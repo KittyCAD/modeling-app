@@ -11,7 +11,7 @@ description: Artifact commands bench-for-kids.kcl
         "type": "make_plane",
         "origin": {
           "x": 0.0,
-          "y": 400.0,
+          "y": 0.0,
           "z": 0.0
         },
         "x_axis": {
@@ -24,32 +24,9 @@ description: Artifact commands bench-for-kids.kcl
           "y": 0.0,
           "z": 1.0
         },
-        "size": 100.0,
+        "size": 60.0,
         "clobber": false,
-        "hide": false
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "plane_set_color",
-        "plane_id": "[uuid]",
-        "color": {
-          "r": 0.6,
-          "g": 0.6,
-          "b": 0.6,
-          "a": 0.3
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "object_visible",
-        "object_id": "[uuid]",
-        "hidden": true
+        "hide": true
       }
     },
     {
@@ -82,7 +59,7 @@ description: Artifact commands bench-for-kids.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -200.0,
+          "x": 200.0,
           "y": 150.0,
           "z": 0.0
         }
@@ -102,16 +79,19 @@ description: Artifact commands bench-for-kids.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "arc_to",
-          "interior": {
-            "x": 0.0,
-            "y": 350.0,
-            "z": 0.0
+          "type": "arc",
+          "center": {
+            "x": -0.0,
+            "y": 150.0
+          },
+          "radius": 200.0,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0
           },
           "end": {
-            "x": 200.0,
-            "y": 150.0,
-            "z": 0.0
+            "unit": "degrees",
+            "value": 180.0
           },
           "relative": false
         }
@@ -126,7 +106,7 @@ description: Artifact commands bench-for-kids.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -200.0,
+            "x": 200.0,
             "y": 150.0,
             "z": 0.0
           },
@@ -138,8 +118,12 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -166,7 +150,7 @@ description: Artifact commands bench-for-kids.kcl
         "target": "[uuid]",
         "distance": 800.0,
         "faces": null,
-        "opposite": "None",
+        "opposite": "Symmetric",
         "extrude_method": "merge",
         "body_type": "solid"
       }
@@ -208,6 +192,15 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -227,6 +220,15 @@ description: Artifact commands bench-for-kids.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -259,8 +261,8 @@ description: Artifact commands bench-for-kids.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 48.0,
-          "y": 0.0,
+          "x": -47.999999999999986,
+          "y": 0.00000000000000015680004672282222,
           "z": 0.0
         }
       }
@@ -281,17 +283,17 @@ description: Artifact commands bench-for-kids.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0,
-            "y": 0.0
+            "x": 0.0000000000000021871003473503814,
+            "y": 0.00000000000000012740004597560524
           },
-          "radius": 48.0,
+          "radius": 47.999999999999986,
           "start": {
-            "unit": "degrees",
-            "value": 0.0
+            "unit": "radians",
+            "value": 3.141592653589793
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 9.42477796076938
           },
           "relative": false
         }
@@ -301,8 +303,12 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -383,17 +389,29 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 43.2,
+        "cut_type": {
+          "fillet": {
+            "radius": 43.2,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": []
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -647,12 +665,12 @@ description: Artifact commands bench-for-kids.kcl
           },
           "radius": 43.2,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -662,8 +680,21 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -744,15 +775,18 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 38.88,
+        "cut_type": {
+          "fillet": {
+            "radius": 38.88,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": []
       }
@@ -908,7 +942,7 @@ description: Artifact commands bench-for-kids.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.88,
+          "x": 38.9,
           "y": 0.0,
           "z": 0.0
         }
@@ -933,14 +967,14 @@ description: Artifact commands bench-for-kids.kcl
             "x": 0.0,
             "y": 0.0
           },
-          "radius": 38.88,
+          "radius": 38.9,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -950,8 +984,21 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -1032,15 +1079,18 @@ description: Artifact commands bench-for-kids.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]"
         ],
-        "radius": 34.992000000000004,
+        "cut_type": {
+          "fillet": {
+            "radius": 34.992000000000004,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": []
       }

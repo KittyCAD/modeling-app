@@ -1,9 +1,8 @@
 //! Web assembly utils.
 
-use std::{
-    pin::Pin,
-    task::{Context, Poll},
-};
+use std::pin::Pin;
+use std::task::Context;
+use std::task::Poll;
 
 /// A JsFuture that implements Send and Sync.
 pub struct JsFuture(pub Option<wasm_bindgen_futures::JsFuture>);

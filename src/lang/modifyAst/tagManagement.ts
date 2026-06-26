@@ -20,10 +20,19 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
+  createMemberExpression,
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
-import { getNodeFromPath, getEdgeCutMeta } from '@src/lang/queryAst'
+import {
+  getEdgeCutMeta,
+  getNodeFromPath,
+  getRegionTagExprFromSegmentId,
+  getSketchSegmentNameFromSourceSurface,
+  getVariableExprsFromSelection,
+  isCallExprWithName,
+  isSketchSegmentCallName,
+} from '@src/lang/queryAst'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import {
   getArtifactOfTypes,
@@ -40,11 +49,12 @@ import type {
   Expr,
   PathToNode,
   Program,
+  VariableDeclaration,
 } from '@src/lang/wasm'
-import type { EdgeCutInfo, Selection } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import { capitaliseFC } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { EdgeCutInfo, Selection } from '@src/machines/modelingSharedTypes'
 
 // ==============================================
 // SECTION 1: PUBLIC TAG ENTRY POINTS
@@ -65,7 +75,7 @@ export function modifyAstWithTagsForSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
   tagMethods?: string[]
-): { modifiedAst: Node<Program>; tags: string[] } | Error {
+): { modifiedAst: Node<Program>; exprs: Expr[] } | Error {
   if (!selection.artifact) {
     return new Error('Selection does not have an artifact')
   }
@@ -96,18 +106,13 @@ export function modifyAstWithTagsForSelection(
     selection.artifact.type === 'segment' //||
     // TODO: selection.artifact.type === 'edgeCutEdge'
   ) {
-    const edgeResult = modifyAstWithTagsForEdgeSelection(
+    return modifyAstWithTagsForEdgeSelection(
       ast,
       selection,
       artifactGraph,
       wasmInstance,
       tagMethods
     )
-    if (err(edgeResult)) return edgeResult
-    return {
-      modifiedAst: edgeResult.modifiedAst,
-      tags: edgeResult.tags,
-    }
   }
 
   // Handle FACE selections
@@ -125,7 +130,48 @@ export function modifyAstWithTagsForSelection(
     if (err(result)) return result
     return {
       modifiedAst: result.modifiedAst,
-      tags: [result.tag],
+      exprs: [result.expr],
+    }
+  }
+
+  if (selection.artifact.type === 'primitiveFace') {
+    const variableLookup = getNodeFromPath<VariableDeclaration>(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance,
+      'VariableDeclaration',
+      false,
+      true
+    )
+    if (
+      !(variableLookup instanceof Error) &&
+      variableLookup.node.type === 'VariableDeclaration' &&
+      isCallExprWithName(variableLookup.node.declaration.init, 'faceId')
+    ) {
+      return {
+        modifiedAst: ast,
+        exprs: [createLocalName(variableLookup.node.declaration.id.name)],
+      }
+    }
+
+    const directLookup = getNodeFromPath<Node<CallExpressionKw>>(
+      ast,
+      selection.codeRef.pathToNode,
+      wasmInstance,
+      'CallExpressionKw',
+      false,
+      true
+    )
+    if (err(directLookup)) {
+      return directLookup
+    }
+    const node = directLookup.node
+    if (!isCallExprWithName(node, 'faceId')) {
+      return new Error('Failed to retrieve primitive face')
+    }
+    return {
+      modifiedAst: ast,
+      exprs: [structuredClone(node)],
     }
   }
 
@@ -248,7 +294,7 @@ function modifyAstWithTagsForEdgeSelection(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
   tagMethods?: string[]
-): { modifiedAst: Node<Program>; tags: string[] } | Error {
+): { modifiedAst: Node<Program>; exprs: Expr[] } | Error {
   if (
     !selection.artifact ||
     (selection.artifact.type !== 'sweepEdge' &&
@@ -259,7 +305,7 @@ function modifyAstWithTagsForEdgeSelection(
   }
 
   let astClone = structuredClone(ast)
-  const tags: string[] = []
+  const exprs: Expr[] = []
 
   // Default: get common edge of 2 faces scenario
   if (!tagMethods || !tagMethods.includes('oppositeAndAdjacentEdges')) {
@@ -288,14 +334,14 @@ function modifyAstWithTagsForEdgeSelection(
       if (err(result)) return result
 
       // Update AST and collect tag using destructuring
-      const { modifiedAst, tag } = result
+      const { modifiedAst, expr } = result
       astClone = modifiedAst
-      tags.push(tag)
+      exprs.push(expr)
     }
 
     return {
       modifiedAst: astClone,
-      tags,
+      exprs,
     }
   }
   // get opposite and adjacent edges scenario
@@ -341,11 +387,11 @@ function modifyAstWithTagsForEdgeSelection(
     )
     if (err(taggedSegment)) return taggedSegment
     const { tag } = taggedSegment
-    tags.push(tag)
+    exprs.push(createLocalName(tag))
 
     return {
       modifiedAst: astClone,
-      tags,
+      exprs,
     }
   }
 
@@ -366,7 +412,7 @@ function modifyAstWithTagForFaceSelection(
   selection: Selection,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): { modifiedAst: Node<Program>; tag: string } | Error {
+): { modifiedAst: Node<Program>; expr: Expr } | Error {
   if (!selection.artifact) {
     return new Error('Selection does not have an artifact')
   }
@@ -381,10 +427,10 @@ function modifyAstWithTagForFaceSelection(
       wasmInstance
     )
     if (err(result)) return result
-    const { modifiedAst, tag } = result
+    const { modifiedAst, expr } = result
     return {
       modifiedAst: modifiedAst,
-      tag: tag,
+      expr,
     }
   }
   // CASE 2: Handle cap face - tag the extrusion/sweep
@@ -400,7 +446,7 @@ function modifyAstWithTagForFaceSelection(
     const { modifiedAst, tag } = result
     return {
       modifiedAst: modifiedAst,
-      tag: tag,
+      expr: createLocalName(tag),
     }
   }
   // CASE 3: Handle edgeCut face - tag the underlying segment
@@ -416,7 +462,7 @@ function modifyAstWithTagForFaceSelection(
     const { modifiedAst, tag } = result
     return {
       modifiedAst: modifiedAst,
-      tag: tag,
+      expr: createLocalName(tag),
     }
   } else {
     return new Error(`Unsupported artifact type: ${selection.artifact.type}`)
@@ -440,7 +486,7 @@ function modifyAstWithTagForWallFace(
   wallFace: Artifact,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
-): { modifiedAst: Node<Program>; tag: string } | Error {
+): { modifiedAst: Node<Program>; expr: Expr } | Error {
   if (wallFace.type !== 'wall') {
     return new Error('Selection artifact is not a valid wall type')
   }
@@ -457,6 +503,34 @@ function modifyAstWithTagForWallFace(
 
   const pathToSegmentNode = segment.codeRef.pathToNode
 
+  // No tag path: just retrieve the sketch block segment
+  const regionTagExpr = getRegionTagExprFromSegmentId(
+    astClone,
+    segment.id,
+    artifactGraph,
+    wasmInstance
+  )
+  if (regionTagExpr) {
+    return {
+      modifiedAst: astClone,
+      expr: regionTagExpr,
+    }
+  }
+
+  // No tag path, no region (surface modeling): retrieve the segment through .sketch
+  const sketchSolveSurfaceTagExpr = getSketchSolveSurfaceTagExprForWallFace(
+    astClone,
+    wallFace,
+    artifactGraph,
+    wasmInstance
+  )
+  if (sketchSolveSurfaceTagExpr) {
+    return {
+      modifiedAst: astClone,
+      expr: sketchSolveSurfaceTagExpr,
+    }
+  }
+
   const result = modifyAstWithTagForSketchSegment(
     astClone,
     pathToSegmentNode,
@@ -467,8 +541,64 @@ function modifyAstWithTagForWallFace(
 
   return {
     modifiedAst: modifiedAst,
-    tag: tag,
+    expr: createLocalName(tag),
   }
+}
+
+function getSketchSolveSurfaceTagExprForWallFace(
+  ast: Node<Program>,
+  wallFace: Extract<Artifact, { type: 'wall' }>,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Expr | null {
+  const sweepArtifact = getArtifactOfTypes(
+    { key: wallFace.sweepId, types: ['sweep'] },
+    artifactGraph
+  )
+  if (err(sweepArtifact)) {
+    return null
+  }
+
+  const sourceSurfaceVars = getVariableExprsFromSelection(
+    {
+      graphSelections: [
+        {
+          artifact: sweepArtifact,
+          codeRef: sweepArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    artifactGraph,
+    ast,
+    wasmInstance
+  )
+  if (err(sourceSurfaceVars) || sourceSurfaceVars.exprs.length !== 1) {
+    return null
+  }
+
+  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+    sweepArtifact,
+    wallFace,
+    artifactGraph,
+    ast,
+    wasmInstance,
+    { fallbackToFirstSegment: false }
+  )
+  if (!sketchSegmentName) {
+    return null
+  }
+
+  return createMemberExpression(
+    createMemberExpression(
+      createMemberExpression(
+        structuredClone(sourceSurfaceVars.exprs[0]),
+        'sketch'
+      ),
+      'tags'
+    ),
+    sketchSegmentName
+  )
 }
 
 /**
@@ -498,15 +628,6 @@ function modifyAstWithTagForCapFace(
     artifactGraph
   )
   if (err(sweepArtifact)) return sweepArtifact
-
-  // Currently only supporting extrusion
-  if (
-    sweepArtifact.subType !== 'extrusion' &&
-    sweepArtifact.subType !== 'revolve' &&
-    sweepArtifact.subType !== 'revolveAboutEdge'
-  ) {
-    return new Error('Only extrusion and revolve caps are currently supported')
-  }
 
   const pathToSweepNode = sweepArtifact.codeRef.pathToNode
 
@@ -572,10 +693,7 @@ function modifyAstWithTagForSketchSegment(
   if (err(segmentNode)) return segmentNode
 
   // Check whether selection is a valid sketch segment
-  if (
-    !(segmentNode.node.callee.name.name in sketchLineHelperMapKw) &&
-    segmentNode.node.callee.name.name !== 'close'
-  ) {
+  if (!isSketchSegmentCallName(segmentNode.node.callee.name.name)) {
     return new Error('Selection is not a sketch segment')
   }
 

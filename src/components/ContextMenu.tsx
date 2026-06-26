@@ -2,12 +2,12 @@ import { Dialog } from '@headlessui/react'
 import type { MouseEvent, RefObject } from 'react'
 import {
   Fragment,
+  memo,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  memo,
 } from 'react'
 import toast from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
@@ -220,9 +220,11 @@ export function ContextMenuItemCopy({
         if (toBeCopiedContent) {
           globalThis?.navigator?.clipboard
             .writeText(toBeCopiedContent)
-            .then(() => toast.success(`Copied ${toBeCopiedLabel} to clipboard`))
+            .then(() =>
+              toast.success(`Copied ${toBeCopiedLabel} to clipboard.`)
+            )
             .catch(() =>
-              toast.error(`Failed to copy ${toBeCopiedLabel} to clipboard`)
+              toast.error(`Failed to copy ${toBeCopiedLabel} to clipboard.`)
             )
         }
       }}

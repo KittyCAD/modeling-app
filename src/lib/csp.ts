@@ -1,19 +1,17 @@
-import path from 'path'
 import fs from 'fs'
-import os from 'os'
 import { fileURLToPath } from 'node:url'
+import os from 'os'
+import path from 'path'
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
 import { app, protocol } from 'electron'
 import mime from 'mime-types'
 
+import {
+  STAGING_BUILD_SUFFIX,
+  getAppFolderNameFromBuild,
+} from '@src/lib/appFolderName'
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
-import { getAppFolderName } from '@src/lib/appFolderName'
-const isStagingBuild = packageJSON.name.includes('-staging')
-const isStagingOrDebugBuild =
-  isStagingBuild ||
-  packageJSON.version === '0.0.0' ||
-  packageJSON.version === 'dev'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -48,13 +46,17 @@ const getMimeType = (filePath: string) => {
 }
 
 const getEnvironmentFolderName = () => {
-  return getAppFolderName({
+  return getAppFolderNameFromBuild({
     packageName: packageJSON.name,
+    packageVersion: packageJSON.version,
     platform: os.platform(),
-    isStaging: isStagingBuild,
-    isStagingOrDebug: isStagingOrDebugBuild,
   })
 }
+
+const isStagingOrDebugBuild =
+  packageJSON.name.includes(STAGING_BUILD_SUFFIX) ||
+  packageJSON.version === '0.0.0' ||
+  packageJSON.version === 'dev'
 
 const getTestSettingsPathForCsp = () => {
   if (process.env.NODE_ENV !== 'test') return undefined

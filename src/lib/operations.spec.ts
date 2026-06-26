@@ -1,10 +1,11 @@
+import { join } from 'path'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { topLevelRange } from '@src/lang/util'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { join } from 'path'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 import {
@@ -13,12 +14,18 @@ import {
   defaultNodePath,
   nodePathFromRange,
 } from '@src/lang/wasm'
+import type { Artifact, ArtifactGraph } from '@src/lang/wasm'
 import {
+  enterEditFlow,
   filterOperations,
+  getHideOpForArtifact,
+  getOperationLabel,
   getOperationVariableName,
+  groupNestedOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
-import { expect, describe, it } from 'vitest'
+import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { describe, expect, it } from 'vitest'
 
 function stdlib(name: string): Operation {
   return {
@@ -29,6 +36,135 @@ function stdlib(name: string): Operation {
     nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
     isError: false,
+  }
+}
+
+function hideOperation(searchId: string): Operation {
+  return {
+    type: 'StdLibCall',
+    name: 'hide',
+    unlabeledArg: {
+      sourceRange: defaultSourceRange(),
+      value: {
+        type: 'Solid',
+        value: { artifactId: searchId },
+      },
+    },
+    labeledArgs: {},
+    nodePath: defaultNodePath(),
+    sourceRange: defaultSourceRange(),
+    isError: false,
+  }
+}
+
+function compositeSolidArtifact(
+  id: string,
+  sourceRange: SourceRange,
+  nodePath: NodePath = defaultNodePath()
+): Artifact {
+  return {
+    type: 'compositeSolid',
+    id,
+    consumed: false,
+    subType: 'subtract',
+    solidIds: [],
+    toolIds: [],
+    codeRef: {
+      range: sourceRange,
+      nodePath,
+      pathToNode: [],
+    },
+  }
+}
+
+function segmentArtifact(id: string): Artifact {
+  return {
+    type: 'segment',
+    id,
+    pathId: 'path-id',
+    edgeIds: [],
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [],
+    },
+    commonSurfaceIds: [],
+  }
+}
+
+function pathArtifact(id: string): Artifact {
+  return {
+    type: 'path',
+    id,
+    subType: 'sketch',
+    planeId: 'plane-id',
+    segIds: [],
+    consumed: false,
+    trajectorySweepId: null,
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+  }
+}
+
+function sweepArtifact(id: string, pathId: string): Artifact {
+  return {
+    type: 'sweep',
+    id,
+    subType: 'extrusion',
+    pathId,
+    surfaceIds: [],
+    edgeIds: [],
+    codeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+    trajectoryId: null,
+    method: 'new',
+    consumed: false,
+    patternIds: [],
+  }
+}
+
+function capArtifact(id: string, sweepId: string): Artifact {
+  return {
+    type: 'cap',
+    id,
+    subType: 'end',
+    sweepId,
+    pathIds: [],
+    edgeCutEdgeIds: [],
+    faceCodeRef: {
+      range: defaultSourceRange(),
+      nodePath: defaultNodePath(),
+      pathToNode: [['body', '']],
+    },
+    cmdId: '',
+  }
+}
+
+function toArtifactGraph(artifacts: Artifact[]): ArtifactGraph {
+  return new Map(artifacts.map((artifact) => [artifact.id, artifact]))
+}
+
+function sketchBlockBegin(index = 0): Operation {
+  return {
+    type: 'GroupBegin',
+    group: {
+      type: 'SketchBlock',
+      sketchId: index + 1,
+    },
+    nodePath: defaultNodePath(),
+    sourceRange: defaultSourceRange(),
+  }
+}
+
+function sketchBlockEnd(): Operation {
+  return {
+    type: 'GroupEnd',
   }
 }
 
@@ -55,24 +191,74 @@ function userReturn(): Operation {
 
 function moduleBegin(name: string): Operation {
   return {
-    type: 'GroupBegin',
-    group: {
-      type: 'ModuleInstance',
-      name,
-      moduleId: 0,
-    },
+    type: 'ModuleInstance',
+    name,
+    moduleId: 0,
     nodePath: defaultNodePath(),
     sourceRange: defaultSourceRange(),
   }
 }
 
-function moduleEnd(): Operation {
-  return {
-    type: 'GroupEnd',
-  }
-}
-
 describe('operations.test.ts', () => {
+  describe('body visibility operations', () => {
+    it('finds a hide operation by direct artifact id', () => {
+      const artifact = compositeSolidArtifact('body-artifact', [0, 10, 0])
+      const hideOp = hideOperation('body-artifact')
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact,
+        artifactGraph: toArtifactGraph([artifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('finds a hide operation for equivalent boolean result artifacts', () => {
+      const sourceRange: SourceRange = [0, 24, 0]
+      const nodePath = defaultNodePath()
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        sourceRange,
+        nodePath
+      )
+      const bodyRowArtifact = compositeSolidArtifact(
+        'body-row-artifact',
+        sourceRange,
+        nodePath
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: bodyRowArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, bodyRowArtifact]),
+      })
+
+      expect(result).toBe(hideOp)
+    })
+
+    it('does not find a hide operation for a different boolean operation', () => {
+      const hiddenArtifact = compositeSolidArtifact(
+        'hidden-result-artifact',
+        [0, 24, 0]
+      )
+      const visibleArtifact = compositeSolidArtifact(
+        'visible-result-artifact',
+        [30, 54, 0]
+      )
+      const hideOp = hideOperation(hiddenArtifact.id)
+
+      const result = getHideOpForArtifact({
+        operations: [hideOp],
+        artifact: visibleArtifact,
+        artifactGraph: toArtifactGraph([hiddenArtifact, visibleArtifact]),
+      })
+
+      expect(result).toBeUndefined()
+    })
+  })
+
   describe('operations filtering', () => {
     it('drops stdlib operations inside a user-defined function call', async () => {
       const operations = [
@@ -109,10 +295,8 @@ describe('operations.test.ts', () => {
       const operations = [
         stdlib('std1'),
         moduleBegin('foo'),
-        moduleEnd(),
         stdlib('std2'),
         moduleBegin('bar'),
-        moduleEnd(),
         stdlib('std3'),
       ]
       const actual = filterOperations(operations)
@@ -182,6 +366,17 @@ describe('operations.test.ts', () => {
         stdlib('std8'),
       ])
     })
+
+    it('keeps sketch group parent and excludes sketch group internals', async () => {
+      const operations = [
+        sketchBlockBegin(0),
+        stdlib('line'),
+        stdlib('coincident'),
+        sketchBlockEnd(),
+      ]
+      const actual = filterOperations(operations)
+      expect(actual).toEqual([sketchBlockBegin(0)])
+    })
   })
 
   function rangeOfText(fullCode: string, target: string): SourceRange {
@@ -204,6 +399,351 @@ describe('operations.test.ts', () => {
       defaultNodePath()
     )
   }
+
+  describe('Extrude edit flow', () => {
+    it('preserves draftAngle in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Sketch',
+          value: { artifactId: 'path-id' },
+        },
+        sourceRange: rangeOfText(code, 'profile001'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+        draftAngle: {
+          value: { type: 'Number', value: 45, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '45deg'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([pathArtifact('path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        draftAngle?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Extrude')
+      expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
+    })
+  })
+
+  describe('Sweep edit flow', () => {
+    it('retrieves tagged cap profiles in the command defaults', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'sweep001 = sweep(capEnd001, path = profile002, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
+      const operation = stdlib('sweep')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'TagIdentifier',
+          value: 'capEnd001',
+          artifact_id: 'cap-id',
+        },
+        sourceRange: rangeOfText(code, 'capEnd001'),
+      }
+      operation.labeledArgs = {
+        path: {
+          value: {
+            type: 'Sketch',
+            value: { artifactId: 'trajectory-path-id' },
+          },
+          sourceRange: rangeOfText(code, 'profile002'),
+        },
+        version: {
+          value: {
+            type: 'Number',
+            value: 2,
+            ty: { type: 'Any' },
+          },
+          sourceRange: rangeOfText(code, '2'),
+        },
+        translateProfileToPath: {
+          value: {
+            type: 'Bool',
+            value: false,
+          },
+          sourceRange: rangeOfText(code, 'false'),
+        },
+        orientProfilePerpendicular: {
+          value: {
+            type: 'Bool',
+            value: true,
+          },
+          sourceRange: rangeOfText(code, 'true'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([
+          pathArtifact('source-path-id'),
+          sweepArtifact('sweep-id', 'source-path-id'),
+          capArtifact('cap-id', 'sweep-id'),
+          pathArtifact('trajectory-path-id'),
+        ]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
+        path?: { graphSelections: Array<{ artifact?: Artifact }> }
+        version?: { valueText: string }
+        translateProfileToPath?: boolean
+        orientProfilePerpendicular?: boolean
+      }
+      expect(result.data.name).toBe('Sweep')
+      expect(argDefaultValues.sketches?.graphSelections[0].artifact?.type).toBe(
+        'cap'
+      )
+      expect(argDefaultValues.path?.graphSelections[0].artifact?.type).toBe(
+        'path'
+      )
+      expect(argDefaultValues.version?.valueText).toBe('2')
+      expect(argDefaultValues.translateProfileToPath).toBe(false)
+      expect(argDefaultValues.orientProfilePerpendicular).toBe(true)
+    })
+  })
+
+  describe('GDT edit flow', () => {
+    it.each([
+      {
+        operationName: 'gdt::profile',
+        commandName: 'GDT Profile',
+        targetLabel: 'edges',
+        targetExpression: '[edge001]',
+        expectedProfileFunction: 'profile',
+        expectedOperationLabel: 'Profile',
+        targetValue: {
+          type: 'Array',
+          value: [{ type: 'Uuid', value: 'segment-id' }],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::profileLine',
+        commandName: 'GDT Profile',
+        targetLabel: 'edges',
+        targetExpression: '[edge001]',
+        expectedProfileFunction: 'profileLine',
+        expectedOperationLabel: 'Profile Line',
+        targetValue: {
+          type: 'Array',
+          value: [{ type: 'Uuid', value: 'segment-id' }],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::profileSurface',
+        commandName: 'GDT Profile',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        expectedProfileFunction: 'profileSurface',
+        expectedOperationLabel: 'Profile Surface',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::perpendicularity',
+        commandName: 'GDT Perpendicularity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::angularity',
+        commandName: 'GDT Angularity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::concentricity',
+        commandName: 'GDT Concentricity',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::symmetry',
+        commandName: 'GDT Symmetry',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::runout',
+        commandName: 'GDT Runout',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+      {
+        operationName: 'gdt::parallelism',
+        commandName: 'GDT Parallelism',
+        targetLabel: 'faces',
+        targetExpression: '[side]',
+        targetValue: {
+          type: 'Array',
+          value: [
+            {
+              type: 'TagIdentifier',
+              value: 'side',
+              artifact_id: 'segment-id',
+            },
+          ],
+        } satisfies OpKclValue,
+      },
+    ])(
+      'preserves variable-backed datums for $operationName',
+      async ({
+        operationName,
+        commandName,
+        targetLabel,
+        targetExpression,
+        expectedProfileFunction,
+        expectedOperationLabel,
+        targetValue,
+      }) => {
+        const { rustContext } = await buildTheWorldAndNoEngineConnection()
+        const code = `datumRefs = ["A"]
+edge001 = getCommonEdge(faces = [side, top])
+${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums = datumRefs)`
+        const datumRefsArgStart = code.lastIndexOf('datumRefs')
+        const operation = stdlib(operationName)
+        if (operation.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        operation.labeledArgs = {
+          [targetLabel]: {
+            value: targetValue,
+            sourceRange: rangeOfText(code, targetExpression),
+          },
+          tolerance: {
+            value: { type: 'Number', value: 0.1, ty: { type: 'Any' } },
+            sourceRange: rangeOfText(code, '0.1mm'),
+          },
+          datums: {
+            value: {
+              type: 'Array',
+              value: [{ type: 'String', value: 'A' }],
+            },
+            sourceRange: topLevelRange(
+              datumRefsArgStart,
+              datumRefsArgStart + 'datumRefs'.length
+            ),
+          },
+        }
+
+        const result = await enterEditFlow({
+          operation,
+          code,
+          artifactGraph: toArtifactGraph([segmentArtifact('segment-id')]),
+          rustContext,
+        })
+        if (result instanceof Error) {
+          throw result
+        }
+        if (result.type !== 'Find and select command') {
+          throw new Error(`Expected edit flow event, got ${result.type}`)
+        }
+
+        const argDefaultValues = result.data.argDefaultValues as {
+          datums?: { valueText: string }
+          profileFunction?: string
+        }
+        expect(result.data.name).toBe(commandName)
+        if (expectedOperationLabel) {
+          expect(getOperationLabel(operation)).toBe(expectedOperationLabel)
+        }
+        if (expectedProfileFunction) {
+          expect(argDefaultValues.profileFunction).toBe(expectedProfileFunction)
+        }
+        expect(argDefaultValues.datums?.valueText).toBe('datumRefs')
+      }
+    )
+  })
 
   describe('variable name of operations', () => {
     it('finds the variable name with simple assignment', async () => {
@@ -271,6 +811,71 @@ describe('operations.test.ts', () => {
       const variableName = getOperationVariableName(op, program, instance)
       expect(variableName).toBeUndefined()
     })
+    it('finds variable names for operations inside a sketch block', async () => {
+      const instance = await loadAndInitialiseWasmInstance(WASM_PATH)
+      const code = `sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -13.64mm, var 7.86mm], end = [var 0mm, var 18.94mm])
+  horizontalDistance([line1.end, ORIGIN]) == 0mm
+  line2 = line(start = [var -12.18mm, var -3.65mm], end = [var -13.64mm, var 7.86mm])
+  coincident([line2.end, line1.start])
+  point2 = point(at = [var 7.65mm, var 18.08mm])
+  point1 = point(at = [var 9.37mm, var 7.94mm])
+  verticalDistance([point1, point2]) == 0mm
+  circle1 = circle(start = [var 10.57mm, var 2.96mm], center = [var 10.49mm, var 0mm])
+  arc1 = arc(start = [var 1.04mm, var -8.29mm], end = [var -3.62mm, var -5.28mm], center = [var -3.42mm, var -10.09mm])
+  coincident([arc1.end, line2.start])
+}
+`
+      const program = assertParse(code, instance)
+
+      const cases = [
+        {
+          name: 'line',
+          target:
+            'line(start = [var -13.64mm, var 7.86mm], end = [var 0mm, var 18.94mm])',
+          expected: 'line1',
+        },
+        {
+          name: 'line',
+          target:
+            'line(start = [var -12.18mm, var -3.65mm], end = [var -13.64mm, var 7.86mm])',
+          expected: 'line2',
+        },
+        {
+          name: 'point',
+          target: 'point(at = [var 7.65mm, var 18.08mm])',
+          expected: 'point2',
+        },
+        {
+          name: 'point',
+          target: 'point(at = [var 9.37mm, var 7.94mm])',
+          expected: 'point1',
+        },
+        {
+          name: 'arc',
+          target:
+            'arc(start = [var 1.04mm, var -8.29mm], end = [var -3.62mm, var -5.28mm], center = [var -3.42mm, var -10.09mm])',
+          expected: 'arc1',
+        },
+        {
+          name: 'circle',
+          target:
+            'circle(start = [var 10.57mm, var 2.96mm], center = [var 10.49mm, var 0mm])',
+          expected: 'circle1',
+        },
+      ] as const
+
+      for (const testCase of cases) {
+        const op = stdlib(testCase.name)
+        if (op.type !== 'StdLibCall') {
+          throw new Error('Expected operation to be a StdLibCall')
+        }
+        op.nodePath = await buildNodePath(code, testCase.target, instance)
+
+        const variableName = getOperationVariableName(op, program, instance)
+        expect(variableName).toBe(testCase.expected)
+      }
+    })
   })
 
   /**
@@ -329,7 +934,7 @@ describe('operations.test.ts', () => {
 
       const actual = groupOperationTypeStreaks(
         ops,
-        ['GroupBegin', 'StdLibCall'],
+        ['GroupBegin', 'StdLibCall', 'ModuleInstance'],
         2
       )
 
@@ -339,6 +944,122 @@ describe('operations.test.ts', () => {
         [moduleBegin('m1'), moduleBegin('m2')],
         userReturn(),
         stdlib('s3'),
+      ])
+    })
+  })
+
+  describe('groupNestedOperations', () => {
+    it('groups contiguous operations from the same sketch block', () => {
+      const allOps = [
+        stdlib('offsetPlane'),
+        sketchBlockBegin(1),
+        stdlib('horizontal'),
+        stdlib('vertical'),
+        stdlib('coincident'),
+        sketchBlockEnd(),
+        stdlib('extrude'),
+      ]
+      const ops = groupOperationTypeStreaks(filterOperations(allOps), [
+        'VariableDeclaration',
+      ])
+
+      const actual = groupNestedOperations(
+        ops,
+        allOps,
+        (groupBegin) => groupBegin.group.type === 'SketchBlock'
+      )
+
+      expect(actual).toEqual([
+        stdlib('offsetPlane'),
+        [
+          sketchBlockBegin(1),
+          stdlib('horizontal'),
+          stdlib('vertical'),
+          stdlib('coincident'),
+          sketchBlockEnd(),
+        ],
+        stdlib('extrude'),
+      ])
+    })
+
+    it('keeps separate sketch blocks separate', () => {
+      const allOps = [
+        sketchBlockBegin(1),
+        stdlib('horizontal'),
+        stdlib('vertical'),
+        sketchBlockEnd(),
+        stdlib('offsetPlane'),
+        sketchBlockBegin(2),
+        stdlib('coincident'),
+        sketchBlockEnd(),
+        stdlib('extrude'),
+      ]
+      const ops = groupOperationTypeStreaks(filterOperations(allOps), [
+        'VariableDeclaration',
+      ])
+
+      const actual = groupNestedOperations(
+        ops,
+        allOps,
+        (groupBegin) => groupBegin.group.type === 'SketchBlock'
+      )
+
+      expect(actual).toEqual([
+        [
+          sketchBlockBegin(1),
+          stdlib('horizontal'),
+          stdlib('vertical'),
+          sketchBlockEnd(),
+        ],
+        stdlib('offsetPlane'),
+        [sketchBlockBegin(2), stdlib('coincident'), sketchBlockEnd()],
+        stdlib('extrude'),
+      ])
+    })
+
+    it('does not merge pre-grouped operation streaks into sketch block groups', () => {
+      const allOps = [
+        sketchBlockBegin(1),
+        stdlib('horizontal'),
+        stdlib('vertical'),
+        sketchBlockEnd(),
+      ]
+      const ops = [[stdlib('a'), stdlib('b')], sketchBlockBegin(1)]
+
+      const actual = groupNestedOperations(
+        ops,
+        allOps,
+        (groupBegin) => groupBegin.group.type === 'SketchBlock'
+      )
+
+      expect(actual).toEqual([
+        [stdlib('a'), stdlib('b')],
+        [
+          sketchBlockBegin(1),
+          stdlib('horizontal'),
+          stdlib('vertical'),
+          sketchBlockEnd(),
+        ],
+      ])
+    })
+    it('can group any GroupBegin type with a predicate', () => {
+      const allOps = [
+        userCall('foo'),
+        stdlib('inside'),
+        userReturn(),
+        stdlib('outside'),
+      ]
+      const ops = filterOperations(allOps)
+
+      const actual = groupNestedOperations(
+        ops,
+        allOps,
+        (groupBegin) => groupBegin.group.type === 'FunctionCall'
+      )
+
+      expect(actual).toEqual([
+        [userCall('foo'), stdlib('inside'), userReturn()],
+        stdlib('outside'),
       ])
     })
   })

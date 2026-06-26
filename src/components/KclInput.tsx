@@ -3,17 +3,17 @@ import {
   closeBracketsKeymap,
   completionKeymap,
 } from '@codemirror/autocomplete'
-import { EditorView, keymap } from '@codemirror/view'
 import { Compartment, EditorState } from '@codemirror/state'
-import { use, useEffect, useRef } from 'react'
+import { EditorView, keymap } from '@codemirror/view'
 import { editorTheme } from '@src/editor/plugins/theme'
-import { getResolvedTheme } from '@src/lib/theme'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { parse, resultIsOk } from '@src/lang/wasm'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { DUMMY_VARIABLE_NAME } from '@src/lib/kclHelpers'
+import { getResolvedTheme } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { varMentions } from '@src/lib/varCompletionExtension'
+import { use, useEffect, useRef } from 'react'
 import styles from './KclInput.module.css'
-import { DUMMY_VARIABLE_NAME } from '@src/lib/kclHelpers'
 
 export function KclInput(props: {
   initialValue: string
@@ -24,9 +24,9 @@ export function KclInput(props: {
   style?: React.CSSProperties
 }) {
   const { settings: settingsSystem } = useApp()
-  const { rustContext, kclManager } = useSingletons()
+  const { kclManager } = useSingletons()
   const settings = settingsSystem.useSettings()
-  const wasmInstance = use(rustContext.wasmInstancePromise)
+  const wasmInstance = use(kclManager.rustContext.wasmInstancePromise)
 
   const variables = kclManager.variablesSignal.value
 

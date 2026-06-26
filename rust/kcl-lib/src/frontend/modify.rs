@@ -1,6 +1,12 @@
 use std::collections::HashSet;
 
-use crate::parsing::ast::types::{BinaryPart, BodyItem, CodeBlock, Expr, ImportSelector};
+use crate::front::Error as ApiError;
+use crate::front::Result as ApiResult;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CodeBlock;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportSelector;
 
 /// Find all defined names in the given code block. This ignores names defined
 /// by glob imports.
@@ -159,28 +165,98 @@ fn find_defined_names_binary_part(expr: &BinaryPart, defined_names: &mut HashSet
     }
 }
 
-pub(super) fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> anyhow::Result<String> {
-    next_free_name_using_max(prefix, taken_names, 999)
+pub(super) fn next_free_name(prefix: &str, taken_names: &HashSet<String>) -> ApiResult<String> {
+    next_free_name_using_padding(prefix, taken_names, 0)
 }
 
-pub(crate) fn next_free_name_using_max(
+pub(crate) fn next_free_name_with_padding(prefix: &str, taken_names: &HashSet<String>) -> ApiResult<String> {
+    next_free_name_using_max_and_padding(prefix, taken_names, 999, 3)
+}
+
+pub(super) fn next_free_name_using_padding(
+    prefix: &str,
+    taken_names: &HashSet<String>,
+    padding: usize,
+) -> ApiResult<String> {
+    next_free_name_using_max_and_padding(prefix, taken_names, 999, padding)
+}
+
+pub(crate) fn next_free_name_using_max(prefix: &str, taken_names: &HashSet<String>, max: u16) -> ApiResult<String> {
+    next_free_name_using_max_and_padding(prefix, taken_names, max, 0)
+}
+
+fn next_free_name_using_max_and_padding(
     prefix: &str,
     taken_names: &HashSet<String>,
     mut max: u16,
-) -> anyhow::Result<String> {
+    padding: usize,
+) -> ApiResult<String> {
     if max == u16::MAX {
         // Prevent overflow.
         max = u16::MAX - 1;
     }
     let mut index = 1;
     while index <= max {
-        let candidate = format!("{prefix}{index}");
+        let candidate = if padding > 0 {
+            format!("{prefix}{index:0padding$}", padding = padding)
+        } else {
+            format!("{prefix}{index}")
+        };
         if !taken_names.contains(&candidate) {
             return Ok(candidate);
         }
         index += 1;
     }
-    Err(anyhow::anyhow!(
-        "Could not find a free name with prefix '{prefix}' after maximum tries."
-    ))
+    Err(ApiError {
+        msg: format!("Could not find a free name with prefix '{prefix}' after maximum tries."),
+    })
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashSet;
+
+    use super::next_free_name;
+    use super::next_free_name_using_max;
+    use super::next_free_name_using_padding;
+
+    #[test]
+    fn next_free_name_defaults_to_no_padding() {
+        let taken = HashSet::new();
+
+        assert_eq!(next_free_name("sketch", &taken).unwrap(), "sketch1");
+        assert_eq!(next_free_name("line", &taken).unwrap(), "line1");
+    }
+
+    #[test]
+    fn next_free_name_with_padding_uses_padding() {
+        let mut taken = HashSet::new();
+        taken.insert("sketch001".to_owned());
+
+        assert_eq!(next_free_name_using_padding("sketch", &taken, 3).unwrap(), "sketch002");
+        assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line01");
+
+        for i in 2..10 {
+            taken.insert(format!("sketch00{i}").to_owned());
+        }
+        taken.insert("line01".to_owned());
+
+        assert_eq!(next_free_name_using_padding("sketch", &taken, 3).unwrap(), "sketch010");
+        assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line02");
+
+        for i in 2..10 {
+            taken.insert(format!("line0{i}").to_owned());
+        }
+
+        assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line10");
+        taken.insert("line10".to_owned());
+        assert_eq!(next_free_name_using_padding("line", &taken, 2).unwrap(), "line11");
+    }
+
+    #[test]
+    fn next_free_name_using_max_remains_unpadded() {
+        let taken = HashSet::new();
+
+        assert_eq!(next_free_name_using_max("line", &taken, 999).unwrap(), "line1");
+    }
 }

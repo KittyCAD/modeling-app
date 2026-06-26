@@ -1,15 +1,17 @@
 use indexmap::IndexMap;
 
-use crate::{
-    ExecutorContext, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ControlFlowKind, ExecState,
-        fn_call::{Arg, Args},
-        kcl_value::{FunctionSource, KclValue},
-        types::RuntimeType,
-    },
-};
+use crate::ExecutorContext;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ControlFlowKind;
+use crate::execution::ExecState;
+use crate::execution::fn_call::Arg;
+use crate::execution::fn_call::Args;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::kcl_value::KclValue;
+use crate::execution::types::RuntimeType;
 
 /// Apply a function to each element of an array.
 pub async fn map(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -30,7 +32,15 @@ async fn inner_map(
 ) -> Result<Vec<KclValue>, KclError> {
     let mut new_array = Vec::with_capacity(array.len());
     for elem in array {
-        let new_elem = call_map_closure(elem, &f, args.source_range, exec_state, &args.ctx).await?;
+        let new_elem = call_map_closure(
+            elem,
+            &f,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
         new_array.push(new_elem);
     }
     Ok(new_array)
@@ -40,6 +50,7 @@ async fn call_map_closure(
     input: KclValue,
     map_fn: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
@@ -47,6 +58,7 @@ async fn call_map_closure(
         Default::default(),
         vec![(None, Arg::new(input, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("map closure".to_owned()),
@@ -90,7 +102,16 @@ async fn inner_reduce(
 ) -> Result<KclValue, KclError> {
     let mut reduced = initial;
     for elem in array {
-        reduced = call_reduce_closure(elem, reduced, &f, args.source_range, exec_state, &args.ctx).await?;
+        reduced = call_reduce_closure(
+            elem,
+            reduced,
+            &f,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
     }
 
     Ok(reduced)
@@ -101,6 +122,7 @@ async fn call_reduce_closure(
     accum: KclValue,
     reduce_fn: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<KclValue, KclError> {
@@ -111,6 +133,7 @@ async fn call_reduce_closure(
         labeled,
         vec![(None, Arg::new(elem, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("reduce closure".to_owned()),
@@ -310,4 +333,85 @@ fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> Runtim
     }
 
     original_ty
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::errors::Severity;
+    use crate::errors::Tag;
+    use crate::execution::KclValueView;
+    use crate::execution::MockConfig;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn flatten_consumed_solid_reports_deprecation_warning() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+toolSketch = sketch(on = XY) {
+  line1 = line(start = [var -2, var -2], end = [var 2, var -2])
+  line2 = line(start = [var 2, var -2], end = [var 2, var 2])
+  line3 = line(start = [var 2, var 2], end = [var -2, var 2])
+  line4 = line(start = [var -2, var 2], end = [var -2, var -2])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool = extrude(region(point = [0, 0], sketch = toolSketch), length = 4)
+
+result = subtract(target, tools = [tool])
+flattened = flatten([[target]])
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await;
+        ctx.close().await;
+
+        match result {
+            Ok(outcome) => {
+                let flattened = outcome.variables.get("flattened").unwrap();
+                let KclValueView::HomArray { value, .. } = flattened else {
+                    panic!("expected `flattened` to be an array, got: {flattened:?}");
+                };
+                assert_eq!(value.len(), 1);
+                assert!(
+                    outcome.issues.iter().any(|issue| {
+                        issue.severity == Severity::Warning
+                            && issue.tag == Tag::Deprecated
+                            && issue
+                                .message
+                                .contains("Calling `flatten` with a consumed solid is deprecated")
+                            && issue
+                                .message
+                                .contains("`target` was already consumed by a `subtract` operation")
+                    }),
+                    "expected flatten consumed-solid deprecation warning, got: {:#?}",
+                    outcome.issues
+                );
+            }
+            Err(err) => {
+                let message = err.error.message();
+                assert!(
+                    message.contains("`target` was already consumed by a `subtract` operation"),
+                    "{message}"
+                );
+                panic!("flatten should warn for consumed-solid validation, but failed with: {message}");
+            }
+        }
+    }
 }

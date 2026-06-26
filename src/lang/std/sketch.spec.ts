@@ -1,5 +1,4 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import {
@@ -12,13 +11,13 @@ import {
 import { topLevelRange } from '@src/lang/util'
 import type { CallExpressionKw } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, test, it } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, test } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -215,16 +214,16 @@ describe('testing addTagForSketchOnFace', () => {
     {
       desc: 'chamfer with its own variable',
       originalChamfer: `chamf = chamfer(
-       extrude001,
-       length = 30,
-       tags = [seg01, getOppositeEdge(seg01)],
-     )`,
+  extrude001,
+  length = 30,
+  tags = [seg01, getOppositeEdge(seg01)],
+)`,
       expectedChamfer: `chamf = chamfer(
-       extrude001,
-       length = 30,
-       tags = [getOppositeEdge(seg01)],
-       tag = $seg03,
-     )
+  extrude001,
+  length = 30,
+  tags = [getOppositeEdge(seg01)],
+  tag = $seg03,
+)
   |> chamfer(length = 30, tags = [seg01])`,
     },
     // Add more test cases here if needed

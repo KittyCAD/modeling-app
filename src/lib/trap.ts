@@ -74,7 +74,12 @@ export function report(
  * Promise.prototype.catch.
  */
 export function reportRejection(reason: any): undefined {
-  report((reason ?? 'Unknown promise rejection').toString())
+  report(
+    (
+      (reason instanceof Object ? JSON.stringify(reason, null, 2) : reason) ??
+      'Unknown promise rejection'
+    ).toString()
+  )
 }
 
 /**
@@ -94,10 +99,11 @@ export function trap<T>(
   }
 
   console.error(value)
-  opts?.suppress ||
+  if (!opts?.suppress) {
     toast.error((opts?.altErr ?? value ?? new Error('Unknown')).toString(), {
       id: 'error',
     })
+  }
   return true
 }
 

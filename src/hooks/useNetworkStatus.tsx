@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   ConnectingTypeGroup,
@@ -13,6 +12,7 @@ import type {
   EngineConnectionState,
   IErrorType,
 } from '@src/network/utils'
+import { useEffect, useState } from 'react'
 
 export enum NetworkHealthState {
   Ok,
@@ -36,7 +36,7 @@ export interface NetworkStatus {
 
 // Must be called from one place in the application.
 // We've chosen the <Router /> component for this.
-export function useNetworkStatus(engineCommandManager: ConnectionManager) {
+export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
   const [immediateState, setImmediateState] = useState<EngineConnectionState>({
     type: EngineConnectionStateType.Disconnected,
   })
@@ -121,12 +121,12 @@ export function useNetworkStatus(engineCommandManager: ConnectionManager) {
       setInternetConnected(false)
       setSteps(structuredClone(initialConnectingTypeGroupState))
     }
-    engineCommandManager.addEventListener(
+    engineCommandManager?.addEventListener(
       EngineCommandManagerEvents.Offline,
       offlineCallback
     )
     return () => {
-      engineCommandManager.removeEventListener(
+      engineCommandManager?.removeEventListener(
         EngineCommandManagerEvents.Offline,
         offlineCallback
       )
@@ -239,24 +239,24 @@ export function useNetworkStatus(engineCommandManager: ConnectionManager) {
       )
     }
 
-    engineCommandManager.addEventListener(
+    engineCommandManager?.addEventListener(
       EngineCommandManagerEvents.EngineAvailable,
       onEngineAvailable as EventListener
     )
 
     return () => {
-      engineCommandManager.removeEventListener(
+      engineCommandManager?.removeEventListener(
         EngineCommandManagerEvents.EngineAvailable,
         onEngineAvailable as EventListener
       )
 
       // When the component is unmounted these should be assigned, but it's possible
       // the component mounts and unmounts before engine is available.
-      engineCommandManager.connection?.removeEventListener(
+      engineCommandManager?.connection?.removeEventListener(
         EngineConnectionEvents.PingPongChanged,
         onPingPongChange as EventListener
       )
-      engineCommandManager.connection?.removeEventListener(
+      engineCommandManager?.connection?.removeEventListener(
         EngineConnectionEvents.ConnectionStateChanged,
         onConnectionStateChange as EventListener
       )

@@ -1,12 +1,12 @@
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { KclManager } from '@src/lang/KclManager'
-import { assertParse, recast, type ArtifactGraph } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selection } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -191,7 +191,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile
       )
       if (err(result)) return result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
@@ -223,7 +223,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile
       )
       if (err(result)) return result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
@@ -255,7 +255,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile
       )
       if (err(result)) return result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
@@ -289,7 +289,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
@@ -320,7 +320,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
@@ -352,7 +352,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         ['oppositeAndAdjacentEdges']
       )
       if (err(result)) return result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
 
       // Verify results
@@ -389,7 +389,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile
       )
       if (err(result)) throw result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
@@ -421,7 +421,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile
       )
       if (err(result)) throw result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
@@ -456,7 +456,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile
       )
       if (err(result)) throw result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
 
@@ -491,7 +491,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
         instanceInThisFile
       )
       if (err(result)) throw result
-      const { modifiedAst, tags } = result
+      const { modifiedAst, exprs: tags } = result
       const tag = tags[0]
       const newCode = recast(modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
@@ -527,7 +527,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       // This should now succeed with our fix
       expect(err(result)).toBeFalsy()
       if (!err(result)) {
-        const { modifiedAst, tags } = result
+        const { modifiedAst, exprs: tags } = result
         const tag = tags[0]
         const newCode = recast(modifiedAst, instanceInThisFile)
         if (!err(newCode)) {

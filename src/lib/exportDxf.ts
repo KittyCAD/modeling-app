@@ -1,18 +1,19 @@
-import { isArray } from '@src/lib/utils'
-import { getOperationVariableName } from '@src/lib/operations'
+import type { WebSocketResponse } from '@kittycad/lib'
+import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import type { KclManager } from '@src/lang/KclManager'
 import {
-  findOperationPlaneLikeArtifact,
   type StdLibCallOp,
+  findOperationPlaneLikeArtifact,
 } from '@src/lang/queryAst'
-import type { WebSocketResponse } from '@kittycad/lib'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
-import type { ToastOptions } from 'react-hot-toast'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { getPlaneFromArtifact } from '@src/lang/std/artifactGraph'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import fsZds from '@src/lib/fs-zds'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { getOperationVariableName } from '@src/lib/operations'
+import { isArray } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ToastOptions } from 'react-hot-toast'
 
 function getSketchArtifactId(
   value: OpKclValue | null | undefined
@@ -84,7 +85,9 @@ export async function exportSketchToDxf(
     if (operation.name === 'subtract2d') {
       planeArtifact = findPlaneArtifactForSubtract2d(operation, kclManager)
       if (!planeArtifact) {
-        toast.error('Could not find sketch to export from subtract2d operation')
+        toast.error(
+          'Could not find sketch to export from subtract2d operation.'
+        )
         return new Error('Could not find plane artifact for subtract2d')
       }
     } else {
@@ -96,13 +99,13 @@ export async function exportSketchToDxf(
     }
 
     if (!planeArtifact) {
-      toast.error('Could not find sketch for DXF export')
+      toast.error('Could not find sketch for DXF export.')
       return new Error('Could not find plane artifact')
     }
 
     // Early exit if no path IDs to process
     if (!('pathIds' in planeArtifact) || !planeArtifact.pathIds?.length) {
-      toast.error('Could not find sketch profiles for DXF export')
+      toast.error('Could not find sketch profiles for DXF export.')
       return new Error('Could not find path IDs')
     }
 
@@ -123,7 +126,7 @@ export async function exportSketchToDxf(
     // Deduplicate entity IDs
     const uniqueEntityIds = Array.from(new Set(entityIds))
     if (uniqueEntityIds.length === 0) {
-      toast.error('Could not find sketch entities for DXF export')
+      toast.error('Could not find sketch entities for DXF export.')
       return new Error('Could not find sketch entities')
     }
 
@@ -176,7 +179,7 @@ export async function exportSketchToDxf(
           return null
         }
 
-        return files as Array<{ name?: string; contents: string }>
+        return files
       } catch {
         return null
       }
@@ -198,14 +201,14 @@ export async function exportSketchToDxf(
     const files = extractExportFiles(response)
     if (!files?.length) {
       console.error('DXF export failed:', response)
-      toast.error('Failed to export sketch to DXF', { id: toastId })
+      toast.error('Failed to export sketch to DXF.', { id: toastId })
       return new Error('Engine command failed')
     }
 
     const selectedFile = selectBestFile(files)
     if (!selectedFile?.contents) {
       console.error('DXF export failed: no file contents', response)
-      toast.error('Failed to export sketch to DXF', { id: toastId })
+      toast.error('Failed to export sketch to DXF.', { id: toastId })
       return new Error('Engine command failed')
     }
 
@@ -218,13 +221,13 @@ export async function exportSketchToDxf(
       )
       if (decoded instanceof Error) {
         console.error('Base64 decode failed:', decoded)
-        toast.error('Failed to decode DXF file data', { id: toastId })
+        toast.error('Failed to decode DXF file data.', { id: toastId })
         return new Error('Base64 decode failed')
       }
       decodedBuf = decoded
     } catch (e) {
       console.error('Base64 decode failed:', e)
-      toast.error('Failed to decode DXF file data', { id: toastId })
+      toast.error('Failed to decode DXF file data.', { id: toastId })
       return new Error('Base64 decode failed')
     }
 
@@ -245,25 +248,22 @@ export async function exportSketchToDxf(
         const testSettingsPath = await window.electron.getAppTestProperty(
           'TEST_SETTINGS_FILE_KEY'
         )
-        const downloadDir = window.electron.join(
+        const downloadDir = fsZds.join(
           testSettingsPath,
           'downloads-during-playwright'
         )
-        await window.electron.mkdir(downloadDir, { recursive: true })
+        await fsZds.mkdir(downloadDir, { recursive: true })
 
         try {
-          await window.electron.writeFile(
-            window.electron.join(downloadDir, fileName),
-            decodedData
-          )
+          await fsZds.writeFile(fsZds.join(downloadDir, fileName), decodedData)
         } catch (e: unknown) {
           console.error('Write file failed:', e)
-          toast.error('Failed to save file', { id: toastId })
+          toast.error('Failed to save file.', { id: toastId })
           const message = e instanceof Error ? e.message : 'Write failed'
           return new Error(message)
         }
 
-        toast.success('DXF export completed [TEST]', { id: toastId })
+        toast.success('DXF export completed [TEST].', { id: toastId })
         return true
       }
 
@@ -283,15 +283,15 @@ export async function exportSketchToDxf(
       }
 
       try {
-        await window.electron.writeFile(filePathMeta.filePath, decodedData)
+        await fsZds.writeFile(filePathMeta.filePath, decodedData)
       } catch (e: unknown) {
         console.error('Write file failed:', e)
-        toast.error('Failed to save file', { id: toastId })
+        toast.error('Failed to save file.', { id: toastId })
         const message = e instanceof Error ? e.message : 'Write failed'
         return new Error(message)
       }
 
-      toast.success('DXF export completed', { id: toastId })
+      toast.success('DXF export completed.', { id: toastId })
       return true
     } else {
       // Browser: download file
@@ -304,9 +304,9 @@ export async function exportSketchToDxf(
   } catch (error: any) {
     console.error('DXF export error:', error)
     if (toastId) {
-      toast.error('Failed to export sketch to DXF', { id: toastId })
+      toast.error('Failed to export sketch to DXF.', { id: toastId })
     } else {
-      toast.error('Failed to export sketch to DXF')
+      toast.error('Failed to export sketch to DXF.')
     }
     return new Error(error?.message ?? 'Unknown error')
   }

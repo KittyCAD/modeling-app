@@ -1,0 +1,22 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing tangent_line_circle.kcl
+---
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  l = line(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm])
+  c = circle(start = [var 0mm, var 7mm], center = [var 0mm, var 4mm])
+
+  fixed([l.start, [-10mm, 0mm]])
+  fixed([l.end, [10mm, 0mm]])
+
+  radius(c) == 3mm
+  c.center.at[0] == 0mm
+  c.start.at[0] == 0mm
+
+  tangent([l, c])
+}
+
+assert(s.c.center.at[1], isEqualTo = 3mm, tolerance = 0.001)
+assert(s.c.start.at[1], isEqualTo = 6mm, tolerance = 0.001)

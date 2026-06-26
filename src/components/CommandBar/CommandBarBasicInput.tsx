@@ -1,11 +1,11 @@
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
-import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp, useSingletons } from '@src/lib/boot'
-import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import { MarkdownText } from '@src/components/MarkdownText'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 
 // TODO: remove the need for this selector once we decouple all actors from React
 const machineContextSelector = (snapshot?: SnapshotFrom<AnyStateMachine>) =>
@@ -23,14 +23,12 @@ function CommandBarBasicInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commands } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { wasmPromise, commands } = useApp()
+  const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as string | undefined
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,
@@ -71,7 +69,12 @@ function CommandBarBasicInput({
   }
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit} className="flex flex-col">
+    <form
+      {...noAutofillFormProps}
+      id="arg-form"
+      onSubmit={handleSubmit}
+      className="flex flex-col"
+    >
       <label
         data-testid="cmd-bar-arg-name"
         className="flex items-center mx-4 my-4"
@@ -85,6 +88,7 @@ function CommandBarBasicInput({
           </span>
         )}
         <input
+          {...noAutofillInputProps}
           data-testid="cmd-bar-arg-value"
           id="arg-form"
           name={arg.inputType}
@@ -94,10 +98,6 @@ function CommandBarBasicInput({
           className={`flex-grow ${arg.inputType === 'color' ? 'h-[41px]' : 'px-2 py-1 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80'} !bg-transparent focus:outline-none`}
           placeholder="Enter a value"
           defaultValue={defaultValue}
-          data-1p-ignore
-          data-lpignore="true"
-          data-form-type="other"
-          data-bwignore
           onKeyDown={(event) => {
             if (event.key === 'Backspace' && event.metaKey) {
               stepBack()
@@ -109,7 +109,7 @@ function CommandBarBasicInput({
       {arg.description && (
         <MarkdownText
           text={arg.description}
-          className="mx-4 mb-4 mt-2 text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+          className="mx-4 mb-4 mt-2 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_*]:select-text [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
         />
       )}
     </form>

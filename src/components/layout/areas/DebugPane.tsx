@@ -1,10 +1,10 @@
 import { CamDebugSettings } from '@src/clientSideScene/ClientSideSceneComp'
 import { AstExplorer } from '@src/components/AstExplorer'
 import { DebugArtifactGraph } from '@src/components/DebugArtifactGraph'
-import { EngineCommands } from '@src/components/EngineCommands'
-import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { DebugSelections } from '@src/components/DebugSelections'
+import { EngineCommands } from '@src/components/EngineCommands'
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import type { AreaTypeComponentProps } from '@src/lib/layout'
 
 export function DebugPane(props: AreaTypeComponentProps) {
   return (

@@ -1,13 +1,11 @@
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 import type { Locator, Page } from '@playwright/test'
 import { isArray, uuidv4 } from '@src/lib/utils'
-
-import type { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
 
 import {
   closeDebugPanel,
   doAndWaitForImageDiff,
   getPixelRGBs,
-  getUtils,
   openAndClearDebugPanel,
   sendCustomCmd,
 } from '@e2e/playwright/test-utils'
@@ -44,6 +42,73 @@ type DragToHandler = (
 type DragFromHandler = (
   dragParams: MouseDragFromParams
 ) => Promise<undefined | boolean>
+
+async function markAndPauseAtPoint(
+  page: Page,
+  point: { x: number; y: number },
+  label?: string
+) {
+  await page.evaluate(
+    ({ point, label }) => {
+      const markerId = 'playwright-click-debug-marker'
+      const existing = document.getElementById(markerId)
+      if (existing) existing.remove()
+
+      const marker = document.createElement('div')
+      marker.id = markerId
+      marker.style.position = 'fixed'
+      marker.style.left = `${point.x}px`
+      marker.style.top = `${point.y}px`
+      marker.style.width = '16px'
+      marker.style.height = '16px'
+      marker.style.transform = 'translate(-50%, -50%)'
+      marker.style.border = '2px solid red'
+      marker.style.borderRadius = '9999px'
+      marker.style.background = 'rgba(255, 0, 0, 0.25)'
+      marker.style.boxShadow = '0 0 0 9999px rgba(0, 0, 0, 0.01)'
+      marker.style.pointerEvents = 'none'
+      marker.style.zIndex = '2147483647'
+
+      const horizontal = document.createElement('div')
+      horizontal.style.position = 'absolute'
+      horizontal.style.left = '-8px'
+      horizontal.style.top = '50%'
+      horizontal.style.width = '32px'
+      horizontal.style.height = '2px'
+      horizontal.style.background = 'red'
+      horizontal.style.transform = 'translateY(-50%)'
+
+      const vertical = document.createElement('div')
+      vertical.style.position = 'absolute'
+      vertical.style.left = '50%'
+      vertical.style.top = '-8px'
+      vertical.style.width = '2px'
+      vertical.style.height = '32px'
+      vertical.style.background = 'red'
+      vertical.style.transform = 'translateX(-50%)'
+
+      marker.append(horizontal, vertical)
+
+      if (label) {
+        const markerLabel = document.createElement('div')
+        markerLabel.textContent = label
+        markerLabel.style.position = 'absolute'
+        markerLabel.style.left = '20px'
+        markerLabel.style.top = '-4px'
+        markerLabel.style.padding = '2px 4px'
+        markerLabel.style.background = 'red'
+        markerLabel.style.color = 'white'
+        markerLabel.style.font = '12px sans-serif'
+        markerLabel.style.whiteSpace = 'nowrap'
+        marker.append(markerLabel)
+      }
+
+      document.body.append(marker)
+    },
+    { point, label }
+  )
+  await page.pause()
+}
 
 export class SceneFixture {
   public page: Page
@@ -122,7 +187,17 @@ export class SceneFixture {
   makeMouseHelpers = (
     x: number,
     y: number,
-    { steps, format }: { steps?: number; format?: 'pixels' | 'ratio' } = {
+    {
+      steps,
+      format,
+      debug,
+      debugLabel,
+    }: {
+      steps?: number
+      format?: 'pixels' | 'ratio'
+      debug?: boolean
+      debugLabel?: string
+    } = {
       steps: 20,
       format: 'pixels',
     }
@@ -134,6 +209,9 @@ export class SceneFixture {
           y,
           format
         )
+        if (debug) {
+          await markAndPauseAtPoint(this.page, resolvedPoint, debugLabel)
+        }
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -153,18 +231,20 @@ export class SceneFixture {
             clickParams.pixelDiff
           )
         }
-        clickParams?.shouldDbClick
-          ? await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
-              delay: clickParams?.delay || 0,
-            })
-          : clickParams?.shouldRightClick
-            ? await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                button: 'right',
-                delay: clickParams?.delay || 0,
-              })
-            : await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
-                delay: clickParams?.delay || 0,
-              })
+        if (clickParams?.shouldDbClick) {
+          await this.page.mouse.dblclick(resolvedPoint.x, resolvedPoint.y, {
+            delay: clickParams?.delay || 0,
+          })
+        } else if (clickParams?.shouldRightClick) {
+          await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            button: 'right',
+            delay: clickParams?.delay || 0,
+          })
+        } else {
+          await this.page.mouse.click(resolvedPoint.x, resolvedPoint.y, {
+            delay: clickParams?.delay || 0,
+          })
+        }
       },
       async (moveParams?: MouseParams) => {
         const resolvedPoint = await this.convertPagePositionToStream(
@@ -172,6 +252,9 @@ export class SceneFixture {
           y,
           format
         )
+        if (debug) {
+          await markAndPauseAtPoint(this.page, resolvedPoint, debugLabel)
+        }
         if (moveParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -188,6 +271,9 @@ export class SceneFixture {
           y,
           format
         )
+        if (debug) {
+          await markAndPauseAtPoint(this.page, resolvedPoint, debugLabel)
+        }
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
             this.page,
@@ -295,8 +381,15 @@ export class SceneFixture {
 
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
    *
-   * Expects the viewPort to be 1000x500 */
-  clickNoWhere = () => this.page.mouse.click(998, 60)
+   * Uses a stream-relative point so it stays away from the toolbar across viewport sizes. */
+  clickNoWhere = async () => {
+    const point = await this.convertPagePositionToStream(
+      998 / 1000,
+      60 / 500,
+      'ratio'
+    )
+    return this.page.mouse.click(point.x, point.y)
+  }
   /** Likely no where, there's a chance it will click something in the scene, depending what you have in the scene.
    */
   moveNoWhere = async (steps?: number) => {
@@ -392,12 +485,11 @@ export class SceneFixture {
   }
 
   settled = async (
-    cmdBar: CmdBarFixture,
     { expectError }: Partial<{ expectError: boolean }> | undefined = {
       expectError: false,
     }
   ) => {
-    const u = await getUtils(this.page)
+    await closeOnboardingModalIfPresent(this.page)
 
     // If the caller expects a KCL error, don't wait for the sketch button to enable.
     if (!expectError) {
@@ -407,14 +499,6 @@ export class SceneFixture {
     }
     await expect(this.startEditSketchBtn).toBeVisible()
     await expect(this.engineConnectionsSpinner).not.toBeVisible()
-
-    await cmdBar.openCmdBar()
-    await cmdBar.chooseCommand('Settings · app · show debug panel')
-    await cmdBar.selectOption({ name: 'on' }).click()
-
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
   }
 
   expectPixelColor = async (

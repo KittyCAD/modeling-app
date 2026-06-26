@@ -3,7 +3,7 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ExecState, Program } from '@src/lang/wasm'
+import type { ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
 import { emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
@@ -69,15 +69,17 @@ export async function executeAst({
   ast,
   rustContext,
   path,
+  callbacks,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
+  callbacks?: ExecCallbacks
 }): Promise<ExecutionResult> {
   try {
-    const settings = await jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.execute(ast, settings, path)
-    await rustContext.waitForAllEngineCommands()
+    const settings = jsAppSettings(rustContext.settingsActor)
+    const execState = await rustContext.execute(ast, settings, path, callbacks)
+    await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
       errors: [],
@@ -94,22 +96,25 @@ export async function executeAstMock({
   rustContext,
   path,
   usePrevMemory,
+  callbacks,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
   usePrevMemory?: boolean
+  callbacks?: ExecCallbacks
 }): Promise<ExecutionResult> {
   try {
-    const settings = await jsAppSettings(rustContext.settingsActor)
+    const settings = jsAppSettings(rustContext.settingsActor)
     const execState = await rustContext.executeMock(
       ast,
       settings,
       path,
-      usePrevMemory
+      usePrevMemory,
+      callbacks
     )
 
-    await rustContext.waitForAllEngineCommands()
+    await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
       errors: [],
@@ -186,14 +191,14 @@ export async function lintAst({
   try {
     let discovered_findings = await kclLint(ast, instance)
 
-    // Filter out Z0005 if new sketch mode is not enabled
-    // Only show Z0005 when useNewSketchMode setting is enabled
+    // Filter out Z0005 if sketch solve mode is not enabled
+    // Only show Z0005 when useSketchSolveMode setting is enabled
     let shouldShowZ0005 = false
     if (rustContext) {
       try {
-        const settings = await jsAppSettings(rustContext.settingsActor)
+        const settings = jsAppSettings(rustContext.settingsActor)
         shouldShowZ0005 =
-          settings?.settings?.modeling?.use_new_sketch_mode === true
+          settings?.settings?.modeling?.use_sketch_solve_mode === true
       } catch {
         // If we can't get settings, no-op since shouldShowZ0005 defaults false
       }
@@ -267,7 +272,7 @@ export async function lintAst({
               ReturnType<typeof rustContext.createNewContext>
             > | null = null
             try {
-              const settings = await jsAppSettings(rustContext.settingsActor)
+              const settings = jsAppSettings(rustContext.settingsActor)
 
               ctx = await rustContext.createNewContext()
 

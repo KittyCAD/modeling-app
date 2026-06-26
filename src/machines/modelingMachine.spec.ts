@@ -1,43 +1,58 @@
-import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { KclManager } from '@src/lang/KclManager'
+import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
-  createLiteral,
   createIdentifier,
+  createLiteral,
   createVariableDeclaration,
 } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import { modelingMachine } from '@src/machines/modelingMachine'
-import { type ActorRefFrom, createActor } from 'xstate'
-import { vi } from 'vitest'
-import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+/** Engine-using integration tests of modelingMachine. */
+import {
+  type Artifact,
+  type ArtifactGraph,
+  type CallExpressionKw,
+  assertParse,
+  recast,
+} from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import {
+  dummyInitSketchGraphDelta,
+  generateModelingMachineDefaultContext,
+  modelingMachineInitialInternalContext,
+} from '@src/machines/modelingSharedContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import {
+  buildTheWorldAndConnectToEngine,
+  buildTheWorldAndNoEngineConnection,
+} from '@src/unitTestUtils'
+import toast from 'react-hot-toast'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { vi } from 'vitest'
+import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
 let rustContextInThisFile: RustContext = null!
-let sceneInfraInThisFile: SceneInfra = null!
-let sceneEntitiesManagerInThisFile: SceneEntities = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
+
+const TESTS_WITHOUT_ENGINE_WORLD = [
+  'routes a cursor inside a sketch block segment to sketch solve edit',
+]
 
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
@@ -46,6 +61,10 @@ let machineManagerInThisFile: MachineManager = null!
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeEach(async () => {
+  const currentTestName = expect.getState().currentTestName ?? ''
+  if (TESTS_WITHOUT_ENGINE_WORLD.some((name) => currentTestName.includes(name)))
+    return
+
   if (instanceInThisFile) {
     return
   }
@@ -53,9 +72,7 @@ beforeEach(async () => {
   const {
     instance,
     engineCommandManager,
-    sceneInfra,
     kclManager,
-    sceneEntitiesManager,
     rustContext,
     commandBarActor,
     machineManager,
@@ -64,14 +81,12 @@ beforeEach(async () => {
   kclManagerInThisFile = kclManager
   engineCommandManagerInThisFile = engineCommandManager
   rustContextInThisFile = rustContext
-  sceneInfraInThisFile = sceneInfra
-  sceneEntitiesManagerInThisFile = sceneEntitiesManager
   commandBarActorInThisFile = commandBarActor
   machineManagerInThisFile = machineManager
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile?.tearDown()
 })
 
 describe('modelingMachine.test.ts', () => {
@@ -101,6 +116,8 @@ describe('modelingMachine.test.ts', () => {
     })),
     SetAngleLengthModal: vi.fn(),
   }))
+
+  const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
 
   // Add this function before the test cases
   // Utility function to wait for a condition to be met
@@ -160,17 +177,13 @@ describe('modelingMachine.test.ts', () => {
       it('should start in the idle state', async () => {
         const contextCopied = generateModelingMachineDefaultContext({
           kclManager: kclManagerInThisFile,
-          sceneInfra: sceneInfraInThisFile,
           rustContext: rustContextInThisFile,
           wasmInstance: instanceInThisFile,
-          sceneEntitiesManager: sceneEntitiesManagerInThisFile,
           engineCommandManager: engineCommandManagerInThisFile,
           commandBarActor: commandBarActorInThisFile,
           machineManager: machineManagerInThisFile,
         })
         contextCopied.engineCommandManager = engineCommandManagerInThisFile
-        contextCopied.sceneInfra = sceneInfraInThisFile
-        contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
         contextCopied.commandBarActor = commandBarActorInThisFile
 
         const actor = createActor(modelingMachine, {
@@ -954,18 +967,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile
@@ -1089,18 +1098,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile
@@ -1234,18 +1239,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile
@@ -1366,18 +1367,14 @@ p3 = [342.51, 216.38],
 
             const contextCopied = generateModelingMachineDefaultContext({
               kclManager: kclManagerInThisFile,
-              sceneInfra: sceneInfraInThisFile,
               rustContext: rustContextInThisFile,
               wasmInstance: instanceInThisFile,
-              sceneEntitiesManager: sceneEntitiesManagerInThisFile,
               engineCommandManager: engineCommandManagerInThisFile,
               commandBarActor: commandBarActorInThisFile,
               machineManager: machineManagerInThisFile,
             })
 
             contextCopied.engineCommandManager = engineCommandManagerInThisFile
-            contextCopied.sceneInfra = sceneInfraInThisFile
-            contextCopied.sceneEntitiesManager = sceneEntitiesManagerInThisFile
             contextCopied.wasmInstance = instanceInThisFile
             contextCopied.rustContext = rustContextInThisFile
             contextCopied.commandBarActor = commandBarActorInThisFile
@@ -1465,6 +1462,316 @@ p3 = [342.51, 216.38],
             expect(kclManagerInThisFile.code).toContain(expectedResult)
           }, 10_000)
         }
+      )
+    })
+
+    describe('modelingMachine sketch entry', () => {
+      const invalidCode = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -4.23mm, var 0.9mm], end = [var 2.98mm, var 3.19mm])
+  line2 = line(start = [var 2.98mm, var 3.19mm], end = [var 3.57mm, var -4.02mm])
+  coincident([line1.end line2.start])
+}`
+      it('keeps invalid code intact when sketch creation is attempted with parse errors', async () => {
+        const {
+          instance,
+          kclManager,
+          rustContext,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        } = await buildTheWorldAndNoEngineConnection()
+
+        kclManager.updateCodeEditor(invalidCode)
+        const parseResult = await kclManager.safeParse(invalidCode)
+
+        expect(parseResult).toBeNull()
+        expect(kclManager.hasParseErrors()).toBe(true)
+
+        const newSketchSpy = vi.spyOn(rustContext, 'newSketch')
+
+        const context = generateModelingMachineDefaultContext({
+          kclManager,
+          rustContext,
+          wasmInstance: instance,
+          engineCommandManager,
+          commandBarActor,
+          machineManager,
+        })
+        context.store.useSketchSolveMode = { current: true } as any
+        context.store.defaultUnit = { current: 'mm' } as any
+        context.projectRef = { current: {} as any }
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({ type: 'Enter sketch' })
+        actor.send({
+          type: 'Select sketch solve plane',
+          data: 'test-plane-id',
+        })
+
+        await waitForCondition(() => toastErrorSpy.mock.calls.length > 0)
+        await waitForCondition(
+          () => actor.getSnapshot().value === 'Sketch no face'
+        )
+
+        expect(newSketchSpy).not.toHaveBeenCalled()
+        expect(kclManager.code).toBe(invalidCode)
+        expect(actor.getSnapshot().value).toBe('Sketch no face')
+        expect(toastErrorSpy).toHaveBeenCalledWith(
+          'Unable to enter sketch while KCL has parse errors.'
+        )
+      })
+
+      it('routes a cursor inside a sketch block segment to sketch solve edit', async () => {
+        const pathToNode = [['body', '']] as any
+        const sketchBlockCodeRef = {
+          range: [0, 100, 0] as [number, number, number],
+          pathToNode,
+          nodePath: { steps: [] },
+        } as any
+        const segmentCodeRef = {
+          range: [35, 85, 0] as [number, number, number],
+          pathToNode,
+          nodePath: { steps: [] },
+        } as any
+        const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
+          type: 'sketchBlock',
+          id: 'sketch-block-1',
+          codeRef: sketchBlockCodeRef,
+          planeId: 'plane-1',
+          sketchId: 7,
+        }
+        const path: Artifact = {
+          type: 'path',
+          subType: 'sketch',
+          id: 'path-1',
+          codeRef: sketchBlockCodeRef,
+          planeId: 'plane-1',
+          segIds: ['segment-1'],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: sketchBlock.id,
+        }
+        const segment: Artifact = {
+          type: 'segment',
+          id: 'segment-1',
+          pathId: path.id,
+          edgeIds: [],
+          commonSurfaceIds: [],
+          codeRef: segmentCodeRef,
+        }
+        const artifactGraph: ArtifactGraph = new Map()
+        artifactGraph.set(sketchBlock.id, sketchBlock)
+        artifactGraph.set(path.id, path)
+        artifactGraph.set(segment.id, segment)
+
+        const context = {
+          ...modelingMachineInitialInternalContext,
+          selectionRanges: {
+            graphSelections: [
+              {
+                codeRef: {
+                  range: [45, 45, 0],
+                  pathToNode,
+                },
+              },
+            ],
+            otherSelections: [],
+          },
+          kclManager: {
+            artifactGraph,
+            hidePlanes: vi.fn(),
+            showPlanes: vi.fn(),
+            sceneInfra: {
+              animate: vi.fn(),
+              resetMouseListeners: vi.fn(),
+              camControls: {
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {},
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        } as any
+
+        let receivedInput: any
+        let actorStarted = false
+        const machine = modelingMachine.provide({
+          actors: {
+            'animate-to-existing-sketch-solve': fromPromise(
+              async ({ input }) => {
+                receivedInput = input
+                actorStarted = true
+                return await new Promise<any>(() => {})
+              }
+            ),
+          },
+        })
+
+        const actor = createActor(machine, { input: context }).start()
+
+        actor.send({ type: 'Enter sketch' })
+
+        await waitForCondition(() => actorStarted)
+
+        expect(actor.getSnapshot().value).toBe(
+          'animating to existing sketch solve'
+        )
+        expect(receivedInput).toEqual(
+          expect.objectContaining({
+            artifactId: sketchBlock.id,
+          })
+        )
+
+        actor.stop()
+      })
+    })
+
+    it('restores camera orbit controls when sketch exit errors', async () => {
+      const {
+        instance,
+        kclManager,
+        rustContext,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      } = await buildTheWorldAndNoEngineConnection()
+
+      const sendSceneCommandSpy = vi
+        .spyOn(engineCommandManager, 'sendSceneCommand')
+        .mockRejectedValue(new Error('sketch exit failed'))
+
+      const context = generateModelingMachineDefaultContext({
+        kclManager,
+        rustContext,
+        wasmInstance: instance,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      })
+      context.store.useSketchSolveMode = { current: true } as any
+      context.store.defaultUnit = { current: 'mm' } as any
+      context.projectRef = { current: {} as any }
+
+      const machine = modelingMachine.provide({
+        actors: {
+          'animate-to-sketch-solve': fromPromise(async () => ({
+            plane: {
+              type: 'defaultPlane',
+              plane: 'XY',
+              planeId: 'test-plane-id',
+              zAxis: [0, 0, 1],
+              yAxis: [0, 1, 0],
+              origin: [0, 0, 0],
+            } as any,
+            sketchSolveId: 1,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
+          })),
+        },
+      })
+
+      const actor = createActor(machine, { input: context }).start()
+
+      actor.send({ type: 'Enter sketch' })
+      actor.send({
+        type: 'Select sketch solve plane',
+        data: 'test-plane-id',
+      })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
+            sketchSolveMode: 'active',
+          })
+        )
+      })
+
+      actor.send({ type: 'Exit sketch' })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
+            idle: 'hidePlanes',
+          })
+        )
+      })
+
+      expect(sendSceneCommandSpy).toHaveBeenCalled()
+      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(true)
+      expect(kclManager.sceneInfra.camControls.enablePan).toBe(true)
+      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+        'engineToClient'
+      )
+    })
+
+    it('disables camera orbit controls in sketch solve mode', async () => {
+      const {
+        instance,
+        kclManager,
+        rustContext,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      } = await buildTheWorldAndNoEngineConnection()
+
+      const context = generateModelingMachineDefaultContext({
+        kclManager,
+        rustContext,
+        wasmInstance: instance,
+        engineCommandManager,
+        commandBarActor,
+        machineManager,
+      })
+      context.store.useSketchSolveMode = { current: true } as any
+      context.store.defaultUnit = { current: 'mm' } as any
+      context.projectRef = { current: {} as any }
+
+      const machine = modelingMachine.provide({
+        actors: {
+          'animate-to-sketch-solve': fromPromise(async () => ({
+            plane: {
+              type: 'defaultPlane',
+              plane: 'XY',
+              planeId: 'test-plane-id',
+              zAxis: [0, 0, 1],
+              yAxis: [0, 1, 0],
+              origin: [0, 0, 0],
+            } as any,
+            sketchSolveId: 1,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
+          })),
+        },
+      })
+
+      const actor = createActor(machine, { input: context }).start()
+
+      actor.send({ type: 'Enter sketch' })
+      actor.send({
+        type: 'Select sketch solve plane',
+        data: 'test-plane-id',
+      })
+
+      await waitForCondition(() => {
+        return (
+          JSON.stringify(actor.getSnapshot().value) ===
+          JSON.stringify({
+            sketchSolveMode: 'active',
+          })
+        )
+      })
+
+      expect(kclManager.sceneInfra.camControls.enableRotate).toBe(false)
+      expect(kclManager.sceneInfra.camControls.syncDirection).toBe(
+        'clientToEngine'
       )
     })
   })

@@ -1,13 +1,13 @@
 ---
 title: "Helix"
 subtitle: "Type in std::types"
-excerpt: "A helix; created by the `helix` function."
+excerpt: "A helix."
 layout: manual
 ---
 
-A helix; created by the `helix` function.
+A helix.
 
-
+A helix can be created by the [`helix` function](/docs/kcl-std/functions/std-helix).
 
 
 

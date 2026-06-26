@@ -162,10 +162,10 @@ export async function maybeWriteToDisk(electron: IElectronAPI) {
     setInterval(() => {
       const marks = getMarks()
       const deltaTotalTable = printDeltaTotal(marks)
-      writeTelemetryFile(electron, deltaTotalTable.join('\n'))
+      writeTelemetryFile(deltaTotalTable.join('\n'))
         .then(() => {})
         .catch(() => {})
-      writeRawTelemetryFile(electron, JSON.stringify(marks))
+      writeRawTelemetryFile(JSON.stringify(marks))
         .then(() => {})
         .catch(() => {})
     }, 5000)

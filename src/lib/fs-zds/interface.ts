@@ -1,3 +1,5 @@
+import type { PromisifyProps } from '@src/lib/types'
+
 export interface IStat {
   dev: number
   ino: number
@@ -72,3 +74,6 @@ export interface IZooDesignStudioFS {
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   attach: () => Promise<undefined | void>
 }
+
+/** Playwright-only version of FS type with "promisified" return types on functions */
+export type PromisifiedZooDesignStudioFS = PromisifyProps<IZooDesignStudioFS>

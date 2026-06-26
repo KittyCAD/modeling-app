@@ -3,20 +3,37 @@ source: kcl-lib/src/simulation_tests.rs
 description: Variables in memory after executing sketch_block_region_triangle.kcl
 ---
 {
-  "line1": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line1"
-  },
-  "line2": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line2"
-  },
-  "line3": {
-    "type": "TagIdentifier",
-    "type": "TagIdentifier",
-    "value": "line3"
+  "__sketch_1_on": {
+    "type": "Plane",
+    "value": {
+      "artifactId": "[uuid]",
+      "id": "[uuid]",
+      "kind": "Custom",
+      "origin": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": "mm"
+      },
+      "xAxis": {
+        "x": 1.0,
+        "y": 0.0,
+        "z": 0.0,
+        "units": null
+      },
+      "yAxis": {
+        "x": 0.0,
+        "y": 1.0,
+        "z": 0.0,
+        "units": null
+      },
+      "zAxis": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 1.0,
+        "units": null
+      }
+    }
   },
   "r": {
     "type": "Sketch",
@@ -34,10 +51,10 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             0.323390814234285
           ],
           "tag": {
-            "commentStart": 65,
-            "end": 70,
+            "commentStart": 24,
+            "end": 29,
             "moduleId": 0,
-            "start": 65,
+            "start": 24,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -57,28 +74,11 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             3.394380782855422,
             0.3233908142344787
           ],
-          "tag": null,
-          "to": [
-            3.394380782855383,
-            0.32339081423467236
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            3.394380782855383,
-            0.32339081423467236
-          ],
           "tag": {
-            "commentStart": 157,
-            "end": 162,
+            "commentStart": 107,
+            "end": 112,
             "moduleId": 0,
-            "start": 157,
+            "start": 107,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -98,28 +98,11 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             1.586666666243411,
             4.808218489067258
           ],
-          "tag": null,
-          "to": [
-            1.586666666243411,
-            4.8082184890674515
-          ],
-          "type": "ToPoint",
-          "units": "mm"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            1.586666666243411,
-            4.8082184890674515
-          ],
           "tag": {
-            "commentStart": 295,
-            "end": 300,
+            "commentStart": 227,
+            "end": 232,
             "moduleId": 0,
-            "start": 295,
+            "start": 227,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -194,6 +177,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
       },
       "artifactId": "[uuid]",
       "originalId": "[uuid]",
+      "originSketchId": "[uuid]",
       "units": "mm"
     }
   },
@@ -559,6 +543,158 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             }
           }
         }
+      },
+      "meta": {
+        "type": "Object",
+        "value": {
+          "sketch": {
+            "type": "Sketch",
+            "value": {
+              "type": "Sketch",
+              "id": "[uuid]",
+              "paths": [
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    -0.22104745036579948,
+                    0.323390814234285
+                  ],
+                  "tag": {
+                    "commentStart": 24,
+                    "end": 29,
+                    "moduleId": 0,
+                    "start": 24,
+                    "type": "TagDeclarator",
+                    "value": "line1"
+                  },
+                  "to": [
+                    3.394380782855422,
+                    0.3233908142344787
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    3.394380782855422,
+                    0.3233908142344787
+                  ],
+                  "tag": {
+                    "commentStart": 107,
+                    "end": 112,
+                    "moduleId": 0,
+                    "start": 107,
+                    "type": "TagDeclarator",
+                    "value": "line2"
+                  },
+                  "to": [
+                    1.586666666243411,
+                    4.808218489067258
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                },
+                {
+                  "__geoMeta": {
+                    "id": "[uuid]",
+                    "sourceRange": []
+                  },
+                  "from": [
+                    1.586666666243411,
+                    4.808218489067258
+                  ],
+                  "tag": {
+                    "commentStart": 227,
+                    "end": 232,
+                    "moduleId": 0,
+                    "start": 227,
+                    "type": "TagDeclarator",
+                    "value": "line3"
+                  },
+                  "to": [
+                    -0.2210474503658385,
+                    0.3233908142340914
+                  ],
+                  "type": "ToPoint",
+                  "units": "mm"
+                }
+              ],
+              "on": {
+                "artifactId": "[uuid]",
+                "id": "[uuid]",
+                "kind": "Custom",
+                "objectId": 0,
+                "origin": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": "mm"
+                },
+                "type": "plane",
+                "xAxis": {
+                  "x": 1.0,
+                  "y": 0.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "yAxis": {
+                  "x": 0.0,
+                  "y": 1.0,
+                  "z": 0.0,
+                  "units": null
+                },
+                "zAxis": {
+                  "x": 0.0,
+                  "y": 0.0,
+                  "z": 1.0,
+                  "units": null
+                }
+              },
+              "start": {
+                "from": [
+                  -0.22104745036579948,
+                  0.323390814234285
+                ],
+                "to": [
+                  -0.22104745036579948,
+                  0.323390814234285
+                ],
+                "units": "mm",
+                "tag": null,
+                "__geoMeta": {
+                  "id": "[uuid]",
+                  "sourceRange": []
+                }
+              },
+              "tags": {
+                "line1": {
+                  "type": "TagIdentifier",
+                  "value": "line1"
+                },
+                "line2": {
+                  "type": "TagIdentifier",
+                  "value": "line2"
+                },
+                "line3": {
+                  "type": "TagIdentifier",
+                  "value": "line3"
+                }
+              },
+              "artifactId": "[uuid]",
+              "originalId": "[uuid]",
+              "units": "mm",
+              "isClosed": "implicitly"
+            }
+          }
+        },
+        "constrainable": false
       }
     },
     "constrainable": false

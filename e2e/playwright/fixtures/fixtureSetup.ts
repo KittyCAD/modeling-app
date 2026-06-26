@@ -1,3 +1,4 @@
+import type { UserFeature } from '@kittycad/lib'
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
   BrowserContext,
@@ -9,23 +10,38 @@ import { _electron as electron } from '@playwright/test'
 
 import fs from 'node:fs'
 import path from 'path'
-import { SETTINGS_FILE_NAME } from '@src/lib/constants'
+import { PROJECT_FOLDER, SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { DeepPartial } from '@src/lib/types'
 import fsp from 'fs/promises'
 
 import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import { CmdBarFixture } from '@e2e/playwright/fixtures/cmdBarFixture'
+import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 import { EditorFixture } from '@e2e/playwright/fixtures/editorFixture'
+import { FsFixture } from '@e2e/playwright/fixtures/fsFixture'
 import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
+import { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { SceneFixture } from '@e2e/playwright/fixtures/sceneFixture'
 import { SignInPageFixture } from '@e2e/playwright/fixtures/signInPageFixture'
 import { ToolbarFixture } from '@e2e/playwright/fixtures/toolbarFixture'
-import { CopilotFixture } from '@e2e/playwright/fixtures/copilotFixture'
 
 import { TEST_SETTINGS } from '@e2e/playwright/storageStates'
-import { getUtils, settingsToToml, setup } from '@e2e/playwright/test-utils'
+import {
+  PLAYWRIGHT_LAYOUT_SETTINGS,
+  getUtils,
+  settingsToToml,
+  setup,
+} from '@e2e/playwright/test-utils'
 import type { ILog } from '@src/lib/debugger'
+import { isArray } from '@src/lib/utils'
+
+const TEST_PROJECT_SETTINGS =
+  TEST_SETTINGS.project &&
+  typeof TEST_SETTINGS.project === 'object' &&
+  !isArray(TEST_SETTINGS.project)
+    ? TEST_SETTINGS.project
+    : undefined
 
 export class AuthenticatedApp {
   public readonly page: Page
@@ -41,8 +57,8 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '') {
-    await setup(this.context, this.page, this.testInfo)
+  async initialise(code = '', userFeatures: readonly UserFeature[] = []) {
+    await setup(this.context, this.page, this.testInfo, userFeatures)
     const u = await getUtils(this.page)
 
     await this.page.addInitScript(async (code) => {
@@ -70,6 +86,11 @@ export interface Fixtures {
   homePage: HomePageFixture
   signInPage: SignInPageFixture
   copilot: CopilotFixture
+  fs: ReturnType<typeof FsFixture>
+  nativeMenu: NativeMenuFixture
+  folderSetupFn: (
+    cb: (dir: string) => Promise<void>
+  ) => Promise<{ dir: string }>
 }
 
 export class ElectronZoo {
@@ -130,7 +151,10 @@ export class ElectronZoo {
     this.available = true
   }
 
-  async createInstanceIfMissing(testInfo: TestInfo) {
+  async createInstanceIfMissing(
+    testInfo: TestInfo,
+    userFeatures: readonly UserFeature[] = []
+  ) {
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
 
@@ -197,8 +221,9 @@ export class ElectronZoo {
       this.context.addInitScript = async function (a, b) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
         // This code works perfectly fine.
-        await oldContextAddInitScript.apply(this, [a, b])
+        const disposable = await oldContextAddInitScript.apply(this, [a, b])
         await that.page.reload()
+        return disposable
       }
 
       // Intentionally changing `this`, so no need to bind.
@@ -207,8 +232,9 @@ export class ElectronZoo {
       this.page.addInitScript = async function (a: any, b: any) {
         // @ts-ignore pretty sure way out of tsc's type checking capabilities.
         // This code works perfectly fine.
-        await oldPageAddInitScript.apply(this, [a, b])
+        const disposable = await oldPageAddInitScript.apply(this, [a, b])
         await that.page.reload()
+        return disposable
       }
     }
 
@@ -221,7 +247,7 @@ export class ElectronZoo {
       app.testProperty['TEST_SETTINGS_FILE_KEY'] = projectDirName
     }, this.projectDirName)
 
-    await setup(this.context, this.page, testInfo)
+    await setup(this.context, this.page, testInfo, userFeatures)
 
     await this.cleanProjectDir()
 
@@ -253,14 +279,6 @@ export class ElectronZoo {
     }
 
     await this.page.setBodyDimensions(this.viewPortSize)
-
-    this.context.folderSetupFn = async function (fn) {
-      return fn(that.projectDirName)
-        .then(() => that.page.reload())
-        .then(() => ({
-          dir: that.projectDirName,
-        }))
-    }
 
     if (!this.firstUrl) {
       await this.page.getByRole('heading', { name: 'Projects' }).count()
@@ -310,12 +328,13 @@ export class ElectronZoo {
         settings: {
           ...TEST_SETTINGS,
           ...appSettings,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
             ...appSettings.app,
           },
           project: {
-            ...TEST_SETTINGS.project,
+            ...TEST_PROJECT_SETTINGS,
             directory: this.projectDirName,
           },
         },
@@ -324,11 +343,12 @@ export class ElectronZoo {
       settingsOverridesToml = settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             ...TEST_SETTINGS.app,
           },
           project: {
-            ...TEST_SETTINGS.project,
+            ...TEST_PROJECT_SETTINGS,
             directory: this.projectDirName,
           },
         },
@@ -360,7 +380,15 @@ const fixturesForElectron = {
 
 const fixturesForWeb = {
   page: async (
-    { page, context }: { page: Page; context: BrowserContext },
+    {
+      page,
+      context,
+      userFeatures,
+    }: {
+      page: Page
+      context: BrowserContext
+      userFeatures: readonly UserFeature[]
+    },
     use: FnUse,
     testInfo: TestInfo
   ) => {
@@ -374,8 +402,9 @@ const fixturesForWeb = {
     const oldPageAddInitScript = page.addInitScript
     page.addInitScript = async function (...args) {
       // @ts-expect-error
-      await oldPageAddInitScript.apply(this, args)
+      const disposable = await oldPageAddInitScript.apply(this, args)
       await page.reload()
+      return disposable
     }
 
     // Intentionally changing `this`, so no need to bind.
@@ -383,12 +412,13 @@ const fixturesForWeb = {
     const oldContextAddInitScript = context.addInitScript
     context.addInitScript = async function (...args) {
       // @ts-expect-error
-      await oldContextAddInitScript.apply(this, args)
+      const disposable = await oldContextAddInitScript.apply(this, args)
       await page.reload()
+      return disposable
     }
 
     const webApp = new AuthenticatedApp(context, page, testInfo)
-    await webApp.initialise()
+    await webApp.initialise('', userFeatures)
 
     await use(page)
   },
@@ -424,15 +454,53 @@ const fixturesBasedOnProcessEnvPlatform = {
   copilot: async ({ page }: { page: Page }, use: FnUse) => {
     await use(new CopilotFixture(page))
   },
+  fs: async ({ page }: { page: Page }, use: FnUse) => {
+    await use(FsFixture(page))
+  },
+  nativeMenu: async ({ tronApp }: { tronApp?: ElectronZoo }, use: FnUse) => {
+    await use(new NativeMenuFixture(tronApp))
+  },
+  folderSetupFn: async (
+    {
+      page,
+      fs,
+      tronApp,
+    }: { page: Page; fs: ReturnType<typeof FsFixture>; tronApp?: ElectronZoo },
+    use: FnUse,
+    testInfo: TestInfo
+  ) => {
+    // Different behavior based on if electron on web.
+    // This is necessary because folder setup needs to run at a particular point.
+    // This forces the page to reload after fs operations.
+    let ret
+    if (!tronApp) {
+      // OPFS is isolated per instance in Playwright!
+      // In the past, it wasn't: https://github.com/microsoft/playwright/issues/29901
+      const projects = await fs.getPath('documents')
+      const projectDirPath = await fs.resolve(projects, PROJECT_FOLDER)
+      ret = async function (fn: (dir: string) => Promise<void>) {
+        return fn(projectDirPath)
+          .then(() => page.reload())
+          .then(() => ({
+            dir: projectDirPath,
+          }))
+      }
+    } else {
+      const projectDirName = testInfo.outputPath('electron-test-projects-dir')
+      ret = async function (fn: (dir: string) => Promise<void>) {
+        return fn(projectDirName)
+          .then(() => page.reload())
+          .then(() => ({
+            dir: projectDirName,
+          }))
+      }
+    }
+
+    await use(ret)
+  },
   _globalAfterEach: [
     async ({ page }: { page: Page }, use: FnUse, testInfo: TestInfo) => {
       await use() // <-- runs the actual test
-
-      // <-- this runs *after every test* in the entire suite
-      if (testInfo.status === 'skipped' || testInfo.status === 'passed') {
-        // NO OP
-        return
-      }
 
       const engineLogs: ILog[] = await page.evaluate(
         () => window.engineDebugger.logs || []

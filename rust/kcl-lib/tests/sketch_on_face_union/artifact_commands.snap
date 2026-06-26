@@ -844,6 +844,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -856,6 +857,7 @@ description: Artifact commands sketch_on_face_union.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

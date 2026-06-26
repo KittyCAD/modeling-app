@@ -1,4 +1,4 @@
-import type { MlCopilotMode, WebSocketResponse } from '@kittycad/lib'
+import type { UserFeature, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -14,10 +14,6 @@ export const MAX_PADDING = 7
  */
 export const DEFAULT_PROJECT_NAME = 'untitled'
 export const DEFAULT_PROJECT_KCL_FILE = 'main.kcl'
-/** Name given the temporary "project" in the browser version of the app */
-export const BROWSER_PROJECT_NAME = 'browser'
-/** Name given the temporary file in the browser version of the app */
-export const BROWSER_FILE_NAME = 'main'
 /**
  * The default name of the project in Desktop.
  * This is prefixed by the Documents directory path.
@@ -28,6 +24,11 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+export const DEFAULT_KCL_VERSION = '2.0'
+export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
+export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
+  'sketch_experimental_features'
+export const OPFS_CLOUD_FEATURE_FLAG: UserFeature = 'web_app_file_browser'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -51,6 +52,7 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   REVOLVE: 'revolve',
   PLANE: 'plane',
   HELIX: 'helix',
+  GEAR: 'gear',
   CLONE: 'clone',
   HIDDEN: 'hidden',
   SOLID: 'solid',
@@ -58,13 +60,19 @@ export const KCL_DEFAULT_CONSTANT_PREFIXES = {
   PATTERN: 'pattern',
   CHAMFER: 'chamfer',
   FILLET: 'fillet',
+  BLEND: 'blend',
   SURFACE: 'surface',
+  EDGE: 'edge',
+  FACE: 'face',
 } as const
 /** The default KCL length expression */
 export const KCL_DEFAULT_LENGTH = `5`
 
-/** The default KCL tolerance expression */
-export const KCL_DEFAULT_TOLERANCE = `0.1mm`
+/** The default KCL tolerance magnitude. Command configs add the active file unit. */
+export const KCL_DEFAULT_TOLERANCE = '0.1'
+
+/** The default KCL datum reference expression */
+export const KCL_DEFAULT_DATUM_REFS = `["A"]`
 
 /** The default KCL precision expression */
 export const KCL_DEFAULT_PRECISION = `3`
@@ -90,10 +98,17 @@ export const KCL_DEFAULT_ORIGIN_2D = `[0, 0]`
 /** The default KCL color expression */
 export const KCL_DEFAULT_COLOR = `#3c73ff`
 
+export const TRIM_PREVIEW_LINE_COLOR = '#ff8800'
+export const TRIM_PREVIEW_LINE_COLOR_HEX = 0xff8800
+export const TRIM_PREVIEW_LINE_WIDTH_PX = 2
+
 /** The sketch mode revamp selection rgb values */
 export const SKETCH_SELECTION_RGB = [255, 183, 39]
 /** The sketch mode revamp selection rgb values as a string */
 export const SKETCH_SELECTION_RGB_STR = SKETCH_SELECTION_RGB.join(', ')
+export const SKETCH_DEFAULT_PLANE_XY = '#ef4444'
+export const SKETCH_DEFAULT_PLANE_XZ = '#3b82f6'
+export const SKETCH_DEFAULT_PLANE_YZ = '#22c55e'
 
 /**
  * Converts an RGB array [r, g, b] to a single integer color value (0xRRGGBB format).
@@ -104,6 +119,33 @@ export function packRgbToColor(rgb: number[]): number {
 }
 /** The sketch mode revamp selection rgb values as HEX */
 export const SKETCH_SELECTION_COLOR = packRgbToColor(SKETCH_SELECTION_RGB)
+/** The sketch mode revamp highlight rgb values */
+export const SKETCH_HIGHLIGHT_RGB = SKETCH_SELECTION_RGB.map((val) =>
+  Math.round(val * 0.7)
+)
+/** The sketch mode revamp highlight rgb values as HEX */
+export const SKETCH_HIGHLIGHT_COLOR = packRgbToColor(SKETCH_HIGHLIGHT_RGB)
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as RGB */
+export const SKETCH_HIGHLIGHT_SECONDARY_RGB = [3, 231, 182]
+/** The sketch mode revamp highlight for secondary items (like a symmetry axis) as HEX */
+export const SKETCH_HIGHLIGHT_SECONDARY_COLOR = packRgbToColor(
+  SKETCH_HIGHLIGHT_SECONDARY_RGB
+)
+
+/** Corresponding engine selections and highlights */
+export const SYSTEM_SELECTION_COLOR = {
+  r: SKETCH_SELECTION_RGB[0] / 255,
+  g: SKETCH_SELECTION_RGB[1] / 255,
+  b: SKETCH_SELECTION_RGB[2] / 255,
+  a: 1,
+}
+
+export const SYSTEM_HIGHLIGHT_COLOR = {
+  r: SKETCH_HIGHLIGHT_RGB[0] / 255,
+  g: SKETCH_HIGHLIGHT_RGB[1] / 255,
+  b: SKETCH_HIGHLIGHT_RGB[2] / 255,
+  a: 1,
+}
 
 /** Sketch Solve file version, to be implemented https://github.com/KittyCAD/modeling-app/issues/9280 **/
 export const SKETCH_FILE_VERSION = 0
@@ -111,13 +153,11 @@ export const SKETCH_FILE_VERSION = 0
 /** The default KCL leader scale expression */
 export const KCL_DEFAULT_LEADER_SCALE = `1.0`
 
-/** The default KCL font point size expression */
-export const KCL_DEFAULT_FONT_POINT_SIZE = `36`
-
-/** The default KCL font scale expression */
-export const KCL_DEFAULT_FONT_SCALE = `1.0`
+/** The default model-space GDT font size expression */
+export const KCL_DEFAULT_FONT_SIZE = `10mm`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
+export const KEYMAP_FILE_NAME = 'keymap.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
 export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
@@ -148,24 +188,21 @@ export const EXECUTE_AST_INTERRUPT_ERROR_MESSAGE = JSON.stringify(
 /** The messages that appear for exporting toasts */
 export const EXPORT_TOAST_MESSAGES = {
   START: 'Exporting...',
-  SUCCESS: 'Exported successfully',
-  FAILED: 'Export failed',
+  SUCCESS: 'Exported successfully.',
+  FAILED: 'Export failed.',
 }
 
 /** The messages that appear for "make" command toasts */
 export const MAKE_TOAST_MESSAGES = {
   START: 'Starting print...',
-  NO_MACHINES: 'No machines available',
-  NO_MACHINE_API_IP: 'No machine api ip available',
-  NO_CURRENT_MACHINE: 'No current machine available',
-  NO_MACHINE_ID: 'No machine id available',
-  NO_NAME: 'No name provided',
-  ERROR_STARTING_PRINT: 'Error while starting print',
-  SUCCESS: 'Started print successfully',
+  NO_MACHINES: 'No machines available.',
+  NO_MACHINE_API_IP: 'No machine api ip available.',
+  NO_CURRENT_MACHINE: 'No current machine available.',
+  NO_MACHINE_ID: 'No machine id available.',
+  NO_NAME: 'No name provided.',
+  ERROR_STARTING_PRINT: 'Error while starting print.',
+  SUCCESS: 'Started print successfully.',
 }
-
-/** Toast id for the app auto-updater toast */
-export const AUTO_UPDATER_TOAST_ID = 'auto-updater-toast'
 
 /** Toast id for the insert foreign part toast */
 export const INSERT_FOREIGN_TOAST_ID = 'insert-foreign-toast'
@@ -175,6 +212,9 @@ export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
+
+/** Toast id for the changes requested banner */
+export const CHANGES_REQUESTED_TOAST_ID = 'changes-requested-toast'
 
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
@@ -223,6 +263,13 @@ export const ASK_TO_OPEN_QUERY_PARAM = 'ask-open-desktop'
 export const DEFAULT_DEFAULT_LENGTH_UNIT: UnitLength = 'mm'
 
 /**
+ * Number of decimal places used when converting engine millimeter values
+ * to the active length unit for selection points.
+ * Sibling to rust/kcl-lib/src/std/mod.rs#DEFAULT_TOLERANCE_MM
+ */
+export const DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES = 7
+
+/**
  * When no annotation is in the KCL file to specify the defaults
  */
 export const DEFAULT_EXPERIMENTAL_FEATURES: WarningLevel = {
@@ -243,8 +290,12 @@ export type ExecutionType =
   | typeof EXECUTION_TYPE_MOCK
   | typeof EXECUTION_TYPE_NONE
 
-/** Key for setting window.localStorage.setItem and .getItem to determine if the runtime is playwright for browsers */
+/** localStorage key to determine if the runtime is Playwright */
 export const IS_PLAYWRIGHT_KEY = 'playwright'
+/** localStorage key to store the token for Playwright */
+export const TOKEN_PERSIST_KEY = 'TOKEN_PERSIST_KEY'
+/** A query parameter for Playwright to authenticate with a Vercel deployment */
+export const VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM = 'vercel-playwright-token'
 
 /** Should we mark all the ML features as "beta"? */
 export const IS_ML_EXPERIMENTAL = true
@@ -261,6 +312,8 @@ export const CMD_NAME_QUERY_PARAM = 'cmd'
 export const CMD_GROUP_QUERY_PARAM = 'groupId'
 /** A query parameter that manually sets the engine pool the frontend should use. */
 export const POOL_QUERY_PARAM = 'pool'
+/** A query parameter containing the project ID to open inside the app. */
+export const PROJECT_ID_QUERY_PARAM = 'project-id'
 /** A query parameter to create a file
  * @deprecated: supporting old share links with this. For new command URLs, use "cmd"
  */
@@ -270,6 +323,11 @@ export const CODE_QUERY_PARAM = 'code'
 /** A query parameter to skip the sign-on view if unnecessary. */
 export const IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM =
   'immediate-sign-in-if-necessary'
+/**
+ * A query parameter to allow the app to be accessed on mobile devices.
+ * Used to test mobile experience as we improve it to be release-able.
+ */
+export const ALLOW_MOBILE_QUERY_PARAM = 'allow-mobile'
 
 // Only used by the desktop app
 export const OAUTH2_DEVICE_CLIENT_ID = '2af127fb-e14e-400a-9c57-a9ed08d1a5b7'
@@ -322,16 +380,8 @@ export const PENDING_COMMAND_TIMEOUT = 60_000
 /** Timeout in MS to save layout */
 export const LAYOUT_SAVE_THROTTLE = 500
 
-// Copilot input
-export const DEFAULT_ML_COPILOT_MODE: MlCopilotMode = 'thoughtful'
-
 // Default backface color
-export const DEFAULT_BACKFACE_COLOR = {
-  a: 1.0,
-  b: 0.05,
-  g: 0.05,
-  r: 0.95,
-}
+export const DEFAULT_BACKFACE_COLOR = '#00D5FF'
 
 /**
  * KCL constants defined in rust/kcl-lib/std/prelude.kcl

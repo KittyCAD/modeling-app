@@ -9,9 +9,10 @@ import {
   addToInputHelper,
 } from '@src/components/AvailableVarsHelpers'
 import type { Expr } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { useSingletons } from '@src/lib/boot'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 type ModalResolve = {
   value: string
@@ -48,7 +49,7 @@ export const GetInfoModal = ({
   initialVariableName,
   selectionRanges,
 }: GetInfoModalProps) => {
-  const { kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const [sign, setSign] = useState(initialValue?.startsWith('-') ? -1 : 1)
   const [segName, setSegName] = useState(initialSegName)
   const [value, setValue] = useState(
@@ -71,7 +72,7 @@ export const GetInfoModal = ({
     value: value,
     initialVariableName,
     selectionRanges,
-    rustContext,
+    rustContext: kclManager.rustContext,
     code: kclManager.codeSignal.value,
     ast: kclManager.astSignal.value,
     variables: kclManager.variablesSignal.value,
@@ -131,6 +132,7 @@ export const GetInfoModal = ({
                     {sign > 0 ? '+' : '-'}
                   </button>
                   <input
+                    {...noAutofillInputProps}
                     type="text"
                     name="val"
                     id="val"
@@ -151,6 +153,7 @@ export const GetInfoModal = ({
                 </label>
                 <div className="mt-1">
                   <input
+                    {...noAutofillInputProps}
                     type="text"
                     name="segName"
                     id="segName"

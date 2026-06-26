@@ -1,26 +1,35 @@
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use ahash::AHashSet;
+use ezpz::Warning;
 use indexmap::IndexMap;
 use kcl_error::SourceRange;
-use kcl_ezpz::Warning;
 use kittycad_modeling_cmds::units::UnitLength;
 use uuid::Uuid;
 
-use crate::{
-    ExecState, KclError,
-    errors::KclErrorDetails,
-    exec::{KclValue, NumericType, Sketch, UnitType},
-    execution::{
-        AbstractSegment, Segment, SegmentKind, SegmentRepr, SketchSurface, UnsolvedExpr, UnsolvedSegment,
-        UnsolvedSegmentKind,
-        types::{PrimitiveType, RuntimeType},
-    },
-    front::{Freedom, Object},
-    std::args::TyF64,
-};
-#[cfg(feature = "artifact-graph")]
-use crate::{execution::Metadata, front::ObjectKind};
+use crate::ExecState;
+use crate::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::KclValue;
+use crate::exec::NumericType;
+use crate::exec::Sketch;
+use crate::exec::UnitType;
+use crate::execution::AbstractSegment;
+use crate::execution::Metadata;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
+use crate::execution::SegmentRepr;
+use crate::execution::SketchSurface;
+use crate::execution::UnsolvedExpr;
+use crate::execution::UnsolvedSegment;
+use crate::execution::UnsolvedSegmentKind;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::front::Freedom;
+use crate::front::Object;
+use crate::front::ObjectKind;
+use crate::std::args::TyF64;
 
 /// Freedom analysis results from solving a sketch constraint system. The `Vec`
 /// is converted to a set to avoid quadratic runtime.
@@ -31,7 +40,7 @@ pub(super) struct FreedomAnalysis {
 }
 
 impl FreedomAnalysis {
-    pub(super) fn from_ezpz_analysis(analysis: kcl_ezpz::FreedomAnalysis, num_constraints: usize) -> Self {
+    pub(super) fn from_ezpz_analysis(analysis: ezpz::FreedomAnalysis, num_constraints: usize) -> Self {
         let underconstrained_vec: Vec<u32> = analysis.into_underconstrained();
         let underconstrained = AHashSet::from_iter(underconstrained_vec.iter().copied());
 
@@ -46,13 +55,13 @@ fn solver_unit(exec_state: &ExecState) -> UnitLength {
     exec_state.length_unit()
 }
 
-pub(super) fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
+pub(crate) fn solver_numeric_type(exec_state: &ExecState) -> NumericType {
     NumericType::Known(UnitType::Length(solver_unit(exec_state)))
 }
 
 /// When giving input to the solver, all numbers must be given in the same
 /// units.
-pub(crate) fn normalize_to_solver_unit(
+pub(crate) fn normalize_to_solver_distance_unit(
     value: &KclValue,
     source_range: SourceRange,
     exec_state: &mut ExecState,
@@ -72,15 +81,38 @@ pub(crate) fn normalize_to_solver_unit(
     })
 }
 
+/// When giving input to the solver, all numbers must be given in the same
+/// units.
+pub(crate) fn normalize_to_solver_angle_unit(
+    value: &KclValue,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+    description: &str,
+) -> Result<KclValue, KclError> {
+    let angle_ty = RuntimeType::angle();
+    value.coerce(&angle_ty, true, exec_state).map_err(|_| {
+        KclError::new_semantic(KclErrorDetails::new(
+            format!(
+                "{} must be coercible to an angle unit {}, but found {}",
+                description,
+                angle_ty.human_friendly_type(),
+                value.human_friendly_type(),
+            ),
+            vec![source_range],
+        ))
+    })
+}
+
 pub(super) fn substitute_sketch_vars(
     variables: IndexMap<String, KclValue>,
     surface: &SketchSurface,
     sketch_id: Uuid,
-    sketch: Option<Sketch>,
+    sketch: Option<&Sketch>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
 ) -> Result<HashMap<String, KclValue>, KclError> {
+    let sketch = sketch.cloned().map(Arc::new);
     let mut subbed = HashMap::with_capacity(variables.len());
     for (name, value) in variables {
         let subbed_value = substitute_sketch_var(
@@ -101,7 +133,7 @@ fn substitute_sketch_var(
     value: KclValue,
     surface: &SketchSurface,
     sketch_id: Uuid,
-    sketch: Option<&Sketch>,
+    sketch: Option<&Arc<Sketch>>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -147,6 +179,7 @@ fn substitute_sketch_var(
         KclValue::Object {
             value,
             constrainable,
+            object_kind,
             meta,
         } => {
             let subbed = value
@@ -159,6 +192,7 @@ fn substitute_sketch_var(
             Ok(KclValue::Object {
                 value: subbed,
                 constrainable,
+                object_kind,
                 meta,
             })
         }
@@ -209,7 +243,7 @@ pub(super) fn substitute_sketch_var_in_segment(
     segment: UnsolvedSegment,
     surface: &SketchSurface,
     sketch_id: Uuid,
-    sketch: Option<Sketch>,
+    sketch: Option<Arc<Sketch>>,
     solve_outcome: &Solved,
     solution_ty: NumericType,
     analysis: Option<&FreedomAnalysis>,
@@ -234,6 +268,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 sketch_id,
                 sketch,
                 tag: segment.tag,
+                node_path: segment.node_path,
                 meta: segment.meta,
             })
         }
@@ -272,6 +307,7 @@ pub(super) fn substitute_sketch_var_in_segment(
                 sketch_id,
                 sketch,
                 tag: segment.tag,
+                node_path: segment.node_path,
                 meta: segment.meta,
             })
         }
@@ -320,6 +356,85 @@ pub(super) fn substitute_sketch_var_in_segment(
                 sketch_id,
                 sketch,
                 tag: segment.tag,
+                node_path: segment.node_path,
+                meta: segment.meta,
+            })
+        }
+        UnsolvedSegmentKind::Circle {
+            start,
+            center,
+            ctor,
+            start_object_id,
+            center_object_id,
+            construction,
+        } => {
+            let (start_x, start_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[0], solve_outcome, solution_ty, analysis, &srs)?;
+            let (start_y, start_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&start[1], solve_outcome, solution_ty, analysis, &srs)?;
+            let (center_x, center_x_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&center[0], solve_outcome, solution_ty, analysis, &srs)?;
+            let (center_y, center_y_freedom) =
+                substitute_sketch_var_in_unsolved_expr(&center[1], solve_outcome, solution_ty, analysis, &srs)?;
+            let start = [start_x, start_y];
+            let center = [center_x, center_y];
+            Ok(Segment {
+                id: segment.id,
+                object_id: segment.object_id,
+                kind: SegmentKind::Circle {
+                    start,
+                    center,
+                    ctor: ctor.clone(),
+                    start_object_id: *start_object_id,
+                    center_object_id: *center_object_id,
+                    start_freedom: point_freedom(start_x_freedom, start_y_freedom),
+                    center_freedom: point_freedom(center_x_freedom, center_y_freedom),
+                    construction: *construction,
+                },
+                surface: surface.clone(),
+                sketch_id,
+                sketch,
+                tag: segment.tag,
+                node_path: segment.node_path,
+                meta: segment.meta,
+            })
+        }
+        UnsolvedSegmentKind::ControlPointSpline {
+            controls,
+            ctor,
+            control_object_ids,
+            control_polygon_edge_object_ids,
+            degree,
+            construction,
+        } => {
+            let mut solved_controls = Vec::with_capacity(controls.len());
+            let mut control_freedoms = Vec::with_capacity(controls.len());
+            for control in controls {
+                let (x, x_freedom) =
+                    substitute_sketch_var_in_unsolved_expr(&control[0], solve_outcome, solution_ty, analysis, &srs)?;
+                let (y, y_freedom) =
+                    substitute_sketch_var_in_unsolved_expr(&control[1], solve_outcome, solution_ty, analysis, &srs)?;
+                solved_controls.push([x, y]);
+                control_freedoms.push(point_freedom(x_freedom, y_freedom));
+            }
+
+            Ok(Segment {
+                id: segment.id,
+                object_id: segment.object_id,
+                kind: SegmentKind::ControlPointSpline {
+                    controls: solved_controls,
+                    ctor: ctor.clone(),
+                    control_object_ids: control_object_ids.clone(),
+                    control_polygon_edge_object_ids: control_polygon_edge_object_ids.clone(),
+                    control_freedoms,
+                    degree: *degree,
+                    construction: *construction,
+                },
+                surface: surface.clone(),
+                sketch_id,
+                sketch,
+                tag: segment.tag,
+                node_path: segment.node_path,
                 meta: segment.meta,
             })
         }
@@ -344,7 +459,7 @@ fn substitute_sketch_var_in_unsolved_expr(
                     source_ranges.to_vec(),
                 )));
             };
-            let freedom = if solve_outcome.variables_in_conflicts.contains(&var_id.0) {
+            let freedom = if solve_outcome.variables_in_conflicts.contains(&(var_id.0 as ezpz::Id)) {
                 Some(Freedom::Conflict)
             } else if let Some(analysis) = analysis {
                 let solver_var_id = var_id.to_constraint_id(source_ranges.first().copied().unwrap_or_default())?;
@@ -381,16 +496,18 @@ pub(crate) struct Solved {
     #[expect(dead_code, reason = "ezpz provides this info, but we aren't using it yet")]
     pub(crate) priority_solved: u32,
     /// Variables involved in unsatisfied constraints (for conflict detection)
-    pub(crate) variables_in_conflicts: AHashSet<usize>,
+    pub(crate) variables_in_conflicts: AHashSet<ezpz::Id>,
+    /// Did the solver converge on a solution?
+    pub(crate) converged: bool,
 }
 
 impl Solved {
-    /// Create a Solved from a kcl_ezpz::SolveOutcome, building the set of variables
+    /// Create a Solved from a ezpz::SolveOutcome, building the set of variables
     /// involved in unsatisfied constraints by examining the original constraints.
     /// Only marks variables from required constraints (not optional) as conflicted.
     pub(crate) fn from_ezpz_outcome(
-        value: kcl_ezpz::SolveOutcome,
-        constraints: &[kcl_ezpz::Constraint],
+        value: ezpz::SolveOutcome,
+        constraints: &[ezpz::Constraint],
         num_required_constraints: usize,
     ) -> Self {
         // Build a set of variables involved in unsatisfied constraints
@@ -401,7 +518,7 @@ impl Solved {
             if constraint_idx < num_required_constraints
                 && let Some(constraint) = constraints.get(constraint_idx)
             {
-                extract_variable_ids_from_constraint(constraint, &mut variables_in_conflicts);
+                constraint.extend_associated_variable_ids(&mut variables_in_conflicts);
             }
         }
 
@@ -411,104 +528,7 @@ impl Solved {
             warnings: value.warnings().to_owned(),
             priority_solved: value.priority_solved(),
             variables_in_conflicts,
-        }
-    }
-}
-
-/// Extract variable IDs from a constraint and add them to the set.
-/// This is a helper function to find which variables are involved in a constraint.
-fn extract_variable_ids_from_constraint(constraint: &kcl_ezpz::Constraint, variable_set: &mut AHashSet<usize>) {
-    match constraint {
-        kcl_ezpz::Constraint::Fixed(id, _) => {
-            variable_set.insert(*id as usize);
-        }
-        kcl_ezpz::Constraint::Distance(pt0, pt1, _) => {
-            extract_ids_from_point(pt0, variable_set);
-            extract_ids_from_point(pt1, variable_set);
-        }
-        kcl_ezpz::Constraint::HorizontalDistance(pt0, pt1, _) => {
-            extract_ids_from_point(pt0, variable_set);
-            extract_ids_from_point(pt1, variable_set);
-        }
-        kcl_ezpz::Constraint::VerticalDistance(pt0, pt1, _) => {
-            extract_ids_from_point(pt0, variable_set);
-            extract_ids_from_point(pt1, variable_set);
-        }
-        kcl_ezpz::Constraint::Horizontal(line) | kcl_ezpz::Constraint::Vertical(line) => {
-            extract_ids_from_line(line, variable_set);
-        }
-        kcl_ezpz::Constraint::PointsCoincident(pt0, pt1) => {
-            extract_ids_from_point(pt0, variable_set);
-            extract_ids_from_point(pt1, variable_set);
-        }
-        kcl_ezpz::Constraint::Arc(arc) => {
-            extract_ids_from_arc(arc, variable_set);
-        }
-        kcl_ezpz::Constraint::PointLineDistance(point, line, _) => {
-            extract_ids_from_point(point, variable_set);
-            extract_ids_from_line(line, variable_set);
-        }
-        kcl_ezpz::Constraint::PointArcCoincident(arc, point) => {
-            extract_ids_from_arc(arc, variable_set);
-            extract_ids_from_point(point, variable_set);
-        }
-        kcl_ezpz::Constraint::LinesEqualLength(line0, line1) => {
-            extract_ids_from_line(line0, variable_set);
-            extract_ids_from_line(line1, variable_set);
-        }
-        kcl_ezpz::Constraint::LinesAtAngle(line0, line1, _) => {
-            extract_ids_from_line(line0, variable_set);
-            extract_ids_from_line(line1, variable_set);
-        }
-        _ => {
-            // This catch-all exists to allow ezpz to add new constraint variants
-            // If we hit this in a debug build, we should add explicit handling for the new variant.
-            debug_assert!(
-                false,
-                "Unhandled constraint variant: {:?}. Please add explicit handling for this variant in extract_variable_ids_from_constraint.",
-                constraint
-            );
-            // Fallback: use Debug output to extract IDs heuristically
-            // This allows release builds to continue working even with new variants
-            let constraint_str = format!("{:?}", constraint);
-            extract_ids_from_debug_string(&constraint_str, variable_set);
-        }
-    }
-}
-
-/// Extract variable IDs from a DatumPoint.
-/// DatumPoint has public fields x_id and y_id that we can access directly.
-fn extract_ids_from_point(pt: &kcl_ezpz::datatypes::inputs::DatumPoint, variable_set: &mut AHashSet<usize>) {
-    variable_set.insert(pt.x_id as usize);
-    variable_set.insert(pt.y_id as usize);
-}
-
-/// Extract variable IDs from a DatumLineSegment.
-/// DatumLineSegment has public fields p0 and p1 (start and end points).
-fn extract_ids_from_line(line: &kcl_ezpz::datatypes::inputs::DatumLineSegment, variable_set: &mut AHashSet<usize>) {
-    extract_ids_from_point(&line.p0, variable_set);
-    extract_ids_from_point(&line.p1, variable_set);
-}
-
-/// Extract variable IDs from a DatumCircularArc.
-/// DatumCircularArc has public fields center, start, and end (all DatumPoint).
-fn extract_ids_from_arc(arc: &kcl_ezpz::datatypes::inputs::DatumCircularArc, variable_set: &mut AHashSet<usize>) {
-    extract_ids_from_point(&arc.center, variable_set);
-    extract_ids_from_point(&arc.start, variable_set);
-    extract_ids_from_point(&arc.end, variable_set);
-}
-
-/// Extract numeric IDs from a debug string.
-/// This parses the string looking for numeric values that could be variable IDs.
-fn extract_ids_from_debug_string(s: &str, variable_set: &mut AHashSet<usize>) {
-    // Use a simple regex-like approach to find numeric values
-    // This is a heuristic - it will extract all numbers, which might include
-    // non-ID values, but it's better than missing IDs
-    for word in s.split_whitespace() {
-        // Remove common punctuation
-        let cleaned = word.trim_matches(|c: char| !c.is_ascii_digit());
-        if let Ok(id) = cleaned.parse::<usize>() {
-            variable_set.insert(id);
+            converged: value.converged(),
         }
     }
 }
@@ -529,16 +549,6 @@ fn point_freedom(x: Option<Freedom>, y: Option<Freedom>) -> Option<Freedom> {
     }
 }
 
-#[cfg(not(feature = "artifact-graph"))]
-pub(super) fn create_segment_scene_objects(
-    _segments: &[Segment],
-    _sketch_block_range: SourceRange,
-    _exec_state: &mut ExecState,
-) -> Result<Vec<Object>, KclError> {
-    Ok(Vec::new())
-}
-
-#[cfg(feature = "artifact-graph")]
 pub(super) fn create_segment_scene_objects(
     segments: &[Segment],
     sketch_block_range: SourceRange,
@@ -546,7 +556,7 @@ pub(super) fn create_segment_scene_objects(
 ) -> Result<Vec<Object>, KclError> {
     let mut scene_objects = Vec::with_capacity(segments.len());
     for segment in segments {
-        let source = Metadata::to_source_ref(&segment.meta);
+        let source = Metadata::to_source_ref(&segment.meta, segment.node_path.clone());
 
         match &segment.kind {
             SegmentKind::Point {
@@ -653,6 +663,7 @@ pub(super) fn create_segment_scene_objects(
                         segment: crate::front::Segment::Line(crate::front::Line {
                             start: start_point_object_id,
                             end: end_point_object_id,
+                            owner: None,
                             ctor: crate::front::SegmentCtor::Line(ctor.as_ref().clone()),
                             ctor_applicable: true,
                             construction: *construction,
@@ -779,7 +790,337 @@ pub(super) fn create_segment_scene_objects(
                 };
                 scene_objects.push(segment_object);
             }
+            SegmentKind::Circle {
+                start,
+                center,
+                ctor,
+                start_object_id,
+                center_object_id,
+                start_freedom,
+                center_freedom,
+                construction,
+            } => {
+                let start_final_freedom = start_freedom.unwrap_or(Freedom::Free);
+                let center_final_freedom = center_freedom.unwrap_or(Freedom::Free);
+                let start_point2d = TyF64::to_point2d(start).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting start point runtime type to API value: {:?}", start),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let start_artifact_id = exec_state.next_artifact_id();
+                let start_point_object = Object {
+                    id: *start_object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: start_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment.object_id),
+                            freedom: start_final_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: start_artifact_id,
+                    source: source.clone(),
+                };
+                let start_point_object_id = start_point_object.id;
+                scene_objects.push(start_point_object);
+
+                let center_point2d = TyF64::to_point2d(center).map_err(|_| {
+                    KclError::new_internal(KclErrorDetails::new(
+                        format!("Error converting center point runtime type to API value: {:?}", center),
+                        vec![sketch_block_range],
+                    ))
+                })?;
+                let center_artifact_id = exec_state.next_artifact_id();
+                let center_point_object = Object {
+                    id: *center_object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Point(crate::front::Point {
+                            position: center_point2d.clone(),
+                            ctor: None,
+                            owner: Some(segment.object_id),
+                            freedom: center_final_freedom,
+                            constraints: Vec::new(),
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: center_artifact_id,
+                    source: source.clone(),
+                };
+                let center_point_object_id = center_point_object.id;
+                scene_objects.push(center_point_object);
+
+                let circle_artifact_id = exec_state.next_artifact_id();
+                let segment_object = Object {
+                    id: segment.object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::Circle(crate::front::Circle {
+                            start: start_point_object_id,
+                            center: center_point_object_id,
+                            ctor: crate::front::SegmentCtor::Circle(ctor.as_ref().clone()),
+                            ctor_applicable: true,
+                            construction: *construction,
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id: circle_artifact_id,
+                    source,
+                };
+                scene_objects.push(segment_object);
+            }
+            SegmentKind::ControlPointSpline {
+                controls,
+                ctor,
+                control_object_ids,
+                control_polygon_edge_object_ids,
+                control_freedoms,
+                degree,
+                construction,
+            } => {
+                let mut control_point_object_ids = Vec::with_capacity(controls.len());
+
+                for ((control, control_object_id), control_freedom) in controls
+                    .iter()
+                    .zip(control_object_ids.iter())
+                    .zip(control_freedoms.iter())
+                {
+                    let control_point2d = TyF64::to_point2d(control).map_err(|_| {
+                        KclError::new_internal(KclErrorDetails::new(
+                            format!(
+                                "Error converting control point runtime type to API value: {:?}",
+                                control
+                            ),
+                            vec![sketch_block_range],
+                        ))
+                    })?;
+                    let artifact_id = exec_state.next_artifact_id();
+                    let point_object = Object {
+                        id: *control_object_id,
+                        kind: ObjectKind::Segment {
+                            segment: crate::front::Segment::Point(crate::front::Point {
+                                position: control_point2d,
+                                ctor: None,
+                                owner: Some(segment.object_id),
+                                freedom: control_freedom.unwrap_or(Freedom::Free),
+                                constraints: Vec::new(),
+                            }),
+                        },
+                        label: Default::default(),
+                        comments: Default::default(),
+                        artifact_id,
+                        source: source.clone(),
+                    };
+                    control_point_object_ids.push(point_object.id);
+                    scene_objects.push(point_object);
+                }
+
+                for (index, edge_object_id) in control_polygon_edge_object_ids.iter().enumerate() {
+                    let edge_artifact_id = exec_state.next_artifact_id();
+                    let edge_object = Object {
+                        id: *edge_object_id,
+                        kind: ObjectKind::Segment {
+                            segment: crate::front::Segment::Line(crate::front::Line {
+                                start: control_point_object_ids[index],
+                                end: control_point_object_ids[index + 1],
+                                owner: Some(segment.object_id),
+                                ctor: crate::front::SegmentCtor::Line(crate::front::LineCtor {
+                                    start: ctor.points[index].clone(),
+                                    end: ctor.points[index + 1].clone(),
+                                    construction: Some(*construction),
+                                }),
+                                ctor_applicable: false,
+                                construction: *construction,
+                            }),
+                        },
+                        label: Default::default(),
+                        comments: Default::default(),
+                        artifact_id: edge_artifact_id,
+                        source: source.clone(),
+                    };
+                    scene_objects.push(edge_object);
+                }
+
+                let artifact_id = exec_state.next_artifact_id();
+                let segment_object = Object {
+                    id: segment.object_id,
+                    kind: ObjectKind::Segment {
+                        segment: crate::front::Segment::ControlPointSpline(crate::front::ControlPointSpline {
+                            controls: control_point_object_ids,
+                            degree: *degree,
+                            ctor: crate::front::SegmentCtor::ControlPointSpline(ctor.as_ref().clone()),
+                            ctor_applicable: true,
+                            construction: *construction,
+                        }),
+                    },
+                    label: Default::default(),
+                    comments: Default::default(),
+                    artifact_id,
+                    source,
+                };
+                scene_objects.push(segment_object);
+            }
         }
     }
     Ok(scene_objects)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use indexmap::IndexMap;
+    use kittycad_modeling_cmds::units::UnitLength;
+    use uuid::Uuid;
+
+    use super::*;
+    use crate::execution::ArtifactId;
+    use crate::execution::BasePath;
+    use crate::execution::GeoMeta;
+    use crate::execution::Plane;
+    use crate::execution::PlaneInfo;
+    use crate::execution::PlaneKind;
+    use crate::execution::ProfileClosed;
+    use crate::front::Expr;
+    use crate::front::LineCtor;
+    use crate::front::Number;
+    use crate::front::ObjectId;
+    use crate::front::Point2d;
+    use crate::std::sketch::PlaneData;
+
+    fn test_point(x: f64, y: f64) -> Point2d<Expr> {
+        Point2d {
+            x: Expr::Var(Number::from((x, UnitLength::Millimeters))),
+            y: Expr::Var(Number::from((y, UnitLength::Millimeters))),
+        }
+    }
+
+    fn test_surface() -> SketchSurface {
+        let id = Uuid::new_v4();
+        SketchSurface::Plane(Box::new(Plane {
+            id,
+            artifact_id: ArtifactId::new(id),
+            object_id: None,
+            kind: PlaneKind::XY,
+            info: PlaneInfo::try_from(PlaneData::XY).unwrap(),
+            meta: vec![],
+        }))
+    }
+
+    fn test_sketch(surface: SketchSurface) -> Sketch {
+        let id = Uuid::new_v4();
+        let base = BasePath {
+            from: [0.0, 0.0],
+            to: [0.0, 0.0],
+            units: UnitLength::Millimeters,
+            tag: None,
+            geo_meta: GeoMeta {
+                id,
+                metadata: Metadata {
+                    source_range: SourceRange::default(),
+                },
+            },
+        };
+        Sketch {
+            id,
+            paths: vec![],
+            inner_paths: vec![],
+            on: surface,
+            start: base,
+            tags: Default::default(),
+            artifact_id: ArtifactId::new(id),
+            original_id: id,
+            origin_sketch_id: None,
+            mirror: None,
+            clone: None,
+            synthetic_jump_path_ids: vec![],
+            units: UnitLength::Millimeters,
+            meta: vec![],
+            is_closed: ProfileClosed::No,
+        }
+    }
+
+    fn test_line_value(object_id_seed: usize) -> KclValue {
+        let point = |x, y| {
+            [
+                UnsolvedExpr::Known(TyF64::new(x, NumericType::mm())),
+                UnsolvedExpr::Known(TyF64::new(y, NumericType::mm())),
+            ]
+        };
+        let segment = UnsolvedSegment {
+            id: Uuid::new_v4(),
+            object_id: ObjectId(object_id_seed),
+            kind: UnsolvedSegmentKind::Line {
+                start: point(0.0, 0.0),
+                end: point(1.0, 0.0),
+                ctor: Box::new(LineCtor {
+                    start: test_point(0.0, 0.0),
+                    end: test_point(1.0, 0.0),
+                    construction: None,
+                }),
+                start_object_id: ObjectId(object_id_seed + 1),
+                end_object_id: ObjectId(object_id_seed + 2),
+                construction: false,
+            },
+            tag: None,
+            node_path: None,
+            meta: vec![],
+        };
+
+        KclValue::Segment {
+            value: Box::new(AbstractSegment {
+                repr: SegmentRepr::Unsolved {
+                    segment: Box::new(segment),
+                },
+                meta: vec![],
+            }),
+        }
+    }
+
+    fn segment_sketch(value: &KclValue) -> &Arc<Sketch> {
+        let KclValue::Segment { value } = value else {
+            panic!("expected segment");
+        };
+        let SegmentRepr::Solved { segment } = &value.repr else {
+            panic!("expected solved segment");
+        };
+        segment.sketch.as_ref().expect("expected segment sketch")
+    }
+
+    #[test]
+    fn substitute_sketch_vars_shares_one_sketch_across_segments() {
+        let surface = test_surface();
+        let sketch = test_sketch(surface.clone());
+        let mut variables = IndexMap::new();
+        variables.insert("line1".to_owned(), test_line_value(1));
+        variables.insert("line2".to_owned(), test_line_value(4));
+        let solved = Solved {
+            final_values: vec![],
+            iterations: 0,
+            warnings: vec![],
+            priority_solved: 0,
+            variables_in_conflicts: AHashSet::new(),
+            converged: true,
+        };
+
+        let substituted = substitute_sketch_vars(
+            variables,
+            &surface,
+            sketch.id,
+            Some(&sketch),
+            &solved,
+            NumericType::mm(),
+            None,
+        )
+        .unwrap();
+
+        let line1_sketch = segment_sketch(&substituted["line1"]);
+        let line2_sketch = segment_sketch(&substituted["line2"]);
+        assert!(Arc::ptr_eq(line1_sketch, line2_sketch));
+        assert_eq!(line1_sketch.id, sketch.id);
+    }
 }

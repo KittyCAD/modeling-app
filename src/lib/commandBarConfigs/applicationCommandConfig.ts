@@ -1,37 +1,35 @@
 import env from '@src/env'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { App } from '@src/lib/app'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import { exportProjectZip } from '@src/lib/exportProjectZip'
+import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
+import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
+import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import {
-  everyKclSample,
-  findKclSample,
-  kclSamplesManifestWithNoMultipleFiles,
-} from '@src/lib/kclSamples'
-import {
+  getEXTNoPeriod,
   getStringAfterLastSeparator,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
-import { returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import { AppMachineEventType, type AppMachineEvent } from '@src/lib/types'
-import type { Layout } from '@src/lib/layout'
-import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -47,7 +45,9 @@ function onSubmitKCLSampleCreation({
   isProjectNew: boolean
 }) {
   if (!kclSample) {
-    toast.error('The command could not be submitted, unable to find Zoo sample')
+    toast.error(
+      'The command could not be submitted, unable to find Zoo sample.'
+    )
     return
   }
   const pathParts = webSafePathSplit(sample)
@@ -132,15 +132,11 @@ function onSubmitKCLSampleCreation({
 }
 
 export function createApplicationCommands({
-  systemIOActor,
+  app,
   wasmInstance,
-  appActor,
-  setLayout,
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  app: App
   wasmInstance: ModuleType
-  appActor: { send: (event: AppMachineEvent) => void }
-  setLayout: (layout: Layout) => void
 }) {
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
@@ -158,44 +154,98 @@ export function createApplicationCommands({
          * inside the systemIOMachine. We can have a fancy model machine that loads
          * KCL samples
          */
-        const folders = systemIOActor.getSnapshot().context.folders
+        const error = "The command couldn't be submitted, check the arguments."
+        const folders = app.systemIOActor.getSnapshot().context.folders
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
         const uniqueNameIfNeeded = isProjectNew
-          ? getUniqueProjectName(requestedProjectName, folders)
+          ? getUniqueProjectName(requestedProjectName, folders ?? [])
           : requestedProjectName
 
-        const kclSample = findKclSample(data.sample)
-        if (
-          data.source === 'kcl-samples' &&
-          kclSample &&
-          kclSample.files.length >= 1
-        ) {
-          onSubmitKCLSampleCreation({
-            sample: data.sample,
-            kclSample,
-            uniqueNameIfNeeded,
-            systemIOActor,
-            isProjectNew,
-          })
-        } else if (window.electron && data.source === 'local' && data.path) {
-          const electron = window.electron
-          const clonePath = data.path
-          const fileNameWithExtension = getStringAfterLastSeparator(clonePath)
-          const readFileContentsAndCreateNewFile = async () => {
-            const text = await electron.readFile(clonePath, 'utf8')
-            systemIOActor.send({
-              type: SystemIOMachineEvents.importFileFromURL,
-              data: {
-                requestedProjectName: uniqueNameIfNeeded,
-                requestedFileNameWithExtension: fileNameWithExtension,
-                requestedCode: text,
-              },
+        if (data.source === 'kcl-samples') {
+          const kclSample = findKclSample(data.sample)
+          if (!kclSample || kclSample.files.length === 0) {
+            toast.error("Couldn't find KCL sample.")
+          } else {
+            onSubmitKCLSampleCreation({
+              sample: data.sample,
+              kclSample,
+              uniqueNameIfNeeded,
+              systemIOActor: app.systemIOActor,
+              isProjectNew,
             })
           }
-          readFileContentsAndCreateNewFile().catch(reportRejection)
+        } else if (data.source === 'local') {
+          const selectedFilePath = isArray(data.files)
+            ? data.files[0]
+            : data.files
+
+          if (!selectedFilePath) {
+            toast.error(error)
+            return
+          }
+
+          const fileNameWithExtension =
+            getStringAfterLastSeparator(selectedFilePath)
+          const fr = new FileReader()
+          const extension = getEXTNoPeriod(selectedFilePath)
+          const isKCL = extension === 'kcl'
+          fr.addEventListener('load', () => {
+            if (isKCL) {
+              if (typeof fr.result !== 'string') {
+                toast.error(error)
+                return
+              }
+
+              app.systemIOActor.send({
+                type: SystemIOMachineEvents.importFileFromURL,
+                data: {
+                  requestedProjectName: uniqueNameIfNeeded,
+                  requestedFileNameWithExtension: fileNameWithExtension,
+                  requestedCode: fr.result,
+                },
+              })
+            } else {
+              if (!(fr.result instanceof ArrayBuffer)) {
+                toast.error(error)
+                return
+              }
+
+              const projectDirectoryPath =
+                app.systemIOActor.getSnapshot().context.projectDirectoryPath
+              const fileData = new Uint8Array(fr.result)
+
+              getNextFileName({
+                entryName: fileNameWithExtension,
+                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
+                wasmInstance,
+                preserveUnknownExtension: true,
+              })
+                .then(({ path }) => {
+                  return fsZds.writeFile(path, fileData)
+                })
+                .then(() => {
+                  app.systemIOActor.send({
+                    type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                  })
+                })
+                .catch(() => toast.error(error))
+            }
+          })
+          fsZds
+            .readFile(selectedFilePath)
+            .then((content) => {
+              const blob = new Blob([new Uint8Array(content)])
+              // Read all KCL as text, but anything else is a blob.
+              if (isKCL) {
+                fr.readAsText(blob)
+              } else {
+                fr.readAsArrayBuffer(blob)
+              }
+            })
+            .catch(() => toast.error(error))
         } else {
-          toast.error("The command couldn't be submitted, check the arguments.")
+          toast.error(error)
         }
       }
     },
@@ -203,16 +253,11 @@ export function createApplicationCommands({
       source: {
         inputType: 'options',
         required: true,
-        skip: false,
-        defaultValue: isDesktop() ? 'local' : 'kcl-samples',
+        skip: true,
+        defaultValue: window.electron ? undefined : 'kcl-samples',
         options() {
           return [
-            {
-              value: 'kcl-samples',
-              name: 'KCL Samples',
-              isCurrent: true,
-            },
-            ...(isDesktop()
+            ...(window.electron
               ? [
                   {
                     value: 'local',
@@ -221,6 +266,11 @@ export function createApplicationCommands({
                   },
                 ]
               : []),
+            {
+              value: 'kcl-samples',
+              name: 'KCL Samples',
+              isCurrent: true,
+            },
           ]
         },
       },
@@ -242,9 +292,7 @@ export function createApplicationCommands({
           return value
         },
         options: () => {
-          const samples = isDesktop()
-            ? everyKclSample
-            : kclSamplesManifestWithNoMultipleFiles
+          const samples = everyKclSample
           return samples.map((sample) => {
             return {
               value: sample.pathFromProjectDirectoryToFirstFile,
@@ -257,34 +305,28 @@ export function createApplicationCommands({
         inputType: 'options',
         required: true,
         skip: true,
-        options: ({ argumentsToSubmit }, _) => {
-          if (isDesktop() && typeof argumentsToSubmit.sample === 'string') {
-            return [
+        defaultValue: window.electron ? undefined : 'existingProject',
+        options: window.electron
+          ? [
               { name: 'New project', value: 'newProject', isCurrent: true },
               { name: 'Existing project', value: 'existingProject' },
             ]
-          } else {
-            return [{ name: 'Overwrite', value: 'existingProject' }]
-          }
-        },
+          : [{ name: 'Existing project', value: 'existingProject' }],
         valueSummary(value) {
-          return isDesktop()
-            ? value === 'newProject'
-              ? 'New project'
-              : 'Existing project'
-            : 'Overwrite'
+          return value === 'newProject' ? 'New project' : 'Existing project'
         },
       },
       projectName: {
         inputType: 'options',
         required: (commandsContext) =>
-          isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        defaultValue: isDesktop() ? undefined : 'browser',
+        defaultValue: () => app.project?.name,
         options: (_, _context) => {
-          const { folders } = systemIOActor.getSnapshot().context
+          const { folders } = app.systemIOActor.getSnapshot().context
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -296,27 +338,32 @@ export function createApplicationCommands({
         },
       },
       newProjectName: {
-        inputType: 'text',
+        inputType: 'string',
         required: (commandsContext) =>
-          isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'newProject',
         skip: true,
       },
-      path: {
+      files: {
         inputType: 'path',
         skip: true,
-        hidden: !isDesktop(),
-        defaultValue: '',
+        hidden: false,
         valueSummary: (value) => {
-          return window.electron ? window.electron.path.basename(value) : ''
+          if (typeof value === 'string') return fsZds.basename(value)
+          if (isArray(value) && typeof value[0] === 'string') {
+            return fsZds.basename(value[0])
+          }
+          return value
         },
         required: (commandContext) =>
-          isDesktop() &&
           ['local'].includes(commandContext.argumentsToSubmit.source as string),
         filters: [
           {
             name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
             extensions: relevantFileExtensions(wasmInstance),
+          },
+          {
+            name: 'All files',
+            extensions: ['*'],
           },
         ],
       },
@@ -340,11 +387,12 @@ export function createApplicationCommands({
     hideFromSearch: true,
     onSubmit: (data) => {
       if (data) {
-        const folders = systemIOActor.getSnapshot().context.folders
+        const folders = app.systemIOActor.getSnapshot().context.folders
+        if (!folders) return
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
           toast.error(
-            'The command could not be submitted, unable to find Zoo sample'
+            'The command could not be submitted, unable to find Zoo sample.'
           )
           return
         }
@@ -360,17 +408,17 @@ export function createApplicationCommands({
           sample: data.sample,
           kclSample,
           uniqueNameIfNeeded,
-          systemIOActor,
+          systemIOActor: app.systemIOActor,
           isProjectNew: true,
         })
       }
     },
     args: {
       source: {
-        inputType: 'text',
+        inputType: 'string',
         required: true,
         skip: false,
-        defaultValue: 'kcl-samples',
+        defaultValue: 'local',
         hidden: true,
       },
       sample: {
@@ -403,15 +451,11 @@ export function createApplicationCommands({
     icon: 'gear',
     groupId: 'application',
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       if (data) {
         const requestedEnvironmentFormatted = returnSelfOrGetHostNameFromURL(
           data.environment
         )
-        writeEnvironmentFile(window.electron, requestedEnvironmentFormatted)
+        writeEnvironmentFile(requestedEnvironmentFormatted)
           .then(() => {
             // Reload the application and it will trigger the correct sign in workflow for the new environment
             window.location.reload()
@@ -447,14 +491,9 @@ export function createApplicationCommands({
       }
     },
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationKittycadWebSocketUrl(
-          window.electron,
           environmentName,
           data?.url ?? ''
         )
@@ -469,9 +508,9 @@ export function createApplicationCommands({
         required: false,
         displayName: 'URL',
         description: `
-          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Engines.
-          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
-          Finally, append **?pool=LABEL** for all other variants of deployed Engines.
+          Locally-running Engines: **ws://localhost:8080/ws/modeling/commands**
+          Pull Requests: **wss://api.dev.zoo.dev/ws/modeling/commands?pr=NUMBER**
+          Other variants: **wss://api.dev.zoo.dev/ws/modeling/commands?pool=LABEL**
         `.trim(),
         defaultValue: () => env().VITE_KITTYCAD_WEBSOCKET_URL ?? '',
       },
@@ -496,14 +535,9 @@ export function createApplicationCommands({
       }
     },
     onSubmit: (data) => {
-      if (!window.electron) {
-        console.error(new Error('No file system present'))
-        return
-      }
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName)
         writeEnvironmentConfigurationMlephantWebSocketUrl(
-          window.electron,
           environmentName,
           data?.url ?? ''
         )
@@ -518,8 +552,8 @@ export function createApplicationCommands({
         required: false,
         displayName: 'URL',
         description: `
-          Replace **api.${env().VITE_ZOO_BASE_DOMAIN}** with **localhost:8080** for locally-running Zookeeper.
-          Alternatively, append **?pr=NUMBER** to connect to a deployed Pull Request.
+          Locally-running Zookeeper: **ws://localhost:8080/ws/ml/copilot**
+          Pull Requests: **wss://api.dev.zoo.dev/ws/ml/copilot?pr=NUMBER**
         `.trim(),
         defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
       },
@@ -533,9 +567,7 @@ export function createApplicationCommands({
     needsReview: false,
     icon: 'layout',
     groupId: 'application',
-    onSubmit: () => {
-      appActor.send({ type: AppMachineEventType.ResetLayout })
-    },
+    onSubmit: app.layout.reset,
   }
 
   const setLayoutCommand: Command = {
@@ -548,12 +580,12 @@ export function createApplicationCommands({
     groupId: 'application',
     onSubmit: (data) => {
       if (isUserLoadableLayoutKey(data?.layoutId)) {
-        setLayout(userLoadableLayouts[data.layoutId])
+        app.layout.set(userLoadableLayouts[data.layoutId])
         // This command is silent, we don't toast success, because
         // it is often used in conjunction with other commands and actions
         // that occur on app load, and we don't want to spam the user.
       } else {
-        toast.error(`No layout found with ID "${data?.layoutId}"`)
+        toast.error(`No layout found with ID "${data?.layoutId}".`)
       }
     },
     args: {
@@ -577,17 +609,56 @@ export function createApplicationCommands({
     },
   }
 
-  return isDesktop()
-    ? [
-        addKCLFileToProject,
-        resetLayoutCommand,
-        setLayoutCommand,
-        createASampleDesktopOnly,
-        switchEnvironmentsCommand,
-        overrideEngineCommand,
-        overrideZookeeperCommand,
-      ]
-    : [addKCLFileToProject, resetLayoutCommand, setLayoutCommand]
+  const checkForUpdatesCommand: Command = {
+    name: 'check-for-updates',
+    displayName: 'Check for updates',
+    description: 'Check for a newer desktop app version.',
+    needsReview: false,
+    icon: 'download',
+    groupId: 'application',
+    onSubmit: () => {
+      if (!window.electron) {
+        return new Error(
+          'Checking for updates is only available in the desktop app.'
+        )
+      }
+
+      return window.electron.appCheckForUpdates()
+    },
+  }
+
+  const exportProjectZipCommand: Command = {
+    name: 'export-project-zip',
+    displayName: 'Download project files',
+    description: 'Download every file in the current project as a ZIP archive.',
+    needsReview: false,
+    icon: 'download',
+    groupId: 'application',
+    onSubmit: async () => {
+      const project = app.project?.projectIORefSignal.value
+      const executingEditor = app.project?.executingEditor.value
+      const wasmInstance = await app.wasmPromise
+
+      await exportProjectZip({
+        project,
+        currentFilePath: app.project?.executingPath,
+        currentFileContents: executingEditor?.code,
+        wasmInstance,
+      })
+    },
+  }
+
+  return [
+    addKCLFileToProject,
+    ...(!isDesktop() ? [exportProjectZipCommand] : []),
+    ...(isDesktop() ? [checkForUpdatesCommand] : []),
+    resetLayoutCommand,
+    setLayoutCommand,
+    createASampleDesktopOnly,
+    switchEnvironmentsCommand,
+    overrideEngineCommand,
+    overrideZookeeperCommand,
+  ]
 }
 
 export function sendAddFileToProjectCommandForCurrentProject(

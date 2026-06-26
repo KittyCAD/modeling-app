@@ -14,9 +14,9 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -30,70 +30,56 @@ jobs:
           id=$(gh run ls --repo kittycad/modeling-app -w build-apps.yml --branch "${RELEASE_TAG_NAME}" --json databaseId | jq '.[0].databaseId')
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
-          name: out-arm64-windows
+          name: out-universal-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-x64-windows
-          path: out
-          run-id: ${{ steps.tag_workflow_id.outputs.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-yml-windows
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
-          name: out-arm64-macos
+          name: out-universal-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
-        with:
-          name: out-x64-macos
-          path: out
-          run-id: ${{ steps.tag_workflow_id.outputs.id }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-yml-macos
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-arm64-linux
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-x64-linux
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-yml-linux
           path: out
           run-id: ${{ steps.tag_workflow_id.outputs.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: out-download-json
           path: out
@@ -124,6 +110,7 @@ jobs:
           path: out
           glob: '*'
           parent: false
+          process_gcloudignore: false
           destination: 'dl.kittycad.io/releases/design-studio'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
@@ -131,7 +118,7 @@ jobs:
 
       - name: Upload release files to Github
         if: ${{ github.event_name == 'release' }}
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: 'out/Zoo*'
 
@@ -147,7 +134,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - name: Check out code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v6.0.2
 
       - name: Set up Python
         uses: actions/setup-python@v6

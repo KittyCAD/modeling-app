@@ -20,6 +20,8 @@ import {
   findAllPreviousVariables,
   getBodyIndex,
   getNodeFromPath,
+  getSettingsAnnotation,
+  getVariableNameFromNodePath,
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
@@ -27,12 +29,14 @@ import {
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { PathToNodeMap } from '@src/lang/util'
 import type { SimplifiedArgDetails } from '@src/lang/std/stdTypes'
+import type { PathToNodeMap } from '@src/lang/util'
 import type {
+  ArtifactGraph,
   CallExpressionKw,
   Expr,
   ExpressionStatement,
+  NumericSuffix,
   PathToNode,
   PipeExpression,
   Program,
@@ -41,20 +45,23 @@ import type {
   VariableDeclarator,
   VariableMap,
 } from '@src/lang/wasm'
-import { isPathToNodeNumber, parse } from '@src/lang/wasm'
+import {
+  baseUnitToNumericSuffix,
+  isPathToNodeNumber,
+  parse,
+} from '@src/lang/wasm'
 import type {
   KclCommandValue,
   KclExpression,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES,
+  KCL_DEFAULT_CONSTANT_PREFIXES,
+} from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
-import { isLiteralArrayOrStatic, type Coords2d } from '@src/lang/util'
-import { err, trap } from '@src/lib/trap'
-import { isArray, isOverlap, roundOff } from '@src/lib/utils'
-import type { ExtrudeFacePlane } from '@src/machines/modelingSharedTypes'
 import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
   type getConstraintInfoKw as GetConstraintInfoKwFn,
@@ -63,7 +70,14 @@ import {
   type removeSingleConstraint as RemoveSingleConstraintFn,
   type transformAstSketchLines as TransformAstSketchLinesFn,
 } from '@src/lang/std/sketchcombos'
+import { type Coords2d, isLiteralArrayOrStatic } from '@src/lang/util'
+import { err, trap } from '@src/lib/trap'
+import { isArray, isOverlap, roundOff } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type {
+  EngineRegionSelection,
+  ExtrudeFacePlane,
+} from '@src/machines/modelingSharedTypes'
 
 export function startSketchOnDefault(
   node: Node<Program>,
@@ -1047,6 +1061,86 @@ export function insertVariableAndOffsetPathToNode(
   }
 }
 
+export function insertRegionVariablesAndOffsetPathToNode({
+  engineRegions,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  engineRegions: EngineRegionSelection[]
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | Expr[] {
+  if (engineRegions.length === 0) {
+    return []
+  }
+
+  const settings = getSettingsAnnotation(modifiedAst, wasmInstance)
+  if (err(settings)) {
+    return settings
+  }
+  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
+    settings.defaultLengthUnit
+  )
+
+  let insertIndex = modifiedAst.body.length
+  const regionExprs: Expr[] = []
+  for (const [index, regionSelection] of engineRegions.entries()) {
+    const sketchArtifact = artifactGraph.get(regionSelection.sketchId)
+    if (!sketchArtifact || sketchArtifact.type !== 'sketchBlock') {
+      return new Error("Couldn't retrieve sketch block artifact")
+    }
+    const sketchVarName = getVariableNameFromNodePath(
+      sketchArtifact.codeRef.pathToNode,
+      modifiedAst,
+      wasmInstance
+    )
+    if (!sketchVarName) {
+      return new Error("Couldn't retrieve sketch block variable")
+    }
+
+    const { x, y } = regionSelection.point
+    if (!Number.isFinite(x) || !Number.isFinite(y)) {
+      return new Error('Region point coordinates are invalid')
+    }
+
+    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+    const regionExpr = createCallExpressionStdLibKw('region', null, [
+      createLabeledArg(
+        'point',
+        createArrayExpression([
+          createLiteral(x, wasmInstance, unitSuffix, decimals),
+          createLiteral(y, wasmInstance, unitSuffix, decimals),
+        ])
+      ),
+      createLabeledArg('sketch', createLocalName(sketchVarName)),
+    ])
+
+    const variableName = findUniqueName(modifiedAst, 'region')
+    const variableIdentifierAst = createLocalName(variableName)
+    insertVariableAndOffsetPathToNode(
+      {
+        valueAst: regionExpr,
+        valueText: '',
+        valueCalculated: '',
+        variableName,
+        variableDeclarationAst: createVariableDeclaration(
+          variableName,
+          regionExpr
+        ),
+        variableIdentifierAst,
+        insertIndex: insertIndex + index,
+      },
+      modifiedAst
+    )
+
+    regionExprs.push(variableIdentifierAst)
+  }
+
+  return regionExprs
+}
+
 // Create an array expression for variables,
 // or keep it null if all are PipeSubstitutions
 export function createVariableExpressionsArray(exprs: Expr[]): Expr | null {
@@ -1191,4 +1285,39 @@ export function createPoint2dExpression(
   }
 
   return expr
+}
+
+/**
+ * Deduplicates face expressions based on their string representation.
+ * This prevents creating multiple annotations for the same face.
+ */
+export function deduplicateFaceExprs(facesExprs: Expr[]): Expr[] {
+  const seen = new Set<string>()
+  const unique: Expr[] = []
+
+  for (const expr of facesExprs) {
+    // Create a stable string representation for comparison
+    const key = exprToKey(expr)
+    if (!seen.has(key)) {
+      seen.add(key)
+      unique.push(expr)
+    }
+  }
+
+  return unique
+}
+
+/**
+ * Converts an expression to a stable string key for deduplication.
+ */
+function exprToKey(expr: Expr): string {
+  if (expr.type === 'Literal') {
+    return `literal:${JSON.stringify(expr.value)}`
+  }
+  if (expr.type === 'Name') {
+    // Name has a nested Identifier: expr.name.name is the actual string
+    return `name:${expr.name.name}`
+  }
+  // Fallback for other expression types (though currently only Name is used)
+  return JSON.stringify(expr)
 }

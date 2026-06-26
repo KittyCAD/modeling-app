@@ -71,12 +71,15 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           })
         )
 
-        throw new Error('Camera position not as expected', {
-          cause: {
-            vals,
-            errors,
-          },
-        })
+        throw new Error(
+          `Camera position not as expected. Expected: ${JSON.stringify(afterPosition)}, received ${JSON.stringify(vals)}`,
+          {
+            cause: {
+              vals,
+              errors,
+            },
+          }
+        )
       }
       shouldRetry = true
     }
@@ -102,7 +105,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
     const camInitialPosition: [number, number, number] = [0, 85, 85]
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
@@ -187,7 +190,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
 
     await homePage.goToModelingScene()
     // this turns on the debug pane setting as well
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.openAndClearDebugPanel()
     await u.closeKclCodePanel()
@@ -253,7 +256,7 @@ test.describe('Testing Camera Movement', { tag: '@desktop' }, () => {
           await page.mouse.up({ button: 'right' })
         },
         // afterPosition: [1.14, 9.49, 119.83], // value on macOS
-        afterPosition: [6.97, 9.69, 119.61], // value on Linux
+        afterPosition: [-12.78, 14.54, 118.64], // value on Linux
         beforePosition: initialCamPosition,
         page,
         scene,

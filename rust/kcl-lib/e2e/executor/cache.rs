@@ -1,9 +1,12 @@
 //! Cache testing framework.
 
-use kcl_lib::{ExecError, ExecOutcome, bust_cache};
-#[cfg(feature = "artifact-graph")]
-use kcl_lib::{NodePathStep, exec::Operation};
-use kcmc::{ModelingCmd, each_cmd as mcmd};
+use kcl_lib::ExecError;
+use kcl_lib::ExecOutcome;
+use kcl_lib::NodePathStep;
+use kcl_lib::bust_cache;
+use kcl_lib::exec::Operation;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds as kcmc;
 use pretty_assertions::assert_eq;
 
@@ -12,6 +15,13 @@ struct Variation<'a> {
     code: &'a str,
     other_files: Vec<(std::path::PathBuf, std::string::String)>,
     settings: &'a kcl_lib::ExecutorSettings,
+}
+
+fn root_operations(outcome: &ExecOutcome) -> &Vec<Operation> {
+    outcome
+        .operations
+        .get(&kcl_lib::ModuleId::default())
+        .expect("root module operations should exist")
 }
 
 async fn cache_test(
@@ -52,7 +62,11 @@ async fn cache_test(
         }
 
         let outcome = match ctx.run_with_caching(program).await {
-            Ok(outcome) => outcome,
+            Ok(outcome) => {
+                let errors = outcome.errors().collect::<Vec<_>>();
+                assert!(errors.is_empty(), "Execution resulted in error: {errors:#?}");
+                outcome
+            }
             Err(error) => {
                 let report = error.into_miette_report_with_outputs(variation.code).unwrap();
                 let report = miette::Report::new(report);
@@ -257,7 +271,6 @@ extrude(profile001, length = 100)"#
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_line_preserves_artifact_graph() {
     let code = r#"sketch001 = startSketchOn(XY)
@@ -307,18 +320,18 @@ extrude001 = extrude(profile001, length = 4)
         second.artifact_graph
     );
     assert!(
-        first.operations.len() < second.operations.len(),
+        first.operations.count() < second.operations.count(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        first.operations.len(),
-        second.operations.len()
+        first.operations.count(),
+        second.operations.count()
     );
-    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+    let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
         panic!("Last operation should be stdlib call extrude");
     };
     assert_eq!(name, "extrude");
     // Make sure there are no duplicates.
     assert_eq!(
-        second.operations.len(),
+        root_operations(second).len(),
         3,
         "There should be exactly this many operations in the second run. {:#?}",
         &second.operations
@@ -342,7 +355,101 @@ extrude001 = extrude(profile001, length = 4)
     }
 }
 
-#[cfg(feature = "artifact-graph")]
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_add_second_sketch_block_preserves_node_path() {
+    let code = r#"sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.14mm, var -0.05mm], end = [var 5.5mm, var 0mm])
+  line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
+  line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.89mm, var 2.82mm])
+  line4 = line(start = [var 4.09mm, var 3.03mm], end = [var 4.5mm, var -0.16mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+"#;
+    // Use a new statement; don't extend the prior pipeline.  This allows us to
+    // detect a prefix.
+    let code_with_extrude = code.to_owned()
+        + r#"
+sketch002 = sketch(on = -XZ) {
+  line1 = line(start = [var -5.33mm, var -0.06mm], end = [var -3.49mm, var -0.06mm])
+  line2 = line(start = [var -3.49mm, var -0.06mm], end = [var -3.49mm, var 3.09mm])
+  line3 = line(start = [var -3.52mm, var 4.47mm], end = [var -5.36mm, var 4.47mm])
+  line4 = line(start = [var -5.33mm, var 3.09mm], end = [var -5.33mm, var -0.06mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+region001 = region(point = [-4.4175mm, -0.0575mm], sketch = sketch002)
+extrude001 = extrude(region001, length = 5)
+"#;
+
+    let result = cache_test(
+        "add_second_sketch_block_preserves_node_path",
+        vec![
+            Variation {
+                code,
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+            Variation {
+                code: code_with_extrude.as_str(),
+                other_files: vec![],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let first = &result.first().unwrap().2;
+    let second = &result.last().unwrap().2;
+
+    assert!(
+        first.artifact_graph.len() < second.artifact_graph.len(),
+        "Second should have all the artifacts of the first, plus more. first={:#?}, second={:#?}",
+        first.artifact_graph,
+        second.artifact_graph
+    );
+    assert!(
+        first.operations.count() < second.operations.count(),
+        "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
+        first.operations.count(),
+        second.operations.count()
+    );
+    let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
+        panic!("Last operation should be stdlib call extrude");
+    };
+    assert_eq!(name, "extrude");
+    // Make sure we have NodePaths.
+    let first_graph = &first.artifact_graph;
+    assert!(!first_graph.is_empty());
+    for artifact in first_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
+    // Make sure we have NodePaths.
+    let second_graph = &second.artifact_graph;
+    assert!(!second_graph.is_empty());
+    for artifact in second_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_offset_plane_computes_node_path() {
     let code = r#"sketch001 = startSketchOn(XY)
@@ -386,8 +493,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     let outcome = ctx.run_with_caching(program).await.unwrap();
 
     // Ensure nothing is left in the batch
-    assert!(ctx.engine.batch().read().await.is_empty());
-    assert!(ctx.engine.batch_end().read().await.is_empty());
+    assert!(ctx.engine_batch.is_empty().await);
 
     // Ensure the planes work, and we can show or hide them.
     // Hide/show the grid.
@@ -398,6 +504,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
 
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(
@@ -414,6 +521,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Raw dog clear the scene entirely.
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(mcmd::SceneClearAll::builder().build()),
@@ -431,6 +539,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Ensure we can show a plane.
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(
@@ -552,7 +661,6 @@ extrude(profile001, length = 100)
     result.last().unwrap();
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_multi_file_other_file_only_change() {
     let code = r#"import "toBeImported.kcl" as importedCube
@@ -687,4 +795,104 @@ extrude(profile001, length = 100)"#
 
     assert!(first.1 != last.1, "The images should be different for the grid");
     assert_eq!(first.2, last.2, "The outcomes should be the same");
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_cache_add_second_sketch_block_import_succeeds() {
+    let rectangle1 = (
+        std::path::PathBuf::from("rectangle1.kcl"),
+        r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 1.36mm, var 1.07mm], end = [var 3.73mm, var 1.07mm])
+  line2 = line(start = [var 3.73mm, var 1.07mm], end = [var 3.73mm, var 3.51mm])
+  line3 = line(start = [var 3.73mm, var 3.51mm], end = [var 1.36mm, var 3.51mm])
+  line4 = line(start = [var 1.36mm, var 3.51mm], end = [var 1.36mm, var 1.07mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+"#
+        .to_string(),
+    );
+
+    let rectangle2 = (
+        std::path::PathBuf::from("rectangle2.kcl"),
+        r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.86mm, var 1.27mm], end = [var 3.04mm, var 1.27mm])
+  line2 = line(start = [var 3.04mm, var 1.27mm], end = [var 3.04mm, var 3.06mm])
+  line3 = line(start = [var 3.04mm, var 3.06mm], end = [var 0.86mm, var 3.06mm])
+  line4 = line(start = [var 0.86mm, var 3.06mm], end = [var 0.86mm, var 1.27mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+"#
+        .to_string(),
+    );
+
+    let code = "import \"rectangle1.kcl\"\n";
+    let code_with_second_import = code.to_owned()
+        + "
+import \"rectangle2.kcl\"
+";
+
+    let result = cache_test(
+        "add_second_sketch_block_import_preserves_node_path",
+        vec![
+            Variation {
+                code,
+                other_files: vec![rectangle1.clone()],
+                settings: &Default::default(),
+            },
+            Variation {
+                code: &code_with_second_import,
+                other_files: vec![rectangle1, rectangle2],
+                settings: &Default::default(),
+            },
+        ],
+    )
+    .await;
+
+    let first = &result.first().unwrap().2;
+    let second = &result.last().unwrap().2;
+
+    assert!(
+        first.artifact_graph.len() < second.artifact_graph.len(),
+        "Second should have all the artifacts of the first, plus more. first={:#?}, second={:#?}",
+        first.artifact_graph,
+        second.artifact_graph
+    );
+    assert!(
+        first.operations.count() < second.operations.count(),
+        "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
+        first.operations.count(),
+        second.operations.count()
+    );
+    // Make sure we have NodePaths.
+    let first_graph = &first.artifact_graph;
+    assert!(!first_graph.is_empty());
+    for artifact in first_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
+    // Make sure we have NodePaths.
+    let second_graph = &second.artifact_graph;
+    assert!(!second_graph.is_empty());
+    for artifact in second_graph.values() {
+        assert!(
+            !artifact.code_ref().map(|c| c.node_path.is_empty()).unwrap_or(false),
+            "artifact={artifact:#?}"
+        );
+    }
 }

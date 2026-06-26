@@ -1,10 +1,14 @@
-import { renderHook } from '@testing-library/react'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
-import { expect, vi, describe, test } from 'vitest'
 import { App } from '@src/lib/app'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnPageMounted', () => {
-  const singletons = new App().singletons
+  const singletons = App.fromProvided({
+    wasmPromise: Promise.resolve({} as ModuleType),
+  }).singletons
+
   describe('on mounted', () => {
     test('should run once', () => {
       const callback = vi.fn(() => 1)
@@ -18,7 +22,7 @@ describe('useOnPageMounted', () => {
 
       // clean up test!
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
     })
     test('should reset with helper function', async () => {
@@ -32,7 +36,7 @@ describe('useOnPageMounted', () => {
         { initialProps: { callback: callback_1 } }
       )
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
       rerender({ callback: callback_2 })
       unmount()
@@ -40,7 +44,7 @@ describe('useOnPageMounted', () => {
       expect(callback_2).toHaveBeenCalledTimes(1)
       // clean up test!
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
     })
     test('should fail to call the callback again, did not reset', async () => {
@@ -59,7 +63,7 @@ describe('useOnPageMounted', () => {
       expect(callback_2).toHaveBeenCalledTimes(0)
       // clean up test!
       result.current.resetGlobalEngineCommandManager(
-        singletons.engineCommandManager
+        singletons.kclManager.engineCommandManager
       )
     })
   })

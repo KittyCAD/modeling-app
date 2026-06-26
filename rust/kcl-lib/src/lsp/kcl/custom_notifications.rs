@@ -1,7 +1,8 @@
 //! Custom notifications for the KCL LSP server that are not part of the LSP specification.
 
 use kittycad_modeling_cmds::units::UnitLength;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use tower_lsp::lsp_types::notification::Notification;
 
 use crate::parsing::ast::types::Node;

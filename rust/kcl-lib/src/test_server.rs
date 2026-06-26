@@ -4,12 +4,17 @@ use std::path::PathBuf;
 
 use kittycad_modeling_cmds::websocket::RawFile;
 
-use crate::{
-    ConnectionError, ExecError, KclError, KclErrorWithOutputs, Program,
-    engine::new_zoo_client,
-    errors::ExecErrorWithState,
-    execution::{EnvironmentRef, ExecState, ExecutorContext, ExecutorSettings},
-};
+use crate::ConnectionError;
+use crate::ExecError;
+use crate::KclError;
+use crate::KclErrorWithOutputs;
+use crate::Program;
+use crate::engine::new_zoo_client;
+use crate::errors::ExecErrorWithState;
+use crate::execution::EnvironmentRef;
+use crate::execution::ExecState;
+use crate::execution::ExecutorContext;
+use crate::execution::ExecutorSettings;
 
 #[derive(serde::Deserialize, serde::Serialize)]
 pub struct RequestBody {
@@ -27,6 +32,15 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
         .await
         .map(|(_, _, snap)| snap)
         .map_err(|err| err.error);
+    ctx.close().await;
+    res
+}
+
+/// Executes a KCL program. Only returns success or error.
+pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
+    let ctx = new_context(true, current_file).await?;
+    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let res = do_execute(&ctx, program).await.map(|_| ()).map_err(|err| err.error);
     ctx.close().await;
     res
 }
@@ -97,6 +111,7 @@ pub async fn execute_and_snapshot_ast(
                 return Err(ExecErrorWithState::new(
                     ExecError::BadExport(format!("Export failed: {err:?}")),
                     exec_state.clone(),
+                    None,
                 ));
             }
         };
@@ -121,27 +136,45 @@ pub async fn execute_and_snapshot_no_auth(
     res
 }
 
+async fn do_execute(
+    ctx: &ExecutorContext,
+    program: Program,
+) -> Result<(ExecState, EnvironmentRef), ExecErrorWithState> {
+    let mut exec_state = ExecState::new(ctx);
+    let result = ctx.run(&program, &mut exec_state).await;
+    let responses = if result.is_err() {
+        #[cfg(feature = "snapshot-engine-responses")]
+        {
+            Some(exec_state.take_root_module_responses())
+        }
+        #[cfg(not(feature = "snapshot-engine-responses"))]
+        None
+    } else {
+        None
+    };
+    let result = result.map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone(), responses))?;
+    for issue in exec_state.issues() {
+        if issue.severity.is_err() {
+            return Err(ExecErrorWithState::new(
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(issue.clone().into())).into(),
+                exec_state.clone(),
+                None,
+            ));
+        }
+    }
+
+    Ok((exec_state, result.0))
+}
+
 async fn do_execute_and_snapshot(
     ctx: &ExecutorContext,
     program: Program,
 ) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
-    let mut exec_state = ExecState::new(ctx);
-    let result = ctx
-        .run(&program, &mut exec_state)
-        .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
-    for e in exec_state.errors() {
-        if e.severity.is_err() {
-            return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
-                exec_state.clone(),
-            ));
-        }
-    }
+    let (exec_state, env_ref) = do_execute(ctx, program).await?;
     let snapshot_png_bytes = ctx
         .prepare_snapshot()
         .await
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?
         .contents
         .0;
 
@@ -150,9 +183,9 @@ async fn do_execute_and_snapshot(
         .with_guessed_format()
         .map_err(|e| ExecError::BadPng(e.to_string()))
         .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
-        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone()))?;
+        .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?;
 
-    Ok((exec_state, result.0, img))
+    Ok((exec_state, env_ref, img))
 }
 
 pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Result<ExecutorContext, ConnectionError> {
@@ -173,6 +206,9 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         project_directory: None,
         current_file: None,
         fixed_size_grid: true,
+        skip_artifact_graph: false,
+        heartbeats: None,
+        default_backface_color: Some("#00D5FF".to_owned()),
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
@@ -196,17 +232,19 @@ pub async fn execute_and_export_step(
 > {
     let ctx = new_context(true, current_file).await?;
     let mut exec_state = ExecState::new(&ctx);
-    let program = Program::parse_no_errs(code)
-        .map_err(|err| ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone()))?;
+    let program = Program::parse_no_errs(code).map_err(|err| {
+        ExecErrorWithState::new(KclErrorWithOutputs::no_outputs(err).into(), exec_state.clone(), None)
+    })?;
     let result = ctx
         .run(&program, &mut exec_state)
         .await
-        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone()))?;
-    for e in exec_state.errors() {
-        if e.severity.is_err() {
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state.clone(), None))?;
+    for issue in exec_state.issues() {
+        if issue.severity.is_err() {
             return Err(ExecErrorWithState::new(
-                KclErrorWithOutputs::no_outputs(KclError::new_semantic(e.clone().into())).into(),
+                KclErrorWithOutputs::no_outputs(KclError::new_semantic(issue.clone().into())).into(),
                 exec_state.clone(),
+                None,
             ));
         }
     }
@@ -217,6 +255,7 @@ pub async fn execute_and_export_step(
             return Err(ExecErrorWithState::new(
                 ExecError::BadExport(format!("Export failed: {err:?}")),
                 exec_state.clone(),
+                None,
             ));
         }
     };

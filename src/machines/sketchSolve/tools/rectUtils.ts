@@ -1,16 +1,25 @@
-import type RustContext from '@src/lib/rustContext'
 import type {
   SceneGraphDelta,
-  SourceDelta,
   SegmentCtor,
+  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import type { Coords2d } from '@src/lang/util'
-import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
 import { addVec, dot2d, scaleVec, subVec } from '@src/lib/utils2d'
+import {
+  isLineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import {
+  type SnapTarget,
+  applyConstraintsForSnapTarget,
+} from '@src/machines/sketchSolve/snapping'
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
+import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
 
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
@@ -19,14 +28,23 @@ export type RectDraftIds = {
   lineIds: [number, number, number, number]
   segmentIds: number[] // all segments, including points, lines
   constraintIds: number[]
+  originPointId: number
+  centerGeometry?: {
+    diagonalLineIds: [number, number]
+    diagonalPointIds: [number, number, number, number]
+    centerPointId: number
+  }
 }
+
+const INITIAL_CENTER_RECT_HALF_SIZE = 5
+const INITIAL_CORNER_RECT_SIZE = MIN_DRAFT_GEOMETRY_DELTA_MM
 
 function getLineFromDelta(
   sceneGraphDelta: SceneGraphDelta
 ): { lineId: number; startPointId: number; endPointId: number } | Error {
   const lineId = [...sceneGraphDelta.new_objects].reverse().find((objId) => {
     const obj = sceneGraphDelta.new_graph.objects[objId]
-    return obj?.kind.type === 'Segment' && obj.kind.segment.type === 'Line'
+    return isLineSegment(obj)
   })
 
   if (lineId === undefined) {
@@ -36,10 +54,7 @@ function getLineFromDelta(
   }
 
   const lineObj = sceneGraphDelta.new_graph.objects[lineId]
-  if (
-    lineObj?.kind.type !== 'Segment' ||
-    lineObj.kind.segment.type !== 'Line'
-  ) {
+  if (!isLineSegment(lineObj)) {
     return new Error(
       'Expected Line object in scene graph delta, but did not find one'
     )
@@ -71,16 +86,37 @@ function getConstraintFromDelta(
   return constraintId
 }
 
+function getPointFromDelta(
+  sceneGraphDelta: SceneGraphDelta
+): { pointId: number } | Error {
+  const pointId = [...sceneGraphDelta.new_objects].reverse().find((objId) => {
+    const obj = sceneGraphDelta.new_graph.objects[objId]
+    return isPointSegment(obj)
+  })
+
+  if (pointId === undefined) {
+    return new Error(
+      'Expected a Point segment to be created, but none was found'
+    )
+  }
+
+  return { pointId }
+}
+
 export async function createDraftRectangle({
   rustContext,
   kclManager,
   sketchId,
   mode,
+  origin = [0, 0],
+  snapTarget,
 }: {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
   mode: RectOriginMode
+  origin?: Coords2d
+  snapTarget?: SnapTarget
 }): Promise<{
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
@@ -89,31 +125,51 @@ export async function createDraftRectangle({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
+  const draftCorners = getInitialDraftRectangleCorners(origin, mode)
+
+  const centerPoint =
+    mode === 'center'
+      ? await makeDraftPoint({
+          units,
+          rustContext,
+          sketchId,
+          settings,
+          position: origin,
+        })
+      : null
 
   const line1 = await makeDraftLine({
     units,
     rustContext,
     sketchId,
     settings,
+    start: draftCorners.start1,
+    end: draftCorners.start2,
   })
   const line2 = await makeDraftLine({
     units,
     rustContext,
     sketchId,
     settings,
+    start: draftCorners.start2,
+    end: draftCorners.start3,
   })
   const line3 = await makeDraftLine({
     units,
     rustContext,
     sketchId,
     settings,
+    start: draftCorners.start3,
+    end: draftCorners.start4,
   })
   const line4 = await makeDraftLine({
     units,
     rustContext,
     sketchId,
     settings,
+    start: draftCorners.start4,
+    end: draftCorners.start1,
   })
 
   /**
@@ -139,6 +195,8 @@ export async function createDraftRectangle({
   const end4 = line4.endPointId
 
   const constraintIds: number[] = []
+  let centerGeometry: RectDraftIds['centerGeometry']
+  const originPointId = centerPoint?.pointId ?? start1
 
   // Connect corners (close loop): line1 -> line2 -> line3 -> line4 -> line1
   const c1 = await addCoincidentConstraint({
@@ -226,6 +284,126 @@ export async function createDraftRectangle({
     lastOperation = topHorizontal
   }
 
+  if (mode === 'center' && centerPoint) {
+    const diagonal1 = await makeDraftLine({
+      units,
+      rustContext,
+      sketchId,
+      settings,
+      construction: true,
+      start: draftCorners.start1,
+      end: draftCorners.start3,
+    })
+    const diagonal2 = await makeDraftLine({
+      units,
+      rustContext,
+      sketchId,
+      settings,
+      construction: true,
+      start: draftCorners.start2,
+      end: draftCorners.start4,
+    })
+
+    const diagonalStartCoincident = await addCoincidentConstraint({
+      a: diagonal1.startPointId,
+      b: start1,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    const diagonalEndCoincident = await addCoincidentConstraint({
+      a: diagonal1.endPointId,
+      b: end2,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    const opposingDiagonalStartCoincident = await addCoincidentConstraint({
+      a: diagonal2.startPointId,
+      b: end1,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    const opposingDiagonalEndCoincident = await addCoincidentConstraint({
+      a: diagonal2.endPointId,
+      b: start4,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    const centerOnDiagonal1 = await addCoincidentConstraint({
+      a: centerPoint.pointId,
+      b: diagonal1.lineId,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    const centerOnDiagonal2 = await addCoincidentConstraint({
+      a: centerPoint.pointId,
+      b: diagonal2.lineId,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    const equalDiagonals = await addTwoLineConstraint({
+      type: 'LinesEqualLength',
+      lines: [diagonal1.lineId, diagonal2.lineId],
+      rustContext,
+      sketchId,
+      settings,
+    })
+
+    constraintIds.push(
+      diagonalStartCoincident.constraintId,
+      diagonalEndCoincident.constraintId,
+      opposingDiagonalStartCoincident.constraintId,
+      opposingDiagonalEndCoincident.constraintId,
+      centerOnDiagonal1.constraintId,
+      centerOnDiagonal2.constraintId,
+      equalDiagonals.constraintId
+    )
+
+    centerGeometry = {
+      diagonalLineIds: [diagonal1.lineId, diagonal2.lineId],
+      diagonalPointIds: [
+        diagonal1.startPointId,
+        diagonal1.endPointId,
+        diagonal2.startPointId,
+        diagonal2.endPointId,
+      ],
+      centerPointId: centerPoint.pointId,
+    }
+
+    lastOperation = equalDiagonals
+  }
+
+  const snapResult = await applyConstraintsForSnapTarget({
+    segmentId: originPointId,
+    target: snapTarget,
+    rustContext,
+    sketchId,
+    settings,
+  })
+  if (snapResult.result !== null) {
+    const snapConstraintIds = snapResult.newObjectIds.filter((objId) => {
+      const obj = snapResult.result?.sceneGraphDelta.new_graph.objects[objId]
+      return obj?.kind.type === 'Constraint'
+    })
+    if (snapConstraintIds.length === 0) {
+      return Promise.reject(
+        new Error(
+          'Expected snap constraints to be created, but none were found'
+        )
+      )
+    }
+    constraintIds.push(...snapConstraintIds)
+    lastOperation = {
+      ...snapResult.result,
+      constraintId: snapConstraintIds[snapConstraintIds.length - 1],
+    }
+  }
+
   const segmentIds = [
     line1.lineId,
     line2.lineId,
@@ -241,6 +419,25 @@ export async function createDraftRectangle({
     end4,
   ]
 
+  if (centerGeometry) {
+    const [diagonal1Id, diagonal2Id] = centerGeometry.diagonalLineIds
+    const [
+      diagonal1StartPointId,
+      diagonal1EndPointId,
+      diagonal2StartPointId,
+      diagonal2EndPointId,
+    ] = centerGeometry.diagonalPointIds
+    segmentIds.push(
+      diagonal1Id,
+      diagonal2Id,
+      centerGeometry.centerPointId,
+      diagonal1StartPointId,
+      diagonal1EndPointId,
+      diagonal2StartPointId,
+      diagonal2EndPointId
+    )
+  }
+
   return {
     // Return the latest delta so the caller has all new ids
     kclSource: lastOperation.kclSource,
@@ -249,6 +446,8 @@ export async function createDraftRectangle({
       lineIds: [line1.lineId, line2.lineId, line3.lineId, line4.lineId],
       segmentIds,
       constraintIds,
+      originPointId,
+      centerGeometry,
     },
   }
 }
@@ -259,16 +458,17 @@ export async function updateDraftRectangleAligned({
   kclManager,
   sketchId,
   draft,
-  rect,
+  mode,
+  startPoint,
+  currentPoint,
 }: {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
   draft: RectDraftIds
-  rect: {
-    min: Coords2d
-    max: Coords2d
-  }
+  mode: Extract<RectOriginMode, 'corner' | 'center'>
+  startPoint: Coords2d
+  currentPoint: Coords2d
 }): Promise<{
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
@@ -276,7 +476,7 @@ export async function updateDraftRectangleAligned({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
 
   return updateDraftRectangleFromCorners({
     rustContext,
@@ -284,8 +484,45 @@ export async function updateDraftRectangleAligned({
     settings,
     draft,
     units,
-    corners: getAxisAlignedRectangleCorners(rect),
+    corners: getAlignedRectangleCorners({
+      mode,
+      origin: startPoint,
+      point: currentPoint,
+    }),
   })
+}
+
+function getAlignedRectangleCorners({
+  mode,
+  origin,
+  point,
+}: {
+  mode: Extract<RectOriginMode, 'corner' | 'center'>
+  origin: Coords2d
+  point: Coords2d
+}): {
+  start1: Coords2d
+  start2: Coords2d
+  start3: Coords2d
+  start4: Coords2d
+} {
+  if (mode === 'center') {
+    const halfWidth = Math.abs(point[0] - origin[0])
+    const halfHeight = Math.abs(point[1] - origin[1])
+    return getAxisAlignedRectangleCorners({
+      min: [origin[0] - halfWidth, origin[1] - halfHeight],
+      max: [origin[0] + halfWidth, origin[1] + halfHeight],
+    })
+  }
+
+  // Keep the first clicked corner pinned to start1 so snap constraints stay on
+  // the user-selected corner even when the drag crosses into another quadrant.
+  return {
+    start1: origin,
+    start2: [point[0], origin[1]],
+    start3: point,
+    start4: [origin[0], point[1]],
+  }
 }
 
 function getAxisAlignedRectangleCorners(rect: {
@@ -302,6 +539,46 @@ function getAxisAlignedRectangleCorners(rect: {
   const start3: Coords2d = [rect.max[0], rect.max[1]]
   const start4: Coords2d = [rect.min[0], rect.max[1]]
   return { start1, start2, start3, start4 }
+}
+
+function getCenteredDraftRectangleCorners(
+  center: Coords2d,
+  halfSize: number
+): {
+  start1: Coords2d
+  start2: Coords2d
+  start3: Coords2d
+  start4: Coords2d
+} {
+  return getAxisAlignedRectangleCorners({
+    min: [center[0] - halfSize, center[1] - halfSize],
+    max: [center[0] + halfSize, center[1] + halfSize],
+  })
+}
+
+function getInitialDraftRectangleCorners(
+  origin: Coords2d,
+  mode: RectOriginMode
+): {
+  start1: Coords2d
+  start2: Coords2d
+  start3: Coords2d
+  start4: Coords2d
+} {
+  if (mode === 'center') {
+    return getCenteredDraftRectangleCorners(
+      origin,
+      INITIAL_CENTER_RECT_HALF_SIZE
+    )
+  }
+
+  return getAxisAlignedRectangleCorners({
+    min: origin,
+    max: [
+      origin[0] + INITIAL_CORNER_RECT_SIZE,
+      origin[1] + INITIAL_CORNER_RECT_SIZE,
+    ],
+  })
 }
 
 // Updates draft rectangle for angled (rotated) rectangle
@@ -328,7 +605,7 @@ export async function updateDraftRectangleAngled({
   const units = baseUnitToNumericSuffix(
     kclManager.fileSettings.defaultLengthUnit
   )
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
 
   return updateDraftRectangleFromCorners({
     rustContext,
@@ -363,6 +640,12 @@ export function getAngledRectangleCorners({
 } {
   const side = subVec(p2, p1)
   const sideLength = Math.hypot(side[0], side[1])
+  if (sideLength === 0) {
+    return getAxisAlignedRectangleCorners({
+      min: p1,
+      max: [p1[0] + INITIAL_CORNER_RECT_SIZE, p1[1] + INITIAL_CORNER_RECT_SIZE],
+    })
+  }
 
   // Unit normal to the first side: rotate 90deg
   const normal: Coords2d = [-side[1] / sideLength, side[0] / sideLength]
@@ -378,6 +661,40 @@ export function getAngledRectangleCorners({
   const start4: Coords2d = addVec(p1, offset)
 
   return { start1, start2, start3, start4 }
+}
+
+export function getAngledRectangleWidth({
+  p1,
+  p2,
+  p3,
+}: {
+  p1: Coords2d
+  p2: Coords2d
+  p3: Coords2d
+}): number {
+  const side = subVec(p2, p1)
+  const sideLength = Math.hypot(side[0], side[1])
+  if (sideLength === 0) {
+    return 0
+  }
+
+  const normal: Coords2d = [-side[1] / sideLength, side[0] / sideLength]
+  return dot2d(subVec(p3, p1), normal)
+}
+
+export function getSeededAngledRectangleThirdPoint(
+  p1: Coords2d,
+  p2: Coords2d,
+  width = MIN_DRAFT_GEOMETRY_DELTA_MM
+): Coords2d {
+  const side = subVec(p2, p1)
+  const sideLength = Math.hypot(side[0], side[1])
+  if (sideLength === 0) {
+    return [p2[0], p2[1] + width]
+  }
+
+  const normal: Coords2d = [-side[1] / sideLength, side[0] / sideLength]
+  return addVec(p2, scaleVec(normal, width))
 }
 
 async function updateDraftRectangleFromCorners({
@@ -405,8 +722,12 @@ async function updateDraftRectangleFromCorners({
 }> {
   const [line1Id, line2Id, line3Id, line4Id] = draft.lineIds
   const { start1, start2, start3, start4 } = corners
+  const center: Coords2d = [
+    (start1[0] + start3[0]) / 2,
+    (start1[1] + start3[1]) / 2,
+  ]
 
-  const edits = [
+  const edits: Array<{ id: number; ctor: SegmentCtor }> = [
     {
       id: line1Id,
       ctor: makeLineSegmentCtor(start1, start2, units),
@@ -425,6 +746,28 @@ async function updateDraftRectangleFromCorners({
     },
   ]
 
+  if (draft.centerGeometry) {
+    const [diagonal1Id, diagonal2Id] = draft.centerGeometry.diagonalLineIds
+    edits.push(
+      {
+        id: diagonal1Id,
+        ctor: makeLineSegmentCtor(start1, start3, units, {
+          construction: true,
+        }),
+      },
+      {
+        id: diagonal2Id,
+        ctor: makeLineSegmentCtor(start2, start4, units, {
+          construction: true,
+        }),
+      },
+      {
+        id: draft.centerGeometry.centerPointId,
+        ctor: makePointSegmentCtor(center, units),
+      }
+    )
+  }
+
   return rustContext.editSegments(0, sketchId, edits, settings)
 }
 
@@ -439,7 +782,10 @@ function makeVarExpr(value: number, units: NumericSuffix) {
 function makeLineSegmentCtor(
   start: Coords2d,
   end: Coords2d,
-  units: NumericSuffix
+  units: NumericSuffix,
+  options?: {
+    construction?: boolean
+  }
 ): SegmentCtor {
   return {
     type: 'Line',
@@ -451,6 +797,20 @@ function makeLineSegmentCtor(
       x: makeVarExpr(end[0], units),
       y: makeVarExpr(end[1], units),
     },
+    ...(options?.construction ? { construction: true } : {}),
+  }
+}
+
+function makePointSegmentCtor(
+  position: Coords2d,
+  units: NumericSuffix
+): SegmentCtor {
+  return {
+    type: 'Point',
+    position: {
+      x: makeVarExpr(position[0], units),
+      y: makeVarExpr(position[1], units),
+    },
   }
 }
 
@@ -459,11 +819,17 @@ async function makeDraftLine({
   rustContext,
   sketchId,
   settings,
+  start,
+  end,
+  construction = false,
 }: {
   units: NumericSuffix
   rustContext: RustContext
   sketchId: number
   settings: AppSettings
+  start?: Coords2d
+  end?: Coords2d
+  construction?: boolean
 }): Promise<{
   lineId: number
   startPointId: number
@@ -471,13 +837,12 @@ async function makeDraftLine({
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
 }> {
-  const ctor: SegmentCtor = {
-    type: 'Line',
-    // These are dummy values as they will be overridden by updateDraftRectangle immediately
-    // If needed they can be sent as a param
-    start: { x: makeVarExpr(0, units), y: makeVarExpr(0, units) },
-    end: { x: makeVarExpr(10, units), y: makeVarExpr(0, units) },
-  }
+  const ctor = makeLineSegmentCtor(
+    start ?? [0, 0],
+    end ?? [10, 0],
+    units,
+    construction ? { construction: true } : undefined
+  )
   const result = await rustContext.addSegment(
     0,
     sketchId,
@@ -489,6 +854,38 @@ async function makeDraftLine({
   if (line instanceof Error) return Promise.reject(line)
   return {
     ...line,
+    ...result,
+  }
+}
+
+async function makeDraftPoint({
+  units,
+  rustContext,
+  sketchId,
+  settings,
+  position,
+}: {
+  units: NumericSuffix
+  rustContext: RustContext
+  sketchId: number
+  settings: AppSettings
+  position: Coords2d
+}): Promise<{
+  pointId: number
+  kclSource: SourceDelta
+  sceneGraphDelta: SceneGraphDelta
+}> {
+  const result = await rustContext.addSegment(
+    0,
+    sketchId,
+    makePointSegmentCtor(position, units),
+    'rectangle-center-point',
+    settings
+  )
+  const point = getPointFromDelta(result.sceneGraphDelta)
+  if (point instanceof Error) return Promise.reject(point)
+  return {
+    ...point,
     ...result,
   }
 }
@@ -541,7 +938,9 @@ async function addSingleLineConstraint({
   const result = await rustContext.addConstraint(
     0,
     sketchId,
-    { type, line },
+    type === 'Horizontal'
+      ? { type: 'Horizontal', line }
+      : { type: 'Vertical', line },
     settings
   )
   const id = getConstraintFromDelta(result.sceneGraphDelta)
@@ -556,7 +955,7 @@ async function addTwoLineConstraint({
   sketchId,
   settings,
 }: {
-  type: 'Parallel' | 'Perpendicular'
+  type: 'Parallel' | 'Perpendicular' | 'LinesEqualLength'
   lines: [number, number]
   rustContext: RustContext
   sketchId: number

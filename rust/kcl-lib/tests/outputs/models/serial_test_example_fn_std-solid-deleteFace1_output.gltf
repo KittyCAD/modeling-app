@@ -12,9 +12,9 @@
         -0.009999999776482582
       ],
       "max": [
-        0.0000000000000000006123233952733111,
+        0,
         0.0020000000949949026,
-        -0.0000000000000000012246467905466221
+        -0
       ]
     },
     {
@@ -33,10 +33,10 @@
       "min": [
         -0.009999999776482582,
         0,
-        -0.0000000000000000012246467905466221
+        -0
       ],
       "max": [
-        -0.000000000000000001836970237518721,
+        -0,
         0.0020000000949949026,
         0.009999999776482582
       ]
@@ -55,7 +55,7 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        -0.000000000000000001836970237518721,
+        -0,
         0,
         -0
       ],
@@ -104,7 +104,7 @@
   "buffers": [
     {
       "byteLength": 576,
-      "uri": "data:application/octet-stream;base64,2bk0IW8SAzsK1yO88wQ1vwAAAADzBDW/2bk0IQAAAAAK1yO88wQ1vwAAAADzBDW/CtcjvG8SAzvZubSh8wQ1vwAAAADzBDW/CtcjvG8SAzvZubSh8wQ1vwAAAADzBDW/2bk0IQAAAAAK1yO88wQ1vwAAAADzBDW/CtcjvAAAAADZubSh8wQ1vwAAAADzBDW/CtcjvG8SAzvZubSh8wQ1vwAAAADzBDU/CtcjvAAAAADZubSh8wQ1vwAAAADzBDU/Y4sHom8SAzsK1yM88wQ1vwAAAADzBDU/Y4sHom8SAzsK1yM88wQ1vwAAAADzBDU/CtcjvAAAAADZubSh8wQ1vwAAAADzBDU/Y4sHogAAAAAK1yM88wQ1vwAAAADzBDU/Y4sHom8SAzsK1yM88wQ1PwAAAADzBDU/Y4sHogAAAAAK1yM88wQ1PwAAAADzBDU/CtcjPG8SAzsAAACA8wQ1PwAAAADzBDU/CtcjPG8SAzsAAACA8wQ1PwAAAADzBDU/Y4sHogAAAAAK1yM88wQ1PwAAAADzBDU/CtcjPAAAAAAAAACA8wQ1PwAAAADzBDU/Y4sHogAAAAAK1yM8AAAAgAAAgL8AAACACtcjvAAAAADZubShAAAAgAAAgL8AAACACtcjPAAAAAAAAACAAAAAgAAAgL8AAACACtcjPAAAAAAAAACAAAAAgAAAgL8AAACACtcjvAAAAADZubShAAAAgAAAgL8AAACA2bk0IQAAAAAK1yO8AAAAgAAAgL8AAACA"
+      "uri": "data:application/octet-stream;base64,AAAAAG8SAzsK1yO88wQ1vwAAAADzBDW/AAAAAAAAAAAK1yO88wQ1vwAAAADzBDW/CtcjvG8SAzsAAACA8wQ1vwAAAADzBDW/CtcjvG8SAzsAAACA8wQ1vwAAAADzBDW/AAAAAAAAAAAK1yO88wQ1vwAAAADzBDW/CtcjvAAAAAAAAACA8wQ1vwAAAADzBDW/CtcjvG8SAzsAAACA8wQ1vwAAAADzBDU/CtcjvAAAAAAAAACA8wQ1vwAAAADzBDU/AAAAgG8SAzsK1yM88wQ1vwAAAADzBDU/AAAAgG8SAzsK1yM88wQ1vwAAAADzBDU/CtcjvAAAAAAAAACA8wQ1vwAAAADzBDU/AAAAgAAAAAAK1yM88wQ1vwAAAADzBDU/AAAAgG8SAzsK1yM88wQ1PwAAAADzBDU/AAAAgAAAAAAK1yM88wQ1PwAAAADzBDU/CtcjPG8SAzsAAACA8wQ1PwAAAADzBDU/CtcjPG8SAzsAAACA8wQ1PwAAAADzBDU/AAAAgAAAAAAK1yM88wQ1PwAAAADzBDU/CtcjPAAAAAAAAACA8wQ1PwAAAADzBDU/AAAAgAAAAAAK1yM8AAAAgAAAgL8AAACACtcjvAAAAAAAAACAAAAAgAAAgL8AAACACtcjPAAAAAAAAACAAAAAgAAAgL8AAACACtcjPAAAAAAAAACAAAAAgAAAgL8AAACACtcjvAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAAAK1yO8AAAAgAAAgL8AAACA"
     }
   ],
   "bufferViews": [
@@ -404,7 +404,7 @@
           "end": 6,
           "t": [
             0,
-            0.014142135623730952
+            0.01414213562373095
           ]
         },
         {
@@ -428,7 +428,7 @@
           "end": 7,
           "t": [
             0,
-            0.014142135623730952
+            0.01414213562373095
           ]
         },
         {
@@ -446,32 +446,32 @@
       ],
       "vertices": [
         [
-          0.0000000000000000006123233995736766,
+          0,
           0,
           -0.01
         ],
         [
           -0.01,
           0,
-          -0.0000000000000000012246467991473532
+          -0
         ],
         [
           -0.01,
           0.002,
-          -0.0000000000000000012246467991473532
+          -0
         ],
         [
-          0.0000000000000000006123233995736766,
+          0,
           0.002,
           -0.01
         ],
         [
-          -0.0000000000000000018369701987210296,
+          -0,
           0,
           0.01
         ],
         [
-          -0.0000000000000000018369701987210296,
+          -0,
           0.002,
           0.01
         ],
@@ -511,9 +511,9 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.7071067811865474,
+              0.7071067811865476,
               0,
-              0.7071067811865477
+              0.7071067811865476
             ],
             "yAxis": [
               0,
@@ -521,7 +521,7 @@
               -0
             ],
             "origin": [
-              -0.005000000000000002,
+              -0.005,
               0.001,
               0.005
             ]
@@ -531,9 +531,9 @@
           "type": "plane",
           "plane": {
             "xAxis": [
-              0.7071067811865477,
+              0.7071067811865476,
               0,
-              -0.7071067811865475
+              -0.7071067811865476
             ],
             "yAxis": [
               -0,
@@ -541,7 +541,7 @@
               0
             ],
             "origin": [
-              0.004999999999999999,
+              0.005,
               0.001,
               0.005
             ]
@@ -573,14 +573,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0000000000000000006123233995736766,
+              0,
               0,
               -0.01
             ],
             "direction": [
               -0.7071067811865476,
               0,
-              0.7071067811865475
+              0.7071067811865476
             ]
           }
         },
@@ -590,7 +590,7 @@
             "origin": [
               -0.01,
               0,
-              -0.0000000000000000012246467991473532
+              -0
             ],
             "direction": [
               0,
@@ -603,14 +603,14 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0000000000000000006123233995736766,
+              0,
               0.002,
               -0.01
             ],
             "direction": [
               -0.7071067811865476,
               0,
-              0.7071067811865475
+              0.7071067811865476
             ]
           }
         },
@@ -618,7 +618,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.0000000000000000006123233995736766,
+              0,
               0,
               -0.01
             ],
@@ -635,12 +635,12 @@
             "origin": [
               -0.01,
               0,
-              -0.0000000000000000012246467991473532
+              -0
             ],
             "direction": [
-              0.7071067811865475,
+              0.7071067811865476,
               0,
-              0.7071067811865477
+              0.7071067811865476
             ]
           }
         },
@@ -648,7 +648,7 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0000000000000000018369701987210296,
+              -0,
               0,
               0.01
             ],
@@ -665,12 +665,12 @@
             "origin": [
               -0.01,
               0.002,
-              -0.0000000000000000012246467991473532
+              -0
             ],
             "direction": [
-              0.7071067811865475,
+              0.7071067811865476,
               0,
-              0.7071067811865477
+              0.7071067811865476
             ]
           }
         },
@@ -678,14 +678,14 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0000000000000000018369701987210296,
+              -0,
               0,
               0.01
             ],
             "direction": [
               0.7071067811865476,
               0,
-              -0.7071067811865475
+              -0.7071067811865476
             ]
           }
         },
@@ -708,14 +708,14 @@
           "type": "line",
           "line": {
             "origin": [
-              -0.0000000000000000018369701987210296,
+              -0,
               0.002,
               0.01
             ],
             "direction": [
               0.7071067811865476,
               0,
-              -0.7071067811865475
+              -0.7071067811865476
             ]
           }
         },

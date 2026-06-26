@@ -33,6 +33,15 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -86,12 +95,12 @@ description: Artifact commands inner-thread.kcl
           },
           "radius": 5.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -101,8 +110,21 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -196,6 +218,15 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -249,12 +280,12 @@ description: Artifact commands inner-thread.kcl
           },
           "radius": 4.0,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -264,8 +295,21 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -359,6 +403,15 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -407,11 +460,11 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.5,
-            "y": 0.0,
+            "x": 4.2500000002,
+            "y": -0.2500000001,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -424,11 +477,11 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": 0.5,
+            "x": 4.25000000045,
+            "y": 0.24999999954999996,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -441,11 +494,11 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.5,
-            "y": 0.0,
+            "x": 3.7499999997,
+            "y": 0.24999999929999994,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -458,20 +511,12 @@ description: Artifact commands inner-thread.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -0.5,
+            "x": 3.74999999985,
+            "y": -0.24999999995,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
       }
     },
     {
@@ -493,6 +538,34 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "sweep",
         "target": "[uuid]",
         "trajectory": "[uuid]",
@@ -500,6 +573,13 @@ description: Artifact commands inner-thread.kcl
         "tolerance": 0.0000001,
         "body_type": "solid",
         "relative_to": "trajectory_curve"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
       }
     },
     {
@@ -541,6 +621,24 @@ description: Artifact commands inner-thread.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "boolean_subtract",
         "target_ids": [
           "[uuid]"
@@ -549,6 +647,7 @@ description: Artifact commands inner-thread.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     }

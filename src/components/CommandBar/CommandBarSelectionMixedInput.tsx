@@ -1,22 +1,23 @@
 import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { use, useEffect, useMemo, useRef, useState } from 'react'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  setSelectionFilter,
-  setSelectionFilterToDefault,
-} from '@src/lib/selectionFilterUtils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -24,16 +25,17 @@ export default function CommandBarSelectionMixedInput({
   arg,
   stepBack,
   onSubmit,
-  wasmInstance,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selectionMixed'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
-  wasmInstance: ModuleType
+  executingEditor: KclManager
 }) {
-  const { commands } = useApp()
-  const { engineCommandManager, kclManager, sceneEntitiesManager } =
-    useSingletons()
+  const { commands, wasmPromise } = useApp()
+  const wasmInstance = use(wasmPromise)
+  const engineCommandManager = kclManager.engineCommandManager
+  const sceneEntitiesManager = kclManager.sceneEntitiesManager
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
@@ -225,7 +227,7 @@ export default function CommandBarSelectionMixedInput({
     isMixedSelection && arg.selectionSource?.allowSceneSelection
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
         className={
           'relative flex flex-col mx-4 my-4 ' +
@@ -260,6 +262,7 @@ export default function CommandBarSelectionMixedInput({
           {arg.name}
         </span>
         <input
+          {...noAutofillInputProps}
           id="selection"
           name="selection"
           ref={inputRef}

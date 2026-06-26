@@ -3,23 +3,35 @@
 use std::collections::HashSet;
 
 use anyhow::Result;
-use kcmc::{ModelingCmd, each_cmd as mcmd};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    ok_response::OkModelingCmdResponse,
-    output as mout,
-    shared::{BodyType, FractionOfEdge, SurfaceEdgeReference},
-    websocket::OkWebSocketResponseData,
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kittycad_modeling_cmds::length_unit::LengthUnit;
+use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
+use kittycad_modeling_cmds::output as mout;
+use kittycad_modeling_cmds::shared::BodyType;
+use kittycad_modeling_cmds::shared::FractionOfEdge;
+use kittycad_modeling_cmds::shared::SurfaceEdgeReference;
+use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::{self as kcmc};
 
-use crate::{
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        BoundedEdge, ExecState, KclValue, ModelingCmdMeta, Solid, SolidCreator,
-        types::{ArrayLen, PrimitiveType, RuntimeType},
-    },
-    std::{Args, args::TyF64, sketch::FaceTag},
-};
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::BoundedEdge;
+use crate::execution::ConsumedSolidOperation;
+use crate::execution::ExecState;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Solid;
+use crate::execution::SolidCreator;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::std::Args;
+use crate::std::DEFAULT_TOLERANCE_MM;
+use crate::std::args::TyF64;
+use crate::std::edge;
+use crate::std::sketch::FaceTag;
+use crate::std::solid_consumption::record_consumed_solids;
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 pub async fn flip_surface(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -219,14 +231,23 @@ async fn inner_delete_face(
 
 /// Create a new surface that blends between two edges of separate surface bodies
 pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let bounded_edges = args.get_unlabeled_kw_arg(
+    let edges: Vec<KclValue> = args.get_unlabeled_kw_arg(
         "edges",
         &RuntimeType::Array(
-            Box::new(RuntimeType::Primitive(PrimitiveType::BoundedEdge)),
+            Box::new(RuntimeType::Union(vec![
+                RuntimeType::Primitive(PrimitiveType::BoundedEdge),
+                RuntimeType::tagged_edge(),
+                RuntimeType::Primitive(PrimitiveType::Any),
+            ])),
             ArrayLen::Known(2),
         ),
         exec_state,
     )?;
+
+    let mut bounded_edges = Vec::with_capacity(edges.len());
+    for edge in edges {
+        bounded_edges.push(resolve_blend_edge(edge, exec_state, &args).await?);
+    }
 
     inner_blend(bounded_edges, exec_state, args.clone())
         .await
@@ -234,24 +255,70 @@ pub async fn blend(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         .map(|value| KclValue::Solid { value })
 }
 
+/// When edge specifiers are used, the first face in `sideFaces` is used in the
+/// [`BoundedEdge`] struct.
+async fn resolve_blend_edge(edge: KclValue, exec_state: &mut ExecState, args: &Args) -> Result<BoundedEdge, KclError> {
+    match edge {
+        KclValue::BoundedEdge { value, .. } => Ok(value),
+        KclValue::TagIdentifier(tag) => {
+            let tagged_edge = args.get_tag_engine_info(exec_state, &tag)?;
+            Ok(BoundedEdge {
+                face_id: tagged_edge.geometry.id(),
+                edge_id: Some(tagged_edge.id),
+                edge_specifier: None,
+                lower_bound: 0.0,
+                upper_bound: 1.0,
+            })
+        }
+        KclValue::Object { value: obj, .. } => {
+            let spec = edge::parse_edge_specifier_object(&obj, args)?;
+            let face_id = edge::face_id_from_first_side_face(&spec, exec_state, args)?;
+            Ok(BoundedEdge {
+                face_id,
+                edge_id: None,
+                edge_specifier: Some(spec),
+                lower_bound: 0.0,
+                upper_bound: 1.0,
+            })
+        }
+        _ => Err(KclError::new_internal(KclErrorDetails::new(
+            "Unexpected edge value while preparing blend edges. Expected BoundedEdge, tagged edge, or edge specifier object (e.g. { sideFaces = [...], endFaces = [...], index = 0 }).".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
+
 async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: Args) -> Result<Solid, KclError> {
     let id = exec_state.next_uuid();
 
-    let surface_refs: Vec<SurfaceEdgeReference> = edges
-        .iter()
-        .map(|edge| {
+    let mut surface_refs = Vec::with_capacity(edges.len());
+    for edge in &edges {
+        let fraction = if let Some(eid) = edge.edge_id {
+            FractionOfEdge::builder()
+                .edge_id(eid)
+                .lower_bound(edge.lower_bound)
+                .upper_bound(edge.upper_bound)
+                .build()
+        } else if let Some(ref spec) = edge.edge_specifier {
+            let resolved = edge::resolve_unresolved_edge_specifier(edge.face_id, spec, exec_state, &args).await?;
+            FractionOfEdge::builder()
+                .edge_specifier(resolved)
+                .lower_bound(edge.lower_bound)
+                .upper_bound(edge.upper_bound)
+                .build()
+        } else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "BoundedEdge must have edge_id or edge_specifier".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        surface_refs.push(
             SurfaceEdgeReference::builder()
                 .object_id(edge.face_id)
-                .edges(vec![
-                    FractionOfEdge::builder()
-                        .edge_id(edge.edge_id)
-                        .lower_bound(edge.lower_bound)
-                        .upper_bound(edge.upper_bound)
-                        .build(),
-                ])
-                .build()
-        })
-        .collect();
+                .edges(vec![fraction])
+                .build(),
+        );
+    }
 
     exec_state
         .batch_modeling_cmd(
@@ -262,12 +329,15 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
 
     let solid = Solid {
         id,
+        value_id: id,
         artifact_id: id.into(),
         value: vec![],
+        faces: Default::default(),
         creator: SolidCreator::Procedural,
         start_cap_id: None,
         end_cap_id: None,
         edge_cuts: vec![],
+        pending_edge_cut_ids: vec![],
         units: exec_state.length_unit(),
         sectional: false,
         meta: vec![crate::execution::Metadata {
@@ -276,4 +346,75 @@ async fn inner_blend(edges: Vec<BoundedEdge>, exec_state: &mut ExecState, args: 
     };
     //TODO: How do we pass back the two new edge ids that were created?
     Ok(solid)
+}
+
+/// Stitch multiple surfaces together into one polysurface
+pub async fn join(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let selection: Vec<Solid> = args.get_unlabeled_kw_arg("selection", &RuntimeType::solids(), exec_state)?;
+    let tolerance: Option<TyF64> = args.get_kw_arg_opt("tolerance", &RuntimeType::length(), exec_state)?;
+
+    inner_join(selection, tolerance, exec_state, args)
+        .await
+        .map(Box::new)
+        .map(|value| KclValue::Solid { value })
+}
+
+async fn inner_join(
+    selection: Vec<Solid>,
+    tolerance: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Solid, KclError> {
+    if selection.len() == 1 {
+        let cmd = mcmd::Solid3dJoin::builder().object_id(selection[0].id).build();
+
+        exec_state
+            .batch_modeling_cmd(ModelingCmdMeta::from_args(exec_state, &args), ModelingCmd::from(cmd))
+            .await?;
+
+        Ok(selection[0].clone())
+    } else {
+        let body_out_id = exec_state.next_uuid();
+
+        exec_state
+            .flush_batch_for_solids(ModelingCmdMeta::from_args(exec_state, &args), &selection)
+            .await?;
+
+        let body_ids = selection.iter().map(|body| body.id).collect();
+        let tolerance = tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM);
+        let cmd = mcmd::Solid3dMultiJoin::builder()
+            .object_ids(body_ids)
+            .tolerance(LengthUnit(tolerance))
+            .build();
+
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args_id(exec_state, &args, body_out_id),
+                ModelingCmd::from(cmd),
+            )
+            .await?;
+
+        let solid = Solid {
+            id: body_out_id,
+            value_id: body_out_id,
+            artifact_id: body_out_id.into(),
+            value: vec![],
+            faces: Default::default(),
+            creator: SolidCreator::Procedural,
+            start_cap_id: None,
+            end_cap_id: None,
+            edge_cuts: vec![],
+            pending_edge_cut_ids: vec![],
+            units: exec_state.length_unit(),
+            sectional: false,
+            meta: vec![args.source_range.into()],
+        };
+        record_consumed_solids(
+            exec_state,
+            &selection,
+            ConsumedSolidOperation::JoinSurfaces,
+            std::slice::from_ref(&solid),
+        );
+        Ok(solid)
+    }
 }

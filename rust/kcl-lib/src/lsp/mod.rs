@@ -9,15 +9,19 @@ pub mod test_util;
 mod tests;
 pub mod util;
 
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity, DiagnosticTag, Position, Range};
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
+use tower_lsp::lsp_types::DiagnosticTag;
+use tower_lsp::lsp_types::Position;
+use tower_lsp::lsp_types::Range;
 pub use util::IntoDiagnostic;
 
-use crate::{
-    CompilationError,
-    errors::{Severity, Suggestion, Tag},
-};
+use crate::CompilationIssue;
+use crate::errors::Severity;
+use crate::errors::Suggestion;
+use crate::errors::Tag;
 
-impl IntoDiagnostic for CompilationError {
+impl IntoDiagnostic for CompilationIssue {
     fn to_lsp_diagnostics(&self, code: &str) -> Vec<Diagnostic> {
         let edit = self.suggestion.as_ref().map(|s| to_lsp_edit(s, code));
 
@@ -72,11 +76,12 @@ impl ToLspRange for crate::SourceRange {
     fn start_to_lsp_position(&self, code: &str) -> Position {
         // Calculate the line and column of the error from the source range.
         // Lines are zero indexed in vscode so we need to subtract 1.
-        let mut line = code.get(..self.start()).unwrap_or_default().lines().count();
+        let code_slice = code.get(..self.start()).unwrap_or_default();
+        let mut line = code_slice.lines().count();
         if line > 0 {
             line = line.saturating_sub(1);
         }
-        let column = code[..self.start()].lines().last().map(|l| l.len()).unwrap_or_default();
+        let column = code_slice.lines().last().map(|l| l.len()).unwrap_or_default();
 
         Position {
             line: line as u32,

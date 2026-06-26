@@ -2,7 +2,9 @@
 use std::env;
 
 #[cfg(feature = "dhat-heap")]
-use dhat::{HeapStats, Profiler};
+use dhat::HeapStats;
+#[cfg(feature = "dhat-heap")]
+use dhat::Profiler;
 use web_time::Instant;
 
 const LOG_ENV_VAR: &str = "ZOO_LOG";

@@ -28,8 +28,8 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
@@ -135,6 +135,19 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
   if (!types.includes(artifact?.type))
     return new Error(`Expected ${types} but got ${artifact?.type}`)
   return artifact as Extract<Artifact, { type: T[number] }>
+}
+
+export function getPatternArtifactForCopyId(
+  id: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'pattern' }> | undefined {
+  return [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'pattern' }> =>
+      artifact.type === 'pattern' &&
+      (artifact.copyIds.includes(id) ||
+        artifact.copyFaceIds.includes(id) ||
+        artifact.copyEdgeIds.includes(id))
+  )
 }
 
 export function expandPlane(
@@ -277,11 +290,14 @@ export function getEdgeCutConsumedCodeRef(
   artifactGraph: ArtifactGraph
 ): CodeRef | Error {
   const seg = getArtifactOfTypes(
-    { key: edge.consumedEdgeId, types: ['segment', 'sweepEdge'] },
+    {
+      key: edge.consumedEdgeId,
+      types: ['segment', 'sweepEdge', 'primitiveEdge'],
+    },
     artifactGraph
   )
   if (err(seg)) return seg
-  if (seg.type === 'segment') return seg.codeRef
+  if (seg.type === 'segment' || seg.type === 'primitiveEdge') return seg.codeRef
   return getSweepEdgeCodeRef(seg, artifactGraph)
 }
 
@@ -290,13 +306,19 @@ export function getSweepFromSuspectedSweepSurface(
   artifactGraph: ArtifactGraph
 ): SweepArtifact | Error {
   const artifact = getArtifactOfTypes(
-    { key: id, types: ['wall', 'cap', 'edgeCut'] },
+    { key: id, types: ['wall', 'cap', 'edgeCut', 'primitiveFace'] },
     artifactGraph
   )
   if (err(artifact)) return artifact
   if (artifact.type === 'wall' || artifact.type === 'cap') {
     return getArtifactOfTypes(
       { key: artifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+  }
+  if (artifact.type === 'primitiveFace') {
+    return getArtifactOfTypes(
+      { key: artifact.solidId, types: ['sweep'] },
       artifactGraph
     )
   }
@@ -371,6 +393,26 @@ export function getSweepArtifactFromSelection(
     )
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'primitiveFace') {
+    const _artifact = getArtifactOfTypes(
+      { key: selection.artifact.solidId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
+  } else if (selection.artifact?.type === 'primitiveEdge') {
+    console.log({ selection, artifactGraph })
+    const path = getArtifactOfTypes(
+      { key: selection.artifact.solidId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) return path
+    const _artifact = getArtifactOfTypes(
+      { key: path.sweepId!, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(_artifact)) return _artifact
+    sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'edgeCut') {
     // Handle edgeCut by getting its consumed edge (segment or sweepEdge)
     const segOrEdge = getArtifactOfTypes(
@@ -420,6 +462,8 @@ export function getCodeRefsByArtifactId(
     const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
     if (err(codeRef)) return null
     return [codeRef]
+  } else if (artifact?.type === 'primitiveEdge') {
+    return [artifact.codeRef]
   } else if (artifact?.type === 'segment') {
     return [artifact.codeRef]
   } else if (artifact?.type === 'edgeCut') {
@@ -439,6 +483,50 @@ export function codeRefFromRange(range: SourceRange, ast: Program): CodeRef {
     range,
     pathToNode: getNodePathFromSourceRange(ast, range),
   }
+}
+
+/** Given a face artifact's ID, determine if the solid's base path is a legacy or solve sketch. */
+export function isFaceFromLegacySketch(
+  faceId: string,
+  graph: ArtifactGraph
+): boolean {
+  const face = getArtifactOfTypes(
+    {
+      key: faceId,
+      types: ['wall'],
+    },
+    graph
+  )
+
+  if (err(face)) {
+    return false
+  }
+
+  const body = getArtifactOfTypes(
+    {
+      key: face.sweepId,
+      types: ['sweep'],
+    },
+    graph
+  )
+
+  if (err(body)) {
+    return false
+  }
+
+  const path = getArtifactOfTypes(
+    {
+      key: body.pathId,
+      types: ['path'],
+    },
+    graph
+  )
+
+  if (err(path)) {
+    return false
+  }
+
+  return path.subType === 'sketch'
 }
 
 function getPlaneFromPath(
@@ -746,6 +834,80 @@ export function getFaceCodeRef(
   return null
 }
 
+export function hasSamePathToNode(
+  left: PathToNode,
+  right: PathToNode
+): boolean {
+  return (
+    left.length === right.length &&
+    left.every(
+      ([leftValue, leftType], index) =>
+        leftValue === right[index][0] && leftType === right[index][1]
+    )
+  )
+}
+
+export function getArtifactsMatchingPathToNode(
+  pathToNode: PathToNode,
+  artifactGraph: ArtifactGraph
+): Artifact[] {
+  return [...artifactGraph.values()].filter(
+    (artifact) =>
+      'codeRef' in artifact &&
+      hasSamePathToNode(artifact.codeRef.pathToNode, pathToNode)
+  )
+}
+
+export function getSketchBlockArtifactForPathToNode(
+  pathToNode: PathToNode,
+  artifactGraph: Map<string, Artifact>
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  return getArtifactsMatchingPathToNode(pathToNode, artifactGraph).find(
+    (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
+      artifact.type === 'sketchBlock'
+  )
+}
+
+export function getSketchBlockForPathArtifact(
+  pathArtifact: Extract<Artifact, { type: 'path' }>,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  if (!pathArtifact.sketchBlockId) return undefined
+  const sketchBlock = artifactGraph.get(pathArtifact.sketchBlockId)
+  if (sketchBlock?.type !== 'sketchBlock') return undefined
+  return sketchBlock
+}
+
+export function getSketchBlockForArtifact(
+  artifact: Artifact | undefined,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'sketchBlock' }> | undefined {
+  if (!artifact) {
+    return undefined
+  }
+
+  if (artifact.type === 'sketchBlock') {
+    return artifact
+  }
+
+  if (artifact.type === 'path') {
+    return getSketchBlockForPathArtifact(artifact, artifactGraph)
+  }
+
+  if (artifact.type === 'segment' || artifact.type === 'solid2d') {
+    const path = getArtifactOfTypes(
+      { key: artifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path)) {
+      return undefined
+    }
+    return getSketchBlockForPathArtifact(path, artifactGraph)
+  }
+
+  return undefined
+}
+
 /**
  * Coerce selections that may contain faces or edges to their parent body (sweep/compositeSolid).
  * This is useful for commands that only work with bodies, but users may have faces or edges selected.
@@ -776,6 +938,7 @@ export function coerceSelectionsToBody(
     if (
       selection.artifact.type === 'sweep' ||
       selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'pattern' ||
       selection.artifact.type === 'path'
     ) {
       if (!seenBodyIds.has(selection.artifact.id)) {
@@ -838,13 +1001,42 @@ export function coerceSelectionsToBody(
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
  */
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
-  const artifacts = filterArtifacts(
-    {
-      types: ['compositeSolid', 'sweep'],
-      predicate: (a) => !a.consumed,
-    },
-    artifactGraph
+  const artifacts: Map<
+    ArtifactId,
+    Extract<Artifact, { type: 'compositeSolid' | 'sweep' | 'pattern' }>
+  > = new Map(
+    filterArtifacts(
+      {
+        types: ['compositeSolid', 'sweep'],
+        predicate: (a) => !a.consumed,
+      },
+      artifactGraph
+    )
   )
+
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'pattern') continue
+    const directSource = artifactGraph.get(artifact.sourceId)
+    const sourceBody =
+      directSource?.type === 'sweep' || directSource?.type === 'compositeSolid'
+        ? directSource
+        : [...artifactGraph.values()].find(
+            (
+              source
+            ): source is Extract<
+              Artifact,
+              { type: 'sweep' | 'compositeSolid' }
+            > =>
+              (source.type === 'sweep' || source.type === 'compositeSolid') &&
+              (source.patternIds || []).includes(artifact.id)
+          )
+    if (sourceBody) {
+      artifacts.set(sourceBody.id, artifact)
+    }
+    artifact.copyIds.forEach((copyId) => {
+      artifacts.set(copyId, artifact)
+    })
+  }
 
   return artifacts
 }

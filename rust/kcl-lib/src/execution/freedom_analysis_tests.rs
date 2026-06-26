@@ -1,21 +1,24 @@
 use std::sync::Arc;
 
-use crate::{
-    ExecutorContext, ExecutorSettings,
-    engine::conn_mock::EngineConnection,
-    execution::{ContextType, MockConfig},
-    front::{Freedom, ObjectKind},
-    frontend::api::ObjectId,
-};
+use crate::ExecutorContext;
+use crate::ExecutorSettings;
+use crate::engine::engine_manager::EngineManager;
+use crate::execution::ContextType;
+use crate::execution::MockConfig;
+use crate::front::Freedom;
+use crate::front::ObjectKind;
+use crate::frontend::api::ObjectId;
 
 async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(EngineConnection::new().unwrap())),
+        engine: Arc::new(EngineManager::new_mock()),
+        engine_batch: crate::engine::EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings::default(),
         context_type: ContextType::Mock,
+        execution_callbacks: Default::default(),
     };
 
     let mock_config = MockConfig {
@@ -35,7 +38,7 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
         }
     }
     // Sort by object ID for consistent ordering
-    point_freedoms.sort_by_key(|(id, _)| id.0);
+    point_freedoms.sort_by_key(|(id, _)| *id);
     exec_ctxt.close().await;
     point_freedoms
 }
@@ -46,20 +49,20 @@ async fn test_freedom_analysis_with_conflicts() {
 @settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
 line1.start.at[0] == 2
 line1.start.at[1] == 8
 line1.end.at[0] == 5
 line1.end.at[1] == 7
 
 
-  line2 = sketch2::line(start = [var 2mm, var 1mm], end = [var -4.75mm, var -0.88mm])
+  line2 = line(start = [var 2mm, var 1mm], end = [var -4.75mm, var -0.88mm])
 line2.start.at[0] == 2
 line2.start.at[1] == 1
 
-  line3 = sketch2::line(start = [var -2.591mm, var -7.081mm], end = [var 1.331mm, var -3.979mm])
-sketch2::distance([line3.start, line3.end]) == 4mm
-sketch2::distance([line3.start, line3.end]) == 6mm
+  line3 = line(start = [var -2.591mm, var -7.081mm], end = [var 1.331mm, var -3.979mm])
+distance([line3.start, line3.end]) == 4mm
+distance([line3.start, line3.end]) == 6mm
 }
 "#;
 
@@ -93,19 +96,19 @@ async fn test_freedom_analysis_without_conflicts() {
 @settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
 line1.start.at[0] == 2
 line1.start.at[1] == 8
 line1.end.at[0] == 5
 line1.end.at[1] == 7
 
 
-  line2 = sketch2::line(start = [var 2mm, var 1mm], end = [var -4.75mm, var -0.88mm])
+  line2 = line(start = [var 2mm, var 1mm], end = [var -4.75mm, var -0.88mm])
 line2.start.at[0] == 2
 line2.start.at[1] == 1
 
-  line3 = sketch2::line(start = [var -2.591mm, var -7.081mm], end = [var 1.331mm, var -3.979mm])
-sketch2::distance([line3.start, line3.end]) == 4mm
+  line3 = line(start = [var -2.591mm, var -7.081mm], end = [var 1.331mm, var -3.979mm])
+distance([line3.start, line3.end]) == 4mm
 }
 "#;
 
@@ -134,17 +137,17 @@ async fn test_freedom_analysis_reordered_lines() {
 @settings(experimentalFeatures = allow)
 
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
 line1.start.at[0] == 2
 line1.start.at[1] == 8
 line1.end.at[0] == 5
 line1.end.at[1] == 7
 
-  line3 = sketch2::line(start = [var -2.591mm, var -7.081mm], end = [var 1.331mm, var -3.979mm])
-sketch2::distance([line3.start, line3.end]) == 4mm
-sketch2::distance([line3.start, line3.end]) == 6mm
+  line3 = line(start = [var -2.591mm, var -7.081mm], end = [var 1.331mm, var -3.979mm])
+distance([line3.start, line3.end]) == 4mm
+distance([line3.start, line3.end]) == 6mm
 
-  line2 = sketch2::line(start = [var 2mm, var 1mm], end = [var -4.75mm, var -0.88mm])
+  line2 = line(start = [var 2mm, var 1mm], end = [var -4.75mm, var -0.88mm])
 line2.start.at[0] == 2
 line2.start.at[1] == 1
 
@@ -178,12 +181,10 @@ async fn test_freedom_analysis_with_zero_constraints() {
     // This test verifies the fix for the bug where segments with no constraints
     // incorrectly showed as Fixed (white) instead of Free (blue).
     let kcl = r#"
-@settings(experimentalFeatures = allow)
-
 sketch(on = YZ) {
-  line1 = sketch2::line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
-  line2 = sketch2::line(start = [var -5.98mm, var 3.5mm], end = [var -8.52mm, var -1.59mm])
-  line3 = sketch2::line(start = [var -6.66mm, var -3.03mm], end = [var 0.52mm, var -3.26mm])
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+  line2 = line(start = [var -5.98mm, var 3.5mm], end = [var -8.52mm, var -1.59mm])
+  line3 = line(start = [var -6.66mm, var -3.03mm], end = [var 0.52mm, var -3.26mm])
 }
 "#;
 

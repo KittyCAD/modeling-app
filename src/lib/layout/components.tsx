@@ -1,76 +1,75 @@
-import isEqual from 'react-fast-compare'
-import type { ArtifactGraph } from '@src/lang/wasm'
-import { LayoutType } from '@src/lib/layout/types'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type {
-  SplitLayout as SplitLayoutType,
-  PaneLayout as PaneLayoutType,
-  Closeable,
-  Direction,
-  Layout,
-  PaneChild,
-  Action,
-  Side,
-  AreaTypeDefinition,
-  ActionTypeDefinition,
-  ActionType,
-} from '@src/lib/layout/types'
-import { AreaType } from '@src/lib/layout/types'
-import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
-import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { Switch } from '@headlessui/react'
-import {
-  createContext,
-  Fragment,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  memo,
-} from 'react'
-import {
-  getOppositeSide,
-  getOppositionDirection,
-  logicalSideToTooltipPosition,
-  sideToSplitDirection,
-  sideToReactCss,
-  sideToTailwindLayoutDirection,
-  sideToTailwindTabDirection,
-  findAndUpdateSplitSizes,
-  findAndReplaceLayoutChildNode,
-  shouldEnableResizeHandle,
-  orientationToReactCss,
-  sideToOrientation,
-  orientationToDirection,
-  togglePaneLayoutNode,
-  saveLayout,
-  shouldDisableFlex,
-  defaultLayout,
-  isCollapsedPaneLayout,
-} from '@src/lib/layout/utils'
-import type {
-  IUpdateNodeSizes,
-  IReplaceLayoutChildNode,
-  ITogglePane,
-} from '@src/lib/layout/utils'
-import Tooltip from '@src/components/Tooltip'
 import {
   ContextMenu,
   ContextMenuDivider,
   ContextMenuItem,
   type ContextMenuProps,
 } from '@src/components/ContextMenu'
-import { isArray } from '@src/lib/utils'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
+import type { ArtifactGraph } from '@src/lang/wasm'
+import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { LayoutType } from '@src/lib/layout/types'
+import type {
+  Action,
+  ActionLibrary,
+  ActionTypeDefinition,
+  AreaLibrary,
+  AreaTypeDefinition,
+  Closeable,
+  Direction,
+  Layout,
+  PaneChild,
+  PaneLayout as PaneLayoutType,
+  Side,
+  SplitLayout as SplitLayoutType,
+} from '@src/lib/layout/types'
+import {
+  defaultLayout,
+  findAndReplaceLayoutChildNode,
+  findAndUpdateSplitSizes,
+  getOppositeSide,
+  getOppositionDirection,
+  isCollapsedPaneLayout,
+  logicalSideToTooltipPosition,
+  orientationToDirection,
+  orientationToReactCss,
+  shouldDisableFlex,
+  shouldEnableResizeHandle,
+  sideToOrientation,
+  sideToReactCss,
+  sideToSplitDirection,
+  sideToTailwindLayoutDirection,
+  sideToTailwindTabDirection,
+  togglePaneLayoutNode,
+} from '@src/lib/layout/utils'
+import type {
+  IReplaceLayoutChildNode,
+  ITogglePane,
+  IUpdateNodeSizes,
+} from '@src/lib/layout/utils'
+import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { isArray } from '@src/lib/utils'
+import {
+  Fragment,
+  createContext,
+  memo,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import isEqual from 'react-fast-compare'
+import { useHotkeys } from 'react-hotkeys-hook'
+import type { ImperativePanelGroupHandle } from 'react-resizable-panels'
+import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels'
 
 type WithoutRootLayout<T> = Omit<T, 'rootLayout'>
 interface LayoutState {
-  areaLibrary: Record<AreaType, AreaTypeDefinition>
-  actionLibrary: Record<ActionType, ActionTypeDefinition>
+  areaLibrary: AreaLibrary
+  actionLibrary: ActionLibrary
   updateSplitSizes: (props: WithoutRootLayout<IUpdateNodeSizes>) => void
   replaceLayoutNode: (props: WithoutRootLayout<IReplaceLayoutChildNode>) => void
   togglePane: (props: WithoutRootLayout<ITogglePane>) => void
@@ -78,26 +77,18 @@ interface LayoutState {
   enableContextMenus: boolean
 }
 
-const nullAreaLibrary = Object.fromEntries(
-  Object.values(AreaType).map((type) => [
-    type,
-    {
-      hide: () => false,
-      Component: () => <></>,
-    } satisfies AreaTypeDefinition,
-  ])
-  // TS is so annoying, I've held its hand the entire way to this type inference but Object.fromEntries widens the key to string
-) as unknown as Record<AreaType, AreaTypeDefinition>
+const missingAreaDefinition = {
+  hide: () => false,
+  Component: () => <></>,
+} satisfies AreaTypeDefinition
 
-const nullActionLibrary = Object.fromEntries(
-  Object.values(AreaType).map((type) => [
-    type,
-    {
-      execute: () => {},
-    } satisfies ActionTypeDefinition,
-  ])
-  // TS is so annoying, I've held its hand the entire way to this type inference but Object.fromEntries widens the key to string
-) as unknown as Record<ActionType, ActionTypeDefinition>
+const missingActionDefinition = {
+  execute: () => {},
+  useHidden: () => true,
+} satisfies ActionTypeDefinition
+
+const nullAreaLibrary: AreaLibrary = {}
+const nullActionLibrary: ActionLibrary = {}
 
 const LayoutStateContext = createContext<LayoutState>({
   areaLibrary: nullAreaLibrary,
@@ -118,7 +109,7 @@ interface LayoutRootNodeProps {
   getLayout: () => Layout | undefined
   setLayout: (layout: Layout) => void
   // Values that affect the layout (pane buttons, menus, etc).
-  showDebugPanel: SettingsType['app']['showDebugPanel']['current']
+  showDebugPanel: SettingsType['debug']['showPanel']['current']
   notifications: boolean[]
   artifactGraph: ArtifactGraph
   layoutName?: string
@@ -134,13 +125,9 @@ export const LayoutRootNode = memo(
     getLayout,
     setLayout,
     showDebugPanel,
-    layoutName = 'default',
     enableContextMenus = false,
   }: LayoutRootNodeProps) {
     const getLayoutWithFallback = () => getLayout() || defaultLayout
-    useEffect(() => {
-      saveLayout({ layout, layoutName })
-    }, [layout, layoutName])
 
     function updateSplitSizes(props: WithoutRootLayout<IUpdateNodeSizes>) {
       const rootLayout = getLayoutWithFallback()
@@ -230,7 +217,8 @@ function LayoutNode({
     case LayoutType.Panes:
       return <PaneLayout layout={layout} key={`node-${layout.id}`} />
     default: {
-      const { Component, ...props } = areaLibrary[layout.areaType]
+      const { Component, ...props } =
+        areaLibrary[layout.areaType] ?? missingAreaDefinition
       return <Component areaConfig={props} layout={layout} onClose={onClose} />
     }
   }
@@ -597,7 +585,8 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
 function ActionButton({ action, side }: { action: Action; side: Side }) {
   const { actionLibrary } = useLayoutState()
   const platform = usePlatform()
-  const resolvedAction = actionLibrary[action.actionType]
+  const resolvedAction =
+    actionLibrary[action.actionType] ?? missingActionDefinition
   const disabledReason = resolvedAction.useDisabled?.()
   const hidden = resolvedAction.useHidden?.()
   useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {

@@ -1,20 +1,9 @@
-import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useState } from 'react'
-import toast from 'react-hot-toast'
-import { useHotkeys } from 'react-hotkeys-hook'
-import ModalContainer from 'react-modal-promise'
-import {
-  useLoaderData,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { useSignalEffect } from '@preact/signals-react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { AppHeader } from '@src/components/AppHeader'
-import { CommandBarOpenButton } from '@src/components/CommandBarOpenButton'
 import { useLspContext } from '@src/components/LspProvider'
 import { useNetworkHealthStatus } from '@src/components/NetworkHealthIndicator'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import { ShareButton } from '@src/components/ShareButton'
 import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
@@ -23,49 +12,59 @@ import {
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
+import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
-  DEFAULT_EXPERIMENTAL_FEATURES,
+  autoUpdateDownloadProgressSignal,
+  autoUpdateReadySignal,
+} from '@src/lib/autoUpdate'
+import { useApp, useSingletons } from '@src/lib/boot'
+import {
+  CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
+import {
+  DefaultLayoutPaneID,
+  LayoutRootNode,
+  defaultLayout,
+  getOpenPanes,
+} from '@src/lib/layout'
+import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
+import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { PATHS } from '@src/lib/paths'
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { Project } from '@src/lib/project'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
+
+import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
+import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
+import {
+  filterStatusBarItemsForScopes,
+  statusBarGlobalItemsValueSpec,
+  statusBarLocalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
 import {
   TutorialRequestToast,
   needsToOnboard,
+  useApplyRememberedOnboardingWorkflow,
 } from '@src/routes/Onboarding/utils'
-import {
-  defaultLayout,
-  DefaultLayoutPaneID,
-  getOpenPanes,
-  LayoutRootNode,
-} from '@src/lib/layout'
-import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
-import { getResolvedTheme } from '@src/lib/theme'
-import {
-  MlEphantManagerReactContext,
-  MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
-import { useSignalEffect } from '@preact/signals-react'
-import { UnitsMenu } from '@src/components/UnitsMenu'
-import { ExperimentalFeaturesMenu } from '@src/components/ExperimentalFeaturesMenu'
-import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { useSelector } from '@xstate/react'
+import { useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
+import ModalContainer from 'react-modal-promise'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 if (window.electron) {
   maybeWriteToDisk(window.electron)
@@ -74,121 +73,155 @@ if (window.electron) {
 }
 
 export function OpenedProject() {
-  const { auth, billing, settings } = useApp()
-  const {
-    systemIOActor,
-    engineCommandManager,
-    sceneInfra,
-    kclManager,
-    useLayout,
-    setLayout,
-    getLayout,
-  } = useSingletons()
+  useSignals()
+  const { auth, billing, settings, layout, project, systemIOActor, registry } =
+    useApp()
+  const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  const getSettings = settings.get
   const defaultAreaLibrary = useDefaultAreaLibrary()
   const defaultActionLibrary = useDefaultActionLibrary()
-  const { state: modelingState } = useModelingContext()
+  const { state: modelingState, send: modelingSend } = useModelingContext()
   useQueryParamEffects(kclManager)
-  const loaderData = useLoaderData<IndexLoaderData>()
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
-  const mlEphantManagerActor2 = MlEphantManagerReactContext.useActorRef()
-
   const location = useLocation()
   const navigate = useNavigate()
-  const filePath = useAbsoluteFilePath()
+  const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
+  const autoUpdateReady = autoUpdateReadySignal.value
+  const lastOperation = useLastOperation()
+  const projects = useFolders()
   const { onProjectOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
 
-  // We need the ref for the outermost div so we can screenshot the app for
-  // the coredump.
-
   // Stream related refs and data
   const [searchParams] = useSearchParams()
 
-  const projectName = loaderData.project?.name || null
-  const projectPath = loaderData.project?.path || null
+  const projectName = project?.name || null
+  const projectPath = project?.path || null
+
+  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+
+  useEffect(() => {
+    setOpfsCloudSyncProjectScope(projectPath ?? undefined)
+
+    return () => {
+      setOpfsCloudSyncProjectScope(undefined)
+    }
+  }, [projectPath])
+
+  // Handle our project folder disappearing (Go back to Projects listing)
+  useEffect(() => {
+    if (systemIOState !== SystemIOMachineStates.idle) {
+      return
+    }
+
+    if (
+      projects &&
+      projects.length > 0 &&
+      projects.every((p: Project) => p.name !== projectName) &&
+      [
+        SystemIOMachineStates.creatingProject,
+        SystemIOMachineStates.renamingProject,
+        SystemIOMachineStates.importFileFromURL,
+      ].includes(lastOperation) === false
+    ) {
+      void navigate(PATHS.HOME)
+    }
+
+    if (projects && projects.length === 0) {
+      void navigate(PATHS.HOME)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projects, lastOperation, systemIOState])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
   useEffect(() => {
-    if (systemIOState !== 'idle') return
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false)
+    if (systemIOState !== 'idle') {
       return
+    }
+    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
+      return
+    }
+    const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
+    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+
+    if (reloadBehavior === 'exit-sketch-solve') {
+      toast(
+        'Zookeeper updated the project while sketch mode was active. Exiting sketch mode to reload safely.'
+      )
+      modelingSend({ type: 'Exit sketch' })
+      return
+    }
+
     kclManager
       .executeCode()
       .then(async () => {
-        await resetCameraPosition({
-          sceneInfra,
-          engineCommandManager,
-          settingsActor,
-        })
+        if (reloadBehavior === 'execute-and-reset-camera') {
+          await resetCameraPosition({
+            sceneInfra: kclManager.sceneInfra,
+            engineCommandManager: kclManager.engineCommandManager,
+            settingsActor,
+          })
+        }
       })
       .catch(reportRejection)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
-  }, [
-    systemIOState,
-    kclManager,
-    sceneInfra,
-    engineCommandManager,
-    settingsActor,
-  ])
+  }, [systemIOState, kclManager, modelingState, modelingSend, settingsActor])
 
   // Run LSP file open hook when navigating between projects or files
   useEffect(() => {
     onProjectOpen(
       { name: projectName, path: projectPath },
-      loaderData.file || null
+      project?.executingPath ? project.executingFileEntry.value : null
     )
-  }, [onProjectOpen, projectName, projectPath, loaderData.file])
-
-  useEffect(() => {
-    // Clear conversation
-    mlEphantManagerActor2.send({
-      type: MlEphantManagerTransitions.ConversationClose,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [projectName, projectPath])
+  }, [onProjectOpen, projectName, projectPath, project])
 
   useHotKeyListener(kclManager)
 
   const settingsValues = settings.useSettings()
+  const machineApiEnabled = settingsValues.app.machineApi.current
+  const registryGlobalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarGlobalItemsValueSpec).value,
+    ['file']
+  )
+  const registryLocalStatusBarItems = filterStatusBarItemsForScopes(
+    registry.signal(statusBarLocalItemsValueSpec).value,
+    ['file']
+  )
   const authToken = auth.useToken()
-  const layout = useLayout()
+  const currentProject = project?.projectIORefSignal.value
+  const projectStatus = useProjectStatus(
+    currentProject?.cloudProjectId,
+    authToken
+  )
+  const hasChangesRequested =
+    projectStatus?.publicationStatus === 'changes_requested'
 
-  useHotkeys('backspace', (e) => {
-    e.preventDefault()
-  })
-  // Since these already exist in the editor, we don't need to define them
-  // with the wrapper.
-  useHotkeys('mod+z', (e) => {
-    e.preventDefault()
-    kclManager.undo()
-  })
-  useHotkeys('mod+shift+z', (e) => {
-    e.preventDefault()
-    kclManager.redo()
-  })
-  useHotkeyWrapper(
-    [isDesktop() ? 'mod + ,' : 'shift + mod + ,'],
-    () => {
-      void navigate(filePath + PATHS.SETTINGS)
-    },
-    kclManager,
-    {
-      splitKey: '|',
+  useEffect(() => {
+    if (!hasChangesRequested) {
+      return
     }
-  )
 
-  useHotkeyWrapper(
-    ['mod + s'],
-    () => {
-      toast.success('Your work is auto-saved in real-time')
-    },
-    kclManager
-  )
+    const message = projectStatus?.feedback
+      ? `Changes requested: ${projectStatus.feedback}. Republishing will put it back into the review queue.`
+      : 'Your Aquarium submission was reviewed and changes were requested. Republishing will put it back into the review queue.'
+
+    toast(message, {
+      id: CHANGES_REQUESTED_TOAST_ID,
+      duration: Number.POSITIVE_INFINITY,
+      icon: '⚠️',
+    })
+
+    return () => {
+      toast.dismiss(CHANGES_REQUESTED_TOAST_ID)
+    }
+  }, [hasChangesRequested, projectStatus?.feedback])
+
+  const onboardingStatus =
+    settingsValues.app.onboardingStatus.current ||
+    settingsValues.app.onboardingStatus.default
+
+  useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
 
   useEngineConnectionSubscriptions()
 
@@ -207,14 +240,13 @@ export function OpenedProject() {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
+  const href = 'href' in location ? location.href : ''
+
   // Show a custom toast to users if they haven't done the onboarding
   // and they're on the web
   useEffect(() => {
-    const onboardingStatus =
-      settingsValues.app.onboardingStatus.current ||
-      settingsValues.app.onboardingStatus.default
     const needsOnboarded =
-      !isDesktop() && // Only show if we're in the browser,
+      !window.electron &&
       authToken && // we're logged in,
       searchParams.size === 0 && // we haven't come via a website "try in browser" link,
       needsToOnboard(location, onboardingStatus) // and we have an uninitialized onboarding status.
@@ -226,7 +258,6 @@ export function OpenedProject() {
             onboardingStatus: settingsValues.app.onboardingStatus.current,
             navigate,
             kclManager,
-            theme: getResolvedTheme(settingsValues.app.theme.current),
             accountUrl: withSiteBaseURL('/account'),
             systemIOActor,
             settingsActor,
@@ -239,10 +270,11 @@ export function OpenedProject() {
         }
       )
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    settingsValues.app.onboardingStatus,
-    settingsValues.app.theme,
-    location,
+    settingsValues.app.onboardingStatus.current,
+    settingsValues.app.theme.current,
+    href,
     navigate,
     searchParams.size,
     authToken,
@@ -288,22 +320,11 @@ export function OpenedProject() {
     }
   }, [])
 
-  const experimentalFeaturesLevel =
-    kclManager.fileSettings.experimentalFeatures ??
-    DEFAULT_EXPERIMENTAL_FEATURES
-  const experimentalFeaturesLocalStatusBarItems: StatusBarItemType[] =
-    experimentalFeaturesLevel.type !== 'Deny'
-      ? [
-          {
-            id: 'experimental-features',
-            component: ExperimentalFeaturesMenu,
-          },
-        ]
-      : []
-
   const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
     () =>
-      getOpenPanes({ rootLayout: layout }).includes(DefaultLayoutPaneID.TTC)
+      getOpenPanes({ rootLayout: layout.signal.value }).includes(
+        DefaultLayoutPaneID.TTC
+      )
         ? [
             {
               id: 'zookeeper-credits',
@@ -311,7 +332,7 @@ export function OpenedProject() {
             },
           ]
         : [],
-    [layout]
+    [layout.signal.value]
   )
 
   const undoRedoButtons = useMemo(
@@ -341,24 +362,22 @@ export function OpenedProject() {
         <div className="relative flex items-center flex-col">
           <AppHeader
             className="transition-opacity transition-duration-75"
-            project={loaderData}
+            project={project?.projectIORefSignal.value}
+            file={project?.executingFileEntry.value}
             enableMenu={true}
             nativeFileMenuCreated={nativeFileMenuCreated}
             projectMenuChildren={undoRedoButtons}
-          >
-            <CommandBarOpenButton />
-            <ShareButton />
-          </AppHeader>
+          />
         </div>
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
-            layout={layout || defaultLayout}
-            getLayout={getLayout}
-            setLayout={setLayout}
+            layout={layout.signal.value || defaultLayout}
+            getLayout={layout.get}
+            setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
             actionLibrary={defaultActionLibrary}
-            showDebugPanel={settingsValues.app.showDebugPanel.current}
+            showDebugPanel={settingsValues.debug.showPanel.current}
             notifications={notifications}
             artifactGraph={kclManager.artifactGraph}
           />
@@ -366,11 +385,18 @@ export function OpenedProject() {
         <StatusBar
           globalItems={[
             networkHealthStatus,
-            ...(isDesktop() ? [networkMachineStatus] : []),
-            ...defaultGlobalStatusBarItems({ location, filePath }),
+            ...(isDesktop() && machineApiEnabled ? [networkMachineStatus] : []),
+            ...defaultGlobalStatusBarItems({
+              autoUpdateDownloadProgress,
+              autoUpdateReady,
+              onRestartToUpdate: () => {
+                window.electron?.appRestart()
+              },
+            }),
+            ...registryGlobalStatusBarItems,
           ]}
           localItems={[
-            ...(getSettings().app.showDebugPanel.current
+            ...(settingsValues.debug.showModelingMachineState.current
               ? ([
                   {
                     id: 'modeling-state',
@@ -385,24 +411,7 @@ export function OpenedProject() {
                   },
                 ] satisfies StatusBarItemType[])
               : []),
-            {
-              id: 'selection',
-              'data-testid': 'selection-status',
-              element: 'text',
-              label:
-                getSelectionTypeDisplayText(
-                  kclManager.astSignal.value,
-                  modelingState.context.selectionRanges
-                ) ?? 'No selection',
-              toolTip: {
-                children: 'Currently selected geometry',
-              },
-            },
-            {
-              id: 'units',
-              component: UnitsMenu,
-            },
-            ...experimentalFeaturesLocalStatusBarItems,
+            ...registryLocalStatusBarItems,
             ...zookeeperLocalStatusBarItems,
             ...defaultLocalStatusBarItems,
           ]}

@@ -1566,6 +1566,7 @@ description: Artifact commands multi_body_multi_tool_subtract.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     }

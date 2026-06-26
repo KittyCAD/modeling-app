@@ -1,17 +1,47 @@
-use std::{collections::HashMap, fs, path::Path};
+use std::collections::HashMap;
+use std::fs;
+use std::path::Path;
+use std::path::PathBuf;
 
 use anyhow::Result;
 use serde_json::json;
 use tokio::task::JoinSet;
 
-use super::kcl_doc::{ConstData, DocData, ExampleProperties, FnData, ModData, TyData};
+use super::kcl_doc::ConstData;
+use super::kcl_doc::DocCategory;
+use super::kcl_doc::DocData;
+use super::kcl_doc::ExampleProperties;
+use super::kcl_doc::FnData;
+use super::kcl_doc::ModData;
+use super::kcl_doc::Properties;
+use super::kcl_doc::TyData;
+use crate::ConnectionError;
 use crate::ExecutorContext;
+use crate::errors::ExecErrorWithState;
+use crate::util::RetryConfig;
+use crate::util::execute_with_retries;
 
 mod type_formatter;
+
+const STDLIB_LINK_PREFIX: &str = "/docs/kcl-std";
+const KCL_LANG_TYPES_LINK: &str = "/docs/kcl-lang/types";
+
+fn output_root() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../../docs/kcl-std")
+}
 
 fn escape_frontmatter_value(value: &str) -> String {
     // YAML frontmatter is double-quoted in templates, so escape backslashes and quotes.
     value.replace('\\', "\\\\").replace('"', "\\\"")
+}
+
+fn check_deprecation_attrs(qual_name: &str, props: &Properties) -> Result<()> {
+    if props.deprecated && props.deprecated_since.is_some() {
+        return Err(anyhow::anyhow!(
+            "{qual_name} has both `deprecated` and `deprecated_since` set; only one may be specified"
+        ));
+    }
+    Ok(())
 }
 
 fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
@@ -90,6 +120,15 @@ fn init_handlebars() -> Result<handlebars::Handlebars<'static>> {
     Ok(hbs)
 }
 
+fn write_doc_output(relative_file_name: &str, output: &str) -> Result<()> {
+    let path = output_root().join(format!("{relative_file_name}.md"));
+    if let Some(parent) = path.parent() {
+        fs::create_dir_all(parent)?;
+    }
+    expectorate::assert_contents(path, output);
+    Ok(())
+}
+
 fn generate_index(kcl_lib: &ModData) -> Result<()> {
     let hbs = init_handlebars()?;
 
@@ -101,21 +140,30 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
     let mut types = HashMap::new();
     types.insert("Primitive types".to_owned(), Vec::new());
 
+    let mut module_properties: HashMap<String, Properties> = HashMap::new();
+    module_properties.insert(kcl_lib.qual_name.clone(), kcl_lib.properties.clone());
+    for d in kcl_lib.all_docs() {
+        if let DocData::Mod(m) = d {
+            module_properties.insert(m.qual_name.clone(), m.properties.clone());
+        }
+    }
+
     for d in kcl_lib.all_docs() {
         if d.hide() {
             continue;
         }
 
-        let group = match d {
-            DocData::Fn(_) => functions.entry(d.mod_name()).or_default(),
-            DocData::Ty(_) => types.entry(d.mod_name()).or_default(),
-            DocData::Const(_) => constants.entry(d.mod_name()).or_default(),
-            DocData::Mod(_) => continue,
+        let group = match d.doc_category() {
+            DocCategory::Functions => functions.entry(d.mod_name()).or_default(),
+            DocCategory::Constants => constants.entry(d.mod_name()).or_default(),
+            DocCategory::Modules => continue,
+            DocCategory::Types => types.entry(d.mod_name()).or_default(),
         };
 
         group.push((
             d.preferred_name().to_owned(),
-            format!("/docs/kcl-std/{}", d.file_name()),
+            format!("{STDLIB_LINK_PREFIX}/{}", d.file_name()),
+            d.is_experimental(),
         ));
     }
 
@@ -123,12 +171,15 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut fns)| {
             fns.sort();
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
-                "items": fns.into_iter().map(|(n, f)| json!({
+                "experimental": experimental,
+                "items": fns.into_iter().map(|(n, f, e)| json!({
                     "name": n,
                     "file_name": f,
+                    "experimental": e,
                 })).collect::<Vec<_>>(),
             });
             (m, val)
@@ -141,12 +192,15 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut consts)| {
             consts.sort();
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": format!("/docs/kcl-std/modules/{}", m.replace("::", "-")),
-                "items": consts.into_iter().map(|(n, f)| json!({
+                "experimental": experimental,
+                "items": consts.into_iter().map(|(n, f, e)| json!({
                     "name": n,
                     "file_name": f,
+                    "experimental": e,
                 })).collect::<Vec<_>>(),
             });
             (m, val)
@@ -159,17 +213,20 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         .into_iter()
         .map(|(m, mut tys)| {
             let file_name = if m == "Primitive types" {
-                "/docs/kcl-lang/types".to_owned()
+                KCL_LANG_TYPES_LINK.to_owned()
             } else {
-                format!("/docs/kcl-std/modules/{}", m.replace("::", "-"))
+                format!("{STDLIB_LINK_PREFIX}/modules/{}", m.replace("::", "-"))
             };
             tys.sort();
+            let experimental = module_properties.get(&m).is_some_and(|p| p.experimental);
             let val = json!({
                 "name": m,
                 "file_name": file_name,
-                "items": tys.into_iter().map(|(n, f)| json!({
+                "experimental": experimental,
+                "items": tys.into_iter().map(|(n, f, e)| json!({
                     "name": n,
                     "file_name": f,
+                    "experimental": e,
                 })).collect::<Vec<_>>(),
             });
             (m, val)
@@ -182,11 +239,12 @@ fn generate_index(kcl_lib: &ModData) -> Result<()> {
         "functions": functions_data,
         "consts": consts_data,
         "types": types_data,
+        "types_overview_link": KCL_LANG_TYPES_LINK,
     });
 
     let output = hbs.render("index", &data)?;
 
-    expectorate::assert_contents("../../docs/kcl-std/index.md", &output);
+    write_doc_output("index", &output)?;
 
     Ok(())
 }
@@ -232,6 +290,8 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
         return Ok(());
     }
 
+    check_deprecation_attrs(&ty.qual_name, &ty.properties)?;
+
     let hbs = init_handlebars()?;
 
     let examples: Vec<serde_json::Value> = ty
@@ -245,16 +305,17 @@ fn generate_type_from_kcl(ty: &TyData, file_name: String, example_name: String, 
         "name": ty.preferred_name,
         "module": mod_name_std(&ty.module_name),
         "definition": ty.alias.as_ref().map(|t| format!("type {} = {t}", ty.preferred_name)),
-        "summary": ty.summary,
-        "description": ty.description,
+        "summary": ty.summary.clone(),
+        "description": ty.description.clone(),
         "deprecated": ty.properties.deprecated,
+        "deprecated_since": ty.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": ty.properties.experimental,
         "examples": examples,
     });
 
     let output = hbs.render("kclType", &data)?;
     let output = cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
+    write_doc_output(&file_name, &output)?;
 
     Ok(())
 }
@@ -265,7 +326,12 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
             .children
             .iter()
             .filter(|(k, _)| k.starts_with(namespace))
-            .map(|(_, v)| (v.preferred_name().to_owned(), v.file_name()))
+            .map(|(_, v)| {
+                (
+                    v.preferred_name().to_owned(),
+                    format!("{STDLIB_LINK_PREFIX}/{}", v.file_name()),
+                )
+            })
             .collect();
 
         items.sort();
@@ -288,15 +354,16 @@ fn generate_mod_from_kcl(m: &ModData, file_name: String) -> Result<()> {
     let data = json!({
         "name": m.name,
         "module": mod_name_std(&m.module_name),
-        "summary": m.summary,
-        "description": m.description,
+        "summary": m.summary.clone(),
+        "description": m.description.clone(),
+        "experimental": m.properties.experimental,
         "modules": modules,
         "functions": functions,
         "types": types,
     });
 
     let output = hbs.render("module", &data)?;
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
+    write_doc_output(&file_name, &output)?;
 
     Ok(())
 }
@@ -320,6 +387,8 @@ fn generate_function_from_kcl(
         return Ok(());
     }
 
+    check_deprecation_attrs(&function.qual_name, &function.properties)?;
+
     let hbs = init_handlebars()?;
 
     let examples: Vec<serde_json::Value> = function
@@ -328,28 +397,38 @@ fn generate_function_from_kcl(
         .enumerate()
         .filter_map(|(index, example)| generate_example(index, &example.0, &example.1, &example_name))
         .collect();
-    let args = function.args.iter().map(|arg| {
-        let docs = arg.docs.clone();
-        if let Some(docs) = &docs {
-            // We deliberately truncate to one line in the template so that if we are using the docs
-            // from the type, then we only take the summary. However, if there's a newline in the 
-            // arg docs, then they would get truncated unintentionally.
-            assert!(!docs.contains('\n'), "Arg docs will get truncated");
-        };
-        json!({
-            "name": arg.name,
-            "type_": arg.ty,
-            "description": docs.or_else(|| arg.ty.as_ref().and_then(|t| docs_for_type(t, kcl_std))).unwrap_or_default(),
-            "required": arg.kind.required(),
+    let args = function
+        .args
+        .iter()
+        .map(|arg| {
+            let docs = arg.docs.clone();
+            if let Some(docs) = &docs {
+                // We deliberately truncate to one line in the template so that if we are using the docs
+                // from the type, then we only take the summary. However, if there's a newline in the
+                // arg docs, then they would get truncated unintentionally.
+                assert!(!docs.contains('\n'), "Arg docs will get truncated");
+            };
+            json!({
+                "name": arg.name,
+                "type_": arg.ty,
+                "description": docs
+                        .or_else(|| arg.ty.as_ref().and_then(|t| docs_for_type(t, kcl_std)))
+                        .unwrap_or_default(),
+                "required": arg.kind.required(),
+                "experimental": arg.experimental,
+                "deprecated": arg.deprecated,
+                "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
+            })
         })
-    }).collect::<Vec<_>>();
+        .collect::<Vec<_>>();
 
     let data = json!({
         "name": function.preferred_name,
         "module": mod_name_std(&function.module_name),
-        "summary": function.summary,
-        "description": function.description,
+        "summary": function.summary.clone(),
+        "description": function.description.clone(),
         "deprecated": function.properties.deprecated,
+        "deprecated_since": function.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": function.properties.experimental,
         "fn_signature": function.preferred_name.clone() + &function.fn_signature(),
         "examples": examples,
@@ -364,7 +443,7 @@ fn generate_function_from_kcl(
 
     let output = hbs.render("function", &data)?;
     let output = &cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), output);
+    write_doc_output(&file_name, output)?;
 
     Ok(())
 }
@@ -386,6 +465,9 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     if cnst.properties.doc_hidden {
         return Ok(());
     }
+
+    check_deprecation_attrs(&cnst.qual_name, &cnst.properties)?;
+
     let hbs = init_handlebars()?;
 
     let examples: Vec<serde_json::Value> = cnst
@@ -398,19 +480,22 @@ fn generate_const_from_kcl(cnst: &ConstData, file_name: String, example_name: St
     let data = json!({
         "name": cnst.preferred_name,
         "module": mod_name_std(&cnst.module_name),
-        "summary": cnst.summary,
-        "description": cnst.description,
+        "summary": cnst.summary.clone(),
+        "description": cnst.description.clone(),
         "deprecated": cnst.properties.deprecated,
+        "deprecated_since": cnst.properties.deprecated_since.as_ref().map(ToString::to_string),
         "experimental": cnst.properties.experimental,
         "type_": cnst.ty,
-        "type_desc": cnst.ty.as_ref().map(|t| docs_for_type(t, kcl_std).unwrap_or_default()),
+        "type_desc": cnst.ty.as_ref().map(|t| {
+            docs_for_type(t, kcl_std).unwrap_or_default()
+        }),
         "examples": examples,
         "value": cnst.value.as_deref().unwrap_or(""),
     });
 
     let output = hbs.render("const", &data)?;
     let output = cleanup_types(&output, kcl_std);
-    expectorate::assert_contents(format!("../../docs/kcl-std/{file_name}.md"), &output);
+    write_doc_output(&file_name, &output)?;
 
     Ok(())
 }
@@ -538,9 +623,8 @@ fn cleanup_type_string(input: &str, fmt_for_text: bool, kcl_std: &ModData) -> St
 
 #[test]
 fn test_generate_stdlib_markdown_docs() {
-    let kcl_std = crate::docs::kcl_doc::walk_prelude();
+    let kcl_std = crate::docs::kcl_doc::walk_stdlib();
 
-    // Generate the index which is the table of contents.
     generate_index(&kcl_std).unwrap();
 
     for d in kcl_std.all_docs() {
@@ -571,7 +655,7 @@ async fn test_code_in_topics() {
             }
 
             let f = path.display().to_string();
-            join_set.spawn(async move { (format!("{f}, example {i}"), run_example(&eg).await) });
+            join_set.spawn(async move { (format!("{f}, example {i}"), run_example_with_retries(&eg).await) });
         }
     }
     let results: Vec<_> = join_set
@@ -612,13 +696,26 @@ fn find_examples(text: &str, filename: &Path) -> Vec<(String, String)> {
     result
 }
 
-async fn run_example(text: &str) -> Result<()> {
+/// Execute the example code, with retries if we get a transient error from the
+/// engine.
+async fn run_example_with_retries(text: &str) -> Result<()> {
     let program = crate::Program::parse_no_errs(text)?;
-    let ctx = ExecutorContext::new_with_default_client().await?;
-    let mut exec_state = crate::execution::ExecState::new(&ctx);
-    ctx.run(&program, &mut exec_state).await?;
-    ctx.close().await;
+    execute_with_retries(&RetryConfig::default(), || run_example(&program)).await?;
     Ok(())
+}
+
+async fn run_example(program: &crate::Program) -> Result<(), ExecErrorWithState> {
+    let ctx = ExecutorContext::new_with_default_client()
+        .await
+        .map_err(ConnectionError::CouldNotMakeClient)?;
+    let mut exec_state = crate::execution::ExecState::new(&ctx);
+    let result = ctx
+        .run(program, &mut exec_state)
+        .await
+        .map_err(|err| ExecErrorWithState::new(err.into(), exec_state, None));
+    // Always close, even when there's an error.
+    ctx.close().await;
+    result.map(|_| ())
 }
 
 #[cfg(test)]
@@ -627,7 +724,7 @@ mod tests {
 
     #[test]
     fn test_cleanup_type_string() {
-        let kcl_std = crate::docs::kcl_doc::walk_prelude();
+        let kcl_std = crate::docs::kcl_doc::walk_stdlib();
 
         struct Test {
             input: &'static str,
@@ -674,7 +771,7 @@ mod tests {
         ];
         for test in tests {
             let actual_text = cleanup_type_string(test.input, true, &kcl_std);
-            assert_eq!(actual_text, test.expected_text, "Failed text");
+            assert_eq!(actual_text, test.expected_text, "Failed formatted text");
             let actual_no_text = cleanup_type_string(test.input, false, &kcl_std);
             assert_eq!(actual_no_text, test.expected_no_text, "Failed no text");
         }

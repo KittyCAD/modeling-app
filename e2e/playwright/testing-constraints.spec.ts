@@ -68,7 +68,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
     await page.mouse.move(startXPx + PUR * 15, 250 - PUR * 10)
     await expect
       .poll(async () => {
-        await page.keyboard.press('Escape', { delay: 500 })
+        await page.keyboard.press('Shift+Escape', { delay: 500 })
         return page.getByRole('button', { name: 'Exit Sketch' }).isVisible()
       })
       .toBe(false)
@@ -97,7 +97,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
     await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -156,7 +156,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4], tag = $seg01)').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -191,8 +191,10 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
         const addVariable = testName === 'Add variable'
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
@@ -267,7 +269,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -297,8 +299,10 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
         const addVariable = testName === 'Add variable'
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
@@ -377,7 +381,7 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
         await page.setBodyDimensions({ width: 1200, height: 800 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [20, 20])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -415,8 +419,10 @@ test.describe('Testing constraints', { tag: '@desktop' }, () => {
           'create-new-variable-checkbox'
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
@@ -496,7 +502,7 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.editSketch(0)
 
         const [line1, line3] = await Promise.all([
@@ -524,8 +530,10 @@ profile001 = startProfile(sketch001, at = [-70, -10])
           'create-new-variable-checkbox'
         )
         const isChecked = await createNewVariableCheckbox.isChecked()
-        XOR(isChecked, addVariable) && // XOR because no need to click the checkbox if the state is already correct
-          (await createNewVariableCheckbox.click())
+        // XOR because no need to click the checkbox if the state is already correct
+        if (XOR(isChecked, addVariable)) {
+          await createNewVariableCheckbox.click()
+        }
 
         await page
           .getByRole('button', { name: 'Add constraining value' })
@@ -596,7 +604,7 @@ profile001 = startProfile(sketch001, at = [-70, -10])
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -686,7 +694,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await editor.scrollToText('line(end = [74.36, 130.4])', true)
         await page.getByText('line(end = [74.36, 130.4])').click()
@@ -767,7 +775,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -823,7 +831,7 @@ part002 = startSketchOn(XZ)
     const cases = [
       {
         codeAfter: `|> angledLine(angle = 73deg, length = segLen(seg01))`,
-        constraintName: 'Equal Length',
+        constraintName: 'Equal',
       },
       {
         codeAfter: `|> angledLine(angle = segAng(seg01), length = 102.05)`,
@@ -862,7 +870,7 @@ part002 = startSketchOn(XZ)
         await page.setBodyDimensions({ width: 1000, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await page.getByText('line(end = [74.36, 130.4])').click()
         await page.getByRole('button', { name: 'Edit Sketch' }).click()
@@ -892,7 +900,7 @@ part002 = startSketchOn(XZ)
         await expect(page.locator('.cm-content')).toContainText(codeAfter)
         // expect the string 'seg01' to appear twice in '.cm-content' the tag segment and referencing the tag
         const content = await page.locator('.cm-content').innerText()
-        await expect(content.match(/seg01/g)).toHaveLength(2)
+        expect(content.match(/seg01/g)).toHaveLength(2)
         // check there are still 2 cursors (they should stay on the same lines as before constraint was applied)
         await expect(page.locator('.cm-cursor')).toHaveCount(2)
         // check actives lines
@@ -943,7 +951,7 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.editSketch(0)
 
         const [convertedAxisClick] = scene.makeMouseHelpers(
@@ -984,14 +992,14 @@ profile001 = startProfile(sketch001, at = [-47.54, -26.74])
 test.describe('Electron constraint tests', () => {
   test('Able to double click label to set constraint', async ({
     page,
-    context,
     homePage,
     scene,
     editor,
     toolbar,
     cmdBar,
+    folderSetupFn,
   }) => {
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'test-sample')
       await fsp.mkdir(bracketDir, { recursive: true })
       await fsp.writeFile(
@@ -1021,7 +1029,7 @@ test.describe('Electron constraint tests', () => {
         sortBy: 'last-modified-desc',
       })
       await homePage.openProject('test-sample')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     async function clickOnFirstSegmentLabel() {

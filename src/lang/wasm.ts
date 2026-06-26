@@ -1,14 +1,13 @@
 import type { ArtifactGraph as RustArtifactGraph } from '@rust/kcl-lib/bindings/Artifact'
 import type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
-import type { CompilationError } from '@rust/kcl-lib/bindings/CompilationError'
+import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
-import type { CoreDumpInfo } from '@rust/kcl-lib/bindings/CoreDumpInfo'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import type { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
-import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
 import type { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
@@ -16,12 +15,15 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { NodePath } from '@rust/kcl-lib/bindings/NodePath'
 import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
+import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { KCLError } from '@src/lang/errors'
 import {
   ARG_INDEX_FIELD,
@@ -35,23 +37,22 @@ import {
 } from '@src/lang/std/artifactGraph'
 import type { Coords2d } from '@src/lang/util'
 import { isTopLevelModule } from '@src/lang/util'
-import type { CoreDumpManager } from '@src/lib/coredump'
-import openWindow from '@src/lib/openWindow'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { Reason, err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
 import { isArray } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
-import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 
 export type { ArrayExpression } from '@rust/kcl-lib/bindings/ArrayExpression'
 export type {
   Artifact,
   Cap as CapArtifact,
   CodeRef,
+  PrimitiveEdge as PrimitiveEdgeArtifact,
   EdgeCut,
+  GdtAnnotationArtifact,
+  PrimitiveFace as PrimitiveFaceArtifact,
   Path as PathArtifact,
   Plane as PlaneArtifact,
   Segment as SegmentArtifact,
@@ -76,6 +77,7 @@ export type { Name } from '@rust/kcl-lib/bindings/Name'
 export type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 export type { ObjectExpression } from '@rust/kcl-lib/bindings/ObjectExpression'
 export type { ObjectProperty } from '@rust/kcl-lib/bindings/ObjectProperty'
+export type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 export type { Parameter } from '@rust/kcl-lib/bindings/Parameter'
 export type { PipeExpression } from '@rust/kcl-lib/bindings/PipeExpression'
 export type { PipeSubstitution } from '@rust/kcl-lib/bindings/PipeSubstitution'
@@ -110,7 +112,7 @@ export type SyntaxType =
   | 'SketchBlock'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
-export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+export type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
 export type { Path } from '@rust/kcl-lib/bindings/Path'
 export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 export type { Solid } from '@rust/kcl-lib/bindings/Solid'
@@ -139,8 +141,8 @@ export function defaultNodePath(): NodePath {
 }
 
 const splitErrors = (
-  input: CompilationError[]
-): { errors: CompilationError[]; warnings: CompilationError[] } => {
+  input: CompilationIssue[]
+): { errors: CompilationIssue[]; warnings: CompilationIssue[] } => {
   let errors = []
   let warnings = []
   for (const i of input) {
@@ -156,13 +158,13 @@ const splitErrors = (
 
 export class ParseResult {
   program: Node<Program> | null
-  errors: CompilationError[]
-  warnings: CompilationError[]
+  errors: CompilationIssue[]
+  warnings: CompilationIssue[]
 
   constructor(
     program: Node<Program> | null,
-    errors: CompilationError[],
-    warnings: CompilationError[]
+    errors: CompilationIssue[],
+    warnings: CompilationIssue[]
   ) {
     this.program = program
     this.errors = errors
@@ -179,8 +181,8 @@ class SuccessParseResult extends ParseResult {
 
   constructor(
     program: Node<Program>,
-    errors: CompilationError[],
-    warnings: CompilationError[]
+    errors: CompilationIssue[],
+    warnings: CompilationIssue[]
   ) {
     super(program, errors, warnings)
     this.program = program
@@ -198,7 +200,7 @@ export const parse = (
   if (err(code)) return code
 
   try {
-    const parsed: [Node<Program>, CompilationError[]] =
+    const parsed: [Node<Program>, CompilationIssue[]] =
       instance.parse_wasm(code)
     let errs = splitErrors(parsed[1])
     return new ParseResult(parsed[0], errs.errors, errs.warnings)
@@ -213,7 +215,7 @@ export const parse = (
       [],
       [],
       {},
-      [],
+      emptyOperationsByModule(),
       defaultArtifactGraph(),
       {},
       null
@@ -238,7 +240,17 @@ export function assertParse(code: string, instance: ModuleType): Node<Program> {
   return result.program
 }
 
-export type VariableMap = { [key in string]?: KclValue }
+export type VariableMap = { [key in string]?: KclValueView }
+
+export interface OperationsByModule {
+  map: { [moduleId: number]: Operation[] }
+}
+
+export interface ExecCallbacks {
+  onOperation(args: OperationCallbackArgs): void
+}
+
+export const ROOT_MODULE_ID = 0
 
 export type PathToNode = [string | number, string][]
 
@@ -256,12 +268,37 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
   typeof input[0][1] === 'string'
 
 export interface ExecState {
-  variables: { [key in string]?: KclValue }
-  operations: Operation[]
+  variables: { [key in string]?: KclValueView }
+  operations: OperationsByModule
   artifactGraph: ArtifactGraph
-  errors: CompilationError[]
+  issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
+}
+
+export function emptyOperationsByModule(): OperationsByModule {
+  return { map: {} }
+}
+
+export function applyOperationCallbackToOperationsByModule(input: {
+  operationsByModule: OperationsByModule
+  callback: OperationCallbackArgs
+}): OperationsByModule {
+  const {
+    operationsByModule,
+    callback: { moduleId, operation, index },
+  } = input
+  const nextOperations = [
+    ...(operationsByModule.map[moduleId] ?? []),
+  ] as Operation[]
+  nextOperations[index] = operation
+
+  return {
+    map: {
+      ...operationsByModule.map,
+      [moduleId]: nextOperations,
+    },
+  }
 }
 
 /**
@@ -271,12 +308,70 @@ export interface ExecState {
 export function emptyExecState(): ExecState {
   return {
     variables: {},
-    operations: [],
+    operations: emptyOperationsByModule(),
     artifactGraph: defaultArtifactGraph(),
-    errors: [],
+    issues: [],
     filenames: [],
     defaultPlanes: null,
   }
+}
+
+export function getOperationsForModule(
+  operationsByModule: OperationsByModule | undefined,
+  moduleId: number | undefined
+): Operation[] {
+  if (moduleId === undefined) {
+    return []
+  }
+
+  return operationsByModule?.map[moduleId] ?? []
+}
+
+export function getRootOperations(
+  operationsByModule: OperationsByModule | undefined
+): Operation[] {
+  return getOperationsForModule(operationsByModule, ROOT_MODULE_ID)
+}
+
+export function getAllOperations(
+  operationsByModule: OperationsByModule | undefined
+): Operation[] {
+  return Object.values(operationsByModule?.map ?? {}).flatMap(
+    (operations) => operations ?? []
+  )
+}
+
+export function getOperationsForCurrentFile(input: {
+  operationsByModule: OperationsByModule | undefined
+  filenames: { [x: number]: ModulePath | undefined }
+  currentPath: string
+}): Operation[] {
+  const { operationsByModule, filenames, currentPath } = input
+  const moduleId = getCurrentModuleId(filenames, currentPath)
+
+  return getOperationsForModule(operationsByModule, moduleId ?? ROOT_MODULE_ID)
+}
+
+export function getCurrentModuleId(
+  filenames: { [x: number]: ModulePath | undefined },
+  currentPath: string
+): number | undefined {
+  const moduleId = Object.entries(filenames).find(([, modulePath]) => {
+    return modulePath?.type === 'Local' && modulePath.value === currentPath
+  })?.[0]
+
+  return moduleId === undefined ? undefined : Number(moduleId)
+}
+
+export function countOperations(
+  operationsByModule: OperationsByModule | undefined
+): number {
+  return Object.values(operationsByModule?.map ?? {}).reduce(
+    (count, operations) => {
+      return count + (operations?.length ?? 0)
+    },
+    0
+  )
 }
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
@@ -286,7 +381,7 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifactGraph,
-    errors: execOutcome.errors,
+    issues: execOutcome.issues,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
   }
@@ -315,7 +410,7 @@ function artifactGraphFromRust(
 }
 
 export function sketchFromKclValueOptional(
-  obj: KclValue | undefined,
+  obj: KclValueView | undefined,
   varName: string | null
 ): Sketch | Reason {
   if (obj?.type === 'Sketch') return obj.value
@@ -347,7 +442,7 @@ export function sketchFromKclValueOptional(
 }
 
 export function sketchFromKclValue(
-  obj: KclValue | undefined,
+  obj: KclValueView | undefined,
   varName: string | null
 ): Sketch | Error {
   const result = sketchFromKclValueOptional(obj, varName)
@@ -442,10 +537,15 @@ export const recast = (ast: Program, instance: ModuleType): string | Error => {
 export function formatNumberLiteral(
   value: number,
   suffix: NumericSuffix,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  decimals?: number
 ): string | Error {
   try {
-    return wasmInstance.format_number_literal(value, JSON.stringify(suffix))
+    return wasmInstance.format_number_literal(
+      value,
+      JSON.stringify(suffix),
+      decimals
+    )
   } catch (e) {
     return new Error(
       `Error formatting number literal: value=${value}, suffix=${suffix}`,
@@ -706,38 +806,6 @@ export function getTangentialArcToInfo({
   }
 }
 
-export async function coreDump(
-  coreDumpManager: CoreDumpManager,
-  wasmInstancePromise: Promise<ModuleType>,
-  openGithubIssue: boolean = false
-): Promise<CoreDumpInfo> {
-  try {
-    console.warn('CoreDump: Initializing core dump')
-    const wasmInstance = await wasmInstancePromise
-    const dump: CoreDumpInfo = await wasmInstance.coredump(coreDumpManager)
-    /* NOTE: this console output of the coredump should include the field
-       `github_issue_url` which is not in the uploaded coredump file.
-       `github_issue_url` is added after the file is uploaded
-       and is only needed for the openWindow operation which creates
-       a new GitHub issue for the user.
-     */
-    if (openGithubIssue && dump.github_issue_url) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      openWindow(dump.github_issue_url)
-    } else {
-      console.error(
-        'github_issue_url undefined. Unable to create GitHub issue for coredump.'
-      )
-    }
-    console.log('CoreDump: final coredump', dump)
-    console.log('CoreDump: final coredump JSON', JSON.stringify(dump))
-    return dump
-  } catch (e: any) {
-    console.error('CoreDump: error', e)
-    return Promise.reject(new Error(`Error getting core dump: ${e}`))
-  }
-}
-
 export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
   const pathToNode: PathToNode = []
   for (const step of nodePath.steps) {
@@ -871,8 +939,15 @@ export function pathToNodeFromRustNodePath(nodePath: NodePath): PathToNode {
       case 'AscribedExpressionExpr':
         pathToNode.push(['expr', 'AscribedExpression'])
         break
-      case 'SketchBlock':
-        // TODO: sketch-api: implement arguments and body.
+      case 'SketchBlockArgs':
+        pathToNode.push(['arguments', 'SketchBlockArgs'])
+        break
+      case 'SketchBlockBody':
+        pathToNode.push(['body', 'SketchBlockBody'])
+        break
+      case 'SketchBlockBodyItem':
+        pathToNode.push(['items', 'SketchBlockBodyItem'])
+        pathToNode.push([step.index, 'index'])
         break
       case 'SketchVar':
         // TODO: sketch-api: implement initial.
@@ -967,6 +1042,23 @@ export function changeDefaultUnits(
 }
 
 /**
+ * Change the KCL version setting for the kcl file.
+ * @returns the new kcl string with the updated settings.
+ */
+export function changeKclVersion(
+  kcl: string,
+  version: string | null,
+  wasmInstance: ModuleType
+): string | Error {
+  try {
+    return wasmInstance.change_kcl_version(kcl, JSON.stringify(version))
+  } catch (e) {
+    console.error('Caught error changing kcl settings', e)
+    return new Error('Caught error changing kcl settings', { cause: e })
+  }
+}
+
+/**
  * Change the meta settings for the kcl file.
  * @returns the new kcl string with the updated settings.
  */
@@ -1011,6 +1103,10 @@ export function isKclEmptyOrOnlySettings(
  */
 export function getKclVersion(wasmInstance: ModuleType): string {
   return wasmInstance.get_kcl_version()
+}
+
+export function getSketchCheckpointLimit(wasmInstance: ModuleType): number {
+  return wasmInstance.sketch_checkpoint_limit()
 }
 
 /**

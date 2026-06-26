@@ -2,17 +2,17 @@
 // A car wheel assembly with a rotor, tire, and lug nuts.
 // Categories: Automotive
 
-// Define units
-@settings(defaultLengthUnit = in)
+// Set units and version
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"
 
-// Import parts
-import "brake-caliper.kcl" as brakeCaliper
+// Import all parts into the assembly file
 import "brake-rotor.kcl" as brakeRotor
 import "car-tire.kcl" as carTire
 import "car-wheel.kcl" as carWheel
 import "lug-nut.kcl" as lugNut
+
 lugNut
   |> patternCircular3d(instances = lugCount, axis = Y, center = [0, 0, 0])

@@ -2,10 +2,11 @@ import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteW
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
 export type ProjectsCommandSchema = {
   'Import file from URL': {
     name: string
@@ -15,10 +16,16 @@ export type ProjectsCommandSchema = {
   }
 }
 
+function defaultEnableProjectDirectoryCommands() {
+  return typeof window !== 'undefined' && Boolean(window.electron)
+}
+
 export function createProjectCommands({
   systemIOActor,
+  enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  enableProjectDirectoryCommands?: boolean
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -58,9 +65,15 @@ export function createProjectCommands({
         options: () => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
+            const displayName = getProjectDisplayName(folder)
             options.push({
-              name: folder.name,
+              name:
+                displayName === folder.name
+                  ? displayName
+                  : `${displayName} (${folder.name})`,
               value: folder.name,
               isCurrent: false,
             })
@@ -122,6 +135,8 @@ export function createProjectCommands({
         options: () => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -167,6 +182,8 @@ export function createProjectCommands({
         options: () => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -185,7 +202,10 @@ export function createProjectCommands({
           const oldName = context.argumentsToSubmit.oldName as
             | string
             | undefined
-          return oldName || defaultProjectFolderNameSnapshot()
+          const folder = folderSnapshot()?.find((item) => item.name === oldName)
+          return folder
+            ? getProjectDisplayName(folder)
+            : oldName || defaultProjectFolderNameSnapshot()
         },
       },
     },
@@ -197,7 +217,6 @@ export function createProjectCommands({
     icon: 'file',
     description: 'Create a file',
     needsReview: true,
-    hideFromSearch: true,
     onSubmit: (record) => {
       if (record) {
         systemIOActor.send({
@@ -240,6 +259,8 @@ export function createProjectCommands({
         options: (_, _context) => {
           const folders = folderSnapshot()
           const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
           folders.forEach((folder) => {
             options.push({
               name: folder.name,
@@ -280,8 +301,7 @@ export function createProjectCommands({
     },
   }
 
-  /** No disk-writing commands are available in the browser */
-  const projectCommands = isDesktop()
+  const projectCommands = enableProjectDirectoryCommands
     ? [
         openProjectCommand,
         createProjectCommand,

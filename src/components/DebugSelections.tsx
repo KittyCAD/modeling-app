@@ -1,28 +1,31 @@
-import { useSingletons } from '@src/lib/boot'
-import { useMemo, useState } from 'react'
-import { uuidv4 } from '@src/lib/utils'
-import { processCodeMirrorRanges } from '@src/lib/selections'
-import { use } from 'react'
 import { EditorSelection } from '@codemirror/state'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
-  groupOperationTypeStreaks,
-  filterOperations,
-} from '@src/lib/operations'
+  ROOT_MODULE_ID,
+  countOperations,
+  emptyOperationsByModule,
+  getOperationsForModule,
+} from '@src/lang/wasm'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { useSingletons } from '@src/lib/boot'
+import {
+  filterOperations,
+  groupOperationTypeStreaks,
+} from '@src/lib/operations'
+import { processCodeMirrorRanges } from '@src/lib/selections'
+import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { reportRejection } from '@src/lib/trap'
+import { useMemo, useState } from 'react'
+import { use } from 'react'
 
-type SingletonDeps = Pick<
-  ReturnType<typeof useSingletons>,
-  'kclManager' | 'engineCommandManager' | 'sceneEntitiesManager'
->
+type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'kclManager'>
 
 async function clearSceneSelection(deps: SingletonDeps) {
-  await deps.engineCommandManager.sendSceneCommand({
+  await deps.kclManager.engineCommandManager.sendSceneCommand({
     type: 'modeling_cmd_req',
     cmd: {
       type: 'select_clear',
@@ -33,7 +36,7 @@ async function clearSceneSelection(deps: SingletonDeps) {
 
 // Pass in a list of scene ids to select in the 3d scene
 async function sceneSelection(ids: string[], deps: SingletonDeps) {
-  await deps.engineCommandManager.sendSceneCommand({
+  await deps.kclManager.engineCommandManager.sendSceneCommand({
     cmd_id: uuidv4(),
     type: 'modeling_cmd_req',
     cmd: {
@@ -48,7 +51,7 @@ function formatArtifactGraph(
   wasmInstance: ModuleType,
   deps: SingletonDeps
 ) {
-  const idsWithTypes = Array.from(artifactGraph).map(([key, artifact]) => {
+  const idsWithTypes = Array.from(artifactGraph).map(([_, artifact]) => {
     const type = artifact.type
     const id = artifact.id
     let codeRefToIds: string[] = []
@@ -119,7 +122,7 @@ function codeRangeToIds(
 ): string[] {
   if (!range) return []
 
-  const { kclManager, engineCommandManager, sceneEntitiesManager } = deps
+  const { kclManager } = deps
   const selections = {
     graphSelections: [
       {
@@ -151,8 +154,8 @@ function codeRangeToIds(
     artifactGraph: kclManager.artifactGraph,
     artifactIndex: kclManager.artifactIndex,
     systemDeps: {
-      engineCommandManager: engineCommandManager,
-      sceneEntitiesManager,
+      engineCommandManager: kclManager.engineCommandManager,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
       wasmInstance: wasmInstance,
     },
   })
@@ -179,7 +182,9 @@ function getEntityIdsFromCmds(
   selectAdds.forEach((event) => {
     if ('cmd' in event && 'type' in event.cmd && 'entities' in event.cmd) {
       const entities = event.cmd.entities
-      ids = ids.concat(entities)
+      ids = ids.concat(
+        entities.filter((e): e is string => typeof e === 'string')
+      )
     }
   })
   return ids
@@ -212,10 +217,10 @@ function generateOperationList(deps: SingletonDeps) {
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
   const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
-    return error.operations && error.operations.length > acc.length
+    return countOperations(error.operations) > countOperations(acc)
       ? error.operations
       : acc
-  }, [] as Operation[])
+  }, emptyOperationsByModule())
 
   const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
@@ -224,10 +229,12 @@ function generateOperationList(deps: SingletonDeps) {
     : kclManager.lastSuccessfulOperations
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList =
-    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
-      'VariableDeclaration',
-    ]) || []
+  const operationList = groupOperationTypeStreaks(
+    filterOperations(
+      getOperationsForModule(unfilteredOperationList, ROOT_MODULE_ID)
+    ),
+    ['VariableDeclaration']
+  )
 
   return operationList.flat()
 }
@@ -251,15 +258,12 @@ function computeOperationList(
 }
 
 export function DebugSelections() {
-  const { kclManager, engineCommandManager, sceneEntitiesManager } =
-    useSingletons()
+  const { kclManager } = useSingletons()
   const singletonDeps: SingletonDeps = useMemo(
     () => ({
       kclManager,
-      engineCommandManager,
-      sceneEntitiesManager,
     }),
-    [kclManager, engineCommandManager, sceneEntitiesManager]
+    [kclManager]
   )
   const [selectedId, _setSelectedId] = useState('')
   const [selectedRange, _setSelectedRange] = useState('')

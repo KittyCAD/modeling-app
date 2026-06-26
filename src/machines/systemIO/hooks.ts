@@ -1,62 +1,63 @@
-import type { FileEntry } from '@src/lib/project'
 import { type MlToolResult } from '@kittycad/lib'
+import { useApp } from '@src/lib/boot'
+import type { FileEntry } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import type { SystemIOActor } from '@src/lib/app'
-import { useSingletons } from '@src/lib/boot'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
+  type RequestedKCLFileDelete,
+  type SystemIOActor,
   SystemIOMachineEvents,
-  SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
-import {
-  type BillingActor,
-  BillingTransition,
-} from '@src/machines/billingMachine'
-import type { ConnectionManager } from '@src/network/connectionManager'
 
 export const useRequestedProjectName = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.requestedProjectName
   )
 }
 export const useRequestedFileName = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.requestedFileName)
 }
 export const useProjectDirectoryPath = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.projectDirectoryPath
   )
 }
 export const useFolders = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.folders)
 }
 export const useState = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state)
 }
 export const useCanReadWriteProjectDirectory = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(
     systemIOActor,
     (state) => state.context.canReadWriteProjectDirectory
   )
 }
 export const useHasListedProjects = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.hasListedProjects)
 }
 
+export const useLastOperation = () => {
+  const { systemIOActor } = useApp()
+  return useSelector(systemIOActor, (state) => state.context.lastOperation)
+}
+
 export const useClearURLParams = () => {
-  const { systemIOActor } = useSingletons()
+  const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.clearURLParams)
 }
 
@@ -73,13 +74,6 @@ export const useProjectIdToConversationId = (
         return
       }
       if (settings2.meta.id.current === uuidNIL) {
-        return
-      }
-      const systemIOActorSnapshot = systemIOActor.getSnapshot()
-      if (
-        systemIOActorSnapshot.value ===
-        SystemIOMachineStates.savingMlEphantConversations
-      ) {
         return
       }
       if (next.context.conversationId === undefined) {
@@ -107,17 +101,19 @@ export const useProjectIdToConversationId = (
   }, [settings2.meta.id.current])
 }
 
+export interface MlEphantNewFileRequestProps {
+  toolOutput: MlToolResult
+  projectNameCurrentlyOpened: string
+  fileFocusedOnInEditor?: FileEntry
+  filesToDelete?: RequestedKCLFileDelete[]
+  exchangeId?: number
+}
+
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
-  billingActor: BillingActor,
-  token: string,
   engineCommandManager: ConnectionManager,
-  fn: (
-    toolOutputTextToCad: MlToolResult,
-    projectNameCurrentlyOpened: string,
-    fileFocusedOnInEditor?: FileEntry
-  ) => void
+  fn: (props: MlEphantNewFileRequestProps) => void
 ) => {
   useEffect(() => {
     let lastId: number | undefined = undefined
@@ -136,16 +132,26 @@ export const useWatchForNewFileRequestsFromMlEphant = (
       // We don't know what project to write to, so do nothing.
       if (!next.context.projectNameCurrentlyOpened) return
 
-      fn(
-        lastResponse.tool_output.result,
-        next.context.projectNameCurrentlyOpened,
-        next.context.fileFocusedOnInEditor
+      const fileNamesToDelete = new Set(
+        lastExchange.responses.flatMap((response) => {
+          if (!('reasoning' in response)) {
+            return []
+          }
+          if (response.reasoning.type !== 'deleted_kcl_file') {
+            return []
+          }
+          return response.reasoning.file_name
+        })
       )
 
-      // TODO: Move elsewhere eventually, decouple from SystemIOActor
-      billingActor.send({
-        type: BillingTransition.Update,
-        apiToken: token,
+      fn({
+        toolOutput: lastResponse.tool_output.result,
+        projectNameCurrentlyOpened: next.context.projectNameCurrentlyOpened,
+        fileFocusedOnInEditor: next.context.fileFocusedOnInEditor,
+        filesToDelete: Array.from(fileNamesToDelete, (requestedFileName) => ({
+          requestedFileName,
+        })),
+        exchangeId: exchanges.length - 1,
       })
 
       // Clear selections since new model

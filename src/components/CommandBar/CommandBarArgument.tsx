@@ -7,11 +7,10 @@ import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
-import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
+import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { use } from 'react'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
@@ -58,6 +57,14 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
 
 export default CommandBarArgument
 
+function NoExecutingEditorWarning() {
+  return (
+    <p className="text-destroy-80">
+      No executing editor, this command input cannot be used.
+    </p>
+  )
+}
+
 function ArgumentInput({
   arg,
   stepBack,
@@ -67,8 +74,8 @@ function ArgumentInput({
   stepBack: () => void
   onSubmit: (event: any) => void
 }) {
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const app = useApp()
+  const executingEditor = app.project?.executingEditor.value
   // @ts-ignore
   switch (arg.inputType) {
     case 'options':
@@ -99,25 +106,39 @@ function ArgumentInput({
         />
       )
     case 'selection':
-      return (
+      return executingEditor ? (
         <CommandBarSelectionInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          executingEditor={executingEditor}
         />
+      ) : (
+        <NoExecutingEditorWarning />
       )
+
     case 'selectionMixed':
-      return (
+      return executingEditor ? (
         <CommandBarSelectionMixedInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
-          wasmInstance={wasmInstance}
+          executingEditor={executingEditor}
         />
+      ) : (
+        <NoExecutingEditorWarning />
       )
+
     case 'kcl':
-      return (
-        <CommandBarKclInput arg={arg} stepBack={stepBack} onSubmit={onSubmit} />
+      return executingEditor ? (
+        <CommandBarKclInput
+          arg={arg}
+          stepBack={stepBack}
+          onSubmit={onSubmit}
+          executingEditor={executingEditor}
+        />
+      ) : (
+        <NoExecutingEditorWarning />
       )
     case 'text':
       return (
@@ -136,20 +157,26 @@ function ArgumentInput({
         />
       )
     case 'vector3d':
-      return (
+      return executingEditor ? (
         <CommandBarVector3DInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          executingEditor={executingEditor}
         />
+      ) : (
+        <NoExecutingEditorWarning />
       )
     case 'vector2d':
-      return (
+      return executingEditor ? (
         <CommandBarVector2DInput
           arg={arg}
           stepBack={stepBack}
           onSubmit={onSubmit}
+          executingEditor={executingEditor}
         />
+      ) : (
+        <NoExecutingEditorWarning />
       )
     case 'number':
       console.error("'number' input is not implemented for CommandBar yet")

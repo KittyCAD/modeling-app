@@ -1,35 +1,26 @@
-import { isCodeTheSame } from '@src/lib/codeEditor'
-import type { ReactNode } from 'react'
-import { createContext, useEffect, useState } from 'react'
-import {
-  useLocation,
-  useNavigate,
-  useNavigation,
-  useRouteLoaderData,
-} from 'react-router-dom'
-import toast from 'react-hot-toast'
-
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAuthNavigation } from '@src/hooks/useAuthNavigation'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
-import { fsManager } from '@src/lang/std/fileSystemManager'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getAppSettingsFilePath } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
 import { PATHS, getStringAfterLastSeparator } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { trap } from '@src/lib/trap'
-import type { IndexLoaderData } from '@src/lib/types'
-import { useSignals } from '@preact/signals-react/runtime'
+import type { ReactNode } from 'react'
+import { createContext, useEffect, useState } from 'react'
+import { useLocation, useNavigate, useNavigation } from 'react-router-dom'
 
 export const RouteProviderContext = createContext({})
 
 export function RouteProvider({ children }: { children: ReactNode }) {
-  const { settings } = useApp()
+  useSignals()
+  const { settings, project } = useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
-  useSignals()
   useAuthNavigation()
-  const loadedProject = useRouteLoaderData(PATHS.FILE) as IndexLoaderData
+  const loadedProject = project?.projectIORefSignal.value
+  const loadedFile = project?.executingFileEntry.value
   const [first, setFirstState] = useState(true)
   const [settingsPath, setSettingsPath] = useState<string | undefined>(
     undefined
@@ -55,8 +46,7 @@ export function RouteProvider({ children }: { children: ReactNode }) {
   }, [first, navigation, location.pathname])
 
   useEffect(() => {
-    if (!window.electron) return
-    getAppSettingsFilePath(window.electron).then(setSettingsPath).catch(trap)
+    getAppSettingsFilePath().then(setSettingsPath).catch(trap)
   }, [])
 
   useFileSystemWatcher(
@@ -81,35 +71,10 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // is very high in the context tree, higher than mlEphant's.
       if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem) return
 
-      const isCurrentFile = loadedProject?.file?.path === path
-      if (isCurrentFile) {
-        if (window.electron) {
-          // Your current file is changed, read it from disk and write it into the code manager and execute the AST,
-          // unless the change was initiated by us (the currently running instance).
-          const code = await window.electron.readFile(path, {
-            encoding: 'utf-8',
-          })
-
-          const lastWrittenCode = kclManager.lastWrite?.code
-          if (!lastWrittenCode || !isCodeTheSame(lastWrittenCode, code)) {
-            const isInSketchMode =
-              kclManager.modelingState?.matches('Sketch') ||
-              kclManager.modelingState?.matches('sketchSolveMode')
-
-            // Nothing written out yet by ourselves, or it's not the same as the current file content
-            // -> this must be an external change -> re-execute.
-            kclManager.updateCodeEditor(code, {
-              shouldExecute: !isInSketchMode,
-              shouldResetCamera: !isInSketchMode,
-              // We explicitly do not write to the file here since we are loading from
-              // the file system and not the editor.
-              shouldWriteToDisk: false,
-            })
-
-            toast('Reloading file from disk', { icon: '📁' })
-          }
-        }
-      } else {
+      // We only react on files other than the currently-executing one here
+      // because the currently-executing one is handled with its own watcher in
+      // KclManager. In future, all files and folders will watch themselves.
+      if (loadedFile?.path !== path) {
         const fileNameWithExtension = getStringAfterLastSeparator(path)
         // Is the file from the change event type imported into the currently opened file
         const isImportedInCurrentFile = kclManager.ast.body.some(
@@ -152,8 +117,8 @@ export function RouteProvider({ children }: { children: ReactNode }) {
       // loadAndValidateSettings trying to recreate files. I do not
       // wish to change the behavior in case anything else uses it.
       // Go home.
-      if (loadedProject?.project?.path) {
-        if (!(await fsManager.exists(loadedProject?.project?.path))) {
+      if (loadedProject?.path) {
+        if (!(await fsZds.stat(loadedProject.path))) {
           void navigate(PATHS.HOME)
           return
         }
@@ -164,17 +129,11 @@ export function RouteProvider({ children }: { children: ReactNode }) {
 
       // Note: currently settings are watched, reloaded even if it was initiated by us (e.g. by a user changing some settings),
       // writeCausedByAppCheckedInFileTreeFileSystemWatcher is not used here.
-      const data = await loadAndValidateSettings(
-        kclManager.wasmInstancePromise,
-        loadedProject?.project?.path
-      )
       settingsActor.send({
-        type: 'Set all settings',
-        settings: data.settings,
-        doNotPersist: true,
+        type: 'reload.settings',
       })
     },
-    [settingsPath, loadedProject?.project?.path].filter(
+    [settingsPath, loadedProject?.path].filter(
       (x: string | undefined) => x !== undefined
     )
   )

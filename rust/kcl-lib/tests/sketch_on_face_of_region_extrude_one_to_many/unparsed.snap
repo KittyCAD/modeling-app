@@ -1,0 +1,34 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_on_face_of_region_extrude_one_to_many.kcl
+---
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 29.67mm, var 0mm])
+  fixed([line1.start, [0, 0]])
+  horizontal(line1)
+  arc1 = arc(start = [var 29.67mm, var 0mm], end = [var 0mm, var 0mm], center = [var 14.83mm, var 4.96mm])
+  coincident([line1.end, arc1.start])
+  coincident([line1.start, arc1.end])
+  line2 = line(start = [var 0.69mm, var 11.98mm], end = [var 27.79mm, var 14.87mm])
+}
+region001 = region(point = [2.77mm, 1.38mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 2)
+
+face001 = faceOf(extrude001, face = region001.tags.line1)
+sketch002 = sketch(on = face001) {
+  line1 = line(start = [var 0.46mm, var 0.53mm], end = [var 0.96mm, var 0.53mm])
+  line2 = line(start = [var 0.96mm, var 0.53mm], end = [var 0.96mm, var 1.03mm])
+  line3 = line(start = [var 0.96mm, var 1.03mm], end = [var 0.46mm, var 1.03mm])
+  line4 = line(start = [var 0.46mm, var 1.03mm], end = [var 0.46mm, var 0.53mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+region002 = region(point = [0.6mm, 0.8mm], sketch = sketch002)
+extrude002 = extrude(region002, length = 2)

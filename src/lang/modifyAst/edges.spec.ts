@@ -1,29 +1,34 @@
-import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import { topLevelRange } from '@src/lang/util'
-import { isOverlap } from '@src/lib/utils'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { KclManager } from '@src/lang/KclManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { Selection } from '@src/machines/modelingSharedTypes'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
 import {
+  EdgeTreatmentType,
+  addBlend,
   addChamfer,
   addFillet,
   deleteEdgeTreatment,
-  EdgeTreatmentType,
 } from '@src/lang/modifyAst/edges'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import { type PathToNode, assertParse, recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
-  enginelessExecutor,
   createSelectionFromArtifacts,
+  enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { err } from '@src/lib/trap'
+import { isOverlap } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type {
+  NonCodeSelection,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -99,6 +104,55 @@ profile001 = startProfile(sketch001, at = [-2, 1])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 revolve001 = revolve(profile001, angle = 270deg, axis = X)`
+  const twoSurfacesForBlend = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-2, 0])
+  |> angledLine(angle = 0deg, length = 4)
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> translate(y = 3, z = 2)
+
+sketch002 = startSketchOn(XZ)
+profile002 = startProfile(sketch002, at = [-1, 0])
+  |> angledLine(angle = 0deg, length = 2)
+  |> extrude(length = 2, bodyType = SURFACE)
+  |> flipSurface()`
+  const sketchSolveSurfacesForBlend = `@settings(experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -9.76mm, var 1.02mm], end = [var -4.06mm, var 5.49mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+sketch002 = sketch(on = XY) {
+  line1 = line(start = [var -13.52mm, var 5.92mm], end = [var -6.48mm, var 9.82mm])
+}
+extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)
+hidden001 = hide(sketch002)
+hidden002 = hide(sketch001)`
+  const sketchSolveSweepEdgesAcrossExtrudesForBlend = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.62mm, var -13.65mm], end = [var 3.37mm, var -13.65mm])
+  line2 = line(start = [var 3.37mm, var -13.65mm], end = [var 3.37mm, var -10.83mm])
+  line3 = line(start = [var 3.37mm, var -10.83mm], end = [var -3.62mm, var -10.83mm])
+  line4 = line(start = [var -3.62mm, var -10.83mm], end = [var -3.62mm, var -13.65mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [-0.125mm, -13.6475mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var -3.45mm, var 10.36mm], end = [var 1.38mm, var 12.93mm])
+  line2 = line(start = [var 1.38mm, var 12.93mm], end = [var 5.28mm, var 9.92mm])
+  coincident([line1.end, line2.start])
+}
+hidden002 = hide(sketch002)
+extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = SURFACE)
+`
 
   describe('Testing addFillet', () => {
     it('should add a basic fillet call on sweepEdge', async () => {
@@ -128,6 +182,198 @@ revolve001 = revolve(profile001, angle = 270deg, axis = X)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(extrudedTriangleWithFillet)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a fillet to the post-subtract body when selecting the original box edge', async () => {
+      const code = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+boxLength = 100
+boxWidth = 100
+boxHeight = 50
+cutoutRadius = 30
+cutoutDepth = 10
+chamferSize = 2
+
+cutoutStartZ = boxHeight - cutoutDepth
+cutoutLowerWallZ = cutoutStartZ + chamferSize
+cutoutUpperWallZ = boxHeight - chamferSize
+cutoutLowerChamferRadius = cutoutRadius - chamferSize
+cutoutWallRadius = cutoutRadius
+cutoutUpperChamferRadius = cutoutRadius + chamferSize
+
+boxProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 100mm, var 0mm])
+  rightEdge = line(start = [var 100mm, var 0mm], end = [var 100mm, var 100mm])
+  topEdge = line(start = [var 100mm, var 100mm], end = [var 0mm, var 100mm])
+  leftEdge = line(start = [var 0mm, var 100mm], end = [var 0mm, var 0mm])
+
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+
+  horizontalDistance([ORIGIN, bottomEdge.start]) == 0mm
+  verticalDistance([ORIGIN, bottomEdge.start]) == 0mm
+  horizontalDistance([bottomEdge.start, bottomEdge.end]) == boxLength
+  verticalDistance([bottomEdge.start, leftEdge.start]) == boxWidth
+}
+
+boxRegion = region(point = [boxLength / 2, boxWidth / 2], sketch = boxProfile)
+boxSolid = extrude(boxRegion, length = boxHeight)
+
+bottomPlane = offsetPlane(XY, offset = cutoutStartZ)
+lowerWallPlane = offsetPlane(XY, offset = cutoutLowerWallZ)
+upperWallPlane = offsetPlane(XY, offset = cutoutUpperWallZ)
+topPlane = offsetPlane(XY, offset = boxHeight)
+
+bottomProfile = sketch(on = bottomPlane) {
+  bottomCircle = circle(start = [var 28mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, bottomCircle.center]) == 0mm
+  verticalDistance([ORIGIN, bottomCircle.center]) == 0mm
+  horizontalDistance([bottomCircle.center, bottomCircle.start]) == cutoutLowerChamferRadius
+  verticalDistance([bottomCircle.center, bottomCircle.start]) == 0mm
+}
+
+lowerWallProfile = sketch(on = lowerWallPlane) {
+  lowerWallCircle = circle(start = [var 30mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, lowerWallCircle.center]) == 0mm
+  verticalDistance([ORIGIN, lowerWallCircle.center]) == 0mm
+  horizontalDistance([lowerWallCircle.center, lowerWallCircle.start]) == cutoutWallRadius
+  verticalDistance([lowerWallCircle.center, lowerWallCircle.start]) == 0mm
+}
+
+upperWallProfile = sketch(on = upperWallPlane) {
+  upperWallCircle = circle(start = [var 30mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, upperWallCircle.center]) == 0mm
+  verticalDistance([ORIGIN, upperWallCircle.center]) == 0mm
+  horizontalDistance([upperWallCircle.center, upperWallCircle.start]) == cutoutWallRadius
+  verticalDistance([upperWallCircle.center, upperWallCircle.start]) == 0mm
+}
+
+topProfile = sketch(on = topPlane) {
+  topCircle = circle(start = [var 32mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, topCircle.center]) == 0mm
+  verticalDistance([ORIGIN, topCircle.center]) == 0mm
+  horizontalDistance([topCircle.center, topCircle.start]) == cutoutUpperChamferRadius
+  verticalDistance([topCircle.center, topCircle.start]) == 0mm
+}
+
+bottomRegion = region(point = [0mm, 0mm], sketch = bottomProfile)
+lowerWallRegion = region(point = [0mm, 0mm], sketch = lowerWallProfile)
+upperWallRegion = region(point = [0mm, 0mm], sketch = upperWallProfile)
+topRegion = region(point = [0mm, 0mm], sketch = topProfile)
+
+cutoutCutter = loft([
+  bottomRegion,
+  lowerWallRegion,
+  upperWallRegion,
+  topRegion,
+])
+
+part = subtract(boxSolid, tools = [cutoutCutter])
+  |> appearance(color = "#8f96a3", roughness = 55, metalness = 8)
+
+hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile])`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const boxSolidStart = code.indexOf('boxSolid = extrude')
+      const boxSolidEnd = code.indexOf('bottomPlane =')
+      const boxSweep = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweep' &&
+          artifact.codeRef.range[0] >= boxSolidStart &&
+          artifact.codeRef.range[0] < boxSolidEnd
+      )
+      if (!boxSweep) {
+        throw new Error('boxSolid sweep artifact not found')
+      }
+
+      const sweepEdge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' && artifact.sweepId === boxSweep.id
+      )
+      if (!sweepEdge) {
+        throw new Error('boxSolid sweepEdge artifact not found')
+      }
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection: createSelectionFromArtifacts([sweepEdge], artifactGraph),
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        'fillet001 = fillet(part, tags = getCommonEdge(faces = [boxRegion.tags.topEdge, capEnd001]), radius = 1)'
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a fillet call using engine primitive edge indices', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const selection: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${extrudedTriangle}
+edge001 = edgeId(extrude001, index = 2)
+fillet001 = fillet(extrude001, tags = edge001, radius = 1)`
+      )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -223,11 +469,57 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 fillet001 = fillet(
   extrude001,
-  tags =   getCommonEdge(faces = [seg01, capEnd001]),
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
   radius = 1,
   tag = $myTag,
 )`
       )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a fillet call with an algorithm version', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const version = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        version,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  radius = 1,
+  version = 2,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
@@ -280,10 +572,13 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const selection = createSelectionFromArtifacts(
-        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
-        artifactGraph
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
       )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
       const nodeToEdit: PathToNode = [
         ['body', ''],
         [2, 'index'],
@@ -440,6 +735,51 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a chamfer call using engine primitive edge indices', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        extrudedTriangle,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const selection: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${extrudedTriangle}
+edge001 = edgeId(extrude001, index = 2)
+chamfer001 = chamfer(extrude001, tags = edge001, length = 1)`
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a basic chamfer call on a sweepEdge and a segment', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
@@ -535,7 +875,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags =   getCommonEdge(faces = [seg01, capEnd001]),
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
   length = 1,
   secondLength = 1.1,
 )`)
@@ -583,10 +923,56 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags =   getCommonEdge(faces = [seg01, capEnd001]),
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
   length = 1,
   angle = 46deg,
   tag = $myChamferTag,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a chamfer call with an algorithm version', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const version = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+        version,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  length = 1,
+  version = 2,
 )`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -718,6 +1104,482 @@ chamfer001 = chamfer(
       expect(newCode).toContain('length = 0.5')
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+  })
+
+  describe('Testing addBlend', () => {
+    it('should add a blend call from exactly two segments', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const segments = [...artifactGraph.values()].filter(
+        (a) => a.type === 'segment'
+      )
+      expect(segments.length).toBe(2)
+      const edges = createSelectionFromArtifacts(segments, artifactGraph)
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call from exactly two primitive edges', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBeGreaterThanOrEqual(2)
+
+      const primitiveEdgeSelections: NonCodeSelection[] = [
+        {
+          entityId: 'blend-primitive-edge-1',
+          parentEntityId: sweeps[0].id,
+          primitiveIndex: 0,
+          primitiveType: 'edge',
+          type: 'enginePrimitive',
+        },
+        {
+          entityId: 'blend-primitive-edge-2',
+          parentEntityId: sweeps[1].id,
+          primitiveIndex: 0,
+          primitiveType: 'edge',
+          type: 'enginePrimitive',
+        },
+      ]
+
+      const edges: Selections = {
+        graphSelections: [],
+        otherSelections: primitiveEdgeSelections,
+      }
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain('blend001 = blend([')
+      expect(newCode.match(/getBoundedEdge\(/g)?.length).toBe(2)
+      expect(newCode.match(/edgeId\(/g)?.length).toBe(2)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call between surfaces from sketch solve segments', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const sweepEdgeBody1 = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      )
+      const sweepEdgeBody2 = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[1].id
+      )
+      if (
+        !sweepEdgeBody1 ||
+        sweepEdgeBody1.type !== 'sweepEdge' ||
+        !sweepEdgeBody2 ||
+        sweepEdgeBody2.type !== 'sweepEdge'
+      ) {
+        throw new Error(
+          'Could not find sweep edges for sketch solve blend test'
+        )
+      }
+
+      const segmentBody1 = artifactGraph.get(sweepEdgeBody1.segId)
+      const segmentBody2 = artifactGraph.get(sweepEdgeBody2.segId)
+      if (
+        !segmentBody1 ||
+        segmentBody1.type !== 'segment' ||
+        !segmentBody2 ||
+        segmentBody2.type !== 'segment'
+      ) {
+        throw new Error(
+          'Could not resolve sketch segments for direct blend refs'
+        )
+      }
+
+      const edges = createSelectionFromArtifacts(
+        [segmentBody1, segmentBody2],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        `blend001 = blend([
+  getBoundedEdge(extrude001, edge = extrude001.sketch.tags.line1),
+  getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1)
+])`
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    async function runAddBlendAndCheckCode(
+      secondEdgeIndex: number,
+      secondEdgeExpr: string
+    ) {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSweepEdgesAcrossExtrudesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const sweepEdgeBody1 = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id
+      )
+      const sweepEdgeBody2 = [...artifactGraph.values()].filter(
+        (a) =>
+          (a.type === 'sweepEdge' && a.sweepId === sweeps[1].id) ||
+          (a.type === 'segment' && a.pathId === sweeps[1].pathId)
+      )[secondEdgeIndex]
+      console.log('sweepEdgeBody2', sweepEdgeBody2)
+      if (
+        !sweepEdgeBody1 ||
+        sweepEdgeBody1.type !== 'sweepEdge' ||
+        !sweepEdgeBody2 ||
+        !(
+          sweepEdgeBody2.type === 'sweepEdge' ||
+          sweepEdgeBody2.type === 'segment'
+        )
+      ) {
+        throw new Error(
+          'Could not find one sweep edge per extrude for blend test'
+        )
+      }
+
+      const edges = createSelectionFromArtifacts(
+        [sweepEdgeBody1, sweepEdgeBody2],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(`blend001 = blend([
+  getBoundedEdge(extrude001, edge = getOppositeEdge(region001.tags.line1)),
+  getBoundedEdge(extrude002, edge = ${secondEdgeExpr})
+])`)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    }
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - first segment', async () => {
+      await runAddBlendAndCheckCode(0, 'extrude002.sketch.tags.line1')
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - second segment', async () => {
+      await runAddBlendAndCheckCode(1, 'extrude002.sketch.tags.line2')
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - first sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        2,
+        'getOppositeEdge(extrude002.sketch.tags.line1)'
+      )
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - second sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        3,
+        'getNextAdjacentEdge(extrude002.sketch.tags.line1)'
+      )
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - third sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        4,
+        'getOppositeEdge(extrude002.sketch.tags.line2)'
+      )
+    })
+
+    it('should add a blend call from two sweepEdges selected across two multi-segment extrudes - fourth sweepEdge', async () => {
+      await runAddBlendAndCheckCode(
+        5,
+        'getNextAdjacentEdge(extrude002.sketch.tags.line2)'
+      )
+    })
+
+    it('should add a blend call with a sweepEdge coming from a region extrude', async () => {
+      const code = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 6.16mm, var 0mm])
+  line2 = line(start = [var 6.16mm, var 0mm], end = [var 6.16mm, var 5.46mm])
+  line3 = line(start = [var 6.16mm, var 5.46mm], end = [var 0mm, var 5.46mm])
+  line4 = line(start = [var 0mm, var 5.46mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [3.08mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+sketch002 = sketch(on = -YZ) {
+  line1 = line(start = [var -5.51mm, var 8.29mm], end = [var 0mm, var 8.04mm])
+  vertical([line1.end, ORIGIN])
+  horizontal(line1)
+}
+extrude002 = extrude(sketch002.line1, length = 5, bodyType = SURFACE)
+hidden002 = hide(sketch002)
+surface001 = flipSurface(extrude002)
+`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const sweepEdgeBody1 = [...artifactGraph.values()]
+        .filter((a) => a.type === 'sweepEdge' && a.sweepId === sweeps[0].id)
+        .at(-6)
+      const segmentBody2 = [...artifactGraph.values()].find(
+        (a) => a.type === 'segment' && a.pathId === sweeps[1].pathId
+      )
+
+      if (!sweepEdgeBody1 || !segmentBody2) {
+        throw new Error(
+          'Could not find the requested sweep edges for blend insertion'
+        )
+      }
+
+      const edges = createSelectionFromArtifacts(
+        [segmentBody2, sweepEdgeBody1],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        `blend001 = blend([
+  getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1),
+  getBoundedEdge(extrude001, edge = getOppositeEdge(region001.tags.line2))
+])`
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call with opposite wrappers from sweep edges', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const oppositeEdgeBody1 = [...artifactGraph.values()].find(
+        (a) =>
+          a.type === 'sweepEdge' &&
+          a.sweepId === sweeps[0].id &&
+          a.subType === 'opposite'
+      )
+      const oppositeEdgeBody2 = [...artifactGraph.values()].find(
+        (a) =>
+          a.type === 'sweepEdge' &&
+          a.sweepId === sweeps[1].id &&
+          a.subType === 'opposite'
+      )
+
+      const edges = createSelectionFromArtifacts(
+        [oppositeEdgeBody1!, oppositeEdgeBody2!],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        `blend001 = blend([
+  getBoundedEdge(extrude001, edge = getOppositeEdge(extrude001.sketch.tags.line1)),
+  getBoundedEdge(extrude002, edge = getOppositeEdge(extrude002.sketch.tags.line1))
+])`
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a blend call with next-adjacent wrappers from sweep edges', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        sketchSolveSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const sweeps = [...artifactGraph.values()].filter(
+        (a) => a.type === 'sweep'
+      )
+      expect(sweeps.length).toBe(2)
+
+      const adjacentEdgeBody1 = [...artifactGraph.values()].find(
+        (a) =>
+          a.type === 'sweepEdge' &&
+          a.sweepId === sweeps[0].id &&
+          a.subType === 'adjacent'
+      )
+      const adjacentEdgeBody2 = [...artifactGraph.values()].find(
+        (a) =>
+          a.type === 'sweepEdge' &&
+          a.sweepId === sweeps[1].id &&
+          a.subType === 'adjacent'
+      )
+
+      const edges = createSelectionFromArtifacts(
+        [adjacentEdgeBody1!, adjacentEdgeBody2!],
+        artifactGraph
+      )
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) {
+        throw newCode
+      }
+      expect(newCode).toContain(
+        `blend001 = blend([
+  getBoundedEdge(extrude001, edge = getNextAdjacentEdge(extrude001.sketch.tags.line1)),
+  getBoundedEdge(extrude002, edge = getNextAdjacentEdge(extrude002.sketch.tags.line1))
+])`
+      )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should fail when fewer than two edges are selected', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        twoSurfacesForBlend,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const singleEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )!
+      const edges = createSelectionFromArtifacts([singleEdge], artifactGraph)
+
+      const result = addBlend({
+        ast,
+        artifactGraph,
+        edges,
+        wasmInstance: instanceInThisFile,
+      })
+      if (!err(result)) {
+        throw new Error('Expected addBlend to fail for a single selected edge')
+      }
+
+      expect(result.message).toBe('Blend requires exactly two selected edges.')
     })
   })
 

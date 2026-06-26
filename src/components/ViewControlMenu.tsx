@@ -1,5 +1,6 @@
-import { useMemo, memo } from 'react'
+import { memo, useMemo } from 'react'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import type { ContextMenuProps } from '@src/components/ContextMenu'
 import {
   ContextMenu,
@@ -8,30 +9,24 @@ import {
 } from '@src/components/ContextMenu'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
+import { useApp, useSingletons } from '@src/lib/boot'
 import type { AxisNames } from '@src/lib/constants'
 import { VIEW_NAMES_SEMANTIC } from '@src/lib/constants'
 import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { reportRejection } from '@src/lib/trap'
-import toast from 'react-hot-toast'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import {
   DefaultLayoutPaneID,
   getOpenPanes,
   setOpenPanes,
 } from '@src/lib/layout'
+import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import { selectSketchPlane } from '@src/lib/selections'
+import { reportRejection } from '@src/lib/trap'
+import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
-  const { settings } = useApp()
-  const {
-    engineCommandManager,
-    getLayout,
-    kclManager,
-    rustContext,
-    sceneEntitiesManager,
-    sceneInfra,
-  } = useSingletons()
+  useSignals()
+  const { settings, layout } = useApp()
+  const { kclManager } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
     modelingState.context.selectionRanges
@@ -65,7 +60,7 @@ export function useViewControlMenuItems() {
         <ContextMenuItem
           key={axisName}
           onClick={() => {
-            sceneInfra.camControls
+            kclManager.sceneInfra.camControls
               .updateCameraToAxis(axisName as AxisNames)
               .catch(reportRejection)
           }}
@@ -78,8 +73,8 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           resetCameraPosition({
-            sceneInfra,
-            engineCommandManager,
+            sceneInfra: kclManager.sceneInfra,
+            engineCommandManager: kclManager.engineCommandManager,
             settingsActor: settings.actor,
           }).catch(reportRejection)
         }}
@@ -102,7 +97,7 @@ export function useViewControlMenuItems() {
         onClick={() => {
           if (firstValidSelection?.codeRef?.range) {
             // First, open the code pane if it's not already open
-            const rootLayout = getLayout()
+            const rootLayout = layout.signal.value
             setOpenPanes(rootLayout, [
               ...getOpenPanes({ rootLayout }),
               DefaultLayoutPaneID.Code,
@@ -148,20 +143,15 @@ export function useViewControlMenuItems() {
       <ContextMenuItem
         onClick={() => {
           if (planeOrFaceId) {
-            sceneInfra.modelingSend({
+            kclManager.sceneInfra.modelingSend({
               type: 'Enter sketch',
               data: { forceNewSketch: true, keepDefaultPlaneVisibility: true },
             })
 
             void selectSketchPlane(
               planeOrFaceId,
-              modelingState.context.store.useNewSketchMode?.current,
-              {
-                kclManager,
-                rustContext,
-                sceneEntitiesManager,
-                sceneInfra,
-              }
+              modelingState.context.store.useSketchSolveMode?.current,
+              kclManager
             )
           }
         }}
@@ -195,16 +185,12 @@ export function useViewControlMenuItems() {
       planeOrFaceId,
       firstValidSelection,
       modelingSend,
-      modelingState.context.store.useNewSketchMode,
+      modelingState.context.store.useSketchSolveMode,
       sketching,
       snapToGrid,
       gizmoType,
-      engineCommandManager,
-      getLayout,
+      layout.signal.value,
       kclManager,
-      rustContext,
-      sceneEntitiesManager,
-      sceneInfra,
       settings,
     ]
   )

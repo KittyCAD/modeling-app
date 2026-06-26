@@ -1,72 +1,150 @@
 //! The executor for the AST.
 
-#[cfg(feature = "artifact-graph")]
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-#[cfg(feature = "artifact-graph")]
-pub use artifact::{
-    Artifact, ArtifactCommand, ArtifactGraph, CodeRef, SketchBlock, SketchBlockConstraint, SketchBlockConstraintType,
-    StartSketchOnFace, StartSketchOnPlane,
-};
+pub use artifact::Artifact;
+pub use artifact::ArtifactCommand;
+pub use artifact::ArtifactGraph;
+pub use artifact::CapSubType;
+pub use artifact::CodeRef;
+pub use artifact::GdtAnnotationArtifact;
+pub use artifact::SketchBlock;
+pub use artifact::SketchBlockConstraint;
+pub use artifact::SketchBlockConstraintType;
+pub use artifact::StartSketchOnFace;
+pub use artifact::StartSketchOnPlane;
 use cache::GlobalState;
-pub use cache::{bust_cache, clear_mem_cache};
-#[cfg(feature = "artifact-graph")]
+pub use cache::bust_cache;
+pub use cache::clear_mem_cache;
 pub use cad_op::Group;
 pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
-pub use kcl_value::{KclObjectFields, KclValue};
-use kcmc::{
-    ImageFormat, ModelingCmd, each_cmd as mcmd,
-    ok_response::{OkModelingCmdResponse, output::TakeSnapshot},
-    websocket::{ModelingSessionData, OkWebSocketResponseData},
-};
-use kittycad_modeling_cmds::{self as kcmc, id::ModelingCmdId};
+pub use kcl_value::KclObjectFields;
+pub use kcl_value::KclObjectKind;
+pub use kcl_value::KclValue;
+pub use kcl_value_view::KclValueView;
+use kcmc::ImageFormat;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::ok_response::output::TakeSnapshot;
+use kcmc::websocket::ModelingSessionData;
+use kcmc::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::id::ModelingCmdId;
+use kittycad_modeling_cmds::{self as kcmc};
 pub use memory::EnvironmentRef;
+#[cfg(test)]
+pub(crate) use memory::MemoryBackendKind;
 pub(crate) use modeling::ModelingCmdMeta;
-use serde::{Deserialize, Serialize};
-pub(crate) use sketch_solve::normalize_to_solver_unit;
-pub use sketch_transpiler::{transpile_old_sketch_to_new, transpile_old_sketch_to_new_with_execution};
+use serde::Deserialize;
+use serde::Serialize;
+pub(crate) use sketch_solve::normalize_to_solver_distance_unit;
+pub(crate) use sketch_solve::solver_numeric_type;
+pub use sketch_transpiler::pre_execute_transpile;
+pub use sketch_transpiler::transpile_all_old_sketches_to_new;
+pub use sketch_transpiler::transpile_old_sketch_to_new;
+pub use sketch_transpiler::transpile_old_sketch_to_new_ast;
+pub use sketch_transpiler::transpile_old_sketch_to_new_with_execution;
+pub(crate) use state::ConstraintKey;
+pub(crate) use state::ConstraintState;
+pub(crate) use state::ConsumedSolidInfo;
+pub(crate) use state::ConsumedSolidKey;
+pub(crate) use state::ConsumedSolidOperation;
+pub use state::ExecState;
+pub(crate) use state::KclVersion;
+pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
-pub use state::{ExecState, MetaSettings};
+pub(crate) use state::TangencyMode;
 use uuid::Uuid;
 
-use crate::{
-    CompilationError, ExecError, KclErrorWithOutputs, SourceRange,
-    engine::{EngineManager, GridScaleBehavior},
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        cache::{CacheInformation, CacheResult},
-        import_graph::{Universe, UniverseMap},
-        typed_path::TypedPath,
-    },
-    front::{Object, ObjectId},
-    fs::FileManager,
-    modules::{ModuleExecutionOutcome, ModuleId, ModulePath, ModuleRepr},
-    parsing::ast::types::{Expr, ImportPath, NodeRef},
-};
-#[cfg(feature = "artifact-graph")]
-use crate::{collections::AhashIndexSet, front::Number};
+use crate::CompilationIssue;
+use crate::ExecError;
+use crate::KclErrorWithOutputs;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::collections::AhashIndexSet;
+use crate::engine::EngineBatchContext;
+use crate::engine::GridScaleBehavior;
+use crate::engine::engine_manager::EngineManager;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::cache::CacheInformation;
+use crate::execution::cache::CacheResult;
+use crate::execution::import_graph::Universe;
+use crate::execution::import_graph::UniverseMap;
+use crate::execution::typed_path::TypedPath;
+use crate::front::Number;
+use crate::front::Object;
+use crate::front::ObjectId;
+use crate::fs::FileManager;
+use crate::modules::ModuleExecutionOutcome;
+use crate::modules::ModuleId;
+use crate::modules::ModulePath;
+use crate::modules::ModuleRepr;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::ImportPath;
+use crate::parsing::ast::types::NodeRef;
+
+#[derive(Debug, Clone, Serialize, ts_rs::TS, PartialEq, Default)]
+#[ts(export)]
+pub struct OperationsByModule {
+    pub map: IndexMap<ModuleId, Vec<Operation>>,
+}
+
+#[derive(Clone, Serialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct OperationCallbackArgs {
+    pub module_id: ModuleId,
+    pub operation: Operation,
+    pub index: usize,
+}
+
+pub trait ExecutionCallbacks: std::fmt::Debug + Send + Sync + 'static {
+    fn on_operation(&self, _args: OperationCallbackArgs) {}
+}
+
+impl OperationsByModule {
+    pub fn count(&self) -> usize {
+        self.map.values().map(Vec::len).sum()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.map.values().all(Vec::is_empty)
+    }
+
+    pub fn get(&self, module_id: &ModuleId) -> Option<&Vec<Operation>> {
+        self.map.get(module_id)
+    }
+
+    pub fn values(&self) -> indexmap::map::Values<'_, ModuleId, Vec<Operation>> {
+        self.map.values()
+    }
+
+    pub fn insert(&mut self, module_id: ModuleId, operations: Vec<Operation>) {
+        self.map.insert(module_id, operations);
+    }
+}
 
 pub(crate) mod annotations;
-#[cfg(feature = "artifact-graph")]
 mod artifact;
 pub(crate) mod cache;
 mod cad_op;
 mod exec_ast;
 pub mod fn_call;
 #[cfg(test)]
-#[cfg(feature = "artifact-graph")]
 mod freedom_analysis_tests;
 mod geometry;
 mod id_generator;
 mod import;
 mod import_graph;
 pub(crate) mod kcl_value;
+pub(crate) mod kcl_value_view;
 mod memory;
 mod modeling;
 mod sketch_solve;
@@ -75,9 +153,14 @@ mod state;
 pub mod typed_path;
 pub(crate) mod types;
 
-/// Convenience macro for handling control flow in execution by returning early
-/// if it is some kind of early return or stripping off the control flow
-/// otherwise.
+pub(crate) const SKETCH_BLOCK_PARAM_ON: &str = "on";
+pub(crate) const SKETCH_OBJECT_META: &str = "meta";
+pub(crate) const SKETCH_OBJECT_META_SKETCH: &str = "sketch";
+
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, it's returned as a
+/// `Result::Ok`.
 macro_rules! control_continue {
     ($control_flow:expr) => {{
         let cf = $control_flow;
@@ -90,6 +173,23 @@ macro_rules! control_continue {
 }
 // Expose the macro to other modules.
 pub(crate) use control_continue;
+
+/// Convenience macro for handling [`KclValueControlFlow`] in execution by
+/// returning early if it is some kind of early return or stripping off the
+/// control flow otherwise. If it's an early return, [`EarlyReturn`] is
+/// used to return it as a `Result::Err`.
+macro_rules! early_return {
+    ($control_flow:expr) => {{
+        let cf = $control_flow;
+        if cf.is_some_return() {
+            return Err(EarlyReturn::from(cf));
+        } else {
+            cf.into_value()
+        }
+    }};
+}
+// Expose the macro to other modules.
+pub(crate) use early_return;
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Serialize)]
 pub enum ControlFlowKind {
@@ -112,21 +212,21 @@ impl ControlFlowKind {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct KclValueControlFlow {
     /// Use [control_continue] or [Self::into_value] to get the value.
-    value: KclValue,
+    value: Box<KclValue>,
     pub control: ControlFlowKind,
 }
 
 impl KclValue {
     pub(crate) fn continue_(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Continue,
         }
     }
 
     pub(crate) fn exit(self) -> KclValueControlFlow {
         KclValueControlFlow {
-            value: self,
+            value: Box::new(self),
             control: ControlFlowKind::Exit,
         }
     }
@@ -139,7 +239,35 @@ impl KclValueControlFlow {
     }
 
     pub(crate) fn into_value(self) -> KclValue {
-        self.value
+        *self.value
+    }
+}
+
+/// A [`KclValueControlFlow`] or an error that needs to be returned early. This
+/// is useful for when functions might encounter either control flow or errors
+/// that need to bubble up early, but these aren't the primary return values of
+/// the function. We can use `EarlyReturn` as the error type in a `Result`.
+///
+/// Normally, you don't construct this directly. Use the `early_return!` macro.
+#[must_use = "You should always handle the control flow value when it is returned"]
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone)]
+pub(crate) enum EarlyReturn {
+    /// A normal value with control flow.
+    Value(KclValueControlFlow),
+    /// An error that occurred during execution.
+    Error(KclError),
+}
+
+impl From<KclValueControlFlow> for EarlyReturn {
+    fn from(cf: KclValueControlFlow) -> Self {
+        EarlyReturn::Value(cf)
+    }
+}
+
+impl From<KclError> for EarlyReturn {
+    fn from(err: KclError) -> Self {
+        EarlyReturn::Error(err)
     }
 }
 
@@ -169,56 +297,232 @@ impl PreserveMem {
 #[serde(rename_all = "camelCase")]
 pub struct ExecOutcome {
     /// Variables in the top-level of the root module. Note that functions will have an invalid env ref.
-    pub variables: IndexMap<String, KclValue>,
-    /// Operations that have been performed in execution order, for display in
-    /// the Feature Tree.
-    #[cfg(feature = "artifact-graph")]
-    pub operations: Vec<Operation>,
+    pub variables: IndexMap<String, KclValueView>,
+    /// Operations that have been performed in execution order, grouped by
+    /// owning module id, for display in the Feature Tree.
+    pub operations: OperationsByModule,
     /// Output artifact graph.
-    #[cfg(feature = "artifact-graph")]
     pub artifact_graph: ArtifactGraph,
     /// Objects in the scene, created from execution.
-    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub scene_objects: Vec<Object>,
     /// Map from source range to object ID for lookup of objects by their source
     /// range.
-    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
-    #[cfg(feature = "artifact-graph")]
     #[serde(skip)]
-    pub var_solutions: Vec<(SourceRange, Number)>,
+    pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     /// Non-fatal errors and warnings.
-    pub errors: Vec<CompilationError>,
+    pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
     pub filenames: IndexMap<ModuleId, ModulePath>,
     /// The default planes.
     pub default_planes: Option<DefaultPlanes>,
 }
 
-impl ExecOutcome {
-    pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
-        #[cfg(feature = "artifact-graph")]
-        {
-            debug_assert!(
-                id.0 < self.scene_objects.len(),
-                "Requested object ID {} but only have {} objects",
-                id.0,
-                self.scene_objects.len()
-            );
-            self.scene_objects.get(id.0)
-        }
-        #[cfg(not(feature = "artifact-graph"))]
-        {
-            let _ = id;
-            None
+/// Per-segment freedom used by the constraint report. Mirrors
+/// [`crate::front::Freedom`] but adds an `Error` variant for when
+/// a point lookup fails.
+#[derive(Debug, Clone, Copy, PartialEq)]
+enum SegmentFreedom {
+    Free,
+    Fixed,
+    Conflict,
+    /// A required point could not be found in the scene graph.
+    Error,
+}
+
+impl From<crate::front::Freedom> for SegmentFreedom {
+    fn from(f: crate::front::Freedom) -> Self {
+        match f {
+            crate::front::Freedom::Free => Self::Free,
+            crate::front::Freedom::Fixed => Self::Fixed,
+            crate::front::Freedom::Conflict => Self::Conflict,
         }
     }
 }
 
+/// Overall constraint status of a sketch.
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
+pub enum ConstraintKind {
+    FullyConstrained,
+    UnderConstrained,
+    OverConstrained,
+    /// Analysis could not determine constraint status (e.g., a point lookup
+    /// failed due to an inconsistent scene graph). Callers decide how to treat
+    /// this — as under-constrained, over-constrained, or something else.
+    Error,
+}
+
+/// Per-sketch summary of constraint freedom analysis.
+///
+/// A sketch with no countable segments (`total_count == 0`) is reported as
+/// [`ConstraintKind::FullyConstrained`]. This is vacuously true — there are
+/// no free or conflicting segments. Callers can check `total_count == 0` to
+/// distinguish this from a genuinely constrained sketch.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SketchConstraintStatus {
+    /// The variable name of the sketch (e.g., "sketch001").
+    pub name: String,
+    /// Overall constraint status derived from per-segment freedom.
+    pub status: ConstraintKind,
+    /// Number of segments that are under-constrained (free to move).
+    pub free_count: usize,
+    /// Number of segments that are over-constrained (conflicting constraints).
+    pub conflict_count: usize,
+    /// Total number of segments analyzed.
+    pub total_count: usize,
+}
+
+/// Grouped report of all sketches by constraint status.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SketchConstraintReport {
+    pub fully_constrained: Vec<SketchConstraintStatus>,
+    pub under_constrained: Vec<SketchConstraintStatus>,
+    pub over_constrained: Vec<SketchConstraintStatus>,
+    /// Sketches where analysis encountered an error (e.g., a point lookup
+    /// failed). Callers decide how to treat these.
+    pub errors: Vec<SketchConstraintStatus>,
+}
+
+/// Compute the constraint status for a single sketch object.
+///
+/// Returns `None` if `sketch_obj` is not a sketch.
+///
+/// Note: a sketch with no countable segments (`total_count == 0`) is reported
+/// as [`ConstraintKind::FullyConstrained`]. This is vacuously true — there are
+/// no free or conflicting segments. Callers can check `total_count == 0` to
+/// distinguish this from a genuinely constrained sketch.
+pub(crate) fn sketch_constraint_status_for_sketch(
+    scene_objects: &[Object],
+    sketch_obj: &Object,
+) -> Option<SketchConstraintStatus> {
+    use crate::front::ObjectKind;
+    use crate::front::Segment;
+
+    let ObjectKind::Sketch(sketch) = &sketch_obj.kind else {
+        return None;
+    };
+
+    // Closure to look up a point's freedom by ObjectId.
+    let lookup = |id: ObjectId| -> Option<crate::front::Freedom> {
+        let obj = scene_objects.get(id.0)?;
+        if let ObjectKind::Segment {
+            segment: Segment::Point(p),
+        } = &obj.kind
+        {
+            Some(p.freedom())
+        } else {
+            None
+        }
+    };
+
+    let mut free_count: usize = 0;
+    let mut conflict_count: usize = 0;
+    let mut error_count: usize = 0;
+    let mut total_count: usize = 0;
+
+    for &seg_id in &sketch.segments {
+        let Some(seg_obj) = scene_objects.get(seg_id.0) else {
+            continue;
+        };
+        let ObjectKind::Segment { segment } = &seg_obj.kind else {
+            continue;
+        };
+        // Skip owned points — their freedom is already captured by
+        // the parent geometry (Line/Arc/Circle) that looks them up.
+        if let Segment::Point(p) = segment
+            && p.owner.is_some()
+        {
+            continue;
+        }
+        let freedom = segment
+            .freedom(lookup)
+            .map(SegmentFreedom::from)
+            .unwrap_or(SegmentFreedom::Error);
+        total_count += 1;
+        match freedom {
+            SegmentFreedom::Free => free_count += 1,
+            SegmentFreedom::Conflict => conflict_count += 1,
+            SegmentFreedom::Error => error_count += 1,
+            SegmentFreedom::Fixed => {}
+        }
+    }
+
+    let status = if error_count > 0 {
+        ConstraintKind::Error
+    } else if conflict_count > 0 {
+        ConstraintKind::OverConstrained
+    } else if free_count > 0 {
+        ConstraintKind::UnderConstrained
+    } else {
+        ConstraintKind::FullyConstrained
+    };
+
+    Some(SketchConstraintStatus {
+        name: sketch_obj.label.clone(),
+        status,
+        free_count,
+        conflict_count,
+        total_count,
+    })
+}
+
+pub(crate) fn sketch_constraint_report_from_scene_objects(scene_objects: &[Object]) -> SketchConstraintReport {
+    let mut fully_constrained = Vec::new();
+    let mut under_constrained = Vec::new();
+    let mut over_constrained = Vec::new();
+    let mut errors = Vec::new();
+
+    for obj in scene_objects {
+        let Some(entry) = sketch_constraint_status_for_sketch(scene_objects, obj) else {
+            continue;
+        };
+        match entry.status {
+            ConstraintKind::FullyConstrained => fully_constrained.push(entry),
+            ConstraintKind::UnderConstrained => under_constrained.push(entry),
+            ConstraintKind::OverConstrained => over_constrained.push(entry),
+            ConstraintKind::Error => errors.push(entry),
+        }
+    }
+
+    SketchConstraintReport {
+        fully_constrained,
+        under_constrained,
+        over_constrained,
+        errors,
+    }
+}
+
+impl ExecOutcome {
+    pub fn scene_object_by_id(&self, id: ObjectId) -> Option<&Object> {
+        debug_assert!(
+            id.0 < self.scene_objects.len(),
+            "Requested object ID {} but only have {} objects",
+            id.0,
+            self.scene_objects.len()
+        );
+        self.scene_objects.get(id.0)
+    }
+
+    /// Returns non-fatal errors. Warnings are not included.
+    pub fn errors(&self) -> impl Iterator<Item = &CompilationIssue> {
+        self.issues.iter().filter(|error| error.is_err())
+    }
+
+    /// Analyze all sketches in the execution result and group them by
+    /// constraint status (fully, under, or over constrained).
+    ///
+    /// Each segment in a sketch computes its own freedom by looking up the
+    /// freedom of its constituent points. Owned points (belonging to a
+    /// Line/Arc/Circle) are skipped to avoid double-counting.
+    pub fn sketch_constraint_report(&self) -> SketchConstraintReport {
+        sketch_constraint_report_from_scene_objects(&self.scene_objects)
+    }
+}
+
 /// Configuration for mock execution.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct MockConfig {
     pub use_prev_memory: bool,
     /// The `ObjectId` of the sketch block to execute for sketch mode. Only the
@@ -228,8 +532,17 @@ pub struct MockConfig {
     /// under-constrained.
     pub freedom_analysis: bool,
     /// The segments that were edited that triggered this execution.
-    #[cfg(feature = "artifact-graph")]
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
+    /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
+    pub drag_anchors: Vec<SegmentDragAnchor>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct SegmentDragAnchor {
+    pub segment_id: ObjectId,
+    pub target: crate::front::Point2d<Number>,
 }
 
 impl Default for MockConfig {
@@ -239,8 +552,8 @@ impl Default for MockConfig {
             use_prev_memory: true,
             sketch_block_id: None,
             freedom_analysis: true,
-            #[cfg(feature = "artifact-graph")]
             segment_ids_edited: AhashIndexSet::default(),
+            drag_anchors: Vec::new(),
         }
     }
 }
@@ -303,6 +616,20 @@ impl TagIdentifier {
         self.info.last().map(|i| &i.1)
     }
 
+    /// Get all tag info entries at the most recent epoch.
+    /// For region-mapped tags, this returns multiple entries (one per region segment).
+    pub fn get_all_cur_info(&self) -> Vec<&TagEngineInfo> {
+        let Some(cur_epoch) = self.info.last().map(|(e, _)| *e) else {
+            return vec![];
+        };
+        self.info
+            .iter()
+            .rev()
+            .take_while(|(e, _)| *e == cur_epoch)
+            .map(|(_, info)| info)
+            .collect()
+    }
+
     /// Add info from a different instance of this tag.
     pub fn merge_info(&mut self, other: &TagIdentifier) {
         assert_eq!(&self.value, &other.value);
@@ -324,6 +651,12 @@ impl TagIdentifier {
 
     pub fn geometry(&self) -> Option<Geometry> {
         self.get_cur_info().map(|info| info.geometry.clone())
+    }
+
+    pub(crate) fn is_body_created_tag(&self) -> bool {
+        self.get_cur_info().is_some_and(|info| {
+            matches!(&info.geometry, Geometry::Solid(_)) && info.path.is_none() && info.surface.is_some()
+        })
     }
 }
 
@@ -401,6 +734,12 @@ impl From<Metadata> for Vec<SourceRange> {
     }
 }
 
+impl From<&Metadata> for SourceRange {
+    fn from(meta: &Metadata) -> Self {
+        meta.source_range
+    }
+}
+
 impl From<SourceRange> for Metadata {
     fn from(source_range: SourceRange) -> Self {
         Self { source_range }
@@ -424,15 +763,16 @@ impl From<&Expr> for Metadata {
 }
 
 impl Metadata {
-    pub fn to_source_ref(meta: &[Metadata]) -> crate::front::SourceRef {
+    pub fn to_source_ref(meta: &[Metadata], node_path: Option<NodePath>) -> crate::front::SourceRef {
         if meta.len() == 1 {
             let meta = &meta[0];
             return crate::front::SourceRef::Simple {
                 range: meta.source_range,
+                node_path,
             };
         }
         crate::front::SourceRef::BackTrace {
-            ranges: meta.iter().map(|m| m.source_range).collect(),
+            ranges: meta.iter().map(|m| (m.source_range, node_path.clone())).collect(),
         }
     }
 }
@@ -458,10 +798,12 @@ pub enum ContextType {
 /// as this uses `Arc` under the hood.
 #[derive(Debug, Clone)]
 pub struct ExecutorContext {
-    pub engine: Arc<Box<dyn EngineManager>>,
+    pub engine: Arc<EngineManager>,
+    pub engine_batch: EngineBatchContext,
     pub fs: Arc<FileManager>,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
+    pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
 }
 
 /// The executor settings.
@@ -485,6 +827,25 @@ pub struct ExecutorSettings {
     pub current_file: Option<TypedPath>,
     /// Whether or not to automatically scale the grid when user zooms.
     pub fixed_size_grid: bool,
+    /// Skip sending the engine messages that are only needed to build the
+    /// artifact graph. When this is true, the artifact graph will be
+    /// incomplete. So you should only use this option if you know you don't
+    /// need the artifact graph or anything that depends on it. In that case,
+    /// skipping these commands can make execution slightly faster.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub skip_artifact_graph: bool,
+    /// If Some(N), sends a heartbeat to keep the WebSocket active, every N seconds.
+    /// If None, no heartbeats will be sent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub heartbeats: Option<u64>,
+    /// If given, sets the default backface colour.
+    /// If not, defaults to whatever the engine's default is.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_backface_color: Option<String>,
+}
+
+fn is_false(b: &bool) -> bool {
+    !*b
 }
 
 impl Default for ExecutorSettings {
@@ -497,6 +858,9 @@ impl Default for ExecutorSettings {
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            skip_artifact_graph: false,
+            heartbeats: None,
+            default_backface_color: None,
         }
     }
 }
@@ -509,14 +873,18 @@ impl From<crate::settings::types::Configuration> for ExecutorSettings {
 
 impl From<crate::settings::types::Settings> for ExecutorSettings {
     fn from(settings: crate::settings::types::Settings) -> Self {
+        let modeling_settings = settings.modeling.unwrap_or_default();
         Self {
-            highlight_edges: settings.modeling.highlight_edges.into(),
-            enable_ssao: settings.modeling.enable_ssao.into(),
-            show_grid: settings.modeling.show_scale_grid,
+            highlight_edges: modeling_settings.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling_settings.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling_settings.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
-            fixed_size_grid: settings.modeling.fixed_size_grid,
+            fixed_size_grid: modeling_settings.fixed_size_grid.unwrap_or_default().0,
+            skip_artifact_graph: false,
+            heartbeats: None,
+            default_backface_color: modeling_settings.backface_color.map(|color| color.0),
         }
     }
 }
@@ -530,13 +898,16 @@ impl From<crate::settings::types::project::ProjectConfiguration> for ExecutorSet
 impl From<crate::settings::types::ModelingSettings> for ExecutorSettings {
     fn from(modeling: crate::settings::types::ModelingSettings) -> Self {
         Self {
-            highlight_edges: modeling.highlight_edges.into(),
-            enable_ssao: modeling.enable_ssao.into(),
-            show_grid: modeling.show_scale_grid,
+            highlight_edges: modeling.highlight_edges.unwrap_or_default().into(),
+            enable_ssao: modeling.enable_ssao.unwrap_or_default().into(),
+            show_grid: modeling.show_scale_grid.unwrap_or_default(),
             replay: None,
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            skip_artifact_graph: false,
+            heartbeats: None,
+            default_backface_color: modeling.backface_color.map(|color| color.0),
         }
     }
 }
@@ -551,6 +922,9 @@ impl From<crate::settings::types::project::ProjectModelingSettings> for Executor
             project_directory: None,
             current_file: None,
             fixed_size_grid: true,
+            skip_artifact_graph: false,
+            heartbeats: None,
+            default_backface_color: None,
         }
     }
 }
@@ -574,9 +948,43 @@ impl ExecutorSettings {
 }
 
 impl ExecutorContext {
+    /// Create a new live executor context from an engine and file manager.
+    pub fn new_with_engine_and_fs(
+        engine: Arc<EngineManager>,
+        fs: Arc<FileManager>,
+        settings: ExecutorSettings,
+    ) -> Self {
+        ExecutorContext {
+            engine,
+            engine_batch: EngineBatchContext::default(),
+            fs,
+            settings,
+            context_type: ContextType::Live,
+            execution_callbacks: Default::default(),
+        }
+    }
+
+    fn clone_with_fresh_execution_batch(&self) -> Self {
+        Self {
+            engine: self.engine.clone(),
+            engine_batch: EngineBatchContext::new(),
+            fs: self.fs.clone(),
+            settings: self.settings.clone(),
+            context_type: self.context_type.clone(),
+            execution_callbacks: self.execution_callbacks.clone(),
+        }
+    }
+
+    /// Create a new live executor context from an engine using the local file manager.
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn new_with_engine(engine: Arc<EngineManager>, settings: ExecutorSettings) -> Self {
+        Self::new_with_engine_and_fs(engine, Arc::new(FileManager::new()), settings)
+    }
+
     /// Create a new default executor context.
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new(client: &kittycad::Client, settings: ExecutorSettings) -> Result<Self> {
+        let pr = std::env::var("ZOO_ENGINE_PR").ok().and_then(|s| s.parse().ok());
         let (ws, _headers) = client
             .modeling()
             .commands_ws(kittycad::modeling::CommandsWsParams {
@@ -591,7 +999,7 @@ impl ExecutorContext {
                 replay: settings.replay.clone(),
                 show_grid: if settings.show_grid { Some(true) } else { None },
                 pool: None,
-                pr: None,
+                pr,
                 unlocked_framerate: None,
                 webrtc: Some(false),
                 video_res_width: None,
@@ -599,44 +1007,38 @@ impl ExecutorContext {
             })
             .await?;
 
-        let engine: Arc<Box<dyn EngineManager>> =
-            Arc::new(Box::new(crate::engine::conn::EngineConnection::new(ws).await?));
+        let engine_conn = EngineManager::new_websocket_transport(ws, settings.heartbeats).await;
+        let engine = Arc::new(engine_conn);
 
-        Ok(Self {
-            engine,
-            fs: Arc::new(FileManager::new()),
-            settings,
-            context_type: ContextType::Live,
-        })
+        Ok(Self::new_with_engine(engine, settings))
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
-        ExecutorContext {
-            engine,
-            fs,
-            settings,
-            context_type: ContextType::Live,
-        }
+    pub fn new(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+        Self::new_with_engine_and_fs(engine, fs, settings)
     }
 
     #[cfg(not(target_arch = "wasm32"))]
     pub async fn new_mock(settings: Option<ExecutorSettings>) -> Self {
         ExecutorContext {
-            engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new_mock(engine: Arc<Box<dyn EngineManager>>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+    pub fn new_mock(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -647,29 +1049,27 @@ impl ExecutorContext {
         fs_manager: crate::fs::wasm::FileSystemManager,
         settings: ExecutorSettings,
     ) -> Result<Self, String> {
-        use crate::mock_engine;
-
-        let mock_engine = Arc::new(Box::new(
-            mock_engine::EngineConnection::new().map_err(|e| format!("Failed to create mock engine: {:?}", e))?,
-        ) as Box<dyn EngineManager>);
-
         let fs = Arc::new(FileManager::new(fs_manager));
 
         Ok(ExecutorContext {
-            engine: mock_engine,
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
             fs,
             settings,
             context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
         })
     }
 
     #[cfg(not(target_arch = "wasm32"))]
-    pub fn new_forwarded_mock(engine: Arc<Box<dyn EngineManager>>) -> Self {
+    pub fn new_forwarded_mock(engine: Arc<EngineManager>) -> Self {
         ExecutorContext {
             engine,
+            engine_batch: EngineBatchContext::default(),
             fs: Arc::new(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
+            execution_callbacks: Default::default(),
         }
     }
 
@@ -714,6 +1114,9 @@ impl ExecutorContext {
                 project_directory: None,
                 current_file: None,
                 fixed_size_grid: false,
+                skip_artifact_graph: false,
+                heartbeats: None,
+                default_backface_color: None,
             },
             None,
             engine_addr,
@@ -743,8 +1146,20 @@ impl ExecutorContext {
         exec_state.global.artifacts.clear();
 
         self.engine
-            .clear_scene(&mut exec_state.mod_local.id_generator, source_range)
-            .await
+            .clear_scene(&self.engine_batch, &mut exec_state.mod_local.id_generator, source_range)
+            .await?;
+        // The engine errors out if you toggle OIT with SSAO off.
+        // So ignore OIT settings if SSAO is off.
+        if self.settings.enable_ssao {
+            let cmd_id = exec_state.next_uuid();
+            exec_state
+                .batch_modeling_cmd(
+                    ModelingCmdMeta::with_id(exec_state, self, source_range, cmd_id),
+                    ModelingCmd::from(mcmd::SetOrderIndependentTransparency::builder().enabled(false).build()),
+                )
+                .await?;
+        }
+        Ok(())
     }
 
     pub async fn bust_cache_and_reset_scene(&self) -> Result<ExecOutcome, KclErrorWithOutputs> {
@@ -763,7 +1178,44 @@ impl ExecutorContext {
         self.eval_prelude(exec_state, SourceRange::synthetic())
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        exec_state.mut_stack().push_new_root_env(true);
+        exec_state
+            .mut_stack()
+            .push_new_root_env(true)
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+        Ok(())
+    }
+
+    fn restore_mock_memory(
+        exec_state: &mut ExecState,
+        mem: cache::SketchModeState,
+        _mock_config: &MockConfig,
+    ) -> Result<(), KclErrorWithOutputs> {
+        *exec_state.mut_stack() = mem.stack;
+        exec_state.global.module_infos = mem.module_infos;
+        exec_state.global.path_to_source_id = mem.path_to_source_id;
+        exec_state.global.id_to_source = mem.id_to_source;
+        exec_state.mod_local.constraint_state = mem.constraint_state;
+        let len = _mock_config
+            .sketch_block_id
+            .map(|sketch_block_id| sketch_block_id.0)
+            .unwrap_or(0);
+        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
+            exec_state
+                .global
+                .root_module_artifacts
+                .restore_scene_objects(scene_objects);
+        } else {
+            let message = format!(
+                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
+                mem.scene_objects.len(),
+                len
+            );
+            debug_assert!(false, "{message}");
+            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
+                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
+            )));
+        }
+
         Ok(())
     }
 
@@ -781,30 +1233,7 @@ impl ExecutorContext {
         let mut exec_state = ExecState::new_mock(self, mock_config);
         if use_prev_memory {
             match cache::read_old_memory().await {
-                Some(mem) => {
-                    *exec_state.mut_stack() = mem.stack;
-                    exec_state.global.module_infos = mem.module_infos;
-                    #[cfg(feature = "artifact-graph")]
-                    {
-                        let len = mock_config
-                            .sketch_block_id
-                            .map(|sketch_block_id| sketch_block_id.0)
-                            .unwrap_or(0);
-                        if let Some(scene_objects) = mem.scene_objects.get(0..len) {
-                            exec_state.global.root_module_artifacts.scene_objects = scene_objects.to_vec();
-                        } else {
-                            let message = format!(
-                                "Cached scene objects length {} is less than expected length from cached object ID generator {}",
-                                mem.scene_objects.len(),
-                                len
-                            );
-                            debug_assert!(false, "{message}");
-                            return Err(KclErrorWithOutputs::no_outputs(KclError::new_internal(
-                                KclErrorDetails::new(message, vec![SourceRange::synthetic()]),
-                            )));
-                        }
-                    }
-                }
+                Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
                 None => self.prepare_mem(&mut exec_state).await?,
             }
         } else {
@@ -813,7 +1242,10 @@ impl ExecutorContext {
 
         // Push a scope so that old variables can be overwritten (since we might be re-executing some
         // part of the scene).
-        exec_state.mut_stack().push_new_env_for_scope();
+        exec_state
+            .mut_stack()
+            .push_new_env_for_scope()
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
         let result = self.inner_run(program, &mut exec_state, PreserveMem::Always).await?;
 
@@ -823,16 +1255,22 @@ impl ExecutorContext {
 
         let mut stack = exec_state.stack().clone();
         let module_infos = exec_state.global.module_infos.clone();
-        #[cfg(feature = "artifact-graph")]
+        let path_to_source_id = exec_state.global.path_to_source_id.clone();
+        let id_to_source = exec_state.global.id_to_source.clone();
+        let constraint_state = exec_state.mod_local.constraint_state.clone();
         let scene_objects = exec_state.global.root_module_artifacts.scene_objects.clone();
-        #[cfg(not(feature = "artifact-graph"))]
-        let scene_objects = Default::default();
-        let outcome = exec_state.into_exec_outcome(result.0, self).await;
+        let outcome = exec_state
+            .into_exec_outcome(result.0, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
 
-        stack.squash_env(result.0);
+        stack.squash_env(result.0).map_err(KclErrorWithOutputs::no_outputs)?;
         let state = cache::SketchModeState {
             stack,
             module_infos,
+            path_to_source_id,
+            id_to_source,
+            constraint_state,
             scene_objects,
         };
         cache::write_old_memory(state).await;
@@ -872,6 +1310,7 @@ impl ExecutorContext {
                             && self
                                 .engine
                                 .reapply_settings(
+                                    &self.engine_batch,
                                     &self.settings,
                                     Default::default(),
                                     &mut cached_state.main.exec_state.id_generator,
@@ -901,6 +1340,7 @@ impl ExecutorContext {
                             if self
                                 .engine
                                 .reapply_settings(
+                                    &self.engine_batch,
                                     &self.settings,
                                     Default::default(),
                                     &mut cached_state.main.exec_state.id_generator,
@@ -940,7 +1380,16 @@ impl ExecutorContext {
 
                             if !clear_scene {
                                 // Return early we don't need to clear the scene.
-                                return Ok(cached_state.into_exec_outcome(self).await);
+                                cache::write_old_memory(
+                                    cached_state
+                                        .mock_memory_state()
+                                        .map_err(KclErrorWithOutputs::no_outputs)?,
+                                )
+                                .await;
+                                return cached_state
+                                    .into_exec_outcome(self)
+                                    .await
+                                    .map_err(KclErrorWithOutputs::no_outputs);
                             }
 
                             (
@@ -957,6 +1406,7 @@ impl ExecutorContext {
                         if self
                             .engine
                             .reapply_settings(
+                                &self.engine_batch,
                                 &self.settings,
                                 Default::default(),
                                 &mut cached_state.main.exec_state.id_generator,
@@ -972,12 +1422,30 @@ impl ExecutorContext {
                             ))
                             .await;
 
-                            return Ok(cached_state.into_exec_outcome(self).await);
+                            cache::write_old_memory(
+                                cached_state
+                                    .mock_memory_state()
+                                    .map_err(KclErrorWithOutputs::no_outputs)?,
+                            )
+                            .await;
+                            return cached_state
+                                .into_exec_outcome(self)
+                                .await
+                                .map_err(KclErrorWithOutputs::no_outputs);
                         }
                         (true, program, None)
                     }
                     CacheResult::NoAction(false) => {
-                        return Ok(cached_state.into_exec_outcome(self).await);
+                        cache::write_old_memory(
+                            cached_state
+                                .mock_memory_state()
+                                .map_err(KclErrorWithOutputs::no_outputs)?,
+                        )
+                        .await;
+                        return cached_state
+                            .into_exec_outcome(self)
+                            .await
+                            .map_err(KclErrorWithOutputs::no_outputs);
                     }
                 };
 
@@ -1001,7 +1469,7 @@ impl ExecutorContext {
                     }
                     None if clear_scene => {
                         // Pop the execution state, since we are starting fresh.
-                        let mut exec_state = cached_state.reconstitute_exec_state();
+                        let mut exec_state = cached_state.reconstitute_exec_state(self);
                         exec_state.reset(self);
 
                         self.send_clear_scene(&mut exec_state, Default::default())
@@ -1015,8 +1483,11 @@ impl ExecutorContext {
                         (exec_state, result)
                     }
                     None => {
-                        let mut exec_state = cached_state.reconstitute_exec_state();
-                        exec_state.mut_stack().restore_env(cached_state.main.result_env);
+                        let mut exec_state = cached_state.reconstitute_exec_state(self);
+                        exec_state
+                            .mut_stack()
+                            .restore_env(cached_state.main.result_env)
+                            .map_err(KclErrorWithOutputs::no_outputs)?;
 
                         let result = self
                             .run_concurrent(&program, &mut exec_state, None, PreserveMem::Always)
@@ -1060,7 +1531,10 @@ impl ExecutorContext {
         ))
         .await;
 
-        let outcome = exec_state.into_exec_outcome(result.0, self).await;
+        let outcome = exec_state
+            .into_exec_outcome(result.0, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
         Ok(outcome)
     }
 
@@ -1095,6 +1569,42 @@ impl ExecutorContext {
             self.get_universe(program, exec_state).await?
         };
 
+        // Push ModuleInstance ops for the root module's direct imports before
+        // child modules execute. This lets the live feature tree show module
+        // names immediately rather than waiting for the root module body to run.
+        // Sort by source position so they appear in source-code order (the
+        // universe_map is a HashMap with non-deterministic iteration order).
+        let mut sorted_imports: Vec<_> = universe_map.iter().collect();
+        sorted_imports.sort_by_key(|(_, import_stmt)| SourceRange::from(*import_stmt));
+        for (_path, import_stmt) in sorted_imports {
+            // Look up by the raw import filename (e.g. "car-wheel.kcl") which
+            // is the key format used by Universe, NOT the resolved absolute
+            // TypedPath that UniverseMap uses as its key.
+            let filename = match &import_stmt.path {
+                ImportPath::Kcl { filename } => filename.to_string(),
+                ImportPath::Foreign { path } => path.to_string(),
+                ImportPath::Std { .. } => continue,
+            };
+            if let Some((_, module_id, module_path, _)) = universe.get(&filename)
+                && let ModulePath::Local { value, .. } = module_path
+            {
+                let name = import_stmt
+                    .module_name()
+                    .unwrap_or_else(|| value.file_name().unwrap_or_default());
+                let source_range = SourceRange::from(import_stmt);
+                exec_state.push_op(crate::execution::cad_op::Operation::ModuleInstance {
+                    name,
+                    module_id: *module_id,
+                    glob: matches!(
+                        import_stmt.selector,
+                        crate::parsing::ast::types::ImportSelector::Glob(_)
+                    ),
+                    node_path: crate::NodePath::placeholder(),
+                    source_range,
+                });
+            }
+        }
+
         let default_planes = self.engine.get_default_planes().read().await.clone();
 
         // Run the prelude to set up the engine.
@@ -1127,17 +1637,8 @@ impl ExecutorContext {
                 // Clone before mutating.
                 let module_exec_state = exec_state.clone();
 
-                self.add_import_module_ops(
-                    exec_state,
-                    &program.ast,
-                    module_id,
-                    &module_path,
-                    source_range,
-                    &universe_map,
-                );
-
                 let repr = repr.clone();
-                let exec_ctxt = self.clone();
+                let exec_ctxt = self.clone_with_fresh_execution_batch();
                 let results_tx = results_tx.clone();
 
                 let exec_module = async |exec_ctxt: &ExecutorContext,
@@ -1167,9 +1668,11 @@ impl ExecutorContext {
                                 .await
                                 .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
-                            result.map(|val| {
-                                ModuleRepr::Foreign(geom.clone(), Some((val, exec_state.mod_local.artifacts.clone())))
-                            })
+                            // Foreign modules don't produce their own operations;
+                            // use a fresh artifact state instead of capturing the
+                            // cloned root module's artifacts (which may contain
+                            // early-pushed ModuleInstance operations).
+                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -1256,9 +1759,14 @@ impl ExecutorContext {
             }
         }
 
-        // Since we haven't technically started executing the root module yet,
-        // the operations corresponding to the imports will be missing unless we
-        // track them here.
+        // The early-pushed ModuleInstance operations have already served their
+        // purpose (firing onOperation callbacks for the live feature tree).
+        // Clear them so they don't duplicate the operations the root module
+        // body will produce when it actually executes its import statements.
+        exec_state.mod_local.artifacts.operations.clear();
+
+        // Move any remaining setup artifacts (non-operation data from the
+        // prelude, etc.) into the root state.
         exec_state
             .global
             .root_module_artifacts
@@ -1293,76 +1801,6 @@ impl ExecutorContext {
         Ok((universe, root_imports))
     }
 
-    #[cfg(not(feature = "artifact-graph"))]
-    fn add_import_module_ops(
-        &self,
-        _exec_state: &mut ExecState,
-        _program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
-        _module_id: ModuleId,
-        _module_path: &ModulePath,
-        _source_range: SourceRange,
-        _universe_map: &UniverseMap,
-    ) {
-    }
-
-    #[cfg(feature = "artifact-graph")]
-    fn add_import_module_ops(
-        &self,
-        exec_state: &mut ExecState,
-        program: &crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>,
-        module_id: ModuleId,
-        module_path: &ModulePath,
-        source_range: SourceRange,
-        universe_map: &UniverseMap,
-    ) {
-        match module_path {
-            ModulePath::Main => {
-                // This should never happen.
-            }
-            ModulePath::Local {
-                value,
-                original_import_path,
-            } => {
-                // We only want to display the top-level module imports in
-                // the Feature Tree, not transitive imports.
-                if universe_map.contains_key(value) {
-                    use crate::NodePath;
-
-                    let node_path = if source_range.is_top_level_module() {
-                        let cached_body_items = exec_state.global.artifacts.cached_body_items();
-                        NodePath::from_range(
-                            &exec_state.build_program_lookup(program.clone()),
-                            cached_body_items,
-                            source_range,
-                        )
-                        .unwrap_or_default()
-                    } else {
-                        // The frontend doesn't care about paths in
-                        // files other than the top-level module.
-                        NodePath::placeholder()
-                    };
-
-                    let name = match original_import_path {
-                        Some(value) => value.to_string_lossy(),
-                        None => value.file_name().unwrap_or_default(),
-                    };
-                    exec_state.push_op(Operation::GroupBegin {
-                        group: Group::ModuleInstance { name, module_id },
-                        node_path,
-                        source_range,
-                    });
-                    // Due to concurrent execution, we cannot easily
-                    // group operations by module. So we leave the
-                    // group empty and close it immediately.
-                    exec_state.push_op(Operation::GroupEnd);
-                }
-            }
-            ModulePath::Std { .. } => {
-                // We don't want to display stdlib in the Feature Tree.
-            }
-        }
-    }
-
     /// Perform the execution of a program.  Accept all possible parameters and
     /// output everything.
     async fn inner_run(
@@ -1381,6 +1819,7 @@ impl ExecutorContext {
         };
         self.engine
             .reapply_settings(
+                &self.engine_batch,
                 &self.settings,
                 Default::default(),
                 exec_state.id_generator(),
@@ -1396,27 +1835,32 @@ impl ExecutorContext {
 
         crate::log::log(format!(
             "Post interpretation KCL memory stats: {:#?}",
-            exec_state.stack().memory.stats
+            exec_state.stack().memory.stats()
         ));
         crate::log::log(format!("Engine stats: {:?}", self.engine.stats()));
 
         /// Write the memory of an execution to the cache for reuse in mock
         /// execution.
-        async fn write_old_memory(ctx: &ExecutorContext, exec_state: &ExecState, env_ref: EnvironmentRef) {
+        async fn write_old_memory(
+            ctx: &ExecutorContext,
+            exec_state: &ExecState,
+            env_ref: EnvironmentRef,
+        ) -> Result<(), KclError> {
             if ctx.is_mock() {
-                return;
+                return Ok(());
             }
-            let mut stack = exec_state.stack().deep_clone();
-            stack.restore_env(env_ref);
+            let mut stack = exec_state.stack().deep_clone()?;
+            stack.restore_env(env_ref)?;
             let state = cache::SketchModeState {
                 stack,
                 module_infos: exec_state.global.module_infos.clone(),
-                #[cfg(feature = "artifact-graph")]
+                path_to_source_id: exec_state.global.path_to_source_id.clone(),
+                id_to_source: exec_state.global.id_to_source.clone(),
+                constraint_state: exec_state.mod_local.constraint_state.clone(),
                 scene_objects: exec_state.global.root_module_artifacts.scene_objects.clone(),
-                #[cfg(not(feature = "artifact-graph"))]
-                scene_objects: Default::default(),
             };
             cache::write_old_memory(state).await;
+            Ok(())
         }
 
         let env_ref = match result {
@@ -1425,13 +1869,17 @@ impl ExecutorContext {
                 // Preserve memory on execution failures so follow-up mock
                 // execution can still reuse stable IDs before the error.
                 if let Some(env_ref) = env_ref {
-                    write_old_memory(self, exec_state, env_ref).await;
+                    write_old_memory(self, exec_state, env_ref)
+                        .await
+                        .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
                 }
                 return Err(exec_state.error_with_outputs(err, env_ref, default_planes));
             }
         };
 
-        write_old_memory(self, exec_state, env_ref).await;
+        write_old_memory(self, exec_state, env_ref)
+            .await
+            .map_err(|err| exec_state.error_with_outputs(err, Some(env_ref), default_planes.clone()))?;
 
         let session_data = self.engine.get_session_data().await;
 
@@ -1451,7 +1899,6 @@ impl ExecutorContext {
 
         // Because of execution caching, we may start with operations from a
         // previous run.
-        #[cfg(feature = "artifact-graph")]
         let start_op = exec_state.global.root_module_artifacts.operations.len();
 
         self.eval_prelude(exec_state, SourceRange::from(program).start_as_range())
@@ -1488,41 +1935,41 @@ impl ExecutorContext {
                 (err, env_ref)
             });
 
-        #[cfg(feature = "artifact-graph")]
+        // Fill in NodePath for operations.
+        let programs = &exec_state.build_program_lookup(program.clone());
+        let cached_body_items = exec_state.global.artifacts.cached_body_items();
+        for op in exec_state
+            .global
+            .root_module_artifacts
+            .operations
+            .iter_mut()
+            .skip(start_op)
         {
-            // Fill in NodePath for operations.
-            let programs = &exec_state.build_program_lookup(program.clone());
-            let cached_body_items = exec_state.global.artifacts.cached_body_items();
-            for op in exec_state
-                .global
-                .root_module_artifacts
-                .operations
-                .iter_mut()
-                .skip(start_op)
-            {
-                op.fill_node_paths(programs, cached_body_items);
-            }
-            for module in exec_state.global.module_infos.values_mut() {
-                if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
-                    for op in &mut outcome.artifacts.operations {
-                        op.fill_node_paths(programs, cached_body_items);
-                    }
+            op.fill_node_paths(programs, cached_body_items);
+        }
+        for module in exec_state.global.module_infos.values_mut() {
+            if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
+                for op in &mut outcome.artifacts.operations {
+                    op.fill_node_paths(programs, cached_body_items);
                 }
             }
         }
 
         // Ensure all the async commands completed.
-        self.engine.ensure_async_commands_completed().await.map_err(|e| {
-            match &exec_result {
-                Ok(env_ref) => (e, Some(*env_ref)),
-                // Prefer the execution error.
-                Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
-            }
-        })?;
+        self.engine
+            .ensure_async_commands_completed(&self.engine_batch)
+            .await
+            .map_err(|e| {
+                match &exec_result {
+                    Ok(env_ref) => (e, Some(*env_ref)),
+                    // Prefer the execution error.
+                    Err((exec_err, env_ref)) => (exec_err.clone(), *env_ref),
+                }
+            })?;
 
         // If we errored out and early-returned, there might be commands which haven't been executed
         // and should be dropped.
-        self.engine.clear_queues().await;
+        self.engine.clear_queues(&self.engine_batch).await;
 
         match exec_state.build_artifact_graph(&self.engine, program).await {
             Ok(_) => exec_result,
@@ -1535,7 +1982,6 @@ impl ExecutorContext {
     /// SAFETY: the current thread must have sole access to the memory referenced in exec_state.
     async fn eval_prelude(&self, exec_state: &mut ExecState, source_range: SourceRange) -> Result<(), KclError> {
         if exec_state.stack().memory.requires_std() {
-            #[cfg(feature = "artifact-graph")]
             let initial_ops = exec_state.mod_local.artifacts.operations.len();
 
             let path = vec!["std".to_owned(), "prelude".to_owned()];
@@ -1545,14 +1991,13 @@ impl ExecutorContext {
                 .await?;
             let (module_memory, _) = self.exec_module_for_items(id, exec_state, source_range).await?;
 
-            exec_state.mut_stack().memory.set_std(module_memory);
+            exec_state.mut_stack().memory.set_std(module_memory)?;
 
             // Operations generated by the prelude are not useful, so clear them
             // out.
             //
             // TODO: Should we also clear them out of each module so that they
             // don't appear in test output?
-            #[cfg(feature = "artifact-graph")]
             exec_state.mod_local.artifacts.operations.truncate(initial_ops);
         }
 
@@ -1564,6 +2009,7 @@ impl ExecutorContext {
         // Zoom to fit.
         self.engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
                 &ModelingCmd::from(
@@ -1581,6 +2027,7 @@ impl ExecutorContext {
         let resp = self
             .engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::execution::SourceRange::default(),
                 &ModelingCmd::from(mcmd::TakeSnapshot::builder().format(ImageFormat::Png).build()),
@@ -1607,6 +2054,7 @@ impl ExecutorContext {
         let resp = self
             .engine
             .send_modeling_cmd(
+                &self.engine_batch,
                 uuid::Uuid::new_v4(),
                 crate::SourceRange::default(),
                 &kittycad_modeling_cmds::ModelingCmd::Export(
@@ -1722,20 +2170,15 @@ pub(crate) async fn parse_execute_with_project_dir(
     let program = crate::Program::parse_no_errs(code)?;
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().map_err(
-            |err| {
-                KclError::new_internal(crate::errors::KclErrorDetails::new(
-                    format!("Failed to create mock engine connection: {err}"),
-                    vec![SourceRange::default()],
-                ))
-            },
-        )?)),
+        engine: Arc::new(EngineManager::new_mock()),
+        engine_batch: EngineBatchContext::default(),
         fs: Arc::new(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,
             ..Default::default()
         },
         context_type: ContextType::Mock,
+        execution_callbacks: Default::default(),
     };
     let mut exec_state = ExecState::new(&exec_ctxt);
     let result = exec_ctxt.run(&program, &mut exec_state).await?;
@@ -1757,15 +2200,20 @@ pub(crate) struct ExecTestResults {
     exec_state: ExecState,
 }
 
+#[cfg(test)]
+impl ExecTestResults {
+    pub(crate) fn root_module_artifact_commands(&self) -> &[ArtifactCommand] {
+        &self.exec_state.global.root_module_artifacts.commands
+    }
+}
+
 /// There are several places where we want to traverse a KCL program or find a symbol in it,
 /// but because KCL modules can import each other, we need to traverse multiple programs.
 /// This stores multiple programs, keyed by their module ID for quick access.
-#[cfg(feature = "artifact-graph")]
 pub struct ProgramLookup {
     programs: IndexMap<ModuleId, crate::parsing::ast::types::Node<crate::parsing::ast::types::Program>>,
 }
 
-#[cfg(feature = "artifact-graph")]
 impl ProgramLookup {
     // TODO: Could this store a reference to KCL programs instead of owning them?
     // i.e. take &state::ModuleInfoMap instead?
@@ -1796,24 +2244,281 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{
-        ModuleId,
-        errors::{KclErrorDetails, Severity},
-        exec::NumericType,
-        execution::{memory::Stack, types::RuntimeType},
-    };
+    use crate::ModuleId;
+    use crate::errors::KclErrorDetails;
+    use crate::errors::Severity;
+    use crate::exec::NumericType;
+    use crate::execution::memory::Stack;
+    use crate::execution::types::RuntimeType;
 
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
-        memory.memory.get_from_unchecked(name, env).unwrap().to_owned()
+        memory.memory.get_from_unchecked(name, env).unwrap()
+    }
+
+    async fn execute_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValueView> {
+        execute_outcome_with_backend(code, backend).await.variables
+    }
+
+    async fn execute_outcome_with_backend(code: &str, backend: memory::MemoryBackendKind) -> ExecOutcome {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("test execution outcome should collect variables");
+        ctx.close().await;
+        outcome
+    }
+
+    async fn execute_error_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValueView> {
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let error = ctx.run(&program, &mut exec_state).await.unwrap_err();
+        ctx.close().await;
+        error.variables
+    }
+
+    async fn execute_project_variables_with_backend(
+        main_code: &str,
+        files: &[(&str, &str)],
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValueView> {
+        let tmpdir = tempfile::TempDir::with_prefix("zma_kcl_memory_backend_project").unwrap();
+        for (name, contents) in files {
+            tokio::fs::write(tmpdir.path().join(name), contents).await.unwrap();
+        }
+
+        let program = crate::Program::parse_no_errs(main_code).unwrap();
+        let ctx = ExecutorContext {
+            engine: Arc::new(EngineManager::new_mock()),
+            engine_batch: EngineBatchContext::default(),
+            fs: Arc::new(crate::fs::FileManager::new()),
+            settings: ExecutorSettings {
+                project_directory: Some(crate::TypedPath(tmpdir.path().into())),
+                ..Default::default()
+            },
+            context_type: ContextType::Mock,
+            execution_callbacks: Default::default(),
+        };
+        let mut exec_state = ExecState::new_with_memory_backend(&ctx, backend);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("test execution outcome should collect variables");
+        ctx.close().await;
+        outcome.variables
+    }
+
+    async fn run_with_caching_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValueView> {
+        let _backend = memory::MemoryBackendKind::override_for_test(backend);
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        let cached = ctx.run_with_caching(program).await.unwrap();
+
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        ctx.close().await;
+        cached.variables
+    }
+
+    async fn run_mock_variables_with_backend(
+        code: &str,
+        backend: memory::MemoryBackendKind,
+    ) -> IndexMap<String, KclValueView> {
+        let _backend = memory::MemoryBackendKind::override_for_test(backend);
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let first = crate::Program::parse_no_errs("x = 2").unwrap();
+        ctx.run_mock(
+            &first,
+            &MockConfig {
+                use_prev_memory: false,
+                ..Default::default()
+            },
+        )
+        .await
+        .unwrap();
+
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+
+        clear_mem_cache().await;
+        ctx.close().await;
+        outcome.variables
+    }
+
+    fn sorted_variable_keys(variables: &IndexMap<String, KclValueView>) -> Vec<String> {
+        let mut keys = variables.keys().cloned().collect::<Vec<_>>();
+        keys.sort();
+        keys
+    }
+
+    fn assert_number_variable(variables: &IndexMap<String, KclValueView>, key: &str, expected: f64) {
+        let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
+        let KclValueView::Number { value, .. } = value else {
+            panic!("expected `{key}` to be a number, got {value:?}");
+        };
+        assert_eq!(*value, expected, "{key}: {value:?}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn exec_outcome_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = x + 1\narr = [x, y]";
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["arr", "x", "y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn error_output_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = missing + 1";
+
+        let legacy = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["x"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn cached_execution_variables_match_between_memory_backends() {
+        let code = "x = 2\ny = x + 1";
+
+        let legacy = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["x", "y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_variables_match_between_memory_backends() {
+        let code = "y = x + 1";
+
+        let legacy = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_eq!(sorted_variable_keys(&legacy), vec!["y"]);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn module_imports_and_exported_closures_match_between_memory_backends() {
+        let module_code = r#"
+export base = 40
+
+export fn addBase(n) {
+  return n + base
+}
+"#;
+        let main_code = r#"
+import base, addBase from 'math.kcl'
+import 'math.kcl'
+
+named = addBase(n = 2)
+qualified = math::addBase(n = 1)
+direct = math::base
+"#;
+
+        let legacy = execute_project_variables_with_backend(
+            main_code,
+            &[("math.kcl", module_code)],
+            memory::MemoryBackendKind::Legacy,
+        )
+        .await;
+        let arena = execute_project_variables_with_backend(
+            main_code,
+            &[("math.kcl", module_code)],
+            memory::MemoryBackendKind::Arena,
+        )
+        .await;
+
+        assert_number_variable(&legacy, "named", 42.0);
+        assert_number_variable(&legacy, "qualified", 41.0);
+        assert_number_variable(&legacy, "direct", 40.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_variables_match_between_memory_backends() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [1, 0])
+  line2 = line(start = [1, 0], end = [0, 1])
+}
+lineCount = 2
+"#;
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert!(legacy.contains_key("sketch001"), "actual: {legacy:?}");
+        assert_number_variable(&legacy, "lineCount", 2.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn tag_call_stack_lookup_matches_between_memory_backends() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10, tag = $seg01)
+
+segLength = segLen(seg01)
+"#;
+
+        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        assert_number_variable(&legacy, "segLength", 10.0);
+        assert_eq!(arena, legacy);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_transpiler_exec_outcome_variables_match_between_memory_backends() {
+        let code = r#"
+sketch001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let legacy = execute_outcome_with_backend(code, memory::MemoryBackendKind::Legacy).await;
+        let arena = execute_outcome_with_backend(code, memory::MemoryBackendKind::Arena).await;
+
+        let legacy_transpiled = transpile_old_sketch_to_new(&legacy, &program, "sketch001").unwrap();
+        let arena_transpiled = transpile_old_sketch_to_new(&arena, &program, "sketch001").unwrap();
+        assert_eq!(arena_transpiled, legacy_transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_execute_warn() {
         let text = "@blah";
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
+        let errs = result.exec_state.issues();
         assert_eq!(errs.len(), 1);
         assert_eq!(errs[0].severity, crate::errors::Severity::Warning);
         assert!(
@@ -1854,6 +2559,123 @@ part001 = startSketchOn(XY)
 yo2 = hmm([identifierGuy + 5])"#;
 
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn multiple_sketch_blocks_do_not_reuse_on_cache_name() {
+        let code = r#"
+firstProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  edge2 = line(start = [var 4mm, var 0mm], end = [var 4mm, var 3mm])
+  edge3 = line(start = [var 4mm, var 3mm], end = [var 0mm, var 3mm])
+  edge4 = line(start = [var 0mm, var 3mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+
+secondProfile = sketch(on = offsetPlane(XY, offset = 6mm)) {
+  edge5 = line(start = [var 1mm, var 1mm], end = [var 5mm, var 1mm])
+  edge6 = line(start = [var 5mm, var 1mm], end = [var 5mm, var 4mm])
+  edge7 = line(start = [var 5mm, var 4mm], end = [var 1mm, var 4mm])
+  edge8 = line(start = [var 1mm, var 4mm], end = [var 1mm, var 1mm])
+  coincident([edge5.end, edge6.start])
+  coincident([edge6.end, edge7.start])
+  coincident([edge7.end, edge8.start])
+  coincident([edge8.end, edge5.start])
+}
+
+firstSolid = extrude(region(point = [2mm, 1mm], sketch = firstProfile), length = 2mm)
+secondSolid = extrude(region(point = [2mm, 2mm], sketch = secondProfile), length = 2mm)
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        assert!(result.exec_state.issues().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_block_artifact_preserves_standard_plane_name() {
+        let code = r#"
+sketch001 = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 1mm])
+}
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        let sketch_blocks = result
+            .exec_state
+            .global
+            .artifacts
+            .graph
+            .values()
+            .filter_map(|artifact| match artifact {
+                Artifact::SketchBlock(block) => Some(block),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+
+        assert_eq!(sketch_blocks.len(), 1);
+        assert_eq!(sketch_blocks[0].standard_plane, Some(crate::engine::PlaneName::NegYz));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn issue_10639_blend_example_with_two_sketch_blocks_executes() {
+        let code = r#"
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
+  line2 = line(start = [var 5.5mm, var 0mm], end = [var 5.5mm, var 3mm])
+  line3 = line(start = [var 5.5mm, var 3mm], end = [var 3.9mm, var 2.8mm])
+  line4 = line(start = [var 4.1mm, var 3mm], end = [var 4.5mm, var -0.2mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+sketch002 = sketch(on = -XZ) {
+  line5 = line(start = [var -5.3mm, var -0.1mm], end = [var -3.5mm, var -0.1mm])
+  line6 = line(start = [var -3.5mm, var -0.1mm], end = [var -3.5mm, var 3.1mm])
+  line7 = line(start = [var -3.5mm, var 4.5mm], end = [var -5.4mm, var 4.5mm])
+  line8 = line(start = [var -5.3mm, var 3.1mm], end = [var -5.3mm, var -0.1mm])
+  coincident([line5.end, line6.start])
+  coincident([line6.end, line7.start])
+  coincident([line7.end, line8.start])
+  coincident([line8.end, line5.start])
+}
+
+region001 = region(point = [-4.4mm, 2mm], sketch = sketch002)
+extrude001 = extrude(region001, length = -2mm, bodyType = SURFACE)
+region002 = region(point = [4.8mm, 1.5mm], sketch = sketch001)
+extrude002 = extrude(region002, length = -2mm, bodyType = SURFACE)
+
+myBlend = blend([extrude001.sketch.tags.line7, extrude002.sketch.tags.line3])
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        assert!(result.exec_state.issues().is_empty());
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn issue_10741_point_circle_coincident_executes() {
+        let code = r#"
+sketch001 = sketch(on = YZ) {
+  circle1 = circle(start = [var -2.67mm, var 1.8mm], center = [var -1.53mm, var 0.78mm])
+  line1 = line(start = [var -1.05mm, var 2.22mm], end = [var -3.58mm, var -0.78mm])
+  coincident([line1.start, circle1])
+}
+"#;
+
+        let result = parse_execute(code).await.unwrap();
+        assert!(
+            result
+                .exec_state
+                .issues()
+                .iter()
+                .all(|issue| issue.severity != Severity::Error),
+            "unexpected execution issues: {:#?}",
+            result.exec_state.issues()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2143,8 +2965,8 @@ answer = returnX()"#;
     async fn test_override_prelude() {
         let text = "PI = 3.0";
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
-        assert!(errs.is_empty());
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2160,8 +2982,8 @@ foo([0, 1])
 type Other = MyTy | Helix
 "#;
         let result = parse_execute(text).await.unwrap();
-        let errs = result.exec_state.errors();
-        assert!(errs.is_empty());
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2773,18 +3595,72 @@ w = f() + f()
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let program = crate::Program::parse_no_errs("x = 2").unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
-        assert_eq!(result.variables.get("x").unwrap().as_f64().unwrap(), 2.0);
+        assert_number_variable(&result.variables, "x", 2.0);
 
         let ctx2 = ExecutorContext::new_mock(None).await;
         let program2 = crate::Program::parse_no_errs("z = x + 1").unwrap();
         let result = ctx2.run_mock(&program2, &MockConfig::default()).await.unwrap();
-        assert_eq!(result.variables.get("z").unwrap().as_f64().unwrap(), 3.0);
+        assert_number_variable(&result.variables, "z", 3.0);
 
         ctx.close().await;
         ctx2.close().await;
     }
 
-    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_then_add_extrude_then_mock_again() {
+        let code = "s = sketch(on = XY) {
+    line1 = line(start = [0.05, 0.05], end = [3.88, 0.81])
+    line2 = line(start = [3.88, 0.81], end = [0.92, 4.67])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [0.92, 4.67], end = [0.05, 0.05])
+    coincident([line2.end, line3.start])
+    coincident([line1.start, line3.end])
+}
+    ";
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        assert!(result.variables.contains_key("s"), "actual: {:?}", &result.variables);
+
+        let code2 = code.to_owned()
+            + "
+region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1)
+    ";
+        let program2 = crate::Program::parse_no_errs(&code2).unwrap();
+        let result = ctx.run_mock(&program2, &MockConfig::default()).await.unwrap();
+        assert!(
+            result.variables.contains_key("region001"),
+            "actual: {:?}",
+            &result.variables
+        );
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn face_parent_solid_stays_compact_for_repeated_sketch_on_face() {
+        let code = format!(
+            r#"{}
+
+face7 = faceOf(solid6, face = r6.tags.line1)
+r7 = squareRegion(onSurface = face7)
+solid7 = extrude(r7, length = width)
+"#,
+            include_str!("../../tests/endless_impeller/input.kcl")
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let solid7 = mem_get_json(result.exec_state.stack(), result.mem_env, "solid7");
+        assert!(matches!(solid7, KclValue::Solid { .. }), "actual: {solid7:?}");
+
+        let face7 = match mem_get_json(result.exec_state.stack(), result.mem_env, "face7") {
+            KclValue::Face { value } => value,
+            value => panic!("expected face7 to be a Face, got {value:?}"),
+        };
+        assert!(face7.parent_solid.creator_sketch_id.is_some());
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_has_stable_ids() {
         let ctx = ExecutorContext::new_mock(None).await;
@@ -2809,7 +3685,78 @@ w = f() + f()
         ctx2.close().await;
     }
 
-    #[cfg(feature = "artifact-graph")]
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_memory_restore_preserves_module_maps() {
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_mock(None).await;
+        let cold_start = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        ctx.run_mock(&crate::Program::empty(), &cold_start).await.unwrap();
+
+        let mut mem = cache::read_old_memory().await.unwrap();
+        assert!(
+            mem.path_to_source_id.len() > 3,
+            "expected prelude imports to populate multiple modules, got {:?}",
+            mem.path_to_source_id
+        );
+        mem.constraint_state.insert(
+            crate::front::ObjectId(1),
+            indexmap::indexmap! {
+                crate::execution::ConstraintKey::LineCircle([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]) =>
+                    crate::execution::ConstraintState::Tangency(crate::execution::TangencyMode::LineCircle(ezpz::LineSide::Left))
+            },
+        );
+
+        let mut exec_state = ExecState::new_mock(&ctx, &MockConfig::default());
+        ExecutorContext::restore_mock_memory(&mut exec_state, mem.clone(), &MockConfig::default()).unwrap();
+
+        assert_eq!(exec_state.global.path_to_source_id, mem.path_to_source_id);
+        assert_eq!(exec_state.global.id_to_source, mem.id_to_source);
+        assert_eq!(exec_state.global.module_infos, mem.module_infos);
+        assert_eq!(exec_state.mod_local.constraint_state, mem.constraint_state);
+
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn run_with_caching_no_action_refreshes_mock_memory() {
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+
+        let ctx = ExecutorContext::new_with_engine(Arc::new(EngineManager::new_mock()), Default::default());
+        let program = crate::Program::parse_no_errs(
+            r#"sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+"#,
+        )
+        .unwrap();
+
+        ctx.run_with_caching(program.clone()).await.unwrap();
+        let baseline_memory = cache::read_old_memory().await.unwrap();
+        assert!(
+            !baseline_memory.scene_objects.is_empty(),
+            "expected engine execution to persist full-scene mock memory"
+        );
+
+        cache::write_old_memory(cache::SketchModeState::new_for_tests()).await;
+        assert_eq!(cache::read_old_memory().await.unwrap().scene_objects.len(), 0);
+
+        ctx.run_with_caching(program).await.unwrap();
+        let refreshed_memory = cache::read_old_memory().await.unwrap();
+        assert_eq!(refreshed_memory.scene_objects, baseline_memory.scene_objects);
+        assert_eq!(refreshed_memory.path_to_source_id, baseline_memory.path_to_source_id);
+        assert_eq!(refreshed_memory.id_to_source, baseline_memory.id_to_source);
+
+        cache::bust_cache().await;
+        clear_mem_cache().await;
+        ctx.close().await;
+    }
+
     #[tokio::test(flavor = "multi_thread")]
     async fn sim_sketch_mode_real_mock_real() {
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
@@ -2823,12 +3770,12 @@ profile001 = startProfile(sketch001, at = [0, 0])
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
         let result = ctx.run_with_caching(program).await.unwrap();
-        assert_eq!(result.operations.len(), 1);
+        assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
         let mock_ctx = ExecutorContext::new_mock(None).await;
         let mock_program = crate::Program::parse_no_errs(code).unwrap();
         let mock_result = mock_ctx.run_mock(&mock_program, &MockConfig::default()).await.unwrap();
-        assert_eq!(mock_result.operations.len(), 1);
+        assert_eq!(mock_result.operations.get(&ModuleId::default()).unwrap().len(), 1);
 
         let code2 = code.to_owned()
             + r#"
@@ -2836,7 +3783,7 @@ extrude001 = extrude(profile001, length = 10)
 "#;
         let program2 = crate::Program::parse_no_errs(&code2).unwrap();
         let result = ctx.run_with_caching(program2).await.unwrap();
-        assert_eq!(result.operations.len(), 2);
+        assert_eq!(result.operations.get(&ModuleId::default()).unwrap().len(), 2);
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -2887,10 +3834,10 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Error);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Error);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         let code = r#"@settings(experimentalFeatures = allow)
@@ -2899,8 +3846,8 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
-        assert!(errors.is_empty());
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
 
         let code = r#"@settings(experimentalFeatures = warn)
 startSketchOn(XY)
@@ -2908,10 +3855,10 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Warning);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Warning);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         let code = r#"@settings(experimentalFeatures = deny)
@@ -2920,10 +3867,10 @@ startSketchOn(XY)
   |> elliptic(center = [0, 0], angleStart = segAng(start), angleEnd = 160deg, majorRadius = 2, minorRadius = 3)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Error);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Error);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         let code = r#"@settings(experimentalFeatures = foo)
@@ -2944,10 +3891,10 @@ fn inc(@x, @(experimental = true) amount? = 1) {
 answer = inc(5, amount = 2)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
-        assert_eq!(errors.len(), 1);
-        assert_eq!(errors[0].severity, Severity::Error);
-        let msg = &errors[0].message;
+        let issues = result.exec_state.issues();
+        assert_eq!(issues.len(), 1);
+        assert_eq!(issues[0].severity, Severity::Error);
+        let msg = &issues[0].message;
         assert!(msg.contains("experimental"), "found {msg}");
 
         // If the parameter isn't used, there's no warning.
@@ -2959,7 +3906,245 @@ fn inc(@x, @(experimental = true) amount? = 1) {
 answer = inc(5)
 "#;
         let result = parse_execute(code).await.unwrap();
-        let errors = result.exec_state.errors();
-        assert_eq!(errors.len(), 0);
+        let issues = result.exec_state.issues();
+        assert!(issues.is_empty(), "issues={issues:#?}");
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn experimental_scalar_fixed_constraint() {
+        let code_left = r#"@settings(experimentalFeatures = warn)
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  point1.at[0] == 1mm
+}
+"#;
+        // It's symmetric. Flipping the binary operator has the same behavior.
+        let code_right = r#"@settings(experimentalFeatures = warn)
+sketch(on = XY) {
+  point1 = point(at = [var 0mm, var 0mm])
+  1mm == point1.at[0]
+}
+"#;
+
+        for code in [code_left, code_right] {
+            let result = parse_execute(code).await.unwrap();
+            let issues = result.exec_state.issues();
+            let Some(error) = issues
+                .iter()
+                .find(|issue| issue.message.contains("scalar fixed constraint is experimental"))
+            else {
+                panic!("found {issues:#?}");
+            };
+            assert_eq!(error.severity, Severity::Warning);
+        }
+    }
+
+    // START Mock Execution tests
+    // Ideally, we would do this as part of all sim tests and delete these one-off tests.
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_arc_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_arc/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_arc_arc_math_only_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_arc_arc_math_only/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_line_circle_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_line_circle/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_tangent_circle_circle_native_executes_with_mock_engine() {
+        let code = std::fs::read_to_string("tests/tangent_circle_circle_native/input.kcl").unwrap();
+        parse_execute(&code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_shadowed_get_opposite_edge_binding_does_not_panic() {
+        let code = r#"startX = 2
+
+baseSketch = sketch(on = XY) {
+  yoyo = line(start = [startX, 0], end = [7, 6])
+  line2 = line(start = [7, 6], end = [7, 12])
+  hi = line(start = [7, 12], end = [startX, 0])
+}
+
+baseRegion = region(point = [5.5, 6], sketch = baseSketch)
+myExtrude = extrude(
+  baseRegion,
+  length = 5,
+  tagEnd = $endCap,
+  tagStart = $startCap,
+)
+yodawg = getCommonEdge(faces = [
+  baseRegion.tags.hi,
+  baseRegion.tags.yoyo
+])
+
+cutSketch = sketch(on = YZ) {
+  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+}
+
+cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
+extrude001 = extrude(cutRegion, length = 5)
+solid001 = subtract(myExtrude, tools = extrude001)
+
+yoyo = getOppositeEdge(baseRegion.tags.hi)
+fillet(solid001, radius = 0.1, tags = yoyo)
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
+    // END Mock Execution tests
+
+    // Sketch constraint report tests
+
+    async fn run_constraint_report(kcl: &str) -> SketchConstraintReport {
+        let program = crate::Program::parse_no_errs(kcl).unwrap();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let mut exec_state = ExecState::new(&ctx);
+        let (env_ref, _) = ctx.run(&program, &mut exec_state).await.unwrap();
+        let outcome = exec_state
+            .into_exec_outcome(env_ref, &ctx)
+            .await
+            .expect("constraint report test outcome should collect variables");
+        let report = outcome.sketch_constraint_report();
+        ctx.close().await;
+        report
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn warn_when_sketch_is_over_constrained() {
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -10.64mm, var 26.44mm], end = [var 13.05mm, var 5.52mm])
+  fixed([line1.start, ORIGIN])
+  fixed([line1.start, [20, 20]])
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        let Some(warning) = issues.iter().find(|issue| issue.message.contains("over-constrained")) else {
+            panic!("expected over-constrained warning; found {issues:#?}");
+        };
+        assert_eq!(warning.severity, Severity::Warning);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn no_warning_when_sketch_is_not_over_constrained() {
+        // Under-constrained sketch should not emit the over-constrained warning.
+        let code = r#"
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+        let issues = result.exec_state.issues();
+        assert!(
+            !issues.iter().any(|issue| issue.message.contains("over-constrained")),
+            "did not expect over-constrained warning; found {issues:#?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_fully_constrained() {
+        // All points are fully constrained via equality constraints.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 0);
+        assert_eq!(report.over_constrained.len(), 0);
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.fully_constrained[0].status, ConstraintKind::FullyConstrained);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_under_constrained() {
+        // No constraints at all — all points are free.
+        let kcl = r#"
+sketch(on = YZ) {
+  line1 = line(start = [var 1.32mm, var -1.93mm], end = [var 6.08mm, var 2.51mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.fully_constrained.len(), 0);
+        assert_eq!(report.under_constrained.len(), 1);
+        assert_eq!(report.over_constrained.len(), 0);
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.under_constrained[0].status, ConstraintKind::UnderConstrained);
+        assert!(report.under_constrained[0].free_count > 0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_over_constrained() {
+        // Conflicting distance constraints on the same pair of points.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+  distance([line1.start, line1.end]) == 100mm
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(report.over_constrained.len(), 1);
+        assert_eq!(report.errors.len(), 0);
+        assert_eq!(report.over_constrained[0].status, ConstraintKind::OverConstrained);
+        assert!(report.over_constrained[0].conflict_count > 0);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_constraint_report_multiple_sketches() {
+        // Two sketches: one fully constrained, one under-constrained.
+        let kcl = r#"
+@settings(experimentalFeatures = allow)
+
+s1 = sketch(on = YZ) {
+  line1 = line(start = [var 2mm, var 8mm], end = [var 5mm, var 7mm])
+  line1.start.at[0] == 2
+  line1.start.at[1] == 8
+  line1.end.at[0] == 5
+  line1.end.at[1] == 7
+}
+
+s2 = sketch(on = XZ) {
+  line1 = line(start = [var 1mm, var 2mm], end = [var 3mm, var 4mm])
+}
+"#;
+        let report = run_constraint_report(kcl).await;
+        assert_eq!(
+            report.fully_constrained.len()
+                + report.under_constrained.len()
+                + report.over_constrained.len()
+                + report.errors.len(),
+            2,
+            "Expected 2 sketches total"
+        );
+        assert_eq!(report.fully_constrained.len(), 1);
+        assert_eq!(report.under_constrained.len(), 1);
     }
 }

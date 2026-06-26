@@ -1,0 +1,47 @@
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -0.13mm, var 0.12mm], end = [var 0.13mm, var 0.12mm])
+  line2 = line(start = [var 0.13mm, var 0.12mm], end = [var 0.13mm, var -0.13mm])
+  line3 = line(start = [var 0.13mm, var -0.13mm], end = [var -0.12mm, var -0.13mm])
+  line4 = line(start = [var -0.12mm, var -0.13mm], end = [var -0.13mm, var 0.12mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  equalLength([line3, line4])
+  distance([line4.start, line4.end]) == 0.25mm
+  line5 = line(start = [var -0.13mm, var 0.12mm], end = [var 0mm, var 0mm], construction = true)
+  coincident([line5.start, line4.end])
+  coincident([line5.end, ORIGIN])
+  line6 = line(start = [var 0mm, var 0mm], end = [var 0.13mm, var 0.12mm], construction = true)
+  coincident([line6.start, line5.end])
+  coincident([line6.end, line2.start])
+  line7 = line(start = [var 0mm, var 0mm], end = [var 0.13mm, var -0.13mm], construction = true)
+  coincident([line7.start, line6.start])
+  coincident([line7.end, line3.start])
+  line8 = line(start = [var 0mm, var 0mm], end = [var -0.12mm, var -0.13mm], construction = true)
+  coincident([line8.start, line7.start])
+  coincident([line8.end, line4.start])
+  equalLength([line8, line5, line6, line7])
+}
+profile = region(point = [0, 0], sketch = sketch001)
+
+sketch002 = sketch(on = YZ) {
+  line1 = line(start = [var -0.01mm, var 0mm], end = [var -0.68mm, var 3.86mm])
+  arc1 = arc(start = [var 0.66mm, var 5.31mm], end = [var -0.68mm, var 3.86mm], center = [var 0.55mm, var 4.07mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  horizontal([line1.start, ORIGIN])
+}
+path = [sketch002.line1, sketch002.arc1]
+
+sweep1 = sweep(path, profile, version = 2)
+|> translate(x = -4, y = 0, z = 0)
+
+// This causes a segfault.
+sweep2 = mirror3d(sweep1, across = YZ)

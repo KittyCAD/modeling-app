@@ -1,5 +1,5 @@
 import { hasProperty, isArray, isRecord } from '@src/lib/utils'
-import { type Object3D, type Group, BufferGeometry, Material } from 'three'
+import { BufferGeometry, type Group, Material, type Object3D } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
 /**
@@ -11,9 +11,8 @@ export function disposeGroupChildren(rootGroup: Group): void {
   // Recursively traverse and dispose of child objects
   for (let i = rootGroup.children.length - 1; i >= 0; i--) {
     const child = rootGroup.children[i]
-    disposeObject(child)
-    // After disposing resources, remove the child from the group
     rootGroup.remove(child)
+    disposeObject(child)
   }
 }
 

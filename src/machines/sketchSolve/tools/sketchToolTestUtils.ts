@@ -1,11 +1,13 @@
-import { vi } from 'vitest'
 import type {
-  SceneGraphDelta,
   ApiObject,
+  SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { emptyOperationsByModule } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
+import { Themes } from '@src/lib/theme'
+import { vi } from 'vitest'
 
 /**
  * Helper to create a minimal valid SceneGraphDelta for testing
@@ -40,9 +42,9 @@ export function createSceneGraphDelta(
     new_objects: newObjectIds,
     invalidates_ids: false,
     exec_outcome: {
-      errors: [],
+      issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
@@ -57,10 +59,12 @@ export function createPointApiObject({
   id,
   x = 0,
   y = 0,
+  owner = null,
 }: {
   id: number
   x?: number
   y?: number
+  owner?: number | null
 }): ApiObject {
   return {
     id,
@@ -73,7 +77,7 @@ export function createPointApiObject({
           y: { value: y, units: 'Mm' },
         },
         ctor: null,
-        owner: null,
+        owner,
         freedom: 'Free',
         constraints: [],
       },
@@ -81,7 +85,7 @@ export function createPointApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -92,10 +96,12 @@ export function createLineApiObject({
   id,
   start,
   end,
+  owner,
 }: {
   id: number
   start: number
   end: number
+  owner?: number
 }): ApiObject {
   return {
     id,
@@ -105,6 +111,7 @@ export function createLineApiObject({
         type: 'Line',
         start,
         end,
+        owner,
         ctor: {
           type: 'Line',
           start: {
@@ -123,7 +130,7 @@ export function createLineApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -172,7 +179,86 @@ export function createArcApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
+
+/**
+ * Helper to create a Circle ApiObject
+ */
+export function createCircleApiObject({
+  id,
+  center,
+  start,
+}: {
+  id: number
+  center: number
+  start: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'Circle',
+        center,
+        start,
+        ctor: {
+          type: 'Circle',
+          center: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          construction: false,
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
+
+export function createControlPointSplineApiObject({
+  id,
+  controls,
+  degree = Math.min(3, Math.max(1, controls.length - 1)),
+}: {
+  id: number
+  controls: number[]
+  degree?: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'ControlPointSpline',
+        controls,
+        degree,
+        ctor: {
+          type: 'ControlPointSpline',
+          points: controls.map(() => ({
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          })),
+          construction: false,
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -184,10 +270,10 @@ export function createArcApiObject({
 export function createMockSceneInfra(): SceneInfra {
   return {
     setCallbacks: vi.fn(),
+    getClientSceneScaleFactor: vi.fn(() => 1),
+    theme: Themes.Light,
     scene: {
-      getObjectByName: vi.fn(() => ({
-        getObjectByName: vi.fn(() => null),
-      })),
+      getObjectByName: vi.fn(() => null),
     },
   } as unknown as SceneInfra
 }
@@ -196,8 +282,18 @@ export function createMockRustContext(): RustContext {
   return {
     addSegment: vi.fn(),
     addConstraint: vi.fn(),
+    chainSegment: vi.fn(),
     editSegments: vi.fn(),
+    editDistanceConstraintLabelPosition: vi.fn(),
     deleteObjects: vi.fn(),
+    settingsActor: {
+      send: vi.fn(),
+      getSnapshot: vi.fn(() => ({
+        context: {
+          app: {},
+        },
+      })),
+    },
   } as unknown as RustContext
 }
 

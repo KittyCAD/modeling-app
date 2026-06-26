@@ -1,9 +1,9 @@
 import { use, useEffect, useMemo, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, toSync } from '@src/lib/utils'
 import { useSelector } from '@xstate/react'
@@ -26,11 +26,9 @@ function CommandBarPathInput({
   stepBack: () => void
   onSubmit: (event: unknown) => void
 }) {
-  const { commands } = useApp()
-  const { kclManager } = useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { wasmPromise, commands } = useApp()
+  const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,
@@ -85,13 +83,14 @@ function CommandBarPathInput({
 
   // Fire on component mount, if outside of e2e test context
   useEffect(() => {
-    window.electron?.process.env.NODE_ENV !== 'test' &&
+    if (window.electron?.process.env.NODE_ENV !== 'test') {
       toSync(pickFileThroughNativeDialog, reportRejection)()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
         data-testid="cmd-bar-arg-name"
         className="flex items-center mx-4 my-4 border-b border-b-chalkboard-100 dark:border-b-chalkboard-80"
@@ -100,6 +99,7 @@ function CommandBarPathInput({
           {arg.displayName || arg.name}
         </span>
         <input
+          {...noAutofillInputProps}
           type="text"
           data-testid="cmd-bar-arg-value"
           id="arg-form"

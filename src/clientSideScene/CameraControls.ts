@@ -29,7 +29,7 @@ import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { Signal } from '@src/lib/signal'
+import { Signal as LegacySignal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err } from '@src/lib/trap'
 import {
@@ -40,9 +40,9 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import { degToRad } from 'three/src/math/MathUtils'
 import { type ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
+import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
@@ -128,8 +128,7 @@ export class CameraControls {
   perspectiveFovBeforeOrtho = 45
   touchControlManager: HammerManager | null = null
   enableTouchControls = true
-  // TODO: proper dependency injection
-  getSettings: (() => SettingsType) | null = null
+  getSettings: () => SettingsType
 
   // NOTE: Duplicated state across Provider and singleton. Mapped from settingsMachine
   _setting_allowOrbitInSketchMode = false
@@ -164,6 +163,34 @@ export class CameraControls {
       0 // NDC z: 0 (halfway between camera near and far)
     )
     return ndc.unproject(camera || this.camera)
+  }
+
+  /**
+   * Normalize stream element coordinates into the "window" shape
+   * that the engine expects.
+   */
+  private streamToEngineWindowCoordinates({
+    clientX,
+    clientY,
+  }: {
+    clientX: number
+    clientY: number
+  }) {
+    const { left, top, width, height } = this.domElement.getBoundingClientRect()
+    if (width === 0 || height === 0) {
+      return { x: 0, y: 0 }
+    }
+
+    return {
+      x: Math.round(
+        ((clientX - left) / width) *
+          this.engineCommandManager.streamDimensions.width
+      ),
+      y: Math.round(
+        ((clientY - top) / height) *
+          this.engineCommandManager.streamDimensions.height
+      ),
+    }
   }
 
   get engineCameraProjection(): CameraProjectionType {
@@ -242,16 +269,17 @@ export class CameraControls {
     interaction: CameraDragInteractionType,
     coordinates: [number, number]
   ) => {
+    const window = this.streamToEngineWindowCoordinates({
+      clientX: coordinates[0],
+      clientY: coordinates[1],
+    })
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.engineCommandManager.sendSceneCommand({
       type: 'modeling_cmd_req',
       cmd: {
         type: 'camera_drag_move',
         interaction: interaction,
-        window: {
-          x: coordinates[0],
-          y: coordinates[1],
-        },
+        window,
       },
       cmd_id: uuidv4(),
     })
@@ -280,9 +308,11 @@ export class CameraControls {
   constructor(
     domElement: HTMLCanvasElement,
     engineCommandManager: ConnectionManager,
+    getSettings: typeof this.getSettings,
     isOrtho = false
   ) {
     this.engineCommandManager = engineCommandManager
+    this.getSettings = getSettings
     this.camera = isOrtho ? new OrthographicCamera() : new PerspectiveCamera()
     this.camera.up.set(0, 0, 1)
     this.camera.far = 20000
@@ -399,7 +429,7 @@ export class CameraControls {
     this._isCamMovingCallback = cb
   }
 
-  public readonly cameraChange = new Signal()
+  public readonly cameraChange = new LegacySignal()
 
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {
@@ -429,12 +459,16 @@ export class CameraControls {
     this.handleStart()
 
     if (this.syncDirection === 'engineToClient') {
+      const window = this.streamToEngineWindowCoordinates({
+        clientX: event.clientX,
+        clientY: event.clientY,
+      })
       void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_start',
           interaction,
-          window: { x: event.clientX, y: event.clientY },
+          window,
         },
         cmd_id: uuidv4(),
       })
@@ -546,12 +580,16 @@ export class CameraControls {
     if (this.syncDirection === 'engineToClient') {
       const interaction = this.getInteractionType(event)
       if (interaction === 'none') return
+      const window = this.streamToEngineWindowCoordinates({
+        clientX: event.clientX,
+        clientY: event.clientY,
+      })
       void this.engineCommandManager.sendSceneCommand({
         type: 'modeling_cmd_req',
         cmd: {
           type: 'camera_drag_end',
           interaction,
-          window: { x: event.clientX, y: event.clientY },
+          window,
         },
         cmd_id: uuidv4(),
       })
@@ -1546,7 +1584,7 @@ const viewHeightFactor = (fov: number) => {
       /    | viewHeight/2
      /     |
     /      |
-   /↙️fov/2 |
+   /↙fov/2 |
   /________|
   \        |
    \._._._.|

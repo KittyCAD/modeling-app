@@ -1,7 +1,7 @@
-import fsSync from 'node:fs'
 import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'path'
+import type { DeviceFlowAuthorization } from '@root/interface'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
@@ -9,8 +9,9 @@ import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import { join } from 'node:path'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -21,29 +22,37 @@ const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
-const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+export const openExternal = (url: unknown) => {
+  const allowedURL = getAllowedExternalURL(url)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
+  }
+
+  return ipcRenderer.invoke('shell.openExternal', allowedURL)
+}
 const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
-const takeElectronWindowScreenshot = ({
-  width,
-  height,
-}: {
-  width: number
-  height: number
-}) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const startDeviceFlow = (host: string): Promise<string> =>
+const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
+const cancelDeviceFlow = (): Promise<void> =>
+  ipcRenderer.invoke('cancelDeviceFlow')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
 ) =>
   ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
 const onUpdateDownloadStart = (
-  callback: (value: { version: string }) => void
+  callback: (value: AutoUpdateDownloadProgress) => void
 ) =>
   ipcRenderer.on('update-download-start', (_event: any, value) =>
+    callback(value)
+  )
+const onUpdateDownloadProgress = (
+  callback: (value: AutoUpdateDownloadProgress) => void
+) =>
+  ipcRenderer.on('update-download-progress', (_event: any, value) =>
     callback(value)
   )
 const onUpdateChecking = (callback: () => void) =>
@@ -56,6 +65,10 @@ const appRestart = () => ipcRenderer.invoke('app.restart')
 const appCheckForUpdates = () => ipcRenderer.invoke('app.checkForUpdates')
 const getAppTestProperty = (propertyName: string) =>
   ipcRenderer.invoke('app.testProperty', propertyName)
+const getMachineApiRunning = (): Promise<boolean> =>
+  ipcRenderer.invoke('machine-api.get-state')
+const setMachineApiState = (signal: 'on' | 'off'): Promise<boolean> =>
+  ipcRenderer.invoke('machine-api.set-state', signal)
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -81,7 +94,7 @@ const watchFileOn = (
   if (!watchers) {
     watchers = new Map()
   }
-  const watcher = chokidar.watch(path, { depth: 1 })
+  const watcher = chokidar.watch(path, { depth: 1, ignoreInitial: true })
   watcher.on('all', callback)
   watchers.set(key, { watcher, callback })
   fsWatchListeners.set(path, watchers)
@@ -105,11 +118,7 @@ const watchFileOff = (path: string, key: string) => {
     fsWatchListeners.set(path, watchers)
   }
 }
-const copy = fs.cp
 const readFile = fs.readFile
-// It seems like from the node source code this does not actually block but also
-// don't trust me on that (jess).
-const exists = (path: string) => fsSync.existsSync(path)
 const rename = (prev: string, next: string) => fs.rename(prev, next)
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
@@ -145,8 +154,8 @@ export async function move(
       const bundledContentsResults = await Promise.all(
         sourceContents.map((relPath) =>
           move(
-            join(source.toString(), relPath),
-            join(destination.toString(), relPath)
+            path.join(source.toString(), relPath),
+            path.join(destination.toString(), relPath)
           )
         )
       )
@@ -197,44 +206,7 @@ export async function move(
 
 // Electron has behavior where it doesn't clone the prototype chain over.
 // So we need to call stat.isDirectory on this side.
-async function statIsDirectory(path: string): Promise<boolean> {
-  try {
-    const res = await stat(path)
-    return res.isDirectory()
-  } catch (e) {
-    if (e === 'ENOENT') {
-      console.error('File does not exist', e)
-      return false
-    }
-    return false // either way we don't know if it is a directory
-  }
-}
-
 const getPath = async (name: string) => ipcRenderer.invoke('app.getPath', name)
-
-const canReadWriteDirectory = async (
-  path: string
-): Promise<{ value: boolean; error: unknown } | Error> => {
-  const isDirectory = await statIsDirectory(path)
-  if (!isDirectory) {
-    return new Error('path is not a directory. Do not send a file path.')
-  }
-
-  // bitwise OR to check read and write permissions
-  try {
-    const canReadWrite = await fs.access(
-      path,
-      fs.constants.R_OK | fs.constants.W_OK
-    )
-    // This function returns undefined. If it cannot access the path it will throw an error
-    return canReadWrite === undefined
-      ? { value: true, error: undefined }
-      : { value: false, error: undefined }
-  } catch (e) {
-    console.error(e)
-    return { value: false, error: e }
-  }
-}
 
 const exposeProcessEnvs = (varNames: Array<string>) => {
   const envs: Record<string, string> = {}
@@ -285,23 +257,19 @@ const createFallbackMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', { page: 'fallback' })
 }
 
-// Given the application menu, try to enable the menu
+// Given the active native menu, try to enable the menu item.
 const enableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('enable-menu', {
     menuId,
   })
 }
 
-// Given the application menu, try to disable the menu
+// Given the active native menu, try to disable the menu item.
 const disableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('disable-menu', {
     menuId,
   })
 }
-
-// Get the user data folder according to Electron
-const getPathUserData = async (): Promise<string> =>
-  ipcRenderer.invoke('get-path-userdata')
 
 /**
  * Gotcha: Even if the callback function is the same function in JS memory
@@ -326,22 +294,22 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
+  cancelDeviceFlow,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.
   watchFileOn,
   watchFileOff,
+  access: fs.access,
   copyFile: fs.copyFile,
   readFile,
   writeFile,
-  exists,
   readdir,
   rename,
   rm: fs.rm,
-  path,
   stat,
-  statIsDirectory,
   mkdir: fs.mkdir,
+  move,
   // opens a dialog
   open,
   save,
@@ -354,9 +322,7 @@ contextBridge.exposeInMainWorld('electron', {
   arch: process.arch,
   platform: process.platform,
   version: process.version,
-  join: path.join.bind(path),
-  sep: path.sep,
-  takeElectronWindowScreenshot,
+  path: path,
   os: {
     isMac,
     isWindows,
@@ -384,20 +350,20 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateChecking,
   onUpdateNotAvailable,
   onUpdateDownloadStart,
+  onUpdateDownloadProgress,
   onUpdateDownloaded,
   onUpdateError,
   appRestart,
   appCheckForUpdates,
   getArgvParsed,
   resizeWindow,
+  getMachineApiRunning,
+  setMachineApiState,
   createHomePageMenu,
   createModelingPageMenu,
   createFallbackMenu,
   enableMenu,
   disableMenu,
   menuOn,
-  canReadWriteDirectory,
-  copy,
-  move,
-  getPathUserData,
+  cp: fs.cp,
 })

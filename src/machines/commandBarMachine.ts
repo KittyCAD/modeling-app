@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
   CommandArgument,
@@ -6,14 +7,51 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
-import type { MachineManager } from '@src/lib/MachineManager'
+import { isDesktop } from '@src/lib/isDesktop'
 import { err } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
+
+type CommandSubmitPromise = PromiseLike<unknown>
+
+function isCommandSubmitPromise(
+  result: unknown
+): result is CommandSubmitPromise {
+  return (
+    typeof result === 'object' &&
+    result !== null &&
+    'then' in result &&
+    typeof result.then === 'function'
+  )
+}
+
+function handleCommandSubmitResult(commandName: string, result: unknown) {
+  if (!result) return
+
+  if (isCommandSubmitPromise(result)) {
+    Promise.resolve(result)
+      .then((resolved) => {
+        if (resolved instanceof Error) {
+          toast.error(resolved.message)
+        }
+      })
+      .catch((error: unknown) => {
+        reportRejection(error)
+        toast.error(`Failed to execute command: ${commandName}`)
+      })
+    return
+  }
+
+  if (result instanceof Error) {
+    toast.error(result.message)
+  }
+}
 
 export type CommandBarInput = {
   commands: Command[]
@@ -27,6 +65,7 @@ export type CommandBarContext = CommandBarInput & {
   reviewValidationError?: string
   machineManager: MachineManager
   kclManager?: KclManager
+  userFeatures?: UserFeaturesService
 }
 
 export type CommandBarMachineEvent =
@@ -62,6 +101,7 @@ export type CommandBarMachineEvent =
       type: 'Remove commands'
       data: { commands: Command[] }
     }
+  | { type: 'Set userFeatures'; data: UserFeaturesService }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
   | {
       type: 'xstate.done.actor.validateSingleArgument'
@@ -121,6 +161,12 @@ export const commandBarMachine = setup({
         return event.data
       },
     }),
+    'Set userFeatures': assign({
+      userFeatures: ({ event }) => {
+        assertEvent(event, 'Set userFeatures')
+        return event.data
+      },
+    }),
     'Execute command': ({ context, event }) => {
       const { selectedCommand } = context
       if (!selectedCommand) return
@@ -135,9 +181,15 @@ export const commandBarMachine = setup({
           resolvedArgs[argName] =
             typeof argValue === 'function' ? argValue(context) : argValue
         }
-        selectedCommand?.onSubmit(resolvedArgs)
+        const result = selectedCommand?.onSubmit(resolvedArgs)
+        if (result) {
+          handleCommandSubmitResult(selectedCommand.name, result)
+        }
       } else {
-        selectedCommand?.onSubmit({ context, event })
+        const result = selectedCommand?.onSubmit({ context, event })
+        if (result) {
+          handleCommandSubmitResult(selectedCommand.name, result)
+        }
       }
     },
     'Set review validation error': assign({
@@ -324,6 +376,33 @@ export const commandBarMachine = setup({
             : !argConfig.required)
       )
     },
+    // Only for add-kcl-file-to-project on web
+    'All required arguments provided': ({ context }) => {
+      if (isDesktop()) return false
+      const { selectedCommand, argumentsToSubmit } = context
+      if (
+        selectedCommand?.name !== 'add-kcl-file-to-project' ||
+        !selectedCommand?.args
+      )
+        return false
+      return Object.entries(selectedCommand.args).every(
+        ([argName, argConfig]) => {
+          if (
+            typeof argConfig.hidden === 'function'
+              ? argConfig.hidden(context)
+              : argConfig.hidden
+          )
+            return true
+          const isRequired =
+            typeof argConfig.required === 'function'
+              ? argConfig.required(context)
+              : argConfig.required
+          if (!isRequired) return true
+          const value = argumentsToSubmit[argName]
+          return value !== undefined && value !== null && value !== ''
+        }
+      )
+    },
     'Has selected command': ({ context }) => !!context.selectedCommand,
   },
   actors: {
@@ -381,7 +460,7 @@ export const commandBarMachine = setup({
                     )
                   } else {
                     // Default message if there is not a custom one sent
-                    toast.error(`Unable to validate ${argName}`)
+                    toast.error(`Unable to validate ${argName}.`)
                     return reject(`unable to validate ${argName}}`)
                   }
                 }
@@ -565,6 +644,10 @@ export const commandBarMachine = setup({
           guard: 'All arguments are skippable',
         },
         {
+          target: 'Checking Arguments',
+          guard: 'All required arguments provided',
+        },
+        {
           target: 'Gathering arguments',
           actions: ['Set current argument to first non-skippable'],
         },
@@ -674,6 +757,13 @@ export const commandBarMachine = setup({
     },
   },
   on: {
+    'Set kclManager': {
+      actions: 'Set kclManager',
+    },
+    'Set userFeatures': {
+      actions: 'Set userFeatures',
+    },
+
     Close: {
       target: '.Closed',
       actions: 'Clear selected command',

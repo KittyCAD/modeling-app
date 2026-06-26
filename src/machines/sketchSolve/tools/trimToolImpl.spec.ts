@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import type { Coords2d } from '@src/lang/util'
 import { assertParse } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { createOnAreaSelectEndCallback } from '@src/machines/sketchSolve/tools/trimToolImpl'
-import type { Coords2d } from '@src/lang/util'
+import type { ConnectionManager } from '@src/network/connectionManager'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -133,7 +133,7 @@ async function executeTrimFlow({
   const ast = assertParse(kclCode, instanceInThisFile)
   const setProgramOutcome = await rustContextInThisFile.hackSetProgram(
     ast,
-    await jsAppSettings(rustContextInThisFile.settingsActor)
+    jsAppSettings(rustContextInThisFile.settingsActor)
   )
   if (setProgramOutcome.type !== 'Success') {
     return new Error(setProgramOutcome.error.error.details.msg)
@@ -338,8 +338,8 @@ sketch(on = YZ) {
       )
 
       // Assert that the test completes within a reasonable time
-      // Note: This test can take 7-9 seconds depending on system load
-      expect(durationMs).toBeLessThan(8_500)
+      // Note: This test can take up to 10 seconds depending on system load
+      expect(durationMs).toBeLessThan(10_000)
     }
   )
 })

@@ -11,9 +11,12 @@ Blend a transitional edge along a tagged path, smoothing the sharp edge.
 fillet(
   @solid: Solid,
   radius: number(Length),
-  tags: [Edge; 1+],
+  tags?: [Edge; 1+],
+  edges?: [any],
   tolerance?: number(Length),
   tag?: TagDecl,
+  legacyMethod?: bool,
+  version?: number(_),
 ): Solid
 ```
 
@@ -27,9 +30,12 @@ will smoothly blend the transition.
 |----------|------|-------------|----------|
 | `solid` | [`Solid`](/docs/kcl-std/types/std-types-Solid) | The solid whose edges should be filletted | Yes |
 | `radius` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The radius of the fillet | Yes |
-| `tags` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The paths you want to fillet | Yes |
+| `tags` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The paths you want to fillet (legacy API) | No |
+| `edges` | [[`any`](/docs/kcl-std/types/std-types-any)] | **Experimental.** Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with: - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based) | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
 | `tag` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | Create a new tag which refers to this fillet | No |
+| `legacyMethod` | [`bool`](/docs/kcl-std/types/std-types-bool) | **Deprecated as of KCL 2.0.** You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm. If true, revert to older engine SSI algorithm. Defaults to false. | No |
+| `version` | [`number(_)`](/docs/kcl-std/types/std-types-number) | **Experimental.** What version of the fillet algorithm to use. Defaults to 1. 0 means "let the Zoo engine choose whichever version is best", 1 is the original Zoo fillet algorithm, 2 is the newer algorithm (supports rolling ball fillets). | No |
 
 ### Returns
 
@@ -113,6 +119,50 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet1.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+blockProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+  horizontal(edge1)
+  vertical(edge2)
+  horizontal(edge3)
+  vertical(edge4)
+}
+
+block = extrude(region(point = [3mm, 2mm], sketch = blockProfile), length = 3, tagEnd = $top)
+
+tabProfile = startSketchOn(block, face = top)
+  |> startProfile(at = [1mm, 1mm])
+  |> line(end = [4mm, 0mm], tag = $tabEdge)
+  |> line(end = [0mm, 1mm])
+  |> line(end = [-4mm, 0mm])
+  |> close()
+
+blockWithTab = extrude(tabProfile, length = 1mm)
+filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the fillet function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-solid-fillet2_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-solid-fillet2.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

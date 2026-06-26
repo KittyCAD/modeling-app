@@ -21,6 +21,9 @@ translate(
 This is really useful for assembling parts together. You can create a part
 and then move it to the correct location.
 
+By default, this does a local translation, around the sketch/body's coordinate system.
+To translate around the global scene coordinate system, use `global = true`.
+
 Translate is really useful for sketches if you want to move a sketch
 and then rotate it using the `rotate` function to create a loft.
 

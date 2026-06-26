@@ -1,5 +1,12 @@
 import { Popover } from '@headlessui/react'
-import { use, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  type CSSProperties,
+  use,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import toast from 'react-hot-toast'
 
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -9,11 +16,13 @@ const shouldAlwaysShowOverlays = () =>
   localStorage.getItem('showAllOverlays') === 'true'
 
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
+import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   ARROWHEAD,
   DEBUG_SHOW_BOTH_SCENES,
@@ -25,33 +34,33 @@ import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import type { ConstrainInfo } from '@src/lang/std/stdTypes'
-import { topLevelRange } from '@src/lang/util'
-import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
-import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { cameraMouseDragGuards } from '@src/lib/cameraControls'
-import type { CameraSystem } from '@src/lib/cameraControls'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { err, reportRejection, trap } from '@src/lib/trap'
-import { throttle, toSync } from '@src/lib/utils'
-import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import { ClientSideFileDropper } from '@src/clientSideScene/image/ClientSideFileDropper'
 import { getImageTransformCursor } from '@src/clientSideScene/image/ImageTransformUI'
+import type { ConstrainInfo } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
+import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import type { CameraSystem } from '@src/lib/cameraControls'
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
+import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
   const [isTween, setIsTween] = useState(false)
 
   const { state } = useModelingContext()
-  const { sceneInfra } = useSingletons()
+  const {
+    kclManager: { sceneInfra },
+  } = useSingletons()
 
   useEffect(() => {
     sceneInfra.camControls.setIsCamMovingCallback(
@@ -64,7 +73,7 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
 
   if (DEBUG_SHOW_BOTH_SCENES || !isCamMoving)
     return { hideClient: false, hideServer: false }
-  let hideServer = state.matches('Sketch')
+  let hideServer = state.matches('Sketch') || state.matches('sketchSolveMode')
   if (isTween) {
     hideServer = false
   }
@@ -72,15 +81,20 @@ function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   return { hideClient: !hideServer, hideServer }
 }
 
+export const DEFAULT_SKETCH_SOLVE_STREAM_DIMMING = 0.8
+
 export const ClientSideScene = ({
   cameraControls,
   enableTouchControls,
+  sketchSolveStreamDimming = DEFAULT_SKETCH_SOLVE_STREAM_DIMMING,
 }: {
   cameraControls: CameraSystem
   enableTouchControls: boolean
+  sketchSolveStreamDimming?: number
 }) => {
-  const { engineCommandManager, sceneEntitiesManager, sceneInfra } =
-    useSingletons()
+  const {
+    kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
+  } = useSingletons()
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
 
@@ -193,17 +207,34 @@ export const ClientSideScene = ({
     cursor = 'crosshair'
   }
 
+  const inSketchMode = state.matches('Sketch')
+  const inSketchSolveMode = state.matches('sketchSolveMode')
+  const shouldApplyStreamDimming =
+    !hideClient && !hideServer && (inSketchMode || inSketchSolveMode)
+  const streamDimmingOpacity = hideServer
+    ? 1
+    : shouldApplyStreamDimming
+      ? inSketchSolveMode
+        ? sketchSolveStreamDimming
+        : DEFAULT_SKETCH_SOLVE_STREAM_DIMMING
+      : null
+
+  const sceneStyle: CSSProperties & { '--tw-bg-opacity'?: number } = { cursor }
+  if (streamDimmingOpacity !== null) {
+    sceneStyle['--tw-bg-opacity'] = streamDimmingOpacity
+  }
+
   return (
     <ClientSideFileDropper>
       <div
         ref={containerRef}
-        style={{ cursor: cursor }}
+        style={sceneStyle}
         data-testid="client-side-scene"
         className={`absolute inset-0 h-full w-full transition-all duration-300 ${
           hideClient ? 'opacity-0' : 'opacity-100'
-        } ${hideServer ? 'bg-chalkboard-10 dark:bg-chalkboard-100' : ''} ${
-          !hideClient && !hideServer && state.matches('Sketch')
-            ? 'bg-chalkboard-10/80 dark:bg-chalkboard-100/80'
+        } ${
+          hideServer || shouldApplyStreamDimming
+            ? 'bg-chalkboard-10 dark:bg-chalkboard-100'
             : ''
         }`}
       ></div>
@@ -697,7 +728,7 @@ const ConstraintSymbol = ({
             } catch (e) {
               console.log('error', e)
             }
-            toast.success('Constraint removed')
+            toast.success('Constraint removed.')
           }
         }, reportRejection)}
       >
@@ -772,7 +803,9 @@ const throttled = (sceneInfra: SceneInfra) =>
 
 export const CamDebugSettings = () => {
   const { commands } = useApp()
-  const { sceneInfra } = useSingletons()
+  const {
+    kclManager: { sceneInfra },
+  } = useSingletons()
   const [camSettings, setCamSettings] = useState<ReactCameraProperties>(
     sceneInfra.camControls.reactCameraProperties
   )

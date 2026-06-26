@@ -1,26 +1,31 @@
+import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
+import { toUtf16 } from '@src/lang/errors'
 import { executeAstMock } from '@src/lang/langHelpers'
+import { forceSuffix } from '@src/lang/util'
 import {
+  type KclValueView,
   type SourceRange,
-  type KclValue,
   formatNumberValue,
   parse,
   resultIsOk,
 } from '@src/lang/wasm'
 import type { KclExpression } from '@src/lib/commandTypes'
-import { err } from '@src/lib/trap'
 import type RustContext from '@src/lib/rustContext'
-import { forceSuffix } from '@src/lang/util'
+import { err } from '@src/lib/trap'
 import { roundOff } from '@src/lib/utils'
-import type { Expr } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Vector2 } from 'three'
-import { toUtf16 } from '@src/lang/errors'
 
 export const DUMMY_VARIABLE_NAME = '__result__'
 
 // Type guard for number value items
-type KclNumber<T = KclValue> = T extends { type: 'Number' } ? T : never
-function isNumberValueItem(item: KclValue): item is KclNumber {
+type KclNumber<T = KclValueView> = T extends { type: 'Number' } ? T : never
+function isNumberValueItem(item: KclValueView): item is KclNumber {
   return item.type === 'Number'
+}
+
+type KclString<T = KclValueView> = T extends { type: 'String' } ? T : never
+function isStringValueItem(item: KclValueView): item is KclString {
+  return item.type === 'String'
 }
 
 /**
@@ -35,6 +40,7 @@ export async function getCalculatedKclExpressionValue(
   rustContext: RustContext,
   options?: {
     allowArrays?: boolean
+    allowStringArrays?: boolean
   }
 ) {
   // Create a one-line program that assigns the value to a variable
@@ -76,10 +82,10 @@ export async function getCalculatedKclExpressionValue(
       }
     }
 
-    // Validate that all array elements are numbers
     const allElementsAreNumbers = varValue.value.every(isNumberValueItem)
+    const allElementsAreStrings = varValue.value.every(isStringValueItem)
 
-    if (!allElementsAreNumbers) {
+    if (!allElementsAreNumbers && !options.allowStringArrays) {
       const valueAsString = 'NAN'
       return {
         astNode: variableDeclaratorAstNode,
@@ -87,8 +93,18 @@ export async function getCalculatedKclExpressionValue(
       }
     }
 
-    const arrayValues = varValue.value.map((item: KclValue) => {
-      if (isNumberValueItem(item)) {
+    if (!allElementsAreNumbers && !allElementsAreStrings) {
+      const valueAsString = 'NAN'
+      return {
+        astNode: variableDeclaratorAstNode,
+        valueAsString,
+      }
+    }
+
+    const arrayValues = varValue.value.map((item: KclValueView) => {
+      if (isStringValueItem(item)) {
+        return JSON.stringify(item.value)
+      } else if (isNumberValueItem(item)) {
         const formatted = formatNumberValue(item.value, item.ty, wasmInstance)
         if (!err(formatted)) {
           return formatted
@@ -120,7 +136,8 @@ export async function getCalculatedKclExpressionValue(
     return formatted
   })()
   // Prefer the formatted value with units.  Fallback to the raw value.
-  const resultRawValue = varValue?.value
+  const resultRawValue =
+    varValue && 'value' in varValue ? varValue.value : undefined
   const valueAsString = resultValueWithUnits
     ? resultValueWithUnits
     : typeof resultRawValue === 'number'
@@ -138,6 +155,7 @@ export async function stringToKclExpression(
   providedRustContext: RustContext,
   options?: {
     allowArrays?: boolean
+    allowStringArrays?: boolean
   }
 ) {
   const calculatedResult = await getCalculatedKclExpressionValue(

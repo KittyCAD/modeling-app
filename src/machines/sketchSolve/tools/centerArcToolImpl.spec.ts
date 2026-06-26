@@ -1,15 +1,38 @@
-import { describe, it, expect, vi } from 'vitest'
+import type {
+  ApiObject,
+  SceneGraphDelta,
+  SourceDelta,
+} from '@rust/kcl-lib/bindings/FrontendApi'
+import { emptyOperationsByModule } from '@src/lang/wasm'
 import {
+  createArcActor,
+  finalizeArcActor,
+  getArcPointIdsForSegment,
   projectPointOntoArcRadius,
   sendResultToParent,
   storeCreatedArcResult,
 } from '@src/machines/sketchSolve/tools/centerArcToolImpl'
-import type {
-  SceneGraphDelta,
-  SourceDelta,
-  ApiObject,
-} from '@rust/kcl-lib/bindings/FrontendApi'
+import {
+  createMockKclManager,
+  createMockRustContext,
+} from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import { describe, expect, it, vi } from 'vitest'
 import type { DoneActorEvent } from 'xstate'
+
+type FinalizingArcEvent = {
+  type: 'xstate.done.actor.0.Center arc tool.Finalizing arc'
+  output: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }
+}
+type CreatingArcEvent = {
+  type: 'xstate.done.actor.0.Center arc tool.Creating arc'
+  output: {
+    kclSource: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+  }
+}
 
 // Helper to create a minimal valid SceneGraphDelta for testing
 function createSceneGraphDelta(
@@ -41,9 +64,9 @@ function createSceneGraphDelta(
     new_objects: newObjectIds,
     invalidates_ids: false,
     exec_outcome: {
-      errors: [],
+      issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
@@ -80,7 +103,7 @@ function createPointApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
@@ -131,11 +154,35 @@ function createArcApiObject({
     label: '',
     comments: '',
     artifact_id: '0',
-    source: { type: 'Simple', range: [0, 0, 0] },
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
   }
 }
 
 describe('centerArcToolImpl', () => {
+  describe('getArcPointIdsForSegment', () => {
+    it('returns center, start, and end point ids for the active draft arc', () => {
+      const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const startPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
+      const endPoint = createPointApiObject({ id: 3, x: 0, y: 10 })
+      const arcObj = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+      })
+      const sceneGraphDelta = createSceneGraphDelta([
+        centerPoint,
+        startPoint,
+        endPoint,
+        arcObj,
+      ])
+
+      expect(
+        getArcPointIdsForSegment(sceneGraphDelta.new_graph.objects, 4)
+      ).toEqual([1, 2, 3])
+    })
+  })
+
   describe('projectPointOntoArcRadius', () => {
     it('should project a point onto the circle defined by center and start', () => {
       const center: [number, number] = [0, 0]
@@ -241,7 +288,7 @@ describe('centerArcToolImpl', () => {
 
       const event = {
         output: {
-          kclSource: { text: 'test' } as SourceDelta,
+          kclSource: { text: 'test' },
           sceneGraphDelta,
         },
       } as DoneActorEvent<{
@@ -306,7 +353,7 @@ describe('centerArcToolImpl', () => {
   })
 
   describe('sendResultToParent', () => {
-    it('should extract IDs from scene graph and return context updates', () => {
+    it('should extract IDs from scene graph and persist finalized arcs', () => {
       const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
       const startPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
       const endPoint = createPointApiObject({ id: 3, x: 0, y: 0 })
@@ -328,16 +375,13 @@ describe('centerArcToolImpl', () => {
         },
       }
 
-      const event = {
+      const event: FinalizingArcEvent = {
+        type: 'xstate.done.actor.0.Center arc tool.Finalizing arc',
         output: {
-          kclSource: { text: 'test' } as SourceDelta,
+          kclSource: { text: 'test' },
           sceneGraphDelta,
         },
-      } as DoneActorEvent<{
-        kclSource?: SourceDelta
-        sceneGraphDelta?: SceneGraphDelta
-        error?: string
-      }>
+      }
 
       const context = {
         sceneGraphDelta: {} as SceneGraphDelta,
@@ -354,6 +398,7 @@ describe('centerArcToolImpl', () => {
         data: {
           sourceDelta: { text: 'test' },
           sceneGraphDelta,
+          checkpointId: null,
         },
       })
 
@@ -361,6 +406,53 @@ describe('centerArcToolImpl', () => {
       expect(result.arcId).toBe(4)
       expect(result.arcEndPointId).toBe(3)
       expect(result.sceneGraphDelta).toBe(sceneGraphDelta)
+    })
+
+    it('should keep created draft arcs in-memory until finalized', () => {
+      const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const startPoint = createPointApiObject({ id: 2, x: 0, y: 0 })
+      const endPoint = createPointApiObject({ id: 3, x: 0, y: 0 })
+      const arcObj = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+      })
+
+      const sceneGraphDelta = createSceneGraphDelta(
+        [centerPoint, startPoint, endPoint, arcObj],
+        [1, 2, 3, 4]
+      )
+
+      const mockSelf = {
+        _parent: {
+          send: vi.fn(),
+        },
+      }
+
+      const event: CreatingArcEvent = {
+        type: 'xstate.done.actor.0.Center arc tool.Creating arc',
+        output: {
+          kclSource: { text: 'test' },
+          sceneGraphDelta,
+        },
+      }
+
+      sendResultToParent({
+        event,
+        self: mockSelf as any,
+        context: { sceneGraphDelta: {} as SceneGraphDelta } as any,
+      } as any)
+
+      expect(mockSelf._parent.send).toHaveBeenCalledWith({
+        type: 'update sketch outcome',
+        data: {
+          sourceDelta: { text: 'test' },
+          sceneGraphDelta,
+          checkpointId: null,
+          writeToDisk: false,
+        },
+      })
     })
 
     it('should return empty object if output has error', () => {
@@ -397,6 +489,302 @@ describe('centerArcToolImpl', () => {
       } as any)
 
       expect(result).toEqual({})
+    })
+  })
+
+  describe('snap constraints', () => {
+    it('creates a coincident constraint for the snapped center point only during draft creation', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const centerPoint = createPointApiObject({ id: 1, x: 0, y: 0 })
+      const startPoint = createPointApiObject({ id: 2, x: 10, y: 0 })
+      const endPoint = createPointApiObject({ id: 3, x: 10, y: 0 })
+      const arcObj = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+      })
+      ;(rustContext.addSegment as any).mockResolvedValue({
+        kclSource: { text: 'arc' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [centerPoint, startPoint, endPoint, arcObj],
+          [1, 2, 3, 4]
+        ),
+      })
+      ;(rustContext.addConstraint as any).mockResolvedValueOnce({
+        kclSource: { text: 'center-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [10]),
+      })
+
+      const result = await createArcActor({
+        input: {
+          centerPoint: [0, 0],
+          startPoint: [10, 0],
+          centerSnapTarget: { type: 'origin' },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        1,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [1, 'ORIGIN'],
+        },
+        expect.anything()
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'center-snap' },
+        sceneGraphDelta: {
+          ...createSceneGraphDelta([], [10]),
+          new_objects: [1, 2, 3, 4, 10],
+        },
+      })
+    })
+
+    it.each<[string, boolean, number[]]>([
+      ['unswapped', false, [1, 2]],
+      ['swapped', true, [1, 3]],
+    ])(
+      'anchors the center and radius-defining endpoint when finalizing a %s arc without snaps',
+      async (_name, arcIsSwapped, expectedAnchorIds) => {
+        const rustContext = createMockRustContext()
+        const kclManager = createMockKclManager()
+        const editSegmentsSpy = vi.spyOn(rustContext, 'editSegments')
+        const currentArc = createArcApiObject({
+          id: 4,
+          center: 1,
+          start: 2,
+          end: 3,
+          startX: 10,
+          startY: 0,
+        })
+        const inputSceneGraphDelta = createSceneGraphDelta(
+          [
+            createPointApiObject({ id: 1, x: 0, y: 0 }),
+            createPointApiObject({ id: 2, x: 10, y: 0 }),
+            createPointApiObject({ id: 3, x: 10, y: 0 }),
+            currentArc,
+          ],
+          [1, 2, 3, 4]
+        )
+        const editResult = {
+          kclSource: { text: 'edit' },
+          sceneGraphDelta: createSceneGraphDelta(
+            [
+              createPointApiObject({ id: 1, x: 0, y: 0 }),
+              createPointApiObject({ id: 2, x: 10, y: 0 }),
+              createPointApiObject({ id: 3, x: 0, y: 10 }),
+              currentArc,
+            ],
+            [4]
+          ),
+        }
+        ;(rustContext.editSegments as any).mockResolvedValue(editResult)
+
+        const result = await finalizeArcActor({
+          input: {
+            arcId: 4,
+            centerPoint: [0, 0],
+            endPoint: [0, 10],
+            sceneGraphDelta: inputSceneGraphDelta,
+            rustContext,
+            kclManager,
+            sketchId: 7,
+            arcIsSwapped,
+          },
+        })
+
+        expect(editSegmentsSpy).toHaveBeenCalledWith(
+          0,
+          7,
+          [
+            {
+              id: 4,
+              ctor: expect.objectContaining({ type: 'Arc' }),
+            },
+          ],
+          expect.anything(),
+          true,
+          expectedAnchorIds
+        )
+        expect(result).toEqual(editResult)
+      }
+    )
+
+    it('adds coincident constraints to the fixed and clicked endpoints when finalizing a swapped arc', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const currentArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 10,
+        startY: 0,
+      })
+      const inputSceneGraphDelta = createSceneGraphDelta(
+        [
+          createPointApiObject({ id: 1, x: 0, y: 0 }),
+          createPointApiObject({ id: 2, x: 10, y: 0 }),
+          createPointApiObject({ id: 3, x: 10, y: 0 }),
+          currentArc,
+        ],
+        [1, 2, 3, 4]
+      )
+      const editedArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 0,
+        startY: 10,
+      })
+      ;(rustContext.editSegments as any).mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [
+            createPointApiObject({ id: 1, x: 0, y: 0 }),
+            createPointApiObject({ id: 2, x: 0, y: 10 }),
+            createPointApiObject({ id: 3, x: 10, y: 0 }),
+            editedArc,
+          ],
+          [4]
+        ),
+      })
+      ;(rustContext.addConstraint as any)
+        .mockResolvedValueOnce({
+          kclSource: { text: 'start-snap' },
+          sceneGraphDelta: createSceneGraphDelta([], [20]),
+        })
+        .mockResolvedValueOnce({
+          kclSource: { text: 'end-snap' },
+          sceneGraphDelta: createSceneGraphDelta([], [21]),
+        })
+
+      const result = await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'point', id: 77 },
+          endSnapTarget: { type: 'point', id: 99 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+          arcIsSwapped: true,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        1,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [3, 77],
+        },
+        expect.anything()
+      )
+      expect(addConstraintSpy).toHaveBeenNthCalledWith(
+        2,
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 99],
+        },
+        expect.anything(),
+        true
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'end-snap' },
+        sceneGraphDelta: {
+          ...createSceneGraphDelta([], [21]),
+          new_objects: [4, 20, 21],
+        },
+        checkpointId: null,
+      })
+    })
+
+    it('adds the deferred second-click snap to the start endpoint when the arc stays unswapped', async () => {
+      const rustContext = createMockRustContext()
+      const kclManager = createMockKclManager()
+      const addConstraintSpy = vi.spyOn(rustContext, 'addConstraint')
+      const currentArc = createArcApiObject({
+        id: 4,
+        center: 1,
+        start: 2,
+        end: 3,
+        startX: 10,
+        startY: 0,
+      })
+      const inputSceneGraphDelta = createSceneGraphDelta(
+        [
+          createPointApiObject({ id: 1, x: 0, y: 0 }),
+          createPointApiObject({ id: 2, x: 10, y: 0 }),
+          createPointApiObject({ id: 3, x: 10, y: 0 }),
+          currentArc,
+        ],
+        [1, 2, 3, 4]
+      )
+      ;(rustContext.editSegments as any).mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta(
+          [
+            createPointApiObject({ id: 1, x: 0, y: 0 }),
+            createPointApiObject({ id: 2, x: 10, y: 0 }),
+            createPointApiObject({ id: 3, x: 0, y: 10 }),
+            currentArc,
+          ],
+          [4]
+        ),
+      })
+      ;(rustContext.addConstraint as any).mockResolvedValue({
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: createSceneGraphDelta([], [30]),
+      })
+
+      const result = await finalizeArcActor({
+        input: {
+          arcId: 4,
+          centerPoint: [0, 0],
+          endPoint: [0, 10],
+          sceneGraphDelta: inputSceneGraphDelta,
+          startSnapTarget: { type: 'point', id: 77 },
+          rustContext,
+          kclManager,
+          sketchId: 7,
+          arcIsSwapped: false,
+        },
+      })
+
+      expect(addConstraintSpy).toHaveBeenCalledWith(
+        0,
+        7,
+        {
+          type: 'Coincident',
+          segments: [2, 77],
+        },
+        expect.anything(),
+        true
+      )
+      expect(result).toEqual({
+        kclSource: { text: 'start-snap' },
+        sceneGraphDelta: {
+          ...createSceneGraphDelta([], [30]),
+          new_objects: [4, 30],
+        },
+        checkpointId: null,
+      })
     })
   })
 })

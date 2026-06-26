@@ -1,13 +1,48 @@
 import { App } from '@src/lib/app'
+import {
+  StorageName,
+  moduleFsViaModuleImport,
+  moduleFsViaWindow,
+} from '@src/lib/fs-zds'
+import { isPlaywright } from '@src/lib/isPlaywright'
 import React from 'react'
+
+// Earliest as possible point to configure the fs layer.
+// In the future we can have the user switch between them at run-time, but
+// for now, there is no intention.
+let fsModulePromise: Promise<void>
+if (window.electron) {
+  fsModulePromise = moduleFsViaModuleImport({
+    type: StorageName.ElectronFS,
+    options: {},
+  })
+} else {
+  fsModulePromise = moduleFsViaModuleImport({
+    type: StorageName.OPFSCloud,
+    options: {},
+  })
+}
+await fsModulePromise
+
+// This was placed here since it's the highest async-awaited code block.
+// ONLY ATTACH WINDOW.FSZDS DURING TESTS! Do not use window.fsZds in app code.
+// This is purely for Playwright to use the fs abstraction through
+// page.evaluate.
+if (typeof window !== 'undefined' && isPlaywright()) {
+  void moduleFsViaWindow({
+    type: window.electron ? StorageName.ElectronFS : StorageName.OPFSCloud,
+    options: {},
+  })
+}
 
 /**
  * This separates the instantiation of the app used by the frontend codebase
  * from its class definition. This app instance should not be referenced by any tests, but rather
  * created anew.
  */
-export const app = new App()
+export const app = App.fromDefaults()
 export const AppContext = React.createContext(app)
+window.app = app
 
 /**
  * Hook to gain access to the global app instance's singletons

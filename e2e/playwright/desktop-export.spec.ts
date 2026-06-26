@@ -11,10 +11,13 @@ import { expect, test } from '@e2e/playwright/zoo-test'
 test(
   'export works on the first try',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+  async (
+    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    testInfo
+  ) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const bracketDir = path.join(dir, 'bracket')
       await Promise.all([fsp.mkdir(bracketDir, { recursive: true })])
       await Promise.all([
@@ -35,7 +38,7 @@ test(
       const projectName = page.getByText(`bracket`)
       await expect(projectName).toBeVisible()
       await projectName.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // Expect zero errors in gutter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -96,14 +99,15 @@ test(
 
       // Close the file pane
       await u.closeFilePanel()
-      await scene.settled(cmdBar)
+      await scene.settled()
+      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Expect zero errors in gutter
       await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
 
       // Click the export button
       const exportButton = page.getByTestId('export-pane-button')
-      await expect(exportButton).toBeVisible()
+      await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
       // Select the first format option
@@ -130,7 +134,7 @@ test(
       const successToastMessage = page.getByText(`Exported successfully`)
       await page.waitForTimeout(1_000)
       const count = await successToastMessage.count()
-      await expect(count).toBeGreaterThanOrEqual(1)
+      expect(count).toBeGreaterThanOrEqual(1)
       await expect(exportingToastMessage).not.toBeVisible()
 
       // Check for the exported file=
@@ -142,8 +146,13 @@ test(
         await expect
           .poll(
             async () => {
-              const outputGltf = await fsp.readFile(secondFileFullPath)
-              return outputGltf.byteLength
+              try {
+                const outputGltf = await fsp.readFile(secondFileFullPath)
+                return outputGltf.byteLength
+              } catch (error: unknown) {
+                void error
+                return 0
+              }
             },
             { timeout: 15_000 }
           )
@@ -156,10 +165,13 @@ test(
 test(
   'DXF export works from feature tree sketch context menu',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+  async (
+    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    testInfo
+  ) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'sketch-project')
       await fsp.mkdir(sketchDir, { recursive: true })
       await fsp.writeFile(
@@ -180,7 +192,7 @@ extrude001 = extrude(profile001, length = 5)`
     const projectName = page.getByText(`sketch-project`)
     await expect(projectName).toBeVisible()
     await projectName.click()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Expect zero errors in gutter
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -214,10 +226,10 @@ extrude001 = extrude(profile001, length = 5)`
     await expect(generalErrorToastMessage).not.toBeVisible()
     await expect(engineErrorToastMessage).not.toBeVisible()
 
-    const successToastMessage = page.getByText('DXF export completed [TEST]')
+    const successToastMessage = page.getByText('DXF export completed [TEST].')
     await page.waitForTimeout(1_000)
     const count = await successToastMessage.count()
-    await expect(count).toBeGreaterThanOrEqual(1)
+    expect(count).toBeGreaterThanOrEqual(1)
 
     // Check for the exported DXF file
     const exportFileName = 'sketch001.dxf'
@@ -248,10 +260,13 @@ extrude001 = extrude(profile001, length = 5)`
 test(
   'DXF export works for second sketch in feature tree',
   { tag: ['@desktop', '@macos', '@windows', '@skipLocalEngine'] },
-  async ({ page, context, scene, tronApp, cmdBar, toolbar }, testInfo) => {
+  async (
+    { page, scene, tronApp, cmdBar, toolbar, folderSetupFn },
+    testInfo
+  ) => {
     if (!tronApp) throw new Error('tronApp is missing.')
 
-    await context.folderSetupFn(async (dir) => {
+    await folderSetupFn(async (dir) => {
       const sketchDir = path.join(dir, 'second-sketch-project')
       await fsp.mkdir(sketchDir, { recursive: true })
       await fsp.writeFile(
@@ -274,7 +289,7 @@ profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
     const projectName = page.getByText(`second-sketch-project`)
     await expect(projectName).toBeVisible()
     await projectName.click()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Expect zero errors in gutter
     await expect(page.locator('.cm-lint-marker-error')).not.toBeVisible()
@@ -300,10 +315,10 @@ profile002 = circle(sketch002, center = [2.5, 2.5], radius = 2)`
     await expect(dxfExportOption).toBeVisible()
     await dxfExportOption.click()
 
-    const successToastMessage = page.getByText('DXF export completed [TEST]')
+    const successToastMessage = page.getByText('DXF export completed [TEST].')
     await page.waitForTimeout(1_000)
     const count = await successToastMessage.count()
-    await expect(count).toBeGreaterThanOrEqual(1)
+    expect(count).toBeGreaterThanOrEqual(1)
 
     // Check for the exported DXF file
     const exportFileName = 'sketch002.dxf'

@@ -1,16 +1,20 @@
 use anyhow::Result;
 #[cfg(feature = "pyo3")]
-use pyo3_stub_gen::{inventory, type_info::PyEnumInfo};
+use pyo3_stub_gen::inventory;
+#[cfg(feature = "pyo3")]
+use pyo3_stub_gen::type_info::PyEnumInfo;
 use serde::Serialize;
-use tower_lsp::lsp_types::{Diagnostic, DiagnosticSeverity};
+use tower_lsp::lsp_types::Diagnostic;
+use tower_lsp::lsp_types::DiagnosticSeverity;
 
-use crate::{
-    SourceRange,
-    errors::Suggestion,
-    lsp::{IntoDiagnostic, ToLspRange, to_lsp_edit},
-    parsing::ast::types::{Node as AstNode, Program},
-    walk::Node,
-};
+use crate::SourceRange;
+use crate::errors::Suggestion;
+use crate::lsp::IntoDiagnostic;
+use crate::lsp::ToLspRange;
+use crate::lsp::to_lsp_edit;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::Program;
+use crate::walk::Node;
 
 /// Check the provided AST for any found rule violations.
 ///
@@ -33,7 +37,11 @@ where
 /// Specific discovered lint rule Violation of a particular Finding.
 #[derive(Clone, Debug, ts_rs::TS, Serialize)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
+#[cfg_attr(
+    feature = "pyo3",
+    pyo3::pyclass(from_py_object),
+    pyo3_stub_gen::derive::gen_stub_pyclass
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Discovered {
     /// Zoo Lint Finding information.
@@ -184,7 +192,11 @@ impl IntoDiagnostic for &Discovered {
 /// Abstract lint problem type.
 #[derive(Clone, Debug, PartialEq, ts_rs::TS, Serialize)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass, pyo3_stub_gen::derive::gen_stub_pyclass)]
+#[cfg_attr(
+    feature = "pyo3",
+    pyo3::pyclass(from_py_object),
+    pyo3_stub_gen::derive::gen_stub_pyclass
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Finding {
     /// Unique identifier for this particular issue.
@@ -206,7 +218,7 @@ pub struct Finding {
 /// Abstract lint problem type.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ts_rs::TS, Serialize, Hash)]
 #[ts(export)]
-#[cfg_attr(feature = "pyo3", pyo3::pyclass)]
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(from_py_object))]
 #[serde(rename_all = "camelCase")]
 pub enum FindingFamily {
     /// KCL style guidelines, e.g. identifier casing.
@@ -320,7 +332,13 @@ macro_rules! finding {
 }
 pub(crate) use finding;
 #[cfg(test)]
-pub(crate) use test::{assert_finding, assert_no_finding, test_finding, test_no_finding};
+pub(crate) use test::assert_finding;
+#[cfg(test)]
+pub(crate) use test::assert_no_finding;
+#[cfg(test)]
+pub(crate) use test::test_finding;
+#[cfg(test)]
+pub(crate) use test::test_no_finding;
 
 #[cfg(test)]
 mod test {

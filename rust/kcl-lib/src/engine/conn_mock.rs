@@ -1,33 +1,35 @@
 //! Functions for setting up our WebSocket and WebRTC connections for communications with the
 //! engine.
 
-use std::{collections::HashMap, sync::Arc};
+use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kcmc::{
-    ok_response::OkModelingCmdResponse,
-    websocket::{
-        BatchResponse, ModelingBatch, OkWebSocketResponseData, SuccessWebSocketResponse, WebSocketRequest,
-        WebSocketResponse,
-    },
-};
-use kittycad_modeling_cmds::{self as kcmc, ImportFiles, ModelingCmd, websocket::ModelingCmdReq};
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::websocket::BatchResponse;
+use kcmc::websocket::ModelingBatch;
+use kcmc::websocket::OkWebSocketResponseData;
+use kcmc::websocket::SuccessWebSocketResponse;
+use kcmc::websocket::WebSocketRequest;
+use kcmc::websocket::WebSocketResponse;
+use kittycad_modeling_cmds::ImportFiles;
+use kittycad_modeling_cmds::ModelingCmd;
+use kittycad_modeling_cmds::websocket::ModelingCmdReq;
+use kittycad_modeling_cmds::{self as kcmc};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
-use crate::{
-    SourceRange,
-    engine::{AsyncTasks, EngineStats},
-    errors::KclError,
-    exec::DefaultPlanes,
-    execution::IdGenerator,
-};
+use crate::SourceRange;
+use crate::engine::AsyncTasks;
+use crate::engine::EngineBatchContext;
+use crate::engine::EngineStats;
+use crate::errors::KclError;
+use crate::exec::DefaultPlanes;
+use crate::execution::IdGenerator;
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     /// The default planes for the scene.
@@ -39,8 +41,6 @@ pub struct EngineConnection {
 impl EngineConnection {
     pub fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {
-            batch: Arc::new(RwLock::new(Vec::new())),
-            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             responses: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
@@ -52,14 +52,6 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
-        self.batch.clone()
-    }
-
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
-        self.batch_end.clone()
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.clone()
     }
@@ -82,6 +74,7 @@ impl crate::engine::EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
+        _batch_context: &EngineBatchContext,
         _id_generator: &mut IdGenerator,
         _source_range: SourceRange,
     ) -> Result<(), KclError> {

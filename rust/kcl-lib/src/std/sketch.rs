@@ -1,46 +1,88 @@
 //! Functions related to sketching.
 
+use std::collections::HashMap;
 use std::f64;
 
 use anyhow::Result;
+use indexmap::IndexMap;
 use kcl_error::SourceRange;
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
 use kcmc::shared::Point2d as KPoint2d; // Point2d is already defined in this pkg, to impl ts_rs traits.
 use kcmc::shared::Point3d as KPoint3d; // Point3d is already defined in this pkg, to impl ts_rs traits.
-use kcmc::{ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, shared::Angle, websocket::ModelingCmdReq};
+use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::{shared::PathSegment, units::UnitLength};
-use parse_display::{Display, FromStr};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::shared::PathSegment;
+use kittycad_modeling_cmds::shared::RegionVersion;
+use kittycad_modeling_cmds::units::UnitLength;
+use parse_display::Display;
+use parse_display::FromStr;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
-use super::{
-    shapes::{get_radius, get_radius_labelled},
-    utils::untype_array,
-};
-#[cfg(feature = "artifact-graph")]
-use crate::execution::{Artifact, ArtifactId, CodeRef, StartSketchOnFace, StartSketchOnPlane};
-use crate::{
-    ExecutorContext,
-    errors::{KclError, KclErrorDetails},
-    exec::PlaneKind,
-    execution::{
-        BasePath, ExecState, GeoMeta, Geometry, KclValue, ModelingCmdMeta, Path, Plane, PlaneInfo, Point2d, Point3d,
-        ProfileClosed, Sketch, SketchSurface, Solid, TagIdentifier, annotations,
-        types::{ArrayLen, NumericType, PrimitiveType, RuntimeType},
-    },
-    parsing::ast::types::TagNode,
-    std::{
-        EQUAL_POINTS_DIST_EPSILON,
-        args::{Args, TyF64},
-        axis_or_reference::Axis2dOrEdgeReference,
-        faces::{FaceSpecifier, make_face},
-        planes::inner_plane_of,
-        utils::{
-            TangentialArcInfoInput, arc_center_and_end, get_tangential_arc_to_info, get_x_component, get_y_component,
-            intersection_with_parallel_line, point_to_len_unit, point_to_mm, untyped_point_to_mm,
-        },
-    },
-};
+use super::shapes::get_radius;
+use super::shapes::get_radius_labelled;
+use super::utils::untype_array;
+use crate::ExecutorContext;
+use crate::NodePath;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::exec::PlaneKind;
+use crate::execution::Artifact;
+use crate::execution::ArtifactId;
+use crate::execution::BasePath;
+use crate::execution::CodeRef;
+use crate::execution::ExecState;
+use crate::execution::GeoMeta;
+use crate::execution::Geometry;
+use crate::execution::KclValue;
+use crate::execution::KclVersion;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Path;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::Point2d;
+use crate::execution::Point3d;
+use crate::execution::ProfileClosed;
+use crate::execution::SKETCH_OBJECT_META;
+use crate::execution::SKETCH_OBJECT_META_SKETCH;
+use crate::execution::Segment;
+use crate::execution::SegmentKind;
+use crate::execution::Sketch;
+use crate::execution::SketchSurface;
+use crate::execution::Solid;
+use crate::execution::StartSketchOnFace;
+use crate::execution::StartSketchOnPlane;
+use crate::execution::TagIdentifier;
+use crate::execution::annotations;
+use crate::execution::types::ArrayLen;
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::front::SourceRef;
+use crate::parsing::ast::types::TagNode;
+use crate::std::CircularDirection;
+use crate::std::EQUAL_POINTS_DIST_EPSILON;
+use crate::std::args::Args;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
+use crate::std::axis_or_reference::Axis2dOrEdgeReference;
+use crate::std::faces::FaceSpecifier;
+use crate::std::faces::make_face;
+use crate::std::planes::inner_plane_of;
+use crate::std::utils::TangentialArcInfoInput;
+use crate::std::utils::arc_center_and_end;
+use crate::std::utils::get_tangential_arc_to_info;
+use crate::std::utils::get_x_component;
+use crate::std::utils::get_y_component;
+use crate::std::utils::intersection_with_parallel_line;
+use crate::std::utils::point_to_len_unit;
+use crate::std::utils::point_to_mm;
+use crate::std::utils::untyped_point_to_mm;
+use crate::util::MathExt;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -962,15 +1004,12 @@ async fn inner_start_sketch_on(
                 Ok(SketchSurface::Plane(plane))
             } else {
                 // Create artifact used only by the UI, not the engine.
-                #[cfg(feature = "artifact-graph")]
-                {
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
-                        id: ArtifactId::from(id),
-                        plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                    id: ArtifactId::from(id),
+                    plane_id: plane.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Plane(plane))
             }
@@ -1032,6 +1071,13 @@ async fn inner_start_sketch_on(
                             vec![args.source_range],
                         )));
                     }
+                    Axis2dOrEdgeReference::EdgeSpecifier(_) => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Use of an edge reference here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
                 };
                 let origin = Point3d::new(0.0, 0.0, 0.0, plane_of.info.origin.units);
                 let plane_data = PlaneData::Plane(PlaneInfo {
@@ -1043,30 +1089,24 @@ async fn inner_start_sketch_on(
                 let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
 
                 // Create artifact used only by the UI, not the engine.
-                #[cfg(feature = "artifact-graph")]
-                {
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
-                        id: ArtifactId::from(id),
-                        plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                    id: ArtifactId::from(id),
+                    plane_id: plane.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Plane(plane))
             } else {
                 let face = make_face(solid, tag, exec_state, args).await?;
 
-                #[cfg(feature = "artifact-graph")]
-                {
-                    // Create artifact used only by the UI, not the engine.
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
-                        id: ArtifactId::from(id),
-                        face_id: face.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                // Create artifact used only by the UI, not the engine.
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
+                    id: ArtifactId::from(id),
+                    face_id: face.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Face(face))
             }
@@ -1091,7 +1131,14 @@ pub async fn make_sketch_plane_from_orientation(
     };
 
     // Create the plane on the fly.
-    ensure_sketch_plane_in_engine(&mut plane, exec_state, args).await?;
+    ensure_sketch_plane_in_engine(
+        &mut plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
 
     Ok(Box::new(plane))
 }
@@ -1100,18 +1147,28 @@ pub async fn make_sketch_plane_from_orientation(
 pub async fn ensure_sketch_plane_in_engine(
     plane: &mut Plane,
     exec_state: &mut ExecState,
-    args: &Args,
+    ctx: &ExecutorContext,
+    source_range: SourceRange,
+    node_path: Option<NodePath>,
 ) -> Result<(), KclError> {
     if plane.is_initialized() {
         return Ok(());
     }
-    #[cfg(feature = "artifact-graph")]
-    {
-        if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
-            plane.object_id = Some(existing_object_id);
-            return Ok(());
-        }
+    if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
+        plane.object_id = Some(existing_object_id);
+        return Ok(());
     }
+
+    // Regenerate the plane's UUID using the current module's IdGenerator so
+    // that each module gets its own engine entity. The prelude defines standard
+    // planes (XY, XZ, YZ) once with a single UUID; without this, every module
+    // that imports one of those planes would send the same UUID to the engine,
+    // causing a duplicate-ID error when execution caching keeps the scene alive
+    // across incremental runs. Modules execute concurrently, so they cannot
+    // generally share information.
+    let id = exec_state.next_uuid();
+    plane.id = id;
+    plane.artifact_id = id.into();
 
     let clobber = false;
     let size = LengthUnit(60.0);
@@ -1136,23 +1193,20 @@ pub async fn ensure_sketch_plane_in_engine(
     };
     exec_state
         .batch_modeling_cmd(
-            ModelingCmdMeta::from_args_id(exec_state, args, plane.id),
+            ModelingCmdMeta::with_id(exec_state, ctx, source_range, plane.id),
             ModelingCmd::from(cmd),
         )
         .await?;
     let plane_object_id = exec_state.next_object_id();
-    #[cfg(feature = "artifact-graph")]
-    {
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::new(plane.id),
-            source: args.source_range.into(),
-        };
-        exec_state.add_scene_object(plane_object, args.source_range);
-    }
+    let plane_object = crate::front::Object {
+        id: plane_object_id,
+        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: ArtifactId::new(plane.id),
+        source: SourceRef::new(source_range, node_path.clone()),
+    };
+    exec_state.add_scene_object(plane_object, source_range);
     plane.object_id = Some(plane_object_id);
 
     Ok(())
@@ -1202,9 +1256,9 @@ pub(crate) async fn create_sketch(
             // Flush the batch for our fillets/chamfers if there are any.
             // If we do not do these for sketch on face, things will fail with face does not exist.
             exec_state
-                .flush_batch_for_solids(
+                .flush_batch_for_face_parent_solids(
                     ModelingCmdMeta::new(exec_state, ctx, source_range),
-                    &[(*face.solid).clone()],
+                    std::slice::from_ref(&face.parent_solid),
                 )
                 .await?;
         }
@@ -1293,12 +1347,14 @@ pub(crate) async fn create_sketch(
         id: path_id,
         original_id: path_id,
         artifact_id: path_id.into(),
+        origin_sketch_id: None,
         on: sketch_surface,
         paths: vec![],
         inner_paths: vec![],
         units,
         mirror: Default::default(),
         clone: Default::default(),
+        synthetic_jump_path_ids: vec![],
         meta: vec![source_range.into()],
         tags: Default::default(),
         start: current_path.clone(),
@@ -1366,7 +1422,7 @@ pub(crate) async fn inner_close(
 ) -> Result<Sketch, KclError> {
     if matches!(sketch.is_closed, ProfileClosed::Explicitly) {
         exec_state.warn(
-            crate::CompilationError {
+            crate::CompilationIssue {
                 source_range: args.source_range,
                 message: "This sketch is already closed. Remove this unnecessary `close()` call".to_string(),
                 suggestion: None,
@@ -1391,7 +1447,7 @@ pub(crate) async fn inner_close(
 
     let mut new_sketch = sketch;
 
-    let distance = ((from.x - to[0]).powi(2) + (from.y - to[1]).powi(2)).sqrt();
+    let distance = ((from.x - to[0]).squared() + (from.y - to[1]).squared()).sqrt();
     if distance > super::EQUAL_POINTS_DIST_EPSILON {
         // These will NOT be the same point in the engine, and an additional segment will be created.
         let current_path = Path::ToPoint {
@@ -1413,7 +1469,7 @@ pub(crate) async fn inner_close(
         new_sketch.paths.push(current_path);
     } else if tag.is_some() {
         exec_state.warn(
-            crate::CompilationError {
+            crate::CompilationIssue {
                 source_range: args.source_range,
                 message: "A tag declarator was specified, but no segment was created".to_string(),
                 suggestion: None,
@@ -2160,7 +2216,7 @@ async fn inner_elliptic_point(
         } else {
             Ok((
                 x.n,
-                minor_radius * (1.0 - x.n.powf(2.0) / major_radius.powf(2.0)).sqrt(),
+                minor_radius * (1.0 - x.n.squared() / major_radius.squared()).sqrt(),
             )
                 .into())
         }
@@ -2177,7 +2233,7 @@ async fn inner_elliptic_point(
             })
         } else {
             Ok((
-                major_radius * (1.0 - y.n.powf(2.0) / minor_radius.powf(2.0)).sqrt(),
+                major_radius * (1.0 - y.n.squared() / minor_radius.squared()).sqrt(),
                 y.n,
             )
                 .into())
@@ -2354,10 +2410,10 @@ async fn inner_hyperbolic_point(
                 ),
             })
         } else {
-            Ok((x.n, semi_minor * (x.n.powf(2.0) / semi_major.powf(2.0) - 1.0).sqrt()).into())
+            Ok((x.n, semi_minor * (x.n.squared() / semi_major.squared() - 1.0).sqrt()).into())
         }
     } else if let Some(y) = y {
-        Ok((semi_major * (y.n.powf(2.0) / semi_minor.powf(2.0) + 1.0).sqrt(), y.n).into())
+        Ok((semi_major * (y.n.squared() / semi_minor.squared() + 1.0).sqrt(), y.n).into())
     } else {
         Err(KclError::Type {
             details: KclErrorDetails::new(
@@ -2400,7 +2456,7 @@ pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
 /// Calculate the tangent of a hyperbolic given a point on the curve
 fn hyperbolic_tangent(point: Point2d, semi_major: f64, semi_minor: f64) -> [f64; 2] {
-    (point.y * semi_major.powf(2.0), point.x * semi_minor.powf(2.0)).into()
+    (point.y * semi_major.squared(), point.x * semi_minor.squared()).into()
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -2515,9 +2571,9 @@ async fn inner_parabolic_point(
     let b = coefficients[1].n;
     let c = coefficients[2].n;
     if let Some(x) = x {
-        Ok((x.n, a * x.n.powf(2.0) + b * x.n + c).into())
+        Ok((x.n, a * x.n.squared() + b * x.n + c).into())
     } else if let Some(y) = y {
-        let det = (b.powf(2.0) - 4.0 * a * (c - y.n)).sqrt();
+        let det = (b.squared() - 4.0 * a * (c - y.n)).sqrt();
         Ok(((-b + det) / (2.0 * a), y.n).into())
     } else {
         Err(KclError::Type {
@@ -2649,9 +2705,9 @@ pub(crate) async fn inner_parabolic(
             + interior[0] * (from.y - end_point.y)
             + from.x * (end_point.y - interior[1]))
             / denom;
-        let b = (end_point.x.powf(2.0) * (from.y - interior[1])
-            + interior[0].powf(2.0) * (end_point.y - from.y)
-            + from.x.powf(2.0) * (interior[1] - end_point.y))
+        let b = (end_point.x.squared() * (from.y - interior[1])
+            + interior[0].squared() * (end_point.y - from.y)
+            + from.x.squared() * (interior[1] - end_point.y))
             / denom;
         let c = (interior[0] * end_point.x * (interior[0] - end_point.x) * from.y
             + end_point.x * from.x * (end_point.x - from.x) * interior[1]
@@ -2859,15 +2915,430 @@ pub(crate) async fn inner_conic(
 
     Ok(new_sketch)
 }
+
+pub(super) async fn region(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let point = args.get_kw_arg_opt(
+        "point",
+        &RuntimeType::Union(vec![RuntimeType::point2d(), RuntimeType::segment()]),
+        exec_state,
+    )?;
+    let segments = args.get_kw_arg_opt(
+        "segments",
+        &RuntimeType::Array(Box::new(RuntimeType::segment()), ArrayLen::Minimum(1)),
+        exec_state,
+    )?;
+    let intersection_index = args.get_kw_arg_opt("intersectionIndex", &RuntimeType::count(), exec_state)?;
+    let direction = args.get_kw_arg_opt("direction", &RuntimeType::string(), exec_state)?;
+    let sketch = args.get_kw_arg_opt("sketch", &RuntimeType::any(), exec_state)?;
+    inner_region(point, segments, intersection_index, direction, sketch, exec_state, args).await
+}
+
+/// Helper enum to reduce cloning of Sketch and Segment in the two branches of
+/// region creation.
+#[expect(clippy::large_enum_variant)]
+enum SketchOrSegment {
+    Sketch(Sketch),
+    Segment(Segment),
+}
+
+impl SketchOrSegment {
+    fn sketch(&self) -> Result<&Sketch, KclError> {
+        match self {
+            SketchOrSegment::Sketch(sketch) => Ok(sketch),
+            SketchOrSegment::Segment(segment) => segment.sketch.as_deref().ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "Segment should have an associated sketch".to_owned(),
+                    vec![],
+                ))
+            }),
+        }
+    }
+}
+
+async fn inner_region(
+    point: Option<KclValue>,
+    segments: Option<Vec<KclValue>>,
+    intersection_index: Option<TyF64>,
+    direction: Option<CircularDirection>,
+    sketch: Option<KclValue>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<KclValue, KclError> {
+    let region_id = exec_state.next_uuid();
+    let kcl_version = exec_state.kcl_version();
+    let region_version = match kcl_version {
+        KclVersion::V1 => RegionVersion::V0,
+        KclVersion::V2 => RegionVersion::V1,
+    };
+
+    let (sketch_or_segment, region_mapping) = match (point, segments) {
+        (Some(point), None) => {
+            let (sketch, pt) = region_from_point(point, sketch, &args)?;
+
+            let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
+            let response = exec_state
+                .send_modeling_cmd(
+                    meta,
+                    ModelingCmd::from(
+                        mcmd::CreateRegionFromQueryPoint::builder()
+                            .object_id(sketch.sketch()?.id)
+                            .query_point(KPoint2d::from(point_to_mm(pt.clone())).map(LengthUnit))
+                            .version(region_version)
+                            .build(),
+                    ),
+                )
+                .await?;
+
+            let region_mapping = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
+                modeling_response: kcmc::ok_response::OkModelingCmdResponse::CreateRegionFromQueryPoint(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (sketch, region_mapping)
+        }
+        (None, Some(segments)) => {
+            if sketch.is_some() {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Sketch parameter must not be provided when segments parameters is provided".to_owned(),
+                    vec![args.source_range],
+                )));
+            }
+            let segments_len = segments.len();
+            let mut segments = segments.into_iter();
+            let Some(seg0_value) = segments.next() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    format!("Expected at least 1 segment to create a region, but got {segments_len}"),
+                    vec![args.source_range],
+                )));
+            };
+            let seg1_value = segments.next().unwrap_or_else(|| seg0_value.clone());
+            let Some(seg0) = seg0_value.into_segment() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    "Expected first segment to be a Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let Some(seg1) = seg1_value.into_segment() else {
+                return Err(KclError::new_argument(KclErrorDetails::new(
+                    "Expected second segment to be a Segment".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let intersection_index = intersection_index.map(|n| n.n as i32).unwrap_or(-1);
+            let direction = direction.unwrap_or(CircularDirection::Counterclockwise);
+
+            let Some(sketch) = &seg0.sketch else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Expected first segment to have an associated sketch. The sketch must be solved to create a region from it.".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+
+            let meta = ModelingCmdMeta::from_args_id(exec_state, &args, region_id);
+            let response = exec_state
+                .send_modeling_cmd(
+                    meta,
+                    ModelingCmd::from(
+                        mcmd::CreateRegion::builder()
+                            .object_id(sketch.id)
+                            .segment(seg0.id)
+                            .intersection_segment(seg1.id)
+                            .intersection_index(intersection_index)
+                            .curve_clockwise(direction.is_clockwise())
+                            .version(region_version)
+                            .build(),
+                    ),
+                )
+                .await?;
+
+            let region_mapping = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
+                modeling_response: kcmc::ok_response::OkModelingCmdResponse::CreateRegion(data),
+            } = response
+            {
+                data.region_mapping
+            } else {
+                Default::default()
+            };
+
+            (SketchOrSegment::Segment(seg0), region_mapping)
+        }
+        (Some(_), Some(_)) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot provide both point and segments parameters. Choose one.".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        (None, None) => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Either point or segments parameter must be provided".to_owned(),
+                vec![args.source_range],
+            )));
+        }
+    };
+
+    let units = exec_state.length_unit();
+    let to = [0.0, 0.0];
+    let first_path = Path::ToPoint {
+        base: BasePath {
+            from: to,
+            to,
+            units,
+            tag: None,
+            geo_meta: GeoMeta {
+                id: match &sketch_or_segment {
+                    SketchOrSegment::Sketch(sketch) => sketch.id,
+                    SketchOrSegment::Segment(segment) => segment.id,
+                },
+                metadata: args.source_range.into(),
+            },
+        },
+    };
+    let start_base_path = BasePath {
+        from: to,
+        to,
+        tag: None,
+        units,
+        geo_meta: GeoMeta {
+            id: region_id,
+            metadata: args.source_range.into(),
+        },
+    };
+    let mut sketch = match sketch_or_segment {
+        SketchOrSegment::Sketch(sketch) => sketch,
+        SketchOrSegment::Segment(segment) => {
+            if let Some(sketch) = segment.sketch {
+                sketch.as_ref().clone()
+            } else {
+                Sketch {
+                    id: region_id,
+                    original_id: region_id,
+                    artifact_id: region_id.into(),
+                    origin_sketch_id: None,
+                    on: segment.surface.clone(),
+                    paths: vec![first_path],
+                    inner_paths: vec![],
+                    units,
+                    mirror: Default::default(),
+                    clone: Default::default(),
+                    synthetic_jump_path_ids: vec![],
+                    meta: vec![args.source_range.into()],
+                    tags: Default::default(),
+                    start: start_base_path,
+                    is_closed: ProfileClosed::Explicitly,
+                }
+            }
+        }
+    };
+    sketch.origin_sketch_id = Some(sketch.id);
+    sketch.id = region_id;
+    sketch.original_id = region_id;
+    sketch.artifact_id = region_id.into();
+
+    let mut region_mapping = region_mapping;
+    if args.ctx.no_engine_commands().await && region_mapping.is_empty() {
+        let mut mock_mapping = HashMap::new();
+        for path in &sketch.paths {
+            mock_mapping.insert(exec_state.next_uuid(), path.get_id());
+        }
+        region_mapping = mock_mapping;
+    }
+    let original_segment_ids = sketch.paths.iter().map(|p| p.get_id()).collect::<Vec<_>>();
+    let original_seg_to_region = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
+
+    {
+        let mut new_paths = Vec::new();
+        for path in &sketch.paths {
+            let original_id = path.get_id();
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
+                for region_id in region_ids {
+                    let mut new_path = path.clone();
+                    new_path.set_id(*region_id);
+                    new_paths.push(new_path);
+                }
+            }
+        }
+
+        sketch.paths = new_paths;
+
+        for (_tag_name, tag) in &mut sketch.tags {
+            let Some(info) = tag.get_cur_info().cloned() else {
+                continue;
+            };
+            let original_id = info.id;
+            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
+                let epoch = tag.info.last().map(|(e, _)| *e).unwrap_or(0);
+                for (i, region_id) in region_ids.iter().enumerate() {
+                    if i == 0 {
+                        if let Some((_, existing)) = tag.info.last_mut() {
+                            existing.id = *region_id;
+                        }
+                    } else {
+                        let mut new_info = info.clone();
+                        new_info.id = *region_id;
+                        tag.info.push((epoch, new_info));
+                    }
+                }
+            }
+        }
+    }
+
+    // After mirror2d, sketch.mirror holds an edge from the mirrored entity
+    // which is not valid on the region. Update it to a region edge so that
+    // do_post_extrude can use it for Solid3dGetExtrusionFaceInfo.
+    if sketch.mirror.is_some() {
+        sketch.mirror = sketch.paths.first().map(|p| p.get_id());
+    }
+
+    sketch.meta.push(args.source_range.into());
+    sketch.is_closed = ProfileClosed::Explicitly;
+
+    Ok(KclValue::Sketch {
+        value: Box::new(sketch),
+    })
+}
+
+/// The region mapping returned from the engine maps from region segment ID to
+/// the original sketch segment ID. Create the reverse mapping, i.e. original
+/// sketch segment ID to region segment IDs, where the entries are ordered by
+/// the given original segments.
+///
+/// This runs in O(r + s) where r is the number of segments in the region, and s
+/// is the number of segments in the original sketch. Technically, it's more
+/// complicated since we also sort region segments, but in practice, there
+/// should be very few of these.
+pub(crate) fn build_reverse_region_mapping(
+    region_mapping: &HashMap<Uuid, Uuid>,
+    original_segments: &[Uuid],
+) -> IndexMap<Uuid, Vec<Uuid>> {
+    let mut reverse: HashMap<Uuid, Vec<Uuid>> = HashMap::default();
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is bad since we're storing in an ordered Vec, but modeling-cmds gives us an unordered HashMap, so we don't really have a choice. This function exists to work around that."
+    )]
+    for (region_id, original_id) in region_mapping {
+        reverse.entry(*original_id).or_default().push(*region_id);
+    }
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "This is safe since we're just sorting values."
+    )]
+    for values in reverse.values_mut() {
+        values.sort_unstable();
+    }
+    let mut ordered = IndexMap::with_capacity(original_segments.len());
+    for original_id in original_segments {
+        let mut region_ids = Vec::new();
+        reverse.entry(*original_id).and_modify(|entry_value| {
+            region_ids = std::mem::take(entry_value);
+        });
+        if !region_ids.is_empty() {
+            ordered.insert(*original_id, region_ids);
+        }
+    }
+    ordered
+}
+
+fn region_from_point(
+    point: KclValue,
+    sketch: Option<KclValue>,
+    args: &Args,
+) -> Result<(SketchOrSegment, [TyF64; 2]), KclError> {
+    match point {
+        KclValue::HomArray { .. } | KclValue::Tuple { .. } => {
+            let Some(pt) = <[TyF64; 2]>::from_kcl_val(&point) else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Expected 2D point for point parameter".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+
+            let Some(sketch_value) = sketch else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Sketch must be provided when point is a 2D point".to_owned(),
+                    vec![args.source_range],
+                )));
+            };
+            let sketch = match sketch_value {
+                KclValue::Sketch { value } => *value,
+                KclValue::Object { value, .. } => {
+                    let Some(meta_value) = value.get(SKETCH_OBJECT_META) else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected sketch to be of type Sketch with a meta field. Sketch must not be empty to create a region.".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+                    let meta_map = match meta_value {
+                        KclValue::Object { value, .. } => value,
+                        _ => {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Expected sketch to be of type Sketch with a meta field that's an object".to_owned(),
+                                vec![args.source_range],
+                            )));
+                        }
+                    };
+                    let Some(sketch_value) = meta_map.get(SKETCH_OBJECT_META_SKETCH) else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected sketch meta to have a sketch field. Sketch must not be empty to create a region."
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+                    let Some(sketch) = sketch_value.as_sketch() else {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected sketch meta to have a sketch field of type Sketch. Sketch must not be empty to create a region.".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    };
+                    sketch.clone()
+                }
+                _ => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Expected sketch to be of type Sketch".to_owned(),
+                        vec![args.source_range],
+                    )));
+                }
+            };
+
+            Ok((SketchOrSegment::Sketch(sketch), pt))
+        }
+        KclValue::Segment { value } => match value.repr {
+            crate::execution::SegmentRepr::Unsolved { .. } => Err(KclError::new_semantic(KclErrorDetails::new(
+                "Segment provided to point parameter is unsolved; segments must be solved to be used as points"
+                    .to_owned(),
+                vec![args.source_range],
+            ))),
+            crate::execution::SegmentRepr::Solved { segment } => {
+                let pt = match &segment.kind {
+                    SegmentKind::Point { position, .. } => position.clone(),
+                    _ => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Expected segment to be a point segment".to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+                };
+
+                Ok((SketchOrSegment::Segment(*segment), pt))
+            }
+        },
+        _ => Err(KclError::new_semantic(KclErrorDetails::new(
+            "Expected point to be either a 2D point like `[0, 0]` or a point segment created from `point()`".to_owned(),
+            vec![args.source_range],
+        ))),
+    }
+}
 #[cfg(test)]
 mod tests {
 
     use pretty_assertions::assert_eq;
 
-    use crate::{
-        execution::TagIdentifier,
-        std::{sketch::PlaneData, utils::calculate_circle_center},
-    };
+    use crate::execution::TagIdentifier;
+    use crate::std::sketch::PlaneData;
+    use crate::std::utils::calculate_circle_center;
 
     #[test]
     fn test_deserialize_plane_data() {

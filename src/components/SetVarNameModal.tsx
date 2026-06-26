@@ -5,9 +5,10 @@ import { type InstanceProps, create } from 'react-modal-promise'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CreateNewVariable } from '@src/components/AvailableVarsHelpers'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { useSingletons } from '@src/lib/boot'
+import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
+import { platform } from '@src/lib/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 type ModalResolve = { variableName: string }
 type ModalReject = boolean
@@ -29,17 +30,42 @@ export const SetVarNameModal = ({
   valueName,
   selectionRanges,
 }: SetVarNameModalProps) => {
-  const { kclManager, rustContext } = useSingletons()
+  const { kclManager } = useSingletons()
   const { isNewVariableNameUnique, newVariableName, setNewVariableName } =
     useCalculateKclExpression({
       value: '',
       initialVariableName: valueName,
       selectionRanges,
-      rustContext,
+      rustContext: kclManager.rustContext,
       code: kclManager.codeSignal.value,
       ast: kclManager.astSignal.value,
       variables: kclManager.variablesSignal.value,
     })
+  const cancelButton = (
+    <ActionButton
+      key="cancel"
+      Element="button"
+      type="button"
+      onClick={() => onReject(false)}
+    >
+      Cancel
+    </ActionButton>
+  )
+  const confirmButton = (
+    <ActionButton
+      key="confirm"
+      Element="button"
+      type="submit"
+      disabled={!isNewVariableNameUnique}
+      iconStart={{ icon: 'plus' }}
+    >
+      Add variable
+    </ActionButton>
+  )
+  const orderedButtons =
+    platform() === 'windows'
+      ? [confirmButton, cancelButton]
+      : [cancelButton, confirmButton]
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -76,7 +102,7 @@ export const SetVarNameModal = ({
                 onResolve({
                   variableName: newVariableName,
                 })
-                toast.success(`Added variable ${newVariableName}`)
+                toast.success(`Added variable ${newVariableName}.`)
               }}
             >
               <CreateNewVariable
@@ -86,18 +112,8 @@ export const SetVarNameModal = ({
                 shouldCreateVariable={true}
                 showCheckbox={false}
               />
-              <div className="mt-8 flex justify-between">
-                <ActionButton Element="button" onClick={() => onReject(false)}>
-                  Cancel
-                </ActionButton>
-                <ActionButton
-                  Element="button"
-                  type="submit"
-                  disabled={!isNewVariableNameUnique}
-                  iconStart={{ icon: 'plus' }}
-                >
-                  Add variable
-                </ActionButton>
+              <div className="mt-8 flex justify-end gap-2">
+                {orderedButtons}
               </div>
             </form>
           </Dialog.Panel>

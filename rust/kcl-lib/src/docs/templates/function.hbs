@@ -9,6 +9,10 @@ layout: manual
 **WARNING:** This function is deprecated.
 
 {{/if}}
+{{#if deprecated_since}}
+**WARNING:** This function is deprecated as of KCL {{deprecated_since}}.
+
+{{/if}}
 {{#if experimental}}
 **WARNING:** This function is experimental and may change or be removed.
 
@@ -27,7 +31,7 @@ layout: manual
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 {{#each args}}
-| `{{name}}` | `{{type_}}` | {{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
+| `{{name}}` | `{{type_}}` | {{#if deprecated}}**Deprecated.** {{/if}}{{#if deprecated_since}}**Deprecated as of KCL {{deprecated_since}}.** {{/if}}{{#if experimental}}**Experimental.** {{/if}}{{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
 {{/each}}
 {{/if}}
 

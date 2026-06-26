@@ -1,0 +1,668 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact commands gdt-tutorial.kcl
+---
+{
+  "public/kcl-samples/gdt-tutorial/main.kcl": [
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -99.36,
+          "y": 49.61,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 100.64,
+            "y": 49.61,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 100.64,
+            "y": -50.39,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -99.36,
+            "y": -50.39,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -99.36,
+            "y": 49.61,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 0.64,
+          "y": 2.7875
+        },
+        "version": "V1"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extrude",
+        "target": "[uuid]",
+        "distance": 100.0,
+        "faces": null,
+        "opposite": "None",
+        "extrude_method": "merge",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "dimension": null,
+          "feature_control": {
+            "entity_id": "[uuid]",
+            "entity_pos": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "leader_type": "dot",
+            "dimension": null,
+            "control_frame": null,
+            "defined_datum": "A",
+            "prefix": null,
+            "suffix": null,
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": 100.0,
+              "y": 100.0
+            },
+            "precision": 0,
+            "font_scale": 1.25,
+            "font_point_size": 36,
+            "leader_scale": 5.0
+          },
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "units": "mm",
+          "dimension": {
+            "from_entity_id": "[uuid]",
+            "from_entity_pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "to_entity_id": "[uuid]",
+            "to_entity_pos": {
+              "x": 1.0,
+              "y": 0.0
+            },
+            "dimension": {
+              "symbol": null,
+              "dimension": null,
+              "tolerance": 0.1
+            },
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": 0.0,
+              "y": 30.0
+            },
+            "precision": 3,
+            "font_scale": 1.1666625,
+            "font_point_size": 36,
+            "arrow_scale": 1.0
+          },
+          "feature_control": null,
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "dimension": null,
+          "feature_control": {
+            "entity_id": "[uuid]",
+            "entity_pos": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "leader_type": "dot",
+            "dimension": null,
+            "control_frame": {
+              "symbol": "flatness",
+              "diameter_symbol": null,
+              "tolerance": 0.001,
+              "modifier": null,
+              "primary_datum": null,
+              "secondary_datum": null,
+              "tertiary_datum": null
+            },
+            "defined_datum": null,
+            "prefix": null,
+            "suffix": null,
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": 100.0,
+              "y": 100.0
+            },
+            "precision": 3,
+            "font_scale": 1.25,
+            "font_point_size": 36,
+            "leader_scale": 5.0
+          },
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "dimension": null,
+          "feature_control": {
+            "entity_id": "[uuid]",
+            "entity_pos": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "leader_type": "dot",
+            "dimension": null,
+            "control_frame": {
+              "symbol": "perpendicularity",
+              "diameter_symbol": null,
+              "tolerance": 0.1,
+              "modifier": null,
+              "primary_datum": "A",
+              "secondary_datum": null,
+              "tertiary_datum": null
+            },
+            "defined_datum": null,
+            "prefix": null,
+            "suffix": null,
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": 100.0,
+              "y": 100.0
+            },
+            "precision": 3,
+            "font_scale": 1.25,
+            "font_point_size": 36,
+            "leader_scale": 5.0
+          },
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "dimension": null,
+          "feature_control": {
+            "entity_id": "[uuid]",
+            "entity_pos": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "leader_type": "dot",
+            "dimension": null,
+            "control_frame": {
+              "symbol": "parallelism",
+              "diameter_symbol": null,
+              "tolerance": 0.2,
+              "modifier": null,
+              "primary_datum": "A",
+              "secondary_datum": null,
+              "tertiary_datum": null
+            },
+            "defined_datum": null,
+            "prefix": null,
+            "suffix": null,
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": -100.0,
+              "y": 100.0
+            },
+            "precision": 3,
+            "font_scale": 1.25,
+            "font_point_size": 36,
+            "leader_scale": 5.0
+          },
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "dimension": null,
+          "feature_control": {
+            "entity_id": "[uuid]",
+            "entity_pos": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "leader_type": "dot",
+            "dimension": null,
+            "control_frame": null,
+            "defined_datum": null,
+            "prefix": "BREAK ALL SHARP EDGES",
+            "suffix": null,
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": 100.0,
+              "y": -100.0
+            },
+            "precision": 0,
+            "font_scale": 1.25,
+            "font_point_size": 36,
+            "leader_scale": 5.0
+          },
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    }
+  ]
+}

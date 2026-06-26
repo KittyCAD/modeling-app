@@ -1,3 +1,12 @@
+import type {
+  ClientMetrics,
+  RtcSessionDescription,
+  WebSocketRequest,
+  WebSocketResponse,
+} from '@kittycad/lib/dist/types/src'
+import { EngineDebugger } from '@src/lib/debugger'
+import { mark } from '@src/lib/performance'
+import { reportRejection } from '@src/lib/trap'
 import {
   ConnectingType,
   EngineConnectionEvents,
@@ -5,14 +14,6 @@ import {
   type ManagerTearDown,
   toRTCSessionDescriptionInit,
 } from '@src/network/utils'
-import { EngineDebugger } from '@src/lib/debugger'
-import { reportRejection } from '@src/lib/trap'
-import type {
-  RtcSessionDescription,
-  WebSocketRequest,
-  WebSocketResponse,
-  ClientMetrics,
-} from '@kittycad/lib/dist/types/src'
 
 /**
  * 4 different event listeners to clean up
@@ -179,6 +180,14 @@ export const createOnWebSocketMessage = ({
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
+        mark('code/apiCallId', {
+          name: 'code/apiCallId',
+          startTime: performance.now(),
+          entryType: 'mark',
+          detail: {
+            apiCallId: apiCallId,
+          },
+        })
         console.log(`API Call ID: ${apiCallId}`)
         EngineDebugger.addLog({
           label: 'onWebSocketMessage',

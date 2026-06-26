@@ -1,20 +1,53 @@
 use std::fmt::Write;
 
-use crate::{
-    KclError, ModuleId,
-    parsing::{
-        DeprecationKind, PIPE_OPERATOR,
-        ast::types::{
-            Annotation, ArrayExpression, ArrayRangeExpression, AscribedExpression, Associativity, BinaryExpression,
-            BinaryOperator, BinaryPart, Block, BodyItem, CallExpressionKw, CommentStyle, DefaultParamVal, Expr,
-            FormatOptions, FunctionExpression, Identifier, IfExpression, ImportSelector, ImportStatement,
-            ItemVisibility, LabeledArg, Literal, LiteralValue, MemberExpression, Name, Node, NodeList, NonCodeMeta,
-            NonCodeNode, NonCodeValue, NumericLiteral, ObjectExpression, Parameter, PipeExpression, Program,
-            SketchBlock, SketchVar, TagDeclarator, TypeDeclaration, UnaryExpression, VariableDeclaration, VariableKind,
-        },
-        deprecation,
-    },
-};
+use crate::KclError;
+use crate::ModuleId;
+use crate::parsing::DeprecationKind;
+use crate::parsing::PIPE_OPERATOR;
+use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::ArrayExpression;
+use crate::parsing::ast::types::ArrayRangeExpression;
+use crate::parsing::ast::types::AscribedExpression;
+use crate::parsing::ast::types::Associativity;
+use crate::parsing::ast::types::BinaryExpression;
+use crate::parsing::ast::types::BinaryOperator;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::Block;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::CommentStyle;
+use crate::parsing::ast::types::DefaultParamVal;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::FormatOptions;
+use crate::parsing::ast::types::FunctionExpression;
+use crate::parsing::ast::types::Identifier;
+use crate::parsing::ast::types::IfExpression;
+use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
+use crate::parsing::ast::types::ItemVisibility;
+use crate::parsing::ast::types::LabeledArg;
+use crate::parsing::ast::types::Literal;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::MemberExpression;
+use crate::parsing::ast::types::Name;
+use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::NodeList;
+use crate::parsing::ast::types::NonCodeMeta;
+use crate::parsing::ast::types::NonCodeNode;
+use crate::parsing::ast::types::NonCodeValue;
+use crate::parsing::ast::types::NumericLiteral;
+use crate::parsing::ast::types::ObjectExpression;
+use crate::parsing::ast::types::Parameter;
+use crate::parsing::ast::types::PipeExpression;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::SketchBlock;
+use crate::parsing::ast::types::SketchVar;
+use crate::parsing::ast::types::TagDeclarator;
+use crate::parsing::ast::types::TypeDeclaration;
+use crate::parsing::ast::types::UnaryExpression;
+use crate::parsing::ast::types::VariableDeclaration;
+use crate::parsing::ast::types::VariableKind;
+use crate::parsing::deprecation;
 
 #[allow(dead_code)]
 pub fn fmt(input: &str) -> Result<String, KclError> {
@@ -119,9 +152,12 @@ fn recast_body(
                 result.push_str(&stmt.recast(options, indentation_level));
             }
             BodyItem::ExpressionStatement(expression_statement) => {
+                let mut tmp_buf = String::new();
                 expression_statement
                     .expression
-                    .recast(&mut result, options, indentation_level, ExprContext::Other)
+                    .recast(&mut tmp_buf, options, indentation_level, ExprContext::Other);
+                options.write_indentation(&mut result, indentation_level);
+                result.push_str(tmp_buf.trim_start());
             }
             BodyItem::VariableDeclaration(variable_declaration) => {
                 variable_declaration.recast(&mut result, options, indentation_level);
@@ -292,8 +328,36 @@ impl ImportStatement {
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub(crate) enum ExprContext {
     Pipe,
+    /// The first expression in a pipe. It should not get pipe-specific child indentation,
+    /// but it also should not emit a leading indent before the expression itself.
+    PipeHead,
     FnDecl,
+    /// Being used as an argument to a call expression, which is in a pipe expression.
+    PipeCallArg,
+    /// Being used as an argument to a call expression.
+    CallArg,
     Other,
+}
+
+impl ExprContext {
+    fn in_pipe(self) -> bool {
+        matches!(self, ExprContext::Pipe | ExprContext::PipeCallArg)
+    }
+
+    fn needs_leading_indent(self) -> bool {
+        !matches!(
+            self,
+            ExprContext::PipeHead | ExprContext::CallArg | ExprContext::PipeCallArg
+        )
+    }
+
+    fn call_arg_context(self) -> ExprContext {
+        if self.in_pipe() {
+            ExprContext::PipeCallArg
+        } else {
+            ExprContext::CallArg
+        }
+    }
 }
 
 impl Expr {
@@ -346,7 +410,9 @@ impl Expr {
                 }
             }
             Expr::TagDeclarator(tag) => tag.recast(buf),
-            Expr::PipeExpression(pipe_exp) => pipe_exp.recast(buf, options, indentation_level, !is_decl),
+            Expr::PipeExpression(pipe_exp) => {
+                pipe_exp.recast(buf, options, indentation_level, !is_decl && ctxt.needs_leading_indent())
+            }
             Expr::UnaryExpression(unary_exp) => unary_exp.recast(buf, options, indentation_level, ctxt),
             Expr::IfExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::PipeSubstitution(_) => buf.push_str(crate::parsing::PIPE_SUBSTITUTION_OPERATOR),
@@ -441,16 +507,17 @@ fn recast_args(
     indentation_level: usize,
     ctxt: ExprContext,
 ) -> Vec<String> {
+    let arg_ctxt = ctxt.call_arg_context();
     let mut arg_list = if let Some(first_arg) = unlabeled {
         let mut first = String::with_capacity(256);
-        first_arg.recast(&mut first, options, indentation_level, ctxt);
+        first_arg.recast(&mut first, options, indentation_level, arg_ctxt);
         vec![first.trim().to_owned()]
     } else {
         Vec::with_capacity(arguments.len())
     };
     arg_list.extend(arguments.iter().map(|arg| {
         let mut buf = String::with_capacity(256);
-        arg.recast(&mut buf, options, indentation_level, ctxt);
+        arg.recast(&mut buf, options, indentation_level, arg_ctxt);
         buf
     }));
     arg_list
@@ -465,11 +532,7 @@ fn recast_call(
     indentation_level: usize,
     ctxt: ExprContext,
 ) {
-    let smart_indent_level = if ctxt == ExprContext::Pipe {
-        0
-    } else {
-        indentation_level
-    };
+    let smart_indent_level = if ctxt.in_pipe() { 0 } else { indentation_level };
     let name = callee;
 
     if let Some(suggestion) = deprecation(&name.name.inner.name, DeprecationKind::Function) {
@@ -484,7 +547,7 @@ fn recast_call(
     let multiline = has_lots_of_args || some_arg_is_already_multiline;
     if multiline {
         let next_indent = indentation_level + 1;
-        let inner_indentation = if ctxt == ExprContext::Pipe {
+        let inner_indentation = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(next_indent)
         } else {
             options.get_indentation(next_indent)
@@ -493,12 +556,14 @@ fn recast_call(
         let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
         args.push(',');
         let args = args;
-        let end_indent = if ctxt == ExprContext::Pipe {
+        let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
         };
-        options.write_indentation(buf, smart_indent_level);
+        if ctxt.needs_leading_indent() {
+            options.write_indentation(buf, smart_indent_level);
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         buf.push('\n');
@@ -508,7 +573,9 @@ fn recast_call(
         write!(buf, "{end_indent}").no_fail();
         buf.push(')');
     } else {
-        options.write_indentation(buf, smart_indent_level);
+        if ctxt.needs_leading_indent() {
+            options.write_indentation(buf, smart_indent_level);
+        }
         name.write_to(buf).no_fail();
         buf.push('(');
         write!(buf, "{args}").no_fail();
@@ -702,7 +769,7 @@ impl ArrayExpression {
 
         // Otherwise, we format a multi-line representation.
         buf.push_str("[\n");
-        let inner_indentation = if ctxt == ExprContext::Pipe {
+        let inner_indentation = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
@@ -720,7 +787,7 @@ impl ArrayExpression {
                 buf.push('\n')
             }
         }
-        let end_indent = if ctxt == ExprContext::Pipe {
+        let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
@@ -813,7 +880,7 @@ impl ObjectExpression {
         indentation_level: usize,
         ctxt: ExprContext,
     ) {
-        let inner_indentation = if ctxt == ExprContext::Pipe {
+        let inner_indentation = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level + 1)
         } else {
             options.get_indentation(indentation_level + 1)
@@ -835,7 +902,7 @@ impl ObjectExpression {
                 }
             })
             .collect();
-        let end_indent = if ctxt == ExprContext::Pipe {
+        let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
             options.get_indentation(indentation_level)
@@ -976,7 +1043,7 @@ impl IfExpression {
             .into_iter()
             .enumerate()
             .map(|(idx, (ind, line))| {
-                let indentation = if ctxt == ExprContext::Pipe && idx == 0 {
+                let indentation = if ctxt.in_pipe() && idx == 0 {
                     String::new()
                 } else {
                     options.get_indentation(indentation_level + ind)
@@ -995,7 +1062,12 @@ impl Node<PipeExpression> {
             options.write_indentation(buf, indentation_level);
         }
         for (index, statement) in self.body.iter().enumerate() {
-            statement.recast(buf, options, indentation_level + 1, ExprContext::Pipe);
+            let (statement_indentation, statement_ctxt) = if index == 0 {
+                (indentation_level, ExprContext::PipeHead)
+            } else {
+                (indentation_level + 1, ExprContext::Pipe)
+            };
+            statement.recast(buf, options, statement_indentation, statement_ctxt);
             let non_code_meta = &self.non_code_meta;
             if let Some(non_code_meta_value) = non_code_meta.non_code_nodes.get(&index) {
                 for val in non_code_meta_value {
@@ -1094,6 +1166,7 @@ impl SketchBlock {
                 start: Default::default(),
                 end: Default::default(),
                 module_id: Default::default(),
+                node_path: None,
                 outer_attrs: Default::default(),
                 pre_comments: Default::default(),
                 comment_start: Default::default(),
@@ -1244,7 +1317,8 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     use super::*;
-    use crate::{ModuleId, parsing::ast::types::FormatOptions};
+    use crate::ModuleId;
+    use crate::parsing::ast::types::FormatOptions;
 
     #[test]
     fn test_recast_annotations_without_body_items() {
@@ -1398,6 +1472,18 @@ export import a, b as bbb from "a.kcl"
     #[test]
     fn test_recast_sketch_block_with_labeled_args() {
         let input = r#"sketch(on = XY) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_sketch_block_with_arg_shorthand() {
+        let input = r#"on = XY
+sketch(on) {
   return 0
 }
 "#;
@@ -2085,13 +2171,13 @@ scarlett_body = rectShape(pos = [0, 0], w = width, l = length)
 // build the bracket sketch around the body
 fn bracketSketch(w, d, t) {
   s = startSketchOn({
-         plane = {
-           origin = { x = 0, y = length / 2 + thk, z = 0 },
-           x_axis = { x = 1, y = 0, z = 0 },
-           y_axis = { x = 0, y = 0, z = 1 },
-           z_axis = { x = 0, y = 1, z = 0 }
-         }
-       })
+    plane = {
+      origin = { x = 0, y = length / 2 + thk, z = 0 },
+      x_axis = { x = 1, y = 0, z = 0 },
+      y_axis = { x = 0, y = 0, z = 1 },
+      z_axis = { x = 0, y = 1, z = 0 }
+    }
+  })
     |> startProfile(at = [-w / 2 - t, d + t])
     |> line(endAbsolute = [-w / 2 - t, -t], tag = $edge1)
     |> line(endAbsolute = [w / 2 + t, -t], tag = $edge2)
@@ -2117,13 +2203,13 @@ bracket_body = bracketSketch(w = width, d = depth, t = thk)
      )
 // build the tabs of the mounting bracket (right side)
 tabs_r = startSketchOn({
-       plane = {
-         origin = { x = 0, y = 0, z = depth + thk },
-         x_axis = { x = 1, y = 0, z = 0 },
-         y_axis = { x = 0, y = 1, z = 0 },
-         z_axis = { x = 0, y = 0, z = 1 }
-       }
-     })
+  plane = {
+    origin = { x = 0, y = 0, z = depth + thk },
+    x_axis = { x = 1, y = 0, z = 0 },
+    y_axis = { x = 0, y = 1, z = 0 },
+    z_axis = { x = 0, y = 0, z = 1 }
+  }
+})
   |> startProfile(at = [width / 2 + thk, length / 2 + thk])
   |> line(end = [10, -5])
   |> line(end = [0, -10])
@@ -2140,13 +2226,13 @@ tabs_r = startSketchOn({
   |> patternLinear3d(axis = [0, -1, 0], repetitions = 1, distance = length - 10)
 // build the tabs of the mounting bracket (left side)
 tabs_l = startSketchOn({
-       plane = {
-         origin = { x = 0, y = 0, z = depth + thk },
-         x_axis = { x = 1, y = 0, z = 0 },
-         y_axis = { x = 0, y = 1, z = 0 },
-         z_axis = { x = 0, y = 0, z = 1 }
-       }
-     })
+  plane = {
+    origin = { x = 0, y = 0, z = depth + thk },
+    x_axis = { x = 1, y = 0, z = 0 },
+    y_axis = { x = 0, y = 1, z = 0 },
+    z_axis = { x = 0, y = 0, z = 1 }
+  }
+})
   |> startProfile(at = [-width / 2 - thk, length / 2 + thk])
   |> line(end = [-10, -5])
   |> line(end = [0, -10])
@@ -3285,6 +3371,49 @@ x = 1
     }
 
     #[test]
+    fn settings_then_code_is_stable() {
+        let code = "\
+@settings(defaultLengthUnit = in)
+
+import \"cube-inches.kcl\" as cubeIn
+import \"cube-mm.kcl\" as cubeMm
+
+cubeIn
+cubeMm
+";
+        let formatted_once = crate::parsing::top_level_parse(code)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_once, code);
+
+        let formatted_twice = crate::parsing::top_level_parse(&formatted_once)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_twice, formatted_once);
+    }
+
+    #[test]
+    fn settings_then_standalone_comment_is_stable() {
+        let code = "\
+@settings(defaultLengthUnit = mm)
+@settings(defaultAngleUnit = deg)
+
+// Cap for gimbal stick
+
+x = 1
+";
+        let formatted_once = crate::parsing::top_level_parse(code)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_once, code);
+
+        let formatted_twice = crate::parsing::top_level_parse(&formatted_once)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_twice, formatted_once);
+    }
+
+    #[test]
     fn module_prefix() {
         let code = "x = std::sweep::SKETCH_PLANE\n";
         let ast = crate::parsing::top_level_parse(code).unwrap();
@@ -3303,6 +3432,91 @@ startSketchOn(XY)
   } else {
     xLine(length = 1)
   }
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_binary_expressions() {
+        let code = "\
+fn foo() {
+  1 == 2
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_assignment() {
+        let code = "\
+fn foo() {
+  x = 1
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_unary_expression() {
+        let code = "\
+fn foo() {
+  -x
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_array_expression() {
+        let code = "\
+fn foo() {
+  [1, 2]
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_name_expression() {
+        let code = "\
+fn foo() {
+  x
+}
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected = code;
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn indented_member_assignment() {
+        let code = "\
+brakcetPlane = {
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 },
+  origin = { x = length / 2 }
+}
 ";
         let ast = crate::parsing::top_level_parse(code).unwrap();
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
@@ -3330,5 +3544,87 @@ return union([right, left])
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;
         assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn fn_args_prefixed_with_spaces() {
+        let code = "holeAt(
+  [cube1, cube2],
+  plane = XY,
+  holeBottom =   hole::flat(),
+  holeBody =   hole::blind(depth = 2, diameter = 1),
+  holeType =   hole::counterbore(diameter = 1.4, depth = 1),
+  cutAt = [1, 1],
+)";
+        let expected = "holeAt(
+  [cube1, cube2],
+  plane = XY,
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 2, diameter = 1),
+  holeType = hole::counterbore(diameter = 1.4, depth = 1),
+  cutAt = [1, 1],
+)
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let recasted = ast.recast_top(&FormatOptions::new(), 0);
+        assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn some_fn_args_still_prefixed() {
+        let code = "a
+  |> b()
+  |> subtract(
+       tools =     startSketchOn(XY)
+      |> circle(diameter = hubDiameter)
+      |> extrude(length = hubThickness * 5, symmetric = true),
+       tolerance,
+     )
+";
+        let ast = crate::parsing::top_level_parse(code).unwrap();
+        let actual_recasted = ast.recast_top(&FormatOptions::new(), 0);
+        let expected_recasted = "a
+  |> b()
+  |> subtract(
+       tools = startSketchOn(XY)
+      |> circle(diameter = hubDiameter)
+      |> extrude(length = hubThickness * 5, symmetric = true),
+       tolerance,
+     )
+";
+        assert_eq!(actual_recasted, expected_recasted);
+    }
+
+    #[test]
+    fn first_in_pipeline_indent() {
+        // These code snippets are identical, except that one passes the gear into a clone,
+        // and the other doesn't.
+        let not_clone = "gear::helical(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = 25deg,
+  gearHeight = 5,
+)
+";
+        let yes_clone = "gear::helical(
+  nTeeth = 12,
+  module = 1.5,
+  pressureAngle = 14deg,
+  helixAngle = 25deg,
+  gearHeight = 5,
+)
+|> clone()
+";
+        // Both these should format their gear::helical parameters the same.
+        let not_clone_recasted = crate::parsing::top_level_parse(not_clone)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        let yes_clone_recasted = crate::parsing::top_level_parse(yes_clone)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert!(not_clone_recasted.contains("\n  nTeeth"));
+        assert!(!yes_clone_recasted.contains("\n       nTeeth"));
+        assert!(yes_clone_recasted.contains("\n  nTeeth"));
     }
 }

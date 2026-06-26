@@ -33,6 +33,15 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "enable_sketch_mode",
         "entity_id": "[uuid]",
         "ortho": false,
@@ -86,12 +95,12 @@ description: Artifact commands tube-manifold.kcl
           },
           "radius": 30.479999999999997,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -101,8 +110,12 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -171,6 +184,15 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -190,6 +212,15 @@ description: Artifact commands tube-manifold.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -223,7 +254,7 @@ description: Artifact commands tube-manifold.kcl
         "path": "[uuid]",
         "to": {
           "x": 152.39999999999998,
-          "y": 73.66,
+          "y": 68.58,
           "z": 0.0
         }
       }
@@ -244,11 +275,28 @@ description: Artifact commands tube-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -25.4,
-            "y": 0.0,
+            "x": 152.39999999999998,
+            "y": 73.66,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 127.0,
+            "y": 73.66,
+            "z": 0.0
+          },
+          "relative": false
         }
       }
     },
@@ -264,7 +312,7 @@ description: Artifact commands tube-manifold.kcl
             "x": 121.91999999999999,
             "y": 73.66
           },
-          "radius": 5.08,
+          "radius": 5.0800000000000045,
           "start": {
             "unit": "degrees",
             "value": 0.0
@@ -301,12 +349,21 @@ description: Artifact commands tube-manifold.kcl
         "type": "extend_path",
         "path": "[uuid]",
         "segment": {
-          "type": "tangential_arc",
+          "type": "arc",
+          "center": {
+            "x": -508.0,
+            "y": -0.0
+          },
           "radius": 73.66,
-          "offset": {
+          "start": {
             "unit": "degrees",
             "value": 90.0
-          }
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 180.0
+          },
+          "relative": false
         }
       }
     },
@@ -319,11 +376,11 @@ description: Artifact commands tube-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 5.08,
+            "x": -576.5799999999999,
             "y": 0.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -337,7 +394,7 @@ description: Artifact commands tube-manifold.kcl
           "type": "arc",
           "center": {
             "x": -508.0,
-            "y": 0.0000000000000006221205739668565
+            "y": -0.000000000000008398627748552546
           },
           "radius": 68.57999999999998,
           "start": {
@@ -362,7 +419,7 @@ description: Artifact commands tube-manifold.kcl
           "type": "line",
           "end": {
             "x": 152.39999999999998,
-            "y": 68.57999999999998,
+            "y": 68.58,
             "z": 0.0
           },
           "relative": false
@@ -373,25 +430,12 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 152.39999999999998,
-            "y": 73.66,
-            "z": 0.0
-          },
-          "relative": false
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 0.0,
+          "y": 71.11999999999999
         }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
       }
     },
     {
@@ -444,6 +488,15 @@ description: Artifact commands tube-manifold.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -608,6 +661,7 @@ description: Artifact commands tube-manifold.kcl
           "[uuid]",
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -634,6 +688,15 @@ description: Artifact commands tube-manifold.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -693,12 +756,12 @@ description: Artifact commands tube-manifold.kcl
           },
           "radius": 73.66,
           "start": {
-            "unit": "degrees",
+            "unit": "radians",
             "value": 0.0
           },
           "end": {
-            "unit": "degrees",
-            "value": 360.0
+            "unit": "radians",
+            "value": 6.283185307179586
           },
           "relative": false
         }
@@ -708,8 +771,12 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
       }
     },
     {
@@ -780,6 +847,15 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -799,6 +875,15 @@ description: Artifact commands tube-manifold.kcl
         "size": 60.0,
         "clobber": false,
         "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
       }
     },
     {
@@ -854,10 +939,10 @@ description: Artifact commands tube-manifold.kcl
           "type": "line",
           "end": {
             "x": 35.559999999999995,
-            "y": 0.0,
+            "y": 152.39999999999998,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -870,11 +955,11 @@ description: Artifact commands tube-manifold.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0,
-            "y": -25.4,
+            "x": 35.559999999999995,
+            "y": 127.0,
             "z": 0.0
           },
-          "relative": true
+          "relative": false
         }
       }
     },
@@ -890,7 +975,7 @@ description: Artifact commands tube-manifold.kcl
             "x": 35.559999999999995,
             "y": 121.91999999999999
           },
-          "radius": 5.08,
+          "radius": 5.0800000000000045,
           "start": {
             "unit": "degrees",
             "value": 90.0
@@ -958,8 +1043,12 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "close_path",
-        "path_id": "[uuid]"
+        "type": "create_region_from_query_point",
+        "object_id": "[uuid]",
+        "query_point": {
+          "x": 17.779999999999998,
+          "y": 76.19999999999999
+        }
       }
     },
     {
@@ -1018,6 +1107,15 @@ description: Artifact commands tube-manifold.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "boolean_subtract",
         "target_ids": [
           "[uuid]"
@@ -1025,6 +1123,7 @@ description: Artifact commands tube-manifold.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },
@@ -1039,6 +1138,7 @@ description: Artifact commands tube-manifold.kcl
         "tool_ids": [
           "[uuid]"
         ],
+        "separate_bodies": false,
         "tolerance": 0.0000001
       }
     },

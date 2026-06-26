@@ -1,12 +1,8 @@
-import decamelize from 'decamelize'
-import type { ForwardedRef } from 'react'
-import { forwardRef, useMemo } from 'react'
-import toast from 'react-hot-toast'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment } from 'react/jsx-runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
@@ -18,34 +14,37 @@ import type {
   SettingsLevel,
 } from '@src/lib/settings/settingsTypes'
 import {
+  formatSettingsLabel,
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
-import { toSync } from '@src/lib/utils'
-import {
-  acceptOnboarding,
-  catchOnboardingWarnError,
-} from '@src/routes/Onboarding/utils'
+import { capitaliseFC, toSync } from '@src/lib/utils'
+import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
-import { AppMachineEventType } from '@src/lib/types'
+import type { ForwardedRef } from 'react'
+import { forwardRef, useMemo } from 'react'
+import toast from 'react-hot-toast'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
   isFileSettings: boolean
+  showPlugins: boolean
 }
 
 export const AllSettingsFields = forwardRef(
   (
-    { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
+    { searchParamTab, isFileSettings, showPlugins }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings } = useApp()
-    const { appActor, kclManager, systemIOActor } = useSingletons()
+    const { settings, layout, systemIOActor } = useApp()
+    const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
     const context = settings.useSettings()
+    const executingPath = useAbsoluteFilePath()
 
     const projectPath = useMemo(() => {
       const filteredPathname = location.pathname
@@ -71,21 +70,16 @@ export const AllSettingsFields = forwardRef(
         kclManager,
         systemIOActor,
         settingsActor: settings.actor,
+        executingPath,
       }
-      // We need to navigate out of settings before accepting onboarding
-      // in the web
-      if (!isDesktop()) {
-        void navigate('..')
-      }
-      acceptOnboarding(props).catch((reason) =>
-        catchOnboardingWarnError(reason, props)
-      )
+      acceptOnboarding(props)
     }
 
     return (
       <div className="relative overflow-y-auto">
         <div ref={scrollRef} className="flex flex-col gap-4 px-2">
           {Object.entries(context)
+            .filter(([category]) => showPlugins || category !== 'plugins')
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(
@@ -98,7 +92,7 @@ export const AllSettingsFields = forwardRef(
                   id={`category-${category}`}
                   className="text-xl mt-6 first-of-type:mt-0 capitalize font-bold"
                 >
-                  {decamelize(category, { separator: ' ' })}
+                  {formatSettingsLabel(category)}
                 </h2>
                 {Object.entries(categorySettings)
                   .filter((item: [string, Setting<unknown>]) =>
@@ -110,9 +104,7 @@ export const AllSettingsFields = forwardRef(
                       setting[setting.getParentLevel(searchParamTab)]
                     return (
                       <SettingsSection
-                        title={decamelize(settingName, {
-                          separator: ' ',
-                        })}
+                        title={formatSettingsLabel(settingName)}
                         id={settingName}
                         className={
                           location.hash === `#${settingName}`
@@ -200,7 +192,7 @@ export const AllSettingsFields = forwardRef(
                     className: 'p-1',
                   }}
                 >
-                  Show in folder
+                  Show in Folder
                 </ActionButton>
               )}
               <ActionButton
@@ -211,7 +203,7 @@ export const AllSettingsFields = forwardRef(
                     level: searchParamTab,
                   })
                   toast.success(
-                    `Your ${searchParamTab}-level settings were reset`
+                    `Your ${searchParamTab}-level settings were reset.`
                   )
                 }}
                 iconStart={{
@@ -221,7 +213,7 @@ export const AllSettingsFields = forwardRef(
                   bgClassName: 'bg-destroy-70',
                 }}
               >
-                Reset {searchParamTab}-level settings
+                Reset {capitaliseFC(searchParamTab)}-Level Settings
               </ActionButton>
             </div>
           </SettingsSection>
@@ -231,9 +223,7 @@ export const AllSettingsFields = forwardRef(
           >
             <ActionButton
               Element="button"
-              onClick={() => {
-                appActor.send({ type: AppMachineEventType.ResetLayout })
-              }}
+              onClick={layout.reset}
               iconStart={{
                 icon: 'refresh',
                 size: 'sm',
@@ -258,7 +248,7 @@ export const AllSettingsFields = forwardRef(
                 to={getReleaseUrl()}
                 iconStart={{ icon: 'file', className: 'p-1' }}
               >
-                View release on GitHub
+                View Release on GitHub
               </ActionButton>
               <ActionButton
                 Element="button"
@@ -271,23 +261,23 @@ export const AllSettingsFields = forwardRef(
                   className: 'p-1',
                 }}
               >
-                Check for updates
+                Check for Updates
               </ActionButton>
             </div>
             <p className="max-w-2xl mt-6">
               Don't see the feature you want? Check to see if it's on{' '}
               <a
                 onClick={openExternalBrowserIfDesktop(
-                  'https://github.com/KittyCAD/modeling-app/discussions'
+                  'https://zoo.dev/roadmap'
                 )}
-                href="https://github.com/KittyCAD/modeling-app/discussions"
+                href="https://zoo.dev/roadmap"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 our roadmap
-              </a>
-              , and start a discussion if you don't see it! Your feedback will
-              help us prioritize what to build next.
+              </a>{' '}
+              or reach out. Your feedback will help us prioritize what to build
+              next.
             </p>
           </div>
         </div>

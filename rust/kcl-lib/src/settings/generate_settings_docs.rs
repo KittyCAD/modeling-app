@@ -1,9 +1,12 @@
 use std::path::PathBuf;
 
-use schemars::{JsonSchema, r#gen::SchemaGenerator};
-use serde_json::{Value, json};
+use schemars::JsonSchema;
+use schemars::r#gen::SchemaGenerator;
+use serde_json::Value;
+use serde_json::json;
 
-use crate::settings::types::{Configuration, project::ProjectConfiguration};
+use crate::settings::types::Configuration;
+use crate::settings::types::project::ProjectConfiguration;
 
 // Project settings example in TOML format
 const PROJECT_SETTINGS_EXAMPLE: &str = r#"[settings.app]
@@ -33,10 +36,6 @@ color = 240.0
 [settings.modeling]
 # Use millimeters as the default measurement unit
 base_unit = "mm"
-
-[settings.text_editor]
-# Disable text wrapping in the editor
-text_wrapping = false
 "#;
 
 const PROJECT_SETTINGS_DOC_PATH: &str = "../../docs/kcl-lang/settings/project.md";

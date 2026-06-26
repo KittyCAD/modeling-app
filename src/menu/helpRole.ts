@@ -3,9 +3,9 @@ import { shell } from 'electron'
 
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { typeSafeWebContentsSend } from '@src/menu/channels'
+import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
-import { getAutoUpdater } from '@src/updater'
+import { autoUpdater as appUpdater } from 'electron-updater'
 
 export const helpRole = (
   mainWindow: BrowserWindow
@@ -16,11 +16,7 @@ export const helpRole = (
       {
         id: 'Help.Show all commands',
         label: 'Show All Commands',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Help.Command Palette...',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Help.Command Palette...'),
       },
       {
         label: 'KCL Code Samples',
@@ -82,11 +78,7 @@ export const helpRole = (
       {
         id: 'Help.Replay onboarding tutorial',
         label: 'Replay Onboarding Tutorial',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Help.Replay onboarding tutorial',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Help.Replay onboarding tutorial'),
       },
       { type: 'separator' },
       {
@@ -98,9 +90,10 @@ export const helpRole = (
         },
       },
       {
+        id: 'Help.Check for updates',
         label: 'Check for Updates',
         click: () => {
-          getAutoUpdater().checkForUpdates().catch(reportRejection)
+          appUpdater.checkForUpdates().catch(reportRejection)
         },
       },
       { type: 'separator' },

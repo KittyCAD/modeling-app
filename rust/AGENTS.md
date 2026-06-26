@@ -2,7 +2,7 @@
 
 ## Scope
 
-This file applies to Rust development under `rust/`. It complements the repo root README.
+This file applies to Rust development under `rust/`. It complements the repo root `CONTRIBUTING.md` and `rust/kcl-lib/README.md`.
 
 ## Project overview
 
@@ -14,14 +14,19 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 ## Dev environment tips
 
 - Generated stdlib docs live under `docs/kcl-std/` and are overwritten by tests; do not edit them directly.
+- If Electron Playwright tests fail locally with `bad option: --remote-debugging-port=0`, run them with `env -u ELECTRON_RUN_AS_NODE ...`, for example `env -u ELECTRON_RUN_AS_NODE npm run test:e2e:desktop -- e2e/playwright/sketch-solve-edit.spec.ts --grep "constraints can be added and undone one at a time in sketch solve mode"`.
 
 ## Code style
 
 - Format code using the nightly toolchain: `cargo +nightly fmt`.
 - Follow clippy lints: `just lint`. If the git stage is clean (i.e. there aren't any unstaged changes), you can run `just lint-fix` to automatically apply most lints.
+- Avoid panicking. Return Results instead. Panic in tests and debug asserts are okay.
+- Avoid `unreachable!()` in `kcl-lib` paths that can be reached from user KCL or scene data. Return a `KclError` instead so unexpected inputs surface as diagnostics instead of panics.
+- Avoid non-ASCII characters in comments.
 
 ## Build and test
 
+- Many tests require an API token. If `ZOO_API_TOKEN` isn't already defined as an environment variable, ask to have the tests run with the token.
 - Build the LSP (from `rust/kcl-language-server`): `npm install` then `cargo build`.
 - Run KCL snapshot tests (requires a Zoo dev token):
   - `export ZOO_API_TOKEN=your-token-here`

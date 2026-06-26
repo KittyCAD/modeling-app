@@ -1,25 +1,33 @@
-use std::{collections::HashMap, str::FromStr};
+use std::collections::HashMap;
+use std::str::FromStr;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::units::{UnitAngle, UnitLength};
-use serde::{Deserialize, Serialize};
+use kittycad_modeling_cmds::units::UnitAngle;
+use kittycad_modeling_cmds::units::UnitLength;
+use serde::Deserialize;
+use serde::Serialize;
 
-use crate::{
-    CompilationError, KclError, SourceRange,
-    errors::KclErrorDetails,
-    exec::PlaneKind,
-    execution::{
-        ExecState, Plane, PlaneInfo, Point3d, annotations,
-        kcl_value::{KclValue, TypeDef},
-        memory::{self},
-    },
-    fmt,
-    parsing::{
-        ast::types::{PrimitiveType as AstPrimitiveType, Type},
-        token::NumericSuffix,
-    },
-    std::args::{FromKclValue, TyF64},
-};
+use crate::CompilationIssue;
+use crate::KclError;
+use crate::SourceRange;
+use crate::errors::KclErrorDetails;
+use crate::exec::PlaneKind;
+use crate::execution::ExecState;
+use crate::execution::Plane;
+use crate::execution::PlaneInfo;
+use crate::execution::Point3d;
+use crate::execution::SKETCH_OBJECT_META;
+use crate::execution::SKETCH_OBJECT_META_SKETCH;
+use crate::execution::annotations;
+use crate::execution::kcl_value::KclValue;
+use crate::execution::kcl_value::TypeDef;
+use crate::execution::memory::{self};
+use crate::fmt;
+use crate::parsing::ast::types::PrimitiveType as AstPrimitiveType;
+use crate::parsing::ast::types::Type;
+use crate::parsing::token::NumericSuffix;
+use crate::std::args::FromKclValue;
+use crate::std::args::TyF64;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum RuntimeType {
@@ -100,6 +108,18 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Solid)
     }
 
+    pub fn gdt() -> Self {
+        RuntimeType::Primitive(PrimitiveType::GdtAnnotation)
+    }
+
+    /// `[GdtAnnotation; 1+]`
+    pub fn gdts() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
     /// `[Helix; 1+]`
     pub fn helices() -> Self {
         RuntimeType::Array(
@@ -113,6 +133,14 @@ impl RuntimeType {
 
     pub fn plane() -> Self {
         RuntimeType::Primitive(PrimitiveType::Plane)
+    }
+
+    /// `[Plane; 1+]`
+    pub fn planes() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Plane)),
+            ArrayLen::Minimum(1),
+        )
     }
 
     pub fn face() -> Self {
@@ -198,7 +226,7 @@ impl RuntimeType {
         source_range: SourceRange,
         constrainable: bool,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationError> {
+    ) -> Result<Self, CompilationIssue> {
         match value {
             Type::Primitive(pt) => Self::from_parsed_primitive(pt, exec_state, source_range, suppress_warnings),
             Type::Array { ty, len } => {
@@ -208,7 +236,7 @@ impl RuntimeType {
             Type::Union { tys } => tys
                 .into_iter()
                 .map(|t| Self::from_parsed(t.inner, exec_state, source_range, constrainable, suppress_warnings))
-                .collect::<Result<Vec<_>, CompilationError>>()
+                .collect::<Result<Vec<_>, CompilationIssue>>()
                 .map(RuntimeType::Union),
             Type::Object { properties } => properties
                 .into_iter()
@@ -216,7 +244,7 @@ impl RuntimeType {
                     RuntimeType::from_parsed(ty.inner, exec_state, source_range, constrainable, suppress_warnings)
                         .map(|ty| (id.name.clone(), ty))
                 })
-                .collect::<Result<Vec<_>, CompilationError>>()
+                .collect::<Result<Vec<_>, CompilationIssue>>()
                 .map(|values| RuntimeType::Object(values, constrainable)),
         }
     }
@@ -226,7 +254,7 @@ impl RuntimeType {
         exec_state: &mut ExecState,
         source_range: SourceRange,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationError> {
+    ) -> Result<Self, CompilationIssue> {
         Ok(match value {
             AstPrimitiveType::Any => RuntimeType::Primitive(PrimitiveType::Any),
             AstPrimitiveType::None => RuntimeType::Primitive(PrimitiveType::None),
@@ -251,21 +279,21 @@ impl RuntimeType {
         exec_state: &mut ExecState,
         source_range: SourceRange,
         suppress_warnings: bool,
-    ) -> Result<Self, CompilationError> {
+    ) -> Result<Self, CompilationIssue> {
         let ty_val = exec_state
             .stack()
             .get(&format!("{}{}", memory::TYPE_PREFIX, alias), source_range)
-            .map_err(|_| CompilationError::err(source_range, format!("Unknown type: {alias}")))?;
+            .map_err(|_| CompilationIssue::err(source_range, format!("Unknown type: {alias}")))?;
 
         Ok(match ty_val {
             KclValue::Type {
                 value, experimental, ..
             } => {
                 let result = match value {
-                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
-                    TypeDef::Alias(ty) => ty.clone(),
+                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
+                    TypeDef::Alias(ty) => ty,
                 };
-                if *experimental && !suppress_warnings {
+                if experimental && !suppress_warnings {
                     exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
                 }
                 result
@@ -612,7 +640,7 @@ impl NumericType {
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
                 if b.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -621,7 +649,7 @@ impl NumericType {
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
                 if a.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -671,7 +699,7 @@ impl NumericType {
                     && b.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -682,7 +710,7 @@ impl NumericType {
                     && a.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -696,7 +724,7 @@ impl NumericType {
                     && b.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -707,7 +735,7 @@ impl NumericType {
                     && a.n != 0.0
                 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -848,7 +876,7 @@ impl NumericType {
             (t @ Known(UnitType::Angle(a1)), Default { angle: a2, .. }) if a1 == a2 => {
                 if b.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -857,7 +885,7 @@ impl NumericType {
             (Default { angle: a1, .. }, t @ Known(UnitType::Angle(a2))) if a1 == a2 => {
                 if a.n != 0.0 {
                     exec_state.warn(
-                        CompilationError::err(source_range, "Prefer to use explicit units for angles"),
+                        CompilationIssue::err(source_range, "Prefer to use explicit units for angles"),
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
@@ -1343,6 +1371,21 @@ impl KclValue {
             },
             PrimitiveType::Sketch => match self {
                 KclValue::Sketch { .. } => Ok(self.clone()),
+                KclValue::Object { value, .. } => {
+                    let Some(meta) = value.get(SKETCH_OBJECT_META) else {
+                        return Err(self.into());
+                    };
+                    let KclValue::Object { value: meta_map, .. } = meta else {
+                        return Err(self.into());
+                    };
+                    let Some(sketch) = meta_map.get(SKETCH_OBJECT_META_SKETCH).and_then(KclValue::as_sketch) else {
+                        return Err(self.into());
+                    };
+
+                    Ok(KclValue::Sketch {
+                        value: Box::new(sketch.clone()),
+                    })
+                }
                 _ => Err(self.into()),
             },
             PrimitiveType::Constraint => match self {
@@ -1380,7 +1423,7 @@ impl KclValue {
                         let z_axis = x_axis.axes_cross_product(&y_axis);
 
                         if value.get("zAxis").is_some() {
-                            exec_state.warn(CompilationError::err(
+                            exec_state.warn(CompilationIssue::err(
                             self.into(),
                             "Object with a zAxis field is being coerced into a plane, but the zAxis is ignored.",
                         ), annotations::WARN_IGNORED_Z_AXIS);
@@ -1474,6 +1517,7 @@ impl KclValue {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
                         constrainable: false,
+                        object_kind: Default::default(),
                     })
                 }
                 _ => Err(self.into()),
@@ -1517,6 +1561,7 @@ impl KclValue {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
                         constrainable: false,
+                        object_kind: Default::default(),
                     })
                 }
                 _ => Err(self.into()),
@@ -1599,7 +1644,7 @@ impl KclValue {
                         "Internal: Expected coerced array length {len} to be less than or equal to original length {}",
                         values.len()
                     );
-                    exec_state.err(CompilationError::err(self.into(), message.clone()));
+                    exec_state.err(CompilationIssue::err(self.into(), message.clone()));
                     #[cfg(debug_assertions)]
                     panic!("{message}");
                 }
@@ -1695,12 +1740,14 @@ impl KclValue {
                     // Note that we don't check for constrainability, coercing to a constrainable object
                     // adds that property.
                     constrainable,
+                    object_kind: Default::default(),
                 })
             }
             KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Object {
                 value: HashMap::new(),
                 meta: meta.clone(),
                 constrainable,
+                object_kind: Default::default(),
             }),
             _ => Err(self.into()),
         }
@@ -1767,7 +1814,8 @@ impl KclValue {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::execution::{ExecTestResults, parse_execute};
+    use crate::execution::ExecTestResults;
+    use crate::execution::parse_execute;
 
     async fn new_exec_state() -> (crate::ExecutorContext, ExecState) {
         let ctx = crate::ExecutorContext::new_mock(None).await;
@@ -1802,6 +1850,7 @@ mod test {
                 value: crate::execution::KclObjectFields::new(),
                 meta: Vec::new(),
                 constrainable: false,
+                object_kind: Default::default(),
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
             KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
@@ -1957,6 +2006,7 @@ mod test {
                 value: HashMap::new(),
                 meta: Vec::new(),
                 constrainable: false,
+                object_kind: Default::default(),
             },
             &mut exec_state,
         );
@@ -1971,6 +2021,7 @@ mod test {
             value: HashMap::new(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let obj1 = KclValue::Object {
             value: [(
@@ -1983,6 +2034,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let obj2 = KclValue::Object {
             value: [
@@ -2013,6 +2065,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
 
         let ty0 = RuntimeType::Object(vec![], false);
@@ -2332,6 +2385,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let a3d = KclValue::Object {
             value: [
@@ -2385,6 +2439,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
 
         let ty2d = RuntimeType::Primitive(PrimitiveType::Axis2d);
@@ -2532,12 +2587,12 @@ mod test {
         let mem = result.exec_state.stack();
         match mem
             .memory
-            .get_from(name, result.mem_env, SourceRange::default(), 0)
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
             KclValue::Number { value, ty, .. } => {
                 assert_eq!(value.round(), expected);
-                assert_eq!(*ty, expected_ty);
+                assert_eq!(ty, expected_ty);
             }
             _ => unreachable!(),
         }
@@ -2573,10 +2628,10 @@ u = min([3rad, 4in])
 
         let result = parse_execute(program).await.unwrap();
         assert_eq!(
-            result.exec_state.errors().len(),
+            result.exec_state.issues().len(),
             5,
             "errors: {:?}",
-            result.exec_state.errors()
+            result.exec_state.issues()
         );
 
         assert_value_and_type("a", &result, 9.0, NumericType::default());
@@ -2634,9 +2689,9 @@ d = cos(1rad)
 
         let result = parse_execute(program).await.unwrap();
         assert!(
-            result.exec_state.errors().is_empty(),
+            result.exec_state.issues().is_empty(),
             "{:?}",
-            result.exec_state.errors()
+            result.exec_state.issues()
         );
 
         assert_value_and_type("a", &result, 1.0, NumericType::default());

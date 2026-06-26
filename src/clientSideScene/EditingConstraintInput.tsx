@@ -7,15 +7,17 @@ import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
   calculateDimensionLabelScreenPosition,
   getConstraintObject,
-  isDistanceConstraint,
-} from '@src/machines/sketchSolve/constraints'
+  isConstraintWithSource,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
 import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useState } from 'react'
 import type { SnapshotFrom, StateFrom } from 'xstate'
 
 export const EditingConstraintInput = () => {
-  const { sceneInfra, rustContext } = useSingletons()
+  const {
+    kclManager: { sceneInfra, rustContext },
+  } = useSingletons()
   const { state } = useModelingContext()
   const editingConstraintId = useSelector(
     state.children.sketchSolveMachine,
@@ -76,7 +78,8 @@ export const EditingConstraintInput = () => {
           sketchId,
           editingConstraintId!,
           value,
-          await jsAppSettings(rustContext.settingsActor)
+          jsAppSettings(rustContext.settingsActor),
+          true
         )
         if (result) {
           sketchSolveActor?.send({
@@ -84,6 +87,7 @@ export const EditingConstraintInput = () => {
             data: {
               sourceDelta: result.kclSource,
               sceneGraphDelta: result.sceneGraphDelta,
+              checkpointId: result.checkpointId ?? null,
             },
           })
         }
@@ -130,8 +134,8 @@ function getInitialDimension(
   let initialDimension = ''
   const constraintObject =
     editingConstraintId && getConstraintObject(editingConstraintId, state)
-  if (constraintObject && isDistanceConstraint(constraintObject.kind)) {
-    initialDimension = constraintObject.kind.constraint.source.expr
+  if (constraintObject && isConstraintWithSource(constraintObject)) {
+    initialDimension = constraintObject.kind.constraint.source.expr ?? ''
   }
   return initialDimension
 }

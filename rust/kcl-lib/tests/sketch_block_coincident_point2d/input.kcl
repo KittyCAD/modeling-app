@@ -1,0 +1,11 @@
+@settings(experimentalFeatures = allow)
+
+// Test coincident constraint with a Point2d literal
+s = sketch(on = XY) {
+  p1 = point(at = [var, var])
+  // Constrain p1 to a known Point2d literal
+  coincident([p1, [1mm, 2.5mm]])
+}
+
+assert(s.p1.at[0], isEqualTo = 1mm, tolerance = 0.00000001mm)
+assert(s.p1.at[1], isEqualTo = 2.5mm, tolerance = 0.00000001mm)

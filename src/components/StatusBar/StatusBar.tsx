@@ -3,6 +3,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
+import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
 export function StatusBar({
@@ -42,11 +43,12 @@ export function StatusBar({
 }
 
 export const defaultStatusBarItemClassNames =
-  'flex items-center px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
+  'flex items-center gap-2 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 rounded-none border-none hover:bg-chalkboard-30 dark:hover:bg-chalkboard-80 focus:bg-chalkboard-30 dark:focus:bg-chalkboard-80 hover:text-chalkboard-100 dark:hover:text-chalkboard-10 focus:text-chalkboard-100 dark:focus:text-chalkboard-10  focus:outline-none focus-visible:ring-2 focus:ring-primary focus:ring-opacity-50'
 
 function StatusBarItem(
   props: StatusBarItemType & { position: 'left' | 'middle' | 'right' }
 ) {
+  const location = useLocation()
   const tooltipPosition: TooltipProps['position'] =
     props.position === 'middle' ? 'top' : `top-${props.position}`
 
@@ -147,7 +149,9 @@ function StatusBarItem(
       return (
         <ActionButton
           Element={props.element}
-          to={props.href}
+          to={
+            props.href instanceof Function ? props.href(location) : props.href
+          }
           iconStart={
             'icon' in props
               ? props.icon && {

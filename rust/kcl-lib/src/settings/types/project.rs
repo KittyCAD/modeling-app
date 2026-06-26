@@ -4,12 +4,12 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kittycad_modeling_cmds::units::UnitLength;
 use schemars::JsonSchema;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use validator::Validate;
 
-use crate::settings::types::{
-    DefaultTrue, OnboardingStatus, ProjectCommandBarSettings, ProjectTextEditorSettings, is_default,
-};
+use crate::settings::types::DefaultTrue;
+use crate::settings::types::is_default;
 
 /// Project specific settings for the app.
 /// These live in `project.toml` in the base of the project directory.
@@ -24,6 +24,11 @@ pub struct ProjectConfiguration {
     #[serde(default)]
     #[validate(nested)]
     pub settings: PerProjectSettings,
+
+    /// Settings for cloud-backed project metadata.
+    #[serde(default, skip_serializing_if = "is_default")]
+    #[validate(nested)]
+    pub cloud: ProjectCloudSettings,
 }
 
 impl ProjectConfiguration {
@@ -57,14 +62,11 @@ pub struct PerProjectSettings {
     #[serde(default)]
     #[validate(nested)]
     pub modeling: ProjectModelingSettings,
-    /// Settings that affect the behavior of the KCL text editor.
-    #[serde(default)]
-    #[validate(nested)]
-    pub text_editor: ProjectTextEditorSettings,
-    /// Settings that affect the behavior of the command bar.
-    #[serde(default)]
-    #[validate(nested)]
-    pub command_bar: ProjectCommandBarSettings,
+    /// Other fields that weren't recognized by our schema.
+    /// App-owned extension settings can live here without Rust understanding
+    /// their inner structure.
+    #[serde(flatten, default, skip_serializing_if = "IndexMap::is_empty")]
+    pub other: IndexMap<String, serde_json::Value>,
 }
 
 /// Information about the project.
@@ -76,6 +78,27 @@ pub struct ProjectMetaSettings {
     pub id: uuid::Uuid,
 }
 
+/// Cloud-backed project metadata.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectCloudSettings {
+    /// Environment-scoped cloud metadata keyed by environment name.
+    /// TOML with dotted environment names should use quoted table names, for
+    /// example `[cloud."zoo.dev"]`.
+    #[serde(flatten, default, skip_serializing_if = "IndexMap::is_empty")]
+    pub environments: IndexMap<String, ProjectCloudEnvironmentSettings>,
+}
+
+/// Cloud-backed metadata for a single environment.
+#[derive(Debug, Default, Clone, Deserialize, Serialize, JsonSchema, ts_rs::TS, PartialEq, Validate)]
+#[ts(export)]
+#[serde(rename_all = "snake_case")]
+pub struct ProjectCloudEnvironmentSettings {
+    #[serde(default, skip_serializing_if = "is_default")]
+    pub project_id: uuid::Uuid,
+}
+
 /// Project specific application settings.
 // TODO: When we remove backwards compatibility with the old settings file, we can remove the
 // aliases to camelCase (and projects plural) from everywhere.
@@ -83,22 +106,18 @@ pub struct ProjectMetaSettings {
 #[ts(export)]
 #[serde(rename_all = "snake_case")]
 pub struct ProjectAppSettings {
-    /// The onboarding status of the app.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub onboarding_status: OnboardingStatus,
     /// When the user is idle, and this is true, the stream will be torn down.
     #[serde(default, skip_serializing_if = "is_default")]
     pub stream_idle_mode: bool,
-    /// When the user is idle, and this is true, the stream will be torn down.
-    #[serde(default, skip_serializing_if = "is_default")]
-    pub allow_orbit_in_sketch_mode: bool,
-    /// Whether to show the debug panel, which lets you see various states
-    /// of the app to aid in development.
+    /// Zookeeper reasoning mode. Uses the app default if not set.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub show_debug_panel: Option<bool>,
+    pub zookeeper_mode: Option<String>,
     /// Settings that affect the behavior of the command bar.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub named_views: IndexMap<uuid::Uuid, NamedView>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten, default, skip_serializing_if = "IndexMap::is_empty")]
+    pub other: IndexMap<String, serde_json::Value>,
 }
 
 /// Project specific settings that affect the behavior while modeling.
@@ -120,18 +139,9 @@ pub struct ProjectModelingSettings {
     /// If false, the grid will get larger as you zoom out, and smaller as you zoom in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub fixed_size_grid: Option<bool>,
-    /// When enabled, tools like line, rectangle, etc. will snap to the grid.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snap_to_grid: Option<bool>,
-    /// The space between major grid lines, specified in the current unit.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub major_grid_spacing: Option<f64>,
-    /// The number of minor grid lines per major grid line.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub minor_grids_per_major: Option<f64>,
-    /// The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub snaps_per_minor: Option<f64>,
+    /// Other fields that weren't recognized by our schema.
+    #[serde(flatten, default, skip_serializing_if = "IndexMap::is_empty")]
+    pub other: IndexMap<String, serde_json::Value>,
 }
 
 fn named_view_point_version_one() -> f64 {
@@ -179,11 +189,16 @@ mod tests {
     use indexmap::IndexMap;
     use pretty_assertions::assert_eq;
     use serde_json::Value;
+    use serde_json::json;
 
-    use super::{
-        NamedView, PerProjectSettings, ProjectAppSettings, ProjectCommandBarSettings, ProjectConfiguration,
-        ProjectMetaSettings, ProjectModelingSettings, ProjectTextEditorSettings,
-    };
+    use super::NamedView;
+    use super::PerProjectSettings;
+    use super::ProjectAppSettings;
+    use super::ProjectCloudEnvironmentSettings;
+    use super::ProjectCloudSettings;
+    use super::ProjectConfiguration;
+    use super::ProjectMetaSettings;
+    use super::ProjectModelingSettings;
     use crate::settings::types::UnitLength;
 
     #[test]
@@ -202,10 +217,6 @@ mod tests {
 [settings.app]
 
 [settings.modeling]
-
-[settings.text_editor]
-
-[settings.command_bar]
 "#
         );
 
@@ -268,10 +279,8 @@ mod tests {
             settings: PerProjectSettings {
                 meta: ProjectMetaSettings { id: uuid::Uuid::nil() },
                 app: ProjectAppSettings {
-                    onboarding_status: Default::default(),
                     stream_idle_mode: false,
-                    allow_orbit_in_sketch_mode: false,
-                    show_debug_panel: Some(true),
+                    zookeeper_mode: None,
                     named_views: IndexMap::from([
                         (
                             uuid::uuid!("323611ea-66e3-43c9-9d0d-1091ba92948c"),
@@ -304,67 +313,86 @@ mod tests {
                             },
                         ),
                     ]),
+                    other: IndexMap::new(),
                 },
                 modeling: ProjectModelingSettings {
                     base_unit: Some(UnitLength::Yards),
                     highlight_edges: Default::default(),
                     enable_ssao: true.into(),
-                    snap_to_grid: None,
-                    major_grid_spacing: None,
-                    minor_grids_per_major: None,
-                    snaps_per_minor: None,
                     fixed_size_grid: None,
+                    other: Default::default(),
                 },
-                text_editor: ProjectTextEditorSettings {
-                    text_wrapping: Some(false),
-                    blinking_cursor: Some(false),
-                },
-                command_bar: ProjectCommandBarSettings {
-                    include_settings: Some(false),
-                },
+                other: IndexMap::from([
+                    (
+                        "command_bar".to_owned(),
+                        json!({
+                            "include_settings": false,
+                        }),
+                    ),
+                    (
+                        "text_editor".to_owned(),
+                        json!({
+                            "text_wrapping": false,
+                            "blinking_cursor": false,
+                        }),
+                    ),
+                ]),
             },
+            cloud: ProjectCloudSettings::default(),
         };
         let serialized = toml::to_string(&conf).unwrap();
-        let old_project_file = r#"[settings.meta]
+        assert!(serialized.contains("[settings.app.named_views.323611ea-66e3-43c9-9d0d-1091ba92948c]"));
+        assert!(serialized.contains("[settings.app.named_views.423611ea-66e3-43c9-9d0d-1091ba92948c]"));
+        assert!(serialized.contains("[settings.modeling]"));
+        assert!(serialized.contains("base_unit = \"yd\""));
+        assert!(serialized.contains("[settings.command_bar]"));
+        assert!(serialized.contains("include_settings = false"));
+        assert!(serialized.contains("[settings.text_editor]"));
+        assert!(serialized.contains("blinking_cursor = false"));
+        assert!(serialized.contains("text_wrapping = false"));
+        let reparsed = toml::from_str::<ProjectConfiguration>(&serialized).unwrap();
+        assert_eq!(reparsed, conf);
+    }
 
-[settings.app]
-show_debug_panel = true
+    #[test]
+    fn test_project_settings_cloud_metadata_round_trip() {
+        let local_project_id = uuid::uuid!("e8f5178c-5227-4567-bb5a-f52b3caef5ea");
+        let zoo_cloud_project_id = uuid::uuid!("04c988e3-ec37-48a4-b491-45c3668934f1");
+        let dev_cloud_project_id = uuid::uuid!("e9632dae-19ca-49ea-bcc1-ee8e34ff9de3");
 
-[settings.app.named_views.323611ea-66e3-43c9-9d0d-1091ba92948c]
-name = "Hello"
-eye_offset = 1236.4015
-fov_y = 45.0
-is_ortho = false
-ortho_scale_enabled = false
-ortho_scale_factor = 45.0
-pivot_position = [-100.0, 100.0, 100.0]
-pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
-world_coord_system = "RightHandedUpZ"
-version = 1.0
+        let conf = ProjectConfiguration {
+            settings: PerProjectSettings {
+                meta: ProjectMetaSettings { id: local_project_id },
+                ..Default::default()
+            },
+            cloud: ProjectCloudSettings {
+                environments: IndexMap::from([
+                    (
+                        "zoo.dev".to_owned(),
+                        ProjectCloudEnvironmentSettings {
+                            project_id: zoo_cloud_project_id,
+                        },
+                    ),
+                    (
+                        "dev.zoo.dev".to_owned(),
+                        ProjectCloudEnvironmentSettings {
+                            project_id: dev_cloud_project_id,
+                        },
+                    ),
+                ]),
+            },
+        };
 
-[settings.app.named_views.423611ea-66e3-43c9-9d0d-1091ba92948c]
-name = "Goodbye"
-eye_offset = 1236.4015
-fov_y = 45.0
-is_ortho = false
-ortho_scale_enabled = false
-ortho_scale_factor = 45.0
-pivot_position = [-100.0, 100.0, 100.0]
-pivot_rotation = [-0.16391756, 0.9862819, -0.01956843, 0.0032552152]
-world_coord_system = "RightHandedUpZ"
-version = 1.0
+        let serialized = toml::to_string(&conf).unwrap();
+        assert!(serialized.contains(&format!(
+            "[cloud.\"zoo.dev\"]\nproject_id = \"{zoo_cloud_project_id}\"\n"
+        )));
+        assert!(serialized.contains(&format!(
+            "[cloud.\"dev.zoo.dev\"]\nproject_id = \"{dev_cloud_project_id}\"\n"
+        )));
+        assert!(serialized.contains(&format!("[settings.meta]\nid = \"{local_project_id}\"\n")));
 
-[settings.modeling]
-base_unit = "yd"
-
-[settings.text_editor]
-text_wrapping = false
-blinking_cursor = false
-
-[settings.command_bar]
-include_settings = false
-"#;
-
-        assert_eq!(serialized, old_project_file)
+        let parsed = ProjectConfiguration::parse_and_validate(&serialized).unwrap();
+        assert_eq!(parsed, conf);
     }
 }

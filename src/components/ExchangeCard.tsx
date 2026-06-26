@@ -1,22 +1,22 @@
 import type { MlCopilotServerMessage } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { Thinking } from '@src/components/Thinking'
+import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
 } from '@src/machines/mlEphantManagerMachine'
 import ms from 'ms'
 import {
-  useEffect,
-  useState,
-  type ReactNode,
   type ComponentProps,
+  type ReactNode,
+  useEffect,
   useMemo,
+  useState,
 } from 'react'
-import Tooltip from '@src/components/Tooltip'
 import toast from 'react-hot-toast'
-import { PlaceholderLine } from '@src/components/PlaceholderLine'
-import { MarkdownText } from '@src/components/MarkdownText'
 
 export type ExchangeCardProps = Exchange & {
   userAvatar?: string
@@ -24,11 +24,42 @@ export type ExchangeCardProps = Exchange & {
   isLastResponse: boolean
 }
 
-type MlCopilotServerMessageError<T = MlCopilotServerMessage> = T extends {
-  error: any
-}
-  ? T
-  : never
+type MlCopilotServerMessageError = Extract<
+  MlCopilotServerMessage,
+  { error: unknown }
+>
+
+type MlCopilotServerMessageEndOfStream = Extract<
+  MlCopilotServerMessage,
+  { end_of_stream: unknown }
+>
+
+const NON_TERMINAL_INFO_TEXTS = [
+  'Manual edits detected since the last Zookeeper state.',
+  'Transient model streaming error; retrying.',
+]
+
+const getEndOfStreamResponse = (
+  responses?: MlCopilotServerMessage[]
+): MlCopilotServerMessageEndOfStream | undefined =>
+  responses?.findLast(
+    (response): response is MlCopilotServerMessageEndOfStream =>
+      'end_of_stream' in response
+  )
+
+const isNonTerminalInfoResponse = (response: MlCopilotServerMessage): boolean =>
+  'info' in response &&
+  NON_TERMINAL_INFO_TEXTS.some((infoText) =>
+    response.info.text.startsWith(infoText)
+  )
+
+const isExchangeComplete = (responses?: MlCopilotServerMessage[]): boolean =>
+  responses?.some(
+    (response) =>
+      'end_of_stream' in response ||
+      'error' in response ||
+      ('info' in response && !isNonTerminalInfoResponse(response))
+  ) ?? false
 
 export interface IButtonCopyProps {
   content: string
@@ -43,10 +74,10 @@ export const ButtonCopy = (props: IButtonCopyProps) => (
       }
       navigator.clipboard.writeText(props.content).then(
         () => {
-          toast.success('Copied response to clipboard')
+          toast.success('Copied response to clipboard.')
         },
         () => {
-          toast.error('Failed to copy response to clipboard')
+          toast.error('Failed to copy response to clipboard.')
         }
       )
     }}
@@ -77,17 +108,13 @@ export const ResponseCardToolBar = (props: {
   onClickClearChat: () => void
   isLastResponse: boolean
 }) => {
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   let contentForClipboard: string | undefined = ''
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      contentForClipboard = lastResponse.end_of_stream.whole_response
-    }
+    contentForClipboard = getEndOfStreamResponse(props.responses)?.end_of_stream
+      .whole_response
   }
 
   return (
@@ -122,9 +149,7 @@ export const ExchangeCardStatus = (props: {
 
   // Error and info also signals the end of a stream, because we'll never
   // see an end_of_stream from them.
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const i = setInterval(() => {
@@ -142,11 +167,13 @@ export const ExchangeCardStatus = (props: {
 
   let timeReasonedFor = 0
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
       timeReasonedFor =
-        new Date(lastResponse.end_of_stream.completed_at ?? 0).getTime() -
-        new Date(lastResponse.end_of_stream.started_at ?? 0).getTime()
+        new Date(
+          endOfStreamResponse.end_of_stream.completed_at ?? 0
+        ).getTime() -
+        new Date(endOfStreamResponse.end_of_stream.started_at ?? 0).getTime()
     }
   } else {
     timeReasonedFor =
@@ -196,6 +223,8 @@ type RequestCardProps = Exchange['request'] & {
   userAvatar?: ReactNode
 }
 
+const MAX_VISIBLE_ATTACHMENTS = 2
+
 const hasVisibleChildren = (children: ReactNode) => {
   return (
     (children instanceof Array && children.length > 0) ||
@@ -211,7 +240,6 @@ export const ChatBubble = (props: {
   dataTestId?: string
   placeholderTestId?: string
   className?: string
-  showCancelledInsteadOfPlaceholder?: boolean
 }) => {
   const cssRequest =
     `${props.wfull ? 'w-full ' : ''} select-text whitespace-pre-line hyphens-auto shadow-sm ${props.side === 'left' ? '' : 'border b-4'} bg-2 text-default rounded-t-md pl-4 pr-4 ${props.className} ` +
@@ -226,8 +254,6 @@ export const ChatBubble = (props: {
         <div style={{ wordBreak: 'break-word' }} className={cssRequest}>
           {hasVisibleChildren(props.children) ? (
             props.children
-          ) : props.showCancelledInsteadOfPlaceholder ? (
-            <span>Message canceled.</span>
           ) : (
             <PlaceholderLine data-testid={props.placeholderTestId} />
           )}
@@ -239,19 +265,60 @@ export const ChatBubble = (props: {
 }
 
 export const RequestCard = (props: RequestCardProps) => {
+  const [showAllAttachments, setShowAllAttachments] = useState(false)
+
   if (!isMlCopilotUserRequest(props)) {
     return null
   }
 
+  const additionalFiles = props.additional_files ?? []
+  const hasHiddenAttachments = additionalFiles.length > MAX_VISIBLE_ATTACHMENTS
+  const visibleAttachments = showAllAttachments
+    ? additionalFiles
+    : additionalFiles.slice(0, MAX_VISIBLE_ATTACHMENTS)
+
   return (
-    <ChatBubble
-      side={'right'}
-      userAvatar={props.userAvatar}
-      dataTestId="ml-request-chat-bubble"
-      className="pt-2 pb-2"
-    >
-      {props.content}
-    </ChatBubble>
+    <>
+      <ChatBubble
+        side={'right'}
+        userAvatar={props.userAvatar}
+        dataTestId="ml-request-chat-bubble"
+        className="pt-2 pb-2"
+      >
+        {props.content}
+      </ChatBubble>
+      {additionalFiles.length > 0 && (
+        <div className="flex justify-end pr-9">
+          <div
+            className="flex flex-col items-end gap-1"
+            data-testid="ml-request-chat-bubble-attachments"
+          >
+            <div className="w-full text-right text-xs font-medium text-chalkboard-70 dark:text-chalkboard-40">
+              Attachments
+            </div>
+            {visibleAttachments.map((file, index) => (
+              <div
+                key={`${file.name}-${index}`}
+                className="flex items-center gap-1 rounded-sm border border-chalkboard-30 dark:border-chalkboard-70 px-2 py-1 text-xs"
+              >
+                <CustomIcon name="paperclip" className="w-3 h-3 shrink-0" />
+                <span className="min-w-0 truncate">{file.name}</span>
+              </div>
+            ))}
+            {hasHiddenAttachments && (
+              <button
+                type="button"
+                onClick={() => setShowAllAttachments(!showAllAttachments)}
+                className="pt-1 pb-1 text-xs"
+                aria-expanded={showAllAttachments}
+              >
+                {showAllAttachments ? '- collapse' : '+ more'}
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -267,6 +334,7 @@ type ResponsesCardProp = {
   items: Exchange['responses']
   deltasAggregated: Exchange['deltasAggregated']
   isLastResponse: boolean
+  onClickClearChat: () => void
 }
 
 const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
@@ -282,7 +350,7 @@ const MaybeError = (props: { maybeError?: MlCopilotServerMessageError }) =>
 
 // This can be used to show `delta` or `tool_output`
 export const ResponsesCard = (props: ResponsesCardProp) => {
-  const items = props.items.map(
+  const infoItems = props.items.map(
     (response: MlCopilotServerMessage, index: number) => {
       // This is INTENTIONALLY left here for documentation.
       // We aggregate `delta` responses into `Exchange.responseAggregated`
@@ -294,14 +362,16 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
       if ('info' in response) {
         return <Delta key={index}>{response.info.text}</Delta>
       }
-      if ('error' in response) {
-        return <MaybeError key={index} maybeError={response} />
-      }
       return null
     }
   )
 
-  const itemsFilteredNulls = items.filter((x: ReactNode | null) => x !== null)
+  const infoItemsFilteredNulls = infoItems.filter(
+    (x: ReactNode | null) => x !== null
+  )
+
+  const maybeError = props.items.filter((r) => 'error' in r)[0]
+  const isComplete = isExchangeComplete(props.items)
 
   const deltasAggregatedMarkdown = useMemo(() => {
     return props.deltasAggregated !== '' ? (
@@ -312,22 +382,46 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
     ) : null
   }, [props.deltasAggregated])
 
-  return (
-    <ChatBubble
-      side={'left'}
-      wfull={true}
-      userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
-      dataTestId="ml-response-chat-bubble"
-      placeholderTestId="ml-response-chat-bubble-thinking"
-      className="py-4"
-      showCancelledInsteadOfPlaceholder={!props.isLastResponse}
-    >
-      {[
-        itemsFilteredNulls.length > 0 ? itemsFilteredNulls : null,
-        deltasAggregatedMarkdown,
-      ].filter((x: ReactNode) => x !== null)}
-    </ChatBubble>
-  )
+  const children = [
+    maybeError ? <MaybeError key="error" maybeError={maybeError} /> : null,
+    deltasAggregatedMarkdown,
+  ].filter((x: ReactNode) => x !== null)
+
+  const shouldShowResponseBubble =
+    hasVisibleChildren(children) || (props.isLastResponse && !isComplete)
+
+  return infoItemsFilteredNulls.length > 0 || shouldShowResponseBubble ? (
+    <>
+      {infoItemsFilteredNulls.length > 0 && (
+        <ChatBubble
+          side={'left'}
+          wfull={true}
+          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+          dataTestId="ml-response-info-chat-bubble"
+          className="py-4"
+        >
+          {infoItemsFilteredNulls}
+        </ChatBubble>
+      )}
+      {shouldShowResponseBubble && (
+        <ChatBubble
+          side={'left'}
+          wfull={true}
+          userAvatar={<div className="h-7 w-7 avatar bg-img-mel" />}
+          dataTestId="ml-response-chat-bubble"
+          placeholderTestId="ml-response-chat-bubble-thinking"
+          className="py-4"
+        >
+          {children}
+        </ChatBubble>
+      )}
+      <ResponseCardToolBar
+        responses={props.items}
+        isLastResponse={props.isLastResponse}
+        onClickClearChat={props.onClickClearChat}
+      />
+    </>
+  ) : null
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
@@ -348,9 +442,7 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
     setUpdatedAt(new Date())
   }, [props.responses.length])
 
-  const isEndOfStream =
-    'end_of_stream' in (props.responses?.slice(-1)[0] ?? {}) ||
-    props.responses?.some((x) => 'error' in x || 'info' in x)
+  const isEndOfStream = isExchangeComplete(props.responses)
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -365,9 +457,9 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
   }, [isEndOfStream])
 
   if (isEndOfStream) {
-    const lastResponse = props.responses?.slice(-1)[0]
-    if (lastResponse !== undefined && 'end_of_stream' in lastResponse) {
-      startedAt = new Date(lastResponse.end_of_stream.started_at ?? 0)
+    const endOfStreamResponse = getEndOfStreamResponse(props.responses)
+    if (endOfStreamResponse !== undefined) {
+      startedAt = new Date(endOfStreamResponse.end_of_stream.started_at ?? 0)
     }
   }
 
@@ -434,10 +526,6 @@ export const ExchangeCard = (props: ExchangeCardProps) => {
       <ResponsesCard
         items={props.responses}
         deltasAggregated={props.deltasAggregated}
-        isLastResponse={props.isLastResponse}
-      />
-      <ResponseCardToolBar
-        responses={props.responses}
         isLastResponse={props.isLastResponse}
         onClickClearChat={props.onClickClearChat}
       />

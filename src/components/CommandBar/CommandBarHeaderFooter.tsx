@@ -4,18 +4,18 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
+import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { useApp } from '@src/lib/boot'
 import type {
   CommandArgument,
   KclCommandValue,
   KclExpressionWithVariable,
 } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { roundOffWithUnits } from '@src/lib/utils'
-import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 function CommandBarHeaderFooter({
   children,
@@ -27,8 +27,7 @@ function CommandBarHeaderFooter({
   clear?: () => void
   submitDisabled?: boolean
 }) {
-  const { commands } = useApp()
-  const { kclManager } = useSingletons()
+  const { commands, project } = useApp()
   const commandBarState = commands.useState()
   const {
     context: { selectedCommand, currentArgument, argumentsToSubmit },
@@ -116,7 +115,12 @@ function CommandBarHeaderFooter({
                 selectedCommand.icon && (
                   <CustomIcon name={selectedCommand.icon} className="w-5 h-5" />
                 )}
-              <span data-testid="command-name">
+              <span
+                data-testid="command-name"
+                className={
+                  selectedCommand.groupId === 'settings' ? 'capitalize' : ''
+                }
+              >
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
               {selectedCommand.status === 'experimental' ? (
@@ -146,7 +150,14 @@ function CommandBarHeaderFooter({
                 const isSkipFalse = arg.skip === false
 
                 // We actually want to show non-hidden optional args that have a value set already
-                if (!(argValue || isCurrentArg || isSkipFalse || isRequired)) {
+                if (
+                  !(
+                    argValue !== undefined ||
+                    isCurrentArg ||
+                    isSkipFalse ||
+                    isRequired
+                  )
+                ) {
                   return []
                 }
 
@@ -175,6 +186,17 @@ function CommandBarHeaderFooter({
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                     }`}
                   >
+                    {arg.status === 'experimental' && (
+                      <span className="inline-flex items-center">
+                        <CustomIcon name="beaker" className="w-3.5 h-3.5" />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>Experimental</span>
+                        </Tooltip>
+                      </span>
+                    )}
                     <span
                       data-testid={`arg-name-${argName.toLowerCase()}`}
                       data-test-name="arg-name"
@@ -184,23 +206,30 @@ function CommandBarHeaderFooter({
                     </span>
                     <span className="sr-only">:&nbsp;</span>
                     <span data-testid="header-arg-value">
-                      {argValue ? (
-                        arg.inputType === 'selection' ||
-                        arg.inputType === 'selectionMixed' ? (
+                      {argValue !== undefined ? (
+                        project?.executingEditor.value &&
+                        (arg.inputType === 'selection' ||
+                          arg.inputType === 'selectionMixed') ? (
                           getSelectionTypeDisplayText(
-                            kclManager.astSignal.value,
+                            project.executingEditor.value.astSignal.value,
                             argValue as Selections
                           )
                         ) : arg.inputType === 'kcl' &&
                           (argValue as KclCommandValue).valueCalculated ? (
-                          roundOffWithUnits(
-                            (argValue as KclCommandValue).valueCalculated,
-                            4
+                          arg.valueSummary ? (
+                            arg.valueSummary(argValue as KclCommandValue)
+                          ) : (
+                            roundOffWithUnits(
+                              (argValue as KclCommandValue).valueCalculated,
+                              4
+                            )
                           )
                         ) : arg.inputType === 'vector3d' ? (
                           (argValue as KclCommandValue).valueCalculated
                         ) : arg.inputType === 'vector2d' ? (
                           (argValue as KclCommandValue).valueCalculated
+                        ) : arg.inputType === 'boolean' ? (
+                          String(argValue)
                         ) : arg.inputType === 'text' &&
                           !arg.valueSummary &&
                           typeof argValue === 'string' ? (

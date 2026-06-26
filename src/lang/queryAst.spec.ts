@@ -1,8 +1,9 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
-import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -14,6 +15,7 @@ import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   findAllPreviousVariables,
+  findOperationForArtifact,
   findOperationPlaneArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
@@ -31,21 +33,26 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, PathToNode } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Identifier, PathToNode, SourceRange } from '@src/lang/wasm'
+import {
+  assertParse,
+  defaultNodePath,
+  getAllOperations,
+  recast,
+} from '@src/lang/wasm'
 import {
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import type { KclManager } from '@src/lang/KclManager'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -833,6 +840,44 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
 })
 
 describe('Testing findOperationArtifact', () => {
+  function range(start: number, end: number, moduleId = 0): SourceRange {
+    return [start, end, moduleId]
+  }
+
+  function gdtOperation(
+    sourceRange: SourceRange,
+    stdlibEntrySourceRange?: SourceRange
+  ): Operation {
+    const operation: Operation = {
+      type: 'StdLibCall',
+      name: 'gdt::flatness',
+      unlabeledArg: null,
+      labeledArgs: {},
+      nodePath: defaultNodePath(),
+      sourceRange,
+      isError: false,
+    }
+    if (stdlibEntrySourceRange) {
+      operation.stdlibEntrySourceRange = stdlibEntrySourceRange
+    }
+    return operation
+  }
+
+  function gdtAnnotationArtifact(
+    id: string,
+    sourceRange: SourceRange
+  ): Artifact {
+    return {
+      type: 'gdtAnnotation',
+      id,
+      codeRef: {
+        range: sourceRange,
+        nodePath: defaultNodePath(),
+        pathToNode: [],
+      },
+    }
+  }
+
   it('should find the correct artifact for a given operation', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -854,10 +899,10 @@ part001 = startSketchOn(plane001)
     const { operations, artifactGraph } = execState
 
     expect(operations).toBeTruthy()
-    expect(operations.length).toBeGreaterThan(0)
+    expect(getAllOperations(operations).length).toBeGreaterThan(0)
 
     // Find an offsetPlane operation
-    const offsetPlaneOp = operations.find(
+    const offsetPlaneOp = getAllOperations(operations).find(
       (op) => op.type === 'StdLibCall' && op.name === 'offsetPlane'
     )
     expect(offsetPlaneOp).toBeTruthy()
@@ -874,6 +919,57 @@ part001 = startSketchOn(plane001)
       const operationNodePath = JSON.stringify(offsetPlaneOp.nodePath)
       expect(artifactNodePath).toBe(operationNodePath)
     }
+  })
+
+  it('resolves a GD&T annotation artifact contained by its source operation', () => {
+    const gdtRange = range(10, 80)
+    const operation = gdtOperation(gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(20, 70))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('resolves a GD&T annotation artifact via stdlib entry range', () => {
+    const declarationRange = range(0, 90, 1)
+    const gdtRange = range(12, 89)
+    const operation = gdtOperation(declarationRange, gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', gdtRange)
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('does not resolve artifacts that do not point at an operation range', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(90, 120))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
+  })
+
+  it('does not resolve artifacts in another module id', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(10, 80, 1))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
   })
 })
 
@@ -1078,6 +1174,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1121,6 +1218,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1152,6 +1250,7 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1197,6 +1296,7 @@ profile002 = circle(sketch001, center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1243,6 +1343,7 @@ profile002 = circle(startSketchOn(XZ), center = [2, 2], radius = 1)
     }
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile
     )
@@ -1296,11 +1397,13 @@ extrude001 = extrude(profile001, length = 1)
     const lastChildLookup = true // we want to look up the child of the profile variable
     const vars = getVariableExprsFromSelection(
       selections,
+      artifactGraph,
       ast,
       instanceInThisFile,
       nodeToEdit,
-      lastChildLookup,
-      artifactGraph
+      {
+        lastChildLookup,
+      }
     )
     if (err(vars)) throw vars
 
@@ -1325,7 +1428,7 @@ extrude001 = extrude(profile001, length = 1)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1345,6 +1448,145 @@ extrude001 = extrude(profile001, length = 1)
     expect(selection.artifact.type).toEqual('path')
   })
 
+  it('maps sketch block segment arguments to edge selections', async () => {
+    const code = `sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = getAllOperations(operations).find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Segment')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+  })
+
+  it('maps sketch block a circle argument to an edge selection', async () => {
+    const code = `sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 4.52mm, var 3.82mm], center = [var 2.96mm, var 3.38mm])
+}
+
+revolve001 = revolve(
+sketch001.circle1,
+angle = 90,
+axis = Y,
+bodyType = SURFACE,
+)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = getAllOperations(operations).find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'revolve'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Revolve operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Segment')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+  })
+
+  it('maps sketch block segment array arguments to edge selections', async () => {
+    const code = `sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -26.3mm, var 25.32mm], end = [var 21.94mm, var -21.01mm])
+  line2 = line(start = [var 21.94mm, var -21.01mm], end = [var 8.14mm, var 14.22mm])
+}
+extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = getAllOperations(operations).find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    expect(op.unlabeledArg.value.type).toBe('Array')
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(2)
+    expect(selections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(selections.graphSelections[1].artifact?.type).toBe('segment')
+  })
+
+  it('retrieves sweep path argument consisting of two surface sweepEdge segments', async () => {
+    const code = `sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.31mm, var 5.27mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, ORIGIN])
+  line2 = line(start = [var 4.03mm, var 6.68mm], end = [var -3.31mm, var 5.27mm])
+  coincident([line2.end, line1.start])
+}
+sketch002 = sketch(on = -YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 11.49mm])
+  coincident([line1.start, ORIGIN])
+  horizontalDistance([line1.end, ORIGIN]) == 0mm
+  arc1 = arc(start = [var 2.33mm, var 18.25mm], end = [var 0mm, var 11.49mm], center = [var 10.95mm, var 11.49mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+}
+sweep001 = sweep([sketch001.line2, sketch001.line1], path = [sketch002.line1, sketch002.arc1], bodyType = SURFACE)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = getAllOperations(operations).find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'sweep'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.labeledArgs.path) {
+      throw new Error('Sweep operation or path argument not found')
+    }
+
+    const pathSelections = retrieveSelectionsFromOpArg(
+      op.labeledArgs.path,
+      artifactGraph
+    )
+    if (err(pathSelections)) throw pathSelections
+
+    expect(pathSelections.graphSelections).toHaveLength(2)
+    expect(pathSelections.graphSelections[0].artifact?.type).toBe('segment')
+    expect(pathSelections.graphSelections[1].artifact?.type).toBe('segment')
+  })
+
   it('should find the cap selection from simple extrude on face', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -1356,7 +1598,7 @@ extrude002 = extrude(capEnd001, length = 5)
       instanceInThisFile,
       kclManagerInThisFile
     )
-    const op = operations.findLast(
+    const op = getAllOperations(operations).findLast(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1387,7 +1629,7 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'revolve'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1424,7 +1666,7 @@ appearance(extrude001, color = '#FF0000')`
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'appearance'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1442,5 +1684,37 @@ appearance(extrude001, color = '#FF0000')`
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('sweep')
+  })
+
+  it('maps a segment tag to a wall selection when a wall exists', async () => {
+    const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [-4.16, -2.97])
+  |> line(end = [2.31, 8.45])
+  |> line(end = [7.53, -7.02])
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg01)
+  |> close()
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+extrude002 = extrude(seg01, length = 5, hideSeams = true)`
+    const { artifactGraph, operations } = await getAstAndArtifactGraph(
+      code,
+      instanceInThisFile,
+      kclManagerInThisFile
+    )
+    const op = getAllOperations(operations).findLast(
+      (o) => o.type === 'StdLibCall' && o.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    console.log('op.unlabeledArg', op.unlabeledArg)
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('wall')
   })
 })

@@ -1,3 +1,4 @@
+import type { UserFeature } from '@kittycad/lib'
 import { test as playwrightTestFn } from '@playwright/test'
 
 import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
@@ -9,11 +10,6 @@ import {
 export { expect } from '@playwright/test'
 
 declare module '@playwright/test' {
-  interface BrowserContext {
-    folderSetupFn: (
-      cb: (dir: string) => Promise<void>
-    ) => Promise<{ dir: string }>
-  }
   interface Page {
     dir: string
     setBodyDimensions: (dims: {
@@ -37,9 +33,11 @@ let isFirstRun = true
 // switch between web and electron if needed.
 const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
   tronApp?: ElectronZoo
+  userFeatures: UserFeature[]
 }>({
+  userFeatures: [[], { option: true }],
   tronApp: [
-    async ({}, use, testInfo) => {
+    async ({ userFeatures }, use, testInfo) => {
       if (process.env.TARGET === 'web') {
         await use(undefined)
         return
@@ -64,7 +62,10 @@ const playwrightTestFnWithFixtures_ = playwrightTestFn.extend<{
         // Execute the async setup in a separate function
         const doSetup = async () => {
           try {
-            await electronZooInstance.createInstanceIfMissing(testInfo)
+            await electronZooInstance.createInstanceIfMissing(
+              testInfo,
+              userFeatures
+            )
             resolve()
           } catch (error) {
             reject(error)

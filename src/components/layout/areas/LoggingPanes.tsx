@@ -1,9 +1,9 @@
 import ReactJsonView from '@microlink/react-json-view'
 
+import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useResolvedTheme } from '@src/hooks/useResolvedTheme'
 import { useSingletons } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 
 export function LogsPane(props: AreaTypeComponentProps) {
   return (
@@ -15,7 +15,7 @@ export function LogsPane(props: AreaTypeComponentProps) {
       <LayoutPanelHeader
         id={props.layout.id}
         icon="logs"
-        title={props.layout.id}
+        title={props.layout.label}
         Menu={null}
         onClose={props.onClose}
       />

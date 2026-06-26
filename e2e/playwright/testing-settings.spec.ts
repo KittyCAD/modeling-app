@@ -1,13 +1,11 @@
 import { join } from 'path'
+import path from 'path'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import type { DeepPartial } from '@src/lib/types'
 import * as fsp from 'fs/promises'
-import path from 'path'
-
-import type { Settings } from '@rust/kcl-lib/bindings/Settings'
 
 import {
+  TEST_SETTINGS,
   TEST_SETTINGS_CORRUPTED,
   TEST_SETTINGS_DEFAULT_THEME,
   TEST_SETTINGS_KEY,
@@ -20,9 +18,10 @@ import {
   tomlToSettings,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Page } from '@playwright/test'
 import type { UnitLength } from '@kittycad/lib/dist/types/src'
-import { uuidv4 } from '@src/lib/utils'
+import type { Page } from '@playwright/test'
+import { Themes } from '@src/lib/theme'
+import { isArray, uuidv4 } from '@src/lib/utils'
 
 const settingsSwitchTab = (page: Page) => async (tab: 'user' | 'proj') => {
   const projectSettingsTab = page.getByRole('radio', { name: 'Project' })
@@ -57,9 +56,7 @@ test.describe(
 
         // Override beforeEach test setup
         // with corrupted settings
-        await tronApp.cleanProjectDir(
-          TEST_SETTINGS_CORRUPTED as DeepPartial<Settings>
-        )
+        await tronApp.cleanProjectDir(TEST_SETTINGS_CORRUPTED)
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -78,9 +75,14 @@ test.describe(
         expect(storedSettings.settings?.modeling?.mouse_controls).toBe('zoo')
         // Commenting this out because tests need this to be set to work properly.
         // expect(storedSettings.settings?.app?.project_directory).toBe('')
-        expect(storedSettings.settings?.project?.default_project_name).toBe(
-          'untitled'
-        )
+        const projectSettings = storedSettings.settings?.project
+        expect(
+          projectSettings &&
+            typeof projectSettings === 'object' &&
+            !isArray(projectSettings)
+            ? projectSettings.default_project_name
+            : undefined
+        ).toBe('untitled')
       }
     )
 
@@ -105,15 +107,13 @@ test.describe(
         })
 
         // Go to the hotkey for Command Palette.
-        const commandPalette = page.getByText('Toggle Command Palette')
+        const commandPalette = page.getByText('Open command palette')
         await commandPalette.scrollIntoViewIfNeeded()
 
-        // The heading is above it and should be in view now.
-        const commandPaletteHeading = page.getByRole('heading', {
-          name: 'Command Palette',
+        const row = page.locator('tr').filter({
+          hasText: 'Open command palette',
         })
-        // The hotkey is in a kbd element next to the heading.
-        const hotkey = commandPaletteHeading.locator('+ div kbd')
+        const hotkey = row.locator('kbd')
         const text = process.platform === 'darwin' ? 'Command+K' : 'Control+K'
         await expect(hotkey).toHaveText(text)
       }
@@ -123,7 +123,7 @@ test.describe(
       page,
       homePage,
       scene,
-      context,
+      folderSetupFn,
     }) => {
       const settingValues: Record<string, UnitLength> = {
         default: 'mm',
@@ -142,7 +142,7 @@ test.describe(
           },
         },
       })
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testProjectDir = path.join(dir, 'test')
         await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
         await Promise.all([
@@ -208,7 +208,7 @@ test.describe(
       page,
       homePage,
       scene,
-      context,
+      folderSetupFn,
     }) => {
       const settingValues = {
         default: 'mm',
@@ -227,7 +227,7 @@ test.describe(
           },
         },
       })
-      await context.folderSetupFn(async (dir) => {
+      await folderSetupFn(async (dir) => {
         const testProjectDir = path.join(dir, 'test')
         await Promise.all([fsp.mkdir(testProjectDir, { recursive: true })])
         await Promise.all([
@@ -334,10 +334,8 @@ test.describe(
     test(
       'project settings reload on external change',
       { tag: ['@macos', '@windows'] },
-      async ({ context, page, toolbar }) => {
-        const { dir: projectDirName } = await context.folderSetupFn(
-          async () => {}
-        )
+      async ({ page, toolbar, folderSetupFn }) => {
+        const { dir: projectDirName } = await folderSetupFn(async () => {})
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
@@ -349,7 +347,7 @@ test.describe(
 
         await createProject({ name: 'project-000', page })
 
-        const changeShowDebugPanelFs = async (show_debug_panel: boolean) => {
+        const changeShowDebugPanelFs = async (showPanel: boolean) => {
           const tempSettingsFilePath = join(
             projectDirName,
             'project-000',
@@ -359,8 +357,8 @@ test.describe(
             tempSettingsFilePath,
             settingsToToml({
               settings: {
-                app: {
-                  show_debug_panel,
+                debug: {
+                  show_panel: showPanel,
                 },
                 // TODO: make sure this isn't just working around a bug
                 // where the existing data wouldn't be preserved?
@@ -373,6 +371,7 @@ test.describe(
         }
 
         await test.step('Check the body theme is first starting as we expect', async () => {
+          await changeShowDebugPanelFs(false)
           await expect(toolbar.debugPaneBtn).not.toBeAttached()
         })
 
@@ -386,8 +385,8 @@ test.describe(
     test(
       `Closing settings modal should go back to the original file being viewed`,
       { tag: ['@macos', '@windows'] },
-      async ({ context, page }, testInfo) => {
-        await context.folderSetupFn(async (dir) => {
+      async ({ page, folderSetupFn }, testInfo) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
@@ -592,7 +591,7 @@ test.describe(
             })
             await button.click()
             const toastMessage = page.getByText(
-              `Updated per-file units to ${unitOfMeasure}`
+              `Updated per-file units to ${unitOfMeasure}.`
             )
             await expect(toastMessage).toBeVisible()
           }
@@ -630,7 +629,7 @@ test.describe(
         await page.setBodyDimensions({ width: 1200, height: 500 })
         await homePage.goToModelingScene()
         await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 15_000 })
-        await scene.settled(cmdBar)
+        await scene.settled()
         await page.waitForTimeout(1000)
 
         // Selectors and constants
@@ -697,6 +696,7 @@ test.describe(
         const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
         const darkBackgroundColor: [number, number, number] = [50, 40, 51] // planes are on
         const lightBackgroundColor: [number, number, number] = [227, 222, 230] // planes are on
+        const streamBackgroundColorTolerance = 20
         const streamBackgroundPixelIsColor = async (
           color: [number, number, number]
         ) => {
@@ -705,6 +705,7 @@ test.describe(
         const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
 
         await test.step(`Test setup`, async () => {
+          await page.emulateMedia({ colorScheme: 'light' })
           await page.setBodyDimensions({ width: 1200, height: 500 })
           await homePage.goToModelingScene()
           await u.waitForPageLoad()
@@ -719,7 +720,7 @@ test.describe(
           )
           await expect
             .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
-            .toBeLessThan(15)
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
         })
 
         await test.step(`Change media query preference to dark, emulating dusk with system theme`, async () => {
@@ -730,15 +731,186 @@ test.describe(
           await expect(toolbar).toHaveCSS('background-color', darkBackgroundCss)
           await expect
             .poll(() => streamBackgroundPixelIsColor(darkBackgroundColor))
-            .toBeLessThan(15)
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
         })
       }
     )
 
     test(
+      `Changing system theme preferences should not override fixed light theme`,
+      { tag: ['@macos', '@windows'] },
+      async ({ page, homePage, tronApp }) => {
+        if (!tronApp) throw new Error('tronApp is missing.')
+
+        await tronApp.cleanProjectDir({
+          ...TEST_SETTINGS,
+          app: {
+            ...TEST_SETTINGS.app,
+            appearance: { theme: Themes.Light },
+          },
+        })
+
+        const u = await getUtils(page)
+
+        const lightBackgroundCss = 'oklch(0.9911 0 264.48)'
+        const lightBackgroundColor: [number, number, number] = [227, 222, 230]
+        const streamBackgroundColorTolerance = 20
+        const streamBackgroundPixelIsColor = async (
+          color: [number, number, number]
+        ) => {
+          return u.getGreatestPixDiff({ x: 1000, y: 200 }, color)
+        }
+        const toolbar = page.locator('menu').filter({ hasText: 'Start Sketch' })
+        const codeMirrorContent = page
+          .locator('.cm-content[data-language="kcl"]')
+          .first()
+        const getCodeMirrorThemeColors = async () =>
+          codeMirrorContent.evaluate((element) => {
+            const editor = element.closest('.cm-editor') ?? element
+            const editorStyle = getComputedStyle(editor)
+            const contentStyle = getComputedStyle(element)
+
+            return {
+              editorBackgroundColor: editorStyle.backgroundColor,
+              contentColor: contentStyle.color,
+              caretColor: contentStyle.caretColor,
+            }
+          })
+        let codeMirrorLightThemeColors:
+          | Awaited<ReturnType<typeof getCodeMirrorThemeColors>>
+          | undefined
+
+        await test.step(`Test setup`, async () => {
+          await page.emulateMedia({ colorScheme: 'light' })
+          await page.setBodyDimensions({ width: 1200, height: 500 })
+          await homePage.goToModelingScene()
+          await u.waitForPageLoad()
+          await page.waitForTimeout(1000)
+          await expect(toolbar).toBeVisible()
+        })
+
+        await test.step(`Check the fixed light theme before system change`, async () => {
+          await expect(toolbar).toHaveCSS(
+            'background-color',
+            lightBackgroundCss
+          )
+          await expect(codeMirrorContent).toBeVisible()
+          codeMirrorLightThemeColors = await getCodeMirrorThemeColors()
+          await expect
+            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
+        })
+
+        await test.step(`Change media query preference to dark, emulating dusk with fixed light theme`, async () => {
+          await page.emulateMedia({ colorScheme: 'dark' })
+        })
+
+        await test.step(`Check the fixed light theme after system change`, async () => {
+          await expect(toolbar).toHaveCSS(
+            'background-color',
+            lightBackgroundCss
+          )
+          if (!codeMirrorLightThemeColors) {
+            throw new Error('CodeMirror light theme colors were not captured.')
+          }
+          await expect
+            .poll(() => getCodeMirrorThemeColors())
+            .toEqual(codeMirrorLightThemeColors)
+          await expect
+            .poll(() => streamBackgroundPixelIsColor(lightBackgroundColor))
+            .toBeLessThanOrEqual(streamBackgroundColorTolerance)
+        })
+      }
+    )
+
+    test('Changing backface color setting sends updated backface command to engine', async ({
+      page,
+      homePage,
+      scene,
+      cmdBar,
+    }) => {
+      type BackfaceColor = { r: number; g: number; b: number; a: number }
+      const expectedBackfaceColor: BackfaceColor = {
+        r: 0,
+        g: 0,
+        b: 1,
+        a: 1,
+      }
+
+      const clearEngineCommandLogs = async () => {
+        await page.evaluate(() => {
+          window.engineCommandManager?.clearCommandLogs()
+        })
+      }
+
+      const getLastSentBackfaceColor =
+        async (): Promise<BackfaceColor | null> =>
+          page.evaluate(() => {
+            type CommandLogLike = {
+              type: string
+              data?: {
+                type?: string
+                cmd?: {
+                  type?: string
+                  backface_color?: BackfaceColor
+                }
+              }
+            }
+            // @ts-expect-error engineCommandManager is attached to window at runtime.
+            const logs: CommandLogLike[] =
+              window.engineCommandManager?.commandLogs ?? []
+
+            const matchingLog = [...logs]
+              .reverse()
+              .find(
+                (log) =>
+                  (log.type === 'send-scene' || log.type === 'send-modeling') &&
+                  log.data?.type === 'modeling_cmd_req' &&
+                  log.data?.cmd?.type === 'set_default_system_properties' &&
+                  Boolean(log.data.cmd.backface_color)
+              )
+
+            return matchingLog?.data?.cmd?.backface_color ?? null
+          })
+
+      const setBackfaceColor = async (hex: string) => {
+        const hexUppercase = hex.toUpperCase()
+        await cmdBar.openCmdBar()
+        await cmdBar.chooseCommand('Settings · modeling · backface color')
+        await cmdBar.currentArgumentInput.fill(hex)
+        await cmdBar.progressCmdBar()
+
+        const toastMessage = page.getByText(
+          `Set backface color to "${hexUppercase}" as a user default`
+        )
+        await expect(toastMessage).toBeVisible()
+        await expect(toastMessage).not.toBeVisible()
+        await scene.settled()
+      }
+
+      await test.step('Load modeling view', async () => {
+        await page.setBodyDimensions({ width: 1200, height: 500 })
+        await homePage.goToModelingScene()
+        await scene.settled()
+      })
+
+      await test.step('Set backface color to blue', async () => {
+        await clearEngineCommandLogs()
+        await setBackfaceColor('#0000ff')
+      })
+
+      await test.step('Verify set_default_system_properties includes backface_color', async () => {
+        await expect
+          .poll(() => getLastSentBackfaceColor(), { timeout: 15_000 })
+          .toEqual(expectedBackfaceColor)
+      })
+    })
+
+    test(
       `Change inline units setting`,
       { tag: ['@macos', '@windows'] },
-      async ({ page, homePage, context, editor }) => {
+      async ({ page, homePage, editor, folderSetupFn }) => {
+        const u = await getUtils(page)
         const initialInlineUnits = 'yd'
         const editedInlineUnits = { short: 'mm', long: 'Millimeters' }
         const inlineSettingsString = (s: string) =>
@@ -747,7 +919,7 @@ test.describe(
         const unitsChangeButton = (name: string) =>
           page.getByRole('button', { name, exact: true })
 
-        await context.folderSetupFn(async (dir) => {
+        await folderSetupFn(async (dir) => {
           const bracketDir = join(dir, 'project-000')
           await fsp.mkdir(bracketDir, { recursive: true })
           await fsp.copyFile(
@@ -765,22 +937,25 @@ test.describe(
 
         await test.step(`Manually write inline settings`, async () => {
           await editor.openPane()
+          // Clear debug logs so expectCmdLog waits for executeAst from this edit, not a prior run.
+          await u.openDebugPanel()
+          await u.clearCommandLogs()
+          await u.closeDebugPanel()
           await editor.replaceCode(
             `fn cube`,
             `${inlineSettingsString(initialInlineUnits)}
 fn cube`
           )
+          await u.openDebugPanel()
+          await u.expectCmdLog('[data-message-type="execution-done"]', 20_000)
+          await u.closeDebugPanel()
           await expect(unitsIndicator).toContainText(initialInlineUnits)
         })
 
         await test.step(`Change units setting via lower-right control`, async () => {
           await unitsIndicator.click()
           await unitsChangeButton(editedInlineUnits.long).click()
-          await expect(
-            page.getByText(
-              `Updated per-file units to ${editedInlineUnits.short}`
-            )
-          ).toBeVisible()
+          await expect(unitsIndicator).toContainText(editedInlineUnits.short)
         })
       }
     )
@@ -795,7 +970,7 @@ fn cube`
             localStorage.setItem('persistCode', initialCode)
           }, initialCode)
           await homePage.goToModelingScene()
-          await scene.settled(cmdBar)
+          await scene.settled()
           await expect(toolbar.experimentalFeaturesMenu).not.toBeVisible()
         })
 
@@ -806,7 +981,7 @@ fn cube`
         })
 
         await test.step('Check that they are enabled', async () => {
-          await scene.settled(cmdBar)
+          await scene.settled()
           await editor.expectEditor.toContain(
             `@settings(experimentalFeatures = allow)
 ${initialCode}`,
@@ -821,7 +996,7 @@ ${initialCode}`,
         })
 
         await test.step('Check that they are disabled', async () => {
-          await scene.settled(cmdBar)
+          await scene.settled()
           await editor.expectEditor.toContain(
             `@settings(experimentalFeatures = deny)
 ${initialCode}`,

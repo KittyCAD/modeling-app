@@ -1,21 +1,21 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import {
-  assertParse,
-  type CodeRef,
   type Artifact,
   type ArtifactGraph,
+  type CodeRef,
   type ExecState,
   type Program,
+  assertParse,
 } from '@src/lang/wasm'
-import { jsAppSettings } from '@src/lib/settings/settingsUtils'
-import type RustContext from '@src/lib/rustContext'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import type { Selections, Selection } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import { err } from '@src/lib/trap'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { expect } from 'vitest'
 
 export async function enginelessExecutor(
@@ -24,7 +24,7 @@ export async function enginelessExecutor(
   usePrevMemory?: boolean,
   path?: string
 ): Promise<ExecState> {
-  const settings = await jsAppSettings(rustContext.settingsActor)
+  const settings = jsAppSettings(rustContext.settingsActor)
   return await rustContext.executeMock(ast, settings, path, usePrevMemory)
 }
 
@@ -80,7 +80,7 @@ export function createSelectionFromArtifacts(
     return {
       codeRef: codeRefs[0],
       artifact,
-    } as Selection
+    }
   })
   return {
     graphSelections,
@@ -91,13 +91,10 @@ export function createSelectionFromArtifacts(
 export function createSelectionFromPathArtifact(
   artifacts: (Artifact & { codeRef: CodeRef })[]
 ): Selections {
-  const graphSelections = artifacts.map(
-    (artifact) =>
-      ({
-        codeRef: artifact.codeRef,
-        artifact,
-      }) as Selection
-  )
+  const graphSelections = artifacts.map((artifact) => ({
+    codeRef: artifact.codeRef,
+    artifact,
+  }))
   return {
     graphSelections,
     otherSelections: [],
@@ -111,11 +108,15 @@ export function getCapFromCylinder(artifactGraph: ArtifactGraph) {
   return createSelectionFromArtifacts([endFace!], artifactGraph)
 }
 
-export function getFacesFromBox(artifactGraph: ArtifactGraph, count: number) {
-  const twoWalls = [...artifactGraph.values()]
+export function getWalls(
+  artifactGraph: ArtifactGraph,
+  count: number,
+  index = 0
+) {
+  const walls = [...artifactGraph.values()]
     .filter((a) => a.type === 'wall')
-    .slice(0, count)
-  return createSelectionFromArtifacts(twoWalls, artifactGraph)
+    .slice(index, index + count)
+  return createSelectionFromArtifacts(walls, artifactGraph)
 }
 
 export async function getKclCommandValue(

@@ -1,17 +1,24 @@
 use anyhow::Result;
 use kittycad_modeling_cmds::units::UnitLength;
 
-use crate::{
-    SourceRange,
-    engine::{DEFAULT_PLANE_INFO, PlaneName},
-    errors::Suggestion,
-    execution::{PlaneInfo, Point3d},
-    lint::rule::{Discovered, Finding, def_finding},
-    parsing::ast::types::{
-        BinaryPart, CallExpressionKw, Expr, LiteralValue, Node as AstNode, ObjectExpression, Program, UnaryOperator,
-    },
-    walk::Node,
-};
+use crate::SourceRange;
+use crate::engine::DEFAULT_PLANE_INFO;
+use crate::engine::PlaneName;
+use crate::errors::Suggestion;
+use crate::execution::PlaneInfo;
+use crate::execution::Point3d;
+use crate::lint::rule::Discovered;
+use crate::lint::rule::Finding;
+use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::CallExpressionKw;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::Node as AstNode;
+use crate::parsing::ast::types::ObjectExpression;
+use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::UnaryOperator;
+use crate::walk::Node;
 
 def_finding!(
     Z0003,
@@ -264,8 +271,10 @@ fn normalize_plane_info(plane_info: &PlaneInfo) -> PlaneInfo {
 
 #[cfg(test)]
 mod tests {
-    use super::{Z0003, lint_should_be_offset_plane};
-    use crate::lint::rule::{test_finding, test_no_finding};
+    use super::Z0003;
+    use super::lint_should_be_offset_plane;
+    use crate::lint::rule::test_finding;
+    use crate::lint::rule::test_no_finding;
 
     // Both axes here are normalized.
     test_finding!(

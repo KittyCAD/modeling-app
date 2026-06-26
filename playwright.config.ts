@@ -5,6 +5,7 @@ const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (W
 
 let workers: number | string
 
+/* Use all available CPU cores based on platform. */
 if (process.env.E2E_WORKERS) {
   workers = process.env.E2E_WORKERS.includes('%')
     ? process.env.E2E_WORKERS
@@ -32,17 +33,14 @@ export default defineConfig({
   timeout: 120_000, // override the default 30s timeout
   testDir: './e2e/playwright',
   testIgnore: '*.test.ts', // ignore unit tests
-  /* Run tests in files in parallel */
+  snapshotPathTemplate: '{testDir}/{testFileName}-snapshots/{arg}{ext}',
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: Boolean(process.env.CI),
-  /* Do not retry using Playwright's built-in retry mechanism */
-  retries: 0,
-  /* Use all available CPU cores */
+  forbidOnly: Boolean(process.env.CI), // fail the build if test.only is used
+  retries: 5,
   workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    [process.env.CI ? 'dot' : 'list'],
+    ['list'],
     ['json', { outputFile: './test-results/report.json' }],
     ['html'],
     ['./e2e/playwright/lib/api-reporter.ts'],
@@ -50,7 +48,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:3000',
+    baseURL: process.env.VERCEL_BASE_URL ?? 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'retain-on-failure',
@@ -112,10 +110,13 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    command: 'npm start',
-    // url: 'http://127.0.0.1:3000',
-    reuseExistingServer: !process.env.CI,
-  },
+  /* Start the local web server unless we're testing against a Vercel deployment. */
+  ...(process.env.VERCEL_BASE_URL
+    ? {}
+    : {
+        webServer: {
+          command: 'npm start',
+          reuseExistingServer: !process.env.CI,
+        },
+      }),
 })

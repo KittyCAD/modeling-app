@@ -1,9 +1,16 @@
-use kittycad_modeling_cmds::{self as kcmc, ok_response::output as mout, units::*};
-use pyo3::{exceptions::PyException, pyclass, pymethods, PyResult};
+use kittycad_modeling_cmds::ok_response::output as mout;
+use kittycad_modeling_cmds::units::*;
+use kittycad_modeling_cmds::{self as kcmc};
+use pyo3::PyResult;
+use pyo3::exceptions::PyException;
+use pyo3::pyclass;
+use pyo3::pymethods;
+
+use crate::bridge::bounding_box::BoundingBoxResponse;
 
 /// Set of physical properties you'd like to run on the model.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Default, Debug, Clone)]
 pub struct PhysicalPropertiesRequest {
     pub volume: Option<kcmc::Volume>,
@@ -11,11 +18,12 @@ pub struct PhysicalPropertiesRequest {
     pub center_of_mass: Option<kcmc::CenterOfMass>,
     pub surface_area: Option<kcmc::SurfaceArea>,
     pub density: Option<kcmc::Density>,
+    pub bounding_box: Option<kcmc::BoundingBox>,
 }
 
 /// Resulting data from a `PhysicalPropertiesRequest`.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Default, Debug, Clone)]
 pub struct PhysicalPropertiesResponse {
     pub volume: Option<mout::Volume>,
@@ -23,6 +31,7 @@ pub struct PhysicalPropertiesResponse {
     pub center_of_mass: Option<mout::CenterOfMass>,
     pub surface_area: Option<mout::SurfaceArea>,
     pub density: Option<mout::Density>,
+    pub bounding_box: Option<mout::BoundingBox>,
 }
 
 #[pyo3_stub_gen::derive::gen_stub_pymethods]
@@ -84,6 +93,15 @@ impl PhysicalPropertiesResponse {
             .as_ref()
             .ok_or(PyException::new_err("Density was not requested"))?
             .density)
+    }
+
+    fn get_bounding_box(&self) -> PyResult<BoundingBoxResponse> {
+        let bb = self
+            .bounding_box
+            .as_ref()
+            .ok_or(PyException::new_err("Bounding box was not requested"))?;
+        let bb = BoundingBoxResponse::from(bb);
+        Ok(bb)
     }
 
     fn get_density_unit(&self) -> PyResult<UnitDensity> {
@@ -187,6 +205,17 @@ impl PhysicalPropertiesRequest {
                 .entity_ids(Default::default())
                 .material_mass(material_mass)
                 .material_mass_unit(material_mass_unit)
+                .build(),
+        );
+        Ok(())
+    }
+
+    /// Requests the bounding box of the model.
+    fn set_bounding_box(&mut self, output_unit: UnitLength) -> PyResult<()> {
+        self.bounding_box = Some(
+            kcmc::BoundingBox::builder()
+                .output_unit(output_unit)
+                .entity_ids(Default::default())
                 .build(),
         );
         Ok(())

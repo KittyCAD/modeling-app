@@ -1,17 +1,17 @@
-import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
+import { emptyOperationsByModule } from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type RustContext from '@src/lib/rustContext'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineContext,
   ModelingMachineInternalContext,
 } from '@src/machines/modelingSharedTypes'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { MachineManager } from '@src/lib/MachineManager'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
-const dummyInitSketchGraphDelta = Object.freeze({
+export const dummyInitSketchGraphDelta: SceneGraphDelta = Object.freeze({
   new_graph: {
     project: 0,
     file: 0,
@@ -31,9 +31,9 @@ const dummyInitSketchGraphDelta = Object.freeze({
   new_objects: [],
   invalidates_ids: false,
   exec_outcome: {
-    errors: [],
+    issues: [],
     variables: {},
-    operations: [],
+    operations: emptyOperationsByModule(),
     artifactGraph: { map: {}, itemCount: 0 },
     filenames: {},
     defaultPlanes: null,
@@ -42,8 +42,8 @@ const dummyInitSketchGraphDelta = Object.freeze({
 
 export const modelingMachineInitialInternalContext: ModelingMachineInternalContext =
   {
-    currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
     selection: [],
     selectionRanges: {
@@ -77,17 +77,15 @@ export const modelingMachineInitialInternalContext: ModelingMachineInternalConte
 
 export function generateModelingMachineDefaultContext(systemDeps: {
   kclManager: KclManager
-  sceneInfra: SceneInfra
   rustContext: RustContext
   wasmInstance: ModuleType
-  sceneEntitiesManager: SceneEntities
   engineCommandManager: ConnectionManager
   commandBarActor: CommandBarActorType
   machineManager: MachineManager
 }) {
   const context: ModelingMachineContext = {
-    currentMode: 'modeling',
     currentTool: 'none',
+    showNonVisualConstraints: false,
     toastId: null,
     selection: [],
     selectionRanges: {

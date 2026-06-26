@@ -1,5 +1,4 @@
 import { Transition } from '@headlessui/react'
-import { base64ToString } from '@src/lib/base64'
 import { useSearchParams } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -9,12 +8,9 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { useSingletons } from '@src/lib/boot'
-import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
 /**
@@ -23,35 +19,12 @@ import toast from 'react-hot-toast'
  * want to open the current page in the desktop app.
  */
 export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
-  const { kclManager } = useSingletons()
   const buttonClasses =
     'bg-transparent flex-0 hover:bg-primary/10 dark:hover:bg-primary/10'
   const [searchParams, setSearchParams] = useSearchParams()
   // We also ignore this param on desktop, as it is redundant
   const hasAskToOpenParam =
     !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
-
-  // Watch the system theme for changes
-  useEffect(() => {
-    const listener = (e: MediaQueryListEvent) => {
-      setThemeClass(e.matches ? Themes.Dark : Themes.Light)
-    }
-
-    darkModeMatcher?.addEventListener('change', listener)
-    return () => darkModeMatcher?.removeEventListener('change', listener)
-  }, [])
-
-  useEffect(() => {
-    if (!hasAskToOpenParam) {
-      return
-    }
-
-    const codeB64 = base64ToString(
-      decodeURIComponent(searchParams.get('code') ?? '')
-    )
-    kclManager.goIntoTemporaryWorkspaceModeWithCode(codeB64)
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [hasAskToOpenParam])
 
   /**
    * This function removes the query param to ask to open in desktop app
@@ -64,7 +37,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     const newURL = `${ZOO_STUDIO_PROTOCOL}://${globalThis.location.pathname.replace(
       '/',
       ''
-    )}${searchParams.size > 0 ? `?${newSearchParams.toString()}` : ''}`
+    )}${newSearchParams.size > 0 ? `?${newSearchParams.toString()}` : ''}`
 
     // TODO: find a way to workaround this limitation, modeling-app#6200
     // Electron issue: https://github.com/electron/electron/issues/40776

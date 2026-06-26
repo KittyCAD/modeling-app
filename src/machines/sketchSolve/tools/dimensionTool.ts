@@ -1,15 +1,16 @@
-import { createMachine, setup } from 'xstate'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
+import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import { createMachine, setup } from 'xstate'
 
 type DimensionToolEvent = BaseToolEvent
 
 export const machine = setup({
   types: {
-    context: {} as Record<string, unknown>,
+    context: {},
     events: {} as DimensionToolEvent,
     input: {} as {
       sceneInfra: SceneInfra
@@ -32,6 +33,9 @@ export const machine = setup({
     'remove point listener': () => {
       // Add your action code here
       // ...
+    },
+    'toast sketch solve error': ({ event }) => {
+      toastSketchSolveError(event)
     },
   },
   actors: {
@@ -82,6 +86,7 @@ export const machine = setup({
         },
         onError: {
           target: 'unequipping',
+          actions: 'toast sketch solve error',
         },
         src: 'askUserForDimensionValues',
       },

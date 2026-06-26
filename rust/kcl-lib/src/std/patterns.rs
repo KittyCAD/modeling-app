@@ -3,33 +3,51 @@
 use std::cmp::Ordering;
 
 use anyhow::Result;
-use kcmc::{
-    ModelingCmd, each_cmd as mcmd, length_unit::LengthUnit, ok_response::OkModelingCmdResponse, shared::Transform,
-    websocket::OkWebSocketResponseData,
-};
-use kittycad_modeling_cmds::{
-    self as kcmc,
-    shared::{Angle, OriginType, Rotation},
-};
+use kcmc::ModelingCmd;
+use kcmc::each_cmd as mcmd;
+use kcmc::length_unit::LengthUnit;
+use kcmc::ok_response::OkModelingCmdResponse;
+use kcmc::shared::Transform;
+use kcmc::websocket::OkWebSocketResponseData;
+use kittycad_modeling_cmds::shared::Angle;
+use kittycad_modeling_cmds::shared::OriginType;
+use kittycad_modeling_cmds::shared::Rotation;
+use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 use uuid::Uuid;
 
 use super::axis_or_reference::Axis3dOrPoint3d;
-use crate::{
-    ExecutorContext, SourceRange,
-    errors::{KclError, KclErrorDetails},
-    execution::{
-        ControlFlowKind, ExecState, Geometries, Geometry, KclObjectFields, KclValue, ModelingCmdMeta, Sketch, Solid,
-        fn_call::{Arg, Args},
-        kcl_value::FunctionSource,
-        types::{NumericType, PrimitiveType, RuntimeType},
-    },
-    std::{
-        args::TyF64,
-        axis_or_reference::Axis2dOrPoint2d,
-        utils::{point_3d_to_mm, point_to_mm},
-    },
-};
+use crate::ExecutorContext;
+use crate::NodePath;
+use crate::SourceRange;
+use crate::errors::KclError;
+use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
+use crate::execution::ControlFlowKind;
+use crate::execution::ExecState;
+use crate::execution::Geometries;
+use crate::execution::Geometry;
+use crate::execution::KclObjectFields;
+use crate::execution::KclValue;
+use crate::execution::ModelingCmdMeta;
+use crate::execution::Sketch;
+use crate::execution::Solid;
+use crate::execution::fn_call::Arg;
+use crate::execution::fn_call::Args;
+use crate::execution::kcl_value::FunctionSource;
+use crate::execution::types::NumericType;
+use crate::execution::types::PrimitiveType;
+use crate::execution::types::RuntimeType;
+use crate::std::args::TyF64;
+use crate::std::axis_or_reference::Axis2dOrPoint2d;
+use crate::std::shapes::POINT_ZERO_ZERO;
+use crate::std::utils::point_3d_to_mm;
+use crate::std::utils::point_to_mm;
+pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(0.0, crate::exec::NumericType::mm()),
+];
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
 
@@ -72,7 +90,15 @@ async fn inner_pattern_transform(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Solid>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Solid>(
+            i,
+            &transform,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -102,7 +128,15 @@ async fn inner_pattern_transform_2d(
         )));
     }
     for i in 1..instances {
-        let t = make_transform::<Sketch>(i, &transform, args.source_range, exec_state, &args.ctx).await?;
+        let t = make_transform::<Sketch>(
+            i,
+            &transform,
+            args.source_range,
+            args.node_path.clone(),
+            exec_state,
+            &args.ctx,
+        )
+        .await?;
         transform_vec.push(t);
     }
     execute_pattern_transform(
@@ -127,10 +161,6 @@ async fn execute_pattern_transform<T: GeometryTrait>(
     // Flush just the fillets/chamfers that apply to these solids.
     T::flush_batch(args, exec_state, &geo_set).await?;
     let starting: Vec<T> = geo_set.into();
-
-    if args.ctx.context_type == crate::execution::ContextType::Mock {
-        return Ok(starting);
-    }
 
     let mut output = Vec::new();
     for geo in starting {
@@ -187,6 +217,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     for id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
+        new_solid.set_artifact_id(id);
         geometries.push(new_solid);
     }
     Ok(geometries)
@@ -196,6 +227,7 @@ async fn make_transform<T: GeometryTrait>(
     i: u32,
     transform: &FunctionSource,
     source_range: SourceRange,
+    node_path: Option<NodePath>,
     exec_state: &mut ExecState,
     ctxt: &ExecutorContext,
 ) -> Result<Vec<Transform>, KclError> {
@@ -209,6 +241,7 @@ async fn make_transform<T: GeometryTrait>(
         Default::default(),
         vec![(None, Arg::new(repetition_num, source_range))],
         source_range,
+        node_path,
         exec_state,
         ctxt.clone(),
         Some("transform closure".to_owned()),
@@ -403,6 +436,7 @@ pub trait GeometryTrait: Clone {
     fn id(&self) -> Uuid;
     fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
+    fn set_artifact_id(&mut self, id: Uuid);
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -416,6 +450,9 @@ impl GeometryTrait for Sketch {
     type Set = Vec<Sketch>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+    }
+    fn set_artifact_id(&mut self, id: Uuid) {
+        self.artifact_id = ArtifactId::new(id);
     }
     fn id(&self) -> Uuid {
         self.id
@@ -442,10 +479,15 @@ impl GeometryTrait for Solid {
     type Set = Vec<Solid>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+        self.value_id = id;
         // We need this for in extrude.rs when you sketch on face.
         if let Some(sketch) = self.sketch_mut() {
             sketch.id = id;
         }
+    }
+
+    fn set_artifact_id(&mut self, id: Uuid) {
+        self.artifact_id = ArtifactId::new(id);
     }
 
     fn id(&self) -> Uuid {
@@ -474,7 +516,8 @@ impl GeometryTrait for Solid {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::execution::types::{NumericType, PrimitiveType};
+    use crate::execution::types::NumericType;
+    use crate::execution::types::PrimitiveType;
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_array_to_point3d() {
@@ -771,7 +814,7 @@ impl CircularPattern {
 pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
     let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
-    let center: [TyF64; 2] = args.get_kw_arg("center", &RuntimeType::point2d(), exec_state)?;
+    let center: Option<[TyF64; 2]> = args.get_kw_arg_opt("center", &RuntimeType::point2d(), exec_state)?;
     let arc_degrees: Option<TyF64> = args.get_kw_arg_opt("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     let rotate_duplicates = args.get_kw_arg_opt("rotateDuplicates", &RuntimeType::bool(), exec_state)?;
     let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
@@ -794,7 +837,7 @@ pub async fn pattern_circular_2d(exec_state: &mut ExecState, args: Args) -> Resu
 async fn inner_pattern_circular_2d(
     sketch_set: Vec<Sketch>,
     instances: u32,
-    center: [TyF64; 2],
+    center: Option<[TyF64; 2]>,
     arc_degrees: Option<f64>,
     rotate_duplicates: Option<bool>,
     use_original: Option<bool>,
@@ -806,6 +849,7 @@ async fn inner_pattern_circular_2d(
     if args.ctx.context_type == crate::execution::ContextType::Mock {
         return Ok(starting_sketches);
     }
+    let center = center.unwrap_or(POINT_ZERO_ZERO);
     let data = CircularPattern2dData {
         instances,
         center,
@@ -857,7 +901,7 @@ pub async fn pattern_circular_3d(exec_state: &mut ExecState, args: Args) -> Resu
     let axis = axis.to_point3d();
 
     // The center about which to make the pattern. This is a 3D vector.
-    let center: [TyF64; 3] = args.get_kw_arg("center", &RuntimeType::point3d(), exec_state)?;
+    let center: Option<[TyF64; 3]> = args.get_kw_arg_opt("center", &RuntimeType::point3d(), exec_state)?;
     // The arc angle (in degrees) to place the repetitions. Must be greater than 0.
     let arc_degrees: Option<TyF64> = args.get_kw_arg_opt("arcDegrees", &RuntimeType::degrees(), exec_state)?;
     // Whether or not to rotate the duplicates as they are copied.
@@ -886,7 +930,7 @@ async fn inner_pattern_circular_3d(
     solids: Vec<Solid>,
     instances: u32,
     axis: [f64; 3],
-    center: [TyF64; 3],
+    center: Option<[TyF64; 3]>,
     arc_degrees: Option<f64>,
     rotate_duplicates: Option<bool>,
     use_original: Option<bool>,
@@ -907,6 +951,7 @@ async fn inner_pattern_circular_3d(
     }
 
     let mut solids = Vec::new();
+    let center = center.unwrap_or(POINT_ZERO_ZERO_ZERO);
     let data = CircularPattern3dData {
         instances,
         axis,
@@ -1008,6 +1053,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_sketch = sketch.clone();
                 new_sketch.id = id;
+                new_sketch.artifact_id = ArtifactId::new(id);
                 geometries.push(new_sketch);
             }
             Geometries::Sketches(geometries)
@@ -1017,6 +1063,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
+                new_solid.artifact_id = ArtifactId::new(id);
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)

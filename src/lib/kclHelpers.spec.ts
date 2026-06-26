@@ -2,9 +2,10 @@ import type { ParseResult, SourceRange } from '@src/lang/wasm'
 import {
   getCalculatedKclExpressionValue,
   getStringValue,
+  stringToKclExpression,
 } from '@src/lib/kclHelpers'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('KCL expression calculations', () => {
   it('calculates a simple expression without units', async () => {
@@ -26,6 +27,19 @@ describe('KCL expression calculations', () => {
     expect(coercedActual.valueAsString).toEqual('31deg')
     expect(coercedActual?.astNode).toBeDefined()
   })
+
+  it('preserves source units on KCL command expressions', async () => {
+    const { rustContext } = await buildTheWorldAndNoEngineConnection()
+    const actual = await stringToKclExpression('0.1in', rustContext)
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual).not.toHaveProperty('errors')
+    expect(coercedActual.valueText).toBe('0.1in')
+    expect(coercedActual.valueAst).toMatchObject({
+      raw: '0.1in',
+      type: 'Literal',
+    })
+  })
+
   it('returns NAN for an invalid expression', async () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     const actual = await getCalculatedKclExpressionValue('1 + x', rustContext)
@@ -110,6 +124,31 @@ describe('KCL expression calculations', () => {
     expect(coercedActual.astNode).toBeDefined()
   })
 
+  it('formats string arrays when allowStringArrays is true', async () => {
+    const { rustContext } = await buildTheWorldAndNoEngineConnection()
+    const actual = await getCalculatedKclExpressionValue(
+      '["A", "B"]',
+      rustContext,
+      { allowArrays: true, allowStringArrays: true }
+    )
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual).not.toHaveProperty('errors')
+    expect(coercedActual.valueAsString).toEqual('["A", "B"]')
+    expect(coercedActual.astNode).toBeDefined()
+  })
+
+  it('rejects string arrays without allowStringArrays', async () => {
+    const { rustContext } = await buildTheWorldAndNoEngineConnection()
+    const actual = await getCalculatedKclExpressionValue(
+      '["A", "B"]',
+      rustContext,
+      { allowArrays: true }
+    )
+    const coercedActual = actual as Exclude<typeof actual, Error | ParseResult>
+    expect(coercedActual.valueAsString).toEqual('NAN')
+    expect(coercedActual.astNode).toBeDefined()
+  })
+
   it('formats arrays with mixed numeric values (integers and floats) when allowArrays is true', async () => {
     const { rustContext } = await buildTheWorldAndNoEngineConnection()
     // Arrays different numeric types should work fine
@@ -182,7 +221,7 @@ describe('getStringValue', () => {
   })
 
   it('an empty string on bad range', () => {
-    const code = `badboi`
+    const code = 'badboi'
     const range: SourceRange = [10, 12, 0]
     const result = getStringValue(code, range)
     expect(result).toBe('')

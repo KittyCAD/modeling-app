@@ -2,6 +2,9 @@ import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
@@ -9,7 +12,6 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -23,19 +25,19 @@ function CommandBarSelectionInput({
   arg,
   stepBack,
   onSubmit,
+  executingEditor: kclManager,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'selection'; name: string }
   stepBack: () => void
   onSubmit: (data: unknown) => void
+  executingEditor: KclManager
 }) {
-  const { commands } = useApp()
-  const { engineCommandManager, kclManager, sceneEntitiesManager } =
-    useSingletons()
-  const wasmInstance = use(kclManager.wasmInstancePromise)
+  const { commands, wasmPromise } = useApp()
+  const engineCommandManager = kclManager.engineCommandManager
+  const wasmInstance = use(wasmPromise)
   const inputRef = useRef<HTMLInputElement>(null)
   const commandBarState = commands.useState()
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const [hasClearedSelection, setHasClearedSelection] = useState(false)
   const selection = useSelector(arg.machineActor, selectionSelector)
   const selectionsByType = useMemo(() => {
     return getSelectionCountByType(kclManager.astSignal.value, selection)
@@ -65,11 +67,7 @@ function CommandBarSelectionInput({
       toSync(() => {
         const promises = [
           new Promise(() =>
-            kclManager.setSelectionFilterToDefault(
-              sceneEntitiesManager,
-              wasmInstance,
-              selection
-            )
+            kclManager.setSelectionFilterToDefault(wasmInstance, selection)
           ),
         ]
         if (!kclManager._isAstEmpty(kclManager.ast)) {
@@ -119,14 +117,14 @@ function CommandBarSelectionInput({
 
   // Clear selection if needed
   useEffect(() => {
-    arg.clearSelectionFirst &&
+    if (arg.clearSelectionFirst) {
       engineCommandManager.modelingSend({
         type: 'Set selection',
         data: {
           selectionType: 'singleCodeCursor',
         },
-      }) &&
-      setHasClearedSelection(true)
+      })
+    }
   }, [arg, engineCommandManager])
 
   // Watch for outside teardowns of this component
@@ -141,36 +139,24 @@ function CommandBarSelectionInput({
             otherSelections: [],
           }
 
-      if (
-        !(arg.clearSelectionFirst && !hasClearedSelection) &&
-        canSubmitSelection &&
-        resolvedSelection
-      ) {
+      if (!arg.clearSelectionFirst && canSubmitSelection && resolvedSelection) {
         onSubmit(resolvedSelection)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [hasClearedSelection])
+  }, [])
 
   // Set selection filter if needed, and reset it when the component unmounts
   useEffect(() => {
-    arg.selectionFilter &&
-      kclManager.setSelectionFilter(
-        arg.selectionFilter,
-        sceneEntitiesManager,
-        wasmInstance
-      )
-    return () =>
-      kclManager.setSelectionFilterToDefault(
-        sceneEntitiesManager,
-        wasmInstance,
-        selection
-      )
+    if (arg.selectionFilter) {
+      kclManager.setSelectionFilter(arg.selectionFilter, wasmInstance)
+    }
+    return () => kclManager.setSelectionFilterToDefault(wasmInstance, selection)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [arg.selectionFilter, wasmInstance])
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
         className={
           'relative flex flex-col mx-4 my-4 ' +
@@ -187,6 +173,7 @@ function CommandBarSelectionInput({
           {arg.name}
         </span>
         <input
+          {...noAutofillInputProps}
           id="selection"
           name="selection"
           ref={inputRef}

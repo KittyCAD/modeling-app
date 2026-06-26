@@ -1,0 +1,6 @@
+.gitignore
+Cargo.toml
+tsconfig.json
+node_modules/**
+client/**
+src/**
