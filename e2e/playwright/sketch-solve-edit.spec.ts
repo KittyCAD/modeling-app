@@ -2249,9 +2249,7 @@ extrude001 = extrude(region001, length = 5)`
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
         `
-        face001 = faceOf(extrude001, face = END)
-        sketch002 = sketch(on = face001) {
-        }`,
+        sketch002 = startSketchOn(extrude001, face = END)`,
         { shouldNormalise: true }
       )
     })
@@ -2266,11 +2264,14 @@ extrude001 = extrude(region001, length = 5)`
     editor,
     toolbar,
   }) => {
-    const code = `${square}
-hidden001 = hide(sketch001)
-region001 = region(point = [0.025mm, -1.9875mm], sketch = sketch001)
-extrude001 = extrude(region001, length = 5)`
-    const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.35, {
+    const code = `sketch001 = startSketchOn(XZ)
+profile001 = startProfile(sketch001, at = [-2.05mm, -1.99mm])
+  |> line(endAbsolute = [2.1mm, -1.99mm], tag = $line1)
+  |> line(endAbsolute = [2.1mm, 2.23mm], tag = $line2)
+  |> line(endAbsolute = [-2.05mm, 2.23mm], tag = $line3)
+  |> close(tag = $line4)
+extrude001 = extrude(profile001, length = 5)`
+    const [clickAboveCenter] = scene.makeMouseHelpers(0.5, 0.28, {
       format: 'ratio',
     })
 
@@ -2299,9 +2300,7 @@ extrude001 = extrude(region001, length = 5)`
       await expect(toolbar.exitSketchBtn).toBeEnabled()
       await editor.expectEditor.toContain(
         `
-        face001 = faceOf(extrude001, face = region001.tags.line4)
-        sketch002 = sketch(on = face001){
-        }`,
+        sketch002 = startSketchOn(extrude001, face = line3)`,
         { shouldNormalise: true }
       )
     })
