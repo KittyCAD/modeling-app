@@ -28,7 +28,7 @@ use uuid::Uuid;
 use crate::SourceRange;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
-use crate::unit_conversion;
+use crate::unit_conversion::ToKcmc;
 
 lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
@@ -281,9 +281,7 @@ impl GridScaleBehavior {
             GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(
                 mcmd::SetGridScale::builder()
                     .value(NUMBER_OF_GRID_COLUMNS)
-                    .units(unit_conversion::length::api_to_kcmc(
-                        unit_length.unwrap_or(UnitLength::Millimeters),
-                    ))
+                    .units(unit_length.unwrap_or(UnitLength::Millimeters).to_kcmc())
                     .build(),
             ),
         }

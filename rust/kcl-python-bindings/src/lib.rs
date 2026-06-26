@@ -11,6 +11,7 @@ use kcl_lib::IsRetryable;
 use kcl_lib::lint::Discovered;
 use kcl_lib::lint::FindingFamily;
 use kcl_lib::lint::checks;
+use kcl_lib::unit_conversion::ToKcmc;
 use kittycad_modeling_cmds::ImageFormat;
 use kittycad_modeling_cmds::ImportFile;
 use kittycad_modeling_cmds::ModelingCmd;
@@ -449,7 +450,7 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
                     .entity_ids(vec![])
                     .format(OutputFormat3d::new(
                         &export_format,
-                        kcmc::format::OutputFormat3dOptions::new(kcl_lib::unit_conversion::length::api_to_kcmc(units)),
+                        kcmc::format::OutputFormat3dOptions::new(units.to_kcmc()),
                     ))
                     .build(),
             ),
@@ -1046,7 +1047,7 @@ async fn get_bounding_box(
             kcl_lib::SourceRange::default(),
             &ModelingCmd::from(
                 kcmc::BoundingBox::builder()
-                    .maybe_output_unit(output_unit.map(kcl_lib::unit_conversion::length::api_to_kcmc))
+                    .maybe_output_unit(output_unit.map(ToKcmc::to_kcmc))
                     .entity_ids(entity_ids)
                     .build(),
             ),

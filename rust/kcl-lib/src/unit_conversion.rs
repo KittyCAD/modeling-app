@@ -98,7 +98,7 @@ impl ToApi for kcmcu::UnitVolume {
     }
 }
 
-pub mod length {
+mod length {
     use kittycad_modeling_cmds::units::UnitLength;
 
     pub fn kcmc_to_api(value: UnitLength) -> kcl_api::UnitLength {
@@ -124,7 +124,7 @@ pub mod length {
     }
 }
 
-pub mod volume {
+mod volume {
     use kittycad_modeling_cmds::units::UnitVolume;
 
     pub fn kcmc_to_api(value: UnitVolume) -> kcl_api::UnitVolume {
@@ -158,7 +158,7 @@ pub mod volume {
     }
 }
 
-pub mod mass {
+mod mass {
     use kittycad_modeling_cmds::units::UnitMass;
 
     pub fn kcmc_to_api(value: UnitMass) -> kcl_api::UnitMass {
@@ -178,7 +178,7 @@ pub mod mass {
     }
 }
 
-pub mod area {
+mod area {
     use kittycad_modeling_cmds::units::UnitArea;
 
     pub fn kcmc_to_api(value: UnitArea) -> kcl_api::UnitArea {
@@ -208,7 +208,7 @@ pub mod area {
     }
 }
 
-pub mod density {
+mod density {
     use kittycad_modeling_cmds::units::UnitDensity;
 
     pub fn kcmc_to_api(value: UnitDensity) -> kcl_api::UnitDensity {
@@ -226,7 +226,7 @@ pub mod density {
     }
 }
 
-pub mod angle {
+mod angle {
     use kittycad_modeling_cmds::units::UnitAngle;
 
     pub fn kcmc_to_api(value: UnitAngle) -> kcl_api::UnitAngle {
