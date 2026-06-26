@@ -1189,12 +1189,12 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::sketch_constraints::SketchConstraintStatus>()?;
     m.add_class::<bridge::sketch_constraints::SketchConstraintReport>()?;
 
-    m.add_class::<kcmc::units::UnitAngle>()?;
-    m.add_class::<kcmc::units::UnitArea>()?;
-    m.add_class::<kcmc::units::UnitDensity>()?;
-    m.add_class::<kcmc::units::UnitLength>()?;
-    m.add_class::<kcmc::units::UnitMass>()?;
-    m.add_class::<kcmc::units::UnitVolume>()?;
+    m.add_class::<kcl_api::UnitAngle>()?;
+    m.add_class::<kcl_api::UnitArea>()?;
+    m.add_class::<kcl_api::UnitDensity>()?;
+    m.add_class::<kcl_api::UnitLength>()?;
+    m.add_class::<kcl_api::UnitMass>()?;
+    m.add_class::<kcl_api::UnitVolume>()?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;

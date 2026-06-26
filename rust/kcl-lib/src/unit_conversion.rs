@@ -24,6 +24,40 @@ pub mod length {
     }
 }
 
+pub mod volume {
+    use kittycad_modeling_cmds::units::UnitVolume;
+
+    pub fn kcmc_to_api(value: UnitVolume) -> kcl_api::UnitVolume {
+        match value {
+            UnitVolume::CubicMillimeters => kcl_api::UnitVolume::CubicMillimeters,
+            UnitVolume::CubicCentimeters => kcl_api::UnitVolume::CubicCentimeters,
+            UnitVolume::CubicFeet => kcl_api::UnitVolume::CubicFeet,
+            UnitVolume::CubicInches => kcl_api::UnitVolume::CubicInches,
+            UnitVolume::CubicMeters => kcl_api::UnitVolume::CubicMeters,
+            UnitVolume::CubicYards => kcl_api::UnitVolume::CubicYards,
+            UnitVolume::FluidOunces => kcl_api::UnitVolume::FluidOunces,
+            UnitVolume::Gallons => kcl_api::UnitVolume::Gallons,
+            UnitVolume::Liters => kcl_api::UnitVolume::Liters,
+            UnitVolume::Milliliters => kcl_api::UnitVolume::Milliliters,
+        }
+    }
+
+    pub fn api_to_kcmc(value: kcl_api::UnitVolume) -> UnitVolume {
+        match value {
+            kcl_api::UnitVolume::CubicMillimeters => UnitVolume::CubicMillimeters,
+            kcl_api::UnitVolume::CubicCentimeters => UnitVolume::CubicCentimeters,
+            kcl_api::UnitVolume::CubicFeet => UnitVolume::CubicFeet,
+            kcl_api::UnitVolume::CubicInches => UnitVolume::CubicInches,
+            kcl_api::UnitVolume::CubicMeters => UnitVolume::CubicMeters,
+            kcl_api::UnitVolume::CubicYards => UnitVolume::CubicYards,
+            kcl_api::UnitVolume::FluidOunces => UnitVolume::FluidOunces,
+            kcl_api::UnitVolume::Gallons => UnitVolume::Gallons,
+            kcl_api::UnitVolume::Liters => UnitVolume::Liters,
+            kcl_api::UnitVolume::Milliliters => UnitVolume::Milliliters,
+        }
+    }
+}
+
 pub mod angle {
     use kittycad_modeling_cmds::units::UnitAngle;
 

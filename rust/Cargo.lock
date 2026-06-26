@@ -2278,6 +2278,8 @@ version = "0.2.166"
 dependencies = [
  "indexmap 2.14.0",
  "kcl-error",
+ "kittycad-measurements",
+ "kittycad-unit-conversion-derive",
  "parse-display 0.11.0",
  "parse-display-derive 0.11.0",
  "pyo3",
