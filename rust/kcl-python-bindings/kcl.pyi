@@ -994,6 +994,58 @@ class UnitArea(enum.Enum):
     """
 
 @typing.final
+class UnitArea(enum.Enum):
+    r"""
+    The valid types of area units.
+    """
+    SquareCentimeters = ...
+    r"""
+    Square centimeters <https://en.wikipedia.org/wiki/Square_centimeter>
+    """
+    SquareDecimeters = ...
+    r"""
+    Square decimeters <https://en.wikipedia.org/wiki/Square_decimeter>
+    """
+    SquareFeet = ...
+    r"""
+    Square feet <https://en.wikipedia.org/wiki/Square_foot>
+    """
+    SquareInches = ...
+    r"""
+    Square inches <https://en.wikipedia.org/wiki/Square_inch>
+    """
+    SquareKilometers = ...
+    r"""
+    Square kilometers <https://en.wikipedia.org/wiki/Square_kilometer>
+    """
+    SquareMeters = ...
+    r"""
+    Square meters <https://en.wikipedia.org/wiki/Square_meter>
+    """
+    SquareMillimeters = ...
+    r"""
+    Square millimeters <https://en.wikipedia.org/wiki/Square_millimeter>
+    """
+    SquareYards = ...
+    r"""
+    Square yards <https://en.wikipedia.org/wiki/Square_mile>
+    """
+
+@typing.final
+class UnitDensity(enum.Enum):
+    r"""
+    The valid types for density units.
+    """
+    PoundsPerCubicFeet = ...
+    r"""
+    Pounds per cubic feet.
+    """
+    KilogramsPerCubicMeter = ...
+    r"""
+    Kilograms per cubic meter.
+    """
+
+@typing.final
 class UnitDensity(enum.Enum):
     r"""
     The valid types for density units.
@@ -1083,6 +1135,70 @@ class UnitMass(enum.Enum):
     Pounds = ...
     r"""
     Pounds <https://en.wikipedia.org/wiki/Pound_(mass)>
+    """
+
+@typing.final
+class UnitMass(enum.Enum):
+    r"""
+    The valid types of mass units.
+    """
+    Grams = ...
+    r"""
+    Grams <https://en.wikipedia.org/wiki/Gram>
+    """
+    Kilograms = ...
+    r"""
+    Kilograms <https://en.wikipedia.org/wiki/Kilogram>
+    """
+    Pounds = ...
+    r"""
+    Pounds <https://en.wikipedia.org/wiki/Pound_(mass)>
+    """
+
+@typing.final
+class UnitVolume(enum.Enum):
+    r"""
+    The valid types of volume units.
+    """
+    CubicMillimeters = ...
+    r"""
+    Cubic millimeters (mm³)
+    """
+    CubicCentimeters = ...
+    r"""
+    Cubic centimeters (cc or cm³) <https://en.wikipedia.org/wiki/Cubic_centimeter>
+    """
+    CubicFeet = ...
+    r"""
+    Cubic feet (ft³) <https://en.wikipedia.org/wiki/Cubic_foot>
+    """
+    CubicInches = ...
+    r"""
+    Cubic inches (cu in or in³) <https://en.wikipedia.org/wiki/Cubic_inch>
+    """
+    CubicMeters = ...
+    r"""
+    Cubic meters (m³) <https://en.wikipedia.org/wiki/Cubic_meter>
+    """
+    CubicYards = ...
+    r"""
+    Cubic yards (yd³) <https://en.wikipedia.org/wiki/Cubic_yard>
+    """
+    FluidOunces = ...
+    r"""
+    US Fluid Ounces (fl oz) <https://en.wikipedia.org/wiki/Fluid_ounce>
+    """
+    Gallons = ...
+    r"""
+    US Gallons (gal US) <https://en.wikipedia.org/wiki/Gallon>
+    """
+    Liters = ...
+    r"""
+    Liters (l) <https://en.wikipedia.org/wiki/Litre>
+    """
+    Milliliters = ...
+    r"""
+    Milliliters (ml) <https://en.wikipedia.org/wiki/Litre>
     """
 
 @typing.final
