@@ -94,12 +94,14 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
+      await scene.settled(cmdBar)
 
       await clickProfile()
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
+      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -125,10 +127,18 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Move to review stage
+      state.currentArgKey = 'bodyType'
+      state.currentArgValue = ''
+      state.highlightedHeaderArg = 'bodyType'
+      state.headerArguments.Angle = '360deg'
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState(state)
+
+      // Move to review stage
       state.currentArgKey = ''
       state.currentArgValue = ''
-      //   state.highlightedHeaderArg = undefined
-      state.headerArguments.Angle = '360deg'
+      state.highlightedHeaderArg = ''
+      state.headerArguments.BodyType = 'SURFACE'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,
@@ -200,13 +210,14 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       // Click revolve tool again
       await toolbar.revolveButton.click()
       await cmdBar.expectState(state)
+      await scene.settled(cmdBar)
 
-      // Click profile using ratio clicks
       await clickProfile2()
 
       // Update state after profile selection
       state.currentArgKey = 'axisOrEdge'
       state.headerArguments.Profiles = '1 profile'
+      state.headerArguments.BodyType = ''
       state.highlightedHeaderArg = 'axisOrEdge'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState(state)
@@ -231,10 +242,18 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       await cmdBar.expectState(state)
 
       // Move to review stage
+      state.currentArgKey = 'bodyType'
+      state.currentArgValue = ''
+      state.highlightedHeaderArg = 'bodyType'
+      state.headerArguments.Angle = '360deg'
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState(state)
+
+      // Move to review stage
       state.currentArgKey = ''
       state.currentArgValue = ''
       state.highlightedHeaderArg = ''
-      state.headerArguments.Angle = '360deg'
+      state.headerArguments.BodyType = 'SURFACE'
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
         commandName: state.commandName,
