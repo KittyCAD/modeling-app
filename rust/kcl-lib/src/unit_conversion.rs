@@ -58,6 +58,26 @@ pub mod volume {
     }
 }
 
+pub mod mass {
+    use kittycad_modeling_cmds::units::UnitMass;
+
+    pub fn kcmc_to_api(value: UnitMass) -> kcl_api::UnitMass {
+        match value {
+            UnitMass::Grams => kcl_api::UnitMass::Grams,
+            UnitMass::Kilograms => kcl_api::UnitMass::Kilograms,
+            UnitMass::Pounds => kcl_api::UnitMass::Pounds,
+        }
+    }
+
+    pub fn api_to_kcmc(value: kcl_api::UnitMass) -> UnitMass {
+        match value {
+            kcl_api::UnitMass::Grams => UnitMass::Grams,
+            kcl_api::UnitMass::Kilograms => UnitMass::Kilograms,
+            kcl_api::UnitMass::Pounds => UnitMass::Pounds,
+        }
+    }
+}
+
 pub mod angle {
     use kittycad_modeling_cmds::units::UnitAngle;
 
