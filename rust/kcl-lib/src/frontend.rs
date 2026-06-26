@@ -5,9 +5,9 @@ use std::collections::VecDeque;
 use std::ops::ControlFlow;
 
 use indexmap::IndexMap;
+use kcl_api::UnitLength;
 use kcl_error::CompilationIssue;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::units::UnitLength;
 use serde::Serialize;
 
 use crate::ExecOutcome;
@@ -86,6 +86,7 @@ use crate::frontend::traverse::Visitor;
 use crate::frontend::traverse::dfs_mut;
 use crate::id::IncIdGenerator;
 use crate::parsing::ast::types as ast;
+use crate::parsing::ast::types::NodePathExt;
 use crate::pretty::NumericSuffix;
 use crate::std::constraints::LinesAtAngleKind;
 use crate::walk::NodeMut;

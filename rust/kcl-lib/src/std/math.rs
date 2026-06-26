@@ -10,6 +10,7 @@ use crate::execution::KclValue;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::RuntimeType;
 use crate::std::args::Args;
 use crate::std::args::TyF64;

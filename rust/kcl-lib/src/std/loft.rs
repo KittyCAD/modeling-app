@@ -232,7 +232,7 @@ async fn inner_loft(
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
 
     use super::*;
     use crate::execution::AbstractSegment;
@@ -242,6 +242,7 @@ mod tests {
     use crate::execution::SegmentRepr;
     use crate::execution::SketchSurface;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::front::Expr;
     use crate::front::LineCtor;
     use crate::front::Number;

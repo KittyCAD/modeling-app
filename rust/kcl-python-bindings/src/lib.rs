@@ -4,11 +4,14 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use anyhow::Result;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 use kcl_lib::ExecutorContext;
 use kcl_lib::IsRetryable;
 use kcl_lib::lint::Discovered;
 use kcl_lib::lint::FindingFamily;
 use kcl_lib::lint::checks;
+use kcl_lib::unit_conversion::ToKcmc;
 use kittycad_modeling_cmds::ImageFormat;
 use kittycad_modeling_cmds::ImportFile;
 use kittycad_modeling_cmds::ModelingCmd;
@@ -16,8 +19,6 @@ use kittycad_modeling_cmds::format::InputFormat3d;
 use kittycad_modeling_cmds::format::OutputFormat3d;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
 use kittycad_modeling_cmds::shared::FileExportFormat;
-use kittycad_modeling_cmds::units::UnitAngle;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::websocket::RawFile;
 use kittycad_modeling_cmds::{self as kcmc};
@@ -449,7 +450,7 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
                     .entity_ids(vec![])
                     .format(OutputFormat3d::new(
                         &export_format,
-                        kcmc::format::OutputFormat3dOptions::new(units),
+                        kcmc::format::OutputFormat3dOptions::new(units.to_kcmc()),
                     ))
                     .build(),
             ),
@@ -1046,7 +1047,7 @@ async fn get_bounding_box(
             kcl_lib::SourceRange::default(),
             &ModelingCmd::from(
                 kcmc::BoundingBox::builder()
-                    .maybe_output_unit(output_unit)
+                    .maybe_output_unit(output_unit.map(ToKcmc::to_kcmc))
                     .entity_ids(entity_ids)
                     .build(),
             ),
@@ -1189,12 +1190,12 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<bridge::sketch_constraints::SketchConstraintStatus>()?;
     m.add_class::<bridge::sketch_constraints::SketchConstraintReport>()?;
 
-    m.add_class::<kcmc::units::UnitAngle>()?;
-    m.add_class::<kcmc::units::UnitArea>()?;
-    m.add_class::<kcmc::units::UnitDensity>()?;
-    m.add_class::<kcmc::units::UnitLength>()?;
-    m.add_class::<kcmc::units::UnitMass>()?;
-    m.add_class::<kcmc::units::UnitVolume>()?;
+    m.add_class::<kcl_api::UnitAngle>()?;
+    m.add_class::<kcl_api::UnitArea>()?;
+    m.add_class::<kcl_api::UnitDensity>()?;
+    m.add_class::<kcl_api::UnitLength>()?;
+    m.add_class::<kcl_api::UnitMass>()?;
+    m.add_class::<kcl_api::UnitVolume>()?;
 
     // These are fine to add top level since we rename them in pyo3 derives.
     m.add_class::<kcmc::format::step::import::Options>()?;

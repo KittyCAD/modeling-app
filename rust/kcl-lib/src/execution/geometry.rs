@@ -8,11 +8,11 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::{self as kcmc};
 use parse_display::Display;
@@ -35,6 +35,7 @@ use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::normalize_to_solver_distance_unit;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
@@ -1383,11 +1384,11 @@ impl Point2d {
     }
 
     pub fn into_x(self) -> TyF64 {
-        TyF64::new(self.x, self.units.into())
+        TyF64::new(self.x, NumericType::length(self.units))
     }
 
     pub fn into_y(self) -> TyF64 {
-        TyF64::new(self.y, self.units.into())
+        TyF64::new(self.y, NumericType::length(self.units))
     }
 
     pub fn ignore_units(self) -> [f64; 2] {
@@ -1603,12 +1604,12 @@ pub struct BasePath {
 
 impl BasePath {
     pub fn get_to(&self) -> [TyF64; 2] {
-        let ty: NumericType = self.units.into();
+        let ty = NumericType::length(self.units);
         [TyF64::new(self.to[0], ty), TyF64::new(self.to[1], ty)]
     }
 
     pub fn get_from(&self) -> [TyF64; 2] {
-        let ty: NumericType = self.units.into();
+        let ty = NumericType::length(self.units);
         [TyF64::new(self.from[0], ty), TyF64::new(self.from[1], ty)]
     }
 }
@@ -1829,28 +1830,28 @@ impl Path {
     /// Where does this path segment start?
     pub fn get_from(&self) -> [TyF64; 2] {
         let p = &self.get_base().from;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// Where does this path segment end?
     pub fn get_to(&self) -> [TyF64; 2] {
         let p = &self.get_base().to;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// The path segment start point and its type.
     pub fn start_point_components(&self) -> ([f64; 2], NumericType) {
         let p = &self.get_base().from;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         (*p, ty)
     }
 
     /// The path segment end point and its type.
     pub fn end_point_components(&self) -> ([f64; 2], NumericType) {
         let p = &self.get_base().to;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         (*p, ty)
     }
 
@@ -1912,7 +1913,7 @@ impl Path {
                 None
             }
         };
-        n.map(|n| TyF64::new(n, self.get_base().units.into()))
+        n.map(|n| TyF64::new(n, NumericType::length(self.get_base().units)))
     }
 
     pub fn get_base_mut(&mut self) -> &mut BasePath {

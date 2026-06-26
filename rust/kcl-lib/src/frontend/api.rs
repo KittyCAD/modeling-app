@@ -2,8 +2,9 @@
 
 #![allow(async_fn_in_trait)]
 
+pub use kcl_api::ObjectId;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::units::UnitLength;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -124,16 +125,6 @@ pub struct EditSketchOutcome {
 pub struct RestoreSketchCheckpointOutcome {
     pub source_delta: SourceDelta,
     pub scene_graph_delta: SceneGraphDelta,
-}
-
-#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord, Deserialize, Serialize, ts_rs::TS)]
-#[ts(export, export_to = "FrontendApi.ts", rename = "ApiObjectId")]
-pub struct ObjectId(pub usize);
-
-impl ObjectId {
-    pub fn predecessor(self) -> Option<Self> {
-        self.0.checked_sub(1).map(ObjectId)
-    }
 }
 
 #[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, Ord, PartialOrd, Deserialize, Serialize, ts_rs::TS)]

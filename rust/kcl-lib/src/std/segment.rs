@@ -11,6 +11,7 @@ use crate::execution::KclValue;
 use crate::execution::Sketch;
 use crate::execution::TagIdentifier;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::Args;
@@ -57,7 +58,10 @@ fn inner_segment_end_x(tag: &TagIdentifier, exec_state: &mut ExecState, args: Ar
         ))
     })?;
 
-    Ok(TyF64::new(path.get_base().to[0], path.get_base().units.into()))
+    Ok(TyF64::new(
+        path.get_base().to[0],
+        NumericType::length(path.get_base().units),
+    ))
 }
 
 /// Returns the segment end of y.
@@ -162,7 +166,7 @@ fn inner_last_segment_x(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         })?
         .get_base();
 
-    Ok(TyF64::new(last_line.to[0], last_line.units.into()))
+    Ok(TyF64::new(last_line.to[0], NumericType::length(last_line.units)))
 }
 
 /// Returns the last segment of y.
@@ -185,7 +189,7 @@ fn inner_last_segment_y(sketch: Sketch, args: Args) -> Result<TyF64, KclError> {
         })?
         .get_base();
 
-    Ok(TyF64::new(last_line.to[1], last_line.units.into()))
+    Ok(TyF64::new(last_line.to[1], NumericType::length(last_line.units)))
 }
 
 /// Returns the length of the segment.

@@ -1,11 +1,12 @@
 use std::f64::consts::PI;
 use std::f64::consts::TAU;
 
+use kcl_api::UnitLength;
 use kittycad_modeling_cmds::shared::Angle;
-use kittycad_modeling_cmds::units::UnitLength;
 
 use super::args::TyF64;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::util::MathExt;
 
 pub(crate) fn untype_point(p: [TyF64; 2]) -> ([f64; 2], NumericType) {
@@ -43,7 +44,10 @@ pub(crate) fn point_to_len_unit(p: [TyF64; 2], len: UnitLength) -> [f64; 2] {
 
 /// Precondition, `p` must be in `len` units (this function does no conversion).
 pub(crate) fn point_to_typed(p: [f64; 2], len: UnitLength) -> [TyF64; 2] {
-    [TyF64::new(p[0], len.into()), TyF64::new(p[1], len.into())]
+    [
+        TyF64::new(p[0], NumericType::length(len)),
+        TyF64::new(p[1], NumericType::length(len)),
+    ]
 }
 
 pub(crate) fn point_3d_to_mm(p: [TyF64; 3]) -> [f64; 3] {
