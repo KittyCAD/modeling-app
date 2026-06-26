@@ -1,0 +1,18 @@
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+// Surface-extrude an edge up to a target (here, an offset plane) instead of a length.
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var 1.84mm, var -0.32mm], center = [var -1.32mm, var 0mm])
+  horizontal([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 3.37mm, var 2.21mm], center = [var 0mm, var 1.52mm])
+  vertical([circle2.center, ORIGIN])
+  line1 = line(start = [var -6.36mm, var -3.01mm], end = [var 3.61mm, var 6.24mm])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [1.6952577mm, -0.9901244mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+
+a = extrude001.sketch.tags.line1
+b = getOppositeEdge(a)
+
+extrude002 = extrude(b, bodyType = SURFACE, to = offsetPlane(XY, offset = 10), method = NEW)

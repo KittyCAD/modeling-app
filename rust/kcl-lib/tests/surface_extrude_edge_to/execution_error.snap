@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing surface_extrude_edge_to.kcl
+---
+KCL Engine error
+
+  × engine: No such object exists
+    ╭─[18:14]
+ 17 │ 
+ 18 │ extrude002 = extrude(b, bodyType = SURFACE, to = offsetPlane(XY, offset = 10), method = NEW)
+    ·              ───────────────────────────────────────┬───────────────────────────────────────┬
+    ·                                                     ╰── tests/surface_extrude_edge_to/input.kcl
+    ·                                                     ╰── tests/surface_extrude_edge_to/input.kcl
+    ╰────
+  ╰─▶ KCL Engine error
+      
+        × engine: No such object exists
+          ╭─[18:14]
+       17 │
+       18 │ extrude002 = extrude(b, bodyType = SURFACE, to = offsetPlane(XY,
+      offset = 10), method = NEW)
+          ·
+      ───────────────────────────────────────┬────────────────────────────────
+      ───────
+          ·                                                     ╰── tests/
+      surface_extrude_edge_to/input.kcl
+          ╰────
