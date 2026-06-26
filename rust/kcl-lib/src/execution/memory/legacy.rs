@@ -1245,6 +1245,7 @@ mod test {
     use super::*;
     use crate::execution::kcl_value::FunctionSource;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
 
     fn sr() -> SourceRange {
         SourceRange::default()

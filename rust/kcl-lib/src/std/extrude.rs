@@ -1223,13 +1223,14 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
 
     use super::*;
     use crate::execution::AbstractSegment;
     use crate::execution::Plane;
     use crate::execution::SegmentRepr;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::front::Expr;
     use crate::front::Number;
     use crate::front::ObjectId;

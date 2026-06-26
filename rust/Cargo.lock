@@ -2278,6 +2278,8 @@ version = "0.2.166"
 dependencies = [
  "indexmap 2.14.0",
  "kcl-error",
+ "kittycad-measurements",
+ "kittycad-unit-conversion-derive",
  "parse-display 0.11.0",
  "parse-display-derive 0.11.0",
  "pyo3",
@@ -2408,6 +2410,7 @@ dependencies = [
  "insta",
  "itertools 0.14.0",
  "js-sys",
+ "kcl-api",
  "kcl-derive-docs",
  "kcl-directory-test-macro",
  "kcl-error",
@@ -2465,6 +2468,7 @@ name = "kcl-python-bindings"
 version = "0.3.166"
 dependencies = [
  "anyhow",
+ "kcl-api",
  "kcl-lib",
  "kittycad-modeling-cmds",
  "miette",
