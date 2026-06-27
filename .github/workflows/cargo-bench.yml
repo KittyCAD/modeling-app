@@ -53,7 +53,7 @@ jobs:
           cd rust
           cargo codspeed build
       - name: Run the benchmarks
-        uses: CodSpeedHQ/action@v4.17.5
+        uses: CodSpeedHQ/action@v4.17.6
         with:
           mode: simulation
           working-directory: rust
