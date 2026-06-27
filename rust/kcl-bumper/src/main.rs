@@ -83,6 +83,7 @@ fn update_semver(bump: Option<SemverBump>, cargo_dot_toml: &mut DocumentMut) -> 
         println!("{current_version}");
         return Ok(None);
     };
+    let prev_version = current_version.clone();
     let mut next_version = current_version;
     match bump {
         SemverBump::Major => next_version.major += 1,
@@ -93,7 +94,7 @@ fn update_semver(bump: Option<SemverBump>, cargo_dot_toml: &mut DocumentMut) -> 
 
     // Update the Cargo.toml
     cargo_dot_toml["package"]["version"] = value(next_version.to_string());
-    println!("{next_version}");
+    println!("\tBumped {prev_version} => {next_version}");
     Ok(Some(next_version))
 }
 
