@@ -69,6 +69,8 @@ const getMachineApiRunning = (): Promise<boolean> =>
   ipcRenderer.invoke('machine-api.get-state')
 const setMachineApiState = (signal: 'on' | 'off'): Promise<boolean> =>
   ipcRenderer.invoke('machine-api.set-state', signal)
+const setZookeeperReasoningSleepBlocked = (active: boolean): Promise<boolean> =>
+  ipcRenderer.invoke('app.setZookeeperReasoningSleepBlocked', active)
 
 const isMac = os.platform() === 'darwin'
 const isWindows = os.platform() === 'win32'
@@ -359,6 +361,7 @@ contextBridge.exposeInMainWorld('electron', {
   resizeWindow,
   getMachineApiRunning,
   setMachineApiState,
+  setZookeeperReasoningSleepBlocked,
   createHomePageMenu,
   createModelingPageMenu,
   createFallbackMenu,

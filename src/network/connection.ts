@@ -721,6 +721,7 @@ export class Connection extends EventTarget {
     this.removeAllEventListeners()
     this.disconnectWebsocket()
     this.disconnectUnreliableDataChannel()
+    this.disconnectMediaStream()
     this.disconnectPeerConnection()
     // Function generated from createPeerConnection workflow
     this.webrtcStatsCollector = undefined
@@ -792,6 +793,27 @@ export class Connection extends EventTarget {
     }
   }
 
+  disconnectMediaStream() {
+    if (!this.mediaStream) {
+      EngineDebugger.addLog({
+        label: 'connection',
+        message: 'disconnectMediaStream: mediaStream is undefined',
+        metadata: { id: this.id },
+      })
+      return
+    }
+
+    EngineDebugger.addLog({
+      label: 'connection',
+      message: 'disconnectMediaStream',
+      metadata: { id: this.id },
+    })
+    this.mediaStream.getTracks().forEach((track) => {
+      track.stop()
+    })
+    this.mediaStream = undefined
+  }
+
   disconnectPeerConnection() {
     if (!this.peerConnection) {
       console.warn(
@@ -800,7 +822,7 @@ export class Connection extends EventTarget {
       return
     }
 
-    if (this.peerConnection.connectionState === 'closed') {
+    if (this.peerConnection.connectionState !== 'closed') {
       EngineDebugger.addLog({
         label: 'connection',
         message: 'disconnectPeerConnection',
@@ -817,6 +839,7 @@ export class Connection extends EventTarget {
         },
       })
     }
+    this.peerConnection = undefined
   }
 
   removeAllEventListeners() {

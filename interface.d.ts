@@ -87,6 +87,7 @@ export interface IElectronAPI {
   getMachineApiIp: () => Promise<string | null>
   getMachineApiRunning: () => Promise<boolean>
   setMachineApiState: (signal: 'on' | 'off') => Promise<boolean>
+  setZookeeperReasoningSleepBlocked: (active: boolean) => Promise<boolean>
   onUpdateChecking: (callback: () => void) => Electron.IpcRenderer
   onUpdateNotAvailable: (callback: () => void) => Electron.IpcRenderer
   onUpdateDownloadStart: (
