@@ -158,7 +158,7 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/preset-env": "^7.29.7",
+    "@babel/preset-env": "^8.0.2",
     "@babel/preset-react": "^7.29.7",
     "@biomejs/biome": "^1.9.4",
     "@electron-forge/cli": "^7.11.1",

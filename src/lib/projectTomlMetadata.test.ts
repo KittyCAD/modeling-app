@@ -1,6 +1,7 @@
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
@@ -74,5 +75,29 @@ describe('projectTomlMetadata', () => {
       'new-project'
     )
     expect(toml).not.toContain('old-project')
+  })
+
+  it('removes one cloud project id without dropping other metadata', () => {
+    const toml = removeCloudProjectIdFromProjectTomlContents(
+      'title = "Some demo"\ndefault_file = "main.kcl"\n\n[cloud."zoo.dev"]\nproject_id = "project-123"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-456"\n',
+      'zoo.dev'
+    )
+
+    expect(getProjectTitleFromProjectTomlContents(toml)).toBe('Some demo')
+    expect(
+      getCloudProjectIdFromProjectTomlContents(toml, 'zoo.dev')
+    ).toBeUndefined()
+    expect(getCloudProjectIdFromProjectTomlContents(toml, 'dev.zoo.dev')).toBe(
+      'project-456'
+    )
+    expect(toml).toContain('default_file = "main.kcl"')
+  })
+
+  it('leaves invalid TOML unchanged when removing a cloud project id', () => {
+    const invalidToml = 'title = "Some demo"\n['
+
+    expect(
+      removeCloudProjectIdFromProjectTomlContents(invalidToml, 'zoo.dev')
+    ).toBe(invalidToml)
   })
 })
