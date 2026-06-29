@@ -5,7 +5,7 @@ import {
   filterOperations,
   groupNestedOperations,
   groupOperationTypeStreaks,
-} from '@src/lib/operations'
+} from '@src/lib/operationGrouping'
 import { isArray } from '@src/lib/utils'
 
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>

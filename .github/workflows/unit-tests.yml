@@ -41,7 +41,6 @@ jobs:
 
   npm-test-unit:
     runs-on: namespace-profile-ubuntu-2-cores
-    needs: build-wasm
     steps:
       - uses: actions/checkout@v6.0.2
 
@@ -57,14 +56,6 @@ jobs:
 
       - name: Download all artifacts
         uses: actions/download-artifact@v8
-
-      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
-      # Restore them here because StdLibCommands is imported as a runtime value.
-      - name: Copy prepared ts-rs bindings
-        run: |
-          ls -R prepared-ts-rs-bindings
-          mkdir rust/kcl-lib/bindings
-          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: npm run test:unit
         if: ${{ github.event_name != 'release' && github.event_name != 'schedule' }}
