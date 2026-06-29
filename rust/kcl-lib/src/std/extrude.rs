@@ -819,9 +819,7 @@ async fn inner_extrude(
                 Extrudable::EdgeTag(tag) => Some(TagDeclarator::new(&tag.value)),
                 Extrudable::Edge(_) => None,
             };
-            solids.push(
-                after_surface_creation(extrude_cmd_id.into(), edge_tag, exec_state, &args).await?,
-            );
+            solids.push(after_surface_creation(extrude_cmd_id.into(), edge_tag, exec_state, &args).await?);
         } else {
             return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected a sketch for extrusion".to_owned(),
