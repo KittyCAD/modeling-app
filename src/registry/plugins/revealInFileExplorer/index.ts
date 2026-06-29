@@ -17,7 +17,7 @@ const revealInFileExplorerItems = defineRegistryItem({
       {
         id: 'reveal-in-file-explorer.project-menu',
         order: 100,
-        label: 'Reveal in File Explorer',
+        label: 'Reveal in file explorer',
         dataTestId: 'project-sidebar-reveal-in-file-explorer',
         isVisible: ({ projectPath }) =>
           Boolean(projectPath) && canRevealInFileExplorer(),
@@ -30,7 +30,7 @@ const revealInFileExplorerItems = defineRegistryItem({
       {
         id: 'reveal-in-file-explorer.row-context-menu',
         order: 100,
-        label: 'Reveal in File Explorer',
+        label: 'Reveal in file explorer',
         dataTestId: 'context-menu-reveal-in-file-explorer',
         isVisible: ({ row }) => !row.isFake && canRevealInFileExplorer(),
         onSelect: ({ row }) => revealInFileExplorer(row.path),
@@ -42,7 +42,7 @@ const revealInFileExplorerItems = defineRegistryItem({
 
 const revealInFileExplorerPlugin = createZdsPlugin({
   id: 'reveal-in-file-explorer',
-  title: 'Reveal in File Explorer',
+  title: 'Reveal in file explorer',
   description:
     'Adds project and file tree menu actions for opening items in the system file manager.',
   items: [revealInFileExplorerItems],
