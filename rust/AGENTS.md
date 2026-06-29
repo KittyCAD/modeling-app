@@ -14,8 +14,7 @@ This file applies to Rust development under `rust/`. It complements the repo roo
 ## Dev environment tips
 
 - Generated stdlib docs live under `docs/kcl-std/` and are overwritten by tests; do not edit them directly.
-- If you cannot run a desktop Playwright e2e test because Electron fails to launch with symptoms like `bad option: --remote-debugging-port=0`, `Authorization required, but no authorization protocol specified`, or `Missing X server or $DISPLAY`, then the solution is to run the test with your desktop X11 session variables passed through explicitly: `env -i HOME=$HOME USER=$USER DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-x11} PATH=$PATH /run/current-system/sw/bin/bash -lc 'cd /home/kurt/repos/fullStack1/modeling-app && npx playwright test ...'`.
-- This appears to be mainly a Linux desktop-session issue, and we hit it on NixOS specifically: the command can work fine in an interactive terminal while failing from an agent/tool-run process unless X11 auth and related session vars are forwarded.
+- If Electron Playwright tests fail locally with `bad option: --remote-debugging-port=0`, run them with `env -u ELECTRON_RUN_AS_NODE ...`, for example `env -u ELECTRON_RUN_AS_NODE npm run test:e2e:desktop -- e2e/playwright/sketch-solve-edit.spec.ts --grep "constraints can be added and undone one at a time in sketch solve mode"`.
 
 ## Code style
 
