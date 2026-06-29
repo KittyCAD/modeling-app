@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 
 use indexmap::IndexMap;
+use kcl_api::NodePath;
 pub use kcl_error::BacktraceItem;
 pub use kcl_error::CompilationIssue;
 pub use kcl_error::IsRetryable;
@@ -17,7 +18,6 @@ use uuid::Uuid;
 
 use crate::ExecOutcome;
 use crate::ModuleId;
-use crate::NodePath;
 use crate::SourceRange;
 use crate::exec::KclValue;
 use crate::execution::ArtifactCommand;

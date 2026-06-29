@@ -110,6 +110,7 @@ jobs:
           path: out
           glob: '*'
           parent: false
+          process_gcloudignore: false
           destination: 'dl.kittycad.io/releases/design-studio'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files
@@ -136,7 +137,7 @@ jobs:
         uses: actions/checkout@v6.0.2
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v6.2.0
         with:
           python-version: '3.x'
 

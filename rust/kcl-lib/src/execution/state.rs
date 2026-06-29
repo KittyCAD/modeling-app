@@ -5,8 +5,8 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::units::UnitAngle;
-use kittycad_modeling_cmds::units::UnitLength;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -1296,6 +1296,7 @@ mod tests {
 
     use super::ModuleArtifactState;
     use crate::NodePath;
+    use crate::NodePathExt;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
     use crate::front::Object;
