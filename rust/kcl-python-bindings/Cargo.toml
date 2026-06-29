@@ -20,6 +20,7 @@ kcl-lib = { path = "../kcl-lib", features = [
 ] }
 #kcl-lib = { path = "../modeling-app/src/wasm-lib/kcl", default-features = false, features = ["pyo3", "engine", "disable-println"] }
 kittycad-modeling-cmds = { workspace = true, features = ["python"] }
+kcl-api = { path = "../kcl-api", features = ["pyo3"] }
 miette = { workspace = true, features = ["fancy"] }
 pyo3 = { workspace = true, features = ["serde", "experimental-async"] }
 pyo3-stub-gen = { workspace = true }
