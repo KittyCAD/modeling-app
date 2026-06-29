@@ -34,7 +34,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
       - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6.2.0
         with:
           python-version: 3.x
       - name: Build wheels
@@ -67,7 +67,7 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6.2.0
         with:
           python-version: 3.x
           architecture: ${{ matrix.target }}
@@ -99,7 +99,7 @@ jobs:
       fail-fast: false
     steps:
       - uses: actions/checkout@v6.0.2
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v6.2.0
         with:
           python-version: 3.x
       - name: Build wheels
