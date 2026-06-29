@@ -3,6 +3,7 @@ import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
 import { ToastInsert } from '@src/components/ToastInsert'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -28,7 +29,6 @@ import {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { getProjectExplorerProjectForRender } from './ProjectExplorerPane.utils'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project, systemIOActor, layout } = useApp()
@@ -59,7 +59,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       })
     }
 
-    const duplicated = getProjectExplorerProjectForRender({
+    const duplicated = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
       projects,
     })

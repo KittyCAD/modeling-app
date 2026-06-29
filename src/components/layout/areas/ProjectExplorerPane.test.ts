@@ -1,8 +1,8 @@
 import {
   FILE_PLACEHOLDER_NAME,
   FOLDER_PLACEHOLDER_NAME,
-} from '@src/components/Explorer/utils'
-import { getProjectExplorerProjectForRender } from '@src/components/layout/areas/ProjectExplorerPane.utils'
+} from '@src/components/Explorer/placeholders'
+import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import type { Project } from '@src/lib/project'
 import { describe, expect, it } from 'vitest'
 
@@ -17,7 +17,7 @@ const project = (name: string, children: Project['children']): Project => ({
   readWriteAccess: true,
 })
 
-describe('getProjectExplorerProjectForRender', () => {
+describe('getProjectExplorerProjectWithPlaceholders', () => {
   it('uses the loaded project while folder hydration is pending', () => {
     const loadedProject = project('demo', [
       {
@@ -27,12 +27,12 @@ describe('getProjectExplorerProjectForRender', () => {
       },
     ])
 
-    const projectForRender = getProjectExplorerProjectForRender({
+    const explorerProject = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
       projects: undefined,
     })
 
-    expect(projectForRender?.children?.map((child) => child.name)).toEqual([
+    expect(explorerProject?.children?.map((child) => child.name)).toEqual([
       FOLDER_PLACEHOLDER_NAME,
       'main.kcl',
       FILE_PLACEHOLDER_NAME,
@@ -58,12 +58,12 @@ describe('getProjectExplorerProjectForRender', () => {
       },
     ])
 
-    const projectForRender = getProjectExplorerProjectForRender({
+    const explorerProject = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
       projects: [hydratedProject],
     })
 
-    expect(projectForRender?.children?.map((child) => child.name)).toEqual([
+    expect(explorerProject?.children?.map((child) => child.name)).toEqual([
       FOLDER_PLACEHOLDER_NAME,
       'fresh.kcl',
       FILE_PLACEHOLDER_NAME,

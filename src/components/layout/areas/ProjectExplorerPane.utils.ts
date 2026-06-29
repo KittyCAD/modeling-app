@@ -1,7 +1,7 @@
-import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
+import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/placeholders'
 import type { Project } from '@src/lib/project'
 
-export function getProjectExplorerProjectForRender({
+export function getProjectExplorerProjectWithPlaceholders({
   loadedProject,
   projects,
 }: {
