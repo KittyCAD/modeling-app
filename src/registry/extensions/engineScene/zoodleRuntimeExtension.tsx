@@ -21,7 +21,8 @@ export interface ZoodleRuntimeExtensionSession {
 const zoodleStreamStackClassName = defineEngineSceneStreamClassName({
   id: 'zookeeper.zoodle.stream-stack',
   order: 100,
-  className: 'z-20',
+  className:
+    'inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
 })
 
 export function createZoodleRuntimeExtension(
@@ -30,7 +31,7 @@ export function createZoodleRuntimeExtension(
   const zoodleAnnotationLayer = defineEngineSceneStreamLayer({
     id: 'zookeeper.zoodle.annotation-layer',
     order: 100,
-    wrapperClassName: 'z-50',
+    wrapperClassName: 'z-50 rounded-lg overflow-hidden',
     Component: () => (
       <ViewportAnnotationOverlay
         imageDataUrl={session.imageDataUrl}
