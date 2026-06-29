@@ -1,0 +1,72 @@
+import {
+  FILE_PLACEHOLDER_NAME,
+  FOLDER_PLACEHOLDER_NAME,
+} from '@src/components/Explorer/utils'
+import { getProjectExplorerProjectForRender } from '@src/components/layout/areas/ProjectExplorerPane.utils'
+import type { Project } from '@src/lib/project'
+import { describe, expect, it } from 'vitest'
+
+const project = (name: string, children: Project['children']): Project => ({
+  metadata: null,
+  kcl_file_count: 1,
+  directory_count: 0,
+  default_file: `/projects/${name}/main.kcl`,
+  path: `/projects/${name}`,
+  name,
+  children,
+  readWriteAccess: true,
+})
+
+describe('getProjectExplorerProjectForRender', () => {
+  it('uses the loaded project while folder hydration is pending', () => {
+    const loadedProject = project('demo', [
+      {
+        name: 'main.kcl',
+        path: '/projects/demo/main.kcl',
+        children: null,
+      },
+    ])
+
+    const projectForRender = getProjectExplorerProjectForRender({
+      loadedProject,
+      projects: undefined,
+    })
+
+    expect(projectForRender?.children?.map((child) => child.name)).toEqual([
+      FOLDER_PLACEHOLDER_NAME,
+      'main.kcl',
+      FILE_PLACEHOLDER_NAME,
+    ])
+    expect(loadedProject.children?.map((child) => child.name)).toEqual([
+      'main.kcl',
+    ])
+  })
+
+  it('prefers the hydrated project from the folder list', () => {
+    const loadedProject = project('demo', [
+      {
+        name: 'stale.kcl',
+        path: '/projects/demo/stale.kcl',
+        children: null,
+      },
+    ])
+    const hydratedProject = project('demo', [
+      {
+        name: 'fresh.kcl',
+        path: '/projects/demo/fresh.kcl',
+        children: null,
+      },
+    ])
+
+    const projectForRender = getProjectExplorerProjectForRender({
+      loadedProject,
+      projects: [hydratedProject],
+    })
+
+    expect(projectForRender?.children?.map((child) => child.name)).toEqual([
+      FOLDER_PLACEHOLDER_NAME,
+      'fresh.kcl',
+      FILE_PLACEHOLDER_NAME,
+    ])
+  })
+})

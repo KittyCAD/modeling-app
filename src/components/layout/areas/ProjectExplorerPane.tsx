@@ -1,7 +1,6 @@
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 import { ToastInsert } from '@src/components/ToastInsert'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -29,6 +28,7 @@ import {
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { getProjectExplorerProjectForRender } from './ProjectExplorerPane.utils'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   const { commands, project, systemIOActor, layout } = useApp()
@@ -48,29 +48,25 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file || !projects) {
+    if (!project || !file) {
       return
     }
 
+    const loadedProject = project.projectIORefSignal.value
     if (projects === undefined) {
       systemIOActor.send({
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
-      return
     }
 
-    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const foundProject = projects.find((p) => {
-      return p.name === project?.name
+    const duplicated = getProjectExplorerProjectForRender({
+      loadedProject,
+      projects,
     })
 
-    if (!foundProject) {
+    if (!duplicated) {
       return
     }
-
-    // Duplicate the state to not edit the raw data
-    const duplicated = structuredClone(foundProject)
-    addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
   }, [file, projects, project, systemIOActor])
 
