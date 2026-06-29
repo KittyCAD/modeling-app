@@ -326,6 +326,35 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
+  it('ignores unmodified global shortcuts from input targets', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const input = document.createElement('input')
+    document.body.append(input)
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    keymap.removeScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE)
+    keymap.applyScope(CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE)
+
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', input), {
+        source: 'global',
+      })
+    ).toBe(false)
+
+    input.remove()
+    registry[Symbol.dispose]()
+  })
+
   it('does not run mode keybindings from CodeMirror while the editor is focused', () => {
     const registry = createRegistryWithKeymapItems([
       {
