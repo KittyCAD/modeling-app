@@ -462,6 +462,13 @@ async fn inner_extrude(
     };
 
     for extrudable in &extrudables {
+        let is_edge = match extrudable {
+            Extrudable::Sketch(..) => false,
+            Extrudable::FaceTag(_) => false,
+            Extrudable::Face(_) => false,
+            Extrudable::EdgeTag(_) => true,
+            Extrudable::Edge(_) => true,
+        };
         let extrude_cmd_id = exec_state.next_uuid();
         let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
         let cmd = match (
@@ -548,6 +555,13 @@ async fn inner_extrude(
                         .direction(direction3d)
                         .build(),
                 )
+            }
+            (None, None, None, None, Some(_), None) if is_edge => {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Extruding an edge with the `to` parameter isn't supported yet. Use an explicit length instead."
+                        .to_owned(),
+                    vec![args.source_range],
+                )));
             }
             (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
@@ -742,13 +756,6 @@ async fn inner_extrude(
             },
             Extrudable::EdgeTag(_) => BeingExtruded::Sketch,
             Extrudable::Edge(_) => BeingExtruded::Sketch,
-        };
-        let is_edge = match extrudable {
-            Extrudable::Sketch(..) => false,
-            Extrudable::FaceTag(_) => false,
-            Extrudable::Face(_) => false,
-            Extrudable::EdgeTag(_) => true,
-            Extrudable::Edge(_) => true,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
