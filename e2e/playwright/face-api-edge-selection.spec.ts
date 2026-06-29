@@ -165,27 +165,6 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       const [clickEdge2] = scene.makeMouseHelpers(0.6748, 0.6455, {
         format: 'ratio',
       })
-      // Remove the first revolve so only one revolve remains in the code. Two revolves
-      // in the same file currently trigger an order-dependent lint error; this step
-      // still exercises edge selection for the second revolve. See order-dependent bug.
-      // TODO this might get resolved soon so check if we can skip this step
-      const codeAfterFirst = await editor.getCurrentCode()
-      const start = codeAfterFirst.indexOf('revolve001 = revolve(')
-      if (start !== -1) {
-        let depth = 0
-        let i = codeAfterFirst.indexOf('(', start)
-        for (; i < codeAfterFirst.length; i++) {
-          if (codeAfterFirst[i] === '(') depth++
-          else if (codeAfterFirst[i] === ')') {
-            depth--
-            if (depth === 0) break
-          }
-        }
-        const rest = codeAfterFirst.slice(i + 1).replace(/^\s*,?\s*\n?/, '')
-        const codeWithoutFirst = codeAfterFirst.slice(0, start) + rest
-        await editor.replaceCode('', codeWithoutFirst)
-        await scene.settled(cmdBar)
-      }
 
       // Set camera position for second revolve
       await scene.moveCameraTo(
@@ -262,10 +241,23 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         reviewValidationError: undefined,
       })
 
+      const codeBeforeSecondRevolveSubmit = await editor.getCurrentCode()
+      const revolveCountBeforeSecondSubmit = (
+        codeBeforeSecondRevolveSubmit.match(/\brevolve\(/g) ?? []
+      ).length
+
       await cmdBar.submit()
 
-      // Assert we have a revolve in the code (the second one; first was removed to avoid order-dependent lint)
-      await editor.expectEditor.toContain(`revolve`)
+      const codeAfterSecondRevolveSubmit = await editor.getCurrentCode()
+      const revolveCountAfterSecondSubmit = (
+        codeAfterSecondRevolveSubmit.match(/\brevolve\(/g) ?? []
+      ).length
+
+      expect(revolveCountAfterSecondSubmit).toBe(
+        revolveCountBeforeSecondSubmit + 1
+      )
+      expect(codeAfterSecondRevolveSubmit).toContain('axis = seg03')
+      expect(codeAfterSecondRevolveSubmit).toContain('revolve002 = revolve')
       await editor.expectEditor.toContain(`axis = seg03`)
       await expect(page.locator('.cm-lint-marker-error')).toHaveCount(0)
 

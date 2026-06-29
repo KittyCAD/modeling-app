@@ -16,15 +16,20 @@ import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { artifactToEntityRef } from '@src/lang/queryAst'
+import {
+  artifactToEntityRef,
+  findOperationForArtifact,
+} from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
+import { getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
 import { EngineDebugger } from '@src/lib/debugger'
+import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromEntity,
@@ -42,7 +47,7 @@ export const ConnectionStream = (props: {
   authToken: string | undefined
   sketchSolveStreamDimming?: number
 }) => {
-  const { settings, project, wasmPromise } = useApp()
+  const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -151,6 +156,24 @@ export const ConnectionStream = (props: {
               return
             }
             const directArtifact = kclManager.artifactGraph.get(entityId)
+            if (directArtifact?.type === 'gdtAnnotation') {
+              const operation = findOperationForArtifact({
+                artifact: directArtifact,
+                operations: getAllOperations(kclManager.operationsByModule),
+              })
+              if (!operation) return
+
+              await prepareEditCommand({
+                artifactGraph: kclManager.artifactGraph,
+                code: kclManager.code,
+                commandBarActor: commands.actor,
+                operation,
+                rustContext: kclManager.rustContext,
+                artifact: directArtifact,
+              })
+              return
+            }
+
             const sketchBlockArtifact = getSketchBlockForArtifact(
               directArtifact,
               kclManager.artifactGraph
