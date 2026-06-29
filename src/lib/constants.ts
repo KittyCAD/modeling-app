@@ -29,8 +29,8 @@ export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
   'sketch_experimental_features'
 export const OPFS_CLOUD_FEATURE_FLAG: UserFeature = 'web_app_file_browser'
-export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG =
-  'segments_based_regions' as UserFeature
+export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: UserFeature =
+  'segments_based_regions'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
