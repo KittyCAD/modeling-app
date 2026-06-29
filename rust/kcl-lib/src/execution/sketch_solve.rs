@@ -4,8 +4,8 @@ use std::sync::Arc;
 use ahash::AHashSet;
 use ezpz::Warning;
 use indexmap::IndexMap;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::units::UnitLength;
 use uuid::Uuid;
 
 use crate::ExecState;
@@ -974,7 +974,7 @@ mod tests {
     use std::sync::Arc;
 
     use indexmap::IndexMap;
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
     use uuid::Uuid;
 
     use super::*;
@@ -985,6 +985,7 @@ mod tests {
     use crate::execution::PlaneInfo;
     use crate::execution::PlaneKind;
     use crate::execution::ProfileClosed;
+    use crate::execution::types::NumericTypeExt;
     use crate::front::Expr;
     use crate::front::LineCtor;
     use crate::front::Number;

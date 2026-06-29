@@ -98,8 +98,8 @@ fn normalize_negative_zero(value: f64) -> f64 {
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitAngle;
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitAngle;
+    use kcl_api::UnitLength;
     use pretty_assertions::assert_eq;
 
     use super::*;

@@ -3,7 +3,6 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type RustContext from '@src/lib/rustContext'
 import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
@@ -32,7 +31,6 @@ export async function applyOrEquipConstraintToolFromToolbar({
   toolName,
   selectedIds,
   objects,
-  defaultLengthUnit,
   rustContext,
   sketchId,
   settings,
@@ -41,7 +39,6 @@ export async function applyOrEquipConstraintToolFromToolbar({
   toolName: ConstraintToolName
   selectedIds: readonly SketchSolveSelectionId[]
   objects: readonly ApiObject[]
-  defaultLengthUnit: NumericSuffix
   rustContext: Pick<RustContext, 'addConstraint'>
   sketchId: number
   settings: Parameters<RustContext['addConstraint']>[3]
@@ -50,8 +47,7 @@ export async function applyOrEquipConstraintToolFromToolbar({
   const preparedApply = getConstraintToolPreparedApply(
     toolName,
     selectedIds,
-    objects,
-    { defaultLengthUnit }
+    objects
   )
 
   if (!preparedApply || toolName === 'symmetricConstraintTool') {

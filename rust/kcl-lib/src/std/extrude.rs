@@ -389,6 +389,15 @@ async fn inner_extrude(
         )));
     }
 
+    if let Some(bidirectional_length) = &bidirectional_length
+        && bidirectional_length.to_mm() < 0.0
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "`bidirectionalLength` must be greater than or equal to 0".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     if (length.is_some() || twist_angle.is_some()) && to.is_some() {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "You cannot give `length` or `twist` params with the `to` param, you have to choose one or the other"
@@ -1223,13 +1232,15 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
 
     use super::*;
     use crate::execution::AbstractSegment;
     use crate::execution::Plane;
     use crate::execution::SegmentRepr;
+    use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::front::Expr;
     use crate::front::Number;
     use crate::front::ObjectId;
@@ -1271,6 +1282,28 @@ mod tests {
                 meta: vec![],
             }),
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_rejects_negative_bidirectional_length_in_mock_exec() {
+        let code = r#"
+profile001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+  |> line(end = [0, 1])
+  |> close()
+
+extrude(profile001, length = 1, bidirectionalLength = -1)
+"#;
+
+        let err = parse_execute(code).await.unwrap_err();
+
+        assert!(matches!(err, KclError::Semantic { .. }), "{err:?}");
+        assert!(
+            err.message()
+                .contains("`bidirectionalLength` must be greater than or equal to 0"),
+            "{err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
