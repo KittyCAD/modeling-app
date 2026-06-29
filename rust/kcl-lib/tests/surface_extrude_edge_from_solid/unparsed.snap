@@ -2,7 +2,7 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Result of unparsing surface_extrude_edge_from_solid.kcl
 ---
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Surface-extrude an edge that belongs to a solid body, obtained via a getter.
 // Same as surface_extrude_edge_from_surface, but extrude001 is a solid.

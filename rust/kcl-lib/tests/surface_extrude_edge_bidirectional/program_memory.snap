@@ -66,10 +66,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 163,
-            "end": 170,
+            "commentStart": 133,
+            "end": 140,
             "moduleId": 0,
-            "start": 163,
+            "start": 133,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 163,
-            "end": 170,
+            "commentStart": 133,
+            "end": 140,
             "moduleId": 0,
-            "start": 163,
+            "start": 133,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 289,
-            "end": 296,
+            "commentStart": 259,
+            "end": 266,
             "moduleId": 0,
-            "start": 289,
+            "start": 259,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 411,
-            "end": 416,
+            "commentStart": 381,
+            "end": 386,
             "moduleId": 0,
-            "start": 411,
+            "start": 381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -139,10 +139,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 163,
-              "end": 170,
+              "commentStart": 133,
+              "end": 140,
               "moduleId": 0,
-              "start": 163,
+              "start": 133,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -169,10 +169,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 163,
-              "end": 170,
+              "commentStart": 133,
+              "end": 140,
               "moduleId": 0,
-              "start": 163,
+              "start": 133,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -199,10 +199,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
             ],
             "radius": 3.4399127895922015,
             "tag": {
-              "commentStart": 289,
-              "end": 296,
+              "commentStart": 259,
+              "end": 266,
               "moduleId": 0,
-              "start": 289,
+              "start": 259,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -223,10 +223,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
               -3.01
             ],
             "tag": {
-              "commentStart": 411,
-              "end": 416,
+              "commentStart": 381,
+              "end": 386,
               "moduleId": 0,
-              "start": 411,
+              "start": 381,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -358,10 +358,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 163,
-            "end": 170,
+            "commentStart": 133,
+            "end": 140,
             "moduleId": 0,
-            "start": 163,
+            "start": 133,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -405,10 +405,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 289,
-            "end": 296,
+            "commentStart": 259,
+            "end": 266,
             "moduleId": 0,
-            "start": 289,
+            "start": 259,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -446,10 +446,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
             -3.01
           ],
           "tag": {
-            "commentStart": 411,
-            "end": 416,
+            "commentStart": 381,
+            "end": 386,
             "moduleId": 0,
-            "start": 411,
+            "start": 381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -555,10 +555,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 163,
-            "end": 170,
+            "commentStart": 133,
+            "end": 140,
             "moduleId": 0,
-            "start": 163,
+            "start": 133,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -585,10 +585,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 163,
-            "end": 170,
+            "commentStart": 133,
+            "end": 140,
             "moduleId": 0,
-            "start": 163,
+            "start": 133,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -615,10 +615,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 289,
-            "end": 296,
+            "commentStart": 259,
+            "end": 266,
             "moduleId": 0,
-            "start": 289,
+            "start": 259,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -639,10 +639,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
             -3.01
           ],
           "tag": {
-            "commentStart": 411,
-            "end": 416,
+            "commentStart": 381,
+            "end": 386,
             "moduleId": 0,
-            "start": 411,
+            "start": 381,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1109,10 +1109,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
                   ],
                   "radius": 3.1761612049768506,
                   "tag": {
-                    "commentStart": 163,
-                    "end": 170,
+                    "commentStart": 133,
+                    "end": 140,
                     "moduleId": 0,
-                    "start": 163,
+                    "start": 133,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1156,10 +1156,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
                   ],
                   "radius": 3.4399127895922015,
                   "tag": {
-                    "commentStart": 289,
-                    "end": 296,
+                    "commentStart": 259,
+                    "end": 266,
                     "moduleId": 0,
-                    "start": 289,
+                    "start": 259,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -1197,10 +1197,10 @@ description: Variables in memory after executing surface_extrude_edge_bidirectio
                     -3.01
                   ],
                   "tag": {
-                    "commentStart": 411,
-                    "end": 416,
+                    "commentStart": 381,
+                    "end": 386,
                     "moduleId": 0,
-                    "start": 411,
+                    "start": 381,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },

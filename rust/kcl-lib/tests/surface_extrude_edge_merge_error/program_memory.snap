@@ -66,10 +66,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 242,
-            "end": 249,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 242,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 242,
-            "end": 249,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 242,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 368,
-            "end": 375,
+            "commentStart": 338,
+            "end": 345,
             "moduleId": 0,
-            "start": 368,
+            "start": 338,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 490,
-            "end": 495,
+            "commentStart": 460,
+            "end": 465,
             "moduleId": 0,
-            "start": 490,
+            "start": 460,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -139,10 +139,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 242,
-              "end": 249,
+              "commentStart": 212,
+              "end": 219,
               "moduleId": 0,
-              "start": 242,
+              "start": 212,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -169,10 +169,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 242,
-              "end": 249,
+              "commentStart": 212,
+              "end": 219,
               "moduleId": 0,
-              "start": 242,
+              "start": 212,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -199,10 +199,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
             ],
             "radius": 3.4399127895922015,
             "tag": {
-              "commentStart": 368,
-              "end": 375,
+              "commentStart": 338,
+              "end": 345,
               "moduleId": 0,
-              "start": 368,
+              "start": 338,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -223,10 +223,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
               -3.01
             ],
             "tag": {
-              "commentStart": 490,
-              "end": 495,
+              "commentStart": 460,
+              "end": 465,
               "moduleId": 0,
-              "start": 490,
+              "start": 460,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -332,10 +332,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 242,
-            "end": 249,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 242,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -379,10 +379,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 368,
-            "end": 375,
+            "commentStart": 338,
+            "end": 345,
             "moduleId": 0,
-            "start": 368,
+            "start": 338,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -420,10 +420,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
             -3.01
           ],
           "tag": {
-            "commentStart": 490,
-            "end": 495,
+            "commentStart": 460,
+            "end": 465,
             "moduleId": 0,
-            "start": 490,
+            "start": 460,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -529,10 +529,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 242,
-            "end": 249,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 242,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -559,10 +559,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 242,
-            "end": 249,
+            "commentStart": 212,
+            "end": 219,
             "moduleId": 0,
-            "start": 242,
+            "start": 212,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -589,10 +589,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 368,
-            "end": 375,
+            "commentStart": 338,
+            "end": 345,
             "moduleId": 0,
-            "start": 368,
+            "start": 338,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -613,10 +613,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
             -3.01
           ],
           "tag": {
-            "commentStart": 490,
-            "end": 495,
+            "commentStart": 460,
+            "end": 465,
             "moduleId": 0,
-            "start": 490,
+            "start": 460,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1083,10 +1083,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                   ],
                   "radius": 3.1761612049768506,
                   "tag": {
-                    "commentStart": 242,
-                    "end": 249,
+                    "commentStart": 212,
+                    "end": 219,
                     "moduleId": 0,
-                    "start": 242,
+                    "start": 212,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1130,10 +1130,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                   ],
                   "radius": 3.4399127895922015,
                   "tag": {
-                    "commentStart": 368,
-                    "end": 375,
+                    "commentStart": 338,
+                    "end": 345,
                     "moduleId": 0,
-                    "start": 368,
+                    "start": 338,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -1171,10 +1171,10 @@ description: Variables in memory after executing surface_extrude_edge_merge_erro
                     -3.01
                   ],
                   "tag": {
-                    "commentStart": 490,
-                    "end": 495,
+                    "commentStart": 460,
+                    "end": 465,
                     "moduleId": 0,
-                    "start": 490,
+                    "start": 460,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },

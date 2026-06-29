@@ -1,4 +1,4 @@
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Surface-extrude an edge up to a target (here, an offset plane) instead of a length.
 sketch001 = sketch(on = XY) {

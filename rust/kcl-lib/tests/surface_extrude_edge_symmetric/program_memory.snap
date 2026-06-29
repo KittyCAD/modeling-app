@@ -66,10 +66,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 148,
-            "end": 155,
+            "commentStart": 118,
+            "end": 125,
             "moduleId": 0,
-            "start": 148,
+            "start": 118,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 148,
-            "end": 155,
+            "commentStart": 118,
+            "end": 125,
             "moduleId": 0,
-            "start": 148,
+            "start": 118,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 274,
-            "end": 281,
+            "commentStart": 244,
+            "end": 251,
             "moduleId": 0,
-            "start": 274,
+            "start": 244,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 396,
-            "end": 401,
+            "commentStart": 366,
+            "end": 371,
             "moduleId": 0,
-            "start": 396,
+            "start": 366,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -139,10 +139,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 148,
-              "end": 155,
+              "commentStart": 118,
+              "end": 125,
               "moduleId": 0,
-              "start": 148,
+              "start": 118,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -169,10 +169,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 148,
-              "end": 155,
+              "commentStart": 118,
+              "end": 125,
               "moduleId": 0,
-              "start": 148,
+              "start": 118,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -199,10 +199,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
             ],
             "radius": 3.4399127895922015,
             "tag": {
-              "commentStart": 274,
-              "end": 281,
+              "commentStart": 244,
+              "end": 251,
               "moduleId": 0,
-              "start": 274,
+              "start": 244,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -223,10 +223,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
               -3.01
             ],
             "tag": {
-              "commentStart": 396,
-              "end": 401,
+              "commentStart": 366,
+              "end": 371,
               "moduleId": 0,
-              "start": 396,
+              "start": 366,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -358,10 +358,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 148,
-            "end": 155,
+            "commentStart": 118,
+            "end": 125,
             "moduleId": 0,
-            "start": 148,
+            "start": 118,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -405,10 +405,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 274,
-            "end": 281,
+            "commentStart": 244,
+            "end": 251,
             "moduleId": 0,
-            "start": 274,
+            "start": 244,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -446,10 +446,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
             -3.01
           ],
           "tag": {
-            "commentStart": 396,
-            "end": 401,
+            "commentStart": 366,
+            "end": 371,
             "moduleId": 0,
-            "start": 396,
+            "start": 366,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -555,10 +555,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 148,
-            "end": 155,
+            "commentStart": 118,
+            "end": 125,
             "moduleId": 0,
-            "start": 148,
+            "start": 118,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -585,10 +585,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 148,
-            "end": 155,
+            "commentStart": 118,
+            "end": 125,
             "moduleId": 0,
-            "start": 148,
+            "start": 118,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -615,10 +615,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 274,
-            "end": 281,
+            "commentStart": 244,
+            "end": 251,
             "moduleId": 0,
-            "start": 274,
+            "start": 244,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -639,10 +639,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
             -3.01
           ],
           "tag": {
-            "commentStart": 396,
-            "end": 401,
+            "commentStart": 366,
+            "end": 371,
             "moduleId": 0,
-            "start": 396,
+            "start": 366,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1109,10 +1109,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
                   ],
                   "radius": 3.1761612049768506,
                   "tag": {
-                    "commentStart": 148,
-                    "end": 155,
+                    "commentStart": 118,
+                    "end": 125,
                     "moduleId": 0,
-                    "start": 148,
+                    "start": 118,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1156,10 +1156,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
                   ],
                   "radius": 3.4399127895922015,
                   "tag": {
-                    "commentStart": 274,
-                    "end": 281,
+                    "commentStart": 244,
+                    "end": 251,
                     "moduleId": 0,
-                    "start": 274,
+                    "start": 244,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -1197,10 +1197,10 @@ description: Variables in memory after executing surface_extrude_edge_symmetric.
                     -3.01
                   ],
                   "tag": {
-                    "commentStart": 396,
-                    "end": 401,
+                    "commentStart": 366,
+                    "end": 371,
                     "moduleId": 0,
-                    "start": 396,
+                    "start": 366,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },

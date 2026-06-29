@@ -863,7 +863,7 @@ export fn ellipse(
 /// extrude003 = extrude(sketch003.arc1, length = 5, bodyType = SURFACE, direction = [1, -1, 1])
 /// ```
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+/// @settings(kclVersion = 2.0)
 ///
 /// // Extruding edges can infer a direction or accept a custom direction
 /// sketch001 = sketch(on = XY) {

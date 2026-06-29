@@ -1,4 +1,4 @@
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Surface-extrude an edge symmetrically about the edge.
 sketch001 = sketch(on = XY) {

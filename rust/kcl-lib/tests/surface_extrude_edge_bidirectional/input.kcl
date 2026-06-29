@@ -1,4 +1,4 @@
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Surface-extrude an edge in both directions with bidirectionalLength.
 sketch001 = sketch(on = XY) {

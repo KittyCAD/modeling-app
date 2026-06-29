@@ -66,10 +66,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 173,
-            "end": 180,
+            "commentStart": 143,
+            "end": 150,
             "moduleId": 0,
-            "start": 173,
+            "start": 143,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -80,10 +80,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 173,
-            "end": 180,
+            "commentStart": 143,
+            "end": 150,
             "moduleId": 0,
-            "start": 173,
+            "start": 143,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -94,10 +94,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 299,
-            "end": 306,
+            "commentStart": 269,
+            "end": 276,
             "moduleId": 0,
-            "start": 299,
+            "start": 269,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -108,10 +108,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 421,
-            "end": 426,
+            "commentStart": 391,
+            "end": 396,
             "moduleId": 0,
-            "start": 421,
+            "start": 391,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -139,10 +139,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 173,
-              "end": 180,
+              "commentStart": 143,
+              "end": 150,
               "moduleId": 0,
-              "start": 173,
+              "start": 143,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -169,10 +169,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
             ],
             "radius": 3.1761612049768506,
             "tag": {
-              "commentStart": 173,
-              "end": 180,
+              "commentStart": 143,
+              "end": 150,
               "moduleId": 0,
-              "start": 173,
+              "start": 143,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -199,10 +199,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
             ],
             "radius": 3.4399127895922015,
             "tag": {
-              "commentStart": 299,
-              "end": 306,
+              "commentStart": 269,
+              "end": 276,
               "moduleId": 0,
-              "start": 299,
+              "start": 269,
               "type": "TagDeclarator",
               "value": "circle2"
             },
@@ -223,10 +223,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
               -3.01
             ],
             "tag": {
-              "commentStart": 421,
-              "end": 426,
+              "commentStart": 391,
+              "end": 396,
               "moduleId": 0,
-              "start": 421,
+              "start": 391,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -358,10 +358,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 173,
-            "end": 180,
+            "commentStart": 143,
+            "end": 150,
             "moduleId": 0,
-            "start": 173,
+            "start": 143,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -405,10 +405,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 299,
-            "end": 306,
+            "commentStart": 269,
+            "end": 276,
             "moduleId": 0,
-            "start": 299,
+            "start": 269,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -446,10 +446,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
             -3.01
           ],
           "tag": {
-            "commentStart": 421,
-            "end": 426,
+            "commentStart": 391,
+            "end": 396,
             "moduleId": 0,
-            "start": 421,
+            "start": 391,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -555,10 +555,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 173,
-            "end": 180,
+            "commentStart": 143,
+            "end": 150,
             "moduleId": 0,
-            "start": 173,
+            "start": 143,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -585,10 +585,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           ],
           "radius": 3.1761612049768506,
           "tag": {
-            "commentStart": 173,
-            "end": 180,
+            "commentStart": 143,
+            "end": 150,
             "moduleId": 0,
-            "start": 173,
+            "start": 143,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -615,10 +615,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
           ],
           "radius": 3.4399127895922015,
           "tag": {
-            "commentStart": 299,
-            "end": 306,
+            "commentStart": 269,
+            "end": 276,
             "moduleId": 0,
-            "start": 299,
+            "start": 269,
             "type": "TagDeclarator",
             "value": "circle2"
           },
@@ -639,10 +639,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
             -3.01
           ],
           "tag": {
-            "commentStart": 421,
-            "end": 426,
+            "commentStart": 391,
+            "end": 396,
             "moduleId": 0,
-            "start": 421,
+            "start": 391,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1109,10 +1109,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
                   ],
                   "radius": 3.1761612049768506,
                   "tag": {
-                    "commentStart": 173,
-                    "end": 180,
+                    "commentStart": 143,
+                    "end": 150,
                     "moduleId": 0,
-                    "start": 173,
+                    "start": 143,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -1156,10 +1156,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
                   ],
                   "radius": 3.4399127895922015,
                   "tag": {
-                    "commentStart": 299,
-                    "end": 306,
+                    "commentStart": 269,
+                    "end": 276,
                     "moduleId": 0,
-                    "start": 299,
+                    "start": 269,
                     "type": "TagDeclarator",
                     "value": "circle2"
                   },
@@ -1197,10 +1197,10 @@ description: Variables in memory after executing surface_extrude_edge_from_surfa
                     -3.01
                   ],
                   "tag": {
-                    "commentStart": 421,
-                    "end": 426,
+                    "commentStart": 391,
+                    "end": 396,
                     "moduleId": 0,
-                    "start": 421,
+                    "start": 391,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },

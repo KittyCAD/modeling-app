@@ -1,4 +1,4 @@
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Surface-extrude an edge that belongs to a surface body, obtained via a getter.
 sketch001 = sketch(on = XY) {

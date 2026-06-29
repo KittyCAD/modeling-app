@@ -723,7 +723,7 @@ extrude003 = extrude(
 </model-viewer>
 
 ```kcl
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // Extruding edges can infer a direction or accept a custom direction
 sketch001 = sketch(on = XY) {

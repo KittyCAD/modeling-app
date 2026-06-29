@@ -1,4 +1,4 @@
-@settings(kclVersion = 2.0, experimentalFeatures = allow)
+@settings(kclVersion = 2.0)
 
 // method = MERGE is not allowed for a surface extrude of an edge; this should
 // fail with "Cannot use method MERGE with surface extrude of an edge".
