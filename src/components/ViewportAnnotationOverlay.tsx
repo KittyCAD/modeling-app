@@ -1,9 +1,7 @@
 import { TRIM_PREVIEW_LINE_COLOR } from '@src/lib/constants'
 import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
-import { getVisibleViewportRect } from '@src/lib/viewportElement'
-import type { PointerEvent as ReactPointerEvent } from 'react'
+import type { PointerEvent as ReactPointerEvent, SyntheticEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { createPortal } from 'react-dom'
 
 const loadImage = (src: string): Promise<HTMLImageElement> =>
   new Promise((resolve, reject) => {
@@ -43,6 +41,10 @@ const getCanvasPoint = (
   }
 }
 
+const stopOverlayEventPropagation = (event: SyntheticEvent) => {
+  event.stopPropagation()
+}
+
 interface ViewportAnnotationOverlayProps {
   imageDataUrl: string
   onCancel: () => void
@@ -54,7 +56,6 @@ export const ViewportAnnotationOverlay = (
 ) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const lastPoint = useRef<{ x: number; y: number } | null>(null)
-  const [viewportRect, setViewportRect] = useState(getVisibleViewportRect)
   const [imageSize, setImageSize] = useState<{
     width: number
     height: number
@@ -89,27 +90,6 @@ export const ViewportAnnotationOverlay = (
       cancelled = true
     }
   }, [props.imageDataUrl])
-
-  useEffect(() => {
-    const updateViewportRect = () => setViewportRect(getVisibleViewportRect())
-    const viewport = document.querySelector('[data-engine]')
-    const resizeObserver =
-      typeof ResizeObserver === 'undefined'
-        ? undefined
-        : new ResizeObserver(updateViewportRect)
-
-    if (viewport instanceof HTMLElement) {
-      resizeObserver?.observe(viewport)
-    }
-    window.addEventListener('resize', updateViewportRect)
-    window.addEventListener('scroll', updateViewportRect, true)
-
-    return () => {
-      resizeObserver?.disconnect()
-      window.removeEventListener('resize', updateViewportRect)
-      window.removeEventListener('scroll', updateViewportRect, true)
-    }
-  }, [])
 
   const drawTo = (event: ReactPointerEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current
@@ -204,16 +184,20 @@ export const ViewportAnnotationOverlay = (
       })
   }
 
-  return createPortal(
+  return (
     <div
       data-testid="viewport-annotation-overlay"
-      className="fixed z-50 bg-chalkboard-100"
-      style={{
-        left: viewportRect.left,
-        top: viewportRect.top,
-        width: viewportRect.width,
-        height: viewportRect.height,
-      }}
+      className="absolute inset-0 z-50 bg-chalkboard-100"
+      onPointerDown={stopOverlayEventPropagation}
+      onPointerMove={stopOverlayEventPropagation}
+      onPointerUp={stopOverlayEventPropagation}
+      onPointerCancel={stopOverlayEventPropagation}
+      onMouseDown={stopOverlayEventPropagation}
+      onMouseMove={stopOverlayEventPropagation}
+      onMouseUp={stopOverlayEventPropagation}
+      onClick={stopOverlayEventPropagation}
+      onDoubleClick={stopOverlayEventPropagation}
+      onWheel={stopOverlayEventPropagation}
     >
       <img
         src={props.imageDataUrl}
@@ -257,7 +241,6 @@ export const ViewportAnnotationOverlay = (
           Send
         </button>
       </div>
-    </div>,
-    document.body
+    </div>
   )
 }
