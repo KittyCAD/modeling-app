@@ -7,13 +7,40 @@ import {
 } from '@kittycad/ui-components'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
+import { getEstimatedBillingBalance } from '@src/lib/billingEstimate'
 import { useApp } from '@src/lib/boot'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type { BillingContext } from '@src/machines/billingMachine'
+import { useEffect, useState } from 'react'
+
+const BILLING_BALANCE_TICK_MS = 1000
+
+function useEstimatedBillingBalance(billingContext: BillingContext) {
+  const [now, setNow] = useState(Date.now())
+  const shouldTick = billingContext.usageStartedAt !== undefined
+
+  useEffect(() => {
+    if (!shouldTick) {
+      return
+    }
+
+    setNow(Date.now())
+    const id = setInterval(() => {
+      setNow(Date.now())
+    }, BILLING_BALANCE_TICK_MS)
+
+    return () => {
+      clearInterval(id)
+    }
+  }, [shouldTick])
+
+  return getEstimatedBillingBalance(billingContext, now)
+}
 
 function BillingStatusBarItem(props: { billingContext: BillingContext }) {
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
+  const displayedBalance = useEstimatedBillingBalance(props.billingContext)
 
   return (
     <Popover className="relative flex items-stretch">
@@ -24,7 +51,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
         <BillingRemaining
           mode={BillingRemainingMode.ProgressBarFixed}
           error={props.billingContext.error}
-          balance={props.billingContext.balance}
+          balance={displayedBalance}
           allowance={props.billingContext.allowance}
           userPaymentBalance={props.billingContext.userPaymentBalance}
         />
@@ -45,7 +72,7 @@ function BillingStatusBarItem(props: { billingContext: BillingContext }) {
           accountHref={withSiteBaseURL('/account/billing')}
           billingClick={openBillingLinkExternally}
           error={props.billingContext.error}
-          balance={props.billingContext.balance}
+          balance={displayedBalance}
           allowance={props.billingContext.allowance}
           userPaymentBalance={props.billingContext.userPaymentBalance}
         />

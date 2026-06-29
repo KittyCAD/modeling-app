@@ -962,6 +962,8 @@ export async function setup(
     })
   })
 
+  await installSlowFsForPlaywright(page)
+
   await page.addInitScript(
     async ({
       token,
@@ -1022,6 +1024,119 @@ export async function setup(
 
   // Trigger a navigation, since loading file:// doesn't.
   await page.reload()
+}
+
+const slowFsMethodNames = [
+  'access',
+  'cp',
+  'getPath',
+  'mkdir',
+  'readFile',
+  'readdir',
+  'rename',
+  'rm',
+  'stat',
+  'writeFile',
+] as const
+
+function readNonNegativeIntEnv(name: string) {
+  const value = process.env[name]
+  if (!value) return 0
+
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0
+
+  return Math.floor(parsed)
+}
+
+async function installSlowFsForPlaywright(page: Page) {
+  const delayMs = readNonNegativeIntEnv('E2E_SLOW_FS_MS')
+  if (delayMs === 0) return
+
+  const jitterMs = readNonNegativeIntEnv('E2E_SLOW_FS_JITTER_MS')
+
+  await page.addInitScript(
+    ({ delayMs, jitterMs, slowFsMethodNames }) => {
+      const globalObject = window as any
+      const installedKey = '__zooPlaywrightSlowFsInstalled'
+      if (globalObject[installedKey]) return
+
+      globalObject[installedKey] = true
+
+      const wrappedKey = Symbol.for('zoo.playwrightSlowFsWrapped')
+      const methods = new Set(slowFsMethodNames)
+
+      const delay = () => {
+        const jitter =
+          jitterMs > 0 ? Math.floor(Math.random() * (jitterMs + 1)) : 0
+        return new Promise((resolve) => setTimeout(resolve, delayMs + jitter))
+      }
+
+      const looksLikeFsZds = (value: unknown) => {
+        if (!value || typeof value !== 'object') return false
+
+        return slowFsMethodNames.every(
+          (methodName) => typeof (value as any)[methodName] === 'function'
+        )
+      }
+
+      const wrapFsZds = <T>(value: T): T => {
+        if (!looksLikeFsZds(value)) return value
+        if ((value as any)[wrappedKey]) return value
+
+        Object.defineProperty(value, wrappedKey, {
+          configurable: false,
+          enumerable: false,
+          value: true,
+        })
+
+        for (const methodName of methods) {
+          const original = (value as any)[methodName]
+          if (typeof original !== 'function') continue
+          ;(value as any)[methodName] = async function (...args: unknown[]) {
+            await delay()
+            return original.apply(this, args)
+          }
+        }
+
+        return value
+      }
+
+      const originalAssign = Object.assign
+      Object.assign = function (target: any, ...sources: any[]) {
+        const result = originalAssign.call(Object, target, ...sources)
+
+        if (
+          looksLikeFsZds(result) ||
+          sources.some((source) => looksLikeFsZds(source))
+        ) {
+          wrapFsZds(result)
+        }
+
+        return result
+      }
+
+      let currentFsZds = wrapFsZds(globalObject.fsZds)
+      const currentDescriptor = Object.getOwnPropertyDescriptor(
+        globalObject,
+        'fsZds'
+      )
+
+      if (!currentDescriptor || currentDescriptor.configurable) {
+        Object.defineProperty(globalObject, 'fsZds', {
+          configurable: true,
+          enumerable: true,
+          get() {
+            return currentFsZds
+          },
+          set(value) {
+            currentFsZds = wrapFsZds(value)
+          },
+        })
+      }
+    },
+    { delayMs, jitterMs, slowFsMethodNames }
+  )
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
@@ -1244,6 +1359,164 @@ export function perProjectSettingsToToml(
   return TOML.stringify(settings as any)
 }
 
+export async function clickElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  await clickElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
+}
+
+export async function clickElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const clickWasTriggered = await triggerElectronNativeMenuByIdForPage(
+    tronApp,
+    page,
+    menuId
+  )
+  expect(clickWasTriggered).toBe(true)
+}
+
+async function triggerElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
+
+  return tronApp.electron.evaluate(
+    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
+      type NativeMenuItemForTest = {
+        accelerator?: unknown
+        click?: (...args: unknown[]) => void
+        label?: unknown
+      }
+      type NativeMenuForTest = {
+        getMenuItemById: (
+          targetMenuId: string
+        ) => NativeMenuItemForTest | null | undefined
+      }
+      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+        return typeof value === 'object' && value !== null
+      }
+      function isNativeMenu(value: unknown): value is NativeMenuForTest {
+        return isObject(value) && typeof value.getMenuItemById === 'function'
+      }
+      function getWindowMenuFromTestProperties() {
+        const testProperties = Reflect.get(app, 'testProperty')
+        if (!isObject(testProperties)) return null
+
+        const nativeWindowMenus = testProperties.nativeWindowMenus
+        if (!(nativeWindowMenus instanceof Map)) return null
+
+        return nativeWindowMenus.get(browserWindowId)
+      }
+
+      const window = BrowserWindow.fromId(browserWindowId)
+      if (!window) return false
+
+      const menu =
+        process.platform === 'darwin'
+          ? Menu.getApplicationMenu()
+          : getWindowMenuFromTestProperties()
+      if (!isNativeMenu(menu)) return false
+
+      const menuItem = menu.getMenuItemById(menuId)
+      if (typeof menuItem?.click !== 'function') return false
+
+      menuItem.click(menuItem, window, {})
+      return true
+    },
+    { browserWindowId, menuId }
+  )
+}
+
+async function getElectronBrowserWindowId(tronApp: ElectronZoo, page: Page) {
+  const browserWindow = await tronApp.electron.browserWindow(page)
+  try {
+    return await browserWindow.evaluate((window) => window.id)
+  } finally {
+    await browserWindow.dispose()
+  }
+}
+
+export async function findElectronNativeMenuById(
+  tronApp: ElectronZoo,
+  menuId: string
+) {
+  await findElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
+}
+
+export async function findElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const found = Boolean(
+    await getElectronNativeMenuItemByIdForPage(tronApp, page, menuId)
+  )
+  expect(found).toBe(true)
+}
+
+export async function getElectronNativeMenuItemByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
+  return tronApp.electron.evaluate(
+    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
+      type NativeMenuItemForTest = {
+        accelerator?: unknown
+        label?: unknown
+      }
+      type NativeMenuForTest = {
+        getMenuItemById: (
+          targetMenuId: string
+        ) => NativeMenuItemForTest | null | undefined
+      }
+      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+        return typeof value === 'object' && value !== null
+      }
+      function isNativeMenu(value: unknown): value is NativeMenuForTest {
+        return isObject(value) && typeof value.getMenuItemById === 'function'
+      }
+      function getWindowMenuFromTestProperties() {
+        const testProperties = Reflect.get(app, 'testProperty')
+        if (!isObject(testProperties)) return null
+
+        const nativeWindowMenus = testProperties.nativeWindowMenus
+        if (!(nativeWindowMenus instanceof Map)) return null
+
+        return nativeWindowMenus.get(browserWindowId)
+      }
+
+      const window = BrowserWindow.fromId(browserWindowId)
+      if (!window) return null
+
+      const menu =
+        process.platform === 'darwin'
+          ? Menu.getApplicationMenu()
+          : getWindowMenuFromTestProperties()
+      if (!isNativeMenu(menu)) return null
+
+      const menuItem = menu.getMenuItemById(menuId)
+      if (!menuItem) return null
+
+      return {
+        accelerator:
+          typeof menuItem.accelerator === 'string'
+            ? menuItem.accelerator
+            : undefined,
+        label: typeof menuItem.label === 'string' ? menuItem.label : '',
+      }
+    },
+    { browserWindowId, menuId }
+  )
+}
+
 export async function openSettingsExpectText(page: Page, text: string) {
   const settings = page.getByTestId('settings-dialog-panel')
   await expect(settings).toBeVisible()
@@ -1258,6 +1531,20 @@ export async function openSettingsExpectLocator(page: Page, selector: string) {
   // You are viewing the keybindings tab
   const settingsLocator = settings.locator(selector)
   await expect(settingsLocator).toBeVisible()
+}
+
+export async function expectKeybindingsSettingsVisible(page: Page) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  await expect(
+    settings.getByRole('button', { name: 'Add keybinding' })
+  ).toBeVisible()
+  await expect(
+    settings.getByRole('columnheader', { name: 'Title' })
+  ).toBeVisible()
+  await expect(
+    settings.getByRole('columnheader', { name: 'Keystrokes' })
+  ).toBeVisible()
 }
 
 /**

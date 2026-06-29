@@ -19,11 +19,10 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
-  getRegionTagExprFromSegmentId,
+  getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
@@ -46,7 +45,10 @@ import type {
 } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
@@ -343,54 +345,6 @@ type BodySelectionData = {
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
-}
-
-function getRegionSketchTagExprFromSourceSurface(
-  sourceSurfaceArtifact: Artifact,
-  edgeArtifact: Artifact,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType
-): Expr | null {
-  if (sourceSurfaceArtifact.type !== 'sweep') {
-    return null
-  }
-
-  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
-    ast,
-    sourceSurfaceArtifact.codeRef.pathToNode,
-    wasmInstance,
-    ['CallExpressionKw']
-  )
-  if (
-    err(sourceSurfaceNode) ||
-    sourceSurfaceNode.node.type !== 'CallExpressionKw'
-  ) {
-    return null
-  }
-
-  const sweepInput = sourceSurfaceNode.node.unlabeled
-  if (!sweepInput || sweepInput.type !== 'Name') {
-    return null
-  }
-
-  const segmentId =
-    edgeArtifact.type === 'segment'
-      ? edgeArtifact.id
-      : edgeArtifact.type === 'sweepEdge'
-        ? edgeArtifact.segId
-        : null
-  if (!segmentId) {
-    return null
-  }
-
-  return getRegionTagExprFromSegmentId(
-    ast,
-    segmentId,
-    artifactGraph,
-    wasmInstance,
-    sweepInput.name.name
-  )
 }
 
 function buildEdgeExpr(

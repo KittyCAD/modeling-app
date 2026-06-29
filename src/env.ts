@@ -23,6 +23,27 @@ export type EnvironmentVariables = {
   readonly VITE_ZOO_SITE_APP_URL: string | undefined
 }
 
+type EnvironmentNameSource = Pick<
+  EnvironmentVariables,
+  'VITE_ZOO_BASE_DOMAIN' | 'VITE_ZOO_API_BASE_URL'
+>
+
+export function getEnvironmentNameFromEnv(
+  environmentVariables: EnvironmentNameSource
+) {
+  const baseDomain = environmentVariables.VITE_ZOO_BASE_DOMAIN
+  if (baseDomain) {
+    return baseDomain
+  }
+
+  const apiBaseUrl = environmentVariables.VITE_ZOO_API_BASE_URL
+  if (apiBaseUrl) {
+    return new URL(apiBaseUrl).hostname.replace(/^api\./, '')
+  }
+
+  return undefined
+}
+
 /** Store the environment in memory to be accessed during runtime */
 let ENVIRONMENT: EnvironmentConfigurationRuntime | null = null
 

@@ -1,0 +1,233 @@
+// Housing
+
+// Set units
+@settings(defaultLengthUnit = in)
+
+// Sketch the primary housing for the pump, to be revolved
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0.47in, var -0.19in], end = [var 0.47in, var -0.23in])
+  line2 = line(start = [var 0.47in, var -0.23in], end = [var 1.5in, var -0.23in])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 1.5in, var -0.23in], end = [var 1.5in, var -0.63in])
+  coincident([line2.end, line3.start])
+  arc1 = arc(start = [var 1.43in, var -0.7in], end = [var 1.5in, var -0.63in], center = [var 1.43in, var -0.63in])
+  coincident([line3.end, arc1.end])
+  tangent([line3, arc1])
+  line4 = line(start = [var 1.43in, var -0.7in], end = [var 0.2in, var -0.7in])
+  coincident([line4.start, arc1.start])
+  line5 = line(start = [var 0.2in, var -0.7in], end = [var 0.2in, var -0.73in])
+  coincident([line4.end, line5.start])
+  line6 = line(start = [var 0.2in, var -0.73in], end = [var 1.43in, var -0.73in])
+  coincident([line5.end, line6.start])
+  arc2 = arc(start = [var 1.43in, var -0.73in], end = [var 1.53in, var -0.63in], center = [var 1.43in, var -0.63in])
+  coincident([line6.end, arc2.start])
+  tangent([line6, arc2])
+  line7 = line(start = [var 1.53in, var -0.63in], end = [var 1.53in, var 0.67in])
+  coincident([line7.start, arc2.end])
+  arc3 = arc(start = [var 1.53in, var 0.67in], end = [var 1.43in, var 0.77in], center = [var 1.43in, var 0.67in])
+  coincident([line7.end, arc3.start])
+  tangent([line7, arc3])
+  line8 = line(start = [var 1.43in, var 0.77in], end = [var 0.2in, var 0.77in])
+  coincident([line8.start, arc3.end])
+  line9 = line(start = [var 0.2in, var 0.77in], end = [var 0.2in, var 0.74in])
+  coincident([line8.end, line9.start])
+  line10 = line(start = [var 0.2in, var 0.74in], end = [var 1.43in, var 0.74in])
+  coincident([line9.end, line10.start])
+  arc4 = arc(start = [var 1.5in, var 0.67in], end = [var 1.43in, var 0.74in], center = [var 1.43in, var 0.67in])
+  coincident([line10.end, arc4.end])
+  tangent([line10, arc4])
+  line11 = line(start = [var 1.5in, var 0.67in], end = [var 1.5in, var -0.19in])
+  coincident([line11.start, arc4.start])
+  line12 = line(start = [var 1.5in, var -0.19in], end = [var 0.47in, var -0.19in])
+  coincident([line11.end, line12.start])
+  coincident([line12.end, line1.start])
+  horizontal(line6)
+  horizontal(line4)
+  horizontal(line2)
+  horizontal(line12)
+  horizontal(line10)
+  horizontal(line8)
+  vertical(line9)
+  vertical(line1)
+  vertical(line5)
+  vertical(line3)
+  vertical(line11)
+  vertical(line7)
+  tangent([line4, arc1])
+  tangent([line7, arc2])
+  coincident([arc2.center, arc1.center])
+  coincident([arc4.center, arc3.center])
+  tangent([line11, arc4])
+  tangent([line8, arc3])
+  radius(arc2) == .1
+  radius(arc1) == .07
+  equalRadius([arc2, arc3])
+  equalRadius([arc1, arc4])
+  horizontalDistance([ORIGIN, line3.start]) == 1.5
+  verticalDistance([line5.start, ORIGIN]) == .7
+
+  verticalDistance([arc2.start, ORIGIN]) == 0.73in
+  horizontalDistance([ORIGIN, line5.start]) == .2
+  coincident([line5, line9])
+  verticalDistance([line12.end, ORIGIN]) == 0.19
+  distance([line1.start, line1.end]) == 0.04
+}
+region001 = region(point = [0.4700984in, -0.21in], sketch = sketch001)
+hide(sketch001)
+revolve001 = revolve(region001, angle = 360deg, axis = Y)
+  |> appearance(color = "#ededed", opacity = 30)
+
+// Model a bore with the same outer diameter as the housing, which will be used for cutting the exterior ports to shape
+sketch002 = sketch(on = XZ) {
+  circle1 = circle(start = [var -1.18in, var 0.92in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == 3 / 2
+}
+hide(sketch002)
+region002 = region(point = [0in, 0in], sketch = sketch002)
+
+extrude002 = extrude(region002, length = 2, symmetric = true)
+
+// Model the two exterior bungs
+sketch003 = sketch(on = -YZ) {
+  line1 = line(start = [var 0in, var 0in], end = [var -0.3in, var -0.1in], construction = true)
+  coincident([line1.start, ORIGIN])
+  line2 = line(start = [var 0in, var 0in], end = [var 0.3in, var 0.1in], construction = true)
+  coincident([line2.start, line1.start])
+  coincident([line2, line1])
+  equalLength([line2, line1])
+  circle1 = circle(start = [var 0.44in, var 0.03in], center = [var 0.3in, var 0.1in])
+  coincident([circle1.center, line2.end])
+  circle2 = circle(start = [var -0.15in, var -0.15in], center = [var -0.3in, var -0.1in])
+  coincident([circle2.center, line1.end])
+  circle3 = circle(start = [var -0.17in, var -0.14in], center = [var -0.3in, var -0.1in])
+  coincident([circle3.center, line1.end])
+  circle4 = circle(start = [var 0.3in, var -0.04in], center = [var 0.3in, var 0.1in])
+  coincident([circle4.center, line2.end])
+  equalRadius([circle2, circle1])
+  equalRadius([circle4, circle3])
+  radius(circle1) == .2
+  radius(circle4) == .17
+  horizontalDistance([circle3.center, circle4.center]) == .75
+  verticalDistance([circle3.center, circle4.center]) == .2
+}
+hide(sketch003)
+
+region003 = region(point = [-0.5707679in, -0.0595579in], sketch = sketch003)
+region004 = region(point = [0.2134512in, 0.2177397in], sketch = sketch003)
+
+extrude001 = extrude([region003, region004], length = 1.8)
+  |> appearance(color = "#ededed", opacity = 30)
+
+  // Rotate the outlet bungs into position, then cut so they fit the housing
+  |> rotate(pitch = 45, global = true)
+  |> subtract(tools = extrude002)
+
+// Model a pocket on the front face of the housing
+sketch004 = sketch(on = offsetPlane(XZ, offset = 0.73)) {
+  arc1 = arc(start = [var -0.13in, var 1.27in], end = [var -1.27in, var -0.18in], center = [var 0in, var 0in])
+  coincident([arc1.center, ORIGIN])
+  arc2 = arc(start = [var 0.91in, var -1.04in], end = [var 1.28in, var -0.5in], center = [var 0in, var 0in])
+  coincident([arc2.center, arc1.center])
+  coincident([arc2.start, arc2.start])
+  arc3 = arc(start = [var 0.05in, var 1.2in], end = [var -0.13in, var 1.27in], center = [var -0.11in, var 1.07in])
+  coincident([arc1.start, arc3.end])
+  tangent([arc1, arc3])
+  arc4 = arc(start = [var 1.28in, var -0.5in], end = [var 1.25in, var -0.31in], center = [var 1.1in, var -0.43in])
+  coincident([arc2.end, arc4.start])
+  tangent([arc2, arc4])
+  arc5 = arc(start = [var 0.7in, var -1.07in], end = [var 0.91in, var -1.04in], center = [var 0.78in, var -0.89in])
+  coincident([arc2.start, arc5.end])
+  tangent([arc2, arc5])
+  arc6 = arc(start = [var -1.27in, var -0.18in], end = [var -1.14in, var -0.34in], center = [var -1.07in, var -0.15in])
+  coincident([arc1.end, arc6.start])
+  tangent([arc1, arc6])
+  line1 = line(start = [var -1.14in, var -0.34in], end = [var 0.7in, var -1.07in])
+  coincident([line1.start, arc6.end])
+  coincident([line1.end, arc5.start])
+  line2 = line(start = [var 1.25in, var -0.31in], end = [var 0.05in, var 1.2in])
+  coincident([line2.start, arc4.end])
+  coincident([line2.end, arc3.start])
+  tangent([line1, arc6])
+  tangent([line1, arc5])
+  tangent([line2, arc4])
+  tangent([line2, arc3])
+  equalRadius([arc5, arc4, arc3, arc6])
+  radius(arc6) == .2
+  radius(arc1) == 1.28in
+  radius(arc2) == 1.38in
+  circle1 = circle(start = [var 0.59in, var -0.15in], center = [var 0in, var 0in])
+  coincident([circle1.center, arc1.center])
+  diameter(circle1) == 1.22in
+}
+hide(sketch004)
+region006 = region(point = [-1.007515in, 0.7893424in], sketch = sketch004)
+
+extrude004 = extrude(region006, length = .02)
+  |> appearance(color = "#ededed", opacity = 30)
+
+// Sketch the path for the front face inlet bung
+sketch005 = sketch(on = XY) {
+  line1 = line(start = [var 0in, var -0.7in], end = [var 0in, var -0.75in])
+  vertical([line1.start, ORIGIN])
+  vertical([line1.end, ORIGIN])
+  verticalDistance([line1.start, ORIGIN]) == 0.7
+  verticalDistance([line1.end, line1.start]) == .05
+  arc1 = arc(start = [var 0in, var -0.75in], end = [var 0.6in, var -1.16in], center = [var 0.47in, var -0.75in])
+  coincident([line1.end, arc1.start])
+  tangent([line1, arc1])
+  arc2 = arc(start = [var 0.91in, var -1.09in], end = [var 0.6in, var -1.16in], center = [var 0.98in, var -2.13in])
+  coincident([arc1.end, arc2.end])
+  tangent([arc1, arc2])
+}
+
+// Model the profile of the front inlet bung, then sweep
+sketch006 = sketch(on = offsetPlane(XZ, offset = 0.7)) {
+  circle1 = circle(start = [var 0.17in, var 0.15in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 0.12in, var 0.09in], center = [var 0in, var 0in])
+  coincident([circle2.center, circle1.center])
+  radius(circle1) == 0.2
+  radius(circle2) == 0.17
+}
+hide(sketch006)
+region005 = region(point = [-0.1498938in, -0.1322592in], sketch = sketch006)
+
+sweep001 = sweep(region005, path = sketch005)
+  |> appearance(color = "#ededed", opacity = 30)
+  |> rotate(pitch = 80)
+
+// Sketch the path for the rear face inlet bung
+sketch007 = sketch(on = XY) {
+  line1 = line(start = [var 0in, var 0.7in], end = [var 0in, var 0.75in])
+  vertical([line1.start, ORIGIN])
+  vertical([line1.end, ORIGIN])
+  arc1 = arc(start = [var 0.53in, var 1.23in], end = [var 0in, var 0.75in], center = [var 0.48in, var 0.75in])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  arc2 = arc(start = [var 0.53in, var 1.23in], end = [var 0.81in, var 1.2in], center = [var 1.32in, var 8.66in])
+  coincident([arc1.start, arc2.start])
+  tangent([arc1, arc2])
+  verticalDistance([ORIGIN, line1.start]) == .7
+  verticalDistance([line1.start, line1.end]) == .05
+  line2 = line(start = [var 0.48in, var 0.75in], end = [var 0.53in, var 1.23in], construction = true)
+  coincident([line2.start, arc1.center])
+  coincident([line2.end, arc2.start])
+  angle([line2, line1]) == 6
+}
+
+// Model the profile of the rear inlet bung, then sweep
+sketch008 = sketch(on = offsetPlane(XZ, offset = -0.7)) {
+  circle1 = circle(start = [var 0.17in, var 0.15in], center = [var 0in, var 0in])
+  coincident([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 0.12in, var 0.09in], center = [var 0in, var 0in])
+  coincident([circle2.center, circle1.center])
+  radius(circle1) == 0.2
+  radius(circle2) == 0.17
+}
+hide(sketch008)
+region008 = region(point = [-0.1498938in, -0.1322592in], sketch = sketch008)
+
+sweep002 = sweep(region008, path = sketch007)
+  |> appearance(color = "#ededed", opacity = 30)
+  |> rotate(pitch = 75)

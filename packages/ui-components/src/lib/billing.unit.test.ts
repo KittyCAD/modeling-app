@@ -163,6 +163,7 @@ test('Finds the credits of Free subscription', async () => {
   if (BillingError.from(billing)) throw billing
   expect(Math.floor(billing.balance)).toEqual(20)
   expect(Math.floor(billing.allowance!)).toEqual(20)
+  expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
   expect(billing.hasSubscription).toBe(false)
   expect(billing.isOrg).toBe(false)
 })
@@ -194,6 +195,7 @@ test('Finds the credits of Plus subscription', async () => {
   if (BillingError.from(billing)) throw billing
   expect(Math.floor(billing.balance)).toEqual(100)
   expect(Math.floor(billing.allowance!)).toEqual(100)
+  expect(billing.payAsYouGoApiCreditPrice).toEqual(0.0083)
   expect(billing.hasSubscription).toBe(true)
   expect(billing.isOrg).toBe(false)
 })

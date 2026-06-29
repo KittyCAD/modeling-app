@@ -2,10 +2,6 @@ import { type MlToolResult } from '@kittycad/lib'
 import { useApp } from '@src/lib/boot'
 import type { FileEntry } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import {
-  type BillingActor,
-  BillingTransition,
-} from '@src/machines/billingMachine'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   type RequestedKCLFileDelete,
@@ -110,13 +106,12 @@ export interface MlEphantNewFileRequestProps {
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
   filesToDelete?: RequestedKCLFileDelete[]
+  exchangeId?: number
 }
 
 // Watch MlEphant for any responses that require files to be created.
 export const useWatchForNewFileRequestsFromMlEphant = (
   mlEphantManagerActor: MlEphantManagerActor,
-  billingActor: BillingActor,
-  token: string,
   engineCommandManager: ConnectionManager,
   fn: (props: MlEphantNewFileRequestProps) => void
 ) => {
@@ -156,12 +151,7 @@ export const useWatchForNewFileRequestsFromMlEphant = (
         filesToDelete: Array.from(fileNamesToDelete, (requestedFileName) => ({
           requestedFileName,
         })),
-      })
-
-      // TODO: Move elsewhere eventually, decouple from SystemIOActor
-      billingActor.send({
-        type: BillingTransition.Update,
-        apiToken: token,
+        exchangeId: exchanges.length - 1,
       })
 
       // Clear selections since new model

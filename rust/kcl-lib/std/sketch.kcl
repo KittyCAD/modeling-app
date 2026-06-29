@@ -1744,18 +1744,65 @@ export fn polygon(
 /// path = [sketch002.line1, sketch002.arc1]
 /// sweep(sketch001.line2, path, bodyType = SURFACE)
 /// ```
+/// ```kcl,sketchSolve
+/// // Demonstrates a sweep from a face
+/// sketch001 = sketch(on = XY) {
+///   line1 = line(start = [var -5mm, var 3mm], end = [var 5mm, var 3mm])
+///   line2 = line(start = [var 5mm, var 3mm], end = [var 5mm, var 0mm])
+///   line3 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+///   line4 = line(start = [var -5mm, var 0mm], end = [var -5mm, var 3mm])
+///   coincident([line1.end, line2.start])
+///   coincident([line2.end, line3.start])
+///   coincident([line3.end, line4.start])
+///   coincident([line4.end, line1.start])
+///   parallel([line2, line4])
+///   parallel([line3, line1])
+///   perpendicular([line1, line2])
+///   horizontal(line3)
+/// }
+/// hidden001 = hide(sketch001)
+/// region001 = region(point = [0mm, 2.9975mm], sketch = sketch001)
+/// extrude001 = extrude(region001, length = 5, tagEnd = $capFace)
+/// sketch002 = sketch(on = XZ) {
+///   line1 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 12mm])
+///   vertical([line1.start, ORIGIN])
+///   vertical([line1.end, ORIGIN])
+///   arc1 = arc(start = [var 10mm, var 20mm], end = [var 0mm, var 12mm], center = [var 7mm, var 12mm])
+///   coincident([line1.end, arc1.end])
+///   tangent([line1, arc1])
+///   arc2 = arc(start = [var 10mm, var 20mm], end = [var 10mm, var 34mm], center = [var 13mm, var 27mm])
+///   coincident([arc1.start, arc2.start])
+///   tangent([arc1, arc2])
+/// }
+/// 
+/// // sweep the tagged face
+/// sweep(capFace, path = sketch002)
+/// |> appearance(color = "#ff00aa")
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn sweep(
   /// The sketch or set of sketches that should be swept in space.
-  @sketches: [Sketch | Segment; 1+],
+  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   /// The path to sweep the sketch along.
   path: Sketch | Helix | [Segment; 1+],
   /// If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components.
   sectional?: bool,
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
+  /// Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead.
   /// What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'.
+  @(deprecated = true)
   relativeTo?: string = 'trajectoryCurve',
+  /// If true, the profile being swept will be moved to the path being swept along,
+  /// before the sweep starts.
+  /// If false, the profile stays where it is, and the sweep starts from there.
+  /// Defaults to false.
+  translateProfileToPath?: bool = false,
+  /// If true, before the sweep starts, the profile will be re-oriented
+  /// so that it is perpendicular to the path being swept along.
+  /// If false, the profile is left in its current orientation.
+  /// Defaults to false.
+  orientProfilePerpendicular?: bool = false,
   /// A named tag for the face at the start of the sweep, i.e. the original sketch.
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.

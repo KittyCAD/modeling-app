@@ -28,6 +28,7 @@ export const DEFAULT_KCL_VERSION = '2.0'
 export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
   'sketch_experimental_features'
+export const OPFS_CLOUD_FEATURE_FLAG: UserFeature = 'web_app_file_browser'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -156,6 +157,7 @@ export const KCL_DEFAULT_LEADER_SCALE = `1.0`
 export const KCL_DEFAULT_FONT_SIZE = `10mm`
 
 export const SETTINGS_FILE_NAME = 'settings.toml'
+export const KEYMAP_FILE_NAME = 'keymap.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
 export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
@@ -210,6 +212,9 @@ export const ONBOARDING_TOAST_ID = 'onboarding-toast'
 
 /** Toast id for the wasm init err toast on web */
 export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
+
+/** Toast id for the changes requested banner */
+export const CHANGES_REQUESTED_TOAST_ID = 'changes-requested-toast'
 
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'

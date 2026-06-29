@@ -17,6 +17,7 @@ import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { describe, expect, it, vi } from 'vitest'
 import { commandsExtension } from '.'
+import { APP_COMMAND_IDS, appCommands } from './appCommands'
 import { TOOLBAR_COMMAND_IDS, toolbarCommands } from './toolbarCommands'
 
 function createCommandBarContext({
@@ -86,6 +87,16 @@ describe('commands extension', () => {
   it('provides toolbar commands for keymap-backed tool selection', () => {
     expect(toolbarCommands.map((command) => command.id)).toContain(
       TOOLBAR_COMMAND_IDS.sketchSolve.vertical
+    )
+  })
+
+  it('provides an app command for every app command id', () => {
+    const appCommandIds = Object.values(APP_COMMAND_IDS).flatMap((group) =>
+      Object.values(group)
+    )
+
+    expect(appCommands.map((command) => command.id).toSorted()).toEqual(
+      appCommandIds.toSorted()
     )
   })
 
@@ -254,5 +265,44 @@ describe('commands extension', () => {
     ])
 
     registry[Symbol.dispose]()
+  })
+
+  it('runs select all in current sketch from keymaps outside legacy sketch state', () => {
+    const sentEvents: unknown[] = []
+    const kclManager = {
+      modelingState: {
+        matches: () => false,
+      },
+      artifactGraph: new Map(),
+      sceneEntitiesManager: {
+        activeSegments: {},
+      },
+      sendModelingEvent: (event: unknown) => {
+        sentEvents.push(event)
+        return true
+      },
+    } as unknown as KclManager
+    const command = appCommands.find(
+      (candidate) =>
+        candidate.id === APP_COMMAND_IDS.modeling.selectAllInCurrentSketch
+    )
+
+    expect(command).toBeDefined()
+    command?.onSubmit({
+      context: { kclManager } as CommandBarContext,
+    })
+
+    expect(sentEvents).toEqual([
+      {
+        type: 'Set selection',
+        data: {
+          selectionType: 'completeSelection',
+          selection: {
+            graphSelections: [],
+            otherSelections: [],
+          },
+        },
+      },
+    ])
   })
 })

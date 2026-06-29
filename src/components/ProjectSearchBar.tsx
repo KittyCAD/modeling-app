@@ -1,10 +1,11 @@
+import { useSignalEffect } from '@preact/signals-react'
 import Fuse from 'fuse.js'
 import { useEffect, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import type { Project } from '@src/lib/project'
+import { projectSearchFocusRequest } from '@src/lib/searchFocusRequests'
 
 export function useProjectSearch(projects: Project[] | undefined) {
   const [query, setQuery] = useState('')
@@ -33,26 +34,21 @@ export function useProjectSearch(projects: Project[] | undefined) {
 
 export function ProjectSearchBar({
   setQuery,
+  keybinding,
 }: {
   setQuery: (query: string) => void
+  keybinding?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  useHotkeys(
-    'Ctrl+.',
-    (event) => {
-      event.preventDefault()
-      inputRef.current?.focus()
-    },
-    { enableOnFormTags: true }
-  )
-  useHotkeys(
-    'mod+f',
-    (event) => {
-      event.preventDefault()
-      inputRef.current?.focus()
-    },
-    { enableOnFormTags: true }
-  )
+  const lastHandledFocusRequest = useRef(projectSearchFocusRequest.value)
+  useSignalEffect(() => {
+    const request = projectSearchFocusRequest.value
+    if (request === lastHandledFocusRequest.current) {
+      return
+    }
+    lastHandledFocusRequest.current = request
+    inputRef.current?.focus()
+  })
 
   return (
     <div className="relative group">
@@ -66,7 +62,9 @@ export function ProjectSearchBar({
           ref={inputRef}
           onChange={(event) => setQuery(event.target.value)}
           className="w-full text-sm bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-          placeholder="Search projects (Ctrl+.)"
+          placeholder={
+            keybinding ? `Search projects (${keybinding})` : 'Search projects'
+          }
         />
       </div>
     </div>

@@ -2,7 +2,10 @@ import { join } from 'node:path'
 import { bracket } from '@e2e/playwright/fixtures/bracket'
 import { FILE_EXT } from '@src/lib/constants'
 
-import { getUtils } from '@e2e/playwright/test-utils'
+import {
+  closeOnboardingModalIfPresent,
+  getUtils,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -137,6 +140,8 @@ test.describe('Query parameter command', { tag: '@web' }, () => {
     toolbar,
     editor,
   }) => {
+    await closeOnboardingModalIfPresent(page)
+
     const sampleTitle = 'Socket Head Cap Screw'
     const sampleSlug = 'socket-head-cap-screw'
     const queryString = `?cmd=add-kcl-file-to-project&groupId=application&projectName=browser&source=kcl-samples&sample=${sampleSlug}/main.kcl`

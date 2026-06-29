@@ -83,6 +83,7 @@ export interface IBillingInfo {
   balance: number
   allowance?: number
   userPaymentBalance?: CustomerBalance
+  payAsYouGoApiCreditPrice?: number
   isOrg: boolean
   hasSubscription: boolean
 }
@@ -166,11 +167,15 @@ export async function getBillingInfo(
     { client }
   )
   const hasOrgError = BillingError.from(org)
+  const payAsYouGoApiCreditPrice = BillingError.from(subscriptions)
+    ? undefined
+    : subscriptions.modeling_app.pay_as_you_go_api_credit_price
 
   if (!hasOrgError) {
     return {
       balance: Number.POSITIVE_INFINITY,
       userPaymentBalance: billing,
+      payAsYouGoApiCreditPrice,
       isOrg: true,
       hasSubscription: true,
     }
@@ -243,6 +248,7 @@ export async function getBillingInfo(
     balance,
     allowance,
     userPaymentBalance: billing,
+    payAsYouGoApiCreditPrice: ratioSec,
     hasSubscription,
     isOrg,
   }

@@ -383,7 +383,9 @@ export function findAllPreviousVariablesPath(
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declaration.id.name
     const varValue = memVars[varName]
-    if (!varValue || typeof varValue?.value !== type) return
+    if (!varValue || !('value' in varValue) || typeof varValue.value !== type) {
+      return
+    }
     variables.push({
       key: varName,
       value: varValue.value,
@@ -2327,6 +2329,56 @@ export function getSketchSegmentNameFromSourceSurface(
   }
 
   return null
+}
+
+export function getRegionSketchTagExprFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  segmentArtifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (!sweepInput || sweepInput.type !== 'Name') {
+    return null
+  }
+
+  const segmentId =
+    segmentArtifact.type === 'segment'
+      ? segmentArtifact.id
+      : segmentArtifact.type === 'sweepEdge'
+        ? segmentArtifact.segId
+        : segmentArtifact.type === 'wall'
+          ? segmentArtifact.segId
+          : null
+  if (!segmentId) {
+    return null
+  }
+
+  return getRegionTagExprFromSegmentId(
+    ast,
+    segmentId,
+    artifactGraph,
+    wasmInstance,
+    sweepInput.name.name
+  )
 }
 
 /**

@@ -292,6 +292,13 @@ export class ToolbarFixture {
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
   }
+  selectGdtFlatness = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down gdt: open menu' })
+      .click()
+    await expect(this.page.getByTestId('dropdown-gdt-flatness')).toBeVisible()
+    await this.page.getByTestId('dropdown-gdt-flatness').click()
+  }
 
   selectCircleThreePoint = async () => {
     await this.page.getByRole('button', { name: 'caret down circles:' }).click()

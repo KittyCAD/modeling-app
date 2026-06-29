@@ -13,6 +13,7 @@ describe('FileExplorer', () => {
           isRenaming={false}
           isCopying={false}
           isDeleting={false}
+          isInteractionDisabled={false}
           onDeleteEnd={() => {}}
         />
       )

@@ -416,6 +416,7 @@ fn generate_function_from_kcl(
                         .unwrap_or_default(),
                 "required": arg.kind.required(),
                 "experimental": arg.experimental,
+                "deprecated": arg.deprecated,
                 "deprecated_since": arg.deprecated_since.as_ref().map(ToString::to_string),
             })
         })

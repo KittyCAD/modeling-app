@@ -1,8 +1,11 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
+use kcl_api::Group;
+use kcl_api::OpArg;
 
 use crate::CompilationIssue;
 use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -18,10 +21,8 @@ use crate::execution::StatementKind;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
-use crate::execution::cad_op::Group;
-use crate::execution::cad_op::OpArg;
-use crate::execution::cad_op::OpKclValue;
 use crate::execution::cad_op::Operation;
+use crate::execution::cad_op::op_from_kcl_value;
 use crate::execution::control_continue;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
@@ -319,6 +320,7 @@ impl FunctionSource {
         }
 
         let args = type_check_params_kw(fn_name.as_deref(), self, args, exec_state)?;
+        let face_tag_names = face_tag_names_for_call(self, &args);
 
         // Warn if experimental or deprecated arguments are used after desugaring.
         for (label, arg) in &args.labeled {
@@ -334,20 +336,26 @@ impl FunctionSource {
                     arg.source_range,
                 );
             }
-            if let Some(since) = &param.deprecated_since
+            // `deprecated` deprecates the parameter for all versions, whereas
+            // `deprecated_since` only deprecates it at or after a given version.
+            let deprecation_suffix = if param.deprecated {
+                Some("is deprecated, see the docs for a recommended replacement".to_owned())
+            } else if let Some(since) = &param.deprecated_since
                 && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
             {
+                Some(format!(
+                    "is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                ))
+            } else {
+                None
+            };
+            if let Some(suffix) = deprecation_suffix {
                 let qualified = match &fn_name {
                     Some(f) => format!("`{f}({label})`"),
                     None => format!("`{label}`"),
                 };
                 exec_state.warn(
-                    CompilationIssue::err(
-                        arg.source_range,
-                        format!(
-                            "{qualified} is deprecated as of KCL {since}. See the docs for a recommended replacement."
-                        ),
-                    ),
+                    CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}")),
                     annotations::WARN_DEPRECATED,
                 );
             }
@@ -374,7 +382,7 @@ impl FunctionSource {
             let op_labeled_args = args
                 .labeled
                 .iter()
-                .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                .map(|(k, arg)| (k.clone(), OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)))
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
@@ -383,7 +391,7 @@ impl FunctionSource {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
                         .unlabeled_kw_arg_unconverted()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
                     node_path: NodePath::placeholder(),
                     source_range: callsite,
@@ -398,7 +406,7 @@ impl FunctionSource {
                         function_source_range: self.ast.as_source_range(),
                         unlabeled_arg: args
                             .unlabeled_kw_arg_unconverted()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                     },
                     node_path: NodePath::placeholder(),
@@ -502,6 +510,9 @@ impl FunctionSource {
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
+            if !face_tag_names.is_empty() {
+                attach_face_tags_to_geometry(result, exec_state, &face_tag_names);
+            }
         }
 
         coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
@@ -550,6 +561,99 @@ fn originates_from_sketch_block(value: &KclValue) -> bool {
     }
 }
 
+fn face_tag_names_for_call(fn_def: &FunctionSource, args: &Args<Desugared>) -> Vec<String> {
+    let Some(std_props) = &fn_def.std_props else {
+        return Vec::new();
+    };
+
+    if !std_function_allows_face_tags(&std_props.name) {
+        return Vec::new();
+    }
+
+    args.labeled
+        .iter()
+        .filter(|(label, _)| matches!(label.as_str(), "tag" | "tagStart" | "tagEnd"))
+        .filter_map(|(_, arg)| match &arg.value {
+            KclValue::TagDeclarator(tag) => Some(tag.name.clone()),
+            _ => None,
+        })
+        .collect()
+}
+
+fn std_function_allows_face_tags(std_fn_name: &str) -> bool {
+    matches!(
+        std_fn_name,
+        "std::sketch::extrude"
+            | "std::solid::chamfer"
+            | "std::solid::fillet"
+            | "std::sketch::sweep"
+            | "std::sketch::loft"
+            | "std::sketch::revolve"
+    )
+}
+
+fn attach_face_tags_to_geometry(result: &mut KclValue, exec_state: &ExecState, tag_names: &[String]) {
+    match result {
+        KclValue::Solid { value } => attach_face_tags_to_solid(value, exec_state, tag_names),
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+            for v in value {
+                attach_face_tags_to_geometry(v, exec_state, tag_names);
+            }
+        }
+        _ => {}
+    }
+}
+
+fn attach_face_tags_to_solid(solid: &mut Solid, exec_state: &ExecState, tag_names: &[String]) {
+    let surfaces = solid.value.clone();
+    for surface in surfaces {
+        let Some(tag) = surface.get_tag() else {
+            continue;
+        };
+        if !tag_names.iter().any(|tag_name| tag_name == &tag.name) {
+            continue;
+        }
+
+        let tag_id = solid
+            .sketch()
+            .and_then(|sketch| sketch.tags.get(&tag.name))
+            .cloned()
+            .unwrap_or_else(|| {
+                let mut solid_copy = solid.clone();
+                clear_tags_from_solid_copy(&mut solid_copy);
+                TagIdentifier {
+                    value: tag.name.clone(),
+                    info: vec![(
+                        exec_state.stack().current_epoch(),
+                        TagEngineInfo {
+                            id: surface.get_id(),
+                            surface: Some(surface.clone()),
+                            path: None,
+                            geometry: Geometry::Solid(solid_copy),
+                        },
+                    )],
+                    meta: vec![Metadata {
+                        source_range: tag.clone().into(),
+                    }],
+                }
+            });
+
+        match solid.faces.get_mut(&tag.name) {
+            Some(existing_tag) => existing_tag.merge_info(&tag_id),
+            None => {
+                solid.faces.insert(tag.name.clone(), tag_id);
+            }
+        }
+    }
+}
+
+fn clear_tags_from_solid_copy(solid: &mut Solid) {
+    if let Some(sketch) = solid.sketch_mut() {
+        sketch.tags.clear(); // Avoid recursive tags.
+    }
+    solid.faces.clear();
+}
+
 fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut ExecState) -> Result<(), KclError> {
     let is_sketch_block = originates_from_sketch_block(&*result);
     // If the return result is a sketch or solid, we want to update the
@@ -590,9 +694,7 @@ fn update_memory_for_tags_of_geometry(result: &mut KclValue, exec_state: &mut Ex
                 return Ok(());
             };
             for (v, mut solid_copy) in surfaces.iter().zip(solid_copies) {
-                if let Some(sketch) = solid_copy.sketch_mut() {
-                    sketch.tags.clear(); // Avoid recursive tags.
-                }
+                clear_tags_from_solid_copy(&mut solid_copy);
                 if let Some(tag) = v.get_tag() {
                     // Get the past tag and update it.
                     let mut is_part_of_sketch = false;
@@ -902,6 +1004,7 @@ fn type_check_params_kw(
         match fn_def.named_args.get(&label) {
             Some(NamedParam {
                 experimental: _,
+                deprecated: _,
                 deprecated_since: _,
                 default_value: def,
                 ty,
@@ -1074,16 +1177,80 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
+    use crate::engine::engine_manager::EngineManager;
+    use crate::errors::Severity;
     use crate::execution::ContextType;
     use crate::execution::EnvironmentRef;
+    use crate::execution::ExecTestResults;
     use crate::execution::memory::Stack;
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::parsing::ast::types::DefaultParamVal;
     use crate::parsing::ast::types::FunctionExpression;
     use crate::parsing::ast::types::Identifier;
     use crate::parsing::ast::types::Parameter;
     use crate::parsing::ast::types::Program;
+
+    fn get_var(result: &ExecTestResults, name: &str) -> KclValue {
+        result
+            .exec_state
+            .stack()
+            .memory
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
+            .unwrap_or_else(|err| panic!("expected variable `{name}` to exist: {err:?}"))
+    }
+
+    fn var_exists(result: &ExecTestResults, name: &str) -> bool {
+        result
+            .exec_state
+            .stack()
+            .memory
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
+            .is_ok()
+    }
+
+    fn assert_vars_are_tags(result: &ExecTestResults, names: &[&str]) {
+        for name in names {
+            assert!(
+                matches!(get_var(result, name), KclValue::TagIdentifier(_)),
+                "expected variable `{name}` to be a tag identifier"
+            );
+        }
+    }
+
+    fn assert_vars_are_missing(result: &ExecTestResults, names: &[&str]) {
+        for name in names {
+            assert!(!var_exists(result, name), "expected variable `{name}` to be absent");
+        }
+    }
+
+    fn assert_body_face_tags(result: &ExecTestResults, expected: &[&str], unexpected: &[&str]) {
+        let body = get_var(result, "body");
+        let KclValue::Solid { value: body } = body else {
+            panic!("expected `body` to be a solid");
+        };
+
+        for tag in expected {
+            assert!(body.faces.contains_key(*tag), "expected body.faces to contain `{tag}`");
+        }
+
+        for tag in unexpected {
+            assert!(
+                !body.faces.contains_key(*tag),
+                "expected body.faces not to contain sketch tag `{tag}`"
+            );
+        }
+    }
+
+    fn deprecated_solid_tag_access_warnings(result: &ExecTestResults) -> Vec<&CompilationIssue> {
+        result
+            .exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.message.contains("Accessing solid-created face"))
+            .collect()
+    }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn test_assign_args_to_params() {
@@ -1104,6 +1271,7 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated: false,
                 deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
@@ -1115,6 +1283,7 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated: false,
                 deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
@@ -1209,7 +1378,7 @@ mod test {
                 })
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
-                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine: Arc::new(EngineManager::new_mock()),
                 engine_batch: crate::engine::EngineBatchContext::default(),
                 fs: Arc::new(crate::fs::FileManager::new()),
                 settings: Default::default(),
@@ -1274,5 +1443,426 @@ f([1, 2, 3])
 f(1, 2, 3)
 "#;
         parse_execute(ast).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_tagged_body_gets_face_tags_and_keeps_legacy_bindings() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+region1 = region(point = [5mm, 5mm], sketch = profile)
+
+body = extrude(region1, length = 5mm, tagStart = $bottom, tagEnd = $top)
+bottomFromBody = body.faces.bottom
+topFromBody = body.faces.top
+lineFromSketch = region1.tags.line1
+legacyBottom = bottom
+legacyTop = top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["bottom", "top"], &["line1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "bottom",
+                "top",
+                "bottomFromBody",
+                "topFromBody",
+                "lineFromSketch",
+                "legacyBottom",
+                "legacyTop",
+            ],
+        );
+        assert_vars_are_missing(&result, &["line1"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_without_tag_arguments_does_not_get_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  line2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  line3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  line4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+region1 = region(point = [5mm, 5mm], sketch = profile)
+
+body = extrude(region1, length = 5mm)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let body = get_var(&result, "body");
+        let KclValue::Solid { value: body } = body else {
+            panic!("expected `body` to be a solid");
+        };
+
+        assert!(
+            body.faces.is_empty(),
+            "body faces should only be populated for tagged calls"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn revolve_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  side = line(start = [var 5mm, var 0mm], end = [var 5mm, var 10mm])
+  line2 = line(start = [var 5mm, var 10mm], end = [var 6mm, var 10mm])
+  line3 = line(start = [var 6mm, var 10mm], end = [var 6mm, var 0mm])
+  line4 = line(start = [var 6mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([side.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, side.start])
+}
+region1 = region(point = [5.5mm, 5mm], sketch = profile)
+
+body = revolve(region1, axis = Y, angle = 90deg, tagStart = $startCap, tagEnd = $endCap)
+startFromBody = body.faces.startCap
+endFromBody = body.faces.endCap
+sideFromSketch = region1.tags.side
+legacyStart = startCap
+legacyEnd = endCap
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["startCap", "endCap"], &["side"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "startCap",
+                "endCap",
+                "startFromBody",
+                "endFromBody",
+                "sideFromSketch",
+                "legacyStart",
+                "legacyEnd",
+            ],
+        );
+        assert_vars_are_missing(&result, &["side"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sweep_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XZ) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 0mm])
+  edge2 = line(start = [var 2mm, var 0mm], end = [var 2mm, var 2mm])
+  edge3 = line(start = [var 2mm, var 2mm], end = [var 0mm, var 2mm])
+  edge4 = line(start = [var 0mm, var 2mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [1mm, 1mm], sketch = profile)
+
+pathSketch = sketch(on = offsetPlane(YZ, offset = -2mm)) {
+  pathLine = line(start = [var 0mm, var 0mm], end = [var 0mm, var 5mm])
+}
+
+body = sweep(profileRegion, path = pathSketch.pathLine, tagStart = $startCap, tagEnd = $endCap)
+startFromBody = body.faces.startCap
+endFromBody = body.faces.endCap
+edgeFromSketch = profileRegion.tags.edge1
+pathFromSketch = pathSketch.pathLine
+legacyStart = startCap
+legacyEnd = endCap
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["startCap", "endCap"], &["edge1", "pathLine"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "startCap",
+                "endCap",
+                "startFromBody",
+                "endFromBody",
+                "edgeFromSketch",
+                "legacyStart",
+                "legacyEnd",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1", "pathLine"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn loft_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+lowerProfile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 6mm, var 0mm])
+  edge2 = line(start = [var 6mm, var 0mm], end = [var 6mm, var 4mm])
+  edge3 = line(start = [var 6mm, var 4mm], end = [var 0mm, var 4mm])
+  edge4 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+lowerRegion = region(point = [3mm, 2mm], sketch = lowerProfile)
+
+upperProfile = sketch(on = offsetPlane(XY, offset = 8mm)) {
+  edge5 = line(start = [var 1mm, var 1mm], end = [var 5mm, var 1mm])
+  edge6 = line(start = [var 5mm, var 1mm], end = [var 4mm, var 3mm])
+  edge7 = line(start = [var 4mm, var 3mm], end = [var 2mm, var 3mm])
+  edge8 = line(start = [var 2mm, var 3mm], end = [var 1mm, var 1mm])
+  coincident([edge5.end, edge6.start])
+  coincident([edge6.end, edge7.start])
+  coincident([edge7.end, edge8.start])
+  coincident([edge8.end, edge5.start])
+}
+upperRegion = region(point = [3mm, 2mm], sketch = upperProfile)
+
+body = loft([lowerRegion, upperRegion], tagStart = $startCap, tagEnd = $endCap)
+startFromBody = body.faces.startCap
+endFromBody = body.faces.endCap
+edgeFromSketch = lowerRegion.tags.edge1
+legacyStart = startCap
+legacyEnd = endCap
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["startCap", "endCap"], &["edge1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "startCap",
+                "endCap",
+                "startFromBody",
+                "endFromBody",
+                "edgeFromSketch",
+                "legacyStart",
+                "legacyEnd",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn chamfer_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+
+base = extrude(profileRegion, length = 5mm, tagEnd = $top)
+body = chamfer(base, tags = getCommonEdge(faces = [profileRegion.tags.edge1, top]), length = 1mm, tag = $chamferFace)
+chamferFromBody = body.faces.chamferFace
+topFromBody = body.faces.top
+edgeFromSketch = profileRegion.tags.edge1
+legacyChamfer = chamferFace
+legacyTop = top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["top", "chamferFace"], &["edge1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "top",
+                "chamferFace",
+                "chamferFromBody",
+                "topFromBody",
+                "edgeFromSketch",
+                "legacyChamfer",
+                "legacyTop",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn fillet_tagged_body_gets_face_tags() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  edge3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  edge4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([edge1.end, edge2.start])
+  coincident([edge2.end, edge3.start])
+  coincident([edge3.end, edge4.start])
+  coincident([edge4.end, edge1.start])
+}
+profileRegion = region(point = [5mm, 5mm], sketch = profile)
+
+base = extrude(profileRegion, length = 5mm, tagEnd = $top)
+body = fillet(base, tags = getCommonEdge(faces = [profileRegion.tags.edge1, top]), radius = 1mm, tag = $filletFace)
+filletFromBody = body.faces.filletFace
+topFromBody = body.faces.top
+edgeFromSketch = profileRegion.tags.edge1
+legacyFillet = filletFace
+legacyTop = top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert_body_face_tags(&result, &["top", "filletFace"], &["edge1"]);
+        assert_vars_are_tags(
+            &result,
+            &[
+                "top",
+                "filletFace",
+                "filletFromBody",
+                "topFromBody",
+                "edgeFromSketch",
+                "legacyFillet",
+                "legacyTop",
+            ],
+        );
+        assert_vars_are_missing(&result, &["edge1"]);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn accessing_body_tag_through_body_sketch_tags_warns() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $line1)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = extrude(profile, length = 5, tagEnd = $top)
+topFromSketch = body.sketch.tags.top
+topFromBody = body.faces.top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(matches!(get_var(&result, "topFromSketch"), KclValue::TagIdentifier(_)));
+        assert!(matches!(get_var(&result, "topFromBody"), KclValue::TagIdentifier(_)));
+
+        let warnings = deprecated_solid_tag_access_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
+        assert!(
+            warnings[0].message.contains("Accessing solid-created face `top` through sketch tags is deprecated. Use the body's faces instead, e.g. `body.faces.top`."),
+            "found {}",
+            warnings[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn accessing_sketch_path_tag_through_body_sketch_tags_does_not_warn() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [10, 0], tag = $line1)
+  |> line(end = [0, 10])
+  |> line(end = [-10, 0])
+  |> close()
+
+body = extrude(profile, length = 5, tagEnd = $top)
+lineFromSketch = body.sketch.tags.line1
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(matches!(get_var(&result, "lineFromSketch"), KclValue::TagIdentifier(_)));
+        let warnings = deprecated_solid_tag_access_warnings(&result);
+        assert!(
+            warnings.is_empty(),
+            "sketch path tags should not get body-tag deprecation warnings: {warnings:#?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn accessing_body_tag_through_sketch_block_region_tags_warns() {
+        let program = r#"@settings(kclVersion = 2.0)
+profile = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [10, 0])
+  line2 = line(start = [10, 0], end = [10, 10])
+  line3 = line(start = [10, 10], end = [0, 10])
+  line4 = line(start = [0, 10], end = [0, 0])
+}
+
+profileRegion = region(point = [1, 1], sketch = profile)
+body = extrude(profileRegion, length = 5, tagEnd = $top)
+topFromRegion = profileRegion.tags.top
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        assert!(matches!(get_var(&result, "topFromRegion"), KclValue::TagIdentifier(_)));
+
+        let warnings = deprecated_solid_tag_access_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
+    }
+
+    fn deprecation_warnings(result: &ExecTestResults) -> Vec<&CompilationIssue> {
+        result
+            .exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.message.contains("is deprecated"))
+            .collect()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_param_deprecated_for_all_versions_warns() {
+        // `@(deprecated = true)` deprecates the parameter regardless of the KCL
+        // version, so even on the latest version the call should warn.
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @a: number,
+  @(deprecated = true)
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1, oldArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert!(
+            warnings[0].message.contains("`f(oldArg)` is deprecated"),
+            "found {}",
+            warnings[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_passing_deprecated_param_does_not_warn() {
+        let program = r#"fn f(
+  @a: number,
+  @(deprecated = true)
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert!(
+            warnings.is_empty(),
+            "unused deprecated parameter should not warn: {warnings:#?}"
+        );
     }
 }

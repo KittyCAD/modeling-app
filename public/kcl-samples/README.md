@@ -32,6 +32,8 @@ ex. `just overwrite-sim-test-sample angle-gauge`
 ---
 #### [angle-gauge](angle-gauge/main.kcl) ([screenshot](screenshots/angle-gauge.png))
 [![angle-gauge](screenshots/angle-gauge.png)](angle-gauge/main.kcl)
+#### [artificial-heart](artificial-heart/main.kcl) ([screenshot](screenshots/artificial-heart.png))
+[![artificial-heart](screenshots/artificial-heart.png)](artificial-heart/main.kcl)
 #### [axial-fan](axial-fan/main.kcl) ([screenshot](screenshots/axial-fan.png))
 [![axial-fan](screenshots/axial-fan.png)](axial-fan/main.kcl)
 #### [ball-bearing](ball-bearing/main.kcl) ([screenshot](screenshots/ball-bearing.png))

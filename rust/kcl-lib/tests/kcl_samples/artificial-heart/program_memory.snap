@@ -1,0 +1,22 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing artificial-heart.kcl
+---
+{
+  "__mod_housing": {
+    "type": "Module",
+    "value": 1
+  },
+  "__mod_impeller": {
+    "type": "Module",
+    "value": 3
+  },
+  "__mod_plumbing": {
+    "type": "Module",
+    "value": 4
+  },
+  "__mod_stator": {
+    "type": "Module",
+    "value": 2
+  }
+}

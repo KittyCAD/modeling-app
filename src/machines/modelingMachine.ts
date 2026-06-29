@@ -125,6 +125,7 @@ import {
   addAngularityGdt,
   addAnnotationGdt,
   addCircularityGdt,
+  addConcentricityGdt,
   addCylindricityGdt,
   addDatumGdt,
   addDistanceGdt,
@@ -133,7 +134,9 @@ import {
   addPerpendicularityGdt,
   addPositionGdt,
   addProfileGdt,
+  addRunoutGdt,
   addStraightnessGdt,
+  addSymmetryGdt,
 } from '@src/lang/modifyAst/gdt'
 import {
   addHelicalGear,
@@ -194,7 +197,7 @@ import {
 import type {
   Artifact,
   ArtifactId,
-  KclValue,
+  KclValueView,
   PathToNode,
   PipeExpression,
   Program,
@@ -285,14 +288,20 @@ function findSceneObjectForPlaneSelection(
 
   if (plane.faceInfo.type === 'cap') {
     const capKind = plane.faceInfo.subType
-    return sceneGraphObjects.find(
-      (object) =>
-        object.kind.type === 'Cap' &&
-        object.kind.kind === capKind &&
-        object.source.type === 'BackTrace' &&
-        object.source.ranges.length === 1 &&
-        sourceRangesEqual(object.source.ranges[0][0], sweepRange)
-    )
+    return sceneGraphObjects.find((object) => {
+      if (
+        object.kind.type !== 'Cap' ||
+        object.kind.kind !== capKind ||
+        object.source.type !== 'BackTrace'
+      ) {
+        return false
+      }
+      const sweepSource = object.source.ranges.at(-1)
+      return (
+        sweepSource !== undefined &&
+        sourceRangesEqual(sweepSource[0], sweepRange)
+      )
+    })
   }
 
   const segmentRange = sourceRangeForPath(
@@ -302,14 +311,19 @@ function findSceneObjectForPlaneSelection(
   )
   if (err(segmentRange)) return undefined
 
-  return sceneGraphObjects.find(
-    (object) =>
-      object.kind.type === 'Wall' &&
-      object.source.type === 'BackTrace' &&
-      object.source.ranges.length === 2 &&
-      sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
-      sourceRangesEqual(object.source.ranges[1][0], segmentRange)
-  )
+  return sceneGraphObjects.find((object) => {
+    if (object.kind.type !== 'Wall' || object.source.type !== 'BackTrace') {
+      return false
+    }
+    const sweepSource = object.source.ranges.at(-2)
+    const segmentSource = object.source.ranges.at(-1)
+    return (
+      sweepSource !== undefined &&
+      segmentSource !== undefined &&
+      sourceRangesEqual(sweepSource[0], sweepRange) &&
+      sourceRangesEqual(segmentSource[0], segmentRange)
+    )
+  })
 }
 
 function getSelectedSketchBlockArtifact({
@@ -621,6 +635,18 @@ export type ModelingMachineEvent =
   | {
       type: 'GDT Angularity'
       data: ModelingCommandSchema['GDT Angularity']
+    }
+  | {
+      type: 'GDT Concentricity'
+      data: ModelingCommandSchema['GDT Concentricity']
+    }
+  | {
+      type: 'GDT Symmetry'
+      data: ModelingCommandSchema['GDT Symmetry']
+    }
+  | {
+      type: 'GDT Runout'
+      data: ModelingCommandSchema['GDT Runout']
     }
   | {
       type: 'GDT Parallelism'
@@ -2045,16 +2071,21 @@ export const modelingMachine = setup({
           })
 
           // This turns the selection into blue, needed when selecting with ctrl+A
-          const { updateSceneObjectColors } = handleSelectionBatch({
-            selections: setSelections.selection,
-            artifactGraph: kclManager.artifactGraph,
-            code: kclManager.code,
-            ast: kclManager.ast,
-            systemDeps: {
-              engineCommandManager,
-              sceneEntitiesManager: kclManager.sceneEntitiesManager,
-              wasmInstance,
-            },
+          const { engineEvents, updateSceneObjectColors } =
+            handleSelectionBatch({
+              selections: setSelections.selection,
+              artifactGraph: kclManager.artifactGraph,
+              code: kclManager.code,
+              ast: kclManager.ast,
+              systemDeps: {
+                engineCommandManager,
+                sceneEntitiesManager: kclManager.sceneEntitiesManager,
+                wasmInstance,
+              },
+            })
+
+          engineEvents.forEach((event) => {
+            engineCommandManager.sendSceneCommand(event).catch(reportRejection)
           })
           updateSceneObjectColors()
 
@@ -3761,7 +3792,7 @@ export const modelingMachine = setup({
           artifact?.type === 'segment' || artifact?.type === 'solid2d'
             ? artifact?.pathId
             : plane?.pathIds[0]
-        let sketch: KclValue | null = null
+        let sketch: KclValueView | null = null
         let planeVar: Plane | null = null
 
         for (const variable of Object.values(kclManager.execState.variables)) {
@@ -5832,6 +5863,147 @@ export const modelingMachine = setup({
         )
       }
     ),
+    gdtConcentricityAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Concentricity'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addConcentricityGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtSymmetryAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Symmetry'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addSymmetryGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
+    gdtRunoutAstMod: fromPromise(
+      async ({
+        input,
+      }: {
+        input:
+          | {
+              data: ModelingCommandSchema['GDT Runout'] | undefined
+              kclManager: KclManager
+              rustContext: RustContext
+            }
+          | undefined
+      }) => {
+        if (!input || !input.data) {
+          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
+        }
+
+        const wasmInstance = await input.kclManager.wasmInstancePromise
+
+        const data = await withDefaultGdtFrameDefaults({
+          data: input.data,
+          engineCommandManager: input.kclManager.engineCommandManager,
+          ast: input.kclManager.ast,
+          sourceCode: input.kclManager.code,
+          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
+          wasmInstance,
+        })
+
+        const result = addRunoutGdt({
+          ...data,
+          ast: input.kclManager.ast,
+          artifactGraph: input.kclManager.artifactGraph,
+          wasmInstance,
+        })
+        if (err(result)) {
+          return Promise.reject(result)
+        }
+
+        await updateModelingState(
+          result.modifiedAst,
+          EXECUTION_TYPE_REAL,
+          input.kclManager,
+          {
+            focusPath: [result.pathToNode],
+          }
+        )
+      }
+    ),
     gdtParallelismAstMod: fromPromise(
       async ({
         input,
@@ -6688,6 +6860,18 @@ export const modelingMachine = setup({
 
         'GDT Angularity': {
           target: 'Applying GDT Angularity',
+        },
+
+        'GDT Concentricity': {
+          target: 'Applying GDT Concentricity',
+        },
+
+        'GDT Symmetry': {
+          target: 'Applying GDT Symmetry',
+        },
+
+        'GDT Runout': {
+          target: 'Applying GDT Runout',
         },
 
         'GDT Parallelism': {
@@ -8949,6 +9133,66 @@ export const modelingMachine = setup({
         id: 'gdtAngularityAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Angularity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Concentricity': {
+      invoke: {
+        src: 'gdtConcentricityAstMod',
+        id: 'gdtConcentricityAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Concentricity') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Symmetry': {
+      invoke: {
+        src: 'gdtSymmetryAstMod',
+        id: 'gdtSymmetryAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Symmetry') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Runout': {
+      invoke: {
+        src: 'gdtRunoutAstMod',
+        id: 'gdtRunoutAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Runout') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

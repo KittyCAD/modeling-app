@@ -110,6 +110,7 @@ jobs:
           path: out
           glob: '*'
           parent: false
+          process_gcloudignore: false
           destination: 'dl.kittycad.io/releases/design-studio'
 
       - name: Invalidate bucket cache on latest*.yml and last_download.json files

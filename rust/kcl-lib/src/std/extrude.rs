@@ -176,7 +176,7 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     Ok(result.into())
 }
 
-async fn coerce_extrude_targets(
+pub async fn coerce_extrude_targets(
     sketch_values: Vec<KclValue>,
     body_type: BodyType,
     tag_start: Option<&TagNode>,
@@ -212,9 +212,15 @@ async fn coerce_extrude_targets(
 
     if !segments.is_empty() {
         if !matches!(body_type, BodyType::Surface) {
+            let kind_of_extrude = match body_type {
+                BodyType::Solid => "solid extrude",
+                BodyType::Surface => "surface extrude",
+                _ => "non-surface extrude",
+            };
             return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Extruding sketch segments is only supported for surface extrudes. Set `bodyType = SURFACE`."
-                    .to_owned(),
+                format!(
+                    "You're trying to perform a {kind_of_extrude} on an edge, but edges can only be extruded with surface extrudes. To do a solid extrude, select a closed sketch region instead. To extrude these edges, do a surface extrude by using `bodyType = SURFACE` instead."
+                ),
                 vec![source_range],
             )));
         }
@@ -379,6 +385,15 @@ async fn inner_extrude(
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "You cannot give both `symmetric` and `bidirectional` params, you have to choose one or the other"
                 .to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    if let Some(bidirectional_length) = &bidirectional_length
+        && bidirectional_length.to_mm() < 0.0
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "`bidirectionalLength` must be greater than or equal to 0".to_owned(),
             vec![args.source_range],
         )));
     }
@@ -664,7 +679,7 @@ async fn inner_extrude(
 
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
-            Extrudable::Face(face_tag) => {
+            Extrudable::FaceTag(face_tag) => {
                 let face_id = sketch_or_face_id;
                 let solid_id = match face_tag.geometry() {
                     Some(crate::execution::Geometry::Solid(solid)) => solid.id,
@@ -676,6 +691,10 @@ async fn inner_extrude(
                 };
                 BeingExtruded::Face { face_id, solid_id }
             }
+            Extrudable::Face(face) => BeingExtruded::Face {
+                face_id: face.id,
+                solid_id: face.parent_solid.solid_id,
+            },
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
@@ -730,6 +749,41 @@ pub enum BeingExtruded {
     Face { face_id: Uuid, solid_id: Uuid },
 }
 
+/// Which edge should we use for querying Solid3dGetExtrusionInfo and GetAdjacencyInfo?
+/// It can be any edge of the body, but if our body is a clone, we should use an edge of
+/// the original body, not the new cloned body.
+fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: Option<&HashMap<Uuid, Uuid>>) -> Uuid {
+    // If this isn't a clone, there's no old/new body distinction.
+    // So just use the edge.
+    if sketch.clone.is_none() {
+        return any_edge_id;
+    }
+    let Some(clone_map) = clone_id_map else {
+        return any_edge_id;
+    };
+
+    // clone_map maps old IDs -> new IDs.
+    // If the `any_edge_id` is an ID of the OLD body
+    // (we know this if it's a _key_ of the map)
+    // we should use it (because that's the old body we're querying).
+    if clone_map.contains_key(&any_edge_id) {
+        return any_edge_id;
+    }
+
+    // Otherwise, if the `any_edge_id` is an ID of the NEW body
+    // (we know this if it's a _value_ of the map),
+    // we should query the corresponding ID in the OLD body.
+    // i.e. if it's a hashmap value, find the corresponding key.
+    if let Some((old_edge_id, _)) = clone_map.iter().find(|(_, new_edge_id)| **new_edge_id == any_edge_id) {
+        return *old_edge_id;
+    }
+
+    // Fall back to this if the clone_map doesn't have the data we expect.
+    // Probably will fail in the engine because it means the clone map was built wrong,
+    // or KCL and the engine disagree about what geometry exists.
+    any_edge_id
+}
+
 #[allow(clippy::too_many_arguments)]
 pub(crate) async fn do_post_extrude<'a>(
     sketch: &Sketch,
@@ -771,19 +825,8 @@ pub(crate) async fn do_post_extrude<'a>(
     };
 
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
-    let mut extrusion_info_edge_id = any_edge_id;
-    if sketch.clone.is_some() && clone_id_map.is_some() {
-        extrusion_info_edge_id = if let Some(clone_map) = clone_id_map {
-            if let Some(new_edge_id) = clone_map.get(&extrusion_info_edge_id) {
-                *new_edge_id
-            } else {
-                extrusion_info_edge_id
-            }
-        } else {
-            any_edge_id
-        };
-    }
-
+    // So let's find an edge of the old body.
+    let extrusion_info_edge_id = get_extrusion_info_edge_id(sketch, any_edge_id, clone_id_map);
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
@@ -871,8 +914,8 @@ pub(crate) async fn do_post_extrude<'a>(
                     ModelingCmdMeta::from_args(exec_state, args),
                     ModelingCmd::from(
                         mcmd::Solid3dGetAdjacencyInfo::builder()
-                            .object_id(sketch.id)
-                            .edge_id(any_edge_id)
+                            .object_id(sketch_id)
+                            .edge_id(extrusion_info_edge_id)
                             .build(),
                     ),
                 )
@@ -1022,6 +1065,7 @@ pub(crate) async fn do_post_extrude<'a>(
         value_id: extrude_cmd_id.into(),
         artifact_id: extrude_cmd_id,
         value: new_value,
+        faces: Default::default(),
         meta,
         units,
         sectional,
@@ -1033,7 +1077,7 @@ pub(crate) async fn do_post_extrude<'a>(
     })
 }
 
-#[derive(Default)]
+#[derive(Debug, Default)]
 struct Faces {
     /// Maps curve ID to face ID for each side.
     sides: HashMap<Uuid, Option<Uuid>>,
@@ -1188,13 +1232,15 @@ fn fake_extrude_surface(exec_state: &mut ExecState, path: &Path) -> Option<Extru
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
 
     use super::*;
     use crate::execution::AbstractSegment;
     use crate::execution::Plane;
     use crate::execution::SegmentRepr;
+    use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::front::Expr;
     use crate::front::Number;
     use crate::front::ObjectId;
@@ -1236,6 +1282,28 @@ mod tests {
                 meta: vec![],
             }),
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn extrude_rejects_negative_bidirectional_length_in_mock_exec() {
+        let code = r#"
+profile001 = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(end = [1, 0])
+  |> line(end = [0, 1])
+  |> close()
+
+extrude(profile001, length = 1, bidirectionalLength = -1)
+"#;
+
+        let err = parse_execute(code).await.unwrap_err();
+
+        assert!(matches!(err, KclError::Semantic { .. }), "{err:?}");
+        assert!(
+            err.message()
+                .contains("`bidirectionalLength` must be greater than or equal to 0"),
+            "{err:?}"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]

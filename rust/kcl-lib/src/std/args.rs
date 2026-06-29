@@ -1,9 +1,9 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 use kcmc::shared::BodyType;
-use kcmc::units::UnitAngle;
-use kcmc::units::UnitLength;
 use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
 
@@ -18,6 +18,7 @@ use crate::execution::BoundedEdge;
 use crate::execution::ExecState;
 use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
+use crate::execution::Face;
 use crate::execution::Geometry;
 use crate::execution::Helix;
 use crate::execution::KclObjectFields;
@@ -35,6 +36,7 @@ pub use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::types::NumericSuffixTypeConvertError;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;
@@ -1263,11 +1265,24 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dAxis3dOrGeometryR
     }
 }
 
+impl<'a> FromKclValue<'a> for Box<Face> {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        let KclValue::Face { value } = arg else {
+            return None;
+        };
+        Some(value.to_owned())
+    }
+}
+
 impl<'a> FromKclValue<'a> for Extrudable {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = Box::<Sketch>::from_kcl_val;
         let case2 = FaceTag::from_kcl_val;
-        case1(arg).map(Self::Sketch).or_else(|| case2(arg).map(Self::Face))
+        let case3 = Box::<Face>::from_kcl_val;
+        case1(arg)
+            .map(Self::Sketch)
+            .or_else(|| case2(arg).map(Self::FaceTag))
+            .or_else(|| case3(arg).map(Self::Face))
     }
 }
 

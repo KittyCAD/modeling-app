@@ -278,13 +278,13 @@ describe('desktop utilities', () => {
       ])
     })
 
-    it('reads project title from project.toml metadata', async () => {
+    it('reads project title and cloud id from project.toml metadata', async () => {
       mockElectron.readFile.mockImplementation(async (path: string) => {
         if (path === '/test/projects/valid-project/.gitignore') {
           return 'dist\nnotes.txt\n'
         }
         if (path === '/test/projects/valid-project/project.toml') {
-          return 'title = "Some demo"\n'
+          return 'title = "Some demo"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n'
         }
 
         return ''
@@ -299,6 +299,7 @@ describe('desktop utilities', () => {
       })
 
       expect(project.title).toBe('Some demo')
+      expect(project.cloudProjectId).toBe('project-123')
     })
 
     it('shows config and dot files when app settings enable all files', async () => {

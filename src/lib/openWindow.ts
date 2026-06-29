@@ -1,6 +1,7 @@
 import type { MouseEventHandler } from 'react'
 
 import { generateDomainsFromBaseDomain } from '@src/env'
+import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import { reportRejection } from '@src/lib/trap'
 
 const docsFallbackURL = `${generateDomainsFromBaseDomain('zoo.dev').SITE_URL}/docs`
@@ -15,8 +16,12 @@ export const openExternalBrowserIfDesktop = (to?: string) =>
       if (!targetURL) {
         return false
       }
-      const url = await getExternalURLWithDocsFallback(targetURL)
-      window.electron.openExternal(url).catch(reportRejection)
+      try {
+        const url = await getExternalURLWithDocsFallback(targetURL)
+        window.electron.openExternal(url).catch(reportRejection)
+      } catch (error) {
+        reportRejection(error)
+      }
       return false
     }
   } as MouseEventHandler<HTMLAnchorElement>
@@ -34,20 +39,20 @@ export default async function openWindow(url: string) {
 export async function getExternalURLWithDocsFallback(
   url: string
 ): Promise<string> {
-  let parsedURL: URL
-  try {
-    parsedURL = new URL(url)
-  } catch {
-    return url
+  const allowedURL = getAllowedExternalURL(url)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
   }
+
+  const parsedURL = new URL(allowedURL)
 
   if (parsedURL.href === docsFallbackURL || parsedURL.pathname !== '/docs') {
-    return url
+    return allowedURL
   }
 
   try {
-    const response = await fetch(url, { method: 'HEAD' })
-    return response.ok ? url : docsFallbackURL
+    const response = await fetch(allowedURL, { method: 'HEAD' })
+    return response.ok ? allowedURL : docsFallbackURL
   } catch {
     return docsFallbackURL
   }

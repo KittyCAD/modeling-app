@@ -88,6 +88,16 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "type": "chamfer"
         }
       ],
+      "faces": {
+        "seg03": {
+          "type": "TagIdentifier",
+          "value": "seg03"
+        },
+        "seg04": {
+          "type": "TagIdentifier",
+          "value": "seg04"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -493,6 +503,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
           "parentSolid": {
             "solidId": "[uuid]",
             "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly",
             "edgeCutIds": [
               "[uuid]",
               "[uuid]",
@@ -883,6 +894,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "parentSolid": {
           "solidId": "[uuid]",
           "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]",
             "[uuid]",
@@ -1043,6 +1055,7 @@ description: Variables in memory after executing sketch-on-chamfer-two-times.kcl
         "parentSolid": {
           "solidId": "[uuid]",
           "creatorSketchId": "[uuid]",
+          "creatorSketchIsClosed": "explicitly",
           "edgeCutIds": [
             "[uuid]",
             "[uuid]",

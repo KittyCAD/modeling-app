@@ -13,9 +13,8 @@ import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 
 // Registry extension entrypoints are imported eagerly while App is still
-// initializing. SelectionFilterControls pulls in useModelingContext, which
-// reaches boot.ts through ModelingMachineProvider/useMenu; importing it here
-// eagerly creates an App <-> boot cycle where App is still undefined.
+// initializing. These status bar components can reach boot.ts, so keep them
+// behind lazy imports to avoid an App <-> boot cycle.
 const SelectionFilterControls = lazy(async () => {
   const { SelectionFilterControls } = await import('./SelectionFilterControls')
   return { default: SelectionFilterControls }
@@ -33,6 +32,20 @@ const ExperimentalFeaturesMenu = lazy(async () => {
   return { default: ExperimentalFeaturesMenu }
 })
 
+const SelectionStatusBarItem = lazy(async () => {
+  const { SelectionStatusBarItem } = await import(
+    '@src/components/SelectionStatusBarItem'
+  )
+  return { default: SelectionStatusBarItem }
+})
+
+const SelectionReferencesPopover = lazy(async () => {
+  const { SelectionReferencesPopover } = await import(
+    '@src/components/SelectionReferencesPopover'
+  )
+  return { default: SelectionReferencesPopover }
+})
+
 const EngineSceneUnitsMenu = () =>
   createElement(Suspense, { fallback: null }, createElement(UnitsMenu))
 
@@ -41,6 +54,21 @@ const EngineSceneExperimentalFeaturesMenu = () =>
     Suspense,
     { fallback: null },
     createElement(ExperimentalFeaturesMenu)
+  )
+
+const EngineSceneSelectionStatusBarItem = ({ label }: { label: string }) =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(SelectionStatusBarItem, {
+      label,
+      popoverSections: [
+        {
+          id: 'selection-references',
+          component: SelectionReferencesPopover,
+        },
+      ],
+    })
   )
 
 const EngineSceneSelectionFilterControls = () =>
@@ -59,23 +87,22 @@ const EngineSceneSelectionFilterControls = () =>
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
-  const selectionStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      executionService.value
+  const selectionStatusBarItem = computed(() => {
+    const selectionStatusLabel = executionService.value?.selectionStatusLabel
+    return nullableStatusBarItem(
+      selectionStatusLabel
         ? {
             id: 'selection',
-            'data-testid': 'selection-status',
-            element: 'text' as const,
-            label: executionService.value.selectionStatusLabel.value,
+            component: () =>
+              createElement(EngineSceneSelectionStatusBarItem, {
+                label: selectionStatusLabel.value,
+              }),
             order: 10,
             scopes: ['file'],
-            toolTip: {
-              children: 'Currently selected geometry',
-            },
           }
         : null
     )
-  )
+  })
   const selectionFilterStatusBarItem = computed(() =>
     nullableStatusBarItem(
       executionService.value

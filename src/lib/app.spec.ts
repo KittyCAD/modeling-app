@@ -1,10 +1,18 @@
+import type { UserFeature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
-import { File } from '@src/lang/KclManager'
+import { signal } from '@preact/signals-core'
+import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
+import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
+import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { loadWasm } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -62,6 +70,23 @@ async function waitForSettingsIdle(app: App) {
   })
 }
 
+async function waitForAuthSettled(app: App) {
+  if (!app.auth.actor.getSnapshot().matches('checkIfLoggedIn')) {
+    return
+  }
+
+  await new Promise<void>((resolve) => {
+    const subscription = app.auth.actor.subscribe((snapshot) => {
+      if (snapshot.matches('checkIfLoggedIn')) {
+        return
+      }
+
+      subscription.unsubscribe()
+      resolve()
+    })
+  })
+}
+
 function disposeApp(app: App) {
   app.closeProject()
   app.systemIOActor.stop()
@@ -70,6 +95,70 @@ function disposeApp(app: App) {
   app.auth.actor.stop()
   app.billing.actor.stop()
   app.userFeatures.actor.stop()
+}
+
+function createUserFeaturesForTest(
+  featureIds: UserFeaturesContext['featureIds']
+) {
+  const contextSignal = signal<UserFeaturesContext>({
+    featureIds,
+  })
+  let snapshot = {
+    context: contextSignal.value,
+    matches: (state: string) => state === UserFeaturesState.Ready,
+  }
+  const listeners = new Set<(nextSnapshot: typeof snapshot) => void>()
+
+  const userFeatures = {
+    actor: {
+      getSnapshot: () => snapshot,
+      subscribe: (listener: (nextSnapshot: typeof snapshot) => void) => {
+        listeners.add(listener)
+        return {
+          unsubscribe: () => listeners.delete(listener),
+        }
+      },
+      stop: vi.fn(),
+    },
+    send: vi.fn(),
+    contextSignal,
+    has: (featureFlagId: UserFeature, defaultValue: boolean) =>
+      contextSignal.value.featureIds.has(featureFlagId) ? true : defaultValue,
+    useContext: () => contextSignal.value,
+    useHas: (featureFlagId: UserFeature, defaultValue: boolean) =>
+      userFeatures.has(featureFlagId, defaultValue),
+    setFeatureIds: (nextFeatureIds: UserFeaturesContext['featureIds']) => {
+      contextSignal.value = {
+        featureIds: nextFeatureIds,
+      }
+      snapshot = {
+        context: contextSignal.value,
+        matches: snapshot.matches,
+      }
+      for (const listener of listeners) {
+        listener(snapshot)
+      }
+    },
+  }
+
+  return userFeatures as unknown as ReturnType<
+    typeof App.getDefaultSystems
+  >['userFeatures'] & {
+    setFeatureIds: (nextFeatureIds: UserFeaturesContext['featureIds']) => void
+  }
+}
+
+async function writeText(path: string, contents: string) {
+  await fsZds.mkdir(fsZds.dirname(path), { recursive: true })
+  await fsZds.writeFile(path, new TextEncoder().encode(contents))
+}
+
+async function waitForHistoryIdle(kclManager: KclManager) {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (!kclManager.historyOperationInProgress.value) return
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  }
+  throw new Error('History operation did not settle')
 }
 
 describe('project system', () => {
@@ -126,6 +215,63 @@ describe('project system', () => {
         ]
       ).toBeUndefined()
     } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('selects the create project command from the app command system', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+      userFeatures,
+    })
+
+    try {
+      expect(
+        app.registry
+          .get(commandsValueSpec)
+          .some(
+            (command) =>
+              command.groupId === 'projects' &&
+              command.name === 'Create project'
+          )
+      ).toBe(false)
+
+      userFeatures.setFeatureIds(new Set([OPFS_CLOUD_FEATURE_FLAG]))
+
+      expect(
+        app.registry
+          .get(commandsValueSpec)
+          .some(
+            (command) =>
+              command.groupId === 'projects' &&
+              command.name === 'Create project'
+          )
+      ).toBe(true)
+      expect(
+        app.commands.actor
+          .getSnapshot()
+          .context.commands.some(
+            (command) =>
+              command.groupId === 'projects' &&
+              command.name === 'Create project'
+          )
+      ).toBe(true)
+
+      app.commands.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Create project',
+        },
+      })
+
+      const snapshot = app.commands.actor.getSnapshot()
+      expect(snapshot.matches('Gathering arguments')).toBe(true)
+      expect(snapshot.context.selectedCommand?.name).toBe('Create project')
+      expect(snapshot.context.currentArgument?.name).toBe('name')
+    } finally {
+      await waitForAuthSettled(app)
       disposeApp(app)
     }
   })
@@ -237,6 +383,77 @@ describe('project system', () => {
       ).toBe(true)
     } finally {
       disposeApp(app)
+    }
+  })
+
+  it('refreshes project folders after Zookeeper undo and redo changes the file set', async () => {
+    const projectPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const createdPath = fsZds.join(projectPath, 'created.kcl')
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 1,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          {
+            name: 'main.kcl',
+            path: mainPath,
+            children: null,
+          },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(mainPath)
+      await Promise.resolve()
+
+      await writeText(createdPath, 'created = true\n')
+      kclManager.addGlobalHistoryEvent(
+        zookeeperEditPatchHistoryEvent({
+          projectPath,
+          activeFilePath: mainPath,
+          patch: {
+            run_id: 'create-file-refresh',
+            changed_files: [
+              {
+                path: 'created.kcl',
+                status: 'created',
+                contents: 'created = true\n',
+              },
+            ],
+          },
+        })
+      )
+      const send = vi.spyOn(app.systemIOActor, 'send')
+
+      kclManager.undo()
+      await waitForHistoryIdle(kclManager)
+      expect(send).toHaveBeenCalledWith({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
+
+      send.mockClear()
+      kclManager.redo()
+      await waitForHistoryIdle(kclManager)
+      expect(send).toHaveBeenCalledWith({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
+        'created = true\n'
+      )
+    } finally {
+      disposeApp(app)
+      await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
 

@@ -1,6 +1,6 @@
-import env from '@src/env'
-import {
+import env, {
   generateDomainsFromBaseDomain,
+  getEnvironmentNameFromEnv,
   processEnv,
   viteEnv,
   windowElectronProcessEnv,
@@ -130,6 +130,34 @@ describe('@src/env', () => {
       }
       const actual = generateDomainsFromBaseDomain('dev.zoo.dev')
       expect(actual).toStrictEqual(expected)
+    })
+  })
+  describe('getEnvironmentNameFromEnv', () => {
+    it('prefers the base domain', () => {
+      expect(
+        getEnvironmentNameFromEnv({
+          VITE_ZOO_BASE_DOMAIN: 'dev.zoo.dev',
+          VITE_ZOO_API_BASE_URL: 'https://api.zoo.dev',
+        })
+      ).toBe('dev.zoo.dev')
+    })
+
+    it('derives the environment name from the API URL', () => {
+      expect(
+        getEnvironmentNameFromEnv({
+          VITE_ZOO_BASE_DOMAIN: undefined,
+          VITE_ZOO_API_BASE_URL: 'https://api.dev.zoo.dev',
+        })
+      ).toBe('dev.zoo.dev')
+    })
+
+    it('returns undefined when neither source is available', () => {
+      expect(
+        getEnvironmentNameFromEnv({
+          VITE_ZOO_BASE_DOMAIN: undefined,
+          VITE_ZOO_API_BASE_URL: undefined,
+        })
+      ).toBeUndefined()
     })
   })
 })

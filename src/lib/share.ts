@@ -2,7 +2,7 @@ import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import { serializeProjectConfiguration } from '@src/lang/wasm'
 import toast from 'react-hot-toast'
 
-import env from '@src/env'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   readProjectSettingsFile,
@@ -425,14 +425,9 @@ function toKittyCadFiles(
 }
 
 function getCurrentEnvironmentName(): string | Error {
-  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
-  if (baseDomain) {
-    return baseDomain
-  }
-
-  const apiBaseUrl = env().VITE_ZOO_API_BASE_URL
-  if (apiBaseUrl) {
-    return new URL(apiBaseUrl).hostname.replace(/^api\./, '')
+  const environmentName = getEnvironmentNameFromEnv(env())
+  if (environmentName !== undefined) {
+    return environmentName
   }
 
   return new Error('Could not determine the active API environment.')

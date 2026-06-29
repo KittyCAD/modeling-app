@@ -14,6 +14,7 @@ use crate::execution::ConstraintKey;
 use crate::execution::ConstraintState;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecutorSettings;
+use crate::execution::KclValueView;
 use crate::execution::annotations;
 use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
@@ -117,8 +118,15 @@ impl GlobalState {
     pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
+        let variables = self
+            .main
+            .exec_state
+            .variables(self.main.result_env)?
+            .into_iter()
+            .map(|(key, value)| (key, KclValueView::from(value)))
+            .collect();
         Ok(ExecOutcome {
-            variables: self.main.exec_state.variables(self.main.result_env)?,
+            variables,
             filenames: self.exec_state.filenames(),
             operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,

@@ -1,7 +1,7 @@
 [package]
 name = "kcl-lib"
 description = "KittyCAD Language implementation and tools"
-version = "0.2.162"
+version = "0.2.166"
 edition = "2024"
 license = "MIT"
 repository = "https://github.com/KittyCAD/modeling-app"
@@ -27,6 +27,8 @@ bench = false
 
 [features]
 default = ["cli", "engine", "artifact-graph"]
+# This is a legacy feature that has no effect. It has been replaced with a
+# runtime flag of execution. See `skip_artifact_graph`.
 artifact-graph = []
 benchmark-execution = []
 cli = ["dep:clap", "kittycad/clap"]
@@ -58,7 +60,6 @@ convert_case = "0.11.0"
 csscolorparser = "0.8.3"
 dashmap = { workspace = true }
 dhat = { version = "0.3", optional = true }
-fnv = "1.0.7"
 form_urlencoded = "1.2.2"
 futures = { version = "0.3.32" }
 git_rev = "0.1.0"
@@ -69,9 +70,10 @@ image = { version = "0.25.10", default-features = false, features = ["png"] }
 image-compare = "0.5.0"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 itertools = "0.14.0"
-kcl-derive-docs = { version = "0.2.162", path = "../kcl-derive-docs" }
-kcl-error = { version = "0.2.162", path = "../kcl-error" }
-kcl-syntax = { version = "0.2.162", path = "../kcl-syntax", optional = true }
+kcl-api = { version = "=0.2.166", path = "../kcl-api" }
+kcl-derive-docs = { version = "=0.2.166", path = "../kcl-derive-docs" }
+kcl-error = { version = "=0.2.166", path = "../kcl-error" }
+kcl-syntax = { version = "=0.2.166", path = "../kcl-syntax", optional = true }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
@@ -105,7 +107,7 @@ schemars = { version = "0.8.17", features = [
 serde = { workspace = true }
 serde_json = { workspace = true }
 sha2 = "0.11.0"
-tabled = { version = "0.20.0", optional = true }
+tabled = { version = "0.21.0", optional = true }
 tempfile = "3.27"
 thiserror = "2.0.18"
 toml = "1.1.0"
@@ -126,6 +128,7 @@ walkdir = "2.5.0"
 web-time = "1.1"
 winnow = "1.0"
 zip = { workspace = true }
+bon = "3.9.3"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { workspace = true, features = ["full"] }
