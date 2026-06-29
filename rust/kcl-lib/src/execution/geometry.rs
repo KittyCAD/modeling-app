@@ -1032,6 +1032,10 @@ pub enum Extrudable {
     FaceTag(FaceTag),
     /// Face.
     Face(Box<Face>),
+    /// Tagged Edge.
+    EdgeTag(Box<TagIdentifier>),
+    /// Edge.
+    Edge(Uuid),
 }
 
 impl Extrudable {
@@ -1046,6 +1050,14 @@ impl Extrudable {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
             Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
             Extrudable::Face(face) => Ok(face.id),
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
+                Some(info) => Ok(info.id),
+                None => Err(KclError::new_type(KclErrorDetails::new(
+                    "Could not find a valid id to extrude".to_owned(),
+                    vec![args.source_range],
+                ))),
+            },
+            Extrudable::Edge(edge) => Ok(*edge),
         }
     }
 
@@ -1058,6 +1070,12 @@ impl Extrudable {
                 None => None,
             },
             Extrudable::Face(_) => None,
+            Extrudable::EdgeTag(tag_identifier) => match tag_identifier.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
+                None => None,
+            },
+            Extrudable::Edge(_) => None,
         }
     }
 
@@ -1076,6 +1094,15 @@ impl Extrudable {
                 Some(is_closed) => is_closed,
                 None => ProfileClosed::Maybe,
             },
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid
+                    .sketch()
+                    .map(|sketch| sketch.is_closed)
+                    .unwrap_or(ProfileClosed::Maybe),
+                _ => ProfileClosed::Maybe,
+            },
+            Extrudable::Edge(_) => ProfileClosed::Maybe,
         }
     }
 }
@@ -1243,6 +1270,15 @@ pub struct CreatorFace {
     pub sketch: Sketch,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorEdge {
+    /// The edge id that served as the base.
+    pub edge_id: uuid::Uuid,
+    /// The solid id that owned the edge.
+    pub body_id: uuid::Uuid,
+}
+
 /// How a solid was created.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -1252,6 +1288,8 @@ pub enum SolidCreator {
     Sketch(Sketch),
     /// Created by extruding or modifying a face.
     Face(CreatorFace),
+    /// Created by extruding or modifying an edge.
+    Edge(CreatorEdge),
     /// Created procedurally without a sketch.
     Procedural,
 }
@@ -1261,6 +1299,7 @@ impl Solid {
         match &self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
@@ -1269,6 +1308,7 @@ impl Solid {
         match &mut self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
