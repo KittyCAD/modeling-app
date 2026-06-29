@@ -64,10 +64,12 @@ export default defineConfig(({ command, mode }) => {
     },
     build: {
       outDir: 'build',
-      // Three 0.184 uses class static blocks that esbuild can minify into
-      // anonymous class expressions which crash during startup. Lowering the
-      // target rewrites those static blocks before minification.
-      target: 'es2021',
+      target: 'es2022',
+    },
+    // Three 0.184 uses class static blocks that esbuild can minify into
+    // anonymous class expressions which crash during startup.
+    esbuild: {
+      keepNames: true,
     },
     resolve: {
       alias: {
