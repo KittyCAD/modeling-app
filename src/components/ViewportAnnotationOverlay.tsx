@@ -186,6 +186,7 @@ export const ViewportAnnotationOverlay = (
 
   return (
     <div
+      role="presentation"
       data-testid="viewport-annotation-overlay"
       className="absolute inset-0 z-50 bg-chalkboard-100"
       onPointerDown={stopOverlayEventPropagation}

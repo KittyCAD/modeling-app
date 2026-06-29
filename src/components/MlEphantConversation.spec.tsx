@@ -8,8 +8,10 @@ import {
 } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-const bootMockState = vi.hoisted(() => ({
-  registry: undefined as unknown,
+const bootMockState = vi.hoisted<{
+  registry: Registry | undefined
+}>(() => ({
+  registry: undefined,
 }))
 
 // Mock modules that access localStorage at import time
@@ -28,10 +30,6 @@ vi.mock('@src/lib/desktop', () => ({
 // Mock useSingletons which requires heavy initialization
 vi.mock('@src/lib/boot', () => ({
   useApp: () => {
-    if (!bootMockState.registry) {
-      throw new Error('Test registry has not been configured')
-    }
-
     return { registry: bootMockState.registry }
   },
   useSingletons: () => ({
