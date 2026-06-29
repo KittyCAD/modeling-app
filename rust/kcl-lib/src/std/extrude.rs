@@ -944,7 +944,7 @@ pub(crate) async fn after_surface_creation(
         meta: vec![args.source_range.into()],
         // Normally, we would propagate the units of the sketch. But an edge
         // doesn't have units. We also don't seem to use this field anywhere.
-        units: UnitLength::Millimeters,
+        units: kcl_api::UnitLength::Millimeters,
         sectional: false,
         creator: SolidCreator::Edge(CreatorEdge { edge_id, body_id }),
         start_cap_id: None,
