@@ -21,11 +21,13 @@ import {
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { selectSketchPlane } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
+import { viewControlMenuSectionsValueSpec } from '@src/registry/contracts/viewControlMenu'
 import toast from 'react-hot-toast'
 
 export function useViewControlMenuItems() {
   useSignals()
-  const { settings, layout } = useApp()
+  const app = useApp()
+  const { settings, layout } = app
   const { kclManager } = useSingletons()
   const { state: modelingState, send: modelingSend } = useModelingContext()
   const planeOrFaceId = getSelectedSketchTarget(
@@ -40,6 +42,9 @@ export function useViewControlMenuItems() {
   const sketching = modelingState.matches('Sketch')
   const snapToGrid = settingsValues.modeling.snapToGrid.current
   const gizmoType = settingsValues.modeling.gizmoType.current
+  const viewControlMenuSections = app.registry.signal(
+    viewControlMenuSectionsValueSpec
+  ).value
 
   // Check if there's a valid selection with source range for "View KCL source code"
   const firstValidSelection = useMemo(() => {
@@ -125,6 +130,14 @@ export function useViewControlMenuItems() {
       >
         View KCL source code
       </ContextMenuItem>,
+      ...(viewControlMenuSections.length > 0
+        ? [
+            <ContextMenuDivider key="view-control-menu-extensions-divider" />,
+            ...viewControlMenuSections.map(({ id, Component }) => (
+              <Component key={id} />
+            )),
+          ]
+        : []),
       <ContextMenuDivider />,
       <ContextMenuItem
         onClick={() => {
@@ -189,6 +202,7 @@ export function useViewControlMenuItems() {
       sketching,
       snapToGrid,
       gizmoType,
+      viewControlMenuSections,
       layout.signal.value,
       kclManager,
       settings,

@@ -63,6 +63,7 @@ if (
 
 // Pull user and system CAs from the OS trust store into Node TLS.
 configureSystemCertificates()
+configureSpaceMouseDriverCertificateTrust()
 
 let mainWindow: BrowserWindow | null = null
 let isInstallingUpdate = false
@@ -317,6 +318,39 @@ const createWindow = (pathToOpen?: string): BrowserWindow => {
   })
 
   return newWindow
+}
+
+function configureSpaceMouseDriverCertificateTrust() {
+  app.on(
+    'certificate-error',
+    (event, _webContents, url, error, certificate, callback) => {
+      if (!isSpaceMouseDriverUrl(url)) {
+        callback(false)
+        return
+      }
+
+      event.preventDefault()
+      console.info('Trusting local 3Dconnexion driver certificate', {
+        url,
+        error,
+        issuer: certificate.issuerName,
+        subject: certificate.subjectName,
+      })
+      callback(true)
+    }
+  )
+}
+
+function isSpaceMouseDriverUrl(value: string) {
+  try {
+    const url = new URL(value)
+    return (
+      url.hostname === '127.51.68.120' &&
+      (url.protocol === 'https:' || url.protocol === 'wss:')
+    )
+  } catch {
+    return false
+  }
 }
 
 const menuActions = {

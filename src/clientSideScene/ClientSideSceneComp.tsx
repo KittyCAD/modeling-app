@@ -1,4 +1,5 @@
 import { Popover } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import {
   type CSSProperties,
   use,
@@ -50,6 +51,7 @@ import { err, reportRejection, trap } from '@src/lib/trap'
 import { throttle, toSync } from '@src/lib/utils'
 import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
+import { engineSceneOverlayItemsValueSpec } from '@src/registry/contracts/engineScene'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)
@@ -90,11 +92,16 @@ export const ClientSideScene = ({
   enableTouchControls: boolean
   sketchSolveStreamDimming?: number
 }) => {
+  useSignals()
+  const app = useApp()
   const {
     kclManager: { sceneEntitiesManager, sceneInfra, engineCommandManager },
   } = useSingletons()
   const { state, send, context } = useModelingContext()
   const { hideClient, hideServer } = useShouldHideScene()
+  const sceneOverlayItems = app.registry.signal(
+    engineSceneOverlayItemsValueSpec
+  ).value
 
   // Listen for changes to the camera controls setting
   // and update the client-side scene's controls accordingly.
@@ -230,6 +237,9 @@ export const ClientSideScene = ({
             : ''
         }`}
       ></div>
+      {sceneOverlayItems.map(({ id, Component }) => (
+        <Component key={id} />
+      ))}
       <Overlays />
       <SketchSolveToolIconOverlay />
       <EditingConstraintInput />

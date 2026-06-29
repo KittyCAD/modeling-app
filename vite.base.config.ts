@@ -164,6 +164,9 @@ export function pluginHotRestart(command: 'reload' | 'restart'): Plugin {
 }
 
 export function indexHtmlCsp(enabled: boolean): Plugin {
+  const connectSrcBase =
+    "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev"
+  const electronConnectSrc = `${connectSrcBase} https://127.51.68.120:* wss://127.51.68.120:*`
   const csp = [
     //  By default, only allow same origin.
     "default-src 'self'",
@@ -172,10 +175,13 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
     // Allow images from any source and inline images. We fetch user profile images from any origin.
     "img-src * blob: data: 'unsafe-inline'",
     // Allow WebSocket connections and fetches to our API.
-    "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev",
+    connectSrcBase,
     // Disallow legacy stuff
     "object-src 'none'",
   ]
+  const electronIndexHtmlCsp = csp.map((source) =>
+    source === connectSrcBase ? electronConnectSrc : source
+  )
 
   // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
   const cspScriptBase =
@@ -260,7 +266,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
         return html.replace(
           indexHtmlRegex,
           `<meta http-equiv="Content-Security-Policy" content="${
-            csp.concat([cspScriptBase]).join('; ') + ';'
+            electronIndexHtmlCsp.concat([cspScriptBase]).join('; ') + ';'
           }">`
         )
       }
