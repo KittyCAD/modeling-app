@@ -383,7 +383,9 @@ export function findAllPreviousVariablesPath(
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declaration.id.name
     const varValue = memVars[varName]
-    if (!varValue || typeof varValue?.value !== type) return
+    if (!varValue || !('value' in varValue) || typeof varValue.value !== type) {
+      return
+    }
     variables.push({
       key: varName,
       value: varValue.value,

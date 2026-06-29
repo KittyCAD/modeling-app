@@ -9,13 +9,19 @@ import {
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
+import {
+  type PreparedZookeeperPatchFileReplay,
+  buildZookeeperHistoryExtension,
+} from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  BODIES_PANE_FEATURE_FLAG,
+  OPFS_CLOUD_FEATURE_FLAG,
+} from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
@@ -52,7 +58,10 @@ import {
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import {
   type UserFeaturesActorRef,
   type UserFeaturesContext,
@@ -94,6 +103,28 @@ import { createActor } from 'xstate'
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
+
+function zookeeperReplayChangesProjectFileSet(
+  replayFiles: readonly PreparedZookeeperPatchFileReplay[]
+) {
+  return replayFiles.some(
+    (replayFile) =>
+      replayFile.previousContent === null || replayFile.nextContent === null
+  )
+}
+
+function getZookeeperReplayFallbackFilePath(
+  project: ZDSProject,
+  deletedPaths: Set<string>
+) {
+  const defaultFile = project.projectIORefSignal.value.default_file
+  const candidates = [
+    defaultFile,
+    ...project.files.map((file) => file.path),
+  ].filter((path, index, paths) => paths.indexOf(path) === index)
+
+  return candidates.find((path) => path && !deletedPaths.has(path))
+}
 
 function isPlaywrightRuntime() {
   return typeof window !== 'undefined' && isPlaywright()
@@ -517,16 +548,59 @@ export class App implements AppSubsystems {
   }
 
   async openProject(projectIORef: Project) {
+    this.disposeProjectHistoryExtensions?.()
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
 
-    // This extension makes it possible to mark FS operations as un/redoable
-    effect(() => {
-      if (this.project?.executingEditor.value) {
-        buildFSHistoryExtension(
-          this.systemIOActor,
-          this.project.executingEditor.value
-        )
+    // These extensions make global project operations un/redoable.
+    this.disposeProjectHistoryExtensions = effect(() => {
+      const project = this.project
+      const executingEditor = project?.executingEditor.value
+      if (!project || !executingEditor) {
+        return
+      }
+
+      const disposeFSHistory = buildFSHistoryExtension(
+        this.systemIOActor,
+        executingEditor
+      )
+      const disposeZookeeperHistory = buildZookeeperHistoryExtension({
+        kclManager: executingEditor,
+        onCurrentFileDelete: async (deletedPaths) => {
+          const fallbackPath = getZookeeperReplayFallbackFilePath(
+            project,
+            deletedPaths
+          )
+          if (!fallbackPath) {
+            return Promise.reject(
+              new Error(
+                'Cannot replay this Zookeeper edit because no fallback KCL file is available.'
+              )
+            )
+          }
+
+          await project.openEditor(fallbackPath, executingEditor)
+        },
+        onActiveFileRestore: async (restoredPath, restoredContents) => {
+          await project.openEditor(
+            restoredPath,
+            executingEditor,
+            restoredContents
+          )
+        },
+        onProjectFilesReplay: async (replayFiles) => {
+          await project.syncReplayedFilesToRust(replayFiles)
+          if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
+            this.systemIOActor.send({
+              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+            })
+          }
+        },
+      })
+
+      return () => {
+        disposeFSHistory()
+        disposeZookeeperHistory()
       }
     })
 
@@ -550,8 +624,12 @@ export class App implements AppSubsystems {
     return this.project
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
+  private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   closeProject() {
+    this.disposeProjectHistoryExtensions?.()
+    this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
+    this.unsubscribeFromSettings = undefined
     this.project?.close()
     this.project = undefined
   }

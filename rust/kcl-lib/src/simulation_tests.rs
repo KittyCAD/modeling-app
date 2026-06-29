@@ -13,9 +13,9 @@ use crate::ExecState;
 use crate::ExecutorContext;
 use crate::ModuleId;
 use crate::errors::KclError;
-use crate::exec::KclValue;
 use crate::execution::ArtifactGraph;
 use crate::execution::EnvironmentRef;
+use crate::execution::KclValueView;
 use crate::execution::ModuleArtifactState;
 use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
@@ -436,7 +436,7 @@ async fn execute_test(test: &Test, render_to_png: bool, export_step: bool) {
 #[must_use]
 fn common_snapshots(
     test: &Test,
-    variables: IndexMap<String, KclValue>,
+    variables: IndexMap<String, KclValueView>,
     #[cfg_attr(not(feature = "snapshot-engine-responses"), expect(unused_variables))] responses: Option<
         IndexMap<Uuid, WebSocketResponse>,
     >,
@@ -6012,6 +6012,153 @@ mod clone_a_mirror3d {
         super::execute(TEST_NAME, true).await
     }
 }
+mod surface_extrude_edge_from_solid {
+    const TEST_NAME: &str = "surface_extrude_edge_from_solid";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod surface_extrude_edge_from_surface {
+    const TEST_NAME: &str = "surface_extrude_edge_from_surface";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod surface_extrude_edge_direction {
+    const TEST_NAME: &str = "surface_extrude_edge_direction";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod surface_extrude_edge_symmetric {
+    const TEST_NAME: &str = "surface_extrude_edge_symmetric";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod surface_extrude_edge_bidirectional {
+    const TEST_NAME: &str = "surface_extrude_edge_bidirectional";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod surface_extrude_edge_to {
+    const TEST_NAME: &str = "surface_extrude_edge_to";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod surface_extrude_edge_merge_error {
+    const TEST_NAME: &str = "surface_extrude_edge_merge_error";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, false).await
+    }
+}
 mod sweep_mirror {
     const TEST_NAME: &str = "sweep_mirror";
 
@@ -6056,6 +6203,27 @@ mod beam_sweeps {
 }
 mod truss_bridge {
     const TEST_NAME: &str = "truss_bridge";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod gdt_face_api_edge_specifier {
+    const TEST_NAME: &str = "gdt_face_api_edge_specifier";
 
     /// Test parsing KCL.
     #[test]

@@ -54,6 +54,7 @@ export function offsetToPos(doc: Text, offset: number) {
 
 const markedOptions: MarkedOptions = {
   gfm: true,
+  sanitize: true,
 }
 
 export function isLSPTextEdit(

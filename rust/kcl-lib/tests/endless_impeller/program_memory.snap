@@ -3006,8 +3006,7 @@ description: Variables in memory after executing endless_impeller.kcl
     }
   },
   "squareRegion": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "width": {
     "type": "Number",

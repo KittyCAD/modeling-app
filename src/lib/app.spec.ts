@@ -1,12 +1,14 @@
 import type { UserFeature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { File } from '@src/lang/KclManager'
+import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -144,6 +146,19 @@ function createUserFeaturesForTest(
   >['userFeatures'] & {
     setFeatureIds: (nextFeatureIds: UserFeaturesContext['featureIds']) => void
   }
+}
+
+async function writeText(path: string, contents: string) {
+  await fsZds.mkdir(fsZds.dirname(path), { recursive: true })
+  await fsZds.writeFile(path, new TextEncoder().encode(contents))
+}
+
+async function waitForHistoryIdle(kclManager: KclManager) {
+  for (let attempt = 0; attempt < 100; attempt += 1) {
+    if (!kclManager.historyOperationInProgress.value) return
+    await new Promise((resolve) => setTimeout(resolve, 0))
+  }
+  throw new Error('History operation did not settle')
 }
 
 describe('project system', () => {
@@ -368,6 +383,77 @@ describe('project system', () => {
       ).toBe(true)
     } finally {
       disposeApp(app)
+    }
+  })
+
+  it('refreshes project folders after Zookeeper undo and redo changes the file set', async () => {
+    const projectPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const createdPath = fsZds.join(projectPath, 'created.kcl')
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      await writeText(mainPath, 'main = true\n')
+      const project: Project = {
+        name: fsZds.basename(projectPath),
+        default_file: mainPath,
+        directory_count: 0,
+        kcl_file_count: 1,
+        metadata: null,
+        path: projectPath,
+        readWriteAccess: true,
+        children: [
+          {
+            name: 'main.kcl',
+            path: mainPath,
+            children: null,
+          },
+        ],
+      }
+      const openedProject = await app.openProject(project)
+      const kclManager = await openedProject.openEditor(mainPath)
+      await Promise.resolve()
+
+      await writeText(createdPath, 'created = true\n')
+      kclManager.addGlobalHistoryEvent(
+        zookeeperEditPatchHistoryEvent({
+          projectPath,
+          activeFilePath: mainPath,
+          patch: {
+            run_id: 'create-file-refresh',
+            changed_files: [
+              {
+                path: 'created.kcl',
+                status: 'created',
+                contents: 'created = true\n',
+              },
+            ],
+          },
+        })
+      )
+      const send = vi.spyOn(app.systemIOActor, 'send')
+
+      kclManager.undo()
+      await waitForHistoryIdle(kclManager)
+      expect(send).toHaveBeenCalledWith({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
+
+      send.mockClear()
+      kclManager.redo()
+      await waitForHistoryIdle(kclManager)
+      expect(send).toHaveBeenCalledWith({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      })
+      await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
+        'created = true\n'
+      )
+    } finally {
+      disposeApp(app)
+      await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
 

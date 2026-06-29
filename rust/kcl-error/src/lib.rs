@@ -1,13 +1,19 @@
+pub use error::BacktraceItem;
+pub use error::IsRetryable;
+pub use error::KclError;
+pub use error::KclErrorDetails;
+use schemars::JsonSchema;
 use serde::Deserialize;
 use serde::Serialize;
 pub use source_range::ModuleId;
 pub use source_range::SourceRange;
 
+mod error;
 mod source_range;
 
 /// An issue which occurred during parsing, etc. The severity determines whether
 /// it's an error, warning, or other kind of issue.
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq, JsonSchema)]
 #[ts(export)]
 pub struct CompilationIssue {
     #[serde(rename = "sourceRange")]
@@ -74,7 +80,7 @@ impl CompilationIssue {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub enum Severity {
     Warning,
@@ -107,7 +113,7 @@ impl Severity {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize, ts_rs::TS, JsonSchema)]
 #[ts(export)]
 pub enum Tag {
     Deprecated,
@@ -116,7 +122,7 @@ pub enum Tag {
     None,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, ts_rs::TS, PartialEq, Eq, JsonSchema)]
 #[ts(export)]
 pub struct Suggestion {
     pub title: String,
