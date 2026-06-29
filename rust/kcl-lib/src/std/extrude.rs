@@ -21,7 +21,6 @@ use kittycad_modeling_cmds::shared::DirectionType;
 use kittycad_modeling_cmds::shared::EntityReference;
 use kittycad_modeling_cmds::shared::ExtrudeMethod;
 use kittycad_modeling_cmds::shared::Point2d;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::{self as kcmc};
 use uuid::Uuid;
 
