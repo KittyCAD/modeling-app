@@ -94,6 +94,7 @@ publish-kcl version:
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
     cargo publish -p kcl-error
+    cargo publish -p kcl-api
     cargo publish -p kcl-syntax
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server
