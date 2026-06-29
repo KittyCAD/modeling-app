@@ -578,7 +578,6 @@ export const ConnectionStream = (props: {
           Connecting and setting up scene...
         </Loading>
       )}
-      )
     </div>
   )
 }

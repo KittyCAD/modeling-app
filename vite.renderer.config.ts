@@ -31,10 +31,13 @@ export default defineConfig((env) => {
     },
     build: {
       outDir: `.vite/renderer/${name}`,
-      target: 'es2022',
+      // Three 0.184 uses class static blocks that esbuild can minify into
+      // anonymous class expressions which crash during startup. Lowering the
+      // target rewrites those static blocks before minification.
+      target: 'es2021',
     },
     // Needed for electron-forge (in npm run tron:start)
-    optimizeDeps: { esbuildOptions: { target: 'es2022' } },
+    optimizeDeps: { esbuildOptions: { target: 'es2021' } },
     plugins: [
       nodePolyfills({
         include: ['path'],

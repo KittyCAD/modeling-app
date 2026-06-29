@@ -19,7 +19,7 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
-import type { EventFrom, StateFrom } from 'xstate'
+import type { StateFrom } from 'xstate'
 import engineSceneExtension from '.'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
@@ -69,9 +69,7 @@ function createEngineSceneViewExtensionContext(
 ): EngineSceneExtensionContext {
   return {
     modelingState: createModelingState(inSketchSolveMode),
-    modelingSend: vi.fn() as unknown as (
-      event: EventFrom<typeof modelingMachine>
-    ) => void,
+    modelingSend: vi.fn(),
     sketchSolveStreamDimming: 0.3,
     setSketchSolveStreamDimming: vi.fn(),
   }
