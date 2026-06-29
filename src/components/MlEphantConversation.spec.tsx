@@ -1101,6 +1101,15 @@ describe('MlEphantConversation', () => {
         expect(
           screen.getByTestId('viewport-annotation-overlay')
         ).toBeInTheDocument()
+        expect(
+          screen.getByTestId('viewport-annotation-tool-drawOrange')
+        ).toHaveAttribute('aria-pressed', 'true')
+
+        fireEvent.click(screen.getByTestId('viewport-annotation-tool-erase'))
+
+        expect(
+          screen.getByTestId('viewport-annotation-tool-erase')
+        ).toHaveAttribute('aria-pressed', 'true')
 
         const sendButton = screen.getByTestId('viewport-annotation-send-button')
         await waitFor(() => expect(sendButton).not.toBeDisabled())

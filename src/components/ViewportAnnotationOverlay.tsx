@@ -1,5 +1,11 @@
-import { TRIM_PREVIEW_LINE_COLOR } from '@src/lib/constants'
+import { useSignals } from '@preact/signals-react/runtime'
 import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
+import {
+  type ZoodleService,
+  type ZoodleToolDefinition,
+  type ZoodleToolKey,
+  zoodleToolKeys,
+} from '@src/registry/contracts/zoodle'
 import type { PointerEvent as ReactPointerEvent, SyntheticEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
 
@@ -45,17 +51,30 @@ const stopOverlayEventPropagation = (event: SyntheticEvent) => {
   event.stopPropagation()
 }
 
+const toolButtonClassName = (tool: ZoodleToolDefinition, isActive: boolean) =>
+  `m-0 flex h-7 items-center justify-center rounded-sm border p-0 text-xs ${
+    tool.type === 'erase' ? 'w-auto px-2' : 'w-7'
+  } ${
+    isActive
+      ? 'border-chalkboard-50 bg-chalkboard-20 dark:border-chalkboard-60 dark:bg-chalkboard-80'
+      : 'border-transparent bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80'
+  }`
+
 interface ViewportAnnotationOverlayProps {
   imageDataUrl: string
   onCancel: () => void
   onSend: (annotatedDataUrl: string) => void
+  zoodle: ZoodleService
 }
 
 export const ViewportAnnotationOverlay = (
   props: ViewportAnnotationOverlayProps
 ) => {
+  useSignals()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const lastPoint = useRef<{ x: number; y: number } | null>(null)
+  const activeToolKey = props.zoodle.activeToolKey.value
+  const activeTool = props.zoodle.toolDefinitions[activeToolKey]
   const [imageSize, setImageSize] = useState<{
     width: number
     height: number
@@ -105,8 +124,12 @@ export const ViewportAnnotationOverlay = (
     const nextPoint = getCanvasPoint(canvas, event)
     const rect = canvas.getBoundingClientRect()
     const pixelRatio = rect.width > 0 ? canvas.width / rect.width : 1
-    ctx.strokeStyle = TRIM_PREVIEW_LINE_COLOR
-    ctx.lineWidth = getTrimPreviewLineWidth(pixelRatio)
+    ctx.globalCompositeOperation =
+      activeTool.type === 'erase' ? 'destination-out' : 'source-over'
+    ctx.strokeStyle = activeTool.type === 'draw' ? activeTool.color : '#000000'
+    const lineWidthMultiplier =
+      'lineWidthMultiplier' in activeTool ? activeTool.lineWidthMultiplier : 1
+    ctx.lineWidth = getTrimPreviewLineWidth(pixelRatio) * lineWidthMultiplier
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.beginPath()
@@ -209,7 +232,9 @@ export const ViewportAnnotationOverlay = (
       <canvas
         ref={canvasRef}
         data-testid="viewport-annotation-canvas"
-        className="absolute inset-0 h-full w-full cursor-crosshair touch-none"
+        className={`absolute inset-0 h-full w-full touch-none ${
+          activeTool.type === 'erase' ? 'cursor-cell' : 'cursor-crosshair'
+        }`}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -217,7 +242,35 @@ export const ViewportAnnotationOverlay = (
           lastPoint.current = null
         }}
       />
-      <div className="absolute top-2 left-1/2 flex max-w-[calc(100%-1rem)] -translate-x-1/2 items-center gap-1 rounded-sm border border-chalkboard-30 bg-chalkboard-10/95 p-1 shadow-sm dark:border-chalkboard-70 dark:bg-chalkboard-90/95">
+      <div className="absolute top-2 left-1/2 flex max-w-[calc(100%-1rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-1 rounded-sm border border-chalkboard-30 bg-chalkboard-10/95 p-1 shadow-sm dark:border-chalkboard-70 dark:bg-chalkboard-90/95">
+        <div className="flex items-center gap-1">
+          {zoodleToolKeys.map((toolKey: ZoodleToolKey) => {
+            const tool = props.zoodle.toolDefinitions[toolKey]
+            const isActive = activeToolKey === toolKey
+
+            return (
+              <button
+                key={toolKey}
+                type="button"
+                data-testid={`viewport-annotation-tool-${toolKey}`}
+                aria-label={tool.label}
+                aria-pressed={isActive}
+                className={toolButtonClassName(tool, isActive)}
+                onClick={() => props.zoodle.equipTool(toolKey)}
+              >
+                {tool.type === 'draw' ? (
+                  <span
+                    className="h-4 w-4 rounded-full border border-chalkboard-100/40 dark:border-chalkboard-10/40"
+                    style={{ backgroundColor: tool.color }}
+                  />
+                ) : (
+                  tool.label
+                )}
+              </button>
+            )
+          })}
+        </div>
+        <div className="h-5 w-px bg-chalkboard-30 dark:bg-chalkboard-70" />
         <button
           type="button"
           className="m-0 h-7 px-2 rounded-sm border-none bg-transparent hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 text-xs"

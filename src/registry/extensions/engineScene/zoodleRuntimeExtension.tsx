@@ -2,7 +2,9 @@ import {
   type RegistryLike,
   defineRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
 import {
   defineEngineSceneStreamClassName,
@@ -11,6 +13,13 @@ import {
   engineSceneStreamClassNamesValueSpec,
   engineSceneStreamLayersValueSpec,
 } from '@src/registry/contracts/engineScene'
+import {
+  type ZoodleService,
+  type ZoodleToolKey,
+  defaultZoodleToolKey,
+  zoodleService,
+  zoodleToolDefinitions,
+} from '@src/registry/contracts/zoodle'
 
 export interface ZoodleRuntimeExtensionSession {
   imageDataUrl: string
@@ -25,9 +34,22 @@ const zoodleStreamStackClassName = defineEngineSceneStreamClassName({
     'inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
 })
 
+function createZoodleService(): ZoodleService {
+  const activeToolKey = signal<ZoodleToolKey>(defaultZoodleToolKey)
+
+  return {
+    toolDefinitions: zoodleToolDefinitions,
+    activeToolKey,
+    equipTool(toolKey) {
+      activeToolKey.value = toolKey
+    },
+  }
+}
+
 export function createZoodleRuntimeExtension(
   session: ZoodleRuntimeExtensionSession
 ) {
+  const zoodle = createZoodleService()
   const zoodleAnnotationLayer = defineEngineSceneStreamLayer({
     id: 'zookeeper.zoodle.annotation-layer',
     order: 100,
@@ -37,6 +59,7 @@ export function createZoodleRuntimeExtension(
         imageDataUrl={session.imageDataUrl}
         onCancel={session.onCancel}
         onSend={session.onSend}
+        zoodle={zoodle}
       />
     ),
   })
@@ -55,6 +78,7 @@ export function createZoodleRuntimeExtension(
         key: zoodleAnnotationLayer.id,
       }),
     ],
+    providesServices: [provideService(zoodleService, zoodle)],
   })
 }
 
