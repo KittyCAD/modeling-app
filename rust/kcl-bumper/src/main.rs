@@ -83,16 +83,18 @@ fn update_semver(bump: Option<SemverBump>, cargo_dot_toml: &mut DocumentMut) -> 
         println!("{current_version}");
         return Ok(None);
     };
+    let prev_version = current_version.clone();
     let mut next_version = current_version;
     match bump {
         SemverBump::Major => next_version.major += 1,
         SemverBump::Minor => next_version.minor += 1,
         SemverBump::Patch => next_version.patch += 1,
     };
+    next_version.pre = Default::default();
 
     // Update the Cargo.toml
     cargo_dot_toml["package"]["version"] = value(next_version.to_string());
-    println!("{next_version}");
+    println!("\tBumped {prev_version} => {next_version}");
     Ok(Some(next_version))
 }
 
@@ -219,6 +221,32 @@ anyhow = "1.0.81"
     #[test]
     fn test_bump_patch() {
         let mut cargo_dot_toml = EXAMPLE.parse::<DocumentMut>().unwrap();
+        update_semver(Some(SemverBump::Patch), &mut cargo_dot_toml).unwrap();
+        assert_eq!(
+            cargo_dot_toml.to_string(),
+            r#"
+[package]
+name = "bumper"
+version = "0.1.1"
+
+[dependencies]
+anyhow = "1.0.81"
+        "#
+        );
+    }
+
+    #[test]
+    fn test_bump_patch_dash_pre() {
+        let mut cargo_dot_toml = r#"
+[package]
+name = "bumper"
+version = "0.1.0-hotfix"
+
+[dependencies]
+anyhow = "1.0.81"
+        "#
+        .parse::<DocumentMut>()
+        .unwrap();
         update_semver(Some(SemverBump::Patch), &mut cargo_dot_toml).unwrap();
         assert_eq!(
             cargo_dot_toml.to_string(),
