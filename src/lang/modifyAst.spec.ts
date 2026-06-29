@@ -1414,7 +1414,6 @@ extrude001 = extrude(profile001, length = 5)
         id: 'legacy-wall-1',
         cmdId: 'cmd-1',
         segId: segmentArtifact!.id,
-        edgeCutEdgeIds: [],
         pathIds: [],
         sweepId: sweepArtifact!.id,
         faceCodeRef: {

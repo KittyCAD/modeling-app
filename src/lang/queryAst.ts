@@ -2693,14 +2693,6 @@ export function getSketchSegmentNameFromSourceSurface(
   let selectedSegment: Extract<Artifact, { type: 'segment' }> | null = null
   if (segmentArtifact.type === 'segment') {
     selectedSegment = segmentArtifact
-  } else if (segmentArtifact.type === 'sweepEdge') {
-    const segment = getArtifactOfTypes(
-      { key: segmentArtifact.segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(segment) && segment.type === 'segment') {
-      selectedSegment = segment
-    }
   } else if (segmentArtifact.type === 'wall') {
     const segment = getArtifactOfTypes(
       { key: segmentArtifact.segId, types: ['segment'] },
@@ -2796,11 +2788,9 @@ export function getRegionSketchTagExprFromSourceSurface(
   const segmentId =
     segmentArtifact.type === 'segment'
       ? segmentArtifact.id
-      : segmentArtifact.type === 'sweepEdge'
+      : segmentArtifact.type === 'wall'
         ? segmentArtifact.segId
-        : segmentArtifact.type === 'wall'
-          ? segmentArtifact.segId
-          : null
+        : null
   if (!segmentId) {
     return null
   }

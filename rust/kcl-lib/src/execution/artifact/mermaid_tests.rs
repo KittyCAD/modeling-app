@@ -638,7 +638,6 @@ impl ArtifactGraph {
     }
 }
 
-
 #[test]
 fn pattern_traversal_links_source_and_copied_geometry() {
     let source_id = ArtifactId::new(Uuid::new_v4());
@@ -772,7 +771,6 @@ fn primitive_edge_does_not_replace_existing_segment_artifact() {
             path_id,
             original_seg_id: None,
             surface_id: None,
-            edge_ids: Vec::new(),
             edge_cut_id: None,
             code_ref: CodeRef::placeholder(SourceRange::synthetic()),
         }),

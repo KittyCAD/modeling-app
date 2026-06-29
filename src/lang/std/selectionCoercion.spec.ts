@@ -69,7 +69,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -79,8 +78,6 @@ describe('coerceSelectionsToBody', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
       edgeCutId: 'edge-cut-1',
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
     }
@@ -88,9 +85,8 @@ describe('coerceSelectionsToBody', () => {
     const edgeCut: Artifact = {
       type: 'edgeCut',
       id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
       subType: 'chamfer',
-      edgeIds: [],
+      surfaceId: null,
       codeRef: { range: [90, 95, 0], pathToNode: [], nodePath: { steps: [] } },
     }
 
@@ -149,7 +145,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -159,8 +154,6 @@ describe('coerceSelectionsToBody', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
       codeRef: { range: [10, 20, 0], pathToNode: [], nodePath: { steps: [] } },
     }
 
@@ -203,7 +196,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -259,7 +251,6 @@ describe('coerceSelectionsToBody', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,

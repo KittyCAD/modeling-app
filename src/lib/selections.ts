@@ -62,6 +62,7 @@ import {
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getPatternArtifactForCopyId,
+  getSegmentForEdgeCut,
   getSketchBlockForPathArtifact,
   getSolid2dCodeRef,
   getSweepArtifactFromSelection,
@@ -390,7 +391,6 @@ function isPrimitiveReferenceArtifact(artifact: Artifact | undefined): boolean {
     artifact?.type === 'wall' ||
     artifact?.type === 'cap' ||
     artifact?.type === 'primitiveFace' ||
-    artifact?.type === 'sweepEdge' ||
     artifact?.type === 'primitiveEdge' ||
     artifact?.type === 'edgeCut'
   )
@@ -523,11 +523,8 @@ async function validateFaceApiReferenceExpr() {
 function getTaggableEdgeArtifact(
   selection: Selection,
   artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'segment' | 'sweepEdge' }> | null {
-  if (
-    selection.artifact?.type === 'segment' ||
-    selection.artifact?.type === 'sweepEdge'
-  ) {
+): Extract<Artifact, { type: 'segment' }> | null {
+  if (selection.artifact?.type === 'segment') {
     return selection.artifact
   }
 
@@ -535,26 +532,8 @@ function getTaggableEdgeArtifact(
     return null
   }
 
-  const consumedEdge = getArtifactOfTypes(
-    {
-      key: selection.artifact.consumedEdgeId,
-      types: ['segment', 'sweepEdge'],
-    },
-    artifactGraph
-  )
-  return err(consumedEdge) ? null : consumedEdge
-}
-
-function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
-  if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
-    return createCallExpressionStdLibKw('getOppositeEdge', tag, [])
-  }
-
-  if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
-    return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
-  }
-
-  return tag
+  const segment = getSegmentForEdgeCut(selection.artifact.id, artifactGraph)
+  return segment ? ({ ...segment, type: 'segment' } as const) : null
 }
 
 function getSourceSurfaceExpr(
@@ -590,12 +569,7 @@ function getSegmentArtifactForTagReference(
     return artifact
   }
 
-  const segmentId =
-    artifact.type === 'sweepEdge'
-      ? artifact.segId
-      : artifact.type === 'wall'
-        ? artifact.segId
-        : null
+  const segmentId = artifact.type === 'wall' ? artifact.segId : null
   if (!segmentId) {
     return null
   }
@@ -733,7 +707,7 @@ function createDirectTaggedEdgeReferenceExpr(
   }
 
   const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
-  if (!edgeArtifact || edgeArtifact.type === 'sweepEdge') {
+  if (!edgeArtifact) {
     return null
   }
   const edgeSelection: ResolvedGraphSelection = {
@@ -778,20 +752,10 @@ function createAdjacentOrOppositeEdgeReferenceExpr({
   }
 
   const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
-  if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
-    return null
-  }
-
-  const segmentArtifact = getArtifactOfTypes(
-    { key: edgeArtifact.segId, types: ['segment'] },
-    artifactGraph
-  )
-  if (err(segmentArtifact)) {
-    return null
-  }
+  if (!edgeArtifact) return null
 
   const segmentSelection: ResolvedGraphSelection = {
-    artifact: segmentArtifact,
+    artifact: edgeArtifact,
     codeRef: graphSelection.codeRef,
   }
 
@@ -807,7 +771,7 @@ function createAdjacentOrOppositeEdgeReferenceExpr({
     kclManager.ast,
     {
       ...graphSelection,
-      artifact: segmentArtifact,
+      artifact: edgeArtifact,
       codeRef: graphSelection.codeRef,
     },
     artifactGraph,
@@ -819,7 +783,7 @@ function createAdjacentOrOppositeEdgeReferenceExpr({
     return null
   }
 
-  return getEdgeTagCallExpr(tagExpr, edgeArtifact)
+  return tagExpr
 }
 
 function createTagReferenceExpr(
@@ -2893,13 +2857,7 @@ const semanticEntityNames: {
   face: ['wall', 'cap', 'primitiveFace', 'enginePrimitiveFace'],
   profile: ['solid2d'],
   region: ['pathRegion', 'engineRegion'],
-  edge: [
-    'segment',
-    'sweepEdge',
-    'edgeCutEdge',
-    'primitiveEdge',
-    'enginePrimitiveEdge',
-  ],
+  edge: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
   point: [],
   plane: ['defaultPlane'],
 }

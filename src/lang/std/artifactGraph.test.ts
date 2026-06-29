@@ -39,7 +39,6 @@ describe('getSweepArtifactFromSelection', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -49,8 +48,6 @@ describe('getSweepArtifactFromSelection', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
       edgeCutId: 'edge-cut-1',
       codeRef: {
         range: [0, 0, 0],
@@ -62,9 +59,8 @@ describe('getSweepArtifactFromSelection', () => {
     const edgeCut: Artifact = {
       type: 'edgeCut',
       id: 'edge-cut-1',
-      consumedEdgeId: 'segment-1',
       subType: 'chamfer',
-      edgeIds: [],
+      surfaceId: null,
       codeRef: {
         range: [0, 0, 0],
         pathToNode: [],
@@ -131,8 +127,6 @@ describe('getSketchBlockForArtifact', () => {
       type: 'segment',
       id: 'segment-1',
       pathId: 'path-1',
-      edgeIds: [],
-      commonSurfaceIds: [],
       codeRef,
     }
 
@@ -238,7 +232,6 @@ describe('getBodiesFromArtifactGraph', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -279,7 +272,6 @@ describe('getBodiesFromArtifactGraph', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: [],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -348,7 +340,6 @@ describe('isFaceFromLegacySketch', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: ['wall-1'],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -359,7 +350,6 @@ describe('isFaceFromLegacySketch', () => {
       id: 'wall-1',
       cmdId: 'cmd-1',
       segId: 'segment-1',
-      edgeCutEdgeIds: [],
       pathIds: [],
       sweepId: 'sweep-1',
       faceCodeRef: {
@@ -402,7 +392,6 @@ describe('isFaceFromLegacySketch', () => {
       pathId: 'path-1',
       subType: 'extrusion',
       surfaceIds: ['wall-1'],
-      edgeIds: [],
       method: 'merge',
       trajectoryId: null,
       consumed: false,
@@ -413,7 +402,6 @@ describe('isFaceFromLegacySketch', () => {
       id: 'wall-1',
       cmdId: 'cmd-1',
       segId: 'segment-1',
-      edgeCutEdgeIds: [],
       pathIds: [],
       sweepId: 'sweep-1',
       faceCodeRef: {

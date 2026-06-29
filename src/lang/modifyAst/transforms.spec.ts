@@ -76,7 +76,6 @@ describe('transforms.test.ts', () => {
         subType: 'extrusion',
         pathId: 'path-id',
         surfaceIds: [],
-        edgeIds: [],
         codeRef: {
           range: sourceRange,
           pathToNode: sourcePathToNode,
@@ -1360,7 +1359,6 @@ extrude001 = extrude(profile001, length = 10)`
         subType: 'end',
         sweepId: bodyArtifact.id,
         pathIds: [],
-        edgeCutEdgeIds: [],
         faceCodeRef: bodyArtifact.codeRef,
         cmdId: '',
       }

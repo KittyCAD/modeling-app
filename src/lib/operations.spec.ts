@@ -82,13 +82,11 @@ function segmentArtifact(id: string): Artifact {
     type: 'segment',
     id,
     pathId: 'path-id',
-    edgeIds: [],
     codeRef: {
       range: defaultSourceRange(),
       nodePath: defaultNodePath(),
       pathToNode: [],
     },
-    commonSurfaceIds: [],
   }
 }
 
@@ -116,7 +114,6 @@ function sweepArtifact(id: string, pathId: string): Artifact {
     subType: 'extrusion',
     pathId,
     surfaceIds: [],
-    edgeIds: [],
     codeRef: {
       range: defaultSourceRange(),
       nodePath: defaultNodePath(),
@@ -136,7 +133,6 @@ function capArtifact(id: string, sweepId: string): Artifact {
     subType: 'end',
     sweepId,
     pathIds: [],
-    edgeCutEdgeIds: [],
     faceCodeRef: {
       range: defaultSourceRange(),
       nodePath: defaultNodePath(),

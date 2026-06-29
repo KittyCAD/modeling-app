@@ -1169,7 +1169,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
     )
     if (
-      edgeArtifact?.type !== 'sweepEdge' ||
+      edgeArtifact?.type !== 'segment' ||
       segmentArtifact?.type !== 'segment' ||
       sweepArtifact?.type !== 'sweep'
     ) {

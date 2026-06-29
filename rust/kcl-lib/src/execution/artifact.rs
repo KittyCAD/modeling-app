@@ -608,10 +608,7 @@ impl Artifact {
             Artifact::PrimitiveFace(a) => Some(&a.code_ref),
             Artifact::Wall(a) => Some(&a.face_code_ref),
             Artifact::Cap(a) => Some(&a.face_code_ref),
-            Artifact::EdgeCut(_)
-            | Artifact::Helix(_)
-            | Artifact::GdtAnnotation(_)
-            | Artifact::Pattern(_) => None,
+            Artifact::EdgeCut(_) | Artifact::Helix(_) | Artifact::GdtAnnotation(_) | Artifact::Pattern(_) => None,
         }
     }
 
@@ -1241,10 +1238,8 @@ fn remap_artifact_for_clone(
             path_id: remap_id_for_clone(source.path_id, entity_id_map),
             original_seg_id: remap_opt_id_for_clone(source.original_seg_id, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
-            edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             edge_cut_id: remap_opt_id_for_clone(source.edge_cut_id, entity_id_map),
             code_ref: clone_code_ref.clone(),
-            common_surface_ids: remap_ids_for_clone(&source.common_surface_ids, entity_id_map),
         }),
         Artifact::Solid2d(source) => Artifact::Solid2d(Solid2d {
             id: remap_id_for_clone(source.id, entity_id_map),
@@ -1296,7 +1291,6 @@ fn remap_artifact_for_clone(
             sub_type: source.sub_type,
             path_id: remap_id_for_clone(source.path_id, entity_id_map),
             surface_ids: remap_ids_for_clone(&source.surface_ids, entity_id_map),
-            edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
             trajectory_id: remap_opt_id_for_clone(source.trajectory_id, entity_id_map),
             method: source.method,
@@ -1310,7 +1304,6 @@ fn remap_artifact_for_clone(
         Artifact::Wall(source) => Artifact::Wall(Wall {
             id: remap_id_for_clone(source.id, entity_id_map),
             seg_id: remap_id_for_clone(source.seg_id, entity_id_map),
-            edge_cut_edge_ids: remap_ids_for_clone(&source.edge_cut_edge_ids, entity_id_map),
             sweep_id: remap_id_for_clone(source.sweep_id, entity_id_map),
             path_ids: remap_ids_for_clone(&source.path_ids, entity_id_map),
             face_code_ref: source.face_code_ref.clone(),
@@ -1319,33 +1312,16 @@ fn remap_artifact_for_clone(
         Artifact::Cap(source) => Artifact::Cap(Cap {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
-            edge_cut_edge_ids: remap_ids_for_clone(&source.edge_cut_edge_ids, entity_id_map),
             sweep_id: remap_id_for_clone(source.sweep_id, entity_id_map),
             path_ids: remap_ids_for_clone(&source.path_ids, entity_id_map),
             face_code_ref: source.face_code_ref.clone(),
             cmd_id: clone_cmd_id,
         }),
-        Artifact::SweepEdge(source) => Artifact::SweepEdge(SweepEdge {
-            id: remap_id_for_clone(source.id, entity_id_map),
-            sub_type: source.sub_type,
-            seg_id: remap_id_for_clone(source.seg_id, entity_id_map),
-            cmd_id: clone_cmd_id,
-            index: source.index,
-            sweep_id: remap_id_for_clone(source.sweep_id, entity_id_map),
-            common_surface_ids: remap_ids_for_clone(&source.common_surface_ids, entity_id_map),
-        }),
         Artifact::EdgeCut(source) => Artifact::EdgeCut(EdgeCut {
             id: remap_id_for_clone(source.id, entity_id_map),
             sub_type: source.sub_type,
-            consumed_edge_id: remap_id_for_clone(source.consumed_edge_id, entity_id_map),
-            edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             surface_id: remap_opt_id_for_clone(source.surface_id, entity_id_map),
             code_ref: clone_code_ref.clone(),
-        }),
-        Artifact::EdgeCutEdge(source) => Artifact::EdgeCutEdge(EdgeCutEdge {
-            id: remap_id_for_clone(source.id, entity_id_map),
-            edge_cut_id: remap_id_for_clone(source.edge_cut_id, entity_id_map),
-            surface_id: remap_id_for_clone(source.surface_id, entity_id_map),
         }),
         Artifact::Helix(source) => Artifact::Helix(Helix {
             id: remap_id_for_clone(source.id, entity_id_map),
@@ -1640,7 +1616,6 @@ fn mirror_3d_artifact_updates(
                 let mut mirrored_sweep = sweep.clone();
                 mirrored_sweep.id = mirrored_solid_id;
                 mirrored_sweep.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
-                mirrored_sweep.edge_ids = face_edge_info.edges.iter().copied().map(ArtifactId::new).collect();
                 mirrored_sweep.code_ref = code_ref.clone();
                 mirrored_sweep.consumed = false;
                 mirrored_sweep.pattern_ids = Vec::new();
@@ -1917,7 +1892,6 @@ fn artifacts_to_update(
                         path_id: id,
                         original_seg_id: Some(ArtifactId::new(*original_segment_id)),
                         surface_id: None,
-                        edge_ids: Vec::new(),
                         edge_cut_id: None,
                         code_ref: code_ref.clone(),
                     }))
