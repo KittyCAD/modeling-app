@@ -206,7 +206,10 @@ import type {
 } from '@src/lang/wasm'
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
-import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
+import {
+  type ModelingCommandSchema,
+  extrudeUsesExperimentalFeatures,
+} from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -4328,7 +4331,7 @@ export const modelingMachine = setup({
         const wasmInstance = await input.kclManager.wasmInstancePromise
         let ast = input.kclManager.ast
         if (
-          input.data.draftAngle &&
+          extrudeUsesExperimentalFeatures(input.data) &&
           input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
         ) {
           const astWithNewSetting = setExperimentalFeatures(

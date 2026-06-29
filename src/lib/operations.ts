@@ -385,6 +385,18 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
+  let direction: ModelingCommandSchema['Extrude']['direction'] | undefined
+  if ('direction' in operation.labeledArgs && operation.labeledArgs.direction) {
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      operation.labeledArgs.direction,
+      artifactGraph
+    )
+    if (err(axisEdgeSelection) || !axisEdgeSelection.edge) {
+      return { reason: 'Missing or invalid direction edge selection' }
+    }
+    direction = axisEdgeSelection.edge
+  }
+
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | undefined
   if (
@@ -527,6 +539,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     length,
     to,
     symmetric,
+    direction,
     bidirectionalLength,
     tagStart,
     tagEnd,

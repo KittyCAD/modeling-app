@@ -8,6 +8,8 @@ import {
   createLocalName,
   createName,
   createTagDeclarator,
+  createVariableDeclaration,
+  findUniqueName,
 } from '@src/lang/create'
 import { toUtf16 } from '@src/lang/errors'
 import {
@@ -17,6 +19,7 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { getEdgeTagCall } from '@src/lang/modifyAst/edges'
 import {
   getFacesExprsFromSelection,
   isFaceArtifact,
@@ -55,8 +58,103 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
+  Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
+
+function isSweepEdgeSelection(selection: Selection): boolean {
+  return selection.artifact?.type === 'sweepEdge'
+}
+
+function getTopLevelInsertIndex(
+  modifiedAst: Node<Program>,
+  nodeToEdit?: PathToNode
+): number {
+  const bodyIndex = nodeToEdit?.[1]?.[0]
+  return typeof bodyIndex === 'number' ? bodyIndex : modifiedAst.body.length
+}
+
+function insertSweepEdgeProfileVariablesAndOffsetPathToNode({
+  edgeProfiles,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  edgeProfiles: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
+  let insertIndex = getTopLevelInsertIndex(modifiedAst, nodeToEdit)
+  const exprs: Expr[] = []
+
+  for (const selection of edgeProfiles.graphSelections) {
+    if (selection.artifact?.type !== 'sweepEdge') {
+      return new Error('Extrude edge profiles must be sweep edge selections.')
+    }
+
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      selection,
+      artifactGraph,
+      wasmInstance,
+      ['oppositeAndAdjacentEdges']
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+
+    if (tagResult.exprs.length !== 1) {
+      return new Error("Couldn't retrieve edge profile expression.")
+    }
+
+    const edgeExpr = getEdgeTagCall(tagResult.exprs[0], selection.artifact)
+    const edgeVariableName = findUniqueName(
+      modifiedAst,
+      KCL_DEFAULT_CONSTANT_PREFIXES.EDGE
+    )
+    const edgeIdentifierAst = createLocalName(edgeVariableName)
+    insertVariableAndOffsetPathToNode(
+      {
+        valueAst: edgeExpr,
+        valueText: '',
+        valueCalculated: '',
+        variableName: edgeVariableName,
+        variableDeclarationAst: createVariableDeclaration(
+          edgeVariableName,
+          edgeExpr
+        ),
+        variableIdentifierAst: edgeIdentifierAst,
+        insertIndex,
+      },
+      modifiedAst,
+      nodeToEdit
+    )
+    insertIndex++
+    exprs.push(edgeIdentifierAst)
+  }
+
+  return { modifiedAst, exprs }
+}
+
+function selectionsReferenceSameSingleArtifact(
+  left: Selections | undefined,
+  right: Selections
+): boolean {
+  if (
+    !left ||
+    left.graphSelections.length !== 1 ||
+    right.graphSelections.length !== 1
+  ) {
+    return false
+  }
+
+  return (
+    left.graphSelections[0].artifact?.id ===
+    right.graphSelections[0].artifact?.id
+  )
+}
 
 export function addExtrude({
   ast,
@@ -66,6 +164,7 @@ export function addExtrude({
   length,
   to,
   symmetric,
+  direction,
   bidirectionalLength,
   tagStart,
   tagEnd,
@@ -85,6 +184,7 @@ export function addExtrude({
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
+  direction?: Selections
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
@@ -128,9 +228,20 @@ export function addExtrude({
     ),
     otherSelections: sketches.otherSelections,
   }
-  if (nonFaceSelections.graphSelections.length > 0) {
+  const edgeProfileSelections: Selections = {
+    graphSelections:
+      nonFaceSelections.graphSelections.filter(isSweepEdgeSelection),
+    otherSelections: [],
+  }
+  const nonEdgeNonFaceSelections: Selections = {
+    graphSelections: nonFaceSelections.graphSelections.filter(
+      (selection) => !isSweepEdgeSelection(selection)
+    ),
+    otherSelections: nonFaceSelections.otherSelections,
+  }
+  if (nonEdgeNonFaceSelections.graphSelections.length > 0) {
     const res = getVariableExprsFromSelection(
-      nonFaceSelections,
+      nonEdgeNonFaceSelections,
       artifactGraph,
       modifiedAst,
       wasmInstance,
@@ -141,6 +252,25 @@ export function addExtrude({
     }
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
+  }
+
+  const hasEdgeProfiles = edgeProfileSelections.graphSelections.length > 0
+  let edgeProfileDirectionExpr: Expr | undefined
+  if (hasEdgeProfiles) {
+    const edgeProfileResult =
+      insertSweepEdgeProfileVariablesAndOffsetPathToNode({
+        edgeProfiles: edgeProfileSelections,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+        nodeToEdit: mNodeToEdit,
+      })
+    if (err(edgeProfileResult)) return edgeProfileResult
+    modifiedAst = edgeProfileResult.modifiedAst
+    vars.exprs.push(...edgeProfileResult.exprs)
+    if (edgeProfileResult.exprs.length === 1) {
+      edgeProfileDirectionExpr = structuredClone(edgeProfileResult.exprs[0])
+    }
   }
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
@@ -188,6 +318,30 @@ export function addExtrude({
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
+  let directionExpr: LabeledArg[] = []
+  if (
+    edgeProfileDirectionExpr &&
+    (!direction ||
+      selectionsReferenceSameSingleArtifact(direction, edgeProfileSelections))
+  ) {
+    directionExpr = [
+      createLabeledArg('direction', structuredClone(edgeProfileDirectionExpr)),
+    ]
+  } else if (direction) {
+    const directionResult = getAxisExpression(
+      undefined,
+      direction,
+      modifiedAst,
+      wasmInstance,
+      artifactGraph,
+      mNodeToEdit
+    )
+    if (err(directionResult)) return directionResult
+    modifiedAst = directionResult.modifiedAst
+    directionExpr = [
+      createLabeledArg('direction', directionResult.generatedAxis),
+    ]
+  }
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -227,8 +381,10 @@ export function addExtrude({
     hideSeams !== undefined
       ? [createLabeledArg('hideSeams', createLiteral(hideSeams, wasmInstance))]
       : []
-  const bodyTypeExpr = bodyType
-    ? [createLabeledArg('bodyType', createLocalName(bodyType))]
+  const effectiveBodyType =
+    bodyType ?? (hasEdgeProfiles ? KCL_PRELUDE_BODY_TYPE_SURFACE : undefined)
+  const bodyTypeExpr = effectiveBodyType
+    ? [createLabeledArg('bodyType', createLocalName(effectiveBodyType))]
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
@@ -236,6 +392,7 @@ export function addExtrude({
     ...lengthExpr,
     ...toExpr,
     ...symmetricExpr,
+    ...directionExpr,
     ...bidirectionalLengthExpr,
     ...tagStartExpr,
     ...tagEndExpr,
@@ -291,7 +448,9 @@ export function addExtrude({
     call,
     pathToEdit: mNodeToEdit,
     pathIfNewPipe: vars.pathIfPipe,
-    variableIfNewDecl: KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
+    variableIfNewDecl: hasEdgeProfiles
+      ? KCL_DEFAULT_CONSTANT_PREFIXES.SURFACE
+      : KCL_DEFAULT_CONSTANT_PREFIXES.EXTRUDE,
     wasmInstance,
   })
   if (err(pathToNode)) {

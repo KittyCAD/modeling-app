@@ -215,7 +215,10 @@ export function profileSelectionRequiresBodyType({
   }
 
   return sketches.graphSelections.some(
-    (selection) => !selection.artifact || selection.artifact.type === 'segment'
+    (selection) =>
+      !selection.artifact ||
+      selection.artifact.type === 'segment' ||
+      selection.artifact.type === 'sweepEdge'
   )
 }
 
@@ -227,6 +230,20 @@ export function extrudeSelectionRequiresBodyType(context: {
   }
 
   return profileSelectionRequiresBodyType(context)
+}
+
+export function extrudeUsesExperimentalFeatures({
+  draftAngle,
+  direction,
+  sketches,
+}: ModelingCommandSchema['Extrude']): boolean {
+  return Boolean(
+    draftAngle ||
+      direction ||
+      sketches.graphSelections.some(
+        (selection) => selection.artifact?.type === 'sweepEdge'
+      )
+  )
 }
 
 const hasEngineConnection = (
@@ -257,6 +274,7 @@ export type ModelingCommandSchema = {
     length?: KclCommandValue
     to?: Selections
     symmetric?: boolean
+    direction?: Selections
     bidirectionalLength?: KclCommandValue
     tagStart?: string
     tagEnd?: string
@@ -1035,11 +1053,29 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       if (err(hasConnectionRes)) {
         return hasConnectionRes
       }
+      const commandArgs =
+        context.argumentsToSubmit as ModelingCommandSchema['Extrude']
+      const wasmInstance = await context.wasmInstancePromise
+      let ast = kclManager.ast
+      if (
+        extrudeUsesExperimentalFeatures(commandArgs) &&
+        kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
+      ) {
+        const astWithNewSetting = setExperimentalFeatures(
+          kclManager.code,
+          {
+            type: 'Allow',
+          },
+          wasmInstance
+        )
+        if (err(astWithNewSetting)) return astWithNewSetting
+        ast = astWithNewSetting
+      }
       const modRes = addExtrude({
-        ...(context.argumentsToSubmit as ModelingCommandSchema['Extrude']),
-        ast: kclManager.ast,
+        ...commandArgs,
+        ast,
         artifactGraph: kclManager.artifactGraph,
-        wasmInstance: await context.wasmInstancePromise,
+        wasmInstance,
       })
       if (err(modRes)) return modRes
       const execRes = await mockExecAstAndReportErrors(
@@ -1058,6 +1094,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: [
           'solid2d',
           'segment',
+          'sweepEdge',
           'cap',
           'wall',
           'pathRegion',
@@ -1085,6 +1122,14 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       symmetric: {
         inputType: 'boolean',
         required: false,
+      },
+      direction: {
+        inputType: 'selection',
+        selectionTypes: ['segment', 'sweepEdge'],
+        multiple: false,
+        clearSelectionFirst: true,
+        required: false,
+        status: 'experimental',
       },
       bidirectionalLength: {
         inputType: 'kcl',
