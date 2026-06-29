@@ -379,6 +379,15 @@ const sharedBulkDeleteWorkflow = async ({
     wasmInstance: ModuleType
   }
 }) => {
+  const requestedFilesToDelete = new Set(
+    (input.filesToDelete ?? []).map((file) =>
+      normalizeKCLFileDeletePath(file.requestedFileName)
+    )
+  )
+  if (requestedFilesToDelete.size === 0) {
+    return 0
+  }
+
   if (!input.context.folders) {
     console.warn('no folders')
     return
@@ -395,12 +404,6 @@ const sharedBulkDeleteWorkflow = async ({
     fileNames: [],
     projectContext: project,
   })
-
-  const requestedFilesToDelete = new Set(
-    (input.filesToDelete ?? []).map((file) =>
-      normalizeKCLFileDeletePath(file.requestedFileName)
-    )
-  )
 
   // requestedFileName is the relative path too.
   const filesToDelete = filesInProject.filter(
@@ -874,24 +877,33 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
             onFileSystemSuccess?: () => void
+            onFileSystemError?: () => void
             onSuccess?: () => void
           }
         }) => {
-          const wasmInstance = await input.context.wasmInstancePromise
-          const message = await sharedBulkCreateWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-              override: input.override,
-            },
-          })
-          // We won't delete until everything's created / updated first.
-          const totalDeleted = await sharedBulkDeleteWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-            },
-          })
+          let message: Awaited<ReturnType<typeof sharedBulkCreateWorkflow>>
+          let totalDeleted = 0
+          try {
+            const wasmInstance = await input.context.wasmInstancePromise
+            message = await sharedBulkCreateWorkflow({
+              input: {
+                ...input,
+                wasmInstance,
+                override: input.override,
+              },
+            })
+            // We won't delete until everything's created / updated first.
+            totalDeleted =
+              (await sharedBulkDeleteWorkflow({
+                input: {
+                  ...input,
+                  wasmInstance,
+                },
+              })) ?? 0
+          } catch (error) {
+            input.onFileSystemError?.()
+            return Promise.reject(error)
+          }
 
           message.message += `, ${totalDeleted} deleted`
           input.onFileSystemSuccess?.()
