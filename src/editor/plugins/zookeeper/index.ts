@@ -5,6 +5,7 @@ import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
 import { isCodeTheSame } from '@src/lib/codeEditor'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
+import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { isErr } from '@src/lib/trap'
 import {
@@ -539,7 +540,9 @@ async function prepareZookeeperPatchReplay(
     if (expectedContentError) {
       if (
         alreadyReplayedFilePaths?.has(replayFile.absolutePath) &&
-        ((replayFile.nextContent === null && currentContent === '') ||
+        ((replayFile.nextContent === null &&
+          currentContent !== null &&
+          isCodeTheSame(currentContent, '')) ||
           (replayFile.expectedContent === null &&
             replayFile.nextContent !== null &&
             currentContent !== null &&
@@ -688,7 +691,7 @@ async function readTextFileIfExists(path: string): Promise<string | null> {
   try {
     return await fsZds.readFile(path, 'utf8')
   } catch (error: unknown) {
-    if (isEnoentError(error)) {
+    if (isPathNotFoundError(error)) {
       return null
     }
 
@@ -811,17 +814,4 @@ function getReplayErrorMessage(error: unknown) {
   }
 
   return 'Failed to replay Zookeeper edit patch.'
-}
-
-function isEnoentError(error: unknown): boolean {
-  if (error === 'ENOENT') {
-    return true
-  }
-
-  return (
-    typeof error === 'object' &&
-    error !== null &&
-    (('cause' in error && error.cause === 'ENOENT') ||
-      ('code' in error && error.code === 'ENOENT'))
-  )
 }

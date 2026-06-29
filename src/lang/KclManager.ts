@@ -156,6 +156,7 @@ import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
+import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
@@ -580,29 +581,7 @@ export class ZDSProject {
 
   /** Get all the KCL files in this project as a flat array. */
   private async getAllKclFiles(): Promise<ApiFile[]> {
-    const apiFiles = await Promise.all(
-      this.files.map(async (file): Promise<ApiFile | null> => {
-        try {
-          return await file.asRustApiFile()
-        } catch (error: unknown) {
-          if (!isEnoentError(error)) {
-            return Promise.reject(error)
-          }
-
-          if (file instanceof KclManager) {
-            return {
-              id: file.id,
-              path: file.path,
-              text: file.code,
-            }
-          }
-
-          return null
-        }
-      })
-    )
-
-    return apiFiles.filter((file): file is ApiFile => file !== null)
+    return Promise.all(this.files.map((file) => file.asRustApiFile()))
   }
 
   /**
@@ -831,6 +810,24 @@ export class KclManager extends File {
   get code(): string {
     return this.editorView.state.doc.toString()
   }
+
+  /** Present active editor data to Rust after Zookeeper has already deleted the file on disk. */
+  async asRustApiFile(): Promise<ApiFile> {
+    try {
+      return await super.asRustApiFile()
+    } catch (error: unknown) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
+
+      return {
+        id: this.id,
+        path: this.path,
+        text: this.code,
+      }
+    }
+  }
+
   get currentSketchCheckpointId(): number | null {
     return this.lastCommittedSketchCheckpointId
   }
@@ -3642,12 +3639,7 @@ export class KclManager extends File {
           }).then(resolve, reject)
         }, 1000)
       }).catch((err: unknown) => {
-        if (
-          typeof err === 'object' &&
-          err !== null &&
-          'cause' in err &&
-          err.cause === 'ENOENT'
-        ) {
+        if (isPathNotFoundError(err)) {
           return
         }
         return err
@@ -3682,7 +3674,7 @@ export class KclManager extends File {
         await File.ioImplementations.read(this.path)
       )
     } catch (err: unknown) {
-      if (isEnoentError(err)) {
+      if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
         return Promise.reject(err)
@@ -3857,17 +3849,4 @@ function writeRecoverySnapshot({
 
 function clearRecoverySnapshot(path: string) {
   safeLSRemoveItem(getRecoverySnapshotKey(path))
-}
-
-function isEnoentError(err: unknown) {
-  if (err === 'ENOENT') {
-    return true
-  }
-
-  return (
-    typeof err === 'object' &&
-    err !== null &&
-    (('cause' in err && err.cause === 'ENOENT') ||
-      ('code' in err && err.code === 'ENOENT'))
-  )
 }
