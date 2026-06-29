@@ -808,7 +808,7 @@ export class App implements AppSubsystems {
             `[mouse→e2e] makeMouseHelpers(${ratioX.toFixed(4)}, ${ratioY.toFixed(4)}, { format: 'ratio' })`
           )
           console.log(
-            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { format: 'pixels' })`
+            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { steps: 20, format: 'pixels' })`
           )
         }
         document.addEventListener('click', onClick, true)
