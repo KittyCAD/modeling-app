@@ -485,16 +485,16 @@ fn constrainable_circular_from_unsolved_segment(
     }
 }
 
-/// Arcs have 6 scalar values (start, end and center; x and y).
-/// These could be fixed constants or sketch variables to be solved.
-/// Each of these needs a sketch variable to feed into the solver.
-/// If it's a solver variable, then use it.
-/// If it's a fixed constant, then create a solver variable for it,
-/// and return a constraint to fix it.
-fn extract_arc_component(
+/// A point-based segment (arc, circle, ...) decomposes into scalar coordinate
+/// values (the x and y of each of its points). Each could be a fixed constant
+/// or a sketch variable to be solved, but each needs a sketch variable to feed
+/// into the solver. If it's already a solver variable, use it. If it's a fixed
+/// constant, create a solver variable for it and return a constraint to fix it.
+fn extract_point_component(
     value: &KclValue,
     exec_state: &mut ExecState,
     range: crate::SourceRange,
+    function_name: &str,
     description: &str,
 ) -> Result<(SketchVarId, Option<SolverConstraint>), KclError> {
     match value.as_unsolved_expr() {
@@ -514,7 +514,7 @@ fn extract_arc_component(
 
             let Some(sketch_state) = exec_state.sketch_block_mut() else {
                 return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "arc() can only be used inside a sketch block".to_owned(),
+                    format!("{function_name}() can only be used inside a sketch block"),
                     vec![range],
                 )));
             };
@@ -887,12 +887,16 @@ pub async fn arc(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
         ))
     })?;
 
-    let (start_x, start_x_fixed) = extract_arc_component(&start_x_value, exec_state, args.source_range, "start x")?;
-    let (start_y, start_y_fixed) = extract_arc_component(&start_y_value, exec_state, args.source_range, "start y")?;
-    let (end_x, end_x_fixed) = extract_arc_component(&end_x_value, exec_state, args.source_range, "end x")?;
-    let (end_y, end_y_fixed) = extract_arc_component(&end_y_value, exec_state, args.source_range, "end y")?;
-    let (center_x, center_x_fixed) = extract_arc_component(&center_x_value, exec_state, args.source_range, "center x")?;
-    let (center_y, center_y_fixed) = extract_arc_component(&center_y_value, exec_state, args.source_range, "center y")?;
+    let (start_x, start_x_fixed) =
+        extract_point_component(&start_x_value, exec_state, args.source_range, "arc", "start x")?;
+    let (start_y, start_y_fixed) =
+        extract_point_component(&start_y_value, exec_state, args.source_range, "arc", "start y")?;
+    let (end_x, end_x_fixed) = extract_point_component(&end_x_value, exec_state, args.source_range, "arc", "end x")?;
+    let (end_y, end_y_fixed) = extract_point_component(&end_y_value, exec_state, args.source_range, "arc", "end y")?;
+    let (center_x, center_x_fixed) =
+        extract_point_component(&center_x_value, exec_state, args.source_range, "arc", "center x")?;
+    let (center_y, center_y_fixed) =
+        extract_point_component(&center_y_value, exec_state, args.source_range, "arc", "center y")?;
     // If any of the points had any components that were fixed, then they'll become constraints
     // in this list.
     let arc_fixed_constraints = [
@@ -1149,30 +1153,22 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         ))
     })?;
 
-    let Some(UnsolvedExpr::Unknown(start_x)) = start_x_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "start x must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(start_y)) = start_y_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "start y must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(center_x)) = center_x_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "center x must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
-    let Some(UnsolvedExpr::Unknown(center_y)) = center_y_value.as_unsolved_expr() else {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            "center y must be a sketch var".to_owned(),
-            vec![args.source_range],
-        )));
-    };
+    // Coordinates may be sketch vars or fixed constants. Constants become
+    // synthetic solver vars pinned with a Fixed constraint, exactly like arc().
+    // This keeps the circle's coordinates as solver vars so the circle can be
+    // used in constraints (distance, diameter, radius, tangent, equalRadius).
+    let (start_x, start_x_fixed) =
+        extract_point_component(&start_x_value, exec_state, args.source_range, "circle", "start x")?;
+    let (start_y, start_y_fixed) =
+        extract_point_component(&start_y_value, exec_state, args.source_range, "circle", "start y")?;
+    let (center_x, center_x_fixed) =
+        extract_point_component(&center_x_value, exec_state, args.source_range, "circle", "center x")?;
+    let (center_y, center_y_fixed) =
+        extract_point_component(&center_y_value, exec_state, args.source_range, "circle", "center y")?;
+    // If any coordinates were fixed constants, pin them with constraints.
+    let circle_fixed_constraints = [start_x_fixed, start_y_fixed, center_x_fixed, center_y_fixed]
+        .into_iter()
+        .flatten();
 
     let ctor = CircleCtor {
         start: Point2d {
@@ -1289,6 +1285,7 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
         optional_constraints
     };
     let mut required_constraints = Vec::new();
+    required_constraints.extend(circle_fixed_constraints);
     if let Some(target) = exec_state.drag_anchor_target(&circle_object_id).cloned() {
         let anchor = fixed_drag_anchor_point(exec_state, args.source_range, target)?;
         let center = DatumPoint::new_xy(
