@@ -3165,14 +3165,12 @@ impl From<Node<Identifier>> for Node<Name> {
     }
 }
 
-pub type TagName = String;
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS, Eq)]
 #[ts(export)]
 #[serde(tag = "type")]
 pub struct TagDeclarator {
     #[serde(rename = "value")]
-    pub name: TagName,
+    pub name: String,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[ts(optional)]

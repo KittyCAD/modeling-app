@@ -754,8 +754,8 @@ async fn inner_extrude(
                 face_id: face.id,
                 solid_id: face.parent_solid.solid_id,
             },
-            Extrudable::EdgeTag(_) => BeingExtruded::Sketch,
-            Extrudable::Edge(_) => BeingExtruded::Sketch,
+            Extrudable::EdgeTag(_) => BeingExtruded::Edge,
+            Extrudable::Edge(_) => BeingExtruded::Edge,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
@@ -843,6 +843,7 @@ pub(crate) struct NamedCapTags<'a> {
 pub enum BeingExtruded {
     Sketch,
     Face { face_id: Uuid, solid_id: Uuid },
+    Edge,
 }
 
 /// Which edge should we use for querying Solid3dGetExtrusionInfo and GetAdjacencyInfo?
@@ -1234,6 +1235,14 @@ pub(crate) async fn do_post_extrude<'a>(
             solid_id,
             sketch,
         }),
+        BeingExtruded::Edge => {
+            let message = "Expected an edge to have been extruded via another code path";
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message.to_owned(),
+                vec![args.source_range],
+            )));
+        }
     };
 
     Ok(Solid {
