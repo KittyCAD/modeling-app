@@ -215,7 +215,10 @@ export function profileSelectionRequiresBodyType({
   }
 
   return sketches.graphSelections.some(
-    (selection) => !selection.artifact || selection.artifact.type === 'segment'
+    (selection) =>
+      !selection.artifact ||
+      selection.artifact.type === 'segment' ||
+      selection.artifact.type === 'sweepEdge'
   )
 }
 
@@ -227,6 +230,20 @@ export function extrudeSelectionRequiresBodyType(context: {
   }
 
   return profileSelectionRequiresBodyType(context)
+}
+
+export function extrudeUsesExperimentalFeatures({
+  draftAngle,
+  direction,
+  sketches,
+}: ModelingCommandSchema['Extrude']): boolean {
+  return Boolean(
+    draftAngle ||
+      direction ||
+      sketches.graphSelections.some(
+        (selection) => selection.artifact?.type === 'sweepEdge'
+      )
+  )
 }
 
 const hasEngineConnection = (
@@ -1041,7 +1058,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       const wasmInstance = await context.wasmInstancePromise
       let ast = kclManager.ast
       if (
-        (commandArgs.draftAngle || commandArgs.direction) &&
+        extrudeUsesExperimentalFeatures(commandArgs) &&
         kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
       ) {
         const astWithNewSetting = setExperimentalFeatures(
@@ -1077,6 +1094,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         selectionTypes: [
           'solid2d',
           'segment',
+          'sweepEdge',
           'cap',
           'wall',
           'pathRegion',

@@ -11,11 +11,18 @@ import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
+import { defaultSourceRange } from '@src/lang/sourceRange'
+import { topLevelRange } from '@src/lang/util'
 import {
+  type Artifact,
+  type ArtifactGraph,
   type Name,
   type PathToNode,
+  type SourceRange,
   assertParse,
   getAllOperations,
+  nodePathFromRange,
+  pathToNodeFromRustNodePath,
   recast,
 } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -97,6 +104,22 @@ async function getAstAndSketchSelectionsEngineless(
   }
   const sketches = createSelectionFromPathArtifact(artifacts)
   return { artifactGraph, ast, sketches }
+}
+
+function rangeOfText(code: string, target: string): SourceRange {
+  const start = code.indexOf(target)
+  if (start === -1) {
+    throw new Error(`Could not find ${target}`)
+  }
+  return topLevelRange(start, start + target.length)
+}
+
+function codeRef(range: SourceRange, pathToNode: PathToNode) {
+  return {
+    range,
+    nodePath: { steps: [] },
+    pathToNode,
+  }
 }
 
 describe('sweeps.test.ts', () => {
@@ -670,6 +693,108 @@ extrude001 = extrude(profile001, length = 2, symmetric = false)`)
 extrude001 = extrude([s.line1, s.line2], length = 1, bodyType = SURFACE)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a surface extrude call from a selected sweep edge profile', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 1)
+  |> yLine(length = 1)
+  |> xLine(length = -1)
+  |> close()
+extrude001 = extrude(profile001, length = 5)`
+      const ast = assertParse(code, instanceInThisFile)
+      const segmentRange = rangeOfText(code, 'xLine(length = 1)')
+      const segmentNodePath = await nodePathFromRange(
+        ast,
+        segmentRange,
+        instanceInThisFile
+      )
+      if (!segmentNodePath) {
+        throw new Error('Segment node path not found')
+      }
+      const segmentPathToNode = pathToNodeFromRustNodePath(segmentNodePath)
+      const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+        [
+          'path-id',
+          {
+            type: 'path',
+            id: 'path-id',
+            subType: 'sketch',
+            planeId: 'plane-id',
+            segIds: ['segment-id'],
+            consumed: false,
+            trajectorySweepId: null,
+            sweepId: 'sweep-id',
+            codeRef: codeRef(defaultSourceRange(), [['body', '']]),
+          },
+        ],
+        [
+          'segment-id',
+          {
+            type: 'segment',
+            id: 'segment-id',
+            pathId: 'path-id',
+            edgeIds: ['edge-id'],
+            codeRef: codeRef(segmentRange, segmentPathToNode),
+            commonSurfaceIds: [],
+          },
+        ],
+        [
+          'sweep-id',
+          {
+            type: 'sweep',
+            id: 'sweep-id',
+            subType: 'extrusion',
+            pathId: 'path-id',
+            surfaceIds: [],
+            edgeIds: ['edge-id'],
+            codeRef: codeRef(defaultSourceRange(), [['body', '']]),
+            trajectoryId: null,
+            method: 'new',
+            consumed: false,
+            patternIds: [],
+          },
+        ],
+        [
+          'edge-id',
+          {
+            type: 'sweepEdge',
+            id: 'edge-id',
+            subType: 'opposite',
+            segId: 'segment-id',
+            cmdId: '',
+            sweepId: 'sweep-id',
+            commonSurfaceIds: [],
+          },
+        ],
+      ])
+
+      const sweepEdge = artifactGraph.get('edge-id')
+      if (!sweepEdge) throw new Error('Sweep edge artifact not found')
+      const sketches = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain('edge001 = getOppositeEdge(seg01)')
+      expect(newCode).toContain('surface001 = extrude(')
+      expect(newCode).toContain('  edge001,')
+      expect(newCode).toContain('  length = 1,')
+      expect(newCode).toContain('  direction = edge001,')
+      expect(newCode).toContain('  bodyType = SURFACE,')
     })
 
     it('should add an extrude call with bodyType "solid"', async () => {

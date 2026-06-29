@@ -3,6 +3,7 @@ import { assertParse } from '@src/lang/wasm'
 import type { Artifact } from '@src/lang/wasm'
 import {
   extrudeSelectionRequiresBodyType,
+  extrudeUsesExperimentalFeatures,
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
   profileSelectionRequiresBodyType,
@@ -143,6 +144,23 @@ describe('Extrude bodyType argument', () => {
       bodyTypeRequiredForCommand('Extrude', {
         sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
         length: parsedLength(),
+      })
+    ).toBe(true)
+  })
+
+  it('requires bodyType when extruding sweep edges after length is confirmed', () => {
+    expect(
+      bodyTypeRequiredForCommand('Extrude', {
+        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+        length: parsedLength(),
+      })
+    ).toBe(true)
+  })
+
+  it('uses experimental features for sweep edge profile extrudes', () => {
+    expect(
+      extrudeUsesExperimentalFeatures({
+        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
       })
     ).toBe(true)
   })
