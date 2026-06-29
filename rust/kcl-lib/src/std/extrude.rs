@@ -788,6 +788,25 @@ async fn inner_extrude(
                 .await?,
             );
         } else if is_edge {
+            // Ensure that edges do not use the MERGE method.
+            match extrude_method {
+                ExtrudeMethod::New => {
+                    // This is expected.
+                }
+                ExtrudeMethod::Merge => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Cannot use method MERGE with surface extrude of an edge".to_owned(),
+                        vec![args.source_range],
+                    )));
+                }
+                _ => {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!("Unknown extrude method: {extrude_method:?}"),
+                        vec![args.source_range],
+                    )));
+                }
+            }
+
             // Surface-extrude an edge.
             exec_state
                 .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), cmd)
@@ -801,7 +820,7 @@ async fn inner_extrude(
                 Extrudable::Edge(_) => None,
             };
             solids.push(
-                after_surface_creation(extrude_cmd_id.into(), extrude_method, edge_tag, exec_state, &args).await?,
+                after_surface_creation(extrude_cmd_id.into(), edge_tag, exec_state, &args).await?,
             );
         } else {
             return Err(KclError::new_type(KclErrorDetails::new(
@@ -865,29 +884,10 @@ fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: 
 /// isn't available.
 pub(crate) async fn after_surface_creation(
     extrude_cmd_id: ArtifactId,
-    extrude_method: ExtrudeMethod,
     edge_tag: Option<crate::parsing::ast::types::Node<TagDeclarator>>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Solid, KclError> {
-    match extrude_method {
-        ExtrudeMethod::New => {
-            // This is expected.
-        }
-        ExtrudeMethod::Merge => {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Cannot use method MERGE with surface extrude of an edge".to_owned(),
-                vec![args.source_range],
-            )));
-        }
-        _ => {
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                format!("Unknown extrude method: {extrude_method:?}"),
-                vec![args.source_range],
-            )));
-        }
-    }
-
     let body_id = extrude_cmd_id.into();
 
     // Bring the object to the front of the scene.
