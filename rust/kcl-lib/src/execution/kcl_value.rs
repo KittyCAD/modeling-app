@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::units::UnitLength;
+use kcl_api::UnitLength;
 use serde::Serialize;
 
 use crate::CompilationIssue;
@@ -37,6 +37,7 @@ use crate::execution::annotations::SETTINGS_UNIT_LENGTH;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::DefaultParamVal;
