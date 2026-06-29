@@ -156,6 +156,7 @@ import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
+import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
@@ -478,10 +479,6 @@ export class ZDSProject {
     // to have for executions and code mods
     markOnce('project/startCollectFiles')
     const apiFiles = await this.getAllKclFiles()
-    if (err(apiFiles)) {
-      reportRejection(apiFiles)
-      return newEditor
-    }
     markOnce('project/endCollectFiles')
 
     markOnce('project/startSendProjectToWasm')
@@ -583,8 +580,8 @@ export class ZDSProject {
   }
 
   /** Get all the KCL files in this project as a flat array. */
-  private getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((f) => f.asRustApiFile()))
+  private async getAllKclFiles(): Promise<ApiFile[]> {
+    return Promise.all(this.files.map((file) => file.asRustApiFile()))
   }
 
   /**
@@ -813,6 +810,24 @@ export class KclManager extends File {
   get code(): string {
     return this.editorView.state.doc.toString()
   }
+
+  /** Present active editor data to Rust after Zookeeper has already deleted the file on disk. */
+  async asRustApiFile(): Promise<ApiFile> {
+    try {
+      return await super.asRustApiFile()
+    } catch (error: unknown) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
+
+      return {
+        id: this.id,
+        path: this.path,
+        text: this.code,
+      }
+    }
+  }
+
   get currentSketchCheckpointId(): number | null {
     return this.lastCommittedSketchCheckpointId
   }
@@ -1931,7 +1946,7 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    const diskCode = normalizeLineEndings(providedCode || (await file.read()))
+    const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
@@ -3109,6 +3124,27 @@ export class KclManager extends File {
     clearRecoverySnapshot(filePath)
     return true
   }
+  synchronizeCurrentEditorAfterDirectGlobalReplay({
+    filePath,
+    nextContent,
+  }: {
+    filePath: string
+    nextContent: string | null
+  }) {
+    if (filePath !== this.path || nextContent === null) {
+      return false
+    }
+
+    this.updateCodeEditor(nextContent, {
+      shouldAddToHistory: false,
+      shouldClearHistory: false,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    this.markFileCodeAsSynced(nextContent)
+    return true
+  }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()
     this.pendingDirectSketchHistoryEntries = []
@@ -3299,8 +3335,8 @@ export class KclManager extends File {
       this.engineCommandManager.sendSceneCommand(event)
     })
   }
-  localStoragePersistCode(): string {
-    return safeLSGetItem(PERSIST_CODE_KEY) || ''
+  localStoragePersistCode(): string | undefined {
+    return safeLSGetItem(PERSIST_CODE_KEY) ?? undefined
   }
   /**
    * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
@@ -3603,12 +3639,7 @@ export class KclManager extends File {
           }).then(resolve, reject)
         }, 1000)
       }).catch((err: unknown) => {
-        if (
-          typeof err === 'object' &&
-          err !== null &&
-          'cause' in err &&
-          err.cause === 'ENOENT'
-        ) {
+        if (isPathNotFoundError(err)) {
           return
         }
         return err
@@ -3643,7 +3674,7 @@ export class KclManager extends File {
         await File.ioImplementations.read(this.path)
       )
     } catch (err: unknown) {
-      if (isEnoentError(err)) {
+      if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
         return Promise.reject(err)
@@ -3818,13 +3849,4 @@ function writeRecoverySnapshot({
 
 function clearRecoverySnapshot(path: string) {
   safeLSRemoveItem(getRecoverySnapshotKey(path))
-}
-
-function isEnoentError(err: unknown) {
-  return (
-    typeof err === 'object' &&
-    err !== null &&
-    'cause' in err &&
-    err.cause === 'ENOENT'
-  )
 }
