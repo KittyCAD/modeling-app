@@ -8,6 +8,10 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
+import {
+  canRevealInFileExplorer,
+  revealInFileExplorer,
+} from '@src/lib/revealInFileExplorer'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
@@ -175,7 +179,7 @@ export const AllSettingsFields = forwardRef(
                   `}
           >
             <div className="flex flex-col items-start gap-4">
-              {isDesktop() && (
+              {canRevealInFileExplorer() && (
                 <ActionButton
                   Element="button"
                   onClick={toSync(async () => {
@@ -184,7 +188,7 @@ export const AllSettingsFields = forwardRef(
                     if (!finalPath) {
                       return new Error('finalPath undefined')
                     }
-                    window.electron?.showInFolder(finalPath)
+                    revealInFileExplorer(finalPath)
                   }, reportRejection)}
                   iconStart={{
                     icon: 'folder',
