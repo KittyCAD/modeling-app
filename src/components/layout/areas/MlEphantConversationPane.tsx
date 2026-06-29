@@ -214,6 +214,7 @@ export const MlEphantConversationPane = (props: {
 
   // Auto-submit the next queued message when current processing completes.
   // If a message was steered, it takes priority over the default FIFO order.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: queue processing intentionally uses the queued prompt state captured by this effect.
   useEffect(() => {
     if (
       !isPromptRunning &&
@@ -261,6 +262,7 @@ export const MlEphantConversationPane = (props: {
     let clearedConversationMapping = true
     let sentDeleteConversationMapping = false
     let startedFreshConversation = false
+    // biome-ignore lint/style/useConst: cleanup can run through actor callbacks before subscription assignment completes.
     let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
     let systemIOSub:
       | ReturnType<typeof props.systemIOActor.subscribe>
@@ -386,6 +388,7 @@ export const MlEphantConversationPane = (props: {
     }
   }
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: this actor coordination effect intentionally tracks project identity, matching the existing eslint suppression below.
   useEffect(() => {
     const subscriptionSystemIOActor = props.systemIOActor.subscribe(
       (systemIOActorSnapshot) => {
@@ -437,7 +440,7 @@ export const MlEphantConversationPane = (props: {
           ) &&
           props.theProject !== undefined
         ) {
-          let project: Project = props.theProject
+          const project: Project = props.theProject
 
           const currentLoaderFile = loaderFileRef.current
           void collectProjectFiles({
@@ -473,9 +476,16 @@ export const MlEphantConversationPane = (props: {
         tryToGetExchanges()
       })
 
-    props.systemIOActor.send({
-      type: SystemIOMachineEvents.getMlEphantConversations,
-    })
+    const systemIOSnapshot = props.systemIOActor.getSnapshot()
+    if (
+      systemIOSnapshot.value === 'idle' &&
+      props.settings.meta.id.current !== uuidNIL &&
+      systemIOSnapshot.context.mlEphantConversations === undefined
+    ) {
+      props.systemIOActor.send({
+        type: SystemIOMachineEvents.getMlEphantConversations,
+      })
+    }
 
     tryToGetExchanges()
 

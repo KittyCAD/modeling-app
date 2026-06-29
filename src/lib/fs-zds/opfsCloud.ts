@@ -62,6 +62,7 @@ import { sanitizeProjectName } from '@src/lib/projectName'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
@@ -424,6 +425,32 @@ export function getOpfsCloudInitialLocalProjectSyncAction({
   return 'enqueue'
 }
 
+export type OpfsCloudMissingRemoteProjectAction =
+  | 'forget-missing-local'
+  | 'remove-clean-local'
+  | 'detach-dirty-local'
+
+export function getOpfsCloudMissingRemoteProjectAction({
+  localProjectExists,
+  hasPendingLocalChanges,
+  hasBaseManifest,
+  localMatchesBase,
+}: {
+  localProjectExists: boolean
+  hasPendingLocalChanges: boolean
+  hasBaseManifest: boolean
+  localMatchesBase: boolean
+}): OpfsCloudMissingRemoteProjectAction {
+  if (!localProjectExists) {
+    return 'forget-missing-local'
+  }
+  if (hasBaseManifest && localMatchesBase && !hasPendingLocalChanges) {
+    return 'remove-clean-local'
+  }
+
+  return 'detach-dirty-local'
+}
+
 async function writeLocalProjectTitle(projectPath: string, title: string) {
   return updateLocalProjectToml(projectPath, (projectToml) =>
     getProjectTitleFromProjectTomlContents(projectToml) === title
@@ -473,6 +500,17 @@ async function writeLocalProjectCloudProjectId(
           environmentName,
           projectId
         )
+  )
+}
+
+async function removeLocalProjectCloudProjectId(projectPath: string) {
+  const environmentName = getEnvironmentName()
+  if (!environmentName) {
+    return false
+  }
+
+  return updateLocalProjectToml(projectPath, (projectToml) =>
+    removeCloudProjectIdFromProjectTomlContents(projectToml, environmentName)
   )
 }
 
@@ -1361,6 +1399,69 @@ async function syncDeletedProject(metadata: ProjectMetadata) {
   await deleteProjectMetadata(metadata.localProjectPath)
 }
 
+async function reconcileMissingRemoteProject(
+  metadata: ProjectMetadata,
+  options: { hasPendingLocalChanges: boolean }
+) {
+  const localProjectExists = await exists(metadata.localProjectPath)
+  let localMatchesBase = false
+  if (
+    localProjectExists &&
+    metadata.baseManifest &&
+    !options.hasPendingLocalChanges
+  ) {
+    localMatchesBase = projectManifestsEqual(
+      await collectLocalProjectFiles(metadata.localProjectPath).then(
+        projectManifestFromFiles
+      ),
+      metadata.baseManifest
+    )
+  }
+
+  const action = getOpfsCloudMissingRemoteProjectAction({
+    localProjectExists,
+    hasPendingLocalChanges: options.hasPendingLocalChanges,
+    hasBaseManifest: Boolean(metadata.baseManifest),
+    localMatchesBase,
+  })
+
+  if (action === 'forget-missing-local') {
+    await clearOutboxEntriesForProject(metadata.localProjectPath)
+    await deleteProjectMetadata(metadata.localProjectPath)
+    return undefined
+  }
+
+  if (action === 'remove-clean-local') {
+    await clearOutboxEntriesForProject(metadata.localProjectPath)
+    await localFs.rm(metadata.localProjectPath, { recursive: true })
+    await deleteProjectMetadata(metadata.localProjectPath)
+    return undefined
+  }
+
+  await removeLocalProjectCloudProjectId(metadata.localProjectPath)
+  const nextMetadata = {
+    ...metadata,
+    remoteProjectId: undefined,
+    remoteRevision: undefined,
+    remoteUpdatedAt: undefined,
+    baseManifest: undefined,
+    conflict: undefined,
+    lastFailure: undefined,
+    lastSyncedAt: undefined,
+  }
+  await putProjectMetadata(nextMetadata)
+  if (!options.hasPendingLocalChanges) {
+    await appendOutboxEntry({
+      projectPath: metadata.localProjectPath,
+      kind: 'upsert',
+      targetPath: metadata.localProjectPath,
+      createdAt: nowIso(),
+    })
+  }
+
+  return nextMetadata
+}
+
 async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   let metadata = await getOrCreateProjectMetadata(projectPath)
   if (isProjectSyncExcluded(metadata)) {
@@ -1409,7 +1510,19 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
     let remoteChanged = false
     let localChanged = true
     if (metadata.remoteProjectId) {
-      remoteProject = await getRemoteProject(config, metadata.remoteProjectId)
+      try {
+        remoteProject = await getRemoteProject(config, metadata.remoteProjectId)
+      } catch (error) {
+        if (error instanceof CloudApiError && error.status === 404) {
+          await reconcileMissingRemoteProject(metadata, {
+            hasPendingLocalChanges: entries.length > 0,
+          })
+          return
+        }
+
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw error
+      }
       remoteRevision = getRevision(remoteProject)
     }
 
@@ -1574,6 +1687,9 @@ async function syncRemoteIndex() {
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const remoteProjects = await listRemoteProjects(config)
+  const remoteProjectIds = new Set(
+    remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
+  )
   let metadata = (await getAllProjectMetadata()).filter(
     (entry) => !isProjectSyncExcluded(entry)
   )
@@ -1598,6 +1714,38 @@ async function syncRemoteIndex() {
       ),
       nextMetadata,
     ]
+  }
+  const removeMetadata = (projectPath: string) => {
+    const normalizedProjectPath = normalizePathForSync(projectPath)
+    metadata = metadata.filter(
+      (entry) =>
+        normalizePathForSync(entry.localProjectPath) !== normalizedProjectPath
+    )
+  }
+
+  for (const localMetadata of [...metadata]) {
+    if (
+      !localMetadata.remoteProjectId ||
+      localMetadata.tombstone ||
+      remoteProjectIds.has(localMetadata.remoteProjectId)
+    ) {
+      continue
+    }
+
+    try {
+      const nextMetadata = await reconcileMissingRemoteProject(localMetadata, {
+        hasPendingLocalChanges: pendingProjectPaths.has(
+          normalizePathForSync(localMetadata.localProjectPath)
+        ),
+      })
+      if (nextMetadata) {
+        upsertMetadata(nextMetadata)
+      } else {
+        removeMetadata(localMetadata.localProjectPath)
+      }
+    } catch (error) {
+      failures.push(error)
+    }
   }
 
   for (const remoteProject of remoteProjects) {

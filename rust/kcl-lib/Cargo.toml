@@ -69,7 +69,7 @@ http = { workspace = true }
 image = { version = "0.25.10", default-features = false, features = ["png"] }
 image-compare = "0.5.0"
 indexmap = { workspace = true, features = ["serde", "rayon"] }
-itertools = "0.14.0"
+itertools = "0.15.0"
 kcl-api = { version = "=0.2.166", path = "../kcl-api" }
 kcl-derive-docs = { version = "=0.2.166", path = "../kcl-derive-docs" }
 kcl-error = { version = "=0.2.166", path = "../kcl-error" }
