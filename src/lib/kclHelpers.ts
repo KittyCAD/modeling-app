@@ -3,7 +3,7 @@ import { toUtf16 } from '@src/lang/errors'
 import { executeAstMock } from '@src/lang/langHelpers'
 import { forceSuffix } from '@src/lang/util'
 import {
-  type KclValue,
+  type KclValueView,
   type SourceRange,
   formatNumberValue,
   parse,
@@ -18,13 +18,13 @@ import type { Vector2 } from 'three'
 export const DUMMY_VARIABLE_NAME = '__result__'
 
 // Type guard for number value items
-type KclNumber<T = KclValue> = T extends { type: 'Number' } ? T : never
-function isNumberValueItem(item: KclValue): item is KclNumber {
+type KclNumber<T = KclValueView> = T extends { type: 'Number' } ? T : never
+function isNumberValueItem(item: KclValueView): item is KclNumber {
   return item.type === 'Number'
 }
 
-type KclString<T = KclValue> = T extends { type: 'String' } ? T : never
-function isStringValueItem(item: KclValue): item is KclString {
+type KclString<T = KclValueView> = T extends { type: 'String' } ? T : never
+function isStringValueItem(item: KclValueView): item is KclString {
   return item.type === 'String'
 }
 
@@ -101,7 +101,7 @@ export async function getCalculatedKclExpressionValue(
       }
     }
 
-    const arrayValues = varValue.value.map((item: KclValue) => {
+    const arrayValues = varValue.value.map((item: KclValueView) => {
       if (isStringValueItem(item)) {
         return JSON.stringify(item.value)
       } else if (isNumberValueItem(item)) {
@@ -136,7 +136,8 @@ export async function getCalculatedKclExpressionValue(
     return formatted
   })()
   // Prefer the formatted value with units.  Fallback to the raw value.
-  const resultRawValue = varValue?.value
+  const resultRawValue =
+    varValue && 'value' in varValue ? varValue.value : undefined
   const valueAsString = resultValueWithUnits
     ? resultValueWithUnits
     : typeof resultRawValue === 'number'

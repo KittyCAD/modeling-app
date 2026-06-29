@@ -1,7 +1,8 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
-import { describe, expect, test, vi } from 'vitest'
+import { beforeAll, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
@@ -81,17 +82,19 @@ const createFakeActor = ({
   defaultMode = undefined,
   modeOptions = undefined,
   value = 'ready',
+  awaitingResponse = true,
 }: {
   conversation?: Conversation
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
   value?: string
+  awaitingResponse?: boolean
 } = {}): FakeMlEphantActor => {
   const snapshot: FakeMlEphantSnapshot = {
     value,
     context: {
       abruptlyClosed: false,
-      awaitingResponse: true,
+      awaitingResponse,
       attachmentsLoadedForCurrentPrompt: true,
       conversation,
       conversationId: 'conversation-id',
@@ -129,7 +132,11 @@ const createFakeSystemIOActor = ({
   }
   let pendingSaveEvent: SaveConversationEvent | undefined
   const listeners = new Set<(next: typeof snapshot) => void>()
-  const notify = () => listeners.forEach((listener) => listener(snapshot))
+  const notify = () => {
+    for (const listener of listeners) {
+      listener(snapshot)
+    }
+  }
   const completeSave = () => {
     if (pendingSaveEvent === undefined) {
       return
@@ -238,8 +245,56 @@ const createStatefulClearChatActor = () => {
           conversationId: undefined,
         },
       }
-      listeners.forEach((listener) => listener(snapshot))
+      for (const listener of listeners) {
+        listener(snapshot)
+      }
     }),
+  }
+
+  return actor
+}
+
+const createStatefulPromptActor = (awaitingResponse = false) => {
+  let snapshot: FakeMlEphantSnapshot = {
+    value: 'ready',
+    context: {
+      abruptlyClosed: false,
+      awaitingResponse,
+      attachmentsLoadedForCurrentPrompt: true,
+      conversation: completedConversation,
+      conversationId: 'conversation-id',
+      defaultMode: undefined,
+      modeOptions: undefined,
+    },
+    matches: (state: unknown) => state === snapshot.value,
+  }
+  const listeners = new Set<(next: FakeMlEphantSnapshot) => void>()
+
+  const actor = {
+    getSnapshot: () => snapshot,
+    subscribe: (listener?: (next: FakeMlEphantSnapshot) => void) => {
+      if (listener !== undefined) {
+        listeners.add(listener)
+      }
+      return {
+        unsubscribe: () => {
+          if (listener !== undefined) {
+            listeners.delete(listener)
+          }
+        },
+      }
+    },
+    send: vi.fn(),
+    setAwaitingResponse: (nextAwaitingResponse: boolean) => {
+      snapshot = {
+        ...snapshot,
+        context: {
+          ...snapshot.context,
+          awaitingResponse: nextAwaitingResponse,
+        },
+      }
+      listeners.forEach((listener) => listener(snapshot))
+    },
   }
 
   return actor
@@ -250,32 +305,42 @@ const renderPane = ({
   systemIOActor = createFakeSystemIOActor(),
   theProject = undefined,
   settingsMetaId = uuidNIL,
+  settingsProjectDirectory = '',
   zookeeperMode = {},
+  kclManager = {
+    code: '',
+    execState: {
+      filenames: [],
+    },
+    artifactGraph: {},
+  },
+  loaderFile = undefined,
+  sendBillingUpdate = vi.fn(),
+  sendBillingUsageStarted = vi.fn(),
+  sendBillingUsageEnded = vi.fn(),
 }: {
-  mlEphantManagerActor?: ReturnType<typeof createFakeActor>
+  mlEphantManagerActor?: FakeMlEphantActor
   systemIOActor?: ReturnType<typeof createFakeSystemIOActor>
   theProject?: any
   settingsMetaId?: string
+  settingsProjectDirectory?: string
   zookeeperMode?: {
     current?: MlCopilotModeId
     project?: MlCopilotModeId
     user?: MlCopilotModeId
   }
+  kclManager?: any
+  loaderFile?: any
+  sendBillingUpdate?: () => void
+  sendBillingUsageStarted?: () => void
+  sendBillingUsageEnded?: () => void
 } = {}) => {
   return render(
     <MemoryRouter>
       <MlEphantConversationPane
         mlEphantManagerActor={mlEphantManagerActor as any}
         systemIOActor={systemIOActor as any}
-        kclManager={
-          {
-            code: '',
-            execState: {
-              filenames: [],
-            },
-            artifactGraph: {},
-          } as any
-        }
+        kclManager={kclManager}
         theProject={theProject}
         contextModeling={
           {
@@ -286,8 +351,9 @@ const renderPane = ({
           } as any
         }
         sendModeling={vi.fn() as any}
-        sendBillingUpdate={vi.fn()}
-        loaderFile={undefined}
+        sendBillingUpdate={sendBillingUpdate}
+        sendBillingUsageStarted={sendBillingUsageStarted}
+        sendBillingUsageEnded={sendBillingUsageEnded}
         settings={
           {
             meta: {
@@ -297,7 +363,7 @@ const renderPane = ({
             },
             app: {
               projectDirectory: {
-                current: '',
+                current: settingsProjectDirectory,
               },
               zookeeperMode: {
                 current: zookeeperMode.current,
@@ -312,10 +378,18 @@ const renderPane = ({
             },
           } as any
         }
+        loaderFile={loaderFile}
       />
     </MemoryRouter>
   )
 }
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
 
 describe('MlEphantConversationPane', () => {
   test('keeps the cancel button visible while the actor is still awaiting a response', () => {
@@ -344,6 +418,39 @@ describe('MlEphantConversationPane', () => {
     }
   })
 
+  test('syncs billing when prompt processing finishes', () => {
+    const mlEphantManagerActor = createStatefulPromptActor(false)
+    const sendBillingUpdate = vi.fn()
+    const sendBillingUsageStarted = vi.fn()
+    const sendBillingUsageEnded = vi.fn()
+
+    renderPane({
+      mlEphantManagerActor,
+      sendBillingUpdate,
+      sendBillingUsageStarted,
+      sendBillingUsageEnded,
+    })
+
+    expect(sendBillingUpdate).not.toHaveBeenCalled()
+    expect(sendBillingUsageStarted).not.toHaveBeenCalled()
+    expect(sendBillingUsageEnded).not.toHaveBeenCalled()
+
+    act(() => {
+      mlEphantManagerActor.setAwaitingResponse(true)
+    })
+
+    expect(sendBillingUsageStarted).toHaveBeenCalledTimes(1)
+    expect(sendBillingUpdate).not.toHaveBeenCalled()
+    expect(sendBillingUsageEnded).not.toHaveBeenCalled()
+
+    act(() => {
+      mlEphantManagerActor.setAwaitingResponse(false)
+    })
+
+    expect(sendBillingUsageEnded).toHaveBeenCalledTimes(1)
+    expect(sendBillingUpdate).toHaveBeenCalledTimes(1)
+  })
+
   test('uses the server default mode when no project setting is set', () => {
     renderPane({
       mlEphantManagerActor: createFakeActor({
@@ -354,12 +461,14 @@ describe('MlEphantConversationPane', () => {
             label: 'Standard',
             description: 'Faster reasoning.',
             icon: 'stopwatch',
+            disabled: false,
           },
           {
             id: 'deep',
             label: 'Deep',
             description: 'More thorough reasoning.',
             icon: 'brain',
+            disabled: false,
           },
         ],
       }),
@@ -381,12 +490,14 @@ describe('MlEphantConversationPane', () => {
             label: 'Standard',
             description: 'Faster reasoning.',
             icon: 'stopwatch',
+            disabled: false,
           },
           {
             id: 'deep',
             label: 'Deep',
             description: 'More thorough reasoning.',
             icon: 'brain',
+            disabled: false,
           },
         ],
       }),
@@ -395,6 +506,78 @@ describe('MlEphantConversationPane', () => {
     expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
       'Standard'
     )
+  })
+
+  test('sends the live editor contents for the active file when starting a prompt', async () => {
+    const projectRoot = fsZds.join(
+      '/tmp',
+      `zookeeper-current-file-${Date.now()}`
+    )
+    const projectPath = fsZds.join(projectRoot, 'demo-project')
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const diskCode = 'boxHeight = 50mm\n'
+    const editorCode = 'boxHeight = 500mm\n'
+    const mlEphantManagerActor = createFakeActor({
+      awaitingResponse: false,
+    })
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(mainPath, new TextEncoder().encode(diskCode))
+
+    try {
+      renderPane({
+        mlEphantManagerActor,
+        settingsProjectDirectory: projectRoot,
+        theProject: {
+          name: 'demo-project',
+          path: projectPath,
+        },
+        loaderFile: {
+          name: 'main.kcl',
+          path: mainPath,
+          children: null,
+        },
+        kclManager: {
+          code: editorCode,
+          path: mainPath,
+          execState: {
+            filenames: {
+              0: {
+                type: 'Local',
+                value: mainPath,
+                original_import_path: null,
+              },
+            },
+          },
+          artifactGraph: {},
+        },
+      })
+
+      fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+        target: { value: 'change the height to 5000' },
+      })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      await waitFor(() => {
+        expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: MlEphantManagerTransitions.MessageSend,
+          })
+        )
+      })
+
+      const messageSend = mlEphantManagerActor.send.mock.calls
+        .map(([event]) => event)
+        .find((event) => event.type === MlEphantManagerTransitions.MessageSend)
+      const activeProjectFile = messageSend?.projectFiles.find(
+        (file: { relPath: string }) => file.relPath === 'main.kcl'
+      )
+
+      expect(messageSend?.fileSelectedDuringPrompting.content).toBe(editorCode)
+      expect(activeProjectFile?.fileContents).toBe(editorCode)
+    } finally {
+      await fsZds.rm(projectRoot, { recursive: true, force: true })
+    }
   })
 
   test('retries cache setup when the project becomes available after settings load', () => {
@@ -449,6 +632,8 @@ describe('MlEphantConversationPane', () => {
           }
           sendModeling={vi.fn() as any}
           sendBillingUpdate={vi.fn()}
+          sendBillingUsageStarted={vi.fn()}
+          sendBillingUsageEnded={vi.fn()}
           loaderFile={undefined}
           settings={
             {

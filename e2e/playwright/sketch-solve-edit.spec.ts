@@ -1990,44 +1990,41 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       await toolbar.openFeatureTreePane()
     })
 
-    await test.step('Delete first constraint from feature tree and verify code updates', async () => {
+    await test.step('Remove first constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Horizontal Constraint',
         0
       )
-      await op.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(op)
       await scene.settled()
       await editor.expectEditor.not.toContain('horizontal(line1)')
     })
 
-    // TODO: can't quite figure out why this is needed for the second delete to work
+    // TODO: can't quite figure out why this is needed for the second remove to work
     await test.step('Wait a bit', async () => {
       await toolbar.closeFeatureTreePane()
       await page.waitForTimeout(1000)
     })
 
-    await test.step('Delete second constraint from feature tree and verify code updates', async () => {
+    await test.step('Remove second constraint from feature tree and verify code updates', async () => {
       const caret = await toolbar.getFeatureTreeOperationGroupCaret(0)
       await caret.click()
       const op = await toolbar.getFeatureTreeOperation(
         'Coincident Constraint',
         0
       )
-      await op.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(op)
       await scene.settled()
       await editor.expectEditor.not.toContain(
         'coincident([line2.start, line1.end])'
       )
     })
 
-    await test.step('Delete sketch block from feature tree and verify code updates', async () => {
+    await test.step('Remove sketch block from feature tree and verify code updates', async () => {
       const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-      await op.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(op)
       await scene.settled()
       await editor.expectEditor.not.toContain('sketch(on')
     })
@@ -2125,26 +2122,24 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       ).not.toBeInViewport()
     })
 
-    await test.step('Delete extrude from feature tree', async () => {
+    await test.step('Remove extrude from feature tree', async () => {
       await toolbar.openFeatureTreePane()
       const extrudeOp = toolbar.featureTreePane
         .getByRole('button', { name: /^(Extrude|extrude001)$/ })
         .first()
       await expect(extrudeOp).toBeVisible()
-      await extrudeOp.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(extrudeOp)
       await scene.settled()
       await editor.expectEditor.not.toContain('extrude(')
     })
 
-    await test.step('Delete region from feature tree and expect original code', async () => {
+    await test.step('Remove region from feature tree and expect original code', async () => {
       await toolbar.openFeatureTreePane()
       const regionOp = toolbar.featureTreePane
         .getByRole('button', { name: /^(Region|region001)$/ })
         .first()
       await expect(regionOp).toBeVisible()
-      await regionOp.click({ button: 'right' })
-      await page.getByRole('button', { name: 'Delete' }).click()
+      await toolbar.removeFeatureTreeOperation(regionOp)
       await scene.settled()
       await editor.expectEditor.not.toContain('region(')
       await editor.expectEditor.toContain(square, { shouldNormalise: true })

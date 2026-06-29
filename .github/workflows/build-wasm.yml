@@ -13,7 +13,7 @@ jobs:
   build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 

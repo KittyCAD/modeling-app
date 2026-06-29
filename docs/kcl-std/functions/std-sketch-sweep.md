@@ -9,11 +9,13 @@ Create a 3D surface or solid by sweeping a sketch along a path.
 
 ```kcl
 sweep(
-  @sketches: [Sketch | Segment; 1+],
+  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
   path: Sketch | Helix | [Segment; 1+],
   sectional?: bool,
   tolerance?: number(Length),
   relativeTo?: string,
+  translateProfileToPath?: bool,
+  orientProfilePerpendicular?: bool,
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
   bodyType?: string,
@@ -34,11 +36,13 @@ swept along the same path.
 
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
-| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be swept in space. | Yes |
+| `sketches` | [[`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Face`](/docs/kcl-std/types/std-types-Face) or [`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace) or [`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The sketch or set of sketches that should be swept in space. | Yes |
 | `path` | [`Sketch`](/docs/kcl-std/types/std-types-Sketch) or [`Helix`](/docs/kcl-std/types/std-types-Helix) or [[`Segment`](/docs/kcl-std/types/std-types-Segment); 1+] | The path to sweep the sketch along. | Yes |
 | `sectional` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the sweep will be broken up into sub-sweeps (extrusions, revolves, sweeps) based on the trajectory path components. | No |
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters. | No |
-| `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
+| `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | **Deprecated.** Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
+| `translateProfileToPath` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. | No |
+| `orientProfilePerpendicular` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. Defaults to false. | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
@@ -455,6 +459,57 @@ sweep(sketch001.line2, path, bodyType = SURFACE)
   ar
   environment-image="/moon_1k.hdr"
   poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep10.png"
+  shadow-intensity="1"
+  camera-controls
+  touch-action="pan-y"
+>
+</model-viewer>
+
+```kcl
+// Demonstrates a sweep from a face
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -5mm, var 3mm], end = [var 5mm, var 3mm])
+  line2 = line(start = [var 5mm, var 3mm], end = [var 5mm, var 0mm])
+  line3 = line(start = [var 5mm, var 0mm], end = [var -5mm, var 0mm])
+  line4 = line(start = [var -5mm, var 0mm], end = [var -5mm, var 3mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [0mm, 2.9975mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, tagEnd = $capFace)
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 4mm], end = [var 0mm, var 12mm])
+  vertical([line1.start, ORIGIN])
+  vertical([line1.end, ORIGIN])
+  arc1 = arc(start = [var 10mm, var 20mm], end = [var 0mm, var 12mm], center = [var 7mm, var 12mm])
+  coincident([line1.end, arc1.end])
+  tangent([line1, arc1])
+  arc2 = arc(start = [var 10mm, var 20mm], end = [var 10mm, var 34mm], center = [var 13mm, var 27mm])
+  coincident([arc1.start, arc2.start])
+  tangent([arc1, arc2])
+}
+
+// sweep the tagged face
+sweep(capFace, path = sketch002)
+  |> appearance(color = "#ff00aa")
+
+```
+
+
+<model-viewer
+  class="kcl-example"
+  alt="Example showing a rendered KCL program that uses the sweep function"
+  src="/kcl-test-outputs/models/serial_test_example_fn_std-sketch-sweep11_output.gltf"
+  ar
+  environment-image="/moon_1k.hdr"
+  poster="/kcl-test-outputs/serial_test_example_fn_std-sketch-sweep11.png"
   shadow-intensity="1"
   camera-controls
   touch-action="pan-y"

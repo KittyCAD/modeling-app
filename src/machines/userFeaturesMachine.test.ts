@@ -64,8 +64,8 @@ describe('userFeaturesMachine', () => {
       expect(fetchFeatures).toHaveBeenCalledTimes(1)
       expect(context.token).toBe('token-a')
       expect(userFeaturesContextHas(context, 'plugins', false)).toBe(true)
-      expect(userFeaturesContextHas(context, 'aquarium', false)).toBe(false)
-      expect(userFeaturesContextHas(context, 'aquarium', true)).toBe(true)
+      expect(userFeaturesContextHas(context, 'bodies_pane', false)).toBe(false)
+      expect(userFeaturesContextHas(context, 'bodies_pane', true)).toBe(true)
     } finally {
       actor.stop()
     }

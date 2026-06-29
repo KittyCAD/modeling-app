@@ -1,28 +1,19 @@
 import { useAppState } from '@src/AppState'
 import { letEngineAnimateAndSyncCamAfter } from '@src/clientSideScene/CameraControls'
-import {
-  useMenuListener,
-  useSketchModeMenuEnableDisable,
-} from '@src/hooks/useMenu'
+import { useMenuListener } from '@src/hooks/useMenu'
+import { useSketchModeMenuEnableDisable } from '@src/hooks/useSketchModeMenuEnableDisable'
 import useModelingMachineCommands from '@src/hooks/useStateMachineCommands'
 import { reportRejection } from '@src/lib/trap'
 import { useMachine } from '@xstate/react'
 import type React from 'react'
 import { createContext, use, useEffect, useMemo, useRef } from 'react'
 import type { MutableRefObject } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 import type { Actor, ContextFrom, Prop, StateFrom } from 'xstate'
-
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { SNAP_TO_GRID_HOTKEY } from '@src/lib/hotkeys'
 
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { modelingMachineCommandConfig } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { Project } from '@src/lib/project'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { selectAllInCurrentSketch } from '@src/lib/selections'
-import { getDeleteKeys } from '@src/lib/utils'
 import { modelingMachine } from '@src/machines/modelingMachine'
 import { useFolders } from '@src/machines/systemIO/hooks'
 
@@ -60,7 +51,6 @@ export const ModelingMachineProvider = ({
   const { machineManager, commands, settings, layout, project, registry } =
     useApp()
   const { kclManager } = useSingletons()
-  const settingsActor = settings.actor
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const settingsValues = settings.useSettings()
   const {
@@ -70,7 +60,6 @@ export const ModelingMachineProvider = ({
       cameraProjection,
       cameraOrbit,
       useSketchSolveMode,
-      snapToGrid,
     },
   } = settingsValues
   const machineApiEnabled = settingsValues.app.machineApi.current
@@ -350,91 +339,6 @@ export const ModelingMachineProvider = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [allowOrbitInSketchMode.current])
-
-  // Allow using the delete key to delete solids. Backspace only on macOS as Windows and Linux have dedicated Delete
-  // `navigator.platform` is deprecated, but the alternative `navigator.userAgentData.platform` is not reliable
-  const deleteKeys = getDeleteKeys()
-
-  useHotkeys(deleteKeys, () => {
-    // Check if we're in sketch solve mode
-    const inSketchSolveMode = modelingState.matches('sketchSolveMode')
-    if (inSketchSolveMode) {
-      // Forward delete event to sketch solve mode
-      // it's probably save to send this regardless of inSketchSolveMode, but still
-      modelingSend({ type: 'delete selected' })
-      return
-    }
-
-    // When the current selection is a segment, delete that directly ('Delete selection' doesn't support it)
-    const segmentNodePaths = Object.keys(modelingState.context.segmentOverlays)
-    const selections =
-      modelingState.context.selectionRanges.graphSelections.filter((sel) =>
-        segmentNodePaths.includes(JSON.stringify(sel.codeRef.pathToNode))
-      )
-    // Order selections by how late they are used in the codebase, as later nodes are less likely to be referenced than
-    // earlier ones. This could be further refined as this is just a simple heuristic.
-    const orderedSelections = selections.slice().sort((a, b) => {
-      const aStart = a.codeRef.range?.[0] ?? 0
-      const bStart = b.codeRef.range?.[0] ?? 0
-      return bStart - aStart
-    })
-    modelingSend({
-      type: 'Delete segments',
-      data: orderedSelections.map((selection) => selection.codeRef.pathToNode),
-    })
-    if (
-      modelingState.context.selectionRanges.graphSelections.length >
-      selections.length
-    ) {
-      // Not all selection were segments -> keep the default delete behavior
-      modelingSend({ type: 'Delete selection' })
-    }
-  })
-
-  // Allow ctrl+alt+c to center to selection
-  useHotkeys(['mod + alt + c'], () => {
-    modelingSend({ type: 'Center camera on selection' })
-  })
-  useHotkeys(['mod + alt + x'], () => {
-    resetCameraPosition({
-      sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
-      settingsActor,
-    }).catch(reportRejection)
-  })
-
-  // Toggle Snap to grid
-  useHotkeyWrapper(
-    [SNAP_TO_GRID_HOTKEY],
-    () => {
-      settingsActor.send({
-        type: 'set.modeling.snapToGrid',
-        data: { level: 'project', value: !snapToGrid.current },
-      })
-    },
-    kclManager
-  )
-
-  useHotkeys(
-    ['mod + a'],
-    (e) => {
-      const inSketchMode = modelingState.matches('Sketch')
-      if (!inSketchMode) return
-
-      e.preventDefault()
-      const selection = selectAllInCurrentSketch(
-        kclManager.artifactGraph,
-        kclManager.sceneEntitiesManager
-      )
-      modelingSend({
-        type: 'Set selection',
-        data: { selectionType: 'completeSelection', selection },
-      })
-    },
-    {
-      enableOnContentEditable: false,
-    }
-  )
 
   useModelingMachineCommands({
     machineId: 'modeling',

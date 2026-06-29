@@ -269,6 +269,7 @@ export class ToolbarFixture {
       | 'clone'
       | 'mirror3d'
       | 'appearance'
+      | 'delete'
   ) => {
     await this.page
       .getByRole('button', { name: 'caret down transform: open menu' })
@@ -290,6 +291,13 @@ export class ToolbarFixture {
     const operationTestId = `dropdown-${operation}`
     await expect(this.page.getByTestId(operationTestId)).toBeVisible()
     await this.page.getByTestId(operationTestId).click()
+  }
+  selectGdtFlatness = async () => {
+    await this.page
+      .getByRole('button', { name: 'caret down gdt: open menu' })
+      .click()
+    await expect(this.page.getByTestId('dropdown-gdt-flatness')).toBeVisible()
+    await this.page.getByTestId('dropdown-gdt-flatness').click()
   }
 
   selectCircleThreePoint = async () => {
@@ -417,6 +425,16 @@ export class ToolbarFixture {
     await operationButton.click({ button: 'right' })
     await expect(goToDefinitionMenuButton).toBeVisible()
     await goToDefinitionMenuButton.click()
+  }
+
+  async removeFeatureTreeOperation(operationButton: Locator) {
+    const removeOperationMenuButton = this.page.getByRole('button', {
+      name: 'Remove operation',
+    })
+
+    await operationButton.click({ button: 'right' })
+    await expect(removeOperationMenuButton).toBeVisible()
+    await removeOperationMenuButton.click()
   }
 
   async fireTtcPrompt(prompt: string) {

@@ -8,9 +8,9 @@ use ezpz::datatypes::inputs::DatumCircularArc;
 use ezpz::datatypes::inputs::DatumDistance;
 use ezpz::datatypes::inputs::DatumLineSegment;
 use ezpz::datatypes::inputs::DatumPoint;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 use kittycad_modeling_cmds as kcmc;
-use kittycad_modeling_cmds::units::UnitAngle;
-use kittycad_modeling_cmds::units::UnitLength;
 
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -38,6 +38,7 @@ use crate::execution::normalize_to_solver_distance_unit;
 use crate::execution::solver_numeric_type;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;
@@ -1422,7 +1423,6 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
         meta: vec![args.source_range.into()],
     };
 
-    #[cfg(feature = "artifact-graph")]
     let optional_constraints = {
         let placeholder_control_ids = control_object_ids
             .iter()
@@ -1480,7 +1480,6 @@ pub async fn control_point_spline(exec_state: &mut ExecState, args: Args) -> Res
     };
     sketch_state.needed_by_engine.push(segment.clone());
 
-    #[cfg(feature = "artifact-graph")]
     sketch_state.solver_optional_constraints.extend(optional_constraints);
 
     let meta = segment.meta.clone();

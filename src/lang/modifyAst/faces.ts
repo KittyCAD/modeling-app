@@ -29,7 +29,6 @@ import {
 import {
   getArtifactOfTypes,
   getCapCodeRef,
-  getCodeRefsByArtifactId,
   getFaceCodeRef,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
@@ -48,7 +47,10 @@ import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -991,66 +993,6 @@ function getSolidSelectionsFromFaceSelections(
       }
     }),
     otherSelections: [],
-  }
-}
-
-export function getBodySelectionFromPrimitiveParentEntityId(
-  parentEntityId: string,
-  artifactGraph: ArtifactGraph
-): Selection | null {
-  const parentArtifact = artifactGraph.get(parentEntityId)
-  if (!parentArtifact) {
-    return null
-  }
-
-  if (
-    parentArtifact.type === 'sweep' ||
-    parentArtifact.type === 'compositeSolid'
-  ) {
-    return {
-      artifact: parentArtifact,
-      codeRef: parentArtifact.codeRef,
-    }
-  }
-
-  if (parentArtifact.type === 'path' && parentArtifact.sweepId) {
-    const parentSweep = getArtifactOfTypes(
-      { key: parentArtifact.sweepId, types: ['sweep'] },
-      artifactGraph
-    )
-    if (!err(parentSweep)) {
-      return {
-        artifact: parentSweep as Artifact,
-        codeRef: parentSweep.codeRef,
-      }
-    }
-  }
-
-  if (
-    parentArtifact.type === 'cap' ||
-    parentArtifact.type === 'wall' ||
-    parentArtifact.type === 'edgeCut'
-  ) {
-    const parentSweep = getSweepFromSuspectedSweepSurface(
-      parentArtifact.id,
-      artifactGraph
-    )
-    if (!err(parentSweep)) {
-      return {
-        artifact: parentSweep as Artifact,
-        codeRef: parentSweep.codeRef,
-      }
-    }
-  }
-
-  const parentCodeRefs = getCodeRefsByArtifactId(parentEntityId, artifactGraph)
-  if (!parentCodeRefs || parentCodeRefs.length === 0) {
-    return null
-  }
-
-  return {
-    artifact: parentArtifact,
-    codeRef: parentCodeRefs[parentCodeRefs.length - 1],
   }
 }
 

@@ -96,13 +96,31 @@ describe('mlEphantManagerMachine', () => {
         icon: 'brain',
       },
     ]
+    const parsedModes = modes.map((mode) => ({ ...mode, disabled: false }))
 
     it('parses the modes_response envelope from the API', () => {
       expect(
         parseMlCopilotModesResult({
           modes_response: { default_mode: 'standard', modes },
         })
-      ).toStrictEqual({ defaultMode: 'standard', modeOptions: modes })
+      ).toStrictEqual({ defaultMode: 'standard', modeOptions: parsedModes })
+    })
+
+    it('preserves disabled mode availability and defaults missing values to enabled', () => {
+      expect(
+        parseMlCopilotModesResult({
+          modes_response: {
+            default_mode: 'deep',
+            modes: [{ ...modes[0], disabled: true }, modes[1]],
+          },
+        })
+      ).toStrictEqual({
+        defaultMode: 'deep',
+        modeOptions: [
+          { ...modes[0], disabled: true },
+          { ...modes[1], disabled: false },
+        ],
+      })
     })
 
     it('returns null for unrelated payloads', () => {
@@ -137,6 +155,7 @@ describe('mlEphantManagerMachine', () => {
           label: 'Standard',
           description: 'Faster reasoning.',
           icon: 'stopwatch',
+          disabled: false,
         },
       ]
       const machine = mlEphantManagerMachine.provide({

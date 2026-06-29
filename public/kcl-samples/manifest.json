@@ -15,6 +15,23 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Medical"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "artificial-heart/main.kcl",
+    "multipleFiles": true,
+    "title": "Artificial Heart",
+    "description": "A model of a permanent electromagnetic blood pump",
+    "files": [
+      "housing.kcl",
+      "impeller.kcl",
+      "main.kcl",
+      "plumbing.kcl",
+      "stator.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Computer Hardware"
     ],
     "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",

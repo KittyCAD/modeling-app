@@ -192,6 +192,10 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
   const vercelCsp =
     csp
       .concat(vercelCspBase)
+      .concat([
+        // Disallow iframes. Iframes might access the parent electron state.
+        "frame-src 'none'",
+      ])
       .concat([cspScriptBase])
       .concat(cspReporting)
       .join('; ') + ';'
@@ -201,10 +205,7 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
     value: 'csp-reporting-endpoint="https://csp-logger.vercel.app/csp-report"',
   }
 
-  console.log(
-    'Content-Security-Policy for Vercel (prod) (vercel.json):',
-    vercelCsp
-  )
+  console.log('Content-Security-Policy for Vercel (prod) (vercel.json):')
 
   console.log(
     JSON.stringify(

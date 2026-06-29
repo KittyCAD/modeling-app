@@ -4,10 +4,14 @@ use async_recursion::async_recursion;
 use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds as kcmc;
+use kcl_api::Group;
+use kcl_api::NumericType;
+use kcl_api::Operation;
+use kcl_api::UnitAngle;
 
 use crate::CompilationIssue;
 use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -22,13 +26,11 @@ use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
-use crate::execution::Group;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::ModuleArtifactState;
-use crate::execution::Operation;
 use crate::execution::PreserveMem;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::SKETCH_OBJECT_META;
@@ -45,13 +47,14 @@ use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
 use crate::execution::annotations::FnAttrs;
-use crate::execution::cad_op::OpKclValue;
+use crate::execution::cad_op::op_from_kcl_value;
 use crate::execution::control_continue;
 use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
+use crate::execution::kcl_value::KclObjectKind;
 use crate::execution::kcl_value::TypeDef;
 use crate::execution::memory::SKETCH_PREFIX;
 use crate::execution::memory::{self};
@@ -66,7 +69,7 @@ use crate::execution::sketch_solve::substitute_sketch_var_in_segment;
 use crate::execution::sketch_solve::substitute_sketch_vars;
 use crate::execution::state::ModuleState;
 use crate::execution::state::SketchBlockState;
-use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::LineCtor;
@@ -674,7 +677,10 @@ impl ExecutorContext {
             .map_err(|err| (err, None, None))?;
 
         if preserve_mem.normal() {
-            exec_state.mut_stack().push_new_root_env(!no_prelude);
+            exec_state
+                .mut_stack()
+                .push_new_root_env(!no_prelude)
+                .map_err(|err| (err, None, None))?;
         }
 
         let result = self
@@ -684,7 +690,8 @@ impl ExecutorContext {
         let env_ref = match preserve_mem {
             PreserveMem::Always => exec_state.mut_stack().pop_and_preserve_env(),
             PreserveMem::Normal => exec_state.mut_stack().pop_env(),
-        };
+        }
+        .map_err(|err| (err, None, None))?;
         let module_artifacts = match preserve_mem {
             PreserveMem::Always => std::mem::take(&mut exec_state.mod_local.artifacts),
             PreserveMem::Normal => {
@@ -762,13 +769,12 @@ impl ExecutorContext {
                             for import_item in items {
                                 // Extract the item from the module.
                                 let mem = &exec_state.stack().memory;
-                                let mut value = mem
-                                    .get_from(&import_item.name.name, env_ref, import_item.into(), 0)
-                                    .cloned();
+                                let mut value =
+                                    mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
                                 let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                                let mut ty = mem.get_from(&ty_name, env_ref, import_item.into(), 0).cloned();
+                                let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
                                 let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                                let mut mod_value = mem.get_from(&mod_name, env_ref, import_item.into(), 0).cloned();
+                                let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
 
                                 if value.is_err() && ty.is_err() && mod_value.is_err() {
                                     return Err(KclError::new_undefined_value(
@@ -865,14 +871,13 @@ impl ExecutorContext {
                                 let item = exec_state
                                     .stack()
                                     .memory
-                                    .get_from(name, env_ref, source_range, 0)
+                                    .get_from_owned(name, env_ref, source_range, 0)
                                     .map_err(|_err| {
                                         internal_err(
                                             format!("{name} is not defined in module (but was exported?)"),
                                             source_range,
                                         )
-                                    })?
-                                    .clone();
+                                    })?;
                                 exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
 
                                 if let ItemVisibility::Export = import_stmt.visibility {
@@ -1018,7 +1023,7 @@ impl ExecutorContext {
                     if should_show_in_feature_tree {
                         exec_state.push_op(Operation::VariableDeclaration {
                             name: var_name.clone(),
-                            value: OpKclValue::from(&rhs),
+                            value: op_from_kcl_value(&rhs),
                             visibility: variable_declaration.visibility,
                             node_path: NodePath::placeholder(),
                             source_range,
@@ -1462,7 +1467,7 @@ impl ExecutorContext {
                         let dummy = EnvironmentRef::dummy();
                         (dummy, Some(dummy))
                     } else {
-                        (exec_state.mut_stack().snapshot(), None)
+                        (exec_state.mut_stack().snapshot()?, None)
                     };
                     (
                         KclValue::Function {
@@ -1692,7 +1697,7 @@ impl Node<SketchBlock> {
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
-            self.prep_mem(exec_state.mut_stack().snapshot(), exec_state);
+            self.prep_mem(exec_state.mut_stack().snapshot()?, exec_state)?;
 
             // Track that we're executing a sketch block.
             let initial_sketch_block_state = {
@@ -1714,15 +1719,17 @@ impl Node<SketchBlock> {
             // the returned sketch object.
             let (result, block_variables) = match self.load_sketch2_into_current_scope(exec_state, ctx, range).await {
                 Ok(()) => {
-                    let parent = exec_state.mut_stack().snapshot();
-                    exec_state.mut_stack().push_new_env_for_call(parent);
+                    let parent = exec_state.mut_stack().snapshot()?;
+                    exec_state.mut_stack().push_new_env_for_call(parent)?;
                     let result = ctx.exec_block(&self.body, exec_state, BodyType::Block).await;
-                    let block_variables = exec_state
-                        .stack()
-                        .find_all_in_current_env()
-                        .map(|(name, value)| (name.clone(), value.clone()))
-                        .collect::<IndexMap<_, _>>();
-                    exec_state.mut_stack().pop_env();
+                    let (result, block_variables) = match exec_state.stack().find_all_in_current_env() {
+                        Ok(block_variables) => (result, block_variables.into_iter().collect::<IndexMap<_, _>>()),
+                        Err(err) => (Err(err), IndexMap::new()),
+                    };
+                    let result = match exec_state.mut_stack().pop_env() {
+                        Ok(_) => result,
+                        Err(err) => Err(err),
+                    };
                     (result, block_variables)
                 }
                 Err(err) => (Err(err), IndexMap::new()),
@@ -1733,7 +1740,10 @@ impl Node<SketchBlock> {
             let sketch_block_state = std::mem::replace(&mut exec_state.mod_local.sketch_block, original_value);
 
             // Pop the scope used for sketch2 aliases.
-            exec_state.mut_stack().pop_env();
+            let result = match exec_state.mut_stack().pop_env() {
+                Ok(_) => result,
+                Err(err) => Err(err),
+            };
 
             (result, block_variables, sketch_block_state)
         };
@@ -2022,6 +2032,7 @@ impl Node<SketchBlock> {
         let return_value = KclValue::Object {
             value: properties,
             constrainable: Default::default(),
+            object_kind: KclObjectKind::Default,
             meta: vec![metadata],
         };
         Ok(if self.is_being_edited {
@@ -2135,7 +2146,7 @@ impl Node<SketchBlock> {
             let sketch_id = exec_state.next_object_id();
             exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
             let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on_value = exec_state.stack().get(&on_cache_name, range)?.clone();
+            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
 
             let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
                 let message =
@@ -2181,8 +2192,7 @@ impl Node<SketchBlock> {
             let value = exec_state
                 .stack()
                 .memory
-                .get_from(&name, env_ref, source_range, 0)?
-                .clone();
+                .get_from_owned(&name, env_ref, source_range, 0)?;
             exec_state.mut_stack().add(name, value, source_range)?;
         }
         Ok(())
@@ -2212,6 +2222,7 @@ impl Node<SketchBlock> {
         let meta_value = KclValue::Object {
             value: meta_map,
             constrainable: false,
+            object_kind: KclObjectKind::Default,
             meta: vec![Metadata {
                 source_range: SourceRange::from(self),
             }],
@@ -2224,8 +2235,8 @@ impl Node<SketchBlock> {
 }
 
 impl SketchBlock {
-    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) {
-        exec_state.mut_stack().push_new_env_for_call(parent);
+    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
+        exec_state.mut_stack().push_new_env_for_call(parent)
     }
 }
 
@@ -2313,7 +2324,7 @@ impl BinaryPart {
     ) -> Result<KclValueControlFlow, KclError> {
         match self {
             BinaryPart::Literal(literal) => Ok(KclValue::from_literal((**literal).clone(), exec_state).continue_()),
-            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.cloned().map(KclValue::continue_),
+            BinaryPart::Name(name) => name.get_result(exec_state, ctx).await.map(KclValue::continue_),
             BinaryPart::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, ctx).await,
             BinaryPart::CallExpressionKw(call_expression) => call_expression.execute(exec_state, ctx).await,
             BinaryPart::UnaryExpression(unary_expression) => unary_expression.get_result(exec_state, ctx).await,
@@ -2329,22 +2340,18 @@ impl BinaryPart {
 }
 
 impl Node<Name> {
-    pub(super) async fn get_result<'a>(
+    pub(super) async fn get_result(
         &self,
-        exec_state: &'a mut ExecState,
+        exec_state: &mut ExecState,
         ctx: &ExecutorContext,
-    ) -> Result<&'a KclValue, KclError> {
+    ) -> Result<KclValue, KclError> {
         let being_declared = exec_state.mod_local.being_declared.clone();
         self.get_result_inner(exec_state, ctx)
             .await
             .map_err(|e| var_in_own_ref_err(e, &being_declared))
     }
 
-    async fn get_result_inner<'a>(
-        &self,
-        exec_state: &'a mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<&'a KclValue, KclError> {
+    async fn get_result_inner(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         if self.abs_path {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Absolute paths (names beginning with `::` are not yet supported)".to_owned(),
@@ -2355,9 +2362,8 @@ impl Node<Name> {
         let mod_name = format!("{}{}", memory::MODULE_PREFIX, self.name.name);
 
         if self.path.is_empty() {
-            let item_value = exec_state.stack().get(&self.name.name, self.into());
-            if item_value.is_ok() {
-                return item_value;
+            if let Ok(item_value) = exec_state.stack().get(&self.name.name, self.into()) {
+                return Ok(item_value);
             }
             return exec_state.stack().get(&mod_name, self.into());
         }
@@ -2376,25 +2382,28 @@ impl Node<Name> {
                     exec_state
                         .stack()
                         .memory
-                        .get_from(&p.name, env, p.as_source_range(), 0)?
+                        .get_from_owned(&p.name, env, p.as_source_range(), 0)?
                 }
                 None => exec_state
                     .stack()
                     .get(&format!("{}{}", memory::MODULE_PREFIX, p.name), self.into())?,
             };
 
-            let KclValue::Module { value: module_id, .. } = value else {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    format!(
-                        "Identifier in path must refer to a module, found {}",
-                        value.human_friendly_type()
-                    ),
-                    p.as_source_ranges(),
-                )));
+            let module_id = match value {
+                KclValue::Module { value, .. } => value,
+                value => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        format!(
+                            "Identifier in path must refer to a module, found {}",
+                            value.human_friendly_type()
+                        ),
+                        p.as_source_ranges(),
+                    )));
+                }
             };
 
             mem_spec = Some(
-                ctx.exec_module_for_items(*module_id, exec_state, p.as_source_range())
+                ctx.exec_module_for_items(module_id, exec_state, p.as_source_range())
                     .await?,
             );
         }
@@ -2405,7 +2414,7 @@ impl Node<Name> {
         let item_value = exec_state
             .stack()
             .memory
-            .get_from(&self.name.name, env, self.name.as_source_range(), 0);
+            .get_from_owned(&self.name.name, env, self.name.as_source_range(), 0);
 
         // Item is defined and exported.
         if item_exported && item_value.is_ok() {
@@ -2416,7 +2425,7 @@ impl Node<Name> {
         let mod_value = exec_state
             .stack()
             .memory
-            .get_from(&mod_name, env, self.name.as_source_range(), 0);
+            .get_from_owned(&mod_name, env, self.name.as_source_range(), 0);
 
         // Module is defined and exported.
         if mod_exported && mod_value.is_ok() {
@@ -3225,19 +3234,19 @@ impl Node<MemberExpression> {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -3247,8 +3256,31 @@ impl Node<MemberExpression> {
                     None,
                 )),
             },
-            (KclValue::Object { value: map, .. }, Property::String(property), false) => {
+            (
+                KclValue::Object {
+                    value: map,
+                    object_kind,
+                    ..
+                },
+                Property::String(property),
+                false,
+            ) => {
                 if let Some(value) = map.get(&property) {
+                    if object_kind
+                        .deprecated_solid_tag_names()
+                        .iter()
+                        .any(|tag_name| tag_name == &property)
+                    {
+                        exec_state.warn(
+                            CompilationIssue::err(
+                                SourceRange::from(self),
+                                format!(
+                                    "Accessing solid-created face `{property}` through sketch tags is deprecated. Use the body's faces instead, e.g. `body.faces.{property}`."
+                                ),
+                            ),
+                            annotations::WARN_DEPRECATED,
+                        );
+                    }
                     Ok(value.to_owned().continue_())
                 } else {
                     Err(KclError::new_undefined_value(
@@ -3326,11 +3358,26 @@ impl Node<MemberExpression> {
                 }
                 .continue_())
             }
+            (KclValue::Solid { value: solid }, Property::String(prop), false) if prop == "faces" => {
+                Ok(KclValue::Object {
+                    meta: vec![Metadata {
+                        source_range: SourceRange::from(self.clone()),
+                    }],
+                    value: solid
+                        .faces
+                        .iter()
+                        .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
+                        .collect(),
+                    constrainable: false,
+                    object_kind: KclObjectKind::Default,
+                }
+                .continue_())
+            }
             (geometry @ KclValue::Solid { .. }, Property::String(prop), false) if prop == "tags" => {
                 // This is a common mistake.
                 Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
-                        "Property `{prop}` not found on {}. You can get a solid's tags through its sketch, as in, `exampleSolid.sketch.tags`.",
+                        "Property `{prop}` not found on {}. You can get a solid's faces through `exampleSolid.faces`, or its sketch tags through `exampleSolid.sketch.tags`.",
                         geometry.human_friendly_type()
                     ),
                     vec![self.clone().into()],
@@ -3346,6 +3393,14 @@ impl Node<MemberExpression> {
                     .map(|(k, tag)| (k.to_owned(), KclValue::TagIdentifier(Box::new(tag.to_owned()))))
                     .collect(),
                 constrainable: false,
+                object_kind: KclObjectKind::SketchTags {
+                    deprecated_solid_tag_names: sk
+                        .tags
+                        .iter()
+                        .filter(|(_, tag)| tag.is_body_created_tag())
+                        .map(|(name, _)| name.to_owned())
+                        .collect(),
+                },
             }
             .continue_()),
             (geometry @ (KclValue::Sketch { .. } | KclValue::Solid { .. }), Property::String(property), false) => {
@@ -3681,15 +3736,15 @@ impl Node<BinaryExpression> {
                                 ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
                             );
                             let desired_angle = match n.ty {
-                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
+                                NumericType::Known(crate::exec::UnitType::Angle(crate::exec::UnitAngle::Degrees))
                                 | NumericType::Default {
                                     len: _,
-                                    angle: kcmc::units::UnitAngle::Degrees,
+                                    angle: UnitAngle::Degrees,
                                 } => ezpz::datatypes::Angle::from_degrees(n.n),
-                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Radians))
+                                NumericType::Known(crate::exec::UnitType::Angle(crate::exec::UnitAngle::Radians))
                                 | NumericType::Default {
                                     len: _,
-                                    angle: kcmc::units::UnitAngle::Radians,
+                                    angle: UnitAngle::Radians,
                                 } => ezpz::datatypes::Angle::from_radians(n.n),
                                 NumericType::Known(crate::exec::UnitType::Count)
                                 | NumericType::Known(crate::exec::UnitType::GenericLength)
@@ -5303,6 +5358,7 @@ impl Node<UnaryExpression> {
                             value,
                             meta: meta.clone(),
                             constrainable: false,
+                            object_kind: KclObjectKind::Default,
                         }
                         .continue_())
                     }
@@ -5548,6 +5604,7 @@ impl Node<ObjectExpression> {
                 source_range: self.into(),
             }],
             constrainable: false,
+            object_kind: KclObjectKind::Default,
         }
         .continue_())
     }
@@ -5724,10 +5781,12 @@ impl Node<PipeExpression> {
 mod test {
     use std::sync::Arc;
 
+    use kcl_api::UnitLength;
     use tokio::io::AsyncWriteExt;
 
     use super::*;
     use crate::ExecutorSettings;
+    use crate::engine::engine_manager;
     use crate::errors::Severity;
     use crate::exec::UnitType;
     use crate::execution::ContextType;
@@ -5751,28 +5810,22 @@ arr1 = [42]: [number(cm)]
         let mem = result.exec_state.stack();
         assert!(matches!(
             mem.memory
-                .get_from("p", result.mem_env, SourceRange::default(), 0)
+                .get_from_owned("p", result.mem_env, SourceRange::default(), 0)
                 .unwrap(),
             KclValue::Plane { .. }
         ));
         let arr1 = mem
             .memory
-            .get_from("arr1", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("arr1", result.mem_env, SourceRange::default(), 0)
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
             assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
-            assert_eq!(
-                *ty,
-                RuntimeType::known_length(kittycad_modeling_cmds::units::UnitLength::Centimeters)
-            );
+            assert_eq!(ty, RuntimeType::known_length(UnitLength::Centimeters));
             // Compare, ignoring meta.
             if let KclValue::Number { value, ty, .. } = &value[0] {
                 // It should not convert units.
                 assert_eq!(*value, 42.0);
-                assert_eq!(
-                    *ty,
-                    NumericType::Known(UnitType::Length(kittycad_modeling_cmds::units::UnitLength::Centimeters))
-                );
+                assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLength::Centimeters)));
             } else {
                 panic!("Expected a number; found {:?}", value[0]);
             }
@@ -5854,7 +5907,7 @@ p2 = -p
         let mem = result.exec_state.stack();
         match mem
             .memory
-            .get_from("p2", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("p2", result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
             KclValue::Plane { value } => {
@@ -5942,16 +5995,7 @@ d = b + c
             .unwrap();
 
         let exec_ctxt = ExecutorContext {
-            engine: Arc::new(Box::new(
-                crate::engine::conn_mock::EngineConnection::new()
-                    .map_err(|err| {
-                        internal_err(
-                            format!("Failed to create mock engine connection: {err}"),
-                            SourceRange::default(),
-                        )
-                    })
-                    .unwrap(),
-            )),
+            engine: Arc::new(engine_manager::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
             fs: Arc::new(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
@@ -6124,7 +6168,7 @@ good = a[0]
         let mem = result.exec_state.stack();
         let num = mem
             .memory
-            .get_from("good", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("good", result.mem_env, SourceRange::default(), 0)
             .unwrap()
             .as_ty_f64()
             .unwrap();
@@ -6154,7 +6198,7 @@ y = x: number(Length)"#;
         let mem = result.exec_state.stack();
         let num = mem
             .memory
-            .get_from("y", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("y", result.mem_env, SourceRange::default(), 0)
             .unwrap()
             .as_ty_f64()
             .unwrap();
@@ -6304,7 +6348,7 @@ s = sketch(on = XY) {
         let mem = result.exec_state.stack();
         let sketch_value = mem
             .memory
-            .get_from("s", result.mem_env, SourceRange::default(), 0)
+            .get_from_owned("s", result.mem_env, SourceRange::default(), 0)
             .unwrap();
 
         let KclValue::Object { value, .. } = sketch_value else {

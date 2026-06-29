@@ -279,7 +279,7 @@ impl ArtifactGraph {
         output.push_str("flowchart LR\n");
 
         let mut next_id = 1_u32;
-        let mut stable_id_map = FnvHashMap::default();
+        let mut stable_id_map = AHashMap::default();
 
         for id in self.map.keys() {
             stable_id_map.insert(*id, next_id);
@@ -301,7 +301,7 @@ impl ArtifactGraph {
     fn flowchart_nodes<W: Write>(
         &self,
         output: &mut W,
-        stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
         prefix: &str,
     ) -> std::fmt::Result {
         // Artifact ID of the path is the key.  The value is a list of
@@ -568,7 +568,7 @@ impl ArtifactGraph {
     fn flowchart_edges<W: Write>(
         &self,
         output: &mut W,
-        stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
         prefix: &str,
     ) -> Result<(), std::fmt::Error> {
         // Mermaid will display two edges in either direction, even using

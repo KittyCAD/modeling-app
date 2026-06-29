@@ -81,6 +81,7 @@ export interface MlCopilotModeOption {
   label: string
   description: string
   icon: CustomIconName
+  disabled: boolean
 }
 
 type MlCopilotModesResult = {
@@ -100,6 +101,7 @@ function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
     label?: unknown
     description?: unknown
     icon?: unknown
+    disabled?: unknown
   }
 
   if (
@@ -121,6 +123,7 @@ function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
     label: candidate.label,
     description: candidate.description,
     icon: candidate.icon,
+    disabled: candidate.disabled === true,
   }
 }
 

@@ -60,15 +60,18 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject(projectName)
+    await expect(toolbar.fileName).toHaveText('main.kcl')
     const shareButton = page.getByTestId('share-button')
 
     // Open deps.kcl (which has no imports) and verify share button is enabled
     await toolbar.fileTreeBtn.click()
     await toolbar.openFile('deps.kcl')
-    await expect(shareButton).not.toBeDisabled()
+    await expect(toolbar.fileName).toHaveText('deps.kcl')
+    await expect(shareButton).not.toBeDisabled({ timeout: 15_000 })
 
     // Open main.kcl (which has an import) and verify share button is disabled
     await toolbar.openFile('main.kcl')
+    await expect(toolbar.fileName).toHaveText('main.kcl')
     await expect(shareButton).toBeDisabled({ timeout: 15_000 })
   })
 

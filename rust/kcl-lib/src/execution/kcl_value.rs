@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::units::UnitLength;
+use kcl_api::UnitLength;
 use serde::Serialize;
 
 use crate::CompilationIssue;
@@ -37,6 +37,7 @@ use crate::execution::annotations::SETTINGS_UNIT_LENGTH;
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::DefaultParamVal;
@@ -54,9 +55,36 @@ use crate::std::args::TyF64;
 
 pub type KclObjectFields = HashMap<String, KclValue>;
 
+#[derive(Debug, Clone, Default, PartialEq, Serialize)]
+pub enum KclObjectKind {
+    #[default]
+    Default,
+    SketchTags {
+        #[serde(default, skip_serializing_if = "Vec::is_empty")]
+        deprecated_solid_tag_names: Vec<String>,
+    },
+}
+
+impl KclObjectKind {
+    pub(crate) fn is_default(&self) -> bool {
+        match self {
+            KclObjectKind::Default => true,
+            KclObjectKind::SketchTags { .. } => false,
+        }
+    }
+
+    pub(crate) fn deprecated_solid_tag_names(&self) -> &[String] {
+        match self {
+            Self::Default => &[],
+            Self::SketchTags {
+                deprecated_solid_tag_names,
+            } => deprecated_solid_tag_names,
+        }
+    }
+}
+
 /// Any KCL value.
-#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
+#[derive(Debug, Clone, Serialize, PartialEq)]
 #[serde(tag = "type")]
 pub enum KclValue {
     Uuid {
@@ -101,6 +129,8 @@ pub enum KclValue {
     Object {
         value: KclObjectFields,
         constrainable: bool,
+        #[serde(default, skip_serializing_if = "KclObjectKind::is_default")]
+        object_kind: KclObjectKind,
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
@@ -134,7 +164,6 @@ pub enum KclValue {
     ImportedGeometry(ImportedGeometry),
     Function {
         #[serde(serialize_with = "function_value_stub")]
-        #[ts(type = "null")]
         value: Box<FunctionSource>,
         #[serde(skip)]
         meta: Vec<Metadata>,
@@ -144,7 +173,6 @@ pub enum KclValue {
         #[serde(skip)]
         meta: Vec<Metadata>,
     },
-    #[ts(skip)]
     Type {
         #[serde(skip)]
         value: TypeDef,
@@ -169,6 +197,8 @@ where
 #[derive(Debug, Clone, PartialEq)]
 pub struct NamedParam {
     pub experimental: bool,
+    /// If true, this parameter is deprecated regardless of the KCL version.
+    pub deprecated: bool,
     /// Constraint marking the KCL version at or after which this parameter is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
     pub default_value: Option<DefaultParamVal>,
@@ -259,6 +289,7 @@ impl FunctionSource {
                 p.identifier.name.clone(),
                 NamedParam {
                     experimental: p.experimental,
+                    deprecated: p.deprecated,
                     deprecated_since: p.deprecated_since.clone(),
                     default_value: p.default_value.clone(),
                     ty: p.param_type.as_ref().map(|t| t.inner.clone()),
@@ -806,6 +837,13 @@ impl KclValue {
         match self {
             KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => value,
             _ => vec![self],
+        }
+    }
+
+    pub fn as_slice(&self) -> Option<&[KclValue]> {
+        match self {
+            KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => Some(value),
+            _ => None,
         }
     }
 

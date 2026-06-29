@@ -1,13 +1,13 @@
 //! Standard library shapes.
 
 use anyhow::Result;
+use kcl_api::UnitLength;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::Angle;
 use kcmc::shared::Point2d as KPoint2d;
 use kittycad_modeling_cmds::shared::PathSegment;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::{self as kcmc};
 use serde::Serialize;
 
@@ -29,6 +29,7 @@ use crate::execution::Path;
 use crate::execution::ProfileClosed;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::adjust_length;
 use crate::parsing::ast::types::TagNode;
@@ -190,8 +191,14 @@ pub async fn circle(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 }
 
 pub const POINT_ZERO_ZERO: [TyF64; 2] = [
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
 ];
 
 pub(super) async fn inner_circle(

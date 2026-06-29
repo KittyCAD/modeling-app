@@ -8,6 +8,7 @@ import {
   closeOnboardingModalIfPresent,
   createProject,
   executorInputPath,
+  expectKeybindingsSettingsVisible,
   getUtils,
   isOutOfViewInScrollContainer,
   runningOnWindows,
@@ -71,8 +72,7 @@ test(
     await expect(page.getByTestId('keybindings-button')).toBeVisible()
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
-    // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
@@ -106,8 +106,7 @@ test(
     await expect(page.getByTestId('keybindings-button')).toBeVisible()
     // Click keyboard shortcuts button.
     await page.getByTestId('keybindings-button').click()
-    // Make sure the keyboard shortcuts modal is visible.
-    await expect(page.getByText('Enter Sketch Mode')).toBeVisible()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
@@ -1099,10 +1098,15 @@ test(
 
     await u.openFilePanel()
 
-    // Find the current file.
+    // Find the current file
     const filesPane = page.locator('#files-pane')
     // Open the directory
-    await page.getByText('nested').click()
+    const nestedFolder = filesPane
+      .getByTestId('file-pane-scroll-container')
+      .getByRole('treeitem', { name: 'nested', exact: true })
+    if ((await nestedFolder.getAttribute('aria-expanded')) !== 'true') {
+      await nestedFolder.click()
+    }
     // See the bracket
     await expect(filesPane.getByText('bracket.kcl')).toBeVisible()
 

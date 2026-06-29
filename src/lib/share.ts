@@ -2,7 +2,7 @@ import { type KclProjectPublicationStatus, projects } from '@kittycad/lib'
 import { serializeProjectConfiguration } from '@src/lang/wasm'
 import toast from 'react-hot-toast'
 
-import env from '@src/env'
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   readProjectSettingsFile,
@@ -12,6 +12,7 @@ import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { toProjectRelativePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -257,7 +258,9 @@ function getProjectUpsertBody(
 }
 
 function getDefaultProjectTitle(project: Project) {
-  return project.name || getPathLeaf(project.path) || 'project'
+  return (
+    getProjectDisplayName(project) || getPathLeaf(project.path) || 'project'
+  )
 }
 
 function getRemoteProject({
@@ -422,14 +425,9 @@ function toKittyCadFiles(
 }
 
 function getCurrentEnvironmentName(): string | Error {
-  const baseDomain = env().VITE_ZOO_BASE_DOMAIN
-  if (baseDomain) {
-    return baseDomain
-  }
-
-  const apiBaseUrl = env().VITE_ZOO_API_BASE_URL
-  if (apiBaseUrl) {
-    return new URL(apiBaseUrl).hostname.replace(/^api\./, '')
+  const environmentName = getEnvironmentNameFromEnv(env())
+  if (environmentName !== undefined) {
+    return environmentName
   }
 
   return new Error('Could not determine the active API environment.')

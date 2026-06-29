@@ -54,6 +54,28 @@ profile002 = startProfile(sketch002, at = [-1.0, 0])
   await expect(element).toHaveAttribute('data-overlay-visible', 'true')
 }
 
+/** Press arrow down until the given label is selected. */
+async function selectCompletionOption(page: Page, label: string) {
+  const labels = page.locator('.cm-tooltip-autocomplete .cm-completionLabel')
+  const target = labels.filter({ hasText: new RegExp(`^${label}$`) })
+  await expect(target).toBeVisible()
+
+  const optionCount = await labels.count()
+  const selectedLabel = page.locator(
+    '.cm-tooltip-autocomplete li[aria-selected="true"] .cm-completionLabel'
+  )
+
+  for (let i = 0; i < optionCount; i++) {
+    if ((await selectedLabel.textContent()) === label) {
+      return
+    }
+
+    await page.keyboard.press('ArrowDown')
+  }
+
+  throw new Error(`Could not select autocomplete option "${label}"`)
+}
+
 test.describe('Editor tests', { tag: '@desktop' }, () => {
   test('can comment out code with ctrl+/', async ({ page, homePage }) => {
     const u = await getUtils(page)
@@ -951,9 +973,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down then enter to accept xLine
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
+      await selectCompletionOption(page, 'xLine')
       await page.keyboard.press('Enter')
       // finish line with comment
       await page.keyboard.type('5')
@@ -1023,9 +1043,7 @@ sketch001 = startSketchOn(XZ)
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down then tab to accept xLine
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
+      await selectCompletionOption(page, 'xLine')
       // finish line with comment
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)

@@ -70,6 +70,19 @@ const getModeOption = (
 ): MlCopilotModeOption | undefined =>
   modeOptions?.find((option) => option.id === mode)
 
+const getSelectableModeOption = (
+  mode: MlCopilotModeId | undefined,
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined => {
+  const option = getModeOption(mode, modeOptions)
+  return option && !option.disabled ? option : undefined
+}
+
+const getFirstSelectableMode = (
+  modeOptions?: MlCopilotModeOption[]
+): MlCopilotModeOption | undefined =>
+  modeOptions?.find((option) => !option.disabled)
+
 export interface MlCopilotModesProps {
   onClick: (mode: MlCopilotModeId) => void
   children: ReactNode
@@ -80,28 +93,38 @@ export interface MlCopilotModesProps {
 const MlCopilotModes = (props: MlCopilotModesProps) => {
   return (
     <>
-      <Popover className="relative">
+      <Popover className="relative min-w-0 max-w-full">
         <Popover.Button
           data-testid="ml-copilot-efforts-button"
-          className="h-7 bg-default flex flex-row items-center gap-1 m-0 pl-1 pr-2 rounded-sm"
+          className="h-7 max-w-full min-w-0 bg-default flex flex-row items-center gap-1 m-0 pl-1 pr-1.5 rounded-sm"
         >
           {props.children}
-          <CustomIcon name="caretUp" className="w-5 h-5 ui-open:rotate-180" />
+          <CustomIcon
+            name="caretUp"
+            className="w-5 h-5 flex-none ui-open:rotate-180"
+          />
         </Popover.Button>
 
         <Popover.Panel className="absolute bottom-full left-0 z-20 flex flex-col gap-2 bg-default mb-1 p-2 border border-chalkboard-70 text-xs rounded-md min-w-[240px]">
           {({ close }) => (
             <>
               {props.modeOptions.map((mode) => (
-                <div
-                  tabIndex={0}
-                  role="button"
+                <button
+                  type="button"
                   key={mode.id}
+                  disabled={mode.disabled}
                   onClick={() => {
+                    if (mode.disabled) return
                     close()
                     props.onClick(mode.id)
                   }}
-                  className={`flex flex-row items-start gap-2 cursor-pointer hover:bg-3 p-2 pr-4 rounded-md border ${props.current === mode.id ? 'border-primary' : ''}`}
+                  className={`flex w-full flex-row items-start gap-2 p-2 pr-4 rounded-md border text-left ${
+                    props.current === mode.id ? 'border-primary' : ''
+                  } ${
+                    mode.disabled
+                      ? 'cursor-not-allowed opacity-60'
+                      : 'cursor-pointer hover:bg-2'
+                  }`}
                   data-testid={`ml-copilot-effort-button-${mode.id}`}
                 >
                   <CustomIcon
@@ -113,8 +136,13 @@ const MlCopilotModes = (props: MlCopilotModesProps) => {
                     <span className="text-chalkboard-70 text-[11px] leading-tight">
                       {mode.description}
                     </span>
+                    {mode.disabled && (
+                      <span className="text-primary text-[11px] leading-tight">
+                        Upgrade your plan to use this mode.
+                      </span>
+                    )}
                   </div>
-                </div>
+                </button>
               ))}
             </>
           )}
@@ -135,20 +163,23 @@ export interface MlEphantExtraInputsProps {
 }
 
 export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
-  const currentMode = getModeOption(props.mode, props.modeOptions)
+  const currentMode = getSelectableModeOption(props.mode, props.modeOptions)
   const modeOptions = props.modeOptions ?? []
 
   return (
-    <div className="flex-1 flex min-w-0 items-end">
-      <div className="flex flex-row w-fit-content items-end gap-1">
+    <div
+      className="flex min-w-0 flex-1 items-end"
+      data-testid="ml-ephant-extra-inputs"
+    >
+      <div className="flex w-full min-w-0 flex-wrap items-end gap-1">
         {SHOW_ZOOKEEPER_REASONING_MODE_DROPDOWN && currentMode && (
           <MlCopilotModes
             onClick={props.onSetMode}
             current={props.mode}
             modeOptions={modeOptions}
           >
-            <CustomIcon name={currentMode.icon} className="w-5 h-5" />
-            {currentMode.label}
+            <CustomIcon name={currentMode.icon} className="w-5 h-5 flex-none" />
+            <span className="min-w-0 truncate">{currentMode.label}</span>
           </MlCopilotModes>
         )}
         <button
@@ -272,15 +303,16 @@ export const MlEphantConversationInput = (
   const { modeOptions, onMlCopilotModeChange } = props
   useEffect(() => {
     if (!modeOptions || modeOptions.length === 0) return
-    if (
-      mode !== undefined &&
-      !modeOptions.some((option) => option.id === mode)
-    ) {
+    const selectedMode = getSelectableModeOption(mode, modeOptions)
+    if (mode !== undefined && selectedMode === undefined) {
+      const fallbackMode =
+        getSelectableModeOption(props.initialMlCopilotMode, modeOptions) ??
+        getFirstSelectableMode(modeOptions)
       userHasPickedMode.current = false
-      setMode(undefined)
-      onMlCopilotModeChange?.(undefined)
+      setMode(fallbackMode?.id)
+      onMlCopilotModeChange?.(fallbackMode?.id)
     }
-  }, [modeOptions, mode, onMlCopilotModeChange])
+  }, [modeOptions, mode, onMlCopilotModeChange, props.initialMlCopilotMode])
 
   const onClick = () => {
     if (props.disabled) return
@@ -288,7 +320,11 @@ export const MlEphantConversationInput = (
     if (!value && attachments.length === 0) return
     if (!refDiv.current) return
 
-    props.onProcess(value, getModeOption(mode, modeOptions)?.id, attachments)
+    props.onProcess(
+      value,
+      getSelectableModeOption(mode, modeOptions)?.id,
+      attachments
+    )
     setValue('')
     setAttachments([])
   }
@@ -497,7 +533,10 @@ export const MlEphantConversationInput = (
             ))}
           </div>
         )}
-        <div className="flex items-end">
+        <div
+          className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-1"
+          data-testid="ml-ephant-composer-actions"
+        >
           <MlEphantExtraInputs
             mode={mode}
             onSetMode={(m) => {
@@ -511,7 +550,7 @@ export const MlEphantConversationInput = (
             attachmentsDisabled={props.disabled}
             modeOptions={props.modeOptions}
           />
-          <div className="flex flex-row gap-1">
+          <div className="flex flex-none flex-row gap-1">
             {!props.disabled && props.needsReconnect && (
               <div className="flex flex-col w-fit items-end">
                 <div className="pr-1 text-xs text-red-500 flex flex-row items-center h-5">

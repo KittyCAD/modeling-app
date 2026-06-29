@@ -1,3 +1,5 @@
+use itertools::Itertools;
+
 use crate::CompilationIssue;
 use crate::SourceRange;
 use crate::errors::KclError;
@@ -16,7 +18,7 @@ pub(crate) fn validate_value_not_consumed(
     exec_state: &ExecState,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
-    if let Some(message) = consumed_value_error_message(value, exec_state) {
+    if let Some(message) = consumed_value_error_message(value, exec_state)? {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             message,
             vec![source_range],
@@ -31,9 +33,9 @@ pub(crate) fn warn_if_value_consumed_for_deprecated_call(
     exec_state: &mut ExecState,
     source_range: SourceRange,
     std_fn_name: &str,
-) {
-    let Some(consumed_message) = consumed_value_error_message(value, exec_state) else {
-        return;
+) -> Result<(), KclError> {
+    let Some(consumed_message) = consumed_value_error_message(value, exec_state)? else {
+        return Ok(());
     };
 
     let function_name = std_fn_name.rsplit("::").next().unwrap_or(std_fn_name);
@@ -45,16 +47,29 @@ pub(crate) fn warn_if_value_consumed_for_deprecated_call(
     );
     issue.tag = Tag::Deprecated;
     exec_state.warn(issue, annotations::WARN_DEPRECATED);
+    Ok(())
 }
 
-fn consumed_value_error_message(value: &KclValue, exec_state: &ExecState) -> Option<String> {
+fn consumed_value_error_message(value: &KclValue, exec_state: &ExecState) -> Result<Option<String>, KclError> {
     match value {
         KclValue::Solid { value } => consumed_solid_error_message(value, exec_state),
         KclValue::HomArray { value, .. } | KclValue::Tuple { value, .. } => {
-            value.iter().find_map(|v| consumed_value_error_message(v, exec_state))
+            for value in value {
+                if let Some(message) = consumed_value_error_message(value, exec_state)? {
+                    return Ok(Some(message));
+                }
+            }
+            Ok(None)
         }
-        KclValue::Object { value, .. } => value.values().find_map(|v| consumed_value_error_message(v, exec_state)),
-        _ => None,
+        KclValue::Object { value, .. } => {
+            for (_, value) in value.iter().sorted_by(|(left, _), (right, _)| left.cmp(right)) {
+                if let Some(message) = consumed_value_error_message(value, exec_state)? {
+                    return Ok(Some(message));
+                }
+            }
+            Ok(None)
+        }
+        _ => Ok(None),
     }
 }
 
@@ -73,7 +88,7 @@ fn validate_solid_not_consumed(
     exec_state: &ExecState,
     source_range: SourceRange,
 ) -> Result<(), KclError> {
-    if let Some(message) = consumed_solid_error_message(solid, exec_state) {
+    if let Some(message) = consumed_solid_error_message(solid, exec_state)? {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             message,
             vec![source_range],
@@ -83,33 +98,37 @@ fn validate_solid_not_consumed(
     Ok(())
 }
 
-fn consumed_solid_error_message(solid: &Solid, exec_state: &ExecState) -> Option<String> {
+fn consumed_solid_error_message(solid: &Solid, exec_state: &ExecState) -> Result<Option<String>, KclError> {
     let key = consumed_solid_key(solid);
     let Some(info) = exec_state.check_solid_consumed(&key) else {
         if let Some(info) = exec_state.check_solid_id_consumed(&solid.id)
             && info.should_report_reused_engine_id_as_consumed(key)
         {
             let operation = info.operation();
-            let current_var = exec_state.find_var_name_for_solid_key(key);
+            let current_var = exec_state.find_var_name_for_solid_key(key)?;
             let output_var = exec_state
                 .latest_consumed_output(info.suggested_replacement_key())
-                .and_then(|key| exec_state.find_var_name_for_solid_key(key));
+                .map(|key| exec_state.find_var_name_for_solid_key(key))
+                .transpose()?
+                .flatten();
             let message = build_stale_body_error_message(current_var.as_deref(), operation, output_var.as_deref());
 
-            return Some(message);
+            return Ok(Some(message));
         }
 
-        return None;
+        return Ok(None);
     };
     let operation = info.operation();
     let suggested_replacement_key = info.suggested_replacement_key();
-    let consumed_var = exec_state.find_var_name_for_solid_key(key);
+    let consumed_var = exec_state.find_var_name_for_solid_key(key)?;
     let output_var = exec_state
         .latest_consumed_output(suggested_replacement_key)
-        .and_then(|key| exec_state.find_var_name_for_solid_key(key));
+        .map(|key| exec_state.find_var_name_for_solid_key(key))
+        .transpose()?
+        .flatten();
     let message = build_consumed_error_message(consumed_var.as_deref(), operation, output_var.as_deref());
 
-    Some(message)
+    Ok(Some(message))
 }
 
 pub(super) fn record_consumed_solids(
@@ -187,12 +206,14 @@ fn build_stale_body_error_message(
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
     use uuid::Uuid;
 
     use super::*;
     use crate::MockConfig;
     use crate::execution::ArtifactId;
+    use crate::execution::KclValue;
+    use crate::execution::MemoryBackendKind;
     use crate::execution::SolidCreator;
 
     fn procedural_solid(id: Uuid, value_id: Uuid) -> Solid {
@@ -201,13 +222,55 @@ mod tests {
             value_id,
             artifact_id: ArtifactId::new(id),
             value: vec![],
+            faces: Default::default(),
             creator: SolidCreator::Procedural,
             start_cap_id: None,
             end_cap_id: None,
             edge_cuts: vec![],
+            pending_edge_cut_ids: vec![],
             units: UnitLength::Millimeters,
             sectional: false,
             meta: vec![SourceRange::default().into()],
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn consumed_solid_diagnostic_names_match_between_memory_backends() {
+        for backend in [MemoryBackendKind::Legacy, MemoryBackendKind::Arena] {
+            let ctx = crate::ExecutorContext::new_mock(None).await;
+            let mut exec_state = ExecState::new_mock_with_memory_backend(&ctx, &MockConfig::default(), backend);
+            let target = procedural_solid(Uuid::from_u128(1), Uuid::from_u128(2));
+
+            exec_state
+                .mut_stack()
+                .push_new_root_env(false)
+                .expect("test root environment should be created");
+            exec_state
+                .mut_stack()
+                .add(
+                    "target".to_owned(),
+                    KclValue::Solid {
+                        value: Box::new(target.clone()),
+                    },
+                    SourceRange::default(),
+                )
+                .unwrap();
+            record_consumed_solids(
+                &mut exec_state,
+                std::slice::from_ref(&target),
+                ConsumedSolidOperation::Subtract,
+                &[],
+            );
+
+            let err = validate_solids_not_consumed(std::slice::from_ref(&target), &exec_state, SourceRange::default())
+                .expect_err("consumed target should be rejected");
+            assert!(
+                err.message()
+                    .contains("`target` was already consumed by a `subtract` operation"),
+                "{backend:?}: {err:?}",
+            );
+
+            ctx.close().await;
         }
     }
 

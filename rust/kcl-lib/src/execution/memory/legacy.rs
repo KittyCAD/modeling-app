@@ -216,9 +216,9 @@ use std::sync::atomic::Ordering;
 use anyhow::Result;
 use env::Environment;
 use indexmap::IndexMap;
-use serde::Deserialize;
-use serde::Serialize;
 
+use super::EnvironmentRef;
+use super::MemoryStats;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -357,7 +357,7 @@ impl EnvironmentsBlocks {
 
         let n = self.n.fetch_add(1, Ordering::Relaxed);
         let block = self.must_current_block_mut();
-        let result = EnvironmentRef(n, usize::MAX);
+        let result = EnvironmentRef::current(n);
         block.push(Box::pin(environment));
         result
     }
@@ -443,15 +443,8 @@ impl fmt::Display for Stack {
 
 impl ProgramMemory {
     #[allow(clippy::new_without_default)]
-    #[allow(dead_code)]
     pub fn new() -> Arc<Self> {
-        Self::new_with_backend(super::MemoryBackendKind::Legacy)
-    }
-
-    pub(crate) fn new_with_backend(backend: super::MemoryBackendKind) -> Arc<Self> {
-        match backend {
-            super::MemoryBackendKind::Legacy => Self::new_legacy(),
-        }
+        Self::new_legacy()
     }
 
     fn new_legacy() -> Arc<Self> {
@@ -516,13 +509,23 @@ impl ProgramMemory {
     pub fn get_from(
         &self,
         var: &str,
+        env_ref: EnvironmentRef,
+        source_range: SourceRange,
+        owner: usize,
+    ) -> Result<KclValue, KclError> {
+        self.get_from_ref(var, env_ref, source_range, owner).cloned()
+    }
+
+    fn get_from_ref(
+        &self,
+        var: &str,
         mut env_ref: EnvironmentRef,
         source_range: SourceRange,
         owner: usize,
     ) -> Result<&KclValue, KclError> {
         loop {
             let env = self.get_env(env_ref.index());
-            env_ref = match env.get(var, env_ref.1, owner) {
+            env_ref = match env.get(var, env_ref.epoch(), owner) {
                 Ok(item) => return Ok(item),
                 Err(Some(parent)) => parent,
                 Err(None) => break,
@@ -535,6 +538,17 @@ impl ProgramMemory {
             KclErrorDetails::new(format!("`{name}` is not defined"), vec![source_range]),
             Some(name.to_owned()),
         ))
+    }
+
+    /// Get an owned value from a specific environment of the memory.
+    pub fn get_from_owned(
+        &self,
+        var: &str,
+        env_ref: EnvironmentRef,
+        source_range: SourceRange,
+        owner: usize,
+    ) -> Result<KclValue, KclError> {
+        self.get_from(var, env_ref, source_range, owner)
     }
 
     /// Iterate over all key/value pairs in the specified environment which satisfy the provided
@@ -610,7 +624,7 @@ impl ProgramMemory {
     pub fn get_from_unchecked(&self, var: &str, mut env_ref: EnvironmentRef) -> Result<&KclValue, KclError> {
         loop {
             let env = self.get_env(env_ref.index());
-            env_ref = match env.get_unchecked(var, env_ref.1) {
+            env_ref = match env.get_unchecked(var, env_ref.epoch()) {
                 Ok(item) => return Ok(item),
                 Err(Some(parent)) => parent,
                 Err(None) => break,
@@ -648,6 +662,11 @@ impl Stack {
     /// Get the current (globally most recent) epoch.
     pub fn current_epoch(&self) -> usize {
         self.memory.epoch.load(Ordering::Relaxed)
+    }
+
+    #[cfg(test)]
+    pub(super) fn current_env_ref(&self) -> EnvironmentRef {
+        self.current_env
     }
 
     /// Push a new (standard KCL) stack frame on to the call stack.
@@ -758,7 +777,7 @@ impl Stack {
         env.mark_as_refed();
 
         let prev_epoch = self.memory.epoch.fetch_add(1, Ordering::Relaxed);
-        EnvironmentRef(self.current_env.0, prev_epoch)
+        EnvironmentRef::at_epoch(self.current_env.index(), prev_epoch)
     }
 
     /// Add a value to the program memory (in the current scope). The value must not already exist.
@@ -826,7 +845,7 @@ impl Stack {
 
     /// Update a variable in memory. `key` must exist in memory. If it doesn't, this function will panic
     /// in debug builds and do nothing in release builds.
-    pub fn update(&mut self, key: &str, f: impl Fn(&mut KclValue, usize)) {
+    pub fn update(&mut self, key: &str, f: impl Fn(&mut KclValue, usize)) -> Result<(), KclError> {
         self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
         self.memory.get_env(self.current_env.index()).update(
             key,
@@ -834,29 +853,35 @@ impl Stack {
             self.memory.epoch.load(Ordering::Relaxed),
             self.id,
         );
+        Ok(())
     }
 
     /// Get a value from the program memory.
     /// Return Err if not found.
-    pub fn get(&self, var: &str, source_range: SourceRange) -> Result<&KclValue, KclError> {
+    pub fn get(&self, var: &str, source_range: SourceRange) -> Result<KclValue, KclError> {
         self.memory.get_from(var, self.current_env, source_range, self.id)
     }
 
+    /// Get a cloned value from the program memory.
+    pub fn get_owned(&self, var: &str, source_range: SourceRange) -> Result<KclValue, KclError> {
+        self.get(var, source_range)
+    }
+
     /// Whether the current frame of the stack contains a variable with the given name.
-    pub fn cur_frame_contains(&self, var: &str) -> bool {
+    pub fn cur_frame_contains(&self, var: &str) -> Result<bool, KclError> {
         let env = self.memory.get_env(self.current_env.index());
-        env.contains_key(var)
+        Ok(env.contains_key(var))
     }
 
     /// Get a key from the first stack frame on the call stack.
-    pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<(usize, &KclValue), KclError> {
+    pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<(usize, KclValue), KclError> {
         if !self.current_env.skip_env() {
-            return Ok((self.current_env.1, self.get(key, source_range)?));
+            return Ok((self.current_env.epoch(), self.get(key, source_range)?));
         }
 
         for env in self.call_stack.iter().rev() {
             if !env.skip_env() {
-                return Ok((env.1, self.memory.get_from(key, *env, source_range, self.id)?));
+                return Ok((env.epoch(), self.memory.get_from(key, *env, source_range, self.id)?));
             }
         }
 
@@ -864,25 +889,26 @@ impl Stack {
     }
 
     /// Iterate over all keys in the current environment which satisfy the provided predicate.
-    pub fn find_keys_in_current_env<'a>(
-        &'a self,
-        pred: impl Fn(&KclValue) -> bool + 'a,
-    ) -> impl Iterator<Item = &'a String> {
+    pub fn find_keys_in_current_env(&self, pred: impl Fn(&KclValue) -> bool) -> Vec<String> {
         self.memory
             .find_all_in_env(self.current_env, pred, self.id)
-            .map(|(k, _)| k)
+            .map(|(k, _)| k.clone())
+            .collect()
     }
 
     /// Iterate over all key/value pairs in the current environment. `env` must
     /// either be read-only or owned by `self`.
-    pub fn find_all_in_current_env(&self) -> impl Iterator<Item = (&String, &KclValue)> {
+    pub fn find_all_in_current_env(&self) -> Vec<(String, KclValue)> {
         self.find_all_in_env(self.current_env)
     }
 
     /// Iterate over all key/value pairs in the specified environment. `env`
     /// must either be read-only or owned by `self`.
-    pub fn find_all_in_env(&self, env: EnvironmentRef) -> impl Iterator<Item = (&String, &KclValue)> {
-        self.memory.find_all_in_env(env, |_| true, self.id)
+    pub fn find_all_in_env(&self, env: EnvironmentRef) -> Vec<(String, KclValue)> {
+        self.memory
+            .find_all_in_env(env, |_| true, self.id)
+            .map(|(key, value)| (key.clone(), value.clone()))
+            .collect()
     }
 
     /// Search the current environment and all environments in the call stack
@@ -894,8 +920,8 @@ impl Stack {
     pub(crate) fn find_var_name_in_all_envs(&self, pred: impl Fn(&KclValue) -> bool) -> Option<String> {
         if !self.current_env.skip_env() {
             for (name, value) in self.find_all_in_env(self.current_env) {
-                if pred(value) {
-                    return Some(name.clone());
+                if pred(&value) {
+                    return Some(name);
                 }
             }
         }
@@ -904,8 +930,8 @@ impl Stack {
                 continue;
             }
             for (name, value) in self.find_all_in_env(*env) {
-                if pred(value) {
-                    return Some(name.clone());
+                if pred(&value) {
+                    return Some(name);
                 }
             }
         }
@@ -933,6 +959,10 @@ impl Stack {
         result.init_iter();
         result
     }
+
+    pub fn walk_call_stack_with<T>(&self, f: impl FnMut(&KclValue) -> Option<T>) -> Vec<T> {
+        self.walk_call_stack().filter_map(f).collect()
+    }
 }
 
 // See walk_call_stack.
@@ -945,7 +975,12 @@ struct CallStackIterator<'a> {
 
 impl CallStackIterator<'_> {
     fn init_iter(&mut self) {
-        self.cur_values = Some(self.stack.memory.get_env(self.cur_env.index()).values(self.cur_env.1));
+        self.cur_values = Some(
+            self.stack
+                .memory
+                .get_env(self.cur_env.index())
+                .values(self.cur_env.epoch()),
+        );
     }
 }
 
@@ -1001,8 +1036,8 @@ impl<'a> Iterator for CallStackIterator<'a> {
 #[cfg(test)]
 impl PartialEq for Stack {
     fn eq(&self, other: &Self) -> bool {
-        let vars: Vec<_> = self.find_keys_in_current_env(|_| true).collect();
-        let vars_other: Vec<_> = other.find_keys_in_current_env(|_| true).collect();
+        let vars = self.find_keys_in_current_env(|_| true);
+        let vars_other = other.find_keys_in_current_env(|_| true);
         if vars != vars_other {
             return false;
         }
@@ -1010,60 +1045,6 @@ impl PartialEq for Stack {
         vars.iter()
             .all(|k| self.get(k, SourceRange::default()).unwrap() == other.get(k, SourceRange::default()).unwrap())
     }
-}
-
-/// An index pointing to an environment at a point in time.
-///
-/// The first field indexes an environment, the second field is an epoch. An epoch of 0 is indicates
-/// a dummy, error, or placeholder env ref, an epoch of `usize::MAX` represents the current most
-/// recent epoch.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Hash, Eq, ts_rs::TS)]
-pub struct EnvironmentRef(usize, usize);
-
-impl EnvironmentRef {
-    pub fn dummy() -> Self {
-        Self(usize::MAX, 0)
-    }
-
-    fn is_regular(&self) -> bool {
-        self.0 < usize::MAX && self.1 > 0
-    }
-
-    fn index(&self) -> usize {
-        self.0
-    }
-
-    fn skip_env(&self) -> bool {
-        self.0 == usize::MAX
-    }
-
-    /// Replace only the env index if it matches `old`.
-    pub fn replace_env(&mut self, old: Self, new: Self) {
-        if self.0 == old.0 {
-            self.0 = new.0;
-        }
-    }
-
-    /// Replace if it matches `old`.
-    pub fn replace_env_and_epoch(&mut self, old: Self, new: Self) {
-        if self.0 == old.0 && self.1 == old.1 {
-            self.0 = new.0;
-            self.1 = new.1;
-        }
-    }
-}
-
-// TODO keep per-stack stats to avoid so many atomic updates
-#[derive(Debug, Default)]
-pub(crate) struct MemoryStats {
-    // Total number of environments created.
-    env_count: AtomicUsize,
-    // Total number of epochs.
-    epoch_count: AtomicUsize,
-    // Total number of values inserted or updated.
-    mutation_count: AtomicUsize,
-    // The number of iterations waiting for a spin lock.
-    lock_waits: AtomicUsize,
 }
 
 // Use a sub-module to protect access to `Environment::bindings` and prevent unexpected mutation
@@ -1264,6 +1245,7 @@ mod test {
     use super::*;
     use crate::execution::kcl_value::FunctionSource;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
 
     fn sr() -> SourceRange {
         SourceRange::default()
@@ -1280,7 +1262,7 @@ mod test {
     #[track_caller]
     fn assert_get(mem: &Stack, key: &str, n: i64) {
         match mem.get(key, sr()).unwrap() {
-            KclValue::Number { value, .. } => assert_eq!(*value as i64, n),
+            KclValue::Number { value, .. } => assert_eq!(value as i64, n),
             _ => unreachable!(),
         }
     }
@@ -1532,7 +1514,7 @@ mod test {
         assert_get(mem, "a", 1);
         assert_get(mem, "b", 2);
         match mem.get("f", SourceRange::default()).unwrap() {
-            KclValue::Function { value, .. } => match &**value {
+            KclValue::Function { value, .. } => match value.as_ref() {
                 FunctionSource {
                     body: crate::execution::kcl_value::FunctionBody::Kcl(memory),
                     ..

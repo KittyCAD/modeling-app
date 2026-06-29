@@ -44,6 +44,6 @@
     }
   },
   "files": {
-    "ignore": ["**/*.json"]
+    "ignore": ["**/*.json", "packages/ui-components/storybook-static/**"]
   }
 }

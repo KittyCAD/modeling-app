@@ -21,3 +21,43 @@ export function xstateEventError(event: unknown): unknown {
 
   return undefined
 }
+
+export type SubscribableActor<TSnapshot> = {
+  getSnapshot: () => TSnapshot
+  subscribe: (listener: (snapshot: TSnapshot) => void) => {
+    unsubscribe: () => void
+  }
+}
+
+export function waitForActorSnapshot<TSnapshot>(
+  actor: SubscribableActor<TSnapshot>,
+  predicate: (snapshot: TSnapshot) => boolean,
+  timeoutMs: number
+) {
+  if (predicate(actor.getSnapshot())) {
+    return Promise.resolve(true)
+  }
+
+  return new Promise<boolean>((resolve) => {
+    let subscription: { unsubscribe: () => void } | undefined
+    let settled = false
+    const finish = (matched: boolean) => {
+      if (settled) {
+        return
+      }
+      settled = true
+      globalThis.clearTimeout(timeout)
+      subscription?.unsubscribe()
+      resolve(matched)
+    }
+    const timeout = globalThis.setTimeout(() => finish(false), timeoutMs)
+    subscription = actor.subscribe((snapshot) => {
+      if (predicate(snapshot)) {
+        finish(true)
+      }
+    })
+    if (predicate(actor.getSnapshot())) {
+      finish(true)
+    }
+  })
+}

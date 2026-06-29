@@ -1,0 +1,59 @@
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 2mm])
+  horizontal([arc1.end, ORIGIN])
+  arc2 = arc(start = [var -4mm, var 0mm], end = [var 4mm, var 0mm], center = [var 0mm, var 2mm])
+  horizontal([arc2.end, ORIGIN])
+  line1 = line(start = [var -5mm, var 0mm], end = [var -4mm, var 0mm])
+  coincident([line1.start, arc1.start])
+  coincident([line1.end, arc2.start])
+  line2 = line(start = [var 4mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line2.start, arc2.end])
+  coincident([line2.end, arc1.end])
+  horizontal(line1)
+  horizontal(line2)
+}
+
+plane001 = offsetPlane(XZ, offset = 10)
+sketch002 = sketch(on = plane001) {
+  arc1 = arc(start = [var -5mm, var 0mm], end = [var 5mm, var 0mm], center = [var 0mm, var 2mm])
+  horizontal([arc1.end, ORIGIN])
+  arc2 = arc(start = [var -4mm, var 0mm], end = [var 4mm, var 0mm], center = [var 0mm, var 2mm])
+  horizontal([arc2.end, ORIGIN])
+  line1 = line(start = [var -5mm, var 0mm], end = [var -4mm, var 0mm])
+  coincident([line1.start, arc1.start])
+  coincident([line1.end, arc2.start])
+  line2 = line(start = [var 4mm, var 0mm], end = [var 5mm, var 0mm])
+  coincident([line2.start, arc2.end])
+  coincident([line2.end, arc1.end])
+  horizontal(line1)
+  horizontal(line2)
+}
+
+region001 = region(point = [0mm, -3mm], sketch = sketch001)
+region002 = region(point = [0mm, -3mm], sketch = sketch002)
+loft001 = loft([region001, region002])
+
+plane002 = offsetPlane(XZ, offset = -1)
+sketch003 = sketch(on = plane002) {
+  line1 = line(start = [var -1mm, var 0mm], end = [var 1mm, var 0mm])
+  line2 = line(start = [var 1mm, var 0mm], end = [var 1mm, var -5mm])
+  line3 = line(start = [var 1mm, var -5mm], end = [var -1mm, var -5mm])
+  line4 = line(start = [var -1mm, var -5mm], end = [var -1mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+
+hidden003 = hide(sketch003)
+region003 = region(point = [0mm, 0mm], sketch = sketch003)
+extrude001 = extrude(region003, length = 2)
+
+subtract([loft001], tools = [extrude001])
+hidden001 = hide(sketch001)

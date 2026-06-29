@@ -1024,6 +1024,72 @@ const CustomIconMap = Object.freeze({
       <path d="M3 9.5H17V10.5H3V9.5Z" fill="currentColor" />
     </svg>
   ),
+  gdtCircularity: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt circularity"
+    >
+      <circle cx="10" cy="10" r="6.5" stroke="currentColor" fill="none" />
+    </svg>
+  ),
+  gdtConcentricity: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt concentricity"
+    >
+      <circle cx="10" cy="10" r="6.5" stroke="currentColor" fill="none" />
+      <circle cx="10" cy="10" r="3.25" stroke="currentColor" fill="none" />
+    </svg>
+  ),
+  gdtSymmetry: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt symmetry"
+    >
+      <path d="M4 6H16" stroke="currentColor" />
+      <path d="M3 10H17" stroke="currentColor" />
+      <path d="M4 14H16" stroke="currentColor" />
+    </svg>
+  ),
+  gdtRunout: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt runout"
+    >
+      <path d="M4 15L14.5 4.5" stroke="currentColor" />
+      <path d="M10.5 4H15V8.5" stroke="currentColor" />
+      <circle cx="6" cy="14" r="2.25" stroke="currentColor" fill="none" />
+    </svg>
+  ),
+  gdtCylindricity: (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="gdt cylindricity"
+    >
+      <circle cx="10" cy="10" r="4.15" stroke="currentColor" fill="none" />
+      <path d="M4.25 17L7.25 3M12.75 17L15.75 3" stroke="currentColor" />
+    </svg>
+  ),
   gdtPosition: (
     <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path

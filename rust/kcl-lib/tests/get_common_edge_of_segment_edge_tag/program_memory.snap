@@ -233,7 +233,10 @@ description: Variables in memory after executing get_common_edge_of_segment_edge
         "value": "line4"
       }
     },
-    "constrainable": false
+    "constrainable": false,
+    "object_kind": {
+      "SketchTags": {}
+    }
   },
   "sketch001": {
     "type": "Object",

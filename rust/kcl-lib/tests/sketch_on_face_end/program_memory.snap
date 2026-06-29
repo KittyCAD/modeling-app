@@ -4,8 +4,7 @@ description: Variables in memory after executing sketch_on_face_end.kcl
 ---
 {
   "cube": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "part001": {
     "type": "Solid",
@@ -304,7 +303,8 @@ description: Variables in memory after executing sketch_on_face_end.kcl
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },

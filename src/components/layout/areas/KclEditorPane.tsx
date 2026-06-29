@@ -1,15 +1,22 @@
 import { Menu } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import usePlatform from '@src/hooks/usePlatform'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { reportRejection, trap } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import styles from './KclEditorMenu.module.css'
@@ -18,10 +25,10 @@ type Singletons = ReturnType<typeof useSingletons>
 
 export const editorShortcutMeta = {
   formatCode: {
-    display: 'Alt + Shift + F',
+    defaultKeys: ['alt+shift+f'],
   },
   convertToVariable: {
-    display: 'Ctrl + Shift + C',
+    defaultKeys: ['ctrl+shift+c'],
   },
 }
 
@@ -82,10 +89,38 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 }
 
 export const KclEditorMenu = () => {
-  const { commands, settings } = useApp()
+  useSignals()
+  const app = useApp()
+  const { commands, settings } = app
   const { kclManager } = useSingletons()
   const platform = usePlatform()
   const settingsActor = settings.actor
+  const keymap = app.registry.optional(keymapService)
+  const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+  const currentScopes = keymap?.getCurrentScopes()
+  const keybindingDisplay = (
+    command: string,
+    fallbackKeystrokes: readonly string[]
+  ) =>
+    keymapKeystrokesDisplay(
+      keymap && currentScopes
+        ? findKeymapItemForCommand(
+            keymap.keymap.value,
+            command,
+            currentScopes,
+            keymapScopes
+          )?.keystrokes
+        : fallbackKeystrokes,
+      platform
+    )
+  const formatCodeKeybinding = keybindingDisplay(
+    APP_COMMAND_IDS.editor.format,
+    editorShortcutMeta.formatCode.defaultKeys
+  )
+  const convertToVariableKeybinding = keybindingDisplay(
+    APP_COMMAND_IDS.editor.convertToVariable,
+    editorShortcutMeta.convertToVariable.defaultKeys
+  )
   const { enable: convertToVarEnabled, handleClick: handleConvertToVarClick } =
     useConvertToVariable(kclManager)
 
@@ -100,9 +135,7 @@ export const KclEditorMenu = () => {
           className={styles.button}
         >
           <span>Format code</span>
-          <small>
-            {hotkeyDisplay(editorShortcutMeta.formatCode.display, platform)}
-          </small>
+          {formatCodeKeybinding && <small>{formatCodeKeybinding}</small>}
         </button>
       </Menu.Item>
       <Menu.Item>
@@ -124,7 +157,9 @@ export const KclEditorMenu = () => {
             className={styles.button}
           >
             <span>Convert to Variable</span>
-            <small>{editorShortcutMeta.convertToVariable.display}</small>
+            {convertToVariableKeybinding && (
+              <small>{convertToVariableKeybinding}</small>
+            )}
           </button>
         </Menu.Item>
       )}

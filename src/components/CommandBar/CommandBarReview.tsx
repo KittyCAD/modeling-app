@@ -141,7 +141,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
-          <div className="px-4 flex flex-wrap gap-2 items-baseline">
+          <div className="px-4 flex flex-wrap gap-2 items-center">
             <span className="text-sm mr-4">Arguments</span>
             {Object.entries(availableOptionalArgs || {}).map(
               ([argName, arg]) => {

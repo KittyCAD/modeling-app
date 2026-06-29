@@ -17,6 +17,7 @@ import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectU
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useProjectStatus } from '@src/hooks/useProjectStatus'
 import { useQueryParamEffects } from '@src/hooks/useQueryParamEffects'
 import {
   autoUpdateDownloadProgressSignal,
@@ -24,10 +25,11 @@ import {
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
+  CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   DefaultLayoutPaneID,
@@ -61,7 +63,6 @@ import {
 import { useSelector } from '@xstate/react'
 import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useHotkeys } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
@@ -100,8 +101,20 @@ export function OpenedProject() {
 
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
+  useEffect(() => {
+    setOpfsCloudSyncProjectScope(projectPath ?? undefined)
+
+    return () => {
+      setOpfsCloudSyncProjectScope(undefined)
+    }
+  }, [projectPath])
+
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
+    if (systemIOState !== SystemIOMachineStates.idle) {
+      return
+    }
+
     if (
       projects &&
       projects.length > 0 &&
@@ -119,7 +132,7 @@ export function OpenedProject() {
       void navigate(PATHS.HOME)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation])
+  }, [projects, lastOperation, systemIOState])
 
   // ZOOKEEPER BEHAVIOR EXCEPTION
   // Only fires on state changes, to deal with Zookeeper control.
@@ -176,48 +189,39 @@ export function OpenedProject() {
     ['file']
   )
   const authToken = auth.useToken()
+  const currentProject = project?.projectIORefSignal.value
+  const projectStatus = useProjectStatus(
+    currentProject?.cloudProjectId,
+    authToken
+  )
+  const hasChangesRequested =
+    projectStatus?.publicationStatus === 'changes_requested'
+
+  useEffect(() => {
+    if (!hasChangesRequested) {
+      return
+    }
+
+    const message = projectStatus?.feedback
+      ? `Changes requested: ${projectStatus.feedback}. Republishing will put it back into the review queue.`
+      : 'Your Aquarium submission was reviewed and changes were requested. Republishing will put it back into the review queue.'
+
+    toast(message, {
+      id: CHANGES_REQUESTED_TOAST_ID,
+      duration: Number.POSITIVE_INFINITY,
+      icon: '⚠️',
+    })
+
+    return () => {
+      toast.dismiss(CHANGES_REQUESTED_TOAST_ID)
+    }
+  }, [hasChangesRequested, projectStatus?.feedback])
+
   const onboardingStatus =
     settingsValues.app.onboardingStatus.current ||
     settingsValues.app.onboardingStatus.default
 
   useApplyRememberedOnboardingWorkflow(location.pathname, onboardingStatus)
-
-  useHotkeys('backspace', (e) => {
-    e.preventDefault()
-  })
-  // Since these already exist in the editor, we don't need to define them
-  // with the wrapper.
-  useHotkeys('mod+z', (e) => {
-    e.preventDefault()
-    kclManager.undo()
-  })
-  useHotkeys('mod+shift+z', (e) => {
-    e.preventDefault()
-    kclManager.redo()
-  })
-
-  useHotkeyWrapper(
-    ['alt + shift + f'],
-    () => {
-      void kclManager.format()
-    },
-    kclManager,
-    {
-      enabled: !isDesktop(),
-      enableOnContentEditable: true,
-      enableOnFormTags: true,
-      // Desktop uses the native Electron menu accelerator for this binding.
-      // Skip CodeMirror registration because this combo types a character there.
-      registerToCodeMirror: false,
-    }
-  )
-  useHotkeyWrapper(
-    ['ctrl + shift + c'],
-    () => {
-      void kclManager.convertToVariable()
-    },
-    kclManager
-  )
 
   useEngineConnectionSubscriptions()
 

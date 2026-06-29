@@ -2,6 +2,7 @@ import { HomePageFixture } from '@e2e/playwright/fixtures/homePageFixture'
 import type { NativeMenuFixture } from '@e2e/playwright/fixtures/nativeMenuFixture'
 import { throwTronAppMissing } from '@e2e/playwright/lib/electron-helpers'
 import {
+  expectKeybindingsSettingsVisible,
   openSettingsExpectLocator,
   openSettingsExpectText,
 } from '@e2e/playwright/test-utils'
@@ -152,7 +153,7 @@ test.describe(
         await homePage.projectsLoaded()
         await homePage.isNativeFileMenuCreated()
         await nativeMenu.click('File.Preferences.Keybindings')
-        await openSettingsExpectLocator(page, '#enter-sketch-mode')
+        await expectKeybindingsSettingsVisible(page)
       })
       await test.step('Home.File.Preferences.User default units', async () => {
         await homePage.projectsLoaded()
@@ -298,7 +299,7 @@ test.describe(
       await test.step('Modeling.File.Preferences.Keybindings', async () => {
         await page.waitForTimeout(250)
         await nativeMenu.click('File.Preferences.Keybindings')
-        await openSettingsExpectLocator(page, '#enter-sketch-mode')
+        await expectKeybindingsSettingsVisible(page)
       })
       await test.step('Modeling.File.Preferences.User default units', async () => {
         await page.waitForTimeout(250)

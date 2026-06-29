@@ -117,80 +117,94 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     [openCodeEditorPaneIfClosed]
   )
 
-  const onRowClicked = (entry: FileExplorerEntry) => {
-    const requestedFileName = parentPathRelativeToProject(
-      entry.path,
-      projectDirectoryPath
-    )
-
-    const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
-    const isRelevantFile = (filename: string): boolean => {
-      const extension = getEXTNoPeriod(filename)
-      if (!extension) {
-        return false
-      }
-      return isExtensionARelevantExtension(extension, RELEVANT_FILE_EXTENSIONS)
-    }
-
-    // Only open the file if it is a kcl file.
-    if (
-      projectRef.current?.value.name &&
-      entry.children == null &&
-      entry.path.endsWith(FILE_EXT)
-    ) {
-      const name = projectRef.current.value.name.slice()
-
-      const navigateHelper = () => {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.navigateToFile,
-          data: {
-            requestedProjectName: name,
-            requestedFileName: requestedFileName,
-          },
-        })
-      }
-
-      if (modelingMachineState.matches('Sketch')) {
-        modelingSend({ type: 'Cancel' })
-        const waitForIdlePromise = new Promise((resolve) => {
-          const subscription = modelingActor.subscribe((state) => {
-            if (state.matches('idle')) {
-              subscription.unsubscribe()
-              resolve(undefined)
-            }
-          })
-        })
-        waitForIdlePromise.catch(reportRejection).finally(() => {
-          navigateHelper()
-        })
-      } else {
-        // immediately navigate
-        navigateHelper()
-      }
-    } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
-      // Allow insert if it is a importable file
-      toast.custom(
-        ToastInsert({
-          onInsert: () => {
-            const relativeFilePath = entry.path.replace(
-              projectRef.current?.value.path + fsZds.sep,
-              ''
-            )
-            commands.send({
-              type: 'Find and select command',
-              data: {
-                name: 'Insert',
-                groupId: 'code',
-                argDefaultValues: { path: relativeFilePath },
-              },
-            })
-            toast.dismiss(INSERT_FOREIGN_TOAST_ID)
-          },
-        }),
-        { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
+  const onRowClicked = useCallback(
+    (entry: FileExplorerEntry) => {
+      const requestedFileName = parentPathRelativeToProject(
+        entry.path,
+        projectDirectoryPath
       )
-    }
-  }
+
+      const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
+      const isRelevantFile = (filename: string): boolean => {
+        const extension = getEXTNoPeriod(filename)
+        if (!extension) {
+          return false
+        }
+        return isExtensionARelevantExtension(
+          extension,
+          RELEVANT_FILE_EXTENSIONS
+        )
+      }
+
+      // Only open the file if it is a kcl file.
+      if (
+        projectRef.current?.value.name &&
+        entry.children == null &&
+        entry.path.endsWith(FILE_EXT)
+      ) {
+        const name = projectRef.current.value.name.slice()
+
+        const navigateHelper = () => {
+          systemIOActor.send({
+            type: SystemIOMachineEvents.navigateToFile,
+            data: {
+              requestedProjectName: name,
+              requestedFileName: requestedFileName,
+            },
+          })
+        }
+
+        if (modelingMachineState.matches('Sketch')) {
+          modelingSend({ type: 'Cancel' })
+          const waitForIdlePromise = new Promise((resolve) => {
+            const subscription = modelingActor.subscribe((state) => {
+              if (state.matches('idle')) {
+                subscription.unsubscribe()
+                resolve(undefined)
+              }
+            })
+          })
+          waitForIdlePromise.catch(reportRejection).finally(() => {
+            navigateHelper()
+          })
+        } else {
+          // immediately navigate
+          navigateHelper()
+        }
+      } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
+        // Allow insert if it is a importable file
+        toast.custom(
+          ToastInsert({
+            onInsert: () => {
+              const relativeFilePath = entry.path.replace(
+                projectRef.current?.value.path + fsZds.sep,
+                ''
+              )
+              commands.send({
+                type: 'Find and select command',
+                data: {
+                  name: 'Insert',
+                  groupId: 'code',
+                  argDefaultValues: { path: relativeFilePath },
+                },
+              })
+              toast.dismiss(INSERT_FOREIGN_TOAST_ID)
+            },
+          }),
+          { duration: 30000, id: INSERT_FOREIGN_TOAST_ID }
+        )
+      }
+    },
+    [
+      commands,
+      modelingActor,
+      modelingMachineState,
+      modelingSend,
+      projectDirectoryPath,
+      systemIOActor,
+      wasmInstance,
+    ]
+  )
 
   return (
     <LayoutPanel

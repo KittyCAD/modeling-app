@@ -227,18 +227,14 @@ impl ExecState {
                 // Find all the solids on the same shared sketch.
                 ids.extend(
                     self.stack()
-                        .walk_call_stack()
-                        .filter(|v| {
-                            matches!(
-                                v,
-                                KclValue::Solid { value }
-                                    if value.sketch_id().unwrap_or(value.id) == sketch_id
-                            )
-                        })
-                        .flat_map(|v| match v {
-                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
-                            _ => unreachable!(),
-                        }),
+                        .walk_call_stack_with(|value| match value {
+                            KclValue::Solid { value } if value.sketch_id().unwrap_or(value.id) == sketch_id => {
+                                Some(value.get_all_edge_cut_ids().collect::<Vec<_>>())
+                            }
+                            _ => None,
+                        })?
+                        .into_iter()
+                        .flatten(),
                 );
                 traversed_sketches.insert(sketch_id);
             }
@@ -270,18 +266,14 @@ impl ExecState {
                 // Find all the solids on the same shared sketch.
                 ids.extend(
                     self.stack()
-                        .walk_call_stack()
-                        .filter(|v| {
-                            matches!(
-                                v,
-                                KclValue::Solid { value }
-                                    if value.sketch_id().unwrap_or(value.id) == sketch_id
-                            )
-                        })
-                        .flat_map(|v| match v {
-                            KclValue::Solid { value } => value.get_all_edge_cut_ids(),
-                            _ => unreachable!(),
-                        }),
+                        .walk_call_stack_with(|value| match value {
+                            KclValue::Solid { value } if value.sketch_id().unwrap_or(value.id) == sketch_id => {
+                                Some(value.get_all_edge_cut_ids().collect::<Vec<_>>())
+                            }
+                            _ => None,
+                        })?
+                        .into_iter()
+                        .flatten(),
                 );
                 traversed_sketches.insert(sketch_id);
             }

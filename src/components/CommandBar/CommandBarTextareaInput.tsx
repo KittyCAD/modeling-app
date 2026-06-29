@@ -1,6 +1,5 @@
 import type { RefObject } from 'react'
 import { useEffect, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
@@ -20,7 +19,6 @@ function CommandBarTextareaInput({
 }) {
   const { commands } = useApp()
   const commandBarState = commands.useState()
-  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   useTextareaAutoGrow(inputRef)

@@ -17,6 +17,7 @@ import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
 import { createActor } from 'xstate'
+import { appCommands } from './appCommands'
 import { toolbarCommands } from './toolbarCommands'
 
 export const commandsExtension = defineRegistryItemFactory((ctx) => {
@@ -90,7 +91,7 @@ export const commandsExtension = defineRegistryItemFactory((ctx) => {
 
 const toolbarCommandsItem = defineRegistryItem({
   id: 'toolbar-commands',
-  provides: toolbarCommands.map((command) =>
+  provides: [...toolbarCommands, ...appCommands].map((command) =>
     provide(commandsValueSpec, command, {
       key: command.id ?? `${command.groupId}:${String(command.name)}`,
     })

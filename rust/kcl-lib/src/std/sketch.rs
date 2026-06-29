@@ -5,7 +5,7 @@ use std::f64;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use itertools::Itertools;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -17,7 +17,6 @@ use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use kittycad_modeling_cmds::shared::RegionVersion;
-use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::Display;
 use parse_display::FromStr;
 use serde::Deserialize;
@@ -61,6 +60,7 @@ use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::SourceRef;
@@ -758,7 +758,7 @@ async fn inner_angled_line_to_x(
     let y_to = from.y + y_component;
 
     let new_sketch = straight_line_with_new_id(
-        StraightLineParams::absolute([x_to, TyF64::new(y_to, from.units.into())], sketch, tag),
+        StraightLineParams::absolute([x_to, TyF64::new(y_to, NumericType::length(from.units))], sketch, tag),
         exec_state,
         &args.ctx,
         args.source_range,
@@ -832,7 +832,7 @@ async fn inner_angled_line_to_y(
     let x_to = from.x + x_component;
 
     let new_sketch = straight_line_with_new_id(
-        StraightLineParams::absolute([TyF64::new(x_to, from.units.into()), y_to], sketch, tag),
+        StraightLineParams::absolute([TyF64::new(x_to, NumericType::length(from.units)), y_to], sketch, tag),
         exec_state,
         &args.ctx,
         args.source_range,
@@ -883,8 +883,8 @@ pub async fn inner_angled_line_that_intersects(
         from.ignore_units(),
     );
     let to = [
-        TyF64::new(to[0], from.units.into()),
-        TyF64::new(to[1], from.units.into()),
+        TyF64::new(to[0], NumericType::length(from.units)),
+        TyF64::new(to[1], NumericType::length(from.units)),
     ];
 
     straight_line_with_new_id(
@@ -1068,6 +1068,13 @@ async fn inner_start_sketch_on(
                     Axis2dOrEdgeReference::Edge(_) => {
                         return Err(KclError::new_semantic(KclErrorDetails::new(
                             "Use of an edge here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
+                                .to_owned(),
+                            vec![args.source_range],
+                        )));
+                    }
+                    Axis2dOrEdgeReference::EdgeSpecifier(_) => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "Use of an edge reference here is unsupported, please specify an `Axis2d` (e.g. `X`) instead."
                                 .to_owned(),
                             vec![args.source_range],
                         )));
@@ -1365,7 +1372,7 @@ pub(crate) async fn create_sketch(
 /// Returns the X component of the sketch profile start point.
 pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
-    let ty = sketch.units.into();
+    let ty = NumericType::length(sketch.units);
     let x = inner_profile_start_x(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
@@ -1377,7 +1384,7 @@ pub(crate) fn inner_profile_start_x(profile: Sketch) -> Result<f64, KclError> {
 /// Returns the Y component of the sketch profile start point.
 pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
-    let ty = sketch.units.into();
+    let ty = NumericType::length(sketch.units);
     let x = inner_profile_start_y(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
@@ -1389,7 +1396,7 @@ pub(crate) fn inner_profile_start_y(profile: Sketch) -> Result<f64, KclError> {
 /// Returns the sketch profile start point.
 pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
-    let ty = sketch.units.into();
+    let ty = NumericType::length(sketch.units);
     let point = inner_profile_start(sketch)?;
     Ok(KclValue::from_point2d(point, ty, args.into()))
 }
@@ -2184,7 +2191,7 @@ pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<Kc
 
     let elliptic_point = inner_elliptic_point(x, y, major_radius, minor_radius, &args).await?;
 
-    args.make_kcl_val_from_point(elliptic_point, exec_state.length_unit().into())
+    args.make_kcl_val_from_point(elliptic_point, NumericType::length(exec_state.length_unit()))
 }
 
 async fn inner_elliptic_point(
@@ -2380,7 +2387,7 @@ pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<
 
     let hyperbolic_point = inner_hyperbolic_point(x, y, semi_major, semi_minor, &args).await?;
 
-    args.make_kcl_val_from_point(hyperbolic_point, exec_state.length_unit().into())
+    args.make_kcl_val_from_point(hyperbolic_point, NumericType::length(exec_state.length_unit()))
 }
 
 async fn inner_hyperbolic_point(
@@ -2552,7 +2559,7 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
 
     let parabolic_point = inner_parabolic_point(x, y, &coefficients, &args).await?;
 
-    args.make_kcl_val_from_point(parabolic_point, exec_state.length_unit().into())
+    args.make_kcl_val_from_point(parabolic_point, NumericType::length(exec_state.length_unit()))
 }
 
 async fn inner_parabolic_point(
@@ -3153,32 +3160,6 @@ async fn inner_region(
                     new_path.set_id(*region_id);
                     new_paths.push(new_path);
                 }
-            }
-        }
-
-        // After mirror2d, sketch.paths still has the original (pre-mirror)
-        // segment IDs. The region_mapping values are mirrored entity edge
-        // IDs which don't match, so the remapping above produces no paths.
-        // Fall back to creating paths from the region_mapping keys directly.
-        if new_paths.is_empty() && !region_mapping.is_empty() {
-            // Sort because the input order is undefined. We need to be
-            // deterministic.
-            for region_edge_id in region_mapping.keys().sorted_unstable() {
-                // We don't know what the actual values are. We just need
-                // something so that `do_post_extrude()` has the correct segment
-                // IDs.
-                new_paths.push(Path::ToPoint {
-                    base: BasePath {
-                        from: [0.0, 0.0],
-                        to: [0.0, 0.0],
-                        units,
-                        tag: None,
-                        geo_meta: GeoMeta {
-                            id: *region_edge_id,
-                            metadata: args.source_range.into(),
-                        },
-                    },
-                });
             }
         }
 

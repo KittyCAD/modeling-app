@@ -12,9 +12,11 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use anyhow::Result;
+pub use kcl_api::ast::ItemVisibility;
 use parse_display::Display;
 use parse_display::FromStr;
 pub use path::NodePath;
+pub use path::NodePathExt;
 pub use path::Step;
 pub(crate) use path::fill_node_paths;
 use serde::Deserialize;
@@ -2685,22 +2687,6 @@ impl CallExpressionKw {
     }
 }
 
-#[derive(Debug, Default, Clone, Copy, Deserialize, Serialize, PartialEq, ts_rs::TS, FromStr, Display)]
-#[ts(export)]
-#[serde(rename_all = "snake_case")]
-#[display(style = "snake_case")]
-pub enum ItemVisibility {
-    #[default]
-    Default,
-    Export,
-}
-
-impl ItemVisibility {
-    pub fn is_default(&self) -> bool {
-        matches!(self, Self::Default)
-    }
-}
-
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type")]
@@ -4116,6 +4102,11 @@ pub struct Parameter {
     /// Whether it's experimental.
     #[serde(default, skip_serializing_if = "is_false")]
     pub experimental: bool,
+    /// If true, this parameter is deprecated regardless of the KCL version. Use
+    /// `deprecated_since` instead to deprecate the parameter only at or after a
+    /// particular version. At most one of the two may be set.
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub deprecated: bool,
     /// If set, this parameter is deprecated as of the given KCL version (e.g.,
     /// "2.0"). The parser validates that this is a dotted integer version;
     /// downstream code reparses it into a `VersionConstraint`.
@@ -4531,7 +4522,8 @@ impl ConstraintLevels {
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
+    use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -4863,6 +4855,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4885,6 +4878,7 @@ cylinder = startSketchOn(-XZ)
                     name: None,
                     params: vec![Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "foo".to_owned(),
@@ -4908,6 +4902,7 @@ cylinder = startSketchOn(-XZ)
                     params: vec![
                         Parameter {
                             experimental: Default::default(),
+                            deprecated: false,
                             deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "foo".to_owned(),
@@ -4920,6 +4915,7 @@ cylinder = startSketchOn(-XZ)
                         },
                         Parameter {
                             experimental: Default::default(),
+                            deprecated: false,
                             deprecated_since: None,
                             identifier: Node::no_src(Identifier {
                                 name: "bar".to_owned(),
@@ -5019,7 +5015,7 @@ startSketchOn(XY)"#;
         assert_eq!(meta_settings.default_length_units, UnitLength::Inches);
 
         // Edit the ast.
-        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
+        let new_program = program.change_default_units(Some(KcmcUnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -5046,7 +5042,7 @@ startSketchOn(XY)
         assert!(result.is_none());
 
         // Edit the ast.
-        let new_program = program.change_default_units(Some(UnitLength::Millimeters)).unwrap();
+        let new_program = program.change_default_units(Some(KcmcUnitLength::Millimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());
@@ -5193,7 +5189,7 @@ startSketchOn(XY)
 "#;
         let program = crate::parsing::top_level_parse(code).unwrap();
 
-        let new_program = program.change_default_units(Some(UnitLength::Centimeters)).unwrap();
+        let new_program = program.change_default_units(Some(KcmcUnitLength::Centimeters)).unwrap();
 
         let result = new_program.meta_settings().unwrap();
         assert!(result.is_some());

@@ -5,14 +5,13 @@ use std::sync::Arc;
 use ahash::AHashMap;
 use anyhow::Result;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds::units::UnitAngle;
-use kittycad_modeling_cmds::units::UnitLength;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
 
 use crate::CompilationIssue;
-use crate::EngineManager;
 use crate::ExecutorContext;
 use crate::KclErrorWithOutputs;
 use crate::MockConfig;
@@ -20,6 +19,7 @@ use crate::NodePath;
 use crate::SegmentDragAnchor;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
+use crate::engine::engine_manager::EngineManager;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::errors::Severity;
@@ -32,6 +32,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
+use crate::execution::KclValueView;
 use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
@@ -40,6 +41,8 @@ use crate::execution::UnsolvedSegment;
 use crate::execution::annotations;
 use crate::execution::cad_op::Operation;
 use crate::execution::id_generator::IdGenerator;
+#[cfg(test)]
+use crate::execution::memory::MemoryBackendKind;
 use crate::execution::memory::ProgramMemory;
 use crate::execution::memory::Stack;
 use crate::execution::sketch_solve::Solved;
@@ -341,6 +344,21 @@ impl ExecState {
         }
     }
 
+    #[cfg(test)]
+    pub(crate) fn new_with_memory_backend(exec_context: &super::ExecutorContext, backend: MemoryBackendKind) -> Self {
+        ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
+            global: GlobalState::new(&exec_context.settings, Default::default()),
+            mod_local: ModuleState::new(
+                ModulePath::Main,
+                ProgramMemory::new_with_backend(backend),
+                Default::default(),
+                false,
+                true,
+            ),
+        }
+    }
+
     pub fn new_mock(exec_context: &super::ExecutorContext, mock_config: &MockConfig) -> Self {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
@@ -351,6 +369,28 @@ impl ExecState {
             mod_local: ModuleState::new(
                 ModulePath::Main,
                 ProgramMemory::new(),
+                Default::default(),
+                mock_config.sketch_block_id.is_some(),
+                mock_config.freedom_analysis,
+            ),
+        }
+    }
+
+    #[cfg(test)]
+    pub(crate) fn new_mock_with_memory_backend(
+        exec_context: &super::ExecutorContext,
+        mock_config: &MockConfig,
+        backend: MemoryBackendKind,
+    ) -> Self {
+        let segment_ids_edited = mock_config.segment_ids_edited.clone();
+        let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
+        global.drag_anchors = mock_config.drag_anchors.clone();
+        ExecState {
+            execution_callbacks: exec_context.execution_callbacks.clone(),
+            global,
+            mod_local: ModuleState::new(
+                ModulePath::Main,
+                ProgramMemory::new_with_backend(backend),
                 Default::default(),
                 mock_config.sketch_block_id.is_some(),
                 mock_config.freedom_analysis,
@@ -429,11 +469,21 @@ impl ExecState {
     /// Convert to execution outcome when running in WebAssembly.  We want to
     /// reduce the amount of data that crosses the WASM boundary as much as
     /// possible.
-    pub async fn into_exec_outcome(self, main_ref: EnvironmentRef, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_exec_outcome(
+        self,
+        main_ref: EnvironmentRef,
+        ctx: &ExecutorContext,
+    ) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        ExecOutcome {
-            variables: self.mod_local.variables(main_ref),
+        let variables = self
+            .mod_local
+            .variables(main_ref)?
+            .into_iter()
+            .map(|(key, value)| (key, KclValueView::from(value)))
+            .collect();
+        Ok(ExecOutcome {
+            variables,
             filenames: self.global.filenames(),
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
@@ -442,7 +492,7 @@ impl ExecState {
             var_solutions: self.global.root_module_artifacts.var_solutions,
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
-        }
+        })
     }
 
     #[cfg(feature = "snapshot-engine-responses")]
@@ -663,7 +713,7 @@ impl ExecState {
     /// Search the live environment for the name of a variable holding a Solid
     /// (or an array of Solids) whose value identity matches `target_key`. Used only on
     /// error paths to recover variable names for diagnostics.
-    pub(crate) fn find_var_name_for_solid_key(&self, target_key: ConsumedSolidKey) -> Option<String> {
+    pub(crate) fn find_var_name_for_solid_key(&self, target_key: ConsumedSolidKey) -> Result<Option<String>, KclError> {
         fn contains_solid_key(value: &KclValue, target_key: ConsumedSolidKey) -> bool {
             match value {
                 KclValue::Solid { value } => {
@@ -815,7 +865,7 @@ impl ExecState {
             error,
             self.issues().to_vec(),
             main_ref
-                .map(|main_ref| self.mod_local.variables(main_ref))
+                .and_then(|main_ref| self.mod_local.variables(main_ref).ok())
                 .unwrap_or_default(),
             self.global.operations_by_module(),
             Default::default(),
@@ -838,7 +888,7 @@ impl ExecState {
 
     pub(crate) async fn build_artifact_graph(
         &mut self,
-        engine: &Arc<Box<dyn EngineManager>>,
+        engine: &Arc<EngineManager>,
         program: NodeRef<'_, crate::parsing::ast::types::Program>,
     ) -> Result<(), KclError> {
         let mut new_commands = Vec::new();
@@ -1106,11 +1156,8 @@ impl ModuleState {
         }
     }
 
-    pub(super) fn variables(&self, main_ref: EnvironmentRef) -> IndexMap<String, KclValue> {
-        self.stack
-            .find_all_in_env(main_ref)
-            .map(|(k, v)| (k.clone(), v.clone()))
-            .collect()
+    pub(super) fn variables(&self, main_ref: EnvironmentRef) -> Result<IndexMap<String, KclValue>, KclError> {
+        self.stack.find_all_in_env_owned(main_ref)
     }
 }
 
@@ -1249,6 +1296,7 @@ mod tests {
 
     use super::ModuleArtifactState;
     use crate::NodePath;
+    use crate::NodePathExt;
     use crate::SourceRange;
     use crate::execution::ArtifactId;
     use crate::front::Object;

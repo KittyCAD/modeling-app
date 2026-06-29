@@ -6,6 +6,8 @@ use kcmc::each_cmd as mcmd;
 use kcmc::ok_response::OkModelingCmdResponse;
 use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds as kcmc;
+use serde::Deserialize;
+use serde::Serialize;
 use uuid::Uuid;
 
 use crate::SourceRange;
@@ -14,6 +16,7 @@ use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
+use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
@@ -24,6 +27,73 @@ use crate::std::Args;
 use crate::std::args::TyF64;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::FaceTag;
+
+/// Tag or UUID for use in an unresolved edge specifier (resolved to face UUIDs in blend).
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Hash, ts_rs::TS)]
+#[serde(untagged)]
+pub enum TagOrUuid {
+    Uuid(Uuid),
+    Tag(Box<TagIdentifier>),
+}
+
+/// Edge specifier payload (sideFaces, endFaces, index) as passed from KCL. Stored in BoundedEdge and resolved to `kcmc::shared::EdgeSpecifier` in blend().
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, ts_rs::TS)]
+#[serde(rename_all = "camelCase")]
+pub struct UnresolvedEdgeSpecifier {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub side_faces: Vec<TagOrUuid>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub end_faces: Vec<TagOrUuid>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub index: Option<u32>,
+}
+
+/// Fetch the face ID(s) for an edge via Solid3dGetAllEdgeFaces.
+/// Returns 1 face for boundary edges (e.g. on surfaces) or 2 for interior edges.
+/// Used for refactor metadata (artifact-graph), fillet/chamfer, and blend edge specifier resolution.
+pub(crate) async fn get_face_ids_for_edge(
+    exec_state: &mut ExecState,
+    object_id: Uuid,
+    edge_id: Uuid,
+    args: &Args,
+) -> Result<Vec<Uuid>, KclError> {
+    if args.ctx.no_engine_commands().await {
+        // Return two so that anything that is expecting an edge on a solid
+        // works.
+        return Ok(vec![exec_state.next_uuid(), exec_state.next_uuid()]);
+    }
+
+    let resp = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(
+                mcmd::Solid3dGetAllEdgeFaces::builder()
+                    .object_id(object_id)
+                    .edge_id(edge_id)
+                    .build(),
+            ),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetAllEdgeFaces(info),
+    } = &resp
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("Solid3dGetAllEdgeFaces response was not as expected: {resp:?}"),
+            vec![args.source_range],
+        )));
+    };
+    if info.faces.is_empty() || info.faces.len() > 2 {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!(
+                "Solid3dGetAllEdgeFaces returned {} face(s) for edge {edge_id}, expected 1 or 2",
+                info.faces.len()
+            ),
+            vec![args.source_range],
+        )));
+    }
+    Ok(info.faces.clone())
+}
 
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
 pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
@@ -314,18 +384,251 @@ async fn inner_get_common_edge(
 
 pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let face = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
-    let edge = args.get_kw_arg("edge", &RuntimeType::edge(), exec_state)?;
+    let edge_val = args.get_kw_arg("edge", &RuntimeType::any(), exec_state)?;
     let lower_bound = args.get_kw_arg_opt("lowerBound", &RuntimeType::num_any(), exec_state)?;
     let upper_bound = args.get_kw_arg_opt("upperBound", &RuntimeType::num_any(), exec_state)?;
 
-    let bounded_edge = inner_get_bounded_edge(face, edge, lower_bound, upper_bound, exec_state, args.clone()).await?;
+    let bounded_edge = match &edge_val {
+        KclValue::Uuid { value, .. } => {
+            inner_get_bounded_edge_with_id(face, EdgeReference::Uuid(*value), lower_bound, upper_bound, exec_state, args.clone()).await?
+        }
+        KclValue::TagIdentifier(tag) => {
+            inner_get_bounded_edge_with_id(face, EdgeReference::Tag(tag.clone()), lower_bound, upper_bound, exec_state, args.clone()).await?
+        }
+        KclValue::Object { value: obj, .. } => {
+            let spec = parse_edge_specifier_object(obj, &args)?;
+            inner_get_bounded_edge_with_specifier(face, spec, lower_bound, upper_bound, &args)?
+        }
+        _ => {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "edge must be a tagged edge, edge UUID, or edge specifier object (e.g. { sideFaces = [...], endFaces = [...], index = 0 })".to_owned(),
+                vec![args.source_range],
+            )))
+        }
+    };
     Ok(KclValue::BoundedEdge {
         value: bounded_edge,
         meta: vec![args.source_range.into()],
     })
 }
 
-pub async fn inner_get_bounded_edge(
+fn tag_or_uuid_from_value(value: &KclValue, field_name: &str, args: &Args) -> Result<TagOrUuid, KclError> {
+    match value {
+        KclValue::Uuid { value, .. } => Ok(TagOrUuid::Uuid(*value)),
+        KclValue::TagIdentifier(tag) => Ok(TagOrUuid::Tag(tag.clone())),
+        _ => Err(KclError::new_type(KclErrorDetails::new(
+            format!("{field_name} elements must be tags or UUIDs"),
+            vec![args.source_range],
+        ))),
+    }
+}
+
+fn parse_tag_or_uuid_array(
+    obj: &KclObjectFields,
+    field_name: &str,
+    required: bool,
+    args: &Args,
+) -> Result<Vec<TagOrUuid>, KclError> {
+    let Some(value) = obj.get(field_name) else {
+        return if required {
+            Err(KclError::new_type(KclErrorDetails::new(
+                format!("edge specifier object must have {field_name}"),
+                vec![args.source_range],
+            )))
+        } else {
+            Ok(Vec::new())
+        };
+    };
+    let values = value.as_slice().ok_or_else(|| {
+        KclError::new_type(KclErrorDetails::new(
+            format!("{field_name} must be an array"),
+            vec![args.source_range],
+        ))
+    })?;
+    values
+        .iter()
+        .map(|value| tag_or_uuid_from_value(value, field_name, args))
+        .collect()
+}
+
+fn parse_edge_specifier_index(obj: &KclObjectFields, args: &Args) -> Result<Option<u32>, KclError> {
+    let Some(index) = obj.get("index") else {
+        return Ok(None);
+    };
+    let KclValue::Number { value, .. } = index else {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "edge specifier 'index' must be a non-negative integer".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    if !value.is_finite() || value.fract() != 0.0 || *value < 0.0 || *value > u32::MAX as f64 {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "edge specifier 'index' must be a non-negative integer".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    Ok(Some(*value as u32))
+}
+
+pub(crate) fn is_edge_specifier_object(value: &KclValue) -> bool {
+    matches!(value, KclValue::Object { value, .. } if value.contains_key("sideFaces"))
+}
+
+pub(crate) fn parse_edge_specifier_value(value: &KclValue, args: &Args) -> Result<UnresolvedEdgeSpecifier, KclError> {
+    let KclValue::Object { value: obj, .. } = value else {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "edge specifier must be an object with 'sideFaces'".to_owned(),
+            vec![args.source_range],
+        )));
+    };
+    parse_edge_specifier_object(obj, args)
+}
+
+/// Parse a KCL object `{ sideFaces, endFaces?, index? }` into UnresolvedEdgeSpecifier. Used by getBoundedEdge and blend.
+pub(crate) fn parse_edge_specifier_object(
+    obj: &KclObjectFields,
+    args: &Args,
+) -> Result<UnresolvedEdgeSpecifier, KclError> {
+    let side_faces = parse_tag_or_uuid_array(obj, "sideFaces", true, args)?;
+    if side_faces.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "sideFaces must be an array of at least one face, but zero were given".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+    let end_faces = parse_tag_or_uuid_array(obj, "endFaces", false, args)?;
+    let index = parse_edge_specifier_index(obj, args)?;
+    Ok(UnresolvedEdgeSpecifier {
+        side_faces,
+        end_faces,
+        index,
+    })
+}
+
+async fn resolve_as_face_id(value: &TagOrUuid, exec_state: &mut ExecState, args: &Args) -> Result<Uuid, KclError> {
+    match value {
+        TagOrUuid::Uuid(uuid) => Ok(*uuid),
+        TagOrUuid::Tag(tag) => {
+            FaceTag::Tag(tag.clone())
+                .get_face_id_from_tag(exec_state, args, false)
+                .await
+        }
+    }
+}
+
+async fn resolve_as_adjacent_face_or_tag_id(
+    value: &TagOrUuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Uuid, KclError> {
+    match value {
+        TagOrUuid::Uuid(uuid) => Ok(*uuid),
+        TagOrUuid::Tag(tag) => match args.get_adjacent_face_to_tag(exec_state, tag, false).await {
+            Ok(face_id) => Ok(face_id),
+            Err(_) => Ok(args.get_tag_engine_info(exec_state, tag)?.id),
+        },
+    }
+}
+
+async fn resolve_as_edge_faces(
+    value: &TagOrUuid,
+    object_id: Uuid,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<Uuid>, KclError> {
+    match value {
+        TagOrUuid::Uuid(uuid) => Ok(vec![*uuid]),
+        TagOrUuid::Tag(tag) => {
+            let edge_id = args.get_tag_engine_info(exec_state, tag)?.id;
+            get_face_ids_for_edge(exec_state, object_id, edge_id, args).await
+        }
+    }
+}
+
+pub(crate) async fn resolve_edge_specifier_with_face_tags(
+    unresolved: &UnresolvedEdgeSpecifier,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<kcmc::shared::EdgeSpecifier, KclError> {
+    let mut side_faces = Vec::with_capacity(unresolved.side_faces.len());
+    for value in &unresolved.side_faces {
+        side_faces.push(resolve_as_face_id(value, exec_state, args).await?);
+    }
+    let mut end_faces = Vec::with_capacity(unresolved.end_faces.len());
+    for value in &unresolved.end_faces {
+        end_faces.push(resolve_as_face_id(value, exec_state, args).await?);
+    }
+    Ok(kcmc::shared::EdgeSpecifier::builder()
+        .side_faces(side_faces)
+        .end_faces(end_faces)
+        .maybe_index(unresolved.index)
+        .build())
+}
+
+pub(crate) async fn resolve_edge_specifier_with_adjacent_faces_or_tag_ids(
+    unresolved: &UnresolvedEdgeSpecifier,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<kcmc::shared::EdgeSpecifier, KclError> {
+    let mut side_faces = Vec::with_capacity(unresolved.side_faces.len());
+    for value in &unresolved.side_faces {
+        side_faces.push(resolve_as_adjacent_face_or_tag_id(value, exec_state, args).await?);
+    }
+    let mut end_faces = Vec::with_capacity(unresolved.end_faces.len());
+    for value in &unresolved.end_faces {
+        end_faces.push(resolve_as_adjacent_face_or_tag_id(value, exec_state, args).await?);
+    }
+    Ok(kcmc::shared::EdgeSpecifier::builder()
+        .side_faces(side_faces)
+        .end_faces(end_faces)
+        .maybe_index(unresolved.index)
+        .build())
+}
+
+pub(crate) async fn parse_edge_refs_to_references(
+    edge_refs: Vec<KclValue>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Vec<kcmc::shared::EdgeSpecifier>, KclError> {
+    if edge_refs.is_empty() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "You must provide at least one edge".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
+    let mut edge_references = Vec::with_capacity(edge_refs.len());
+    for edge_ref_value in &edge_refs {
+        let spec = parse_edge_specifier_value(edge_ref_value, args)?;
+        edge_references.push(resolve_edge_specifier_with_face_tags(&spec, exec_state, args).await?);
+    }
+    Ok(edge_references)
+}
+
+/// Get the face (surface body) id from the first side_face of an unresolved
+/// specifier. Used when building a BoundedEdge from an edge specifier object in
+/// blend().
+pub(super) fn face_id_from_first_side_face(
+    spec: &UnresolvedEdgeSpecifier,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Uuid, KclError> {
+    let first = spec.side_faces.first().ok_or_else(|| {
+        KclError::new_type(KclErrorDetails::new(
+            "edge specifier must have at least one sideFace".to_owned(),
+            vec![args.source_range],
+        ))
+    })?;
+    match first {
+        TagOrUuid::Uuid(u) => Ok(*u),
+        TagOrUuid::Tag(t) => {
+            let info = args.get_tag_engine_info(exec_state, t)?;
+            Ok(info.geometry.id())
+        }
+    }
+}
+
+pub(crate) async fn inner_get_bounded_edge_with_id(
     face: Solid,
     edge: EdgeReference,
     lower_bound: Option<TyF64>,
@@ -333,6 +636,39 @@ pub async fn inner_get_bounded_edge(
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<BoundedEdge, KclError> {
+    let (lb, ub) = bounds_from_opts(lower_bound, upper_bound, &args)?;
+    let edge_id = edge.get_engine_id(exec_state, &args)?;
+    Ok(BoundedEdge {
+        face_id: face.id,
+        edge_id: Some(edge_id),
+        edge_specifier: None,
+        lower_bound: lb,
+        upper_bound: ub,
+    })
+}
+
+fn inner_get_bounded_edge_with_specifier(
+    face: Solid,
+    spec: UnresolvedEdgeSpecifier,
+    lower_bound: Option<TyF64>,
+    upper_bound: Option<TyF64>,
+    args: &Args,
+) -> Result<BoundedEdge, KclError> {
+    let (lb, ub) = bounds_from_opts(lower_bound, upper_bound, args)?;
+    Ok(BoundedEdge {
+        face_id: face.id,
+        edge_id: None,
+        edge_specifier: Some(spec),
+        lower_bound: lb,
+        upper_bound: ub,
+    })
+}
+
+fn bounds_from_opts(
+    lower_bound: Option<TyF64>,
+    upper_bound: Option<TyF64>,
+    args: &Args,
+) -> Result<(f32, f32), KclError> {
     let lower_bound = if let Some(lower_bound) = lower_bound {
         let val = lower_bound.n as f32;
         if !(0.0..=1.0).contains(&val) {
@@ -348,7 +684,6 @@ pub async fn inner_get_bounded_edge(
     } else {
         0.0_f32
     };
-
     let upper_bound = if let Some(upper_bound) = upper_bound {
         let val = upper_bound.n as f32;
         if !(0.0..=1.0).contains(&val) {
@@ -364,11 +699,27 @@ pub async fn inner_get_bounded_edge(
     } else {
         1.0_f32
     };
+    Ok((lower_bound, upper_bound))
+}
 
-    Ok(BoundedEdge {
-        face_id: face.id,
-        edge_id: edge.get_engine_id(exec_state, &args)?,
-        lower_bound,
-        upper_bound,
-    })
+/// Resolve an unresolved edge specifier (tags/UUIDs) to engine EdgeSpecifier (face UUIDs) for blend. Called from blend().
+pub(crate) async fn resolve_unresolved_edge_specifier(
+    object_id: Uuid,
+    unresolved: &UnresolvedEdgeSpecifier,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<kcmc::shared::EdgeSpecifier, KclError> {
+    let mut side_faces = Vec::new();
+    for v in &unresolved.side_faces {
+        side_faces.extend(resolve_as_edge_faces(v, object_id, exec_state, args).await?);
+    }
+    let mut end_faces = Vec::new();
+    for v in &unresolved.end_faces {
+        end_faces.extend(resolve_as_edge_faces(v, object_id, exec_state, args).await?);
+    }
+    Ok(kcmc::shared::EdgeSpecifier::builder()
+        .side_faces(side_faces)
+        .end_faces(end_faces)
+        .maybe_index(unresolved.index)
+        .build())
 }

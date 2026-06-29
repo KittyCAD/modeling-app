@@ -144,9 +144,13 @@ After merging, run `make tag` and follow its instructions. This should publish a
 
 Paste a link to the PR below.
 
+The above should generate a PR in https://github.com/KittyCAD/homebrew-kittycad/pulls. Merge it.
+
 </details><br>
 
 Release PR: ???
+
+Homebrew KittyCAD PR: ???
 
 # API
 

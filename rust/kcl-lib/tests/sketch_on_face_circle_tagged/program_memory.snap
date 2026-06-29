@@ -4,8 +4,7 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
 ---
 {
   "cube": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "myCircle": {
     "type": "TagIdentifier",
@@ -257,7 +256,8 @@ description: Variables in memory after executing sketch_on_face_circle_tagged.kc
           },
           "parentSolid": {
             "solidId": "[uuid]",
-            "creatorSketchId": "[uuid]"
+            "creatorSketchId": "[uuid]",
+            "creatorSketchIsClosed": "explicitly"
           },
           "units": "mm"
         },

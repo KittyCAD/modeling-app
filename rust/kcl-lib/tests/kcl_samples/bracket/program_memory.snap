@@ -182,6 +182,16 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1772,6 +1782,16 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2164,6 +2184,16 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2612,6 +2642,16 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2990,6 +3030,16 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3456,6 +3506,16 @@ description: Variables in memory after executing bracket.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

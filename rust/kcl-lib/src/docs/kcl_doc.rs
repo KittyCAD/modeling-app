@@ -876,6 +876,8 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Whether this argument is deprecated regardless of the KCL version.
+    pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
 }
@@ -916,6 +918,7 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
         };
 
@@ -1014,9 +1017,14 @@ impl ArgData {
                     index + 2
                 ),
             )),
-            Some("Axis2d | Edge | Segment") | Some("Axis3d | Edge | Segment") => {
-                Some((index, format!(r#"{label}${{{index}:X}}"#)))
-            }
+            Some("Axis2d | Edge")
+            | Some("Axis3d | Edge")
+            | Some("Axis2d | Edge | any")
+            | Some("Axis3d | Edge | any")
+            | Some("Axis2d | Edge | Segment")
+            | Some("Axis3d | Edge | Segment")
+            | Some("Axis2d | Edge | Segment | any")
+            | Some("Axis3d | Edge | Segment | any") => Some((index, format!(r#"{label}${{{index}:X}}"#))),
             Some("Sketch") | Some("Sketch | Helix") | Some("Sketch | Helix | [Segment; 1+]") => {
                 Some((index, format!(r#"{label}${{{index}:sketch000}}"#)))
             }

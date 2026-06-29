@@ -167,7 +167,8 @@ description: Artifact commands gdt-tutorial.kcl
         "query_point": {
           "x": 0.64,
           "y": 2.7875
-        }
+        },
+        "version": "V1"
       }
     },
     {
@@ -249,6 +250,153 @@ description: Artifact commands gdt-tutorial.kcl
         },
         "y_axis": {
           "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "dimension": null,
+          "feature_control": {
+            "entity_id": "[uuid]",
+            "entity_pos": {
+              "x": 0.5,
+              "y": 0.5
+            },
+            "leader_type": "dot",
+            "dimension": null,
+            "control_frame": null,
+            "defined_datum": "A",
+            "prefix": null,
+            "suffix": null,
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": 100.0,
+              "y": 100.0
+            },
+            "precision": 0,
+            "font_scale": 1.25,
+            "font_point_size": 36,
+            "leader_scale": 5.0
+          },
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 60.0,
+        "clobber": false,
+        "hide": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "new_annotation",
+        "options": {
+          "text": null,
+          "line_ends": null,
+          "line_width": null,
+          "color": null,
+          "position": null,
+          "units": "mm",
+          "dimension": {
+            "from_entity_id": "[uuid]",
+            "from_entity_pos": {
+              "x": 0.0,
+              "y": 0.0
+            },
+            "to_entity_id": "[uuid]",
+            "to_entity_pos": {
+              "x": 1.0,
+              "y": 0.0
+            },
+            "dimension": {
+              "symbol": null,
+              "dimension": null,
+              "tolerance": 0.1
+            },
+            "plane_id": "[uuid]",
+            "offset": {
+              "x": 0.0,
+              "y": 30.0
+            },
+            "precision": 3,
+            "font_scale": 1.1666625,
+            "font_point_size": 36,
+            "arrow_scale": 1.0
+          },
+          "feature_control": null,
+          "feature_tag": null
+        },
+        "clobber": false,
+        "annotation_type": "t3d"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
           "y": 1.0,
           "z": 0.0
         },
@@ -295,71 +443,6 @@ description: Artifact commands gdt-tutorial.kcl
               "y": 100.0
             },
             "precision": 3,
-            "font_scale": 1.25,
-            "font_point_size": 36,
-            "leader_scale": 5.0
-          },
-          "feature_tag": null
-        },
-        "clobber": false,
-        "annotation_type": "t3d"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "new_annotation",
-        "options": {
-          "text": null,
-          "line_ends": null,
-          "line_width": null,
-          "color": null,
-          "position": null,
-          "dimension": null,
-          "feature_control": {
-            "entity_id": "[uuid]",
-            "entity_pos": {
-              "x": 0.5,
-              "y": 0.5
-            },
-            "leader_type": "dot",
-            "dimension": null,
-            "control_frame": null,
-            "defined_datum": "A",
-            "prefix": null,
-            "suffix": null,
-            "plane_id": "[uuid]",
-            "offset": {
-              "x": 100.0,
-              "y": 100.0
-            },
-            "precision": 0,
             "font_scale": 1.25,
             "font_point_size": 36,
             "leader_scale": 5.0
@@ -510,100 +593,6 @@ description: Artifact commands gdt-tutorial.kcl
             "font_point_size": 36,
             "leader_scale": 5.0
           },
-          "feature_tag": null
-        },
-        "clobber": false,
-        "annotation_type": "t3d"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "make_plane",
-        "origin": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "x_axis": {
-          "x": 1.0,
-          "y": 0.0,
-          "z": 0.0
-        },
-        "y_axis": {
-          "x": 0.0,
-          "y": 0.0,
-          "z": 1.0
-        },
-        "size": 60.0,
-        "clobber": false,
-        "hide": true
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "new_annotation",
-        "options": {
-          "text": null,
-          "line_ends": null,
-          "line_width": null,
-          "color": null,
-          "position": null,
-          "units": "mm",
-          "dimension": {
-            "from_entity_id": "[uuid]",
-            "from_entity_pos": {
-              "x": 0.5,
-              "y": 0.0
-            },
-            "to_entity_id": "[uuid]",
-            "to_entity_pos": {
-              "x": 0.5,
-              "y": 0.0
-            },
-            "dimension": {
-              "symbol": null,
-              "dimension": null,
-              "tolerance": 0.1
-            },
-            "plane_id": "[uuid]",
-            "offset": {
-              "x": 100.0,
-              "y": 100.0
-            },
-            "precision": 3,
-            "font_scale": 1.25,
-            "font_point_size": 36,
-            "arrow_scale": 1.0
-          },
-          "feature_control": null,
           "feature_tag": null
         },
         "clobber": false,

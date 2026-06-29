@@ -4,14 +4,12 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     rust-overlay.url = "github:oxalica/rust-overlay";
-    naersk.url = "github:nix-community/naersk";
   };
 
   outputs = {
     self,
     nixpkgs,
     rust-overlay,
-    naersk,
   }: let
     overlays = [
       (import rust-overlay)
@@ -102,28 +100,26 @@
         pkgs,
         system,
       }: let
-        naersk-lib = pkgs.callPackage naersk {
+        cargoToml = builtins.fromTOML (builtins.readFile ./rust/kcl-language-server/Cargo.toml);
+        rustPlatform = pkgs.makeRustPlatform {
           cargo = pkgs.rustToolchain;
           rustc = pkgs.rustToolchain;
         };
       in {
-        kcl-language-server = naersk-lib.buildPackage {
+        kcl-language-server = rustPlatform.buildRustPackage {
           pname = "kcl-language-server";
-          version = "0.1.0";
-          release = true;
+          version = cargoToml.package.version;
 
           src = ./rust;
 
-          cargoBuildOptions = opt:
-            opt
-            ++ [
-              "-p"
-              "kcl-language-server"
-            ];
-          buildInputs = [
-            pkgs.openssl
-            pkgs.pkg-config
+          cargoLock.lockFile = ./rust/Cargo.lock;
+          cargoBuildFlags = [
+            "-p"
+            "kcl-language-server"
           ];
+          doCheck = false;
+          nativeBuildInputs = [pkgs.pkg-config];
+          buildInputs = [pkgs.openssl];
         };
         default = self.packages.${system}.kcl-language-server;
       }

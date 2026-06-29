@@ -1,6 +1,5 @@
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { MarkdownText } from '@src/components/MarkdownText'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
@@ -30,7 +29,6 @@ function CommandBarBasicInput({
   const previouslySetValue = commandBarState.context.argumentsToSubmit[
     arg.name
   ] as string | undefined
-  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,

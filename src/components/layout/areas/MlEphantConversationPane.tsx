@@ -48,6 +48,8 @@ export const MlEphantConversationPane = (props: {
   contextModeling: ModelingMachineContext
   sendModeling: ReturnType<typeof useModelingContext>['send']
   sendBillingUpdate: () => void
+  sendBillingUsageStarted: () => void
+  sendBillingUsageEnded: () => void
   loaderFile: FileEntry | undefined
   settings: SettingsType
   user?: MlEphantConversationPaneUser
@@ -120,6 +122,7 @@ export const MlEphantConversationPane = (props: {
 
     const projectFiles = await collectProjectFiles({
       selectedFileContents: props.kclManager.code,
+      selectedFilePath: props.kclManager.path,
       fileNames: props.kclManager.execState.filenames,
       projectContext: project,
     })
@@ -142,8 +145,6 @@ export const MlEphantConversationPane = (props: {
       mode,
       additionalFiles: attachments,
     })
-
-    props.sendBillingUpdate()
   }
 
   const needsReconnect = abruptlyClosed
@@ -158,7 +159,6 @@ export const MlEphantConversationPane = (props: {
   }
 
   const onCancel = () => {
-    props.sendBillingUpdate()
     props.mlEphantManagerActor.send({
       type: MlEphantManagerTransitions.Cancel,
     })
@@ -191,7 +191,12 @@ export const MlEphantConversationPane = (props: {
     setQueue((prev) => prev.filter((msg) => msg.id !== id))
   }, [])
 
-  const { sendBillingUpdate, mlEphantManagerActor } = props
+  const {
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+    sendBillingUsageStarted,
+    mlEphantManagerActor,
+  } = props
   const onSteer = useCallback(
     (id: string) => {
       // Mark the message to be processed next without reordering the queue.
@@ -200,12 +205,11 @@ export const MlEphantConversationPane = (props: {
       steeredId.current = id
       // Interrupt the current prompt; when the response completes,
       // the auto-submit effect sends the steered message.
-      sendBillingUpdate()
       mlEphantManagerActor.send({
         type: MlEphantManagerTransitions.Interrupt,
       })
     },
-    [mlEphantManagerActor, sendBillingUpdate]
+    [mlEphantManagerActor]
   )
 
   // Auto-submit the next queued message when current processing completes.
@@ -438,6 +442,7 @@ export const MlEphantConversationPane = (props: {
           const currentLoaderFile = loaderFileRef.current
           void collectProjectFiles({
             selectedFileContents: props.kclManager.code,
+            selectedFilePath: props.kclManager.path,
             fileNames: props.kclManager.execState.filenames,
             projectContext: project,
           }).then((projectFiles) => {
@@ -460,9 +465,6 @@ export const MlEphantConversationPane = (props: {
         if (isProcessing) {
           return
         }
-
-        // End of processing, trigger a billing update
-        props.sendBillingUpdate()
 
         if (context.conversation !== undefined) {
           return
@@ -501,6 +503,28 @@ export const MlEphantConversationPane = (props: {
   const userBlockedOnPaymentReason = props.user?.block_message
   const isLoadingAttachments =
     !attachmentsLoadedForCurrentPrompt && conversation !== undefined
+  const wasPromptRunningRef = useRef(false)
+
+  useEffect(() => {
+    if (isPromptRunning === wasPromptRunningRef.current) {
+      return
+    }
+
+    wasPromptRunningRef.current = isPromptRunning
+
+    if (isPromptRunning) {
+      sendBillingUsageStarted()
+      return
+    }
+
+    sendBillingUsageEnded()
+    sendBillingUpdate()
+  }, [
+    isPromptRunning,
+    sendBillingUpdate,
+    sendBillingUsageEnded,
+    sendBillingUsageStarted,
+  ])
 
   return (
     <MlEphantConversation
