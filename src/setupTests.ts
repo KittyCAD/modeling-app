@@ -1,17 +1,6 @@
 // Import globals setup first to ensure 'expect' and 'fetch' are available
 import '@src/setupTests-globals'
 import '@testing-library/jest-dom'
-import dotenv from 'dotenv'
-
-const NODE_ENV = process.env.NODE_ENV || 'development'
-dotenv.config({ path: [`.env.${NODE_ENV}.local`, `.env.${NODE_ENV}`] })
-
-// Local engine URL for integration tests that connect (override via env or change this line)
-if (typeof process !== 'undefined') {
-  process.env.VITE_ZOO_BASE_DOMAIN ??= 'dev.zoo.dev'
-  process.env.VITE_KITTYCAD_WEBSOCKET_URL ??=
-    'wss://api.dev.zoo.dev/ws/modeling/commands'
-}
 
 import { cleanup } from '@testing-library/react'
 import { Vector2 } from 'three'
