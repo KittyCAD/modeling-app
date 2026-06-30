@@ -265,16 +265,23 @@ async function replayZookeeperEditPatch({
     alreadyReplayedFilePaths,
     fileContentOverrides: new Map([[kclManager.path, kclManager.code]]),
   }
-  const preparedReplayFiles = effectProps.snapshotFiles?.length
-    ? await prepareZookeeperSnapshotReplay(
-        effectProps.snapshotFiles,
-        effectProps.direction,
-        replayOptions
-      )
-    : await prepareZookeeperPatchReplay(
-        unwrapZookeeperPatchFileReplays(effectProps),
-        replayOptions
-      )
+  let preparedReplayFiles: PreparedZookeeperPatchFileReplay[]
+  if (effectProps.snapshotFiles?.length) {
+    preparedReplayFiles = await prepareZookeeperSnapshotReplay(
+      effectProps.snapshotFiles,
+      effectProps.direction,
+      replayOptions
+    )
+  } else {
+    const replayFiles = getZookeeperPatchFileReplays(effectProps)
+    if (isErr(replayFiles)) {
+      return Promise.reject(replayFiles)
+    }
+    preparedReplayFiles = await prepareZookeeperPatchReplay(
+      replayFiles,
+      replayOptions
+    )
+  }
   const currentFileReplay = preparedReplayFiles.find(
     (replayFile) => replayFile.absolutePath === kclManager.path
   )
@@ -351,17 +358,6 @@ async function replayZookeeperEditPatch({
       error
     )
   })
-}
-
-function unwrapZookeeperPatchFileReplays(
-  effectProps: ZookeeperPatchEffectProps
-) {
-  const replayFiles = getZookeeperPatchFileReplays(effectProps)
-  if (isErr(replayFiles)) {
-    throw replayFiles
-  }
-
-  return replayFiles
 }
 
 function getZookeeperPatchFileReplays({
