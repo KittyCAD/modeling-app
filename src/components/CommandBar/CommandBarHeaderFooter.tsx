@@ -63,9 +63,7 @@ function CommandBarHeaderFooter({
       ? {
           icon: 'beaker' as const,
           label: 'Experimental',
-          className: selectedCommand.mlBranding
-            ? 'border-ml-green dark:text-ml-green'
-            : 'border-primary dark:text-primary',
+          className: 'border-primary dark:text-primary',
         }
       : selectedCommand?.status === 'deprecated'
         ? {
@@ -200,9 +198,7 @@ function CommandBarHeaderFooter({
                     key={argName}
                     className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
                       argName === currentArgument?.name
-                        ? selectedCommand.mlBranding
-                          ? 'disabled:bg-ml-green/10 dark:disabled:bg-ml-green/20 disabled:border-ml-green dark:disabled:border-ml-green disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
-                          : 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
+                        ? 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                     }`}
                   >
@@ -324,26 +320,14 @@ function CommandBarHeaderFooter({
           <div className="flex-grow"></div>
           {isReviewing ? (
             <ReviewingButton
-              bgClassName={
-                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
-              }
-              iconClassName={
-                selectedCommand.mlBranding
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
-              }
+              bgClassName="!bg-primary"
+              iconClassName="!text-chalkboard-10"
               disabled={submitDisabled}
             />
           ) : (
             <GatheringArgsButton
-              bgClassName={
-                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
-              }
-              iconClassName={
-                selectedCommand.mlBranding
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
-              }
+              bgClassName="!bg-primary"
+              iconClassName="!text-chalkboard-10"
             />
           )}
         </div>
