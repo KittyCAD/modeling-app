@@ -8,6 +8,12 @@ import {
 } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
+const bootMockState = vi.hoisted<{
+  registry: Registry | undefined
+}>(() => ({
+  registry: undefined,
+}))
+
 // Mock modules that access localStorage at import time
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
@@ -23,6 +29,9 @@ vi.mock('@src/lib/desktop', () => ({
 
 // Mock useSingletons which requires heavy initialization
 vi.mock('@src/lib/boot', () => ({
+  useApp: () => {
+    return { registry: bootMockState.registry }
+  },
   useSingletons: () => ({
     kclManager: {
       astSignal: { value: null },
@@ -39,6 +48,8 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
   }
 })
 
+import { Registry } from '@kittycad/registry'
+import { useSignals } from '@preact/signals-react/runtime'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
@@ -49,6 +60,40 @@ import type {
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
+import {
+  type EngineSceneExtensionContext,
+  engineSceneRuntimeExtensionsSlot,
+  engineSceneStreamLayersValueSpec,
+} from '@src/registry/contracts/engineScene'
+
+const configureTestRegistry = () => {
+  const registry = new Registry()
+  registry.configure([engineSceneRuntimeExtensionsSlot.of()])
+  bootMockState.registry = registry
+  return registry
+}
+
+const testEngineSceneContext = {
+  modelingState: { matches: () => false },
+  modelingSend: vi.fn(),
+  sketchSolveStreamDimming: 0.8,
+  setSketchSolveStreamDimming: vi.fn(),
+} as unknown as EngineSceneExtensionContext
+
+const TestEngineSceneStreamLayers = () => {
+  useSignals()
+  const registry = bootMockState.registry as Registry
+  const layers = registry.signal(engineSceneStreamLayersValueSpec).value
+
+  return (
+    <>
+      {layers.map((layer) => {
+        const Component = layer.Component
+        return <Component key={layer.id} {...testEngineSceneContext} />
+      })}
+    </>
+  )
+}
 
 const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   {
@@ -69,6 +114,7 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
 
 describe('MlEphantConversation', () => {
   beforeEach(() => {
+    configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
   })
 
@@ -977,22 +1023,25 @@ describe('MlEphantConversation', () => {
 
     const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
       return render(
-        <MlEphantConversation
-          isLoading={false}
-          conversation={{ exchanges: [] }}
-          onProcess={handleProcess}
-          onClickClearChat={() => {}}
-          onReconnect={() => {}}
-          onCancel={() => {}}
-          needsReconnect={false}
-          disabled={disabled}
-          hasPromptCompleted={true}
-          contexts={[]}
-          isProcessing={false}
-          queue={[]}
-          onRemoveFromQueue={() => {}}
-          onSteer={() => {}}
-        />
+        <>
+          <MlEphantConversation
+            isLoading={false}
+            conversation={{ exchanges: [] }}
+            onProcess={handleProcess}
+            onClickClearChat={() => {}}
+            onReconnect={() => {}}
+            onCancel={() => {}}
+            needsReconnect={false}
+            disabled={disabled}
+            hasPromptCompleted={true}
+            contexts={[]}
+            isProcessing={false}
+            queue={[]}
+            onRemoveFromQueue={() => {}}
+            onSteer={() => {}}
+          />
+          <TestEngineSceneStreamLayers />
+        </>
       )
     }
 
