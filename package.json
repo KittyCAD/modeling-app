@@ -221,7 +221,7 @@
     "postcss": "^8.5.14",
     "postinstall-postinstall": "^2.1.0",
     "setimmediate": "^1.0.5",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.3.1",
     "ts-node": "^10.0.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.60.0",
