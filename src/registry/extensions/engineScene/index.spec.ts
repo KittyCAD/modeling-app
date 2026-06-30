@@ -87,6 +87,7 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
+      'measure',
       'selection',
       'selection-filter',
       'units',
@@ -94,7 +95,7 @@ describe('engineScene extension', () => {
     ])
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
-    ).toEqual([['file'], ['file'], ['file'], ['file']])
+    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file']])
   })
 
   it('hides the experimental features item when file settings deny it', () => {
@@ -118,13 +119,14 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['selection', 'selection-filter', 'units'])
+    ).toEqual(['measure', 'selection', 'selection-filter', 'units'])
 
     showExperimentalFeaturesStatusBarItem.value = true
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
+      'measure',
       'selection',
       'selection-filter',
       'units',

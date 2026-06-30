@@ -46,6 +46,11 @@ const SelectionReferencesPopover = lazy(async () => {
   return { default: SelectionReferencesPopover }
 })
 
+const MeasurementStatusBarItem = lazy(async () => {
+  const { MeasurementStatusBarItem } = await import('./MeasurementTool')
+  return { default: MeasurementStatusBarItem }
+})
+
 const EngineSceneUnitsMenu = () =>
   createElement(Suspense, { fallback: null }, createElement(UnitsMenu))
 
@@ -78,6 +83,13 @@ const EngineSceneSelectionFilterControls = () =>
     createElement(SelectionFilterControls)
   )
 
+const EngineSceneMeasurementStatusBarItem = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(MeasurementStatusBarItem)
+  )
+
 /**
  * Engine scene extension.
  *
@@ -103,6 +115,18 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         : null
     )
   })
+  const measurementStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'measure',
+            component: EngineSceneMeasurementStatusBarItem,
+            order: 9,
+            scopes: ['file'],
+          }
+        : null
+    )
+  )
   const selectionFilterStatusBarItem = computed(() =>
     nullableStatusBarItem(
       executionService.value
@@ -144,6 +168,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
+        provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
         provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
