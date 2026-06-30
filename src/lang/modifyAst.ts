@@ -11,6 +11,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createPipeExpression,
   createUnaryExpression,
   createVariableDeclaration,
@@ -21,6 +22,7 @@ import {
   getBodyIndex,
   getNodeFromPath,
   getSettingsAnnotation,
+  getSketchSegmentName,
   getVariableNameFromNodePath,
   isCallExprWithName,
   isNodeSafeToReplace,
@@ -62,6 +64,10 @@ import {
 import type { DefaultPlaneStr } from '@src/lib/planes'
 
 import { ARG_AT } from '@src/lang/constants'
+import {
+  getOriginalSegmentArtifact,
+  getSketchBlockForArtifact,
+} from '@src/lang/std/artifactGraph'
 import {
   type addTagForSketchOnFace as AddTagForSketchOnFaceFn,
   type getConstraintInfoKw as GetConstraintInfoKwFn,
@@ -1061,6 +1067,47 @@ export function insertVariableAndOffsetPathToNode(
   }
 }
 
+function getSegmentExprForEngineRegion({
+  segmentId,
+  sketchId,
+  sketchVarName,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  segmentId: string
+  sketchId: string
+  sketchVarName: string
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | Expr {
+  const segmentArtifact = getOriginalSegmentArtifact(segmentId, artifactGraph)
+  if (!segmentArtifact) {
+    return new Error("Couldn't retrieve region segment artifact")
+  }
+
+  const sketchArtifact = getSketchBlockForArtifact(
+    segmentArtifact,
+    artifactGraph
+  )
+  if (sketchArtifact?.id !== sketchId) {
+    return new Error('Region segment is not part of the selected sketch')
+  }
+
+  const segmentVarName = getSketchSegmentName(
+    modifiedAst,
+    segmentArtifact.id,
+    artifactGraph,
+    wasmInstance
+  )
+  if (!segmentVarName) {
+    return new Error("Couldn't retrieve region segment variable")
+  }
+
+  return createMemberExpression(sketchVarName, segmentVarName)
+}
+
 export function insertRegionVariablesAndOffsetPathToNode({
   engineRegions,
   modifiedAst,
@@ -1076,13 +1123,15 @@ export function insertRegionVariablesAndOffsetPathToNode({
     return []
   }
 
-  const settings = getSettingsAnnotation(modifiedAst, wasmInstance)
-  if (err(settings)) {
-    return settings
+  const pointRegions = engineRegions.filter(({ point }) => point)
+  let unitSuffix: NumericSuffix | undefined
+  if (pointRegions.length > 0) {
+    const settings = getSettingsAnnotation(modifiedAst, wasmInstance)
+    if (err(settings)) {
+      return settings
+    }
+    unitSuffix = baseUnitToNumericSuffix(settings.defaultLengthUnit)
   }
-  const unitSuffix: NumericSuffix = baseUnitToNumericSuffix(
-    settings.defaultLengthUnit
-  )
 
   let insertIndex = modifiedAst.body.length
   const regionExprs: Expr[] = []
@@ -1100,22 +1149,78 @@ export function insertRegionVariablesAndOffsetPathToNode({
       return new Error("Couldn't retrieve sketch block variable")
     }
 
-    const { x, y } = regionSelection.point
-    if (!Number.isFinite(x) || !Number.isFinite(y)) {
-      return new Error('Region point coordinates are invalid')
-    }
+    let regionExpr: Expr
+    if (regionSelection.resolvableIntersectionInfo) {
+      const {
+        segment,
+        intersection_segment: intersectionSegment,
+        intersection_count: intersectionCount,
+        intersection_index: intersectionIndex,
+        curve_clockwise: curveClockwise,
+      } = regionSelection.resolvableIntersectionInfo
+      // Closed primitive curves, such as circles, can report the same curve as
+      // both the walking curve and intersecting curve. KCL only needs that curve
+      // once to resolve the region.
+      const segmentIds =
+        segment === intersectionSegment
+          ? [segment]
+          : [segment, intersectionSegment]
 
-    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
-    const regionExpr = createCallExpressionStdLibKw('region', null, [
-      createLabeledArg(
-        'point',
-        createArrayExpression([
-          createLiteral(x, wasmInstance, unitSuffix, decimals),
-          createLiteral(y, wasmInstance, unitSuffix, decimals),
-        ])
-      ),
-      createLabeledArg('sketch', createLocalName(sketchVarName)),
-    ])
+      const segmentExprs: Expr[] = []
+      for (const segmentId of segmentIds) {
+        const segmentExpr = getSegmentExprForEngineRegion({
+          segmentId,
+          sketchId: regionSelection.sketchId,
+          sketchVarName,
+          modifiedAst,
+          artifactGraph,
+          wasmInstance,
+        })
+        if (err(segmentExpr)) {
+          return segmentExpr
+        }
+        segmentExprs.push(segmentExpr)
+      }
+
+      const labeledArgs = [
+        createLabeledArg('segments', createArrayExpression(segmentExprs)),
+      ]
+      // KCL defaults to -1, which resolves the last intersection.
+      // The engine reports that same case as the final zero-based index.
+      if (intersectionIndex !== intersectionCount - 1) {
+        labeledArgs.push(
+          createLabeledArg(
+            'intersectionIndex',
+            createLiteral(intersectionIndex, wasmInstance)
+          )
+        )
+      }
+      if (curveClockwise) {
+        labeledArgs.push(createLabeledArg('direction', createLocalName('CW')))
+      }
+
+      regionExpr = createCallExpressionStdLibKw('region', null, labeledArgs)
+    } else {
+      const { x, y } = regionSelection.point
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        return new Error('Region point coordinates are invalid')
+      }
+      if (!unitSuffix) {
+        return new Error("Couldn't retrieve region point unit suffix")
+      }
+
+      const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+      regionExpr = createCallExpressionStdLibKw('region', null, [
+        createLabeledArg(
+          'point',
+          createArrayExpression([
+            createLiteral(x, wasmInstance, unitSuffix, decimals),
+            createLiteral(y, wasmInstance, unitSuffix, decimals),
+          ])
+        ),
+        createLabeledArg('sketch', createLocalName(sketchVarName)),
+      ])
+    }
 
     const variableName = findUniqueName(modifiedAst, 'region')
     const variableIdentifierAst = createLocalName(variableName)
