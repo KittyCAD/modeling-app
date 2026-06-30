@@ -1387,7 +1387,7 @@ mod test {
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(EngineManager::new_mock()),
                 engine_batch: crate::engine::EngineBatchContext::default(),
-                fs: Arc::new(crate::fs::FileManager::new()),
+                fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),
