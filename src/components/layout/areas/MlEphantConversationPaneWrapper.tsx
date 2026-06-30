@@ -4,18 +4,23 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import {
+  type ZookeeperSnapshotFileReplay,
+  zookeeperEditPatchHistoryEvent,
+} from '@src/editor/plugins/zookeeper'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { isCodeTheSame } from '@src/lib/codeEditor'
+import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
   mergeZookeeperEditPatches,
+  normalizeZookeeperPatchPath,
 } from '@src/lib/zookeeperEditPatch'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
@@ -140,7 +145,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   useWatchForNewFileRequestsFromMlEphant(
     mlEphantManagerActor,
     kclManager.engineCommandManager,
-    (requestProps) => {
+    async (requestProps) => {
       const activeFilePath =
         requestProps.fileFocusedOnInEditor?.path ?? kclManager.path
       const payload = prepareMlEphantNewFileRequest({
@@ -179,8 +184,17 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             project?.name === payload.requestedProjectName &&
             activeFilePath === kclManager.path
         )
-        if (shouldRecordZookeeperHistory) {
-          beginPendingZookeeperHistoryWrite(exchangeId, activeFilePath)
+        if (
+          shouldRecordZookeeperHistory &&
+          project?.path &&
+          payload.zookeeperEditPatch
+        ) {
+          await beginPendingZookeeperHistoryWrite({
+            activeFilePath,
+            exchangeId,
+            patch: payload.zookeeperEditPatch,
+            projectPath: project.path,
+          })
         }
         kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
         systemIOActor.send({
@@ -216,7 +230,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                     normalizeKCLFileDeletePath(file.requestedFileName) ===
                     currentEditorRelativePath
                 )
-                completePendingZookeeperHistoryWrite({
+                void completePendingZookeeperHistoryWrite({
                   activeFileDeleted,
                   activeFilePath,
                   activeFileRequestedCode: currentFile?.requestedCode,
@@ -355,11 +369,16 @@ function useZookeeperEditPatchHistory({
         codeChangeRequestedCode !== undefined &&
         kclManager.path === codeChangeFilePath
       ) {
-        const codeChangePreviousCode = getZookeeperPatchPreviousCode(
-          pending.patch,
-          codeChangeRelativePath,
-          codeChangeRequestedCode
-        )
+        const codeChangePreviousCode =
+          getZookeeperSnapshotPreviousCode(
+            pending.snapshotFiles,
+            codeChangeRelativePath
+          ) ??
+          getZookeeperPatchPreviousCode(
+            pending.patch,
+            codeChangeRelativePath,
+            codeChangeRequestedCode
+          )
         // Project refreshes may reload the active editor before Zookeeper
         // history is recorded. Put the captured pre-write state back first so
         // the Zookeeper change lands on top of the user's local undo stack.
@@ -380,6 +399,7 @@ function useZookeeperEditPatchHistory({
             projectPath: pending.projectPath,
             patch: pending.patch,
             activeFilePath: pending.activeFilePath,
+            snapshotFiles: pending.snapshotFiles,
           }),
           codeChangeRequestedCode,
           codeChangePreviousCode
@@ -392,6 +412,7 @@ function useZookeeperEditPatchHistory({
           projectPath: pending.projectPath,
           patch: pending.patch,
           activeFilePath: pending.activeFilePath,
+          snapshotFiles: pending.snapshotFiles,
         })
       )
     },
@@ -422,6 +443,7 @@ function useZookeeperEditPatchHistory({
           currentFileRequestedCode: pending.currentFileRequestedCode,
           patch: pending.patch,
           projectPath: pending.projectPath,
+          snapshotFiles: getReadyZookeeperSnapshotFiles(pending),
         })
       } finally {
         if (pendingZookeeperHistoryByExchange.current.size === 0) {
@@ -433,11 +455,17 @@ function useZookeeperEditPatchHistory({
   )
 
   const beginPendingZookeeperHistoryWrite = useCallback(
-    (exchangeId: number, activeFilePath?: string) => {
+    async ({
+      activeFilePath,
+      exchangeId,
+      patch,
+      projectPath,
+    }: BeginPendingZookeeperHistoryWriteProps) => {
       const pending =
         pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
         createPendingZookeeperHistory()
       pending.outstandingWrites += 1
+      pending.projectPath ??= projectPath
       if (
         !pending.activeEditorState &&
         activeFilePath &&
@@ -447,12 +475,23 @@ function useZookeeperEditPatchHistory({
       }
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
       kclManager.zookeeperHistoryRecordingInProgress = true
+      try {
+        await captureZookeeperSnapshotPreviousContents({
+          kclManager,
+          patch,
+          pending,
+          projectPath,
+        })
+      } catch (error: unknown) {
+        console.error('Failed to capture Zookeeper history snapshots.', error)
+        pending.snapshotFilesByRelativePath.clear()
+      }
     },
     [kclManager]
   )
 
   const completePendingZookeeperHistoryWrite = useCallback(
-    ({
+    async ({
       activeFileDeleted,
       activeFilePath,
       activeFileRequestedCode,
@@ -465,7 +504,6 @@ function useZookeeperEditPatchHistory({
       const pending =
         pendingZookeeperHistoryByExchange.current.get(exchangeId) ??
         createPendingZookeeperHistory()
-      pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
       pending.projectPath = projectPath
       pending.activeFilePath ??= activeFilePath
       pending.activeFileDeleted = pending.activeFileDeleted || activeFileDeleted
@@ -477,6 +515,17 @@ function useZookeeperEditPatchHistory({
       pending.patch = pending.patch
         ? mergeZookeeperEditPatches(pending.patch, patch)
         : patch
+      try {
+        await captureZookeeperSnapshotNextContents({
+          patch,
+          pending,
+          projectPath,
+        })
+      } catch (error: unknown) {
+        console.error('Failed to capture Zookeeper history snapshots.', error)
+        pending.snapshotFilesByRelativePath.clear()
+      }
+      pending.outstandingWrites = Math.max(0, pending.outstandingWrites - 1)
       pendingZookeeperHistoryByExchange.current.set(exchangeId, pending)
       tryFlushPendingZookeeperHistory(exchangeId)
     },
@@ -532,6 +581,144 @@ function getZookeeperCodeChangeTarget({
   }
 }
 
+function getZookeeperSnapshotPreviousCode(
+  snapshotFiles: readonly ZookeeperSnapshotFileReplay[],
+  relativePath: string | undefined
+) {
+  if (relativePath === undefined) {
+    return
+  }
+
+  const snapshotFile = snapshotFiles.find(
+    (file) => normalizeKCLFileDeletePath(file.relativePath) === relativePath
+  )
+  if (snapshotFile === undefined) {
+    return
+  }
+
+  return snapshotFile.previousContent ?? ''
+}
+
+async function captureZookeeperSnapshotPreviousContents({
+  kclManager,
+  patch,
+  pending,
+  projectPath,
+}: {
+  kclManager: KclManager
+  patch: ZookeeperEditPatch
+  pending: PendingZookeeperHistory
+  projectPath: string
+}) {
+  for (const changedFile of patch.changed_files ?? []) {
+    const snapshotPath = getZookeeperSnapshotPath(projectPath, changedFile.path)
+    if (pending.snapshotFilesByRelativePath.has(snapshotPath.relativePath)) {
+      continue
+    }
+
+    const previousContent =
+      snapshotPath.absolutePath === kclManager.path
+        ? kclManager.code
+        : await readZookeeperSnapshotFileIfExists(snapshotPath.absolutePath)
+    pending.snapshotFilesByRelativePath.set(snapshotPath.relativePath, {
+      ...snapshotPath,
+      previousContent,
+    })
+  }
+}
+
+async function captureZookeeperSnapshotNextContents({
+  patch,
+  pending,
+  projectPath,
+}: {
+  patch: ZookeeperEditPatch
+  pending: PendingZookeeperHistory
+  projectPath: string
+}) {
+  for (const changedFile of patch.changed_files ?? []) {
+    const snapshotPath = getZookeeperSnapshotPath(projectPath, changedFile.path)
+    const snapshotFile = pending.snapshotFilesByRelativePath.get(
+      snapshotPath.relativePath
+    ) ?? {
+      ...snapshotPath,
+      previousContent: null,
+    }
+
+    snapshotFile.nextContent = await readZookeeperSnapshotFileIfExists(
+      snapshotPath.absolutePath
+    )
+    pending.snapshotFilesByRelativePath.set(
+      snapshotPath.relativePath,
+      snapshotFile
+    )
+  }
+}
+
+function getReadyZookeeperSnapshotFiles(
+  pending: PendingZookeeperHistory
+): ZookeeperSnapshotFileReplay[] {
+  const snapshotFiles: ZookeeperSnapshotFileReplay[] = []
+
+  for (const snapshotFile of pending.snapshotFilesByRelativePath.values()) {
+    if (snapshotFile.nextContent === undefined) {
+      return []
+    }
+
+    snapshotFiles.push({
+      relativePath: snapshotFile.relativePath,
+      absolutePath: snapshotFile.absolutePath,
+      previousContent: snapshotFile.previousContent,
+      nextContent: snapshotFile.nextContent,
+    })
+  }
+
+  return snapshotFiles
+}
+
+function getZookeeperSnapshotPath(projectPath: string, relativePath: string) {
+  const normalizedPath = normalizeZookeeperPatchPath(relativePath)
+  const pathParts = normalizedPath.split('/')
+  const safePathParts = pathParts.filter(
+    (part) => part.length > 0 && part !== '.'
+  )
+
+  if (
+    pathParts.some((part) => part === '..') ||
+    safePathParts.length === 0 ||
+    normalizedPath.startsWith('/') ||
+    /^[A-Za-z]:/.test(normalizedPath)
+  ) {
+    throw new Error(
+      `Cannot record Zookeeper history for unsafe path "${relativePath}".`
+    )
+  }
+
+  return {
+    relativePath: normalizedPath,
+    absolutePath: fsZds.join(projectPath, ...safePathParts),
+  }
+}
+
+async function readZookeeperSnapshotFileIfExists(path: string) {
+  try {
+    return await fsZds.readFile(path, 'utf8')
+  } catch (error: unknown) {
+    if (isPathNotFoundError(error)) {
+      return null
+    }
+
+    return Promise.reject(error)
+  }
+}
+
+type PendingZookeeperSnapshotFile = {
+  relativePath: string
+  absolutePath: string
+  previousContent: string | null
+  nextContent?: string | null
+}
+
 type PendingZookeeperHistory = {
   activeFileDeleted: boolean
   activeEditorState?: EditorState
@@ -542,6 +729,7 @@ type PendingZookeeperHistory = {
   outstandingWrites: number
   patch?: ZookeeperEditPatch
   projectPath?: string
+  snapshotFilesByRelativePath: Map<string, PendingZookeeperSnapshotFile>
   streamEnded: boolean
 }
 
@@ -554,17 +742,32 @@ type ReadyPendingZookeeperHistory = {
   currentFileRequestedCode?: string
   patch: ZookeeperEditPatch
   projectPath: string
+  snapshotFiles: readonly ZookeeperSnapshotFileReplay[]
 }
 
-type CompletePendingZookeeperHistoryWriteProps =
-  ReadyPendingZookeeperHistory & {
-    exchangeId: number
-  }
+type BeginPendingZookeeperHistoryWriteProps = {
+  activeFilePath?: string
+  exchangeId: number
+  patch: ZookeeperEditPatch
+  projectPath: string
+}
+
+type CompletePendingZookeeperHistoryWriteProps = {
+  activeFileDeleted: boolean
+  activeFilePath?: string
+  activeFileRequestedCode?: string
+  currentFilePath?: string
+  currentFileRequestedCode?: string
+  exchangeId: number
+  patch: ZookeeperEditPatch
+  projectPath: string
+}
 
 function createPendingZookeeperHistory(): PendingZookeeperHistory {
   return {
     activeFileDeleted: false,
     outstandingWrites: 0,
+    snapshotFilesByRelativePath: new Map(),
     streamEnded: false,
   }
 }
