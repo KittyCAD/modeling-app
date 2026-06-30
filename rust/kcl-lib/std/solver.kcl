@@ -237,8 +237,8 @@ export fn distance(
   labelPosition?: Point2d,
 ) {}
 
-/// Constrain the radius of an arc segment.
-/// Accepts a single arc segment and constrains the distance from its center to its start point.
+/// Constrain the radius of an arc or circle segment.
+/// Accepts a single arc or circle segment and constrains the distance from its center to its start point.
 ///
 /// ```kcl,sketchSolve
 /// profile = sketch(on = XY) {
@@ -253,7 +253,7 @@ export fn distance(
 /// ```
 @(impl = std_rust_constraint, feature_tree = true)
 export fn radius(
-  /// The arc segment whose radius should match the value set with `==`.
+  /// The arc or circle segment whose radius should match the value set with `==`.
   @points: Segment,
   /// Optional position for the displayed constraint label in the sketch's local 2D coordinate system.
   labelPosition?: Point2d,

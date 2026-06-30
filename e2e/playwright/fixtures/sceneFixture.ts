@@ -45,10 +45,10 @@ type DragFromHandler = (
   dragParams: MouseDragFromParams
 ) => Promise<undefined | boolean>
 
-async function markAndPauseAtPoint(
+async function markClickDebugPoint(
   page: Page,
   point: { x: number; y: number },
-  label?: string
+  { label, enablePause }: { label?: string; enablePause?: boolean } = {}
 ) {
   await page.evaluate(
     ({ point, label }) => {
@@ -109,7 +109,9 @@ async function markAndPauseAtPoint(
     },
     { point, label }
   )
-  await page.pause()
+  if (enablePause) {
+    await page.pause()
+  }
 }
 
 export class SceneFixture {
@@ -194,13 +196,13 @@ export class SceneFixture {
     {
       steps,
       format,
-      debug,
       debugLabel,
+      enablePause,
     }: {
       steps?: number
       format?: 'pixels' | 'ratio'
-      debug?: boolean
       debugLabel?: string
+      enablePause?: boolean
     } = {
       steps: 20,
       format: 'pixels',
@@ -213,8 +215,11 @@ export class SceneFixture {
           y,
           format
         )
-        if (debug) {
-          await markAndPauseAtPoint(this.page, resolvedPoint, debugLabel)
+        if (debugLabel) {
+          await markClickDebugPoint(this.page, resolvedPoint, {
+            label: debugLabel,
+            enablePause,
+          })
         }
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(
@@ -256,8 +261,11 @@ export class SceneFixture {
           y,
           format
         )
-        if (debug) {
-          await markAndPauseAtPoint(this.page, resolvedPoint, debugLabel)
+        if (debugLabel) {
+          await markClickDebugPoint(this.page, resolvedPoint, {
+            label: debugLabel,
+            enablePause,
+          })
         }
         if (moveParams?.pixelDiff) {
           return doAndWaitForImageDiff(
@@ -275,8 +283,11 @@ export class SceneFixture {
           y,
           format
         )
-        if (debug) {
-          await markAndPauseAtPoint(this.page, resolvedPoint, debugLabel)
+        if (debugLabel) {
+          await markClickDebugPoint(this.page, resolvedPoint, {
+            label: debugLabel,
+            enablePause,
+          })
         }
         if (clickParams?.pixelDiff) {
           return doAndWaitForImageDiff(

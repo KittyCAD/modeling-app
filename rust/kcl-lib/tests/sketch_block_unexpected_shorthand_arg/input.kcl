@@ -1,0 +1,6 @@
+@settings(kclVersion = 2.0)
+
+foo = 2
+s = sketch(on = XY, foo) {
+  circle1 = circle(start = [var 0.42mm, var 0.2mm], center = [var 0.25mm, var 0.35mm])
+}
