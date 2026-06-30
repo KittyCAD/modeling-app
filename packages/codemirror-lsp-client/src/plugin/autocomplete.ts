@@ -3,10 +3,12 @@ import {
   autocompletion,
   clearSnippet,
   closeCompletion,
+  currentCompletions,
   hasNextSnippetField,
   moveCompletionSelection,
   nextSnippetField,
   prevSnippetField,
+  selectedCompletionIndex,
   startCompletion,
 } from '@codemirror/autocomplete'
 import type { CompletionContext } from '@codemirror/autocomplete'
@@ -32,13 +34,15 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
   {
     key: 'Escape',
     run: (view: EditorView): boolean => {
-      if (clearSnippet(view)) return true
+      if (clearSnippet(view)) {
+        return true
+      }
 
       return closeCompletion(view)
     },
   },
-  { key: 'ArrowDown', run: moveCompletionSelection(true) },
-  { key: 'ArrowUp', run: moveCompletionSelection(false) },
+  { key: 'ArrowDown', run: moveCompletionSelectionOrExit(true) },
+  { key: 'ArrowUp', run: moveCompletionSelectionOrExit(false) },
   { key: 'PageDown', run: moveCompletionSelection(true, 'page') },
   { key: 'PageUp', run: moveCompletionSelection(false, 'page') },
   { key: 'Enter', run: acceptCompletion },
@@ -58,6 +62,26 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
 
 const lspAutocompleteKeymapExt = Prec.highest(keymap.of(lspAutocompleteKeymap))
 
+export function moveCompletionSelectionOrExit(forward: boolean) {
+  const moveSelection = moveCompletionSelection(forward)
+
+  return (view: EditorView): boolean => {
+    const selectedIndex = selectedCompletionIndex(view.state)
+    const completions = currentCompletions(view.state)
+
+    const shouldExit =
+      selectedIndex !== null &&
+      (forward ? selectedIndex >= completions.length - 1 : selectedIndex <= 0)
+
+    if (!shouldExit) {
+      return moveSelection(view)
+    }
+
+    closeCompletion(view)
+    return false
+  }
+}
+
 export default function lspAutocompleteExt(
   plugin: ViewPlugin<LanguageServerPlugin>
 ): Extension {
@@ -68,22 +92,27 @@ export default function lspAutocompleteExt(
       override: [
         async (context) => {
           const { state, pos, view } = context
-          let value = view?.plugin(plugin)
-          if (!value) return null
+          const value = view?.plugin(plugin)
+          if (!value) {
+            return null
+          }
 
-          let nodeBefore = syntaxTree(state).resolveInner(pos, -1)
+          const nodeBefore = syntaxTree(state).resolveInner(pos, -1)
           if (
             nodeBefore.name === 'BlockComment' ||
             nodeBefore.name === 'LineComment'
-          )
+          ) {
             return null
+          }
 
           const cmpTriggers = getCompletionTriggerKind(
             context,
             value.client.getServerCapabilities().completionProvider
               ?.triggerCharacters ?? []
           )
-          if (!cmpTriggers) return null
+          if (!cmpTriggers) {
+            return null
+          }
 
           return await value.requestCompletion(
             context,
