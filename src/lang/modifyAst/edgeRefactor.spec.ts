@@ -1361,7 +1361,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).toContain('endFaces = [startCap]')
+        expect(n).not.toContain('endFaces')
         expect(n).not.toContain(removed)
       })
     }

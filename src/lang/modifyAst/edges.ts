@@ -462,16 +462,6 @@ export function addBlend({
   }
 }
 
-function getSegmentIdFromEdgeArtifact(edgeArtifact: Artifact): string | null {
-  if (edgeArtifact.type === 'segment') {
-    return edgeArtifact.id
-  }
-  if (edgeArtifact.type === 'sweepEdge') {
-    return edgeArtifact.segId
-  }
-  return null
-}
-
 function buildEdgeExpr(
   edgeSelection: EdgeSelectionForExpr,
   ast: Node<Program>,
@@ -703,38 +693,6 @@ type FilletEdgeRefPayload = {
   side_faces: string[]
   end_faces?: string[]
   index?: number
-}
-
-function getEndFaceIdsForEdgeIdMeta(
-  meta: EdgeRefactorMeta,
-  artifactGraph: ArtifactGraph
-): string[] {
-  if (meta.stdlibFn !== 'edgeId') {
-    return []
-  }
-
-  const edgeArtifact = artifactGraph.get(meta.edgeId)
-  if (!edgeArtifact) {
-    return []
-  }
-
-  const backingSegmentId = getSegmentIdFromEdgeArtifact(edgeArtifact)
-  if (!backingSegmentId) {
-    return []
-  }
-
-  const backingSegment = getArtifactOfTypes(
-    { key: backingSegmentId, types: ['segment'] },
-    artifactGraph
-  )
-  if (err(backingSegment)) {
-    return []
-  }
-
-  const sideFaceIds = new Set(meta.faceIds)
-  return backingSegment.commonSurfaceIds.filter(
-    (faceId) => !sideFaceIds.has(faceId)
-  )
 }
 
 /**
@@ -1281,7 +1239,6 @@ function findFilletChamferCallsToFixUnified(
             if (meta) {
               orderedPayloads.push({
                 side_faces: meta.faceIds,
-                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
               })
             }
           }
@@ -1319,7 +1276,6 @@ function findFilletChamferCallsToFixUnified(
             if (meta) {
               orderedPayloads.push({
                 side_faces: meta.faceIds,
-                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
               })
             }
           }
@@ -1560,7 +1516,6 @@ export function findGdtEdgesCallsToFix(
 
         orderedPayloads.push({
           side_faces: meta.faceIds,
-          end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
         })
       }
 
@@ -1615,7 +1570,6 @@ export function findGdtDistanceEndpointCallsToFix(
           label,
           payload: {
             side_faces: meta.faceIds,
-            end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
           },
         })
       }
