@@ -263,7 +263,7 @@ async fn parse_distance_entity_arg(
 
     if edge::is_edge_specifier_object(&value) {
         let unresolved = edge::parse_edge_specifier_value(&value, args)?;
-        let edge_reference = edge::resolve_edge_specifier_with_face_tags(&unresolved, exec_state, args).await?;
+        let edge_reference = edge::resolve_edge_specifier_with_face_tags(&unresolved, None, exec_state, args).await?;
         return Ok(Some(DistanceEntity::Specifier(edge_reference)));
     }
 
