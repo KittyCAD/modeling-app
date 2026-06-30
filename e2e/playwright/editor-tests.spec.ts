@@ -1018,7 +1018,6 @@ sketch001 = startSketchOn(XZ)
       // Make sure just hitting tab will take the only one left
       await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
       await page.waitForTimeout(500)
-      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Tab')
       await page.waitForTimeout(500)
       await page.keyboard.type('XZ')

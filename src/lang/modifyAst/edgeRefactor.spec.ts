@@ -609,7 +609,7 @@ const KCL_MIXED_DIRECT_AND_STDLIB = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [e1, getOppositeEdge(e1)])
 `
 
-/** Mixed: one deprecated call + one plain segment tag. TODO: should seg01 stay in same fillet or be split into two fillet calls? */
+/** Mixed: one deprecated call + one plain segment tag. Both should be converted to edgeRefs. */
 const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -889,6 +889,66 @@ describe('refactorZ0006Unified', () => {
       expect(n).toContain('sideFaces = [e1, cap1]')
       expect(n).toContain('tolerance = 0.1mm')
       expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
+    })
+
+    it('scoped Z0006 refactor only updates the lint source range that was requested', () => {
+      const code = `base = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagEnd = $cap1)
+
+first = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], tolerance = 0.1mm)
+second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], tolerance = 0.2mm)
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph = createTaggedWallAndCapGraph(ast, code, {
+        segmentId: 'segment-e1',
+        wallId: 'wall-e1',
+        capId: 'cap-1',
+        pathId: 'path-1',
+        sweepId: 'sweep-1',
+        segmentSnippet: 'line(endAbsolute = [10, 0], tag = $e1)',
+        extrudeSnippet: 'extrude(length = 5, tagEnd = $cap1)',
+      })
+      const ranges = sourceRangesForCalls(ast, 'getCommonEdge')
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: 'edge-1',
+          sourceRange: ranges[0],
+          faceIds: facePair('wall-e1', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+        {
+          edgeId: 'edge-2',
+          sourceRange: ranges[1],
+          faceIds: facePair('wall-e1', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const refactored = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance,
+        ranges[0]
+      )
+
+      expect(err(refactored)).toBe(false)
+      if (err(refactored)) throw refactored
+      const n = norm(refactored)
+      expect(n).toContain('first = gdt::straightness(')
+      expect(n).toContain('edges = [{')
+      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).toContain('second = gdt::straightness(')
+      expect(n).toContain(
+        'second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], tolerance = 0.2mm)'
+      )
     })
 
     it('refactors GD&T distance from/to with provided metadata without requiring engine execution', () => {
@@ -1576,7 +1636,7 @@ describe('refactorZ0006Unified', () => {
     )
 
     it(
-      'mixed tags [getOppositeEdge(e1), seg01]: refactor runs without crashing (TODO: keep seg01 vs split into two fillet calls)',
+      'mixed tags [getOppositeEdge(e1), seg01]: refactor converts the whole tags array to edgeRefs',
       { timeout: 30_000 },
       async () => {
         const ast = assertParse(
@@ -1594,10 +1654,15 @@ describe('refactorZ0006Unified', () => {
         )
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
-        // Currently we only convert when ALL tags elements are deprecated; mixed leaves tags as-is.
-        // TODO: Decide whether to (1) keep seg01 in same fillet and only convert getOppositeEdge to edgeRefs,
-        // or (2) split into two separate fillet calls. For now we just assert no crash.
-        expect(refactored).toContain('fillet')
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [seg01, capStart001]')
+        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
+          .length
+        expect(sideFaceCount).toBe(2)
+        expect(n).not.toContain('tags = [')
       }
     )
 
