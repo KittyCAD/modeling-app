@@ -838,43 +838,6 @@ type FilletEdgeRefPayload = {
   index?: number
 }
 
-function getEndFaceIdsForEdgeIdMeta(
-  meta: EdgeRefactorMeta,
-  artifactGraph: ArtifactGraph
-): string[] {
-  if (meta.stdlibFn !== 'edgeId') {
-    return []
-  }
-
-  const edgeArtifact = artifactGraph.get(meta.edgeId)
-  if (!edgeArtifact) {
-    return []
-  }
-
-  const backingSegmentId =
-    edgeArtifact.type === 'sweepEdge'
-      ? edgeArtifact.segId
-      : edgeArtifact.type === 'segment'
-        ? edgeArtifact.id
-        : null
-  if (!backingSegmentId) {
-    return []
-  }
-
-  const backingSegment = getArtifactOfTypes(
-    { key: backingSegmentId, types: ['segment'] },
-    artifactGraph
-  )
-  if (err(backingSegment)) {
-    return []
-  }
-
-  const sideFaceIds = new Set(meta.faceIds)
-  return backingSegment.commonSurfaceIds.filter(
-    (faceId) => !sideFaceIds.has(faceId)
-  )
-}
-
 export function createEdgeRefObjectExpression(
   payload: FilletEdgeRefPayload,
   wasmInstance: ModuleType,
@@ -1257,7 +1220,6 @@ function findFilletChamferCallsToFixUnified(
               if (meta) {
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
-                  end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
                 })
               } else {
                 hasUnconvertedTagsElement = true
@@ -1300,7 +1262,6 @@ function findFilletChamferCallsToFixUnified(
               if (meta) {
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
-                  end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
                 })
               } else {
                 hasUnconvertedTagsElement = true
@@ -1502,7 +1463,6 @@ export function findGdtEdgesCallsToFix(
 
         orderedPayloads.push({
           side_faces: meta.faceIds,
-          end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
         })
       }
 
@@ -1557,7 +1517,6 @@ export function findGdtDistanceEndpointCallsToFix(
           label,
           payload: {
             side_faces: meta.faceIds,
-            end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
           },
         })
       }
