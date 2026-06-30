@@ -632,6 +632,14 @@ async fn resolve_edge_specifiers_with_face_tags(
             );
         }
     }
+    // We should never duplicate the index. It should be used once on the engine
+    // side to resolve the entire set.
+    if references.len() > 1 && unresolved.index.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "You tried to use an index with sideFaces or endFaces that were split, which isn't supported yet. Please report this to Zoo and include your KCL to help improve this.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
     Ok(references)
 }
 
