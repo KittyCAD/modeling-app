@@ -3936,10 +3936,10 @@ impl MemberExpression {
         self.object.rename_identifiers(old_name, new_name, excluded);
         if self.computed {
             self.property.rename_identifiers(old_name, new_name, excluded);
-        } else if let Expr::Name(property) = &mut self.property {
-            if !excluded.contains(&property.name.name.as_str()) {
-                property.rename(old_name, new_name);
-            }
+        } else if let Expr::Name(property) = &mut self.property
+            && !excluded.contains(&property.name.name.as_str())
+        {
+            property.rename(old_name, new_name);
         }
     }
 
