@@ -172,7 +172,6 @@ export function calculateArcRenderInput(
       )
     : radiusSigned
 
-  //const signedAngle = getSignedAngleBetweenVec(line1Dir, line2Dir)
   const signedAngle = normalizeAngleRad(obj.kind.constraint.angle)
 
   const explicitLabelPosition = getAngleLabelPosition(obj)
