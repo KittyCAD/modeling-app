@@ -1,6 +1,6 @@
 [package]
 name = "kcl-python-bindings"
-version = "0.3.166"
+version = "0.3.167"
 edition = "2024"
 repository = "https://github.com/kittycad/modeling-app"
 exclude = ["tests/*", "files/*", "venv/*"]
@@ -20,7 +20,7 @@ kcl-lib = { path = "../kcl-lib", features = [
 ] }
 #kcl-lib = { path = "../modeling-app/src/wasm-lib/kcl", default-features = false, features = ["pyo3", "engine", "disable-println"] }
 kittycad-modeling-cmds = { workspace = true, features = ["python"] }
-kcl-api = { version = "=0.2.166", path = "../kcl-api", features = ["pyo3"] }
+kcl-api = { path = "../kcl-api", features = ["pyo3"] }
 miette = { workspace = true, features = ["fancy"] }
 pyo3 = { workspace = true, features = ["serde", "experimental-async"] }
 pyo3-stub-gen = { workspace = true }

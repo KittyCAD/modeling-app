@@ -84,13 +84,14 @@ const convertIStatToFileMetadata = (
   }
 }
 
-function isPathNotFoundError(error: unknown) {
+export function isPathNotFoundError(error: unknown) {
   return (
     error === 'ENOENT' ||
     (typeof error === 'string' && error.startsWith('ENOENT')) ||
     (typeof error === 'object' &&
       error !== null &&
       (('code' in error && error.code === 'ENOENT') ||
+        ('cause' in error && error.cause === 'ENOENT') ||
         ('message' in error &&
           typeof error.message === 'string' &&
           error.message.startsWith('ENOENT'))))

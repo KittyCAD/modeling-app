@@ -3,6 +3,7 @@ use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kittycad_modeling_cmds::shared::AnnotationBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationFeatureControl;
+use kittycad_modeling_cmds::shared::AnnotationFeatureTag;
 use kittycad_modeling_cmds::shared::AnnotationLineEnd;
 use kittycad_modeling_cmds::shared::AnnotationMbdBasicDimension;
 use kittycad_modeling_cmds::shared::AnnotationMbdControlFrame;
@@ -403,6 +404,84 @@ async fn inner_datum(
             ModelingCmd::from(
                 mcmd::NewAnnotation::builder()
                     .options(AnnotationOptions::builder().feature_control(feature_control).build())
+                    .clobber(false)
+                    .annotation_type(AnnotationType::T3D)
+                    .build(),
+            ),
+        )
+        .await?;
+    add_gdt_annotation_artifact(exec_state, args, annotation_id);
+    Ok(GdtAnnotation {
+        id: annotation_id,
+        meta,
+    })
+}
+
+pub async fn note(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let note: String = args.get_kw_arg("note", &RuntimeType::string(), exec_state)?;
+    let frame_plane: Option<Plane> = args.get_kw_arg_opt("framePlane", &RuntimeType::plane(), exec_state)?;
+    let frame_position: Option<[TyF64; 2]> =
+        args.get_kw_arg_opt("framePosition", &RuntimeType::point2d(), exec_state)?;
+    let font_size: Option<TyF64> = args.get_kw_arg_opt("fontSize", &RuntimeType::length(), exec_state)?;
+
+    let annotation = inner_note(note, frame_plane, frame_position, font_size, exec_state, &args).await?;
+    Ok(KclValue::GdtAnnotation {
+        value: Box::new(annotation),
+    })
+}
+
+async fn inner_note(
+    note: String,
+    frame_plane: Option<Plane>,
+    frame_position: Option<[TyF64; 2]>,
+    font_size: Option<TyF64>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<GdtAnnotation, KclError> {
+    let mut frame_plane = if let Some(plane) = frame_plane {
+        plane
+    } else {
+        // No plane given. Default to the world XY plane.
+        xy_plane(exec_state, args).await?
+    };
+    ensure_sketch_plane_in_engine(
+        &mut frame_plane,
+        exec_state,
+        &args.ctx,
+        args.source_range,
+        args.node_path.clone(),
+    )
+    .await?;
+    let meta = vec![Metadata::from(args.source_range)];
+    let annotation_id = exec_state.next_uuid();
+    // A note does not attach to a face. Passing the plane as the entity tells the engine to
+    // place the note inline on that plane with no leader (an MBD free note).
+    let feature_tag = AnnotationFeatureTag::builder()
+        .maybe_entity_id(Some(frame_plane.id))
+        .entity_pos(KPoint2d { x: 0.0, y: 0.0 })
+        .leader_type(AnnotationLineEnd::None)
+        .key(String::new())
+        .value(note)
+        .show_key(false)
+        .plane_id(frame_plane.id)
+        .offset(if let Some(offset) = &frame_position {
+            KPoint2d {
+                x: offset[0].to_mm(),
+                y: offset[1].to_mm(),
+            }
+        } else {
+            KPoint2d { x: 100.0, y: 100.0 }
+        })
+        .font_scale(gdt_font_scale(font_size.as_ref(), args)?)
+        .font_point_size(GDT_FONT_TEXTURE_POINT_SIZE)
+        .leader_scale(1.0)
+        .build();
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, args, annotation_id),
+            ModelingCmd::from(
+                mcmd::NewAnnotation::builder()
+                    .options(AnnotationOptions::builder().feature_tag(feature_tag).build())
                     .clobber(false)
                     .annotation_type(AnnotationType::T3D)
                     .build(),

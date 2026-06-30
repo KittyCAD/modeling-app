@@ -6,6 +6,7 @@ use kcl_api::UnitLength;
 use kcmc::shared::BodyType;
 use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
+use uuid::Uuid;
 
 use super::fillet::EdgeReference;
 use crate::CompilationIssue;
@@ -1279,10 +1280,14 @@ impl<'a> FromKclValue<'a> for Extrudable {
         let case1 = Box::<Sketch>::from_kcl_val;
         let case2 = FaceTag::from_kcl_val;
         let case3 = Box::<Face>::from_kcl_val;
+        let case4 = Uuid::from_kcl_val;
+        let case5 = Box::<TagIdentifier>::from_kcl_val;
         case1(arg)
             .map(Self::Sketch)
             .or_else(|| case2(arg).map(Self::FaceTag))
             .or_else(|| case3(arg).map(Self::Face))
+            .or_else(|| case4(arg).map(Self::Edge))
+            .or_else(|| case5(arg).map(Self::EdgeTag))
     }
 }
 

@@ -974,7 +974,6 @@ export async function setup(
     }) => {
       localStorage.clear()
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
-      localStorage.setItem('persistCode', ``)
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {

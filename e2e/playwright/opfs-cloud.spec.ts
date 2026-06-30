@@ -165,7 +165,11 @@ test(
         cleanSyncedProject,
         staleDirtyProject,
       ],
-      listedProjects: [remoteOnlyProject, cleanSyncedProject],
+      listedProjects: [
+        remoteOnlyProject,
+        cleanSyncedProject,
+        staleDirtyProject,
+      ],
       remoteListGate,
       createProject: () => ({
         id: 'created-local-only-project',

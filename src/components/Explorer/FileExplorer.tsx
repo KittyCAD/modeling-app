@@ -15,6 +15,7 @@ import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
+import type { ProjectExplorerRowContextMenuItem } from '@src/registry/contracts/projectExplorer'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 export const StatusDot = () => {
@@ -71,6 +72,7 @@ export const FileExplorer = ({
   isInteractionDisabled,
   isExternalDragOver,
   highlightedEntry,
+  rowContextMenuItems = [],
   onDeleteEnd,
   onExternalDragOverRow,
 }: {
@@ -83,6 +85,7 @@ export const FileExplorer = ({
   isInteractionDisabled: boolean
   isExternalDragOver?: boolean
   highlightedEntry?: FileExplorerEntry | null
+  rowContextMenuItems?: readonly ProjectExplorerRowContextMenuItem[]
   onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
@@ -113,6 +116,7 @@ export const FileExplorer = ({
             isInteractionDisabled={isInteractionDisabled}
             isExternalDragHighlighted={isHighlighted}
             isExternalDragOver={isExternalDragOver}
+            rowContextMenuItems={rowContextMenuItems}
             onDeleteEnd={onDeleteEnd}
             onExternalDragOverRow={onExternalDragOverRow}
           />
@@ -127,6 +131,7 @@ export const FileExplorer = ({
  */
 function FileExplorerRowContextMenu({
   itemRef,
+  row,
   onRename,
   onDelete,
   onCopy,
@@ -134,7 +139,31 @@ function FileExplorerRowContextMenu({
   callback,
   onPaste,
   isCopying,
+  rowContextMenuItems,
 }: FileExplorerRowContextMenuProps) {
+  const extensionItems = rowContextMenuItems.flatMap((item) => {
+    const context = { row }
+    if (item.isVisible && !item.isVisible(context)) {
+      return []
+    }
+
+    const disabled =
+      typeof item.disabled === 'function'
+        ? item.disabled(context)
+        : item.disabled
+
+    return [
+      <ContextMenuItem
+        key={item.id}
+        data-testid={item.dataTestId}
+        disabled={disabled}
+        onClick={() => item.onSelect(context)}
+      >
+        {item.label}
+      </ContextMenuItem>,
+    ]
+  })
+
   return (
     <ContextMenu
       menuTargetElement={itemRef}
@@ -162,6 +191,7 @@ function FileExplorerRowContextMenu({
         >
           Open in new window
         </ContextMenuItem>,
+        ...extensionItems,
       ]}
     />
   )
@@ -266,6 +296,7 @@ export const FileExplorerRowElement = ({
   isInteractionDisabled,
   isExternalDragHighlighted,
   isExternalDragOver,
+  rowContextMenuItems,
   onDeleteEnd,
   onExternalDragOverRow,
 }: {
@@ -278,6 +309,7 @@ export const FileExplorerRowElement = ({
   isInteractionDisabled: boolean
   isExternalDragHighlighted?: boolean
   isExternalDragOver?: boolean
+  rowContextMenuItems: readonly ProjectExplorerRowContextMenuItem[]
   onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
@@ -518,6 +550,7 @@ export const FileExplorerRowElement = ({
       {!isInteractionDisabled && (
         <FileExplorerRowContextMenu
           itemRef={rowElementRef}
+          row={row}
           onRename={() => {
             row.onRenameStart()
           }}
@@ -537,6 +570,7 @@ export const FileExplorerRowElement = ({
             row.onPaste()
           }}
           isCopying={isCopying}
+          rowContextMenuItems={rowContextMenuItems}
         />
       )}
     </div>
