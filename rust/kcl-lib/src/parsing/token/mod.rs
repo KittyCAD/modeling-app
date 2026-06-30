@@ -1,6 +1,7 @@
 // Clippy does not agree with rustc here for some reason.
 #![allow(clippy::needless_lifetimes)]
 
+use std::env;
 use std::fmt;
 use std::iter::Enumerate;
 use std::num::NonZeroUsize;
@@ -25,7 +26,7 @@ use crate::parsing::ast::types::VariableKind;
 
 mod tokeniser;
 
-#[cfg(all(test, feature = "new-scanner"))]
+#[cfg(test)]
 mod compat_tests;
 
 pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
@@ -587,7 +588,117 @@ impl From<&Token> for SourceRange {
     }
 }
 
+/// Environment variable selecting which lexer implementation [`lex`] uses.
+pub(crate) const KCL_LEXER_ENV_VAR: &str = "KCL_LEXER";
+
+/// Which lexer implementation [`lex`] uses.
+///
+/// KCL is migrating from the winnow `tokeniser` (`Legacy`) to the `kcl-syntax`
+/// logos lexer (`Syntax`). The choice is made at runtime so each tool can be
+/// migrated independently via the `KCL_LEXER` environment variable, with a
+/// compile-time [`LexerMode::DEFAULT`] that flips once every tool is validated.
+///
+/// Precedence: test override > `KCL_LEXER` > [`LexerMode::DEFAULT`]. This mirrors
+/// the existing `KCL_MEMORY_IMPL` selector in `execution::memory`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub(crate) enum LexerMode {
+    Legacy,
+    Syntax,
+}
+
+impl LexerMode {
+    /// The mode used when `KCL_LEXER` is unset. Stays `Legacy` until the
+    /// migration is validated and ready to flip.
+    const DEFAULT: Self = Self::Legacy;
+
+    /// Resolve the active lexer mode (see precedence on [`LexerMode`]).
+    pub(crate) fn resolve() -> Self {
+        #[cfg(test)]
+        if let Some(mode) = Self::test_override() {
+            return mode;
+        }
+
+        match env::var(KCL_LEXER_ENV_VAR) {
+            Ok(value) => Self::parse(&value),
+            Err(env::VarError::NotPresent) => Self::DEFAULT,
+            Err(env::VarError::NotUnicode(value)) => {
+                panic!(
+                    "{KCL_LEXER_ENV_VAR} must be valid unicode; got `{}`.",
+                    value.to_string_lossy()
+                )
+            }
+        }
+    }
+
+    fn parse(value: &str) -> Self {
+        let value = value.trim();
+        if value.eq_ignore_ascii_case("legacy") {
+            return Self::Legacy;
+        }
+        if value.eq_ignore_ascii_case("syntax") {
+            return Self::Syntax;
+        }
+        panic!("Unsupported {KCL_LEXER_ENV_VAR} value `{value}`. Expected `legacy` or `syntax`.")
+    }
+
+    #[cfg(test)]
+    fn test_override_value(self) -> u8 {
+        match self {
+            Self::Legacy => 1,
+            Self::Syntax => 2,
+        }
+    }
+
+    #[cfg(test)]
+    fn test_override() -> Option<Self> {
+        match TEST_LEXER_MODE_OVERRIDE.load(std::sync::atomic::Ordering::SeqCst) {
+            1 => Some(Self::Legacy),
+            2 => Some(Self::Syntax),
+            _ => None,
+        }
+    }
+
+    /// Override the lexer mode for the lifetime of the returned guard.
+    ///
+    /// This uses a process-global atomic, so it is only race-free under test
+    /// runners that isolate tests in separate processes (e.g. `cargo nextest`).
+    /// Under in-process parallel `cargo test`, prefer driving the lexer with an
+    /// explicit mode; reserve this guard for dispatch/integration tests.
+    #[cfg(test)]
+    pub(crate) fn override_for_test(mode: Self) -> LexerModeOverrideGuard {
+        let previous = TEST_LEXER_MODE_OVERRIDE.swap(mode.test_override_value(), std::sync::atomic::Ordering::SeqCst);
+        LexerModeOverrideGuard { previous }
+    }
+}
+
+#[cfg(test)]
+static TEST_LEXER_MODE_OVERRIDE: std::sync::atomic::AtomicU8 = std::sync::atomic::AtomicU8::new(0);
+
+#[cfg(test)]
+pub(crate) struct LexerModeOverrideGuard {
+    previous: u8,
+}
+
+#[cfg(test)]
+impl Drop for LexerModeOverrideGuard {
+    fn drop(&mut self) {
+        TEST_LEXER_MODE_OVERRIDE.store(self.previous, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+
+// Phase 0 adds the runtime seam only. `Syntax` mode intentionally delegates to
+// the legacy tokeniser so that selecting it is a safe no-op until the
+// `kcl-syntax` adapter lands in Phase 2; at that point this dispatch gains a
+// real second arm and the `match_same_arms` allow below is removed.
+#[allow(clippy::match_same_arms)]
 pub fn lex(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
+    match LexerMode::resolve() {
+        LexerMode::Legacy => lex_legacy(s, module_id),
+        LexerMode::Syntax => lex_legacy(s, module_id),
+    }
+}
+
+fn lex_legacy(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
     tokeniser::lex(s, module_id).map_err(|err| {
         let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
         let module_id = err.input().state.module_id;
@@ -614,4 +725,38 @@ pub fn lex(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
             vec![SourceRange::new(offset, offset + 1, module_id)],
         ))
     })
+}
+
+#[cfg(test)]
+mod lexer_mode_tests {
+    use super::LexerMode;
+
+    #[test]
+    fn default_mode_is_legacy() {
+        assert_eq!(LexerMode::DEFAULT, LexerMode::Legacy);
+    }
+
+    #[test]
+    fn parse_accepts_known_values_case_insensitively() {
+        assert_eq!(LexerMode::parse("legacy"), LexerMode::Legacy);
+        assert_eq!(LexerMode::parse("  SYNTAX  "), LexerMode::Syntax);
+    }
+
+    #[test]
+    #[should_panic(expected = "Unsupported KCL_LEXER value")]
+    fn parse_rejects_unknown_values() {
+        let _ = LexerMode::parse("rowan");
+    }
+
+    #[test]
+    fn override_guard_sets_and_restores_mode() {
+        // Reserved for dispatch/integration tests; relies on the process-global
+        // atomic, which is race-free under nextest's process isolation.
+        {
+            let _guard = LexerMode::override_for_test(LexerMode::Syntax);
+            assert_eq!(LexerMode::resolve(), LexerMode::Syntax);
+        }
+        let _guard = LexerMode::override_for_test(LexerMode::Legacy);
+        assert_eq!(LexerMode::resolve(), LexerMode::Legacy);
+    }
 }

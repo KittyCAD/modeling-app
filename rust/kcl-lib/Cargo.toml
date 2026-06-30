@@ -40,7 +40,6 @@ engine = []
 pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
 # Helper functions also used in benchmarks.
 lsp-test-util = []
-new-scanner = ["dep:kcl-syntax"]
 # For debugging.
 snapshot-engine-responses = []
 tabled = ["dep:tabled"]
@@ -73,7 +72,7 @@ itertools = "0.15.0"
 kcl-api = { version = "=0.2.166", path = "../kcl-api" }
 kcl-derive-docs = { version = "=0.2.166", path = "../kcl-derive-docs" }
 kcl-error = { version = "=0.2.166", path = "../kcl-error" }
-kcl-syntax = { version = "=0.2.166", path = "../kcl-syntax", optional = true }
+kcl-syntax = { version = "=0.2.166", path = "../kcl-syntax" }
 ezpz = { workspace = true }
 kittycad = { workspace = true }
 kittycad-modeling-cmds = { workspace = true }
