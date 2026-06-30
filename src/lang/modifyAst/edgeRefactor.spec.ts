@@ -617,7 +617,7 @@ const KCL_MIXED_DIRECT_AND_STDLIB = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [e1, getOppositeEdge(e1)])
 `
 
-/** Mixed: one deprecated call + one plain segment tag. TODO: should seg01 stay in same fillet or be split into two fillet calls? */
+/** Mixed: one deprecated call + one plain segment tag. Both should be converted to edgeRefs. */
 const KCL_MIXED_DEPRECATED_AND_SEGMENT_TAG = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -1584,7 +1584,7 @@ describe('refactorZ0006Unified', () => {
     )
 
     it(
-      'mixed tags [getOppositeEdge(e1), seg01]: refactor runs without crashing (TODO: keep seg01 vs split into two fillet calls)',
+      'mixed tags [getOppositeEdge(e1), seg01]: refactor converts the whole tags array to edgeRefs',
       { timeout: 30_000 },
       async () => {
         const ast = assertParse(
@@ -1602,10 +1602,15 @@ describe('refactorZ0006Unified', () => {
         )
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
-        // Currently we only convert when ALL tags elements are deprecated; mixed leaves tags as-is.
-        // TODO: Decide whether to (1) keep seg01 in same fillet and only convert getOppositeEdge to edgeRefs,
-        // or (2) split into two separate fillet calls. For now we just assert no crash.
-        expect(refactored).toContain('fillet')
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toMatch(/fillet\(\s*radius = 1,\s*edges = \[/)
+        expect(n).toContain('sideFaces = [e1, capEnd001]')
+        expect(n).toContain('sideFaces = [seg01, capStart001]')
+        const sideFaceCount = (refactored.match(/sideFaces\s*=\s*\[/g) ?? [])
+          .length
+        expect(sideFaceCount).toBe(2)
+        expect(n).not.toContain('tags = [')
       }
     )
 
