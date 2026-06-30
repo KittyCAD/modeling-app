@@ -29,7 +29,6 @@ import {
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { copyFileShareLink } from '@src/lib/links'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
@@ -49,12 +48,9 @@ interface KclCommandConfig {
   systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
-  authToken: string
   settings: {
     defaultUnit: UnitLength
   }
-  isRestrictedToOrg?: boolean
-  password?: string
   project?: Project
 }
 
@@ -295,23 +291,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       icon: 'code',
       onSubmit: () => {
         commandProps.kclManager.format().catch(reportRejection)
-      },
-    },
-    {
-      name: 'share-file-link',
-      displayName: 'Share part via Zoo link',
-      description: 'Create a link that contains a copy of the current file.',
-      groupId: 'code',
-      needsReview: false,
-      icon: 'link',
-      onSubmit: (input) => {
-        copyFileShareLink({
-          token: commandProps.authToken,
-          code: commandProps.kclManager.code,
-          name: commandProps.projectData.project?.name || '',
-          isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
-          password: input?.event.data.password,
-        }).catch(reportRejection)
       },
     },
     {
