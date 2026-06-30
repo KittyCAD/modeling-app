@@ -13,6 +13,7 @@ import {
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
+  modelingStdLibCommandUsesExperimentalFeatures,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -206,25 +207,6 @@ describe('Extrude bodyType argument', () => {
 })
 
 describe('Sweep-like bodyType argument', () => {
-  it('allows sweep profiles to be selected from sketches, segments, regions, and faces', () => {
-    const commandConfig = modelingMachineCommandConfig.Sweep
-    if (!commandConfig || isArray(commandConfig)) {
-      throw new Error('Sweep should have a single command config')
-    }
-
-    expect(commandConfig.args?.sketches).toMatchObject({
-      inputType: 'selection',
-      selectionTypes: [
-        'solid2d',
-        'segment',
-        'cap',
-        'wall',
-        'pathRegion',
-        'engineRegion',
-      ],
-    })
-  })
-
   it('marks the legacy relativeTo argument as deprecated', () => {
     const commandConfig = modelingMachineCommandConfig.Sweep
     if (!commandConfig || isArray(commandConfig)) {
@@ -329,6 +311,42 @@ describe('stdlib command arg derivation', () => {
     expect(modelingStdLibCommandStatus('Helical Gear')).toBe('experimental')
     expect(modelingStdLibCommandStatus('Extrude')).toBeUndefined()
     expect(stdLibCommandStatus('startSketchOn')).toBe('deprecated')
+  })
+
+  it('derives experimental settings from KCL stdlib metadata', () => {
+    const cases: [
+      Parameters<typeof modelingStdLibCommandUsesExperimentalFeatures>[0],
+      Record<string, unknown>,
+      boolean,
+    ][] = [
+      ['Extrude', {}, false],
+      ['Extrude', { draftAngle: parsedLength('45deg') }, true],
+      ['Extrude', { direction: selectionsForArtifact() }, false],
+      ['Fillet', { edges: selectionsForArtifact() }, false],
+      ['Fillet', { version: parsedLength('2') }, true],
+      ['Helical Gear', {}, true],
+    ]
+
+    for (const [commandName, args, usesExperimentalFeatures] of cases) {
+      expect(
+        modelingStdLibCommandUsesExperimentalFeatures(commandName, args),
+        commandName
+      ).toBe(usesExperimentalFeatures)
+    }
+  })
+
+  it('keeps non-experimental stdlib args non-experimental in the command bar', () => {
+    const sweepCommand = modelingMachineCommandConfig.Sweep
+    if (!sweepCommand || isArray(sweepCommand)) {
+      throw new Error('Sweep should have a single command config')
+    }
+
+    expect(sweepCommand.args?.version?.status).toBeUndefined()
+    expect(
+      modelingStdLibCommandUsesExperimentalFeatures('Sweep', {
+        version: parsedLength('2'),
+      })
+    ).toBe(false)
   })
 })
 

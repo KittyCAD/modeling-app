@@ -115,7 +115,7 @@ export type HoleCommandArgs = Override<
 >
 
 export type FilletCommandArgs = Override<
-  Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'tolerance'>,
+  Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'edges' | 'tolerance'>,
   {
     selection: Selections
     radius: KclCommandValue
@@ -124,7 +124,7 @@ export type FilletCommandArgs = Override<
 >
 
 export type ChamferCommandArgs = Override<
-  Omit<StdLibCommandArgs<'chamfer'>, 'solid' | 'tags'>,
+  Omit<StdLibCommandArgs<'chamfer'>, 'solid' | 'tags' | 'edges'>,
   {
     selection: Selections
     length: KclCommandValue

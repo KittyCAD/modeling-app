@@ -689,7 +689,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
           defaultValue: '2',
           required: false,
-          status: 'experimental',
         },
       },
     }),

@@ -272,7 +272,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'fillet',
     editFlow: true,
     flowArgOrder: ['selection', 'radius'],
-    omittedStdLibArgs: ['solid', 'tolerance'],
+    omittedStdLibArgs: ['solid', 'edges', 'tolerance'],
     argAliases: {
       tags: 'selection',
     },
@@ -281,7 +281,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'chamfer',
     editFlow: true,
     flowArgOrder: ['selection', 'length'],
-    omittedStdLibArgs: ['solid'],
+    omittedStdLibArgs: ['solid', 'edges'],
     argAliases: {
       tags: 'selection',
     },
@@ -568,6 +568,9 @@ export const modelingCommandStdLibDriftConfig = {
   Record<ModelingCommandName, StdLibCommandDriftConfig>
 >
 
+export type ModelingStdLibCommandName =
+  keyof typeof modelingCommandStdLibDriftConfig
+
 export function modelingStdLibCommandName<
   CommandName extends keyof typeof modelingCommandStdLibDriftConfig,
 >(
@@ -624,4 +627,28 @@ export function modelingStdLibCommandStatus(
   ] as StdLibCommandDriftConfig
 
   return stdLibCommandStatus(driftConfig.stdLibName)
+}
+
+export function modelingStdLibCommandUsesExperimentalFeatures(
+  commandName: ModelingStdLibCommandName,
+  commandArgs: Record<string, unknown>
+) {
+  const driftConfig = modelingCommandStdLibDriftConfig[
+    commandName
+  ] as StdLibCommandDriftConfig
+  const stdLibCommand = STD_LIB_COMMANDS[driftConfig.stdLibName]
+
+  if (stdLibCommand.experimental) {
+    return true
+  }
+
+  const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
+  return stdLibCommand.args.some((arg) => {
+    if (!arg.experimental || omittedStdLibArgs.has(arg.name)) {
+      return false
+    }
+
+    const commandArgName = driftConfig.argAliases?.[arg.name] ?? arg.name
+    return commandArgs[commandArgName] !== undefined
+  })
 }
