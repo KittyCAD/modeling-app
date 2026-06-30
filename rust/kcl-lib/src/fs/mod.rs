@@ -7,6 +7,7 @@ use anyhow::Result;
 use crate::SourceRange;
 use crate::execution::typed_path::TypedPath;
 
+pub mod in_memory;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod local;
 #[cfg(not(target_arch = "wasm32"))]
