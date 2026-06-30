@@ -27,6 +27,10 @@ function isTomlTable(value: TomlValue | undefined): value is TomlTable {
   )
 }
 
+function isEmptyTomlTable(value: TomlTable) {
+  return Object.keys(value).length === 0
+}
+
 export function getProjectTitleFromProjectTomlContents(contents: string) {
   const table = parseProjectToml(contents)
   if (!table) {
@@ -94,4 +98,29 @@ export function getCloudProjectIdFromProjectTomlContents(
   }
 
   return undefined
+}
+
+export function removeCloudProjectIdFromProjectTomlContents(
+  contents: string,
+  environmentName: string
+) {
+  const table = parseProjectToml(contents)
+  if (!table || !isTomlTable(table.cloud)) {
+    return contents
+  }
+
+  const environment = table.cloud[environmentName]
+  if (!isTomlTable(environment)) {
+    return contents
+  }
+
+  delete environment.project_id
+  if (isEmptyTomlTable(environment)) {
+    delete table.cloud[environmentName]
+  }
+  if (isEmptyTomlTable(table.cloud)) {
+    delete table.cloud
+  }
+
+  return stringifyToml(table)
 }
