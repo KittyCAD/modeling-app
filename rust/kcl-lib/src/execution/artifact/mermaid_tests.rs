@@ -735,12 +735,13 @@ fn surface_blend_creates_blend_sweep_artifact() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
