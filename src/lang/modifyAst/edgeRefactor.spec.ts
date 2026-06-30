@@ -899,6 +899,66 @@ describe('refactorZ0006Unified', () => {
       expect(n).not.toContain('getCommonEdge(faces = [e1, cap1])')
     })
 
+    it('scoped Z0006 refactor only updates the lint source range that was requested', () => {
+      const code = `base = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagEnd = $cap1)
+
+first = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], tolerance = 0.1mm)
+second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], tolerance = 0.2mm)
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph = createTaggedWallAndCapGraph(ast, code, {
+        segmentId: 'segment-e1',
+        wallId: 'wall-e1',
+        capId: 'cap-1',
+        pathId: 'path-1',
+        sweepId: 'sweep-1',
+        segmentSnippet: 'line(endAbsolute = [10, 0], tag = $e1)',
+        extrudeSnippet: 'extrude(length = 5, tagEnd = $cap1)',
+      })
+      const ranges = sourceRangesForCalls(ast, 'getCommonEdge')
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: 'edge-1',
+          sourceRange: ranges[0],
+          faceIds: facePair('wall-e1', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+        {
+          edgeId: 'edge-2',
+          sourceRange: ranges[1],
+          faceIds: facePair('wall-e1', 'cap-1'),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const refactored = refactorZ0006Unified(
+        ast,
+        metadata,
+        [],
+        graph,
+        wasmInstance,
+        ranges[0]
+      )
+
+      expect(err(refactored)).toBe(false)
+      if (err(refactored)) throw refactored
+      const n = norm(refactored)
+      expect(n).toContain('first = gdt::straightness(')
+      expect(n).toContain('edges = [{')
+      expect(n).toContain('sideFaces = [e1, cap1]')
+      expect(n).toContain('second = gdt::straightness(')
+      expect(n).toContain(
+        'second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], tolerance = 0.2mm)'
+      )
+    })
+
     it('refactors GD&T distance from/to with provided metadata without requiring engine execution', () => {
       const ast = assertParse(KCL_GDT_DISTANCE_GET_COMMON_EDGE, wasmInstance)
       const graph = defaultArtifactGraph()
