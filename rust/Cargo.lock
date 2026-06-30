@@ -110,7 +110,7 @@ version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -121,7 +121,7 @@ checksum = "291e6a250ff86cd4a820112fb8898808a366d8f9f58ce16d1f538353ad55747d"
 dependencies = [
  "anstyle",
  "once_cell_polyfill",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1002,9 +1002,9 @@ checksum = "e1d926b4d407d372f141f93bb444696142c29d32962ccbd3531117cf3aa0bfa9"
 
 [[package]]
 name = "either"
-version = "1.15.0"
+version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "48c757948c5ede0e46177b7add2e67155f70e33c07fea8284df6576da70b3719"
+checksum = "91622ff5e7162018101f2fea40d6ebf4a78bbe5a49736a2020649edf9693679e"
 
 [[package]]
 name = "embedded-io"
@@ -1113,7 +1113,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2198,7 +2198,7 @@ checksum = "3640c1c38b8e4e43584d8df18be5fc6b0aa314ce6ebf51b53313d4306cca8e46"
 dependencies = [
  "hermit-abi",
  "libc",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2289,7 +2289,7 @@ dependencies = [
  "parse-display 0.11.0",
  "parse-display-derive 0.11.0",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.23.0",
  "schemars",
  "serde",
  "ts-rs",
@@ -2434,7 +2434,7 @@ dependencies = [
  "pretty_assertions",
  "proptest",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.23.0",
  "rayon",
  "regex",
  "reqwest",
@@ -2479,7 +2479,7 @@ dependencies = [
  "kittycad-modeling-cmds",
  "miette",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.23.0",
  "serde",
  "serde_json",
  "tokio",
@@ -2604,7 +2604,7 @@ dependencies = [
  "parse-display 0.11.0",
  "parse-display-derive 0.11.0",
  "pyo3",
- "pyo3-stub-gen",
+ "pyo3-stub-gen 0.22.4",
  "schemars",
  "serde",
  "serde_bytes",
@@ -3087,7 +3087,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -3836,9 +3836,9 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen"
-version = "0.22.3"
+version = "0.22.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1242a6080f45edcfaf3be3b9968914dd47a408c5590aea22770b978f7c36ffa7"
+checksum = "fea98776c32736ebba63cc6dc3d4b5c67933446e39aa378a49b1652fb1e9a6cc"
 dependencies = [
  "anyhow",
  "chrono",
@@ -3852,7 +3852,33 @@ dependencies = [
  "numpy",
  "ordered-float",
  "pyo3",
- "pyo3-stub-gen-derive",
+ "pyo3-stub-gen-derive 0.22.4",
+ "rustpython-parser",
+ "serde",
+ "serde_json",
+ "time",
+ "toml",
+]
+
+[[package]]
+name = "pyo3-stub-gen"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a267ea4da9a831f534def7f1d8e14f581d5640d3e5af6527072724f216f4dbbf"
+dependencies = [
+ "anyhow",
+ "chrono",
+ "either",
+ "indexmap 2.14.0",
+ "inventory",
+ "itertools 0.14.0",
+ "log",
+ "maplit",
+ "num-complex",
+ "numpy",
+ "ordered-float",
+ "pyo3",
+ "pyo3-stub-gen-derive 0.23.0",
  "rustpython-parser",
  "serde",
  "serde_json",
@@ -3862,9 +3888,23 @@ dependencies = [
 
 [[package]]
 name = "pyo3-stub-gen-derive"
-version = "0.22.3"
+version = "0.22.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fd9a73abe6f57890e657c265b86805637138f83203e1a56bc156078abf215e36"
+checksum = "643db6033267fd2f875fc8970d76bef247bbcdfcffe3ea5c6cd40424024f6c89"
+dependencies = [
+ "heck",
+ "indexmap 2.14.0",
+ "proc-macro2",
+ "quote",
+ "rustpython-parser",
+ "syn 2.0.118",
+]
+
+[[package]]
+name = "pyo3-stub-gen-derive"
+version = "0.23.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6573423a5e8cc43ec7565eccccbc2dd35e1fc9032d9ca404afab875429eb8cf0"
 dependencies = [
  "heck",
  "indexmap 2.14.0",
@@ -4315,7 +4355,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.12.1",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4847,7 +4887,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5065,7 +5105,7 @@ dependencies = [
  "getrandom 0.4.1",
  "once_cell",
  "rustix 1.1.4",
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5074,7 +5114,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -6098,7 +6138,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
