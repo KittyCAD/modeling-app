@@ -1217,8 +1217,25 @@ function visitProgramExpressions(
   }
 }
 
+type Z0006SourceRange = [number, number, number]
+
+function sourceRangesOverlap(
+  a: Z0006SourceRange,
+  b: Z0006SourceRange
+): boolean {
+  return a[2] === b[2] && a[0] < b[1] && b[0] < a[1]
+}
+
+function filterCallsBySourceRange<T extends { range: Z0006SourceRange }>(
+  calls: T[],
+  sourceRange?: Z0006SourceRange
+): T[] {
+  if (!sourceRange) return calls
+  return calls.filter((call) => sourceRangesOverlap(call.range, sourceRange))
+}
+
 interface UnifiedCallToFix {
-  range: [number, number, number]
+  range: Z0006SourceRange
   orderedPayloads: FilletEdgeRefPayload[]
   hasExistingEdgeRefs: boolean
   tagsBaseExpr?: Expr | null
@@ -1329,7 +1346,7 @@ function findFilletChamferCallsToFixUnified(
 }
 
 interface RevolveHelixCallToFix {
-  range: [number, number, number]
+  range: Z0006SourceRange
   faceIds: [string, string]
   /** When range is 0,0 we use this path to find the call (fallback). */
   pathToCall?: PathToNode
@@ -1337,19 +1354,19 @@ interface RevolveHelixCallToFix {
 
 /** One entry per extrude call that has to = deprecated stdlib (e.g. getCommonEdge). */
 interface ExtrudeToCallToFix {
-  range: [number, number, number]
+  range: Z0006SourceRange
   faceIds: [string, string]
   pathToCall?: PathToNode
 }
 
 interface GdtEdgesCallToFix {
-  range: [number, number, number]
+  range: Z0006SourceRange
   orderedPayloads: FilletEdgeRefPayload[]
   pathToCall?: PathToNode
 }
 
 interface GdtDistanceEndpointCallToFix {
-  range: [number, number, number]
+  range: Z0006SourceRange
   endpoints: Array<{
     label: 'from' | 'to'
     payload: FilletEdgeRefPayload
@@ -1827,25 +1844,33 @@ export function refactorZ0006Unified(
   edgeRefactorMetadata: EdgeRefactorMeta[],
   directTagFilletMetadata: DirectTagFilletMeta[],
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  sourceRange?: Z0006SourceRange
 ): string | Error {
-  const toFixFC = findFilletChamferCallsToFixUnified(
-    ast,
-    edgeRefactorMetadata,
-    directTagFilletMetadata,
-    artifactGraph
+  const toFixFC = filterCallsBySourceRange(
+    findFilletChamferCallsToFixUnified(
+      ast,
+      edgeRefactorMetadata,
+      directTagFilletMetadata,
+      artifactGraph
+    ),
+    sourceRange
   )
-  const toFixRH = findRevolveHelixCallsToFix(ast, edgeRefactorMetadata)
-  const toFixET = findExtrudeToCallsToFix(ast, edgeRefactorMetadata)
-  const toFixGdtEdges = findGdtEdgesCallsToFix(
-    ast,
-    edgeRefactorMetadata,
-    artifactGraph
+  const toFixRH = filterCallsBySourceRange(
+    findRevolveHelixCallsToFix(ast, edgeRefactorMetadata),
+    sourceRange
   )
-  const toFixGdtDistanceEndpoints = findGdtDistanceEndpointCallsToFix(
-    ast,
-    edgeRefactorMetadata,
-    artifactGraph
+  const toFixET = filterCallsBySourceRange(
+    findExtrudeToCallsToFix(ast, edgeRefactorMetadata),
+    sourceRange
+  )
+  const toFixGdtEdges = filterCallsBySourceRange(
+    findGdtEdgesCallsToFix(ast, edgeRefactorMetadata, artifactGraph),
+    sourceRange
+  )
+  const toFixGdtDistanceEndpoints = filterCallsBySourceRange(
+    findGdtDistanceEndpointCallsToFix(ast, edgeRefactorMetadata, artifactGraph),
+    sourceRange
   )
   if (
     toFixFC.length === 0 &&

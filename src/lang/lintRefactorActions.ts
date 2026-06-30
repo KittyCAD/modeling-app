@@ -140,10 +140,13 @@ function computeZ0006RefactorSource({
   edgeRefactorMetadata,
   directTagFilletMetadata,
   artifactGraph,
+  sourceRange,
 }: Omit<
   RefactorLintActionsParams,
   'lint' | 'rustContext' | 'shouldShowZ0005' | 'z0006RefactorCache'
->): string | null {
+> & {
+  sourceRange?: [number, number, number]
+}): string | null {
   if (
     !artifactGraph ||
     (!edgeRefactorMetadata?.length && !directTagFilletMetadata?.length)
@@ -156,7 +159,8 @@ function computeZ0006RefactorSource({
     edgeRefactorMetadata ?? [],
     directTagFilletMetadata ?? [],
     artifactGraph,
-    instance
+    instance,
+    sourceRange
   )
   const newSource = err(newSourceResult) ? null : newSourceResult.trim() || null
   const codeActuallyChanged =
@@ -168,9 +172,11 @@ async function getZ0006RefactorSource(
   params: Omit<
     RefactorLintActionsParams,
     'lint' | 'rustContext' | 'shouldShowZ0005'
-  >
+  > & {
+    sourceRange?: [number, number, number]
+  }
 ): Promise<string | null> {
-  if (!params.z0006RefactorCache) {
+  if (params.sourceRange || !params.z0006RefactorCache) {
     return computeZ0006RefactorSource(params)
   }
 
@@ -208,6 +214,7 @@ async function createZ0006Actions({
     edgeRefactorMetadata,
     directTagFilletMetadata,
     artifactGraph,
+    sourceRange: [lint.pos[0], lint.pos[1], lint.pos[2] ?? 0],
     z0006RefactorCache,
   })
   if (!newSource) return {}
@@ -215,7 +222,7 @@ async function createZ0006Actions({
   return {
     actions: [
       {
-        name: 'Convert to edge specifiers',
+        name: 'Convert this edge reference to edge specifiers',
         apply: (view: EditorView, _from: number, _to: number) => {
           try {
             view.dispatch({
