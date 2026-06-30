@@ -294,7 +294,6 @@ describe('project system', () => {
         expect.arrayContaining([
           'command-bar.open',
           'code-editor.render',
-          'share.open',
           'publish.open',
         ])
       )

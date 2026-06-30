@@ -71,3 +71,5 @@ venv
 .biome/
 .million
 .cursor
+
+SPECIFICATION.txt
