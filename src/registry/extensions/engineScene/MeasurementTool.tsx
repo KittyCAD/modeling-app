@@ -10,7 +10,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
+import { isArray, uuidv4 } from '@src/lib/utils'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   type DistanceMode,
@@ -22,7 +22,6 @@ import {
   getDistanceTypeForMode,
   getMeasurementEntities,
   getVolumeUnit,
-  pointDistance,
 } from './measurementUtils'
 
 type MeasurementStatus = 'idle' | 'measuring'
@@ -62,12 +61,16 @@ type MeasurementResult =
       entityIdsKey: string
     }
 
+type ModelingDataResult =
+  | { type: 'data'; data: unknown }
+  | { type: 'error'; error: Error }
+
 function getResponseErrorMessage(response: unknown): string {
   if (response instanceof Error) {
     return response.message
   }
 
-  if (Array.isArray(response)) {
+  if (isArray(response)) {
     const errorMessage = response.find(
       (item) => typeof item?.errors?.[0]?.message === 'string'
     )?.errors?.[0]?.message
@@ -118,7 +121,7 @@ function getMeasureButtonTitle(
   }
 
   if (target?.type === 'edgeLength') {
-    return 'Measure straight-line edge length'
+    return 'Measure edge length'
   }
 
   if (target?.type === 'surfaceArea') {
@@ -136,17 +139,23 @@ function getMeasureButtonTitle(
   return 'Select one measurable entity or two entities'
 }
 
-function getModelingData(response: unknown, expectedType: string): unknown {
+function getModelingData(
+  response: unknown,
+  expectedType: string
+): ModelingDataResult {
   if (!isModelingResponse(response)) {
-    throw new Error(getResponseErrorMessage(response))
+    return {
+      type: 'error',
+      error: new Error(getResponseErrorMessage(response)),
+    }
   }
 
   const modelingResponse = response.resp.data.modeling_response
   if (modelingResponse.type !== expectedType || !('data' in modelingResponse)) {
-    throw new Error('Measurement failed')
+    return { type: 'error', error: new Error('Measurement failed') }
   }
 
-  return modelingResponse.data
+  return { type: 'data', data: modelingResponse.data }
 }
 
 function MeasurementValue({
@@ -272,10 +281,10 @@ export function MeasurementTool() {
     setStatus('measuring')
     setErrorMessage(null)
 
-    async function runMeasurement(): Promise<MeasurementResult> {
+    async function runMeasurement(): Promise<MeasurementResult | Error> {
       if (targetForRequest.type === 'distance') {
         const [entityId1, entityId2] = targetForRequest.entityIds
-        const data = getModelingData(
+        const modelingData = getModelingData(
           await sendModelingCommand({
             type: 'entity_get_distance',
             entity_id1: entityId1,
@@ -284,6 +293,10 @@ export function MeasurementTool() {
           }),
           'entity_get_distance'
         )
+        if (modelingData.type === 'error') {
+          return modelingData.error
+        }
+        const { data } = modelingData
 
         if (
           typeof data !== 'object' ||
@@ -293,7 +306,7 @@ export function MeasurementTool() {
           typeof data.min_distance !== 'number' ||
           typeof data.max_distance !== 'number'
         ) {
-          throw new Error('Measurement failed')
+          return new Error('Measurement failed')
         }
 
         return {
@@ -306,33 +319,37 @@ export function MeasurementTool() {
       }
 
       if (targetForRequest.type === 'edgeLength') {
-        const data = getModelingData(
+        const modelingData = getModelingData(
           await sendModelingCommand({
-            type: 'curve_get_end_points',
-            curve_id: targetForRequest.entity.id,
+            type: 'edge_get_length',
+            edge_id: targetForRequest.entity.id,
           }),
-          'curve_get_end_points'
+          'edge_get_length'
         )
+        if (modelingData.type === 'error') {
+          return modelingData.error
+        }
+        const { data } = modelingData
 
         if (
           typeof data !== 'object' ||
           data === null ||
-          !('start' in data) ||
-          !('end' in data)
+          !('length' in data) ||
+          typeof data.length !== 'number'
         ) {
-          throw new Error('Measurement failed')
+          return new Error('Measurement failed')
         }
 
         return {
           type: 'edgeLength',
-          length: pointDistance(data.start as Point3d, data.end as Point3d),
+          length: data.length,
           entityIdsKey: selectedEntityIdsKey,
           unit,
         }
       }
 
       if (targetForRequest.type === 'surfaceArea') {
-        const data = getModelingData(
+        const modelingData = getModelingData(
           await sendModelingCommand({
             type: 'surface_area',
             entity_ids: [targetForRequest.entity.id],
@@ -340,6 +357,10 @@ export function MeasurementTool() {
           }),
           'surface_area'
         )
+        if (modelingData.type === 'error') {
+          return modelingData.error
+        }
+        const { data } = modelingData
 
         if (
           typeof data !== 'object' ||
@@ -347,7 +368,7 @@ export function MeasurementTool() {
           !('surface_area' in data) ||
           typeof data.surface_area !== 'number'
         ) {
-          throw new Error('Measurement failed')
+          return new Error('Measurement failed')
         }
 
         return {
@@ -370,11 +391,19 @@ export function MeasurementTool() {
           output_unit: unit,
         }),
       ])
-      const volumeData = getModelingData(volumeResponse, 'volume')
-      const centerOfMassData = getModelingData(
+      const volumeModelingData = getModelingData(volumeResponse, 'volume')
+      const centerOfMassModelingData = getModelingData(
         centerOfMassResponse,
         'center_of_mass'
       )
+      if (volumeModelingData.type === 'error') {
+        return volumeModelingData.error
+      }
+      if (centerOfMassModelingData.type === 'error') {
+        return centerOfMassModelingData.error
+      }
+      const { data: volumeData } = volumeModelingData
+      const { data: centerOfMassData } = centerOfMassModelingData
 
       if (
         typeof volumeData !== 'object' ||
@@ -385,7 +414,7 @@ export function MeasurementTool() {
         centerOfMassData === null ||
         !('center_of_mass' in centerOfMassData)
       ) {
-        throw new Error('Measurement failed')
+        return new Error('Measurement failed')
       }
 
       return {
@@ -401,6 +430,10 @@ export function MeasurementTool() {
     runMeasurement()
       .then((measurementResult) => {
         if (latestRequestKey.current === requestKey) {
+          if (measurementResult instanceof Error) {
+            setErrorMessage(getResponseErrorMessage(measurementResult))
+            return
+          }
           setResult(measurementResult)
         }
       })
@@ -520,7 +553,7 @@ export function MeasurementTool() {
         {matchingResult?.type === 'edgeLength' && (
           <div className="grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80">
             <MeasurementValue
-              label="Straight length"
+              label="Length"
               value={matchingResult.length}
               unit={matchingResult.unit}
             />

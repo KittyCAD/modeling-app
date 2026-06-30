@@ -9,7 +9,6 @@ import {
   getMeasurementEntities,
   getMeasurementEntityIds,
   getVolumeUnit,
-  pointDistance,
 } from './measurementUtils'
 
 describe('MeasurementTool helpers', () => {
@@ -222,8 +221,7 @@ describe('MeasurementTool helpers', () => {
     expect(getVolumeUnit('ft')).toBe('ft3')
   })
 
-  it('measures and formats 3d points', () => {
-    expect(pointDistance({ x: 0, y: 0, z: 0 }, { x: 2, y: 3, z: 6 })).toBe(7)
+  it('formats 3d points', () => {
     expect(formatPoint3d({ x: 1.23456, y: 0.00000012, z: Number.NaN })).toBe(
       '1.2346, 1.200e-7, -'
     )

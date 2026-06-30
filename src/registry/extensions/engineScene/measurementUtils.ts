@@ -200,10 +200,6 @@ export function getVolumeUnit(unit: UnitLength): UnitVolume {
   return volumeUnitByLengthUnit[unit]
 }
 
-export function pointDistance(start: Point3d, end: Point3d): number {
-  return Math.hypot(end.x - start.x, end.y - start.y, end.z - start.z)
-}
-
 export function formatDistance(value: number): string {
   if (!Number.isFinite(value)) {
     return '-'
