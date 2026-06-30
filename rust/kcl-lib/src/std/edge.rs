@@ -614,6 +614,19 @@ async fn resolve_edge_specifiers_with_face_tags(
         end_face_groups.push(resolve_as_face_ids(value, solid, exec_state, args).await?);
     }
 
+    // Before computing all combinations, count them. If there would be too
+    // many, generate a fatal error so that we don't get stuck doing large
+    // work on pathological input.
+    let side_face_count = side_face_groups.iter().map(Vec::len).fold(1, usize::saturating_mul);
+    let end_face_count = end_face_groups.iter().map(Vec::len).fold(1, usize::saturating_mul);
+    let total_combinations = side_face_count.saturating_mul(end_face_count);
+    if total_combinations > 256 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "This edge specifier is too ambiguous. The maximum number of effective edges specified has been exceeded. Either specify fewer faces or use faces that have been split fewer times.".to_owned(),
+            vec![args.source_range],
+        )));
+    }
+
     // TODO(face-api): Once modeling-commands can represent grouped logical face
     // references, pass these groups through as one engine payload instead of
     // expanding them into several flat EdgeSpecifier payloads.
@@ -643,8 +656,16 @@ async fn resolve_edge_specifiers_with_face_tags(
     Ok(references)
 }
 
+/// Computes the Cartesian product of a list of groups of face UUIDs. Given N
+/// groups, it returns every way of picking exactly one UUID from each group,
+/// preserving positional order.
+///
+/// ```ignore
+/// face_id_combinations([[a, b], [c, d]])  ->  [[a, c], [a, d], [b, c], [b, d]]
+/// ```
 fn face_id_combinations(groups: &[Vec<Uuid>]) -> Vec<Vec<Uuid>> {
     if groups.is_empty() {
+        // Callers expect at least one element in the outer Vec.
         return vec![Vec::new()];
     }
 
