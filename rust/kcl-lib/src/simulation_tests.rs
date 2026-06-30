@@ -6324,7 +6324,7 @@ mod fillet_ambiguous_region_edge_specifier {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod fillet_ambiguous_region_edge_specifier_broad {
@@ -6345,7 +6345,7 @@ mod fillet_ambiguous_region_edge_specifier_broad {
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
     async fn kcl_test_execute() {
-        super::execute(TEST_NAME, false).await
+        super::execute(TEST_NAME, true).await
     }
 }
 mod gdt_face_api_edge_specifier {
