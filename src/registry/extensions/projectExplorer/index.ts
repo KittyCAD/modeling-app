@@ -7,10 +7,9 @@ import {
   projectExplorerProjectMenuItemsValueSpec,
   projectExplorerRowContextMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 
-const revealInFileExplorerItems = defineRegistryItem({
-  id: 'reveal-in-file-explorer.items',
+const projectExplorerExtension = defineRegistryItem({
+  id: 'project-explorer',
   provides: [
     provide(
       projectExplorerProjectMenuItemsValueSpec,
@@ -40,13 +39,4 @@ const revealInFileExplorerItems = defineRegistryItem({
   ],
 })
 
-const revealInFileExplorerPlugin = createZdsPlugin({
-  id: 'reveal-in-file-explorer',
-  title: 'Reveal in file explorer',
-  description:
-    'Adds project and file tree menu actions for opening items in the system file manager.',
-  items: [revealInFileExplorerItems],
-  defaultSetting: 'core',
-})
-
-export default revealInFileExplorerPlugin
+export default projectExplorerExtension

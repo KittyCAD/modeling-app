@@ -8,6 +8,7 @@ const originalElectron = window.electron
 
 afterEach(() => {
   window.electron = originalElectron
+  vi.restoreAllMocks()
 })
 
 describe('revealInFileExplorer', () => {
@@ -18,6 +19,7 @@ describe('revealInFileExplorer', () => {
   })
 
   it('uses the Electron file manager reveal bridge', () => {
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     const showInFolder = vi.fn()
     window.electron = {
       showInFolder,
@@ -28,5 +30,14 @@ describe('revealInFileExplorer', () => {
     revealInFileExplorer('/project/main.kcl')
 
     expect(showInFolder).toHaveBeenCalledWith('/project/main.kcl')
+  })
+
+  it('hides reveal support outside the desktop app', () => {
+    const showInFolder = vi.fn()
+    window.electron = {
+      showInFolder,
+    } as unknown as Window['electron']
+
+    expect(canRevealInFileExplorer()).toBe(false)
   })
 })

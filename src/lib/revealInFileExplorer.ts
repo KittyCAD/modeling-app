@@ -1,7 +1,9 @@
+import { isDesktop } from '@src/lib/isDesktop'
 import { reportRejection } from '@src/lib/trap'
 
 export function canRevealInFileExplorer() {
   return (
+    isDesktop() &&
     typeof window !== 'undefined' &&
     typeof window.electron?.showInFolder === 'function'
   )
