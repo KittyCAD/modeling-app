@@ -14,6 +14,9 @@ import {
   engineSceneStreamLayersValueSpec,
 } from '@src/registry/contracts/engineScene'
 import {
+  ZOODLE_BRUSH_SIZE_DEFAULT_PX,
+  ZOODLE_BRUSH_SIZE_MAX_PX,
+  ZOODLE_BRUSH_SIZE_MIN_PX,
   type ZoodleService,
   type ZoodleToolKey,
   defaultZoodleToolKey,
@@ -34,14 +37,30 @@ const zoodleStreamStackClassName = defineEngineSceneStreamClassName({
     'inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
 })
 
+const clampZoodleBrushSize = (brushSize: number) => {
+  const finiteBrushSize = Number.isFinite(brushSize)
+    ? brushSize
+    : ZOODLE_BRUSH_SIZE_DEFAULT_PX
+
+  return Math.min(
+    ZOODLE_BRUSH_SIZE_MAX_PX,
+    Math.max(ZOODLE_BRUSH_SIZE_MIN_PX, finiteBrushSize)
+  )
+}
+
 function createZoodleService(): ZoodleService {
   const activeToolKey = signal<ZoodleToolKey>(defaultZoodleToolKey)
+  const brushSize = signal(ZOODLE_BRUSH_SIZE_DEFAULT_PX)
 
   return {
     toolDefinitions: zoodleToolDefinitions,
     activeToolKey,
+    brushSize,
     equipTool(toolKey) {
       activeToolKey.value = toolKey
+    },
+    setBrushSize(nextBrushSize) {
+      brushSize.value = clampZoodleBrushSize(nextBrushSize)
     },
   }
 }

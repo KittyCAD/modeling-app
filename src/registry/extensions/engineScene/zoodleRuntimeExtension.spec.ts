@@ -5,7 +5,12 @@ import {
   engineSceneStreamLayersValueSpec,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
-import { zoodleService } from '@src/registry/contracts/zoodle'
+import {
+  ZOODLE_BRUSH_SIZE_DEFAULT_PX,
+  ZOODLE_BRUSH_SIZE_MAX_PX,
+  ZOODLE_BRUSH_SIZE_MIN_PX,
+  zoodleService,
+} from '@src/registry/contracts/zoodle'
 import { describe, expect, it, vi } from 'vitest'
 import engineSceneExtension from '.'
 import { activateZoodleRuntimeExtension } from './zoodleRuntimeExtension'
@@ -50,6 +55,7 @@ describe('zoodle runtime extension', () => {
     const zoodle = registry.get(zoodleService)
 
     expect(zoodle.activeToolKey.value).toBe('drawOrange')
+    expect(zoodle.brushSize.value).toBe(ZOODLE_BRUSH_SIZE_DEFAULT_PX)
     expect(zoodle.toolDefinitions.drawOrange).toMatchObject({
       type: 'draw',
       color: '#ff8800',
@@ -72,5 +78,11 @@ describe('zoodle runtime extension', () => {
     zoodle.equipTool('erase')
 
     expect(zoodle.activeToolKey.value).toBe('erase')
+
+    zoodle.setBrushSize(ZOODLE_BRUSH_SIZE_MAX_PX + 1)
+    expect(zoodle.brushSize.value).toBe(ZOODLE_BRUSH_SIZE_MAX_PX)
+
+    zoodle.setBrushSize(ZOODLE_BRUSH_SIZE_MIN_PX - 1)
+    expect(zoodle.brushSize.value).toBe(ZOODLE_BRUSH_SIZE_MIN_PX)
   })
 })

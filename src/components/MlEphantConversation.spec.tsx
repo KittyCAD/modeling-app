@@ -65,6 +65,7 @@ import {
   engineSceneRuntimeExtensionsSlot,
   engineSceneStreamLayersValueSpec,
 } from '@src/registry/contracts/engineScene'
+import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
 
 const configureTestRegistry = () => {
   const registry = new Registry()
@@ -1128,6 +1129,29 @@ describe('MlEphantConversation', () => {
         expect(
           screen.getByTestId('viewport-annotation-tool-drawOrange')
         ).toHaveAttribute('aria-pressed', 'true')
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-slider')
+        ).toHaveValue(String(ZOODLE_BRUSH_SIZE_DEFAULT_PX))
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-dot')
+        ).toHaveStyle({
+          width: `${ZOODLE_BRUSH_SIZE_DEFAULT_PX}px`,
+          height: `${ZOODLE_BRUSH_SIZE_DEFAULT_PX}px`,
+        })
+
+        fireEvent.change(
+          screen.getByTestId('viewport-annotation-brush-size-slider'),
+          {
+            target: { value: '6' },
+          }
+        )
+
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-slider')
+        ).toHaveValue('6')
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-dot')
+        ).toHaveStyle({ width: '6px', height: '6px' })
 
         fireEvent.click(screen.getByTestId('viewport-annotation-tool-erase'))
 

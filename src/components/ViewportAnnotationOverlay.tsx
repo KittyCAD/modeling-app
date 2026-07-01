@@ -1,6 +1,7 @@
 import { useSignals } from '@preact/signals-react/runtime'
-import { getTrimPreviewLineWidth } from '@src/lib/freehandLineDrawing'
 import {
+  ZOODLE_BRUSH_SIZE_MAX_PX,
+  ZOODLE_BRUSH_SIZE_MIN_PX,
   type ZoodleDrawToolDefinition,
   type ZoodleService,
   type ZoodleToolDefinition,
@@ -80,6 +81,8 @@ const toolbarButtonClassName =
 
 interface ZoodleToolbarProps {
   activeToolKey: ZoodleToolKey
+  activeTool: ZoodleToolDefinition
+  brushSize: number
   disabledSend: boolean
   onCancel: () => void
   onClear: () => void
@@ -121,6 +124,42 @@ const ZoodleToolbar = (props: ZoodleToolbarProps) => (
             </button>
           )
         })}
+      </div>
+      <div className="flex shrink-0 items-center justify-center gap-2 px-1">
+        <span
+          className="flex h-5 w-5 shrink-0 items-center justify-center"
+          aria-hidden="true"
+        >
+          <span
+            data-testid="viewport-annotation-brush-size-dot"
+            className={`rounded-full border border-chalkboard-100/40 dark:border-chalkboard-10/40 ${
+              props.activeTool.type === 'draw'
+                ? getDrawToolColorClassName(props.activeTool)
+                : 'text-default'
+            }`}
+            style={{
+              width: `${props.brushSize}px`,
+              height: `${props.brushSize}px`,
+              backgroundColor:
+                props.activeTool.type === 'draw'
+                  ? props.activeTool.color
+                  : 'currentColor',
+            }}
+          />
+        </span>
+        <input
+          type="range"
+          min={ZOODLE_BRUSH_SIZE_MIN_PX}
+          max={ZOODLE_BRUSH_SIZE_MAX_PX}
+          step="1"
+          value={props.brushSize}
+          aria-label="Brush size"
+          data-testid="viewport-annotation-brush-size-slider"
+          className="h-7 w-24 cursor-pointer accent-ml-green"
+          onChange={(event) => {
+            props.zoodle.setBrushSize(Number(event.target.value))
+          }}
+        />
       </div>
       <div className="flex shrink-0 items-center justify-center gap-1">
         <button
@@ -166,6 +205,7 @@ export const ViewportAnnotationOverlay = (
   const lastPoint = useRef<{ x: number; y: number } | null>(null)
   const activeToolKey = props.zoodle.activeToolKey.value
   const activeTool = props.zoodle.toolDefinitions[activeToolKey]
+  const brushSize = props.zoodle.brushSize.value
   const [imageSize, setImageSize] = useState<{
     width: number
     height: number
@@ -223,7 +263,7 @@ export const ViewportAnnotationOverlay = (
         : '#000000'
     const lineWidthMultiplier =
       'lineWidthMultiplier' in activeTool ? activeTool.lineWidthMultiplier : 1
-    ctx.lineWidth = getTrimPreviewLineWidth(pixelRatio) * lineWidthMultiplier
+    ctx.lineWidth = brushSize * pixelRatio * lineWidthMultiplier
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
     ctx.beginPath()
@@ -341,6 +381,8 @@ export const ViewportAnnotationOverlay = (
       />
       <ZoodleToolbar
         activeToolKey={activeToolKey}
+        activeTool={activeTool}
+        brushSize={brushSize}
         disabledSend={!imageSize}
         onCancel={props.onCancel}
         onClear={clearDrawing}
