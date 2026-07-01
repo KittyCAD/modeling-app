@@ -453,6 +453,44 @@ describe('keymap extension', () => {
     registry[Symbol.dispose]()
   })
 
+  it('keeps editor focus priority while typing in the CodeMirror search field', () => {
+    const registry = createRegistryWithKeymapItems([
+      {
+        id: 'test.sketch-solve-line',
+        title: 'Test sketch solve line',
+        command: 'zds.settings.tab',
+        source: 'test',
+        keystrokes: ['l'],
+        scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+      },
+    ])
+    const keymap = registry.get(keymapService)
+    const editor = document.createElement('div')
+    const searchPanel = document.createElement('div')
+    const searchInput = document.createElement('input')
+
+    editor.className = 'cm-editor'
+    searchPanel.className = 'cm-panel cm-search'
+    searchPanel.append(searchInput)
+    editor.append(searchPanel)
+    document.body.append(editor)
+
+    keymap.applyScope(MODE_SKETCH_SOLVE_KEYMAP_SCOPE)
+    searchInput.dispatchEvent(new FocusEvent('focusin', { bubbles: true }))
+
+    expect(keymap.getCurrentScopes()).toContain(
+      CODE_EDITOR_FOCUSED_KEYMAP_SCOPE
+    )
+    expect(
+      keymap.handleKeyDown(createKeyboardEventWithTarget('l', searchInput), {
+        source: 'global',
+      })
+    ).toBe(false)
+
+    editor.remove()
+    registry[Symbol.dispose]()
+  })
+
   it('accepts JSON-style keymap document contributions', () => {
     const keymapSlot = new Slot()
     const registry = new Registry()
