@@ -601,6 +601,23 @@ pub(crate) async fn resolve_edge_specifier_with_face_tags(
 
 const MAX_EDGE_COMBINATIONS: usize = 256;
 
+/// Multiply group sizes into the number of combinations in their Cartesian
+/// product. Saturates at `usize::MAX` instead of overflowing, so a pathological
+/// product can't wrap around to a small value and slip under the limit check.
+fn combination_count(group_sizes: impl IntoIterator<Item = usize>) -> usize {
+    group_sizes.into_iter().fold(1, usize::saturating_mul)
+}
+
+/// Whether expanding the side/end face groups into concrete edge references
+/// would exceed `MAX_EDGE_COMBINATIONS`. Each axis is checked on its own in
+/// addition to the product: an empty group makes the product zero, which would
+/// otherwise mask a large count on the opposite axis.
+fn edge_combinations_exceed_limit(side_face_count: usize, end_face_count: usize) -> bool {
+    side_face_count > MAX_EDGE_COMBINATIONS
+        || end_face_count > MAX_EDGE_COMBINATIONS
+        || side_face_count.saturating_mul(end_face_count) > MAX_EDGE_COMBINATIONS
+}
+
 async fn resolve_edge_specifiers_with_face_tags(
     unresolved: &UnresolvedEdgeSpecifier,
     solid: Option<&Solid>,
@@ -619,15 +636,9 @@ async fn resolve_edge_specifiers_with_face_tags(
     // Before computing all combinations, count them. If there would be too
     // many, generate a fatal error so that we don't get stuck doing large
     // work on pathological input.
-    let side_face_count = side_face_groups.iter().map(Vec::len).fold(1, usize::saturating_mul);
-    let end_face_count = end_face_groups.iter().map(Vec::len).fold(1, usize::saturating_mul);
-    let total_combinations = side_face_count.saturating_mul(end_face_count);
-    // We need to check all of them in case one is zero. It would make the total
-    // zero.
-    if side_face_count > MAX_EDGE_COMBINATIONS
-        || end_face_count > MAX_EDGE_COMBINATIONS
-        || total_combinations > MAX_EDGE_COMBINATIONS
-    {
+    let side_face_count = combination_count(side_face_groups.iter().map(Vec::len));
+    let end_face_count = combination_count(end_face_groups.iter().map(Vec::len));
+    if edge_combinations_exceed_limit(side_face_count, end_face_count) {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "This edge specifier is too ambiguous. The maximum number of effective edges specified has been exceeded. Either specify fewer faces or use faces that have been split fewer times.".to_owned(),
             vec![args.source_range],
@@ -849,4 +860,102 @@ pub(crate) async fn resolve_unresolved_edge_specifier(
         .end_faces(end_faces)
         .maybe_index(unresolved.index)
         .build())
+}
+
+#[cfg(test)]
+mod tests {
+    use uuid::Uuid;
+
+    use super::MAX_EDGE_COMBINATIONS;
+    use super::combination_count;
+    use super::edge_combinations_exceed_limit;
+    use super::face_id_combinations;
+
+    #[test]
+    fn face_id_combinations_empty_input_is_one_empty_combination() {
+        // The product of zero groups is a single empty tuple, not zero tuples.
+        // Callers rely on this so that an absent endFaces still yields one
+        // iteration rather than dropping every reference.
+        assert_eq!(face_id_combinations(&[]), vec![Vec::<Uuid>::new()]);
+    }
+
+    #[test]
+    fn face_id_combinations_empty_group_annihilates() {
+        // A single zero-length group collapses the whole product to nothing.
+        let a = Uuid::from_u128(1);
+        assert_eq!(face_id_combinations(&[vec![a], vec![]]), Vec::<Vec<Uuid>>::new());
+    }
+
+    #[test]
+    fn face_id_combinations_is_ordered_cartesian_product() {
+        let (a, b, c, d) = (
+            Uuid::from_u128(1),
+            Uuid::from_u128(2),
+            Uuid::from_u128(3),
+            Uuid::from_u128(4),
+        );
+        assert_eq!(
+            face_id_combinations(&[vec![a, b], vec![c, d]]),
+            vec![vec![a, c], vec![a, d], vec![b, c], vec![b, d]],
+        );
+    }
+
+    #[test]
+    fn combination_count_is_product_of_group_sizes() {
+        assert_eq!(combination_count(std::iter::empty::<usize>()), 1); // empty product
+        assert_eq!(combination_count([1usize, 1, 1]), 1);
+        assert_eq!(combination_count([2usize, 3, 4]), 24);
+    }
+
+    #[test]
+    fn combination_count_with_empty_group_is_zero() {
+        assert_eq!(combination_count([5usize, 0, 5]), 0);
+    }
+
+    #[test]
+    fn combination_count_saturates_instead_of_overflowing() {
+        // Must pin at usize::MAX rather than wrapping to a small value, which
+        // would let a huge product slip under the limit.
+        assert_eq!(combination_count([usize::MAX, 2]), usize::MAX);
+        assert_eq!(combination_count([usize::MAX, usize::MAX]), usize::MAX);
+    }
+
+    #[test]
+    fn within_limit_is_allowed() {
+        assert!(!edge_combinations_exceed_limit(1, 1));
+        // Exactly at the limit on a single axis is allowed.
+        assert!(!edge_combinations_exceed_limit(MAX_EDGE_COMBINATIONS, 1));
+        assert!(!edge_combinations_exceed_limit(1, MAX_EDGE_COMBINATIONS));
+    }
+
+    #[test]
+    fn one_past_the_limit_on_a_single_axis_is_rejected() {
+        assert!(edge_combinations_exceed_limit(MAX_EDGE_COMBINATIONS + 1, 1));
+        assert!(edge_combinations_exceed_limit(1, MAX_EDGE_COMBINATIONS + 1));
+    }
+
+    #[test]
+    fn product_of_two_in_range_axes_still_exceeds_limit() {
+        // 16 and 17 are each within the limit but 16 * 17 = 272 is not, so the
+        // product check is needed in addition to the per-axis checks.
+        assert!(edge_combinations_exceed_limit(16, 17));
+    }
+
+    #[test]
+    fn large_axis_is_rejected_even_when_the_other_axis_is_zero() {
+        // Regression for the zero case: an empty group zeroes the product, so
+        // without the per-axis checks the huge opposite axis would still be
+        // expanded.
+        assert_eq!((MAX_EDGE_COMBINATIONS + 1).saturating_mul(0), 0);
+        assert!(edge_combinations_exceed_limit(MAX_EDGE_COMBINATIONS + 1, 0));
+        assert!(edge_combinations_exceed_limit(0, MAX_EDGE_COMBINATIONS + 1));
+    }
+
+    #[test]
+    fn saturated_count_is_rejected_without_overflowing() {
+        // A count that already saturated must be over the limit, and the final
+        // multiply must neither panic nor wrap.
+        assert!(edge_combinations_exceed_limit(usize::MAX, 2));
+        assert!(edge_combinations_exceed_limit(usize::MAX, usize::MAX));
+    }
 }
