@@ -184,22 +184,22 @@ async fn inner_chamfer(
             EdgeReference::Uuid(u) => *u,
             EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
         };
+        let tag_identifier = match edge_ref {
+            EdgeReference::Tag(t) => t.value.clone(),
+            EdgeReference::Uuid(_) => String::new(),
+        };
+        if tag_identifier.is_empty() {
+            exec_state.record_edge_refactor_meta_from_pending(edge_id, Some(solid.id), *source_range, None);
+            continue;
+        }
         if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
             && let [a, b] = face_ids.as_slice()
         {
-            let tag_identifier = match edge_ref {
-                EdgeReference::Tag(t) => t.value.clone(),
-                EdgeReference::Uuid(_) => String::new(),
-            };
-            if !tag_identifier.is_empty() {
-                tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                    tag_identifier,
-                    edge_id,
-                    face_ids: [*a, *b],
-                });
-            } else {
-                exec_state.record_edge_refactor_meta_from_pending(edge_id, *source_range, [*a, *b]);
-            }
+            tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                tag_identifier,
+                edge_id,
+                face_ids: [*a, *b],
+            });
         }
     }
     if !tag_entries.is_empty() {

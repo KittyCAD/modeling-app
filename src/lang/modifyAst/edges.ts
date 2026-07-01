@@ -1241,7 +1241,7 @@ function findFilletChamferCallsToFixUnified(
               const meta = edgeRefactorMetadata.find((m) =>
                 sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
-              if (meta) {
+              if (meta?.faceIds) {
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1283,7 +1283,7 @@ function findFilletChamferCallsToFixUnified(
                   deprecatedCall.call.moduleId
                 )
               )
-              if (meta) {
+              if (meta?.faceIds) {
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1384,7 +1384,7 @@ export function findRevolveHelixCallsToFix(
       const moduleId = call.moduleId
       const callStart = call.start
       const callEnd = call.end
-      if (meta) {
+      if (meta?.faceIds) {
         results.push({
           range: [callStart, callEnd, moduleId],
           faceIds: [meta.faceIds[0], meta.faceIds[1]],
@@ -1432,7 +1432,7 @@ export function findExtrudeToCallsToFix(
       const moduleId = call.moduleId
       const callStart = call.start
       const callEnd = call.end
-      if (meta) {
+      if (meta?.faceIds) {
         results.push({
           range: [callStart, callEnd, moduleId],
           faceIds: [meta.faceIds[0], meta.faceIds[1]],
@@ -1484,7 +1484,7 @@ export function findGdtEdgesCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta) {
+        if (!meta?.faceIds) {
           hasUnconvertedEdgesElement = true
           continue
         }
@@ -1539,7 +1539,7 @@ export function findGdtDistanceEndpointCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta) continue
+        if (!meta?.faceIds) continue
 
         endpoints.push({
           label,
