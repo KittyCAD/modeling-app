@@ -30,7 +30,7 @@
     "@csstools/postcss-oklab-function": "^4.0.12",
     "@headlessui/react": "^1.7.19",
     "@headlessui/tailwindcss": "^0.2.2",
-    "@kittycad/lib": "^4.2.16",
+    "@kittycad/lib": "^4.3.4",
     "@lezer/highlight": "^1.2.1",
     "@lezer/lr": "^1.4.10",
     "@microlink/react-json-view": "^1.31.20",

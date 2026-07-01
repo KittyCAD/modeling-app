@@ -30,6 +30,7 @@ import {
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -206,6 +207,10 @@ function ProjectMenuPopover({
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
+  const projectPath = project?.path
+  const contributedProjectMenuItems = app.registry.signal(
+    projectExplorerProjectMenuItemsValueSpec
+  ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const exportProjectZipCommandInfo = {
@@ -265,6 +270,35 @@ function ProjectMenuPopover({
           },
         },
         'break',
+        ...contributedProjectMenuItems.flatMap((item) => {
+          if (!projectPath) {
+            return []
+          }
+
+          const context = { projectPath }
+          if (item.isVisible && !item.isVisible(context)) {
+            return []
+          }
+
+          const disabled =
+            typeof item.disabled === 'function'
+              ? item.disabled(context)
+              : item.disabled
+
+          return [
+            {
+              id: item.id,
+              Element: 'button' as const,
+              children: (
+                <span className="flex-1" data-testid={item.dataTestId}>
+                  {item.label}
+                </span>
+              ),
+              disabled,
+              onClick: () => item.onSelect(context),
+            },
+          ]
+        }),
         {
           id: 'importFile',
           Element: 'button',
@@ -391,6 +425,8 @@ function ProjectMenuPopover({
       isDesktop,
       homeNavigationEnabled,
       cloudConflictMetadata,
+      projectPath,
+      contributedProjectMenuItems,
     ]
   )
 

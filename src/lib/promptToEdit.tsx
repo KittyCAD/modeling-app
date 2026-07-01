@@ -4,7 +4,7 @@ import type {
 } from '@kittycad/lib'
 import { getArtifactOfTypes } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
-import { parentPathRelativeToProject } from '@src/lib/paths'
+import { parentPathRelativeToProject, toWebSafePath } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
 import type {
@@ -29,7 +29,10 @@ export function activeFileRelativeToProject({
     currentFileEntry.path,
     applicationProjectDirectory
   )
-  return activeFile || undefined
+  // Normalize to forward slashes so the `active_file` sent to the ML/Zookeeper
+  // service matches the posix-keyed project files; parentPathRelativeToProject
+  // joins with the OS separator (backslashes on Windows).
+  return activeFile ? toWebSafePath(activeFile) : undefined
 }
 
 function sourceIndexToLineColumn(
