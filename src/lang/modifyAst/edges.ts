@@ -1178,8 +1178,25 @@ function filterCallsBySourceRange<T extends { range: Z0006SourceRange }>(
 interface UnifiedCallToFix {
   range: Z0006SourceRange
   orderedPayloads: FilletEdgeRefPayload[]
+  orderedEdgeRefExprs: Expr[]
   hasExistingEdgeRefs: boolean
   tagsBaseExpr?: Expr | null
+}
+
+function createEdgeRefFromGetCommonEdgeCall(
+  call: Node<CallExpressionKw>
+): Expr | null {
+  if (getCalleeName(call) !== 'getCommonEdge') return null
+
+  const facesArg = findKwArg('faces', call)
+  if (!facesArg || facesArg.type !== 'ArrayExpression') return null
+
+  const sideFaces = facesArg.elements ?? []
+  if (sideFaces.length === 0) return null
+
+  return createObjectExpression({
+    sideFaces: createArrayExpression(structuredClone(sideFaces)),
+  })
 }
 
 function findFilletChamferCallsToFixUnified(
@@ -1201,6 +1218,7 @@ function findFilletChamferCallsToFixUnified(
       const elements = getTagsElementsFromCall(call)
       const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
       const orderedPayloads: FilletEdgeRefPayload[] = []
+      const orderedEdgeRefExprs: Expr[] = []
       let tagsBaseExpr: Expr | null = null
       let hasUnconvertedTagsElement = false
 
@@ -1214,6 +1232,12 @@ function findFilletChamferCallsToFixUnified(
           if (inner) {
             const innerCallee = getCalleeName(inner)
             if (isDeprecatedEdgeStdlib(innerCallee)) {
+              const edgeRefExpr = createEdgeRefFromGetCommonEdgeCall(inner)
+              if (edgeRefExpr) {
+                orderedEdgeRefExprs.push(edgeRefExpr)
+                continue
+              }
+
               const meta = edgeRefactorMetadata.find((m) =>
                 sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
@@ -1274,15 +1298,19 @@ function findFilletChamferCallsToFixUnified(
           }
         }
       }
+
       if (
         elements?.length &&
         !hasUnconvertedTagsElement &&
-        (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0)
+        (orderedPayloads.length > 0 ||
+          orderedEdgeRefExprs.length > 0 ||
+          existingEdgeRefExprs.length > 0)
       ) {
         const moduleId = call.moduleId
         results.push({
           range: [call.start, call.end, moduleId],
           orderedPayloads,
+          orderedEdgeRefExprs,
           hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
           tagsBaseExpr: tagsBaseExpr ?? undefined,
         })
@@ -1771,12 +1799,13 @@ export function refactorZ0006Unified(
   for (const {
     range,
     orderedPayloads,
+    orderedEdgeRefExprs,
     hasExistingEdgeRefs,
     tagsBaseExpr,
   } of toFixFilletChamfer) {
     let nextAst = structuredClone(modifiedAst)
     const path = getNodePathFromSourceRange(nextAst, range)
-    const edgeRefExprs: Expr[] = []
+    const edgeRefExprs: Expr[] = structuredClone(orderedEdgeRefExprs)
     let failedToCreateEdgeRef = false
     for (const payload of orderedPayloads) {
       const result = createEdgeRefObjectExpression(
