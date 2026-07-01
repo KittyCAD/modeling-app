@@ -526,6 +526,11 @@ export const modelingCommandStdLibDriftConfig = {
       edges: 'objects',
     },
   },
+  'GDT Note': {
+    stdLibName: 'gdt::note',
+    editFlow: true,
+    flowArgOrder: ['note'],
+  },
   'Boolean Subtract': {
     stdLibName: 'subtract',
     flowArgOrder: ['solids', 'tools'],

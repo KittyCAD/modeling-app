@@ -224,6 +224,10 @@ export type GdtRunoutCommandArgs = GdtObjectsCommandArgs<'gdt::runout'>
 export type GdtParallelismCommandArgs =
   GdtObjectsCommandArgs<'gdt::parallelism'>
 export type GdtAnnotationCommandArgs = GdtObjectsCommandArgs<'gdt::annotation'>
+export type GdtNoteCommandArgs = Override<
+  StdLibCommandArgs<'gdt::note'>,
+  GdtFrameArgs
+>
 export type GdtDatumCommandArgs = Override<
   Omit<StdLibCommandArgs<'gdt::datum'>, 'face'>,
   { faces: Selections } & GdtFrameArgs
@@ -294,6 +298,7 @@ export type StdLibModelingCommandSchema = {
   'GDT Runout': GdtRunoutCommandArgs
   'GDT Parallelism': GdtParallelismCommandArgs
   'GDT Annotation': GdtAnnotationCommandArgs
+  'GDT Note': GdtNoteCommandArgs
   'GDT Datum': GdtDatumCommandArgs
   'Boolean Subtract': BooleanSubtractCommandArgs
   'Boolean Union': BooleanUnionCommandArgs

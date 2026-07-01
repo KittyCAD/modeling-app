@@ -2113,6 +2113,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
     ),
   },
+  'GDT Note': {
+    description: 'Add a free-floating model-based definition note on a plane.',
+    icon: 'note',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Note']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Note']>(
+      'GDT Note',
+      {
+        overrides: {
+          note: {
+            inputType: 'text',
+            defaultValue: 'Note:',
+          },
+          framePosition: gdtFrameDisplayArgOverrides.framePosition,
+          framePlane: gdtFrameDisplayArgOverrides.framePlane,
+          fontSize: gdtFrameDisplayArgOverrides.fontSize,
+        },
+      }
+    ),
+  },
   'Flip Surface': {
     description:
       'Flips the orientation of a surface, swapping which side is the front and which is the reverse.',
