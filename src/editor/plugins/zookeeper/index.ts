@@ -419,9 +419,7 @@ async function prepareZookeeperSnapshotReplay(
         : snapshotFile.nextContent
     const diskContent = await readTextFileIfExists(snapshotFile.absolutePath)
     const currentContent =
-      diskContent === null
-        ? null
-        : (fileContentOverrides?.get(snapshotFile.absolutePath) ?? diskContent)
+      fileContentOverrides?.get(snapshotFile.absolutePath) ?? diskContent
 
     if (isZookeeperReplayContentSame(currentContent, previousContent)) {
       preparedReplayFiles.push({
