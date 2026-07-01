@@ -1073,6 +1073,38 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
       expect(result.message).toContain('No Z0006 fixes to apply')
     })
 
+    it('refactors getCommonEdge in function bodies without execution metadata', () => {
+      const code = `fn bracket() {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> xLine(length = 10, tag = $baseInside)
+    |> yLine(length = 10, tag = $hookInside)
+    |> close()
+  body = extrude(profile, length = 5)
+    |> fillet(
+         radius = 1,
+         tags = [
+           getCommonEdge(faces = [baseInside, hookInside])
+         ],
+       )
+  return body
+}
+part = bracket()
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+
+      const result = refactorZ0006Unified(ast, [], [], graph, wasmInstance)
+
+      expect(err(result)).toBe(false)
+      if (err(result)) throw result
+      const n = norm(result)
+      expect(n).toContain('fillet(')
+      expect(n).toContain('edges = [')
+      expect(n).toContain('sideFaces = [baseInside, hookInside]')
+      expect(n).not.toContain('getCommonEdge')
+    })
+
     it('does not migrate a nested fillet tag variable using a shadowed top-level edge helper', () => {
       const code = KCL_SHADOWED_EDGE_HELPER_VARIABLE
       const ast = assertParse(code, wasmInstance)

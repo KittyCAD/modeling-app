@@ -3,6 +3,7 @@ import { EditorSelection } from '@codemirror/state'
 import type {
   Point2d,
   QueryEntityTypeWithPoint,
+  RegionGetResolvableIntersectionInfo,
   WebSocketRequest,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -61,7 +62,9 @@ import {
   getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getOriginalSegmentArtifact,
   getPatternArtifactForCopyId,
+  getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSolid2dCodeRef,
   getSweepArtifactFromSelection,
@@ -237,8 +240,28 @@ async function resolveSweepParentEntityIdForEdge(
   return undefined
 }
 
+async function getResolvableIntersectionInfoForRegion(
+  regionId: ArtifactId,
+  engineCommandManager: ConnectionManager
+): Promise<RegionGetResolvableIntersectionInfo | null> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'region_get_resolvable_intersection_info',
+      region_id: regionId,
+    },
+  })
+  if (!isModelingResponse(response)) return null
+  const regionInfoResponse = response.resp.data.modeling_response
+  if (regionInfoResponse.type !== 'region_get_resolvable_intersection_info') {
+    return null
+  }
+  return regionInfoResponse.data
+}
+
 async function getRegionQueryPointForRegion(
-  regionId: string,
+  regionId: ArtifactId,
   engineCommandManager: ConnectionManager
 ): Promise<Point2d | null> {
   const response = await engineCommandManager.sendSceneCommand({
@@ -255,29 +278,27 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data?.query_point ?? null
 }
 
-export async function getEngineRegionSelectionFromEntity(
-  regionEntityId: string,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  engineCommandManager: ConnectionManager,
-  wasmInstance: ModuleType
-): Promise<EngineRegionSelection | null> {
-  const queryPointMm = await getRegionQueryPointForRegion(
-    regionEntityId,
-    engineCommandManager
-  )
-  if (!queryPointMm) return null
-  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
-  const settings = getSettingsAnnotation(ast, wasmInstance)
-  const lengthUnit =
-    !isErr(settings) && settings.defaultLengthUnit
-      ? settings.defaultLengthUnit
-      : DEFAULT_DEFAULT_LENGTH_UNIT
-  const point: Point2d = {
-    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
-    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+function getSketchIdForRegionInfo(
+  regionInfo: RegionGetResolvableIntersectionInfo,
+  artifactGraph: ArtifactGraph
+): ArtifactId | null {
+  const segmentIds = [regionInfo.segment, regionInfo.intersection_segment]
+  for (const segmentId of segmentIds) {
+    const segment = getOriginalSegmentArtifact(segmentId, artifactGraph)
+    if (!segment) continue
+
+    const sketch = getSketchBlockForArtifact(segment, artifactGraph)
+    if (sketch) return sketch.id
   }
 
+  return null
+}
+
+async function getSketchIdForEngineRegionEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<ArtifactId | null> {
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
     engineCommandManager
@@ -288,13 +309,63 @@ export async function getEngineRegionSelectionFromEntity(
   if (!path || path.type !== 'path') return null
 
   const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
-  if (!sketch) return null
+  return sketch?.id ?? null
+}
+
+export async function getEngineRegionSelectionFromEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  engineCommandManager: ConnectionManager,
+  wasmInstance: ModuleType,
+  useSegmentsBasedRegions = false
+): Promise<EngineRegionSelection | null> {
+  if (!useSegmentsBasedRegions) {
+    const queryPointMm = await getRegionQueryPointForRegion(
+      regionEntityId,
+      engineCommandManager
+    )
+    if (!queryPointMm) return null
+    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+    const settings = getSettingsAnnotation(ast, wasmInstance)
+    const lengthUnit =
+      !isErr(settings) && settings.defaultLengthUnit
+        ? settings.defaultLengthUnit
+        : DEFAULT_DEFAULT_LENGTH_UNIT
+    const point: Point2d = {
+      x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+      y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+    }
+
+    const sketchId = await getSketchIdForEngineRegionEntity(
+      regionEntityId,
+      artifactGraph,
+      engineCommandManager
+    )
+    if (!sketchId) return null
+
+    return {
+      type: 'engineRegion',
+      id: regionEntityId,
+      point,
+      sketchId,
+    }
+  }
+
+  const regionInfo = await getResolvableIntersectionInfoForRegion(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!regionInfo) return null
+
+  const sketchId = getSketchIdForRegionInfo(regionInfo, artifactGraph)
+  if (!sketchId) return null
 
   return {
     type: 'engineRegion',
     id: regionEntityId,
-    point,
-    sketchId: sketch.id,
+    sketchId,
+    resolvableIntersectionInfo: regionInfo,
   }
 }
 
@@ -1428,11 +1499,13 @@ export async function getEventForQueryEntityTypeWithPoint(
     kclManager,
     rustContext,
     wasmInstance,
+    useSegmentsBasedRegions,
   }: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
     rustContext: RustContext
     wasmInstance: ModuleType
+    useSegmentsBasedRegions: boolean
   }
 ): Promise<ModelingMachineEvent | null> {
   // Engine may return reference under data (e.g. { type, data: { reference } }) or at top level (e.g. { type, reference })
@@ -1642,7 +1715,8 @@ export async function getEventForQueryEntityTypeWithPoint(
       artifactGraph,
       ast,
       engineCommandManager,
-      wasmInstance
+      wasmInstance,
+      useSegmentsBasedRegions
     )
     if (regionSelection) {
       return {

@@ -83,7 +83,6 @@ import {
   redoDepth,
   undoDepth,
 } from '@codemirror/commands'
-import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
@@ -2856,51 +2855,7 @@ export class KclManager extends File {
   get copilotEnabled(): boolean {
     return this._copilotEnabled
   }
-  // Invoked when editorView is created and each time when it is updated (eg. user is sketching)..
-  // setEditorView(editorView: EditorView) {
-  //   this.overrideTreeHighlighterUpdateForPerformanceTracking()
-  // }
 
-  /** TODO: Investigate if this is still needed in the new world */
-  overrideTreeHighlighterUpdateForPerformanceTracking() {
-    // @ts-ignore
-    this._editorView?.plugins.forEach((e) => {
-      let sawATreeDiff = false
-      // we cannot use <>.constructor.name since it will get destroyed
-      // when packaging the application.
-      const isTreeHighlightPlugin =
-        e?.value &&
-        e.value?.hasOwnProperty('tree') &&
-        e.value?.hasOwnProperty('decoratedTo') &&
-        e.value?.hasOwnProperty('decorations')
-      if (isTreeHighlightPlugin) {
-        let originalUpdate = e.value.update
-        // @ts-ignore
-        function performanceTrackingUpdate(args) {
-          /**
-           * TreeHighlighter.update will be called multiple times on start up.
-           * We do not want to track the highlight performance of an empty update.
-           * mark the syntax highlight one time when the new tree comes in with the
-           * initial code
-           */
-          const treeIsDifferent =
-            // @ts-ignore
-            !sawATreeDiff && this.tree !== syntaxTree(args.state)
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/willSyntaxHighlight')
-          }
-          // Call the original function
-          // @ts-ignore
-          originalUpdate.apply(this, [args])
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/didSyntaxHighlight')
-            sawATreeDiff = true
-          }
-        }
-        e.value.update = performanceTrackingUpdate
-      }
-    })
-  }
   get isAllTextSelected() {
     return this._isAllTextSelected
   }

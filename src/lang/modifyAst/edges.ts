@@ -1013,10 +1013,28 @@ function getTagsBaseFromTagElement(el: Expr): Expr | null {
   return innerMember.object
 }
 
+function isNestedScopePath(pathToNode: PathToNode): boolean {
+  return pathToNode.some(
+    ([, owner]) =>
+      owner === 'FunctionExpression' ||
+      owner === 'SketchBlock' ||
+      owner === 'Block' ||
+      owner === 'IfExpression'
+  )
+}
+
 function findDeprecatedEdgeStdlibCallForVariable(
   program: Program,
-  variableName: string
+  variableName: string,
+  referencePath: PathToNode
 ): { call: Node<CallExpressionKw>; tagsBaseExpr: Expr | null } | null {
+  // Variable lookup is currently top-level only. In nested scopes, a local
+  // binding may shadow a top-level helper, so skip instead of risking an
+  // incorrect migration.
+  if (isNestedScopePath(referencePath)) {
+    return null
+  }
+
   for (const item of program.body ?? []) {
     if (item.type !== 'VariableDeclaration') continue
     if (item.declaration.id?.name !== variableName) continue
@@ -1140,35 +1158,42 @@ function walkExpr(
   } else if (expr.type === 'MemberExpression') {
     walkExpr(expr.object, visitor, options, pathPrefix)
     walkExpr(expr.property, visitor, options, pathPrefix)
+  } else if (expr.type === 'FunctionExpression') {
+    visitProgramExpressions(expr.body, visitor, options, [
+      ...(pathPrefix ?? []),
+      ['body', 'FunctionExpression'],
+    ])
   }
 }
 
 function visitProgramExpressions(
   program: Program,
   visitor: ExprVisitor,
-  options: ExprWalkOptions
+  options: ExprWalkOptions,
+  pathPrefix: PathToNode = []
 ): void {
   const body = program.body ?? []
   for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
     const item = body[statementIndex]
-    const pathPrefix: PathToNode = [
+    const statementPathPrefix: PathToNode = [
+      ...pathPrefix,
       ['body', ''],
       [statementIndex, 'index'],
     ]
     if (item.type === 'VariableDeclaration' && item.declaration?.init) {
       visitExpr(item.declaration.init, visitor, options, [
-        ...pathPrefix,
+        ...statementPathPrefix,
         ['declaration', 'VariableDeclaration'],
         ['init', ''],
       ])
     } else if (item.type === 'ExpressionStatement' && item.expression) {
       visitExpr(item.expression, visitor, options, [
-        ...pathPrefix,
+        ...statementPathPrefix,
         ['expression', 'ExpressionStatement'],
       ])
     } else if (item.type === 'ReturnStatement' && item.argument) {
       visitExpr(item.argument, visitor, options, [
-        ...pathPrefix,
+        ...statementPathPrefix,
         ['argument', 'ReturnStatement'],
       ])
     }
@@ -1195,9 +1220,27 @@ function filterCallsBySourceRange<T extends { range: Z0006SourceRange }>(
 interface UnifiedCallToFix {
   range: Z0006SourceRange
   orderedPayloads: FilletEdgeRefPayload[]
+  orderedEdgeRefExprs: Expr[]
   hasExistingEdgeRefs: boolean
   tagsBaseExpr?: Expr | null
 }
+
+function createEdgeRefFromGetCommonEdgeCall(
+  call: Node<CallExpressionKw>
+): Expr | null {
+  if (getCalleeName(call) !== 'getCommonEdge') return null
+
+  const facesArg = findKwArg('faces', call)
+  if (!facesArg || facesArg.type !== 'ArrayExpression') return null
+
+  const sideFaces = facesArg.elements ?? []
+  if (sideFaces.length === 0) return null
+
+  return createObjectExpression({
+    sideFaces: createArrayExpression(structuredClone(sideFaces)),
+  })
+}
+
 function findFilletChamferCallsToFixUnified(
   program: Program,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1206,7 +1249,7 @@ function findFilletChamferCallsToFixUnified(
 ): UnifiedCallToFix[] {
   const results: UnifiedCallToFix[] = []
 
-  const processExpr: ExprVisitor = (expr, _pathPrefix, walk) => {
+  const processExpr: ExprVisitor = (expr, pathPrefix, walk) => {
     if (expr.type !== 'CallExpressionKw') {
       walk(expr)
       return
@@ -1220,7 +1263,9 @@ function findFilletChamferCallsToFixUnified(
     const elements = getTagsElementsFromCall(call)
     const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
     const orderedPayloads: FilletEdgeRefPayload[] = []
+    const orderedEdgeRefExprs: Expr[] = []
     let tagsBaseExpr: Expr | null = null
+    let hasUnconvertedTagsElement = false
 
     if (elements?.length) {
       for (const el of elements) {
@@ -1233,6 +1278,12 @@ function findFilletChamferCallsToFixUnified(
         if (inner) {
           const innerCallee = getCalleeName(inner)
           if (isDeprecatedEdgeStdlib(innerCallee)) {
+            const edgeRefExpr = createEdgeRefFromGetCommonEdgeCall(inner)
+            if (edgeRefExpr) {
+              orderedEdgeRefExprs.push(edgeRefExpr)
+              continue
+            }
+
             const meta = edgeRefactorMetadata.find((m) =>
               sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
             )
@@ -1240,7 +1291,11 @@ function findFilletChamferCallsToFixUnified(
               orderedPayloads.push({
                 side_faces: meta.faceIds,
               })
+            } else {
+              hasUnconvertedTagsElement = true
             }
+          } else {
+            hasUnconvertedTagsElement = true
           }
         } else if (el.type === 'Name') {
           const tagName = el.name.name
@@ -1249,7 +1304,7 @@ function findFilletChamferCallsToFixUnified(
             callSourceRangeMatches(m, call.start, call.end, moduleId)
           )
           const tagEntry = directMeta?.tags?.find(
-            (t) => t.tagIdentifier === tagName
+            (t: { tagIdentifier: string }) => t.tagIdentifier === tagName
           )
           if (tagEntry) {
             orderedPayloads.push({ side_faces: tagEntry.faceIds })
@@ -1258,7 +1313,8 @@ function findFilletChamferCallsToFixUnified(
 
           const deprecatedCall = findDeprecatedEdgeStdlibCallForVariable(
             program,
-            tagName
+            tagName,
+            pathPrefix ?? []
           )
           if (deprecatedCall) {
             if (tagsBaseExpr === null && deprecatedCall.tagsBaseExpr) {
@@ -1277,17 +1333,30 @@ function findFilletChamferCallsToFixUnified(
               orderedPayloads.push({
                 side_faces: meta.faceIds,
               })
+            } else {
+              hasUnconvertedTagsElement = true
             }
+          } else {
+            hasUnconvertedTagsElement = true
           }
+        } else {
+          hasUnconvertedTagsElement = true
         }
       }
     }
 
-    if (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0) {
+    if (
+      elements?.length &&
+      !hasUnconvertedTagsElement &&
+      (orderedPayloads.length > 0 ||
+        orderedEdgeRefExprs.length > 0 ||
+        existingEdgeRefExprs.length > 0)
+    ) {
       const moduleId = call.moduleId
       results.push({
         range: [call.start, call.end, moduleId],
         orderedPayloads,
+        orderedEdgeRefExprs,
         hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
         tagsBaseExpr: tagsBaseExpr ?? undefined,
       })
@@ -1845,11 +1914,12 @@ export function refactorZ0006Unified(
   for (const {
     range,
     orderedPayloads,
+    orderedEdgeRefExprs,
     hasExistingEdgeRefs,
     tagsBaseExpr,
   } of toFixFC) {
     const path = getNodePathFromSourceRange(modifiedAst, range)
-    const edgeRefExprs: Expr[] = []
+    const edgeRefExprs: Expr[] = structuredClone(orderedEdgeRefExprs)
     let nextAst = structuredClone(modifiedAst)
     let failedToCreateEdgeRef = false
     for (const payload of orderedPayloads) {

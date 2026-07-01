@@ -13,6 +13,7 @@ import {
 } from '@src/lang/modifyAst/sweeps'
 import { resolveToCodeRef } from '@src/lang/queryAst'
 import {
+  type ArtifactGraph,
   type Name,
   assertParse,
   getAllOperations,
@@ -33,7 +34,10 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EngineRegionSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
@@ -97,6 +101,49 @@ async function getAstAndSketchSelectionsEngineless(
   }
   const sketches = createSelectionFromPathArtifact(artifacts, artifactGraph)
   return { artifactGraph, ast, sketches }
+}
+
+function createEngineRegionSelectionForSketch({
+  artifactGraph,
+  sketchId,
+  intersectionIndex = 0,
+  intersectionCount = 1,
+}: {
+  artifactGraph: ArtifactGraph
+  sketchId: string
+  intersectionIndex?: number
+  intersectionCount?: number
+}): EngineRegionSelection {
+  const segmentIds = [...artifactGraph.values()]
+    .filter((artifact) => {
+      if (artifact.type !== 'segment') return false
+
+      const path = artifactGraph.get(artifact.pathId)
+      return path?.type === 'path' && path.sketchBlockId === sketchId
+    })
+    .map((artifact) => artifact.id)
+
+  if (segmentIds.length === 0) {
+    throw new Error('Sketch segment artifacts not found')
+  }
+  const segment = segmentIds[0]
+  if (!segment) {
+    throw new Error('Sketch segment artifact not found')
+  }
+  const intersectionSegment = segmentIds[1] ?? segment
+
+  return {
+    type: 'engineRegion',
+    id: 'region-1',
+    sketchId,
+    resolvableIntersectionInfo: {
+      segment,
+      intersection_segment: intersectionSegment,
+      intersection_index: intersectionIndex,
+      intersection_count: intersectionCount,
+      curve_clockwise: false,
+    },
+  }
 }
 
 describe('sweeps.test.ts', () => {
@@ -292,6 +339,130 @@ extrude002 = extrude(seg01, length = 3)`)
 region001 = region(point = [1mm, 1mm], sketch = s)
 extrude001 = extrude(region001, length = 1)`
       )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an extrude call from a segments-based sketch region selection', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `hidden001 = hide(s)
+region001 = region(segments = [s.line1, s.line2])
+extrude001 = extrude(region001, length = 1)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should emit intersectionIndex only for ambiguous sketch region intersections', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+            intersectionIndex: 0,
+            intersectionCount: 2,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(segments = [s.line1, s.line2], intersectionIndex = 0)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should omit intersectionIndex when the engine selects the final intersection', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+            intersectionIndex: 2,
+            intersectionCount: 3,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(segments = [s.line1, s.line2])`
+      )
+      expect(newCode).not.toContain(`intersectionIndex`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
