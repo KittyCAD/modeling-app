@@ -743,6 +743,49 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
         expect(argDefaultValues.datums?.valueText).toBe('datumRefs')
       }
     )
+
+    // A note has no geometry selection, so it does not fit the parameterized
+    // cases above (which all resolve faces/edges). Cover its edit flow on its own.
+    it('enters edit flow for gdt::note', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'gdt::note(note = "Note on XY", framePlane = XZ)'
+      const operation = stdlib('gdt::note')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.labeledArgs = {
+        note: {
+          value: { type: 'String', value: 'Note on XY' },
+          sourceRange: rangeOfText(code, '"Note on XY"'),
+        },
+        framePlane: {
+          value: { type: 'String', value: 'XZ' },
+          sourceRange: rangeOfText(code, 'XZ'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      expect(result.data.name).toBe('GDT Note')
+      expect(getOperationLabel(operation)).toBe('Note')
+      const argDefaultValues = result.data.argDefaultValues as {
+        note?: string
+        framePlane?: string
+      }
+      expect(argDefaultValues.note).toBe('Note on XY')
+      expect(argDefaultValues.framePlane).toBe('XZ')
+    })
   })
 
   describe('variable name of operations', () => {
