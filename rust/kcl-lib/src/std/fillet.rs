@@ -228,7 +228,16 @@ async fn inner_fillet(
         };
         for edge_id in ids {
             if tag_identifier.is_empty() {
-                exec_state.record_edge_refactor_meta_from_pending(edge_id, Some(solid.id), *source_range, None);
+                let face_ids = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args)
+                    .await
+                    .ok()
+                    .and_then(|face_ids| {
+                        let [a, b] = face_ids.as_slice() else {
+                            return None;
+                        };
+                        Some([*a, *b])
+                    });
+                exec_state.record_edge_refactor_meta_from_pending(edge_id, Some(solid.id), *source_range, face_ids);
                 continue;
             }
             if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await

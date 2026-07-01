@@ -66,7 +66,7 @@ pub(crate) async fn get_face_ids_for_edge(
     }
 
     let resp = exec_state
-        .send_modeling_cmd(
+        .send_modeling_cmd_for_metadata(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::Solid3dGetAllEdgeFaces::builder()

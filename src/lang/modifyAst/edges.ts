@@ -1167,16 +1167,22 @@ function sourceRangesOverlap(
   return a[2] === b[2] && a[0] < b[1] && b[0] < a[1]
 }
 
-function filterCallsBySourceRange<T extends { range: Z0006SourceRange }>(
-  calls: T[],
-  sourceRange?: Z0006SourceRange
-): T[] {
+function filterCallsBySourceRange<
+  T extends { range: Z0006SourceRange; triggerRanges?: Z0006SourceRange[] },
+>(calls: T[], sourceRange?: Z0006SourceRange): T[] {
   if (!sourceRange) return calls
-  return calls.filter((call) => sourceRangesOverlap(call.range, sourceRange))
+  return calls.filter(
+    (call) =>
+      sourceRangesOverlap(call.range, sourceRange) ||
+      call.triggerRanges?.some((range) =>
+        sourceRangesOverlap(range, sourceRange)
+      )
+  )
 }
 
 interface UnifiedCallToFix {
   range: Z0006SourceRange
+  triggerRanges?: Z0006SourceRange[]
   orderedPayloads: FilletEdgeRefPayload[]
   orderedEdgeRefExprs: Expr[]
   hasExistingEdgeRefs: boolean
@@ -1219,6 +1225,7 @@ function findFilletChamferCallsToFixUnified(
       const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
       const orderedPayloads: FilletEdgeRefPayload[] = []
       const orderedEdgeRefExprs: Expr[] = []
+      const triggerRanges: Z0006SourceRange[] = []
       let tagsBaseExpr: Expr | null = null
       let hasUnconvertedTagsElement = false
 
@@ -1242,6 +1249,7 @@ function findFilletChamferCallsToFixUnified(
                 sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
               if (meta?.faceIds) {
+                triggerRanges.push([inner.start, inner.end, inner.moduleId])
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1284,6 +1292,11 @@ function findFilletChamferCallsToFixUnified(
                 )
               )
               if (meta?.faceIds) {
+                triggerRanges.push([
+                  deprecatedCall.call.start,
+                  deprecatedCall.call.end,
+                  deprecatedCall.call.moduleId,
+                ])
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1309,6 +1322,7 @@ function findFilletChamferCallsToFixUnified(
         const moduleId = call.moduleId
         results.push({
           range: [call.start, call.end, moduleId],
+          triggerRanges,
           orderedPayloads,
           orderedEdgeRefExprs,
           hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
