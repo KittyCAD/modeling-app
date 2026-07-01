@@ -1362,6 +1362,12 @@ interface GdtDistanceEndpointCallToFix {
   pathToCall?: PathToNode
 }
 
+interface BoundedEdgeCallToFix {
+  range: Z0006SourceRange
+  payload: FilletEdgeRefPayload
+  pathToCall?: PathToNode
+}
+
 function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
   if (!expr || typeof expr !== 'object') return null
   if (expr.type === 'CallExpressionKw') return expr
@@ -1576,6 +1582,47 @@ export function findGdtDistanceEndpointCallsToFix(
   return results
 }
 
+export function findBoundedEdgeCallsToFix(
+  program: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+): BoundedEdgeCallToFix[] {
+  const results: BoundedEdgeCallToFix[] = []
+
+  traverse(program, {
+    enter(node, pathToNode) {
+      if (node.type !== 'CallExpressionKw') return
+
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (calleeName !== 'getBoundedEdge') return
+
+      const edgeArg = call.arguments?.find((a) => getLabelName(a) === 'edge')
+      if (!edgeArg?.arg) return
+
+      const inner = getCallFromExpr(edgeArg.arg)
+      if (!inner) return
+
+      const innerCallee = getCalleeName(inner)
+      if (!isDeprecatedEdgeStdlib(innerCallee)) return
+
+      const meta = edgeRefactorMetadata.find((m) =>
+        sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
+      )
+      if (!meta?.faceIds) return
+
+      results.push({
+        range: [call.start, call.end, call.moduleId],
+        payload: {
+          side_faces: meta.faceIds,
+        },
+        pathToCall: pathToNode,
+      })
+    },
+  })
+
+  return results
+}
+
 function refactorRevolveHelixAxisToEdgeRefInPlace(
   modifiedAst: Node<Program>,
   toFix: RevolveHelixCallToFix[],
@@ -1765,6 +1812,47 @@ function refactorGdtDistanceEndpointsToEdgeSpecifiersInPlace(
   return modifiedAst
 }
 
+function refactorBoundedEdgeEdgeArgToEdgeSpecifierInPlace(
+  modifiedAst: Node<Program>,
+  toFix: BoundedEdgeCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  if (toFix.length === 0) return modifiedAst
+
+  for (let index = 0; index < toFix.length; index++) {
+    const { payload, pathToCall } = toFix[index]
+    const path = pathToCall?.length ? pathToCall : pathList[index]
+    const result = createEdgeRefObjectExpression(
+      payload,
+      wasmInstance,
+      modifiedAst,
+      artifactGraph
+    )
+    if (err(result)) continue
+
+    const nextAst = result.modifiedAst
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      nextAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (err(nodeResult)) continue
+
+    const callNode = nodeResult.node
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => getLabelName(a) !== 'edge'
+    )
+    newArgs.push(createLabeledArg('edge', result.expr))
+    callNode.arguments = newArgs
+    modifiedAst = nextAst
+  }
+
+  return modifiedAst
+}
+
 export function refactorZ0006Unified(
   ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1798,12 +1886,17 @@ export function refactorZ0006Unified(
     findGdtDistanceEndpointCallsToFix(ast, edgeRefactorMetadata, artifactGraph),
     sourceRange
   )
+  const toFixBoundedEdge = filterCallsBySourceRange(
+    findBoundedEdgeCallsToFix(ast, edgeRefactorMetadata),
+    sourceRange
+  )
   if (
     toFixFilletChamfer.length === 0 &&
     toFixRevolveHelix.length === 0 &&
     toFixExtrudeTo.length === 0 &&
     toFixGdtEdges.length === 0 &&
-    toFixGdtDistanceEndpoints.length === 0
+    toFixGdtDistanceEndpoints.length === 0 &&
+    toFixBoundedEdge.length === 0
   ) {
     return new Error('No Z0006 fixes to apply')
   }
@@ -1902,6 +1995,18 @@ export function refactorZ0006Unified(
     modifiedAst,
     toFixGdtDistanceEndpoints,
     toFixGdtDistanceEndpoints.map((item) =>
+      item.pathToCall?.length
+        ? item.pathToCall
+        : getNodePathFromSourceRange(ast, item.range)
+    ),
+    artifactGraph,
+    wasmInstance
+  )
+
+  modifiedAst = refactorBoundedEdgeEdgeArgToEdgeSpecifierInPlace(
+    modifiedAst,
+    toFixBoundedEdge,
+    toFixBoundedEdge.map((item) =>
       item.pathToCall?.length
         ? item.pathToCall
         : getNodePathFromSourceRange(ast, item.range)

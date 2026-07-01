@@ -32,6 +32,7 @@ import { join } from 'path'
 import type { KclManager } from '@src/lang/KclManager'
 import { hydrateEdgeRefactorMetadata } from '@src/lang/lintRefactorActions'
 import {
+  findBoundedEdgeCallsToFix,
   findExtrudeToCallsToFix,
   findGdtDistanceEndpointCallsToFix,
   findGdtEdgesCallsToFix,
@@ -403,6 +404,12 @@ gdt001 = gdt::distance(
   from = getCommonEdge(faces = [e1, cap1]),
   to = getCommonEdge(faces = [e2, cap1]),
   tolerance = 0.1mm,
+)
+`
+
+const KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE = `bounded001 = getBoundedEdge(
+  surface001,
+  edge = getCommonEdge(faces = [face1, face2]),
 )
 `
 
@@ -875,6 +882,30 @@ describe('refactorZ0006Unified', () => {
         'from',
         'to',
       ])
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('finds getBoundedEdge edge calls with deprecated stdlib for Z0006 refactor', () => {
+      const ast = assertParse(
+        KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE,
+        wasmInstance
+      )
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const toFix = findBoundedEdgeCallsToFix(ast, metadata)
+
+      expect(toFix).toHaveLength(1)
+      expect(toFix[0]?.payload.side_faces).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
