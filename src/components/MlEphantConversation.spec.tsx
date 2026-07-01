@@ -1065,10 +1065,34 @@ describe('MlEphantConversation', () => {
 
     test('displays screenshot annotation button', () => {
       renderConversation()
-      expect(
-        screen.getByTestId('ml-ephant-annotate-screenshot-button')
-      ).toBeInTheDocument()
+      const zoodleButton = screen.getByTestId(
+        'ml-ephant-annotate-screenshot-button'
+      )
+      expect(zoodleButton).toBeInTheDocument()
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
       expect(screen.getByText('Zoodle')).toBeInTheDocument()
+    })
+
+    test('marks screenshot annotation button active and cancels on second click', () => {
+      renderConversation()
+
+      const zoodleButton = screen.getByTestId(
+        'ml-ephant-annotate-screenshot-button'
+      )
+
+      fireEvent.click(zoodleButton)
+
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'true')
+      expect(
+        screen.getByTestId('viewport-annotation-overlay')
+      ).toBeInTheDocument()
+
+      fireEvent.click(zoodleButton)
+
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
+      expect(
+        screen.queryByTestId('viewport-annotation-overlay')
+      ).not.toBeInTheDocument()
     })
 
     test('adds annotated viewport screenshot as an attachment', async () => {
