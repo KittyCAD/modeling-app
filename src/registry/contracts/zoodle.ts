@@ -6,6 +6,7 @@ export type ZoodleDrawToolDefinition = {
   type: 'draw'
   label: string
   color: string
+  colorClassName?: string
   lineWidthMultiplier?: number
 }
 
@@ -30,10 +31,17 @@ export const zoodleToolDefinitions = {
     label: 'Green',
     color: '#29FFA4',
   },
-  drawWhite: {
+  drawZooBlue: {
     type: 'draw',
-    label: 'White',
-    color: '#FFFFFF',
+    label: 'Zoo blue',
+    color: 'currentColor',
+    colorClassName: 'text-primary',
+  },
+  drawDefault: {
+    type: 'draw',
+    label: 'Default',
+    color: 'currentColor',
+    colorClassName: 'text-default',
   },
   erase: {
     type: 'erase',

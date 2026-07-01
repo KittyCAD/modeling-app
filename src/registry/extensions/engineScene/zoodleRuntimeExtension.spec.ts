@@ -54,6 +54,16 @@ describe('zoodle runtime extension', () => {
       type: 'draw',
       color: '#ff8800',
     })
+    expect(zoodle.toolDefinitions.drawZooBlue).toMatchObject({
+      type: 'draw',
+      color: 'currentColor',
+      colorClassName: 'text-primary',
+    })
+    expect(zoodle.toolDefinitions.drawDefault).toMatchObject({
+      type: 'draw',
+      color: 'currentColor',
+      colorClassName: 'text-default',
+    })
     expect(zoodle.toolDefinitions.erase).toMatchObject({
       type: 'erase',
       lineWidthMultiplier: 4,
