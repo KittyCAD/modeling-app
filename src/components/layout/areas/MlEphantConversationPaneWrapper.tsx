@@ -221,8 +221,6 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
 
               void (async () => {
                 let historyRecorded = false
-                await waitForIdleState({ systemIOActor })
-                kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
                 if (
                   shouldRecordZookeeperHistory &&
                   project?.path &&
@@ -237,6 +235,8 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                     reserved: pendingHistoryReserved,
                   })
                 }
+                await waitForIdleState({ systemIOActor })
+                kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
                 systemIOActor.send({
                   type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
                   data: {
