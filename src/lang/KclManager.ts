@@ -2005,7 +2005,7 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
-    providedEditor.watch()
+    providedEditor.reactivateFileLifecycle()
     return providedEditor
   }
 
@@ -2042,10 +2042,7 @@ export class KclManager extends File {
       zookeeperHistoryExtension(),
     ])
     this._editorView = this.createEditorView(initialCode)
-    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
-      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
-    })
-    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    this.subscribeToSettingsUpdates()
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -2082,9 +2079,23 @@ export class KclManager extends File {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
+    this.settingsSubscription = undefined
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
+  }
+
+  public reactivateFileLifecycle() {
+    this.subscribeToSettingsUpdates()
+    this.watch()
+  }
+
+  private subscribeToSettingsUpdates() {
+    this.settingsSubscription?.unsubscribe()
+    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    })
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
   }
 
   private markFileCodeAsSynced(code: string) {

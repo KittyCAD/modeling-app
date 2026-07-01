@@ -6,6 +6,7 @@ import type {
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { waitFor } from 'xstate'
 
 import {
   createKclManagerTestHarness,
@@ -638,6 +639,46 @@ describe('KclManager diagnostics', () => {
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(executeCodeSpy).toHaveBeenCalledWith(mainCode)
+  })
+
+  it('reactivates settings subscriptions when reusing a closed singleton editor', async () => {
+    const { app, kclManager } = createKclManagerTestHarness('')
+    await waitFor(app.settings.actor, (state) => state.matches('idle'))
+
+    const path = '/tmp/kcl-manager-settings-reactivation-test.kcl'
+    const readSpy = vi
+      .spyOn(File.ioImplementations, 'read')
+      .mockResolvedValue('opened code')
+    const setAutomaticallyRenderSpy = vi.spyOn(
+      kclManager,
+      'setEditorAutomaticallyRender'
+    )
+
+    kclManager.close()
+
+    const opened = await KclManager.fromFile(
+      new File(path, 102),
+      (kclManager as any).systemDeps,
+      kclManager
+    )
+
+    expect(opened).toBe(kclManager)
+    setAutomaticallyRenderSpy.mockClear()
+
+    app.settings.actor.send({
+      type: 'set.textEditor.automaticallyRender',
+      data: {
+        level: 'user',
+        value: false,
+      },
+      doNotPersist: true,
+    } as never)
+    await waitFor(app.settings.actor, (state) => state.matches('idle'))
+
+    expect(setAutomaticallyRenderSpy).toHaveBeenCalledWith(false)
+
+    readSpy.mockRestore()
+    setAutomaticallyRenderSpy.mockRestore()
   })
 
   it('does not overwrite dirty editor state when an external reload resolves later', async () => {
