@@ -599,6 +599,8 @@ pub(crate) async fn resolve_edge_specifier_with_face_tags(
     Ok(references.remove(0))
 }
 
+const MAX_EDGE_COMBINATIONS: usize = 256;
+
 async fn resolve_edge_specifiers_with_face_tags(
     unresolved: &UnresolvedEdgeSpecifier,
     solid: Option<&Solid>,
@@ -620,7 +622,12 @@ async fn resolve_edge_specifiers_with_face_tags(
     let side_face_count = side_face_groups.iter().map(Vec::len).fold(1, usize::saturating_mul);
     let end_face_count = end_face_groups.iter().map(Vec::len).fold(1, usize::saturating_mul);
     let total_combinations = side_face_count.saturating_mul(end_face_count);
-    if total_combinations > 256 {
+    // We need to check all of them in case one is zero. It would make the total
+    // zero.
+    if side_face_count > MAX_EDGE_COMBINATIONS
+        || end_face_count > MAX_EDGE_COMBINATIONS
+        || total_combinations > MAX_EDGE_COMBINATIONS
+    {
         return Err(KclError::new_semantic(KclErrorDetails::new(
             "This edge specifier is too ambiguous. The maximum number of effective edges specified has been exceeded. Either specify fewer faces or use faces that have been split fewer times.".to_owned(),
             vec![args.source_range],
