@@ -6,7 +6,6 @@ import type {
   UnitVolume,
 } from '@kittycad/lib'
 import { Draggable } from '@kittycad/ui-components'
-import { signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
@@ -82,8 +81,6 @@ type ModelingDataResult =
   | { type: 'error'; error: Error }
 
 type SendModelingCommand = (cmd: ModelingCmd) => Promise<unknown>
-
-export const isMeasurementToolOpen = signal(false)
 
 function getMeasurementEntityLabel(entity: MeasurementEntity): string {
   if (entity.kind === 'body') {
@@ -841,7 +838,7 @@ export function MeasurementStatusBarItem() {
   const summary = matchingResult
     ? getMeasurementResultSummary(matchingResult, unit)
     : null
-  const isOpen = isMeasurementToolOpen.value
+  const isOpen = measurementToolService.isOpen.value
   const streamContainerRef = useMemo<RefObject<HTMLElement | null>>(
     () => ({ current: streamElement }),
     [streamElement]
@@ -865,7 +862,7 @@ export function MeasurementStatusBarItem() {
         aria-expanded={isOpen}
         aria-label={summary ? `Measure: ${summary}` : 'Measure'}
         onClick={() => {
-          isMeasurementToolOpen.value = true
+          measurementToolService.open()
         }}
       >
         <CustomIcon name="ruler" className="h-5 w-5 shrink-0" />
@@ -895,7 +892,7 @@ export function MeasurementDraggablePanel({
 }) {
   useSignals()
 
-  if (!isMeasurementToolOpen.value) {
+  if (!measurementToolService.isOpen.value) {
     return null
   }
 
@@ -929,7 +926,7 @@ export function MeasurementDraggablePanel({
             className="flex items-center gap-1 rounded-sm px-2 py-1 text-xs text-chalkboard-80 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-20 dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90"
             onMouseDown={(event) => event.stopPropagation()}
             onClick={() => {
-              isMeasurementToolOpen.value = false
+              measurementToolService.close()
             }}
           >
             <CustomIcon name="close" className="h-3.5 w-3.5" />
