@@ -357,11 +357,17 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     }
 
     await fsZds.mkdir(projectRoot, { recursive: true })
+    const writtenFilePaths: string[] = []
     for (const file of input.files) {
       const targetPath = fsZds.join(projectRoot, file.requestedFileName)
       await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
       await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
+      writtenFilePaths.push(targetPath)
     }
+    await reloadExecutingEditorAfterBulkWrite({
+      context: input.context,
+      writtenFilePaths,
+    })
 
     if (requestedFileNameWithExtension) {
       const entrypointPath = fsZds.join(
