@@ -598,6 +598,25 @@ describe('project system', () => {
         filePath: mainFile.path,
       })
 
+      const otherProject: Project = {
+        ...mockProject,
+        name: 'other-test',
+        path: '/some-dir/other-test',
+        children: [
+          {
+            name: 'main.kcl',
+            path: '/some-dir/other-test/main.kcl',
+            children: [],
+          },
+        ],
+      }
+
+      await projectSession.openProject(otherProject)
+      expect(projectSession.openedProjectHandle.value).toEqual({
+        projectPath: otherProject.path,
+      })
+      expect(projectSession.executingEditorHandle.value).toBeUndefined()
+
       projectSession.closeProject()
 
       expect(app.project).toBeUndefined()

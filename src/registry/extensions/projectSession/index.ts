@@ -86,10 +86,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
     stopProjectEffects()
     currentProject?.close()
     openedProject.value = undefined
+    executingEditorHandle.value = undefined
 
     if (clearHandles) {
       openedProjectHandle.value = undefined
-      executingEditorHandle.value = undefined
     }
 
     if (clearProjectSettings) {
