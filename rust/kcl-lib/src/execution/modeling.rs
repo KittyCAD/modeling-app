@@ -170,6 +170,25 @@ impl ExecState {
             .await
     }
 
+    /// Send a modeling cmd and wait for the response without recording it as an artifact command.
+    ///
+    /// This is for metadata lookups that support lint/refactor behavior but should not become
+    /// part of the user's observable modeling command history.
+    pub(crate) async fn send_modeling_cmd_for_metadata(
+        &mut self,
+        mut meta: ModelingCmdMeta<'_>,
+        cmd: ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
+        let id = meta.id(self.id_generator());
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
+    }
+
     /// Send the modeling cmd async and don't wait for the response.
     /// Add it to our list of async commands.
     pub(crate) async fn async_modeling_cmd(
