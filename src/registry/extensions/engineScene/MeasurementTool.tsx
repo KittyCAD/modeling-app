@@ -28,6 +28,17 @@ import {
 import { createPortal } from 'react-dom'
 import toast from 'react-hot-toast'
 import {
+  type MeasurementTarget,
+  getDefaultDistanceModeForTarget,
+  getDistanceMeasurementLabel,
+  getDistanceModeLabel,
+  getMeasurementTarget,
+  isUnsupportedDistanceMode,
+  unsupportedFaceSurfaceAreaMessage,
+  unsupportedTopologyDistanceMessage,
+} from './measurementCapabilities'
+import { measurementToolService } from './measurementToolService'
+import {
   type DistanceMode,
   type MeasurementEntity,
   distanceModes,
@@ -40,12 +51,6 @@ import {
 } from './measurementUtils'
 
 type MeasurementStatus = 'idle' | 'measuring'
-
-type MeasurementTarget =
-  | { type: 'distance'; entities: [MeasurementEntity, MeasurementEntity] }
-  | { type: 'edgeLength'; entity: MeasurementEntity }
-  | { type: 'faceSurfaceArea'; entity: MeasurementEntity }
-  | { type: 'bodyDetails'; entity: MeasurementEntity }
 
 type MeasurementResult =
   | {
@@ -77,12 +82,6 @@ type ModelingDataResult =
   | { type: 'error'; error: Error }
 
 type SendModelingCommand = (cmd: ModelingCmd) => Promise<unknown>
-
-const defaultDistanceMode: DistanceMode = 'euclidean'
-const unsupportedFaceSurfaceAreaMessage =
-  'Face surface area is not supported by the current engine endpoint. Select the body to measure total surface area, volume, and center of mass.'
-const unsupportedTopologyDistanceMessage =
-  '3D distance between selected faces or edges is not supported by the current engine endpoint. Select X, Y, or Z distance instead.'
 
 export const isMeasurementToolOpen = signal(false)
 
@@ -131,57 +130,6 @@ function getResponseErrorMessage(response: unknown): string {
   }
 
   return 'Measurement failed'
-}
-
-function getMeasurementTarget(
-  selectedEntities: MeasurementEntity[]
-): MeasurementTarget | null {
-  if (selectedEntities.length === 2) {
-    return {
-      type: 'distance',
-      entities: [selectedEntities[0], selectedEntities[1]],
-    }
-  }
-
-  if (selectedEntities.length !== 1) {
-    return null
-  }
-
-  const [entity] = selectedEntities
-  if (entity.kind === 'edge') {
-    return { type: 'edgeLength', entity }
-  }
-
-  if (entity.kind === 'face') {
-    return { type: 'faceSurfaceArea', entity }
-  }
-
-  if (entity.kind === 'body') {
-    return { type: 'bodyDetails', entity }
-  }
-
-  return null
-}
-
-function hasTopologyDistanceSelection(
-  entities: [MeasurementEntity, MeasurementEntity]
-): boolean {
-  return entities.some(
-    (entity) => entity.kind === 'face' || entity.kind === 'edge'
-  )
-}
-
-function getDefaultDistanceModeForTarget(
-  measurementTarget: MeasurementTarget | null
-): DistanceMode {
-  if (
-    measurementTarget?.type === 'distance' &&
-    hasTopologyDistanceSelection(measurementTarget.entities)
-  ) {
-    return 'x'
-  }
-
-  return defaultDistanceMode
 }
 
 function getModelingData(
@@ -313,10 +261,7 @@ async function requestMeasurement({
   volumeUnit: UnitVolume
 }): Promise<MeasurementResult | Error> {
   if (targetForRequest.type === 'distance') {
-    if (
-      distanceMode === 'euclidean' &&
-      hasTopologyDistanceSelection(targetForRequest.entities)
-    ) {
+    if (isUnsupportedDistanceMode(targetForRequest, distanceMode)) {
       return new Error(unsupportedTopologyDistanceMessage)
     }
 
@@ -466,7 +411,7 @@ function getMeasurementResultSummary(
     const value = hasDistanceRange
       ? `${formatDistance(result.min)}-${formatDistance(result.max)}`
       : formatDistance(result.min)
-    return `${value} ${unit}`
+    return `${getDistanceMeasurementLabel(result.mode)}: ${value} ${unit}`
   }
 
   if (result.type === 'edgeLength') {
@@ -481,14 +426,15 @@ function getMeasurementResultText(
   unit: UnitLength
 ): string {
   if (result.type === 'distance') {
+    const label = getDistanceMeasurementLabel(result.mode)
     const hasDistanceRange = Math.abs(result.max - result.min) > 1e-9
     if (!hasDistanceRange) {
-      return `Distance: ${formatDistance(result.min)} ${unit}`
+      return `${label}: ${formatDistance(result.min)} ${unit}`
     }
 
     return [
-      `Min: ${formatDistance(result.min)} ${unit}`,
-      `Max: ${formatDistance(result.max)} ${unit}`,
+      `${label} min: ${formatDistance(result.min)} ${unit}`,
+      `${label} max: ${formatDistance(result.max)} ${unit}`,
     ].join('\n')
   }
 
@@ -540,6 +486,7 @@ function CopyableMeasurementBlock({
 }
 
 export function MeasurementTool() {
+  useSignals()
   const { state } = useModelingContext()
   const { engineCommandManager, kclManager, store } = state.context
   const [distanceModePreference, setDistanceModePreference] = useState<{
@@ -562,10 +509,11 @@ export function MeasurementTool() {
     () => getMeasurementTarget(selectedEntities),
     [selectedEntities]
   )
+  const serviceDistanceMode = measurementToolService.lastDistanceMode.value
   const distanceMode =
     distanceModePreference?.selectionKey === selectedEntityIdsKey
       ? distanceModePreference.mode
-      : getDefaultDistanceModeForTarget(measurementTarget)
+      : getDefaultDistanceModeForTarget(measurementTarget, serviceDistanceMode)
   const measurementTargetKey =
     measurementTarget?.type === 'distance'
       ? distanceMode
@@ -683,12 +631,13 @@ export function MeasurementTool() {
                     ? 'Euclidean distance'
                     : `${mode.label} axis distance`
                 }
-                onClick={() =>
+                onClick={() => {
+                  measurementToolService.setDistanceMode(mode.value)
                   setDistanceModePreference({
                     selectionKey: selectedEntityIdsKey,
                     mode: mode.value,
                   })
-                }
+                }}
                 className={`m-0 h-7 border-0 border-r border-solid border-chalkboard-20 px-2 text-xs last:border-r-0 dark:border-chalkboard-80 ${
                   isActive
                     ? '!bg-primary !text-chalkboard-10 hover:!bg-primary focus:!bg-primary'
@@ -720,13 +669,17 @@ export function MeasurementTool() {
           className="grid grid-cols-2 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80"
         >
           <MeasurementValue
-            label={hasDistanceRange ? 'Min' : 'Distance'}
+            label={
+              hasDistanceRange
+                ? `${getDistanceModeLabel(matchingResult.mode)} min`
+                : getDistanceMeasurementLabel(matchingResult.mode)
+            }
             value={matchingResult.min}
             unit={unit}
           />
           {hasDistanceRange && (
             <MeasurementValue
-              label="Max"
+              label={`${getDistanceModeLabel(matchingResult.mode)} max`}
               value={matchingResult.max}
               unit={unit}
             />
@@ -803,8 +756,11 @@ export function MeasurementStatusBarItem() {
     () => getMeasurementTarget(selectedEntities),
     [selectedEntities]
   )
-  const defaultStatusDistanceMode =
-    getDefaultDistanceModeForTarget(measurementTarget)
+  const serviceDistanceMode = measurementToolService.lastDistanceMode.value
+  const defaultStatusDistanceMode = getDefaultDistanceModeForTarget(
+    measurementTarget,
+    serviceDistanceMode
+  )
   const measurementInputKey = `${selectedEntityIdsKey}:${
     measurementTarget?.type === 'distance'
       ? defaultStatusDistanceMode

@@ -2,6 +2,14 @@ import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
 import {
+  getDefaultDistanceModeForTarget,
+  getDistanceMeasurementLabel,
+  getMeasurementTarget,
+  isUnsupportedDistanceMode,
+  measurementCapabilities,
+} from './measurementCapabilities'
+import {
+  type MeasurementEntity,
   formatDistance,
   formatPoint3d,
   getAreaUnit,
@@ -12,6 +20,13 @@ import {
 } from './measurementUtils'
 
 describe('MeasurementTool helpers', () => {
+  function measurementEntity(
+    kind: MeasurementEntity['kind'],
+    id = `${kind}-id`
+  ): MeasurementEntity {
+    return { id, kind }
+  }
+
   function artifact(value: { id: string; type: Artifact['type'] }): Artifact {
     return value as Artifact
   }
@@ -198,6 +213,72 @@ describe('MeasurementTool helpers', () => {
       { id: 'face-id', kind: 'face' },
       { id: 'body-id', kind: 'body' },
     ])
+  })
+
+  it('maps selected entities to measurement capabilities', () => {
+    const edge = measurementEntity('edge')
+    const face = measurementEntity('face')
+    const body = measurementEntity('body')
+
+    expect(
+      measurementCapabilities.map((capability) => ({
+        type: capability.type,
+        label: capability.label,
+      }))
+    ).toEqual([
+      { type: 'distance', label: 'Distance' },
+      { type: 'edgeLength', label: 'Edge length' },
+      { type: 'faceSurfaceArea', label: 'Face surface area' },
+      { type: 'bodyDetails', label: 'Body details' },
+    ])
+    expect(getMeasurementTarget([edge])).toEqual({
+      type: 'edgeLength',
+      entity: edge,
+    })
+    expect(getMeasurementTarget([face])).toEqual({
+      type: 'faceSurfaceArea',
+      entity: face,
+    })
+    expect(getMeasurementTarget([body])).toEqual({
+      type: 'bodyDetails',
+      entity: body,
+    })
+    expect(getMeasurementTarget([body, face])).toEqual({
+      type: 'distance',
+      entities: [body, face],
+    })
+    expect(getMeasurementTarget([body, face, edge])).toBeNull()
+  })
+
+  it('defaults topology distances to a supported axis mode', () => {
+    const target = getMeasurementTarget([
+      measurementEntity('face'),
+      measurementEntity('edge'),
+    ])
+
+    expect(target?.type).toBe('distance')
+    if (!target) {
+      throw new Error('Expected distance target')
+    }
+
+    expect(isUnsupportedDistanceMode(target, 'euclidean')).toBe(true)
+    expect(isUnsupportedDistanceMode(target, 'x')).toBe(false)
+    expect(getDefaultDistanceModeForTarget(target, null)).toBe('x')
+    expect(getDefaultDistanceModeForTarget(target, 'euclidean')).toBe('x')
+    expect(getDefaultDistanceModeForTarget(target, 'z')).toBe('z')
+  })
+
+  it('keeps non-topology distance defaults and labels readable', () => {
+    const target = getMeasurementTarget([
+      measurementEntity('body', 'body-1'),
+      measurementEntity('body', 'body-2'),
+    ])
+
+    expect(target?.type).toBe('distance')
+    expect(getDefaultDistanceModeForTarget(target, null)).toBe('euclidean')
+    expect(getDefaultDistanceModeForTarget(target, 'y')).toBe('y')
+    expect(getDistanceMeasurementLabel('euclidean')).toBe('3D distance')
+    expect(getDistanceMeasurementLabel('x')).toBe('X distance')
   })
 
   it('builds distance type payloads for the engine command', () => {
