@@ -6030,7 +6030,7 @@ d = b + c
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(engine_manager::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
-            fs: Arc::new(crate::fs::FileManager::new()),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()

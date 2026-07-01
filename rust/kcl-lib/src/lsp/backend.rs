@@ -1,7 +1,5 @@
 //! A shared backend trait for lsp servers memory and behavior.
 
-use std::sync::Arc;
-
 use anyhow::Result;
 use dashmap::DashMap;
 use tower_lsp::lsp_types::CreateFilesParams;
@@ -21,7 +19,7 @@ use tower_lsp::lsp_types::TextDocumentItem;
 use tower_lsp::lsp_types::WorkspaceFolder;
 
 use crate::execution::typed_path::TypedPath;
-use crate::fs::FileSystem;
+use crate::fs::FileSystemHandle;
 
 /// A trait for the backend of the language server.
 #[async_trait::async_trait]
@@ -31,7 +29,7 @@ where
 {
     fn client(&self) -> &tower_lsp::Client;
 
-    fn fs(&self) -> &Arc<crate::fs::FileManager>;
+    fn fs(&self) -> &FileSystemHandle;
 
     async fn is_initialized(&self) -> bool;
 
