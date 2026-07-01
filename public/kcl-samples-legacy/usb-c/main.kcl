@@ -50,11 +50,19 @@ shellProfile = startSketchOn(YZ)
 shellBody = extrude(shellProfile, length = shellLength)
   |> fillet(
        radius = shellCornerRadius,
-       tags = [
-         getNextAdjacentEdge(shellEdge01),
-         getNextAdjacentEdge(shellEdge02),
-         getNextAdjacentEdge(shellEdge03),
-         getNextAdjacentEdge(shellEdge04)
+       edges = [
+         {
+           sideFaces = [shellEdge01, shellEdge02]
+         },
+         {
+           sideFaces = [shellEdge02, shellEdge03]
+         },
+         {
+           sideFaces = [shellEdge03, shellEdge04]
+         },
+         {
+           sideFaces = [shellEdge01, shellEdge04]
+         }
        ],
      )
 
@@ -70,11 +78,19 @@ cavityProfile = startSketchOn(offsetPlane(YZ, offset = rearWall))
 cavityBody = extrude(cavityProfile, length = cavityLength)
   |> fillet(
        radius = innerCornerRadius,
-       tags = [
-         getNextAdjacentEdge(cavityEdge01),
-         getNextAdjacentEdge(cavityEdge02),
-         getNextAdjacentEdge(cavityEdge03),
-         getNextAdjacentEdge(cavityEdge04)
+       edges = [
+         {
+           sideFaces = [cavityEdge01, cavityEdge02]
+         },
+         {
+           sideFaces = [cavityEdge02, cavityEdge03]
+         },
+         {
+           sideFaces = [cavityEdge03, cavityEdge04]
+         },
+         {
+           sideFaces = [cavityEdge01, cavityEdge04]
+         }
        ],
      )
 
@@ -100,11 +116,19 @@ housingProfile = startSketchOn(YZ)
 housing = extrude(housingProfile, length = -housingLength)
   |> fillet(
        radius = housingCornerRadius,
-       tags = [
-         getNextAdjacentEdge(housingEdge01),
-         getNextAdjacentEdge(housingEdge02),
-         getNextAdjacentEdge(housingEdge03),
-         getNextAdjacentEdge(housingEdge04)
+       edges = [
+         {
+           sideFaces = [housingEdge01, housingEdge02]
+         },
+         {
+           sideFaces = [housingEdge02, housingEdge03]
+         },
+         {
+           sideFaces = [housingEdge03, housingEdge04]
+         },
+         {
+           sideFaces = [housingEdge01, housingEdge04]
+         }
        ],
      )
   |> appearance(color = "#1b1b1b", metalness = 4, roughness = 72)

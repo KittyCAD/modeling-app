@@ -31,7 +31,7 @@ result
 # rust
 /target
 /public/kcl_wasm_lib_bg.wasm
-
+/original-test-results/
 # playwright
 trace.zip
 test-results/

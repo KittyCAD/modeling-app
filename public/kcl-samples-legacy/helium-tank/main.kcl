@@ -43,12 +43,7 @@ tankRevolve = revolve(tankSketch, angle = 220deg, axis = Y)
 valveBody = startSketchOn(offsetPlane(XY, offset = tankHeight - 0.5))
   |> circle(center = [0, 0], radius = portDiameter / 1.9, tag = $seg03)
   |> extrude(length = 1.5, tagEnd = $capEnd001)
-  |> fillet(
-       radius = 0.1,
-       tags = [
-         getCommonEdge(faces = [seg03, capEnd001])
-       ],
-     )
+  |> fillet(radius = 0.1, edges = [{ sideFaces = [seg03, capEnd001] }])
 
 // Model the outlet port of the valve, then union it all together
 valvePort = startSketchOn(YZ)
@@ -97,14 +92,14 @@ mountingHoles = startSketchOn(offsetPlane(XZ, offset = -tankDiameter / 1.9))
   |> extrude(length = -5)
 
 bracket = subtract(
-       [bracketSleeve],
-       tools = union(patternLinear3d(
-         mountingHoles,
-         instances = 2,
-         distance = tankDiameter / 2.25,
-         axis = [-1, 0, 0],
-       )),
-     )
+  [bracketSleeve],
+  tools = union(patternLinear3d(
+    mountingHoles,
+    instances = 2,
+    distance = tankDiameter / 2.25,
+    axis = [-1, 0, 0],
+  )),
+)
   |> appearance(color = "#cd0404")
 
 // Model a circular strap to secure the tank to the bracket

@@ -68,20 +68,20 @@ corners = patternCircular3d(
 
 // Create the baseplate by patterning sides
 basePlateSides = patternLinear3d(
-       sides,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength,
-     )
+  sides,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // Create the corners of the baseplate by patterning the corners
 basePlateCorners = patternLinear3d(
-       corners,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength,
-     )
+  corners,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // Create the center cutout for the magnet profile
@@ -144,11 +144,31 @@ magnetHolesExtrude = extrude(magnetProfile, length = -magDepth)
 magnetHolesExtrudeFillets = fillet(
   magnetHolesExtrude,
   radius = cornerRadius,
-  tags = [
-    getNextAdjacentEdge(magnetHolesExtrude.sketch.tags.line001),
-    getPreviousAdjacentEdge(magnetHolesExtrude.sketch.tags.line001),
-    getNextAdjacentEdge(magnetHolesExtrude.sketch.tags.line003),
-    getPreviousAdjacentEdge(magnetHolesExtrude.sketch.tags.line003)
+  edges = [
+    {
+      sideFaces = [
+        magnetHolesExtrude.sketch.tags.line001,
+        magnetHolesExtrude.sketch.tags.line002
+      ]
+    },
+    {
+      sideFaces = [
+        magnetHolesExtrude.sketch.tags.line001,
+        magnetHolesExtrude.sketch.tags.line004
+      ]
+    },
+    {
+      sideFaces = [
+        magnetHolesExtrude.sketch.tags.line003,
+        magnetHolesExtrude.sketch.tags.line004
+      ]
+    },
+    {
+      sideFaces = [
+        magnetHolesExtrude.sketch.tags.line002,
+        magnetHolesExtrude.sketch.tags.line003
+      ]
+    }
   ],
 )
 
@@ -162,28 +182,48 @@ magnetCutoutExtrude = extrude(magnetProfileNoMagnets, length = -magDepth)
 magnetCutoutExtrudeFillets = fillet(
   magnetCutoutExtrude,
   radius = cornerRadius,
-  tags = [
-    getNextAdjacentEdge(magnetCutoutExtrude.sketch.tags.line001),
-    getPreviousAdjacentEdge(magnetCutoutExtrude.sketch.tags.line001),
-    getNextAdjacentEdge(magnetCutoutExtrude.sketch.tags.line003),
-    getPreviousAdjacentEdge(magnetCutoutExtrude.sketch.tags.line003)
+  edges = [
+    {
+      sideFaces = [
+        magnetCutoutExtrude.sketch.tags.line001,
+        magnetCutoutExtrude.sketch.tags.line002
+      ]
+    },
+    {
+      sideFaces = [
+        magnetCutoutExtrude.sketch.tags.line001,
+        magnetCutoutExtrude.sketch.tags.line004
+      ]
+    },
+    {
+      sideFaces = [
+        magnetCutoutExtrude.sketch.tags.line003,
+        magnetCutoutExtrude.sketch.tags.line004
+      ]
+    },
+    {
+      sideFaces = [
+        magnetCutoutExtrude.sketch.tags.line002,
+        magnetCutoutExtrude.sketch.tags.line003
+      ]
+    }
   ],
 )
 
 // Pattern the magnet cutouts with holes
 patternLinear3d(
-       magnetHolesExtrudeFillets,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength,
-     )
+  magnetHolesExtrudeFillets,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)
 
 // Pattern the magnet cutouts without holes
 patternLinear3d(
-       magnetCutoutExtrudeFillets,
-       axis = [1.0, 0.0, 0.0],
-       instances = countBinWidth,
-       distance = binLength,
-     )
+  magnetCutoutExtrudeFillets,
+  axis = [1.0, 0.0, 0.0],
+  instances = countBinWidth,
+  distance = binLength,
+)
   |> patternLinear3d(axis = [0.0, 1.0, 0.0], instances = countBinLength, distance = binLength)

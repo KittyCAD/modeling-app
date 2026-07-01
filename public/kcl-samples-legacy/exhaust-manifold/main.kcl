@@ -133,15 +133,15 @@ flangeSketch = startSketchOn(XY)
   |> extrude(length = plateHeight)
   |> fillet(
        radius = 1.5,
-       tags = [
-         getNextAdjacentEdge(seg04),
-         getNextAdjacentEdge(seg07)
+       edges = [
+         { sideFaces = [seg05, seg04] },
+         { sideFaces = [seg08, seg07] }
        ],
      )
   |> fillet(
        radius = .25,
-       tags = [
-         getNextAdjacentEdge(seg03),
-         getNextAdjacentEdge(seg08)
+       edges = [
+         { sideFaces = [seg04, seg03] },
+         { sideFaces = [seg09, seg08] }
        ],
      )

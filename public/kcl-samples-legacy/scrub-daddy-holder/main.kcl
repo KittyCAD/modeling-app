@@ -21,31 +21,37 @@ magnets = startProfile(sketch, at = [0, 0])
 
 // create the base of the holder
 base = startProfile(
-       sketch,
-       at = [
-         -spongeDiameter / 2 * 0.6,
-         -spongeEyeDiameter / 2 * 1.5
-       ],
-     )
+  sketch,
+  at = [
+    -spongeDiameter / 2 * 0.6,
+    -spongeEyeDiameter / 2 * 1.5
+  ],
+)
   |> xLine(length = spongeDiameter * 0.6, tag = $line001)
   |> yLine(length = spongeEyeDiameter * 1.5, tag = $line002)
   |> xLine(endAbsolute = profileStartX(), tag = $line003)
   |> close(tag = $line004)
-  |> extrude(length = magnetThickness * 1.5)
+  |> extrude(length = magnetThickness * 1.5, tagEnd = $capEnd002)
   |> subtract(tools = [magnets])
   |> fillet(
        radius = 5,
-       tags = [
-         getNextAdjacentEdge(line001),
-         getNextAdjacentEdge(line002),
-         getNextAdjacentEdge(line003),
-         getNextAdjacentEdge(line004)
+       edges = [
+         { sideFaces = [line001, line002] },
+         { sideFaces = [line002, line003] },
+         { sideFaces = [line003, line004] },
+         { sideFaces = [line001, line004] }
        ],
      )
 
 // create the holder pegs which go into the eyes of the sponge
 holder = startSketchOn(base, face = END)
   |> circle(center = [spongeEyeCenter2Center / 2, 0], diameter = spongeEyeDiameter, tag = $circ001)
-  |> extrude(length = spongeThickness - magnetThickness)
-  |> fillet(radius = 2, tags = [getOppositeEdge(circ001), circ001])
+  |> extrude(length = spongeThickness - magnetThickness, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 2,
+       edges = [
+         { sideFaces = [circ001, capEnd001] },
+         { sideFaces = [circ001, capEnd002] }
+       ],
+     )
   |> patternCircular3d(instances = 2, center = [0, 0, 0], axis = Z)

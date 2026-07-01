@@ -156,11 +156,13 @@ sketch002 = clone(sketch001)
 fillet(
   sketch002,
   radius = 2,
-  tags = [
-    getCommonEdge(faces = [
-      sketch002.sketch.tags.face0,
-      sketch002.sketch.tags.face1
-    ])
+  edges = [
+    {
+      sideFaces = [
+        sketch002.sketch.tags.face0,
+        sketch002.sketch.tags.face1
+      ]
+    }
   ],
 )
 
@@ -240,11 +242,31 @@ clonedMountingPlate = clone(mountingPlate)
 fillet(
   clonedMountingPlate,
   radius = filletRadius,
-  tags = [
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge1),
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge2),
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge3),
-    getNextAdjacentEdge(clonedMountingPlate.sketch.tags.edge4)
+  edges = [
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge1,
+        clonedMountingPlate.sketch.tags.edge2
+      ]
+    },
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge2,
+        clonedMountingPlate.sketch.tags.edge3
+      ]
+    },
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge3,
+        clonedMountingPlate.sketch.tags.edge4
+      ]
+    },
+    {
+      sideFaces = [
+        clonedMountingPlate.sketch.tags.edge1,
+        clonedMountingPlate.sketch.tags.edge4
+      ]
+    }
   ],
 )
   |> translate(x = 0, y = 50, z = 0)

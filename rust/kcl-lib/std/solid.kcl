@@ -28,11 +28,11 @@ import Face from "std::types"
 /// mountingPlate = extrude(mountingPlateSketch, length = thickness)
 ///   |> fillet(
 ///     radius = filletRadius,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
+///     edges = [
+///       { sideFaces = [edge1, edge2] },
+///       { sideFaces = [edge2, edge3] },
+///       { sideFaces = [edge3, edge4] },
+///       { sideFaces = [edge1, edge4] }
 ///     ],
 ///   )
 /// ```
@@ -54,11 +54,11 @@ import Face from "std::types"
 ///   |> fillet(
 ///     radius = filletRadius,
 ///     tolerance = 0.000001,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
+///     edges = [
+///       { sideFaces = [edge1, edge2] },
+///       { sideFaces = [edge2, edge3] },
+///       { sideFaces = [edge3, edge4] },
+///       { sideFaces = [edge1, edge4] }
 ///     ],
 ///   )
 /// ```
@@ -84,12 +84,12 @@ import Face from "std::types"
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
 ///   |> line(end = [4mm, 0mm], tag = $tabEdge)
-///   |> line(end = [0mm, 1mm])
+///   |> line(end = [0mm, 1mm], tag = $seg01)
 ///   |> line(end = [-4mm, 0mm])
 ///   |> close()
 ///
 /// blockWithTab = extrude(tabProfile, length = 1mm)
-/// filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+/// filletedBlock = fillet(blockWithTab, radius = 0.5mm, edges = [{ sideFaces = [tabEdge, seg01] }])
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn fillet(
@@ -144,11 +144,11 @@ export fn fillet(
 /// mountingPlate = extrude(mountingPlateSketch, length = thickness)
 ///   |> chamfer(
 ///     length = chamferLength,
-///     tags = [
-///       getNextAdjacentEdge(edge1),
-///       getNextAdjacentEdge(edge2),
-///       getNextAdjacentEdge(edge3),
-///       getNextAdjacentEdge(edge4)
+///     edges = [
+///       { sideFaces = [edge1, edge2] },
+///       { sideFaces = [edge2, edge3] },
+///       { sideFaces = [edge3, edge4] },
+///       { sideFaces = [edge1, edge4] }
 ///     ],
 ///   )
 /// ```
@@ -167,11 +167,11 @@ export fn fillet(
 ///
 /// part001 = cube(pos = [0,0], scale = 20)
 ///     |> close(tag = $line1)
-///     |> extrude(length = 20)
+///     |> extrude(length = 20, tagEnd = $capEnd001)
 ///     // We tag the chamfer to reference it later.
 ///     |> chamfer(
 ///         length = 10,
-///         tags = [getOppositeEdge(line1)],
+///         edges = [{ sideFaces = [line1, capEnd001] }],
 ///         tag = $chamfer1,
 ///     )  
 ///
@@ -199,11 +199,11 @@ export fn fillet(
 ///
 /// part001 = cube(pos = [0,0], scale = 20)
 ///     |> close(tag = $line1)
-///     |> extrude(length = 20)
+///     |> extrude(length = 20, tagEnd = $capEnd001)
 ///     |> chamfer(
 ///         length = 10,
 ///         angle = 30deg,
-///         tags = [getOppositeEdge(line1)],
+///         edges = [{ sideFaces = [line1, capEnd001] }],
 ///     )
 /// ```
 ///
@@ -228,12 +228,12 @@ export fn fillet(
 /// tabProfile = startSketchOn(block, face = top)
 ///   |> startProfile(at = [1mm, 1mm])
 ///   |> line(end = [4mm, 0mm], tag = $tabEdge)
-///   |> line(end = [0mm, 1mm])
+///   |> line(end = [0mm, 1mm], tag = $seg01)
 ///   |> line(end = [-4mm, 0mm])
 ///   |> close()
 ///
 /// blockWithTab = extrude(tabProfile, length = 1mm)
-/// chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+/// chamfered = chamfer(blockWithTab, length = 0.5mm, edges = [{ sideFaces = [tabEdge, seg01] }])
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn chamfer(

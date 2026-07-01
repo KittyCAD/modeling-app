@@ -41,7 +41,7 @@ part001 = startSketchOn(XY)
   |> chamfer(length = 10, tags = [getOppositeEdge(line0)], tag = $chamfer0)
 
 // Get the shared edge between the chamfer and the extrusion.
-commonEdge = getCommonEdge(faces = [chamfer0, end0])
+commonEdge = { sideFaces = [chamfer0, end0] }
 
 // Chamfer the shared edge.
 // TODO: uncomment this when ssi for fillets lands

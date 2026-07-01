@@ -23,11 +23,31 @@ sketch001 = startSketchOn(XY)
 extrude001 = extrude(sketch001, length = height)
   |> fillet(
        radius = wallThickness * 4,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001)
+       edges = [
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentB001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB001,
+             rectangleSegmentC001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentD001
+           ]
+         }
        ],
      )
 
@@ -110,11 +130,31 @@ sketch003 = startSketchOn(XY)
 extrude003 = extrude(sketch003, length = wallThickness)
   |> fillet(
        radius = wallThickness * 4,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA002),
-         getNextAdjacentEdge(rectangleSegmentB002),
-         getNextAdjacentEdge(rectangleSegmentC002),
-         getNextAdjacentEdge(rectangleSegmentD002)
+       edges = [
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentB002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB002,
+             rectangleSegmentC002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC002,
+             rectangleSegmentD002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentD002
+           ]
+         }
        ],
      )
 
@@ -160,10 +200,30 @@ sketch004 = startSketchOn(extrude003, face = END)
 extrude004 = extrude(sketch004, length = wallThickness)
   |> fillet(
        radius = wallThickness * 3,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA003),
-         getNextAdjacentEdge(rectangleSegmentB003),
-         getNextAdjacentEdge(rectangleSegmentC003),
-         getNextAdjacentEdge(rectangleSegmentD003)
+       edges = [
+         {
+           sideFaces = [
+             rectangleSegmentA003,
+             rectangleSegmentB003
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB003,
+             rectangleSegmentC003
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC003,
+             rectangleSegmentD003
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA003,
+             rectangleSegmentD003
+           ]
+         }
        ],
      )

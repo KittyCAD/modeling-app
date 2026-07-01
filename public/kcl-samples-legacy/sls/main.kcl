@@ -59,8 +59,10 @@ engineSectionBody = extrude(engineSectionProfile, length = 10 - 2.9, tagStart = 
 engineSectionLowerEdge = chamfer(
   engineSectionBody,
   length = 0.5,
-  tags = [
-    getCommonEdge(faces = [engineSectionLowerSegment, capStart001])
+  edges = [
+    {
+      sideFaces = [engineSectionLowerSegment, capStart001]
+    }
   ],
 )
 engineSectionPaintwork = appearance(engineSectionBody, color = "#ffffff")
