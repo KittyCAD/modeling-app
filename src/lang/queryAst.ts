@@ -1224,6 +1224,26 @@ export function getVariableExprsFromSelection(
       continue
     }
 
+    if (s.artifact?.type === 'edgeCut') {
+      const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance,
+        'VariableDeclaration',
+        false,
+        true
+      )
+      if (!err(edgeCutVariable)) {
+        const name = edgeCutVariable.node.declaration.id.name
+        if (pushedNames[name]) {
+          continue
+        }
+        exprs.push(createLocalName(name))
+        pushedNames[name] = true
+        continue
+      }
+    }
+
     if (s.artifact?.type === 'segment') {
       const sketchSegmentId = s.artifact.originalSegId ?? s.artifact.id
       const sketchName = getSketchVariableNameForSegment(
