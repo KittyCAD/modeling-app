@@ -475,6 +475,97 @@ async fn execute_and_export_impl(input: KclInput, export_format: FileExportForma
     result
 }
 
+fn parse_sketch_svg_mode(mode: Option<String>) -> PyResult<kcl_lib::front::SketchSvgMode> {
+    let Some(mode) = mode else {
+        return Ok(kcl_lib::front::SketchSvgMode::Agent);
+    };
+    match mode.trim().to_ascii_lowercase().as_str() {
+        "agent" => Ok(kcl_lib::front::SketchSvgMode::Agent),
+        "drawing" | "draw" => Ok(kcl_lib::front::SketchSvgMode::Drawing),
+        "constraints" | "constraint" | "debug" => Ok(kcl_lib::front::SketchSvgMode::Constraints),
+        other => Err(PyException::new_err(format!(
+            "Invalid sketch SVG mode `{other}`. Expected `agent`, `drawing`, or `constraints`."
+        ))),
+    }
+}
+
+async fn export_sketch_svg_impl(
+    input: KclInput,
+    sketch_name: Option<String>,
+    mode: Option<String>,
+    include_points: Option<bool>,
+    include_constraints: Option<bool>,
+    include_control_polygon: Option<bool>,
+) -> PyResult<String> {
+    let KclProgram {
+        code,
+        program,
+        path,
+        filename,
+    } = load_and_parse(input).await?;
+
+    let project_directory = path
+        .as_ref()
+        .and_then(|path| path.parent())
+        .map(|path| kcl_lib::TypedPath::new(path.to_string_lossy().as_ref()));
+    let current_file = path
+        .as_ref()
+        .map(|path| kcl_lib::TypedPath::new(path.to_string_lossy().as_ref()));
+    let ctx = ExecutorContext::new_mock(Some(kcl_lib::ExecutorSettings {
+        project_directory,
+        current_file,
+        ..Default::default()
+    }))
+    .await;
+    let mock_config = kcl_lib::MockConfig {
+        use_prev_memory: false,
+        ..Default::default()
+    };
+    let outcome = match ctx.run_mock(&program, &mock_config).await {
+        Ok(outcome) => outcome,
+        Err(err) => {
+            ctx.close().await;
+            return Err(into_miette(err, &code));
+        }
+    };
+    ctx.close().await;
+
+    let scene_graph = kcl_lib::front::SceneGraph {
+        project: kcl_lib::front::ProjectId(0),
+        file: kcl_lib::front::FileId(0),
+        version: kcl_lib::front::Version(0),
+        objects: outcome.scene_objects,
+        settings: Default::default(),
+        sketch_mode: None,
+    };
+    let sketch_id = if let Some(sketch_name) = sketch_name {
+        Some(
+            kcl_lib::front::sketch_id_for_variable_name(&program, &scene_graph, &sketch_name)
+                .map_err(|err| PyException::new_err(err.msg))?,
+        )
+    } else {
+        None
+    };
+
+    let options = kcl_lib::front::SketchSvgOptions {
+        sketch_id,
+        include_points: include_points.unwrap_or(false),
+        include_constraints: include_constraints.unwrap_or(true),
+        include_control_polygon: include_control_polygon.unwrap_or(true),
+        mode: parse_sketch_svg_mode(mode)?,
+        ..Default::default()
+    };
+    let export = kcl_lib::front::export_sketch_svg(&scene_graph, options).map_err(|err| {
+        let source = if filename.is_empty() {
+            "provided KCL code".to_owned()
+        } else {
+            filename
+        };
+        PyException::new_err(format!("Failed to export sketch SVG from {source}: {}", err.msg))
+    })?;
+    Ok(export.svg)
+}
+
 /// Parse the kcl code from a file path.
 #[pyo3_stub_gen::derive::gen_stub_pyfunction]
 #[pyfunction]
@@ -553,6 +644,62 @@ async fn mock_execute(path: String) -> PyResult<bool> {
     spawn_py(async move {
         execute_impl(KclInput::Path(path), true).await?;
         Ok(true)
+    })
+    .await
+}
+
+/// Generate an SVG for a sketch in a KCL file without connecting to the engine.
+///
+/// If `sketch_name` is provided, it must be the variable assigned to a `sketch(...) { ... }` block.
+/// If omitted, the first frontend sketch found in execution order is exported.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction(signature = (path, sketch_name=None, *, mode=None, include_points=None, include_constraints=None, include_control_polygon=None))]
+async fn export_sketch_svg(
+    path: String,
+    sketch_name: Option<String>,
+    mode: Option<String>,
+    include_points: Option<bool>,
+    include_constraints: Option<bool>,
+    include_control_polygon: Option<bool>,
+) -> PyResult<String> {
+    spawn_py(async move {
+        export_sketch_svg_impl(
+            KclInput::Path(path),
+            sketch_name,
+            mode,
+            include_points,
+            include_constraints,
+            include_control_polygon,
+        )
+        .await
+    })
+    .await
+}
+
+/// Generate an SVG for a sketch in KCL source code without connecting to the engine.
+///
+/// If `sketch_name` is provided, it must be the variable assigned to a `sketch(...) { ... }` block.
+/// If omitted, the first frontend sketch found in execution order is exported.
+#[pyo3_stub_gen::derive::gen_stub_pyfunction]
+#[pyfunction(signature = (code, sketch_name=None, *, mode=None, include_points=None, include_constraints=None, include_control_polygon=None))]
+async fn export_sketch_svg_code(
+    code: String,
+    sketch_name: Option<String>,
+    mode: Option<String>,
+    include_points: Option<bool>,
+    include_constraints: Option<bool>,
+    include_control_polygon: Option<bool>,
+) -> PyResult<String> {
+    spawn_py(async move {
+        export_sketch_svg_impl(
+            KclInput::Code(code),
+            sketch_name,
+            mode,
+            include_points,
+            include_constraints,
+            include_control_polygon,
+        )
+        .await
     })
     .await
 }
@@ -1218,6 +1365,8 @@ fn kcl(_py: Python, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(execute_code, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute, m)?)?;
     m.add_function(wrap_pyfunction!(mock_execute_code, m)?)?;
+    m.add_function(wrap_pyfunction!(export_sketch_svg, m)?)?;
+    m.add_function(wrap_pyfunction!(export_sketch_svg_code, m)?)?;
     m.add_function(wrap_pyfunction!(get_sketch_constraint_status, m)?)?;
     m.add_function(wrap_pyfunction!(get_sketch_constraint_status_code, m)?)?;
     m.add_function(wrap_pyfunction!(execute_and_snapshot, m)?)?;
@@ -1310,5 +1459,64 @@ result = subtract(cube, tools = [cylinder])
             report.contains("[22:10]"),
             "report should include a line:column marker for the source span: {report}"
         );
+    }
+
+    const TWO_SKETCHES: &str = r#"
+@settings(kclVersion = 2.0)
+
+sketch_a = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+  line1.start.at[0] == 0
+  line1.start.at[1] == 0
+  line1.end.at[0] == 1
+  line1.end.at[1] == 0
+}
+
+sketch_b = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 2mm])
+  line1.start.at[0] == 0
+  line1.start.at[1] == 0
+  line1.end.at[0] == 0
+  line1.end.at[1] == 2
+}
+"#;
+
+    #[test]
+    fn export_sketch_svg_impl_selects_named_sketch() {
+        let svg = tokio()
+            .block_on(export_sketch_svg_impl(
+                KclInput::Code(TWO_SKETCHES.to_owned()),
+                Some("sketch_b".to_owned()),
+                None,
+                None,
+                None,
+                None,
+            ))
+            .unwrap();
+
+        assert!(svg.starts_with("<svg"));
+        assert!(svg.contains("sketch-svg-mode-agent"));
+        assert!(svg.contains(r#"data-layer="model-geometry""#));
+        assert!(svg.contains(r#"x1="0" y1="0" x2="0" y2="-2""#));
+    }
+
+    #[test]
+    fn export_sketch_svg_impl_reports_available_names() {
+        pyo3::Python::initialize();
+        let error = tokio()
+            .block_on(export_sketch_svg_impl(
+                KclInput::Code(TWO_SKETCHES.to_owned()),
+                Some("missing".to_owned()),
+                None,
+                None,
+                None,
+                None,
+            ))
+            .unwrap_err();
+        let message = error.to_string();
+
+        assert!(message.contains("No sketch variable named `missing` found"));
+        assert!(message.contains("sketch_a"));
+        assert!(message.contains("sketch_b"));
     }
 }

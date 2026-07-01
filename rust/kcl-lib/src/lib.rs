@@ -223,6 +223,10 @@ pub mod front {
             Line, LineCtor, LinesEqualLength, Midpoint, NewSegmentInfo, Parallel, Perpendicular, Point, Point2d,
             PointCtor, Segment, SegmentCtor, Sketch, SketchApi, SketchCtor, StartOrEnd, Symmetric, Tangent, Vertical,
         },
+        sketch_svg::{
+            SketchSvgBounds, SketchSvgExport, SketchSvgMode, SketchSvgOptions, SketchSvgQuality, SketchSvgViewBox,
+            export_sketch_svg, sketch_id_for_variable_name,
+        },
         // Re-export trim module items
         trim::{
             ArcPoint, AttachToEndpoint, CoincidentData, ConstraintToMigrate, Coords2d, EndpointChanged, LineEndpoint,

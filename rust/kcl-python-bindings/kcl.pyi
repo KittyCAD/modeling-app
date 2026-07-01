@@ -77,6 +77,8 @@ __all__ = [
     "execute_code_and_measure",
     "execute_code_and_snapshot",
     "execute_code_and_snapshot_views",
+    "export_sketch_svg",
+    "export_sketch_svg_code",
     "format",
     "format_dir",
     "get_sketch_constraint_status",
@@ -1309,6 +1311,22 @@ async def execute_code_and_snapshot_views(code: builtins.str, image_format: zooI
     Execute the kcl code and snapshot it in a specific format.
     Returns one image for each camera angle you provide.
     If you don't provide any camera angles, a default head-on camera angle will be used.
+    """
+
+async def export_sketch_svg(path: builtins.str, sketch_name: typing.Optional[builtins.str] = None, *, mode: typing.Optional[builtins.str] = None, include_points: typing.Optional[builtins.bool] = None, include_constraints: typing.Optional[builtins.bool] = None, include_control_polygon: typing.Optional[builtins.bool] = None) -> builtins.str:
+    r"""
+    Generate an SVG for a sketch in a KCL file without connecting to the engine.
+    
+    If `sketch_name` is provided, it must be the variable assigned to a `sketch(...) { ... }` block.
+    If omitted, the first frontend sketch found in execution order is exported.
+    """
+
+async def export_sketch_svg_code(code: builtins.str, sketch_name: typing.Optional[builtins.str] = None, *, mode: typing.Optional[builtins.str] = None, include_points: typing.Optional[builtins.bool] = None, include_constraints: typing.Optional[builtins.bool] = None, include_control_polygon: typing.Optional[builtins.bool] = None) -> builtins.str:
+    r"""
+    Generate an SVG for a sketch in KCL source code without connecting to the engine.
+    
+    If `sketch_name` is provided, it must be the variable assigned to a `sketch(...) { ... }` block.
+    If omitted, the first frontend sketch found in execution order is exported.
     """
 
 def format(code: builtins.str) -> builtins.str:
