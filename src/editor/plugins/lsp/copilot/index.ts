@@ -81,6 +81,21 @@ interface GhostText {
   uuid: string
 }
 
+const typeThroughCharacter = /^[A-Za-z0-9_]$/
+
+function canTypeThroughGhostText(key: string, displayText: string): boolean {
+  if (key.length !== 1) {
+    return true
+  }
+
+  const nextGhostChar = displayText[0]
+  return (
+    typeThroughCharacter.test(key) &&
+    nextGhostChar !== undefined &&
+    typeThroughCharacter.test(nextGhostChar)
+  )
+}
+
 const completionDecoration = StateField.define<CompletionState>({
   create(_state: EditorState) {
     return { ghostText: null }
@@ -293,7 +308,7 @@ export class CompletionRequester implements PluginValue {
   }
 
   autocompleting(): boolean {
-    return completionStatus(this.view.state) === 'active'
+    return completionStatus(this.view.state) !== null
   }
 
   notFocused(): boolean {
@@ -511,6 +526,10 @@ export class CompletionRequester implements PluginValue {
 
     const tabKey = 'Tab'
 
+    if (this.autocompleting()) {
+      return this.rejectSuggestionCommand()
+    }
+
     // When we type a key that is the same as the first letter of the suggestion, we delete the first letter of the suggestion and carry through with the original keypress
     const ghostTextStart = ghostText.displayPos
     const indent = this.view.state.facet(indentUnit)
@@ -524,6 +543,8 @@ export class CompletionRequester implements PluginValue {
       return true
     } else if (key === tabKey) {
       return this.acceptSuggestionCommand()
+    } else if (!canTypeThroughGhostText(key, ghostText.displayText)) {
+      return this.rejectSuggestionCommand()
     } else if (ghostText.weirdInsert || key !== ghostText.displayText[0]) {
       return this.rejectSuggestionCommand()
     } else if (ghostText.displayText.length === 1) {
