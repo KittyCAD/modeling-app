@@ -1312,11 +1312,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           selection: {
             inputType: 'selection',
-            selectionTypes: [
-              'segment',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
-            ],
+            selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
             multiple: true,
             required: true,
             skip: false,
