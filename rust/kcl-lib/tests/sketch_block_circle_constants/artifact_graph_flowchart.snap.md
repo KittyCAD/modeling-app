@@ -38,21 +38,13 @@ flowchart LR
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   16["Sweep Extrusion<br>[847, 907, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Opposite"]
-  21[Wall]
+  17[Wall]
     %% face_code_ref=Missing NodePath
-  22[Wall]
+  18[Wall]
     %% face_code_ref=Missing NodePath
   15 --- 1
-  19 <--x 1
   16 --- 2
-  20 <--x 2
-  11 <--x 3
   15 --- 3
-  12 <--x 4
   16 --- 4
   7 x--> 5
   8 x--> 5
@@ -70,19 +62,7 @@ flowchart LR
   9 <--x 11
   10 <--x 12
   11 --- 17
-  11 --- 19
-  11 --- 21
   12 --- 18
-  12 --- 20
-  12 --- 22
   15 --- 17
-  15 --- 19
-  15 --- 21
   16 --- 18
-  16 --- 20
-  16 --- 22
-  21 --- 17
-  22 --- 18
-  21 --- 19
-  22 --- 20
 ```

@@ -198,43 +198,27 @@ flowchart LR
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   89["Sweep Revolve<br>[4380, 4424, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 27 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  90["SweepEdge Adjacent"]
-  91["SweepEdge Adjacent"]
-  92["SweepEdge Adjacent"]
-  93["SweepEdge Adjacent"]
-  94["SweepEdge Adjacent"]
-  95["SweepEdge Adjacent"]
-  96["SweepEdge Adjacent"]
-  97["SweepEdge Opposite"]
-  98["SweepEdge Opposite"]
-  99["SweepEdge Opposite"]
-  100[Wall]
+  90[Wall]
     %% face_code_ref=Missing NodePath
-  101[Wall]
+  91[Wall]
     %% face_code_ref=Missing NodePath
-  102[Wall]
+  92[Wall]
     %% face_code_ref=Missing NodePath
-  103[Wall]
+  93[Wall]
     %% face_code_ref=Missing NodePath
-  104[Wall]
+  94[Wall]
     %% face_code_ref=Missing NodePath
-  105[Wall]
+  95[Wall]
     %% face_code_ref=Missing NodePath
-  106[Wall]
+  96[Wall]
     %% face_code_ref=Missing NodePath
-  107[Wall]
+  97[Wall]
     %% face_code_ref=Missing NodePath
   85 --- 1
-  97 <--x 1
   86 --- 2
-  98 <--x 2
   89 --- 3
-  99 <--x 3
-  25 <--x 4
   85 --- 4
-  42 <--x 5
   86 --- 5
-  39 <--x 6
   89 --- 6
   16 x--> 7
   24 x--> 7
@@ -294,66 +278,27 @@ flowchart LR
   24 <--x 49
   43 x--> 25
   25 --- 90
-  25 --- 97
-  25 --- 100
   26 <--x 28
   27 <--x 29
-  87 <--x 28
-  28 --- 101
+  28 --- 91
   30 <--x 34
   31 <--x 35
   32 <--x 36
   33 <--x 37
-  88 <--x 34
-  34 --- 91
-  34 --- 102
-  88 <--x 35
-  35 --- 92
-  35 --- 103
-  88 <--x 36
-  36 --- 93
-  36 --- 104
-  88 <--x 37
-  37 --- 94
-  37 --- 105
+  34 --- 92
+  35 --- 93
+  36 --- 94
+  37 --- 95
   38 <--x 39
-  39 --- 95
-  39 --- 98
-  39 --- 106
+  39 --- 96
   40 <--x 42
-  42 --- 96
-  42 --- 99
-  42 --- 107
+  42 --- 97
   85 --- 90
-  85 --- 97
-  85 --- 100
-  86 --- 96
-  86 --- 99
-  86 --- 107
-  87 --- 101
-  88 --- 91
+  86 --- 97
+  87 --- 91
   88 --- 92
   88 --- 93
   88 --- 94
-  88 --- 102
-  88 --- 103
-  88 --- 104
-  88 --- 105
-  89 --- 95
-  89 --- 98
-  89 --- 106
-  100 --- 90
-  102 --- 91
-  91 x--> 102
-  103 --- 92
-  92 x--> 103
-  104 --- 93
-  93 x--> 104
-  94 x--> 105
-  105 --- 94
-  106 --- 95
-  107 --- 96
-  100 --- 97
-  106 --- 98
-  107 --- 99
+  88 --- 95
+  89 --- 96
 ```

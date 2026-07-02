@@ -11,17 +11,12 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   5["Sweep Revolve<br>[89, 142, 2]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-  6["SweepEdge Adjacent"]
-  7[Wall]
+  6[Wall]
     %% face_code_ref=Missing NodePath
   2 --- 1
   1 --- 3
   1 --- 4
   1 ---- 5
-  5 <--x 3
   3 --- 6
-  3 --- 7
   5 --- 6
-  5 --- 7
-  7 --- 6
 ```

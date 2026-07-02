@@ -154,13 +154,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 45 }, ExpressionStatementExpr]
   73["Sweep Sweep<br>[4106, 4397, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  74["SweepEdge Adjacent"]
-  75["SweepEdge Opposite"]
-  76[Wall]
+  74[Wall]
     %% face_code_ref=Missing NodePath
   73 --- 1
-  75 <--x 1
-  20 <--x 2
   73 --- 2
   5 x--> 3
   8 x--> 3
@@ -197,11 +193,5 @@ flowchart LR
   8 <--x 32
   19 <--x 20
   20 --- 74
-  20 --- 75
-  20 --- 76
   73 --- 74
-  73 --- 75
-  73 --- 76
-  76 --- 74
-  76 --- 75
 ```

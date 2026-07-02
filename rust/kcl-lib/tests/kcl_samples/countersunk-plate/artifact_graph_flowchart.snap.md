@@ -178,79 +178,41 @@ flowchart LR
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   86["Sweep RevolveAboutEdge<br>[4391, 4662, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  87["SweepEdge Adjacent"]
-  88["SweepEdge Adjacent"]
-  89["SweepEdge Adjacent"]
-  90["SweepEdge Adjacent"]
-  91["SweepEdge Adjacent"]
-  92["SweepEdge Adjacent"]
-  93["SweepEdge Adjacent"]
-  94["SweepEdge Adjacent"]
-  95["SweepEdge Adjacent"]
-  96["SweepEdge Adjacent"]
-  97["SweepEdge Adjacent"]
-  98["SweepEdge Adjacent"]
-  99["SweepEdge Adjacent"]
-  100["SweepEdge Adjacent"]
-  101["SweepEdge Opposite"]
-  102["SweepEdge Opposite"]
-  103["SweepEdge Opposite"]
-  104["SweepEdge Opposite"]
-  105["SweepEdge Opposite"]
-  106["SweepEdge Opposite"]
-  107["SweepEdge Opposite"]
-  108["SweepEdge Opposite"]
-  109[Wall]
+  87[Wall]
     %% face_code_ref=Missing NodePath
-  110[Wall]
+  88[Wall]
     %% face_code_ref=Missing NodePath
-  111[Wall]
+  89[Wall]
     %% face_code_ref=Missing NodePath
-  112[Wall]
+  90[Wall]
     %% face_code_ref=Missing NodePath
-  113[Wall]
+  91[Wall]
     %% face_code_ref=Missing NodePath
-  114[Wall]
+  92[Wall]
     %% face_code_ref=Missing NodePath
-  115[Wall]
+  93[Wall]
     %% face_code_ref=Missing NodePath
-  116[Wall]
+  94[Wall]
     %% face_code_ref=Missing NodePath
-  117[Wall]
+  95[Wall]
     %% face_code_ref=Missing NodePath
-  118[Wall]
+  96[Wall]
     %% face_code_ref=Missing NodePath
-  119[Wall]
+  97[Wall]
     %% face_code_ref=Missing NodePath
-  120[Wall]
+  98[Wall]
     %% face_code_ref=Missing NodePath
-  121[Wall]
+  99[Wall]
     %% face_code_ref=Missing NodePath
-  122[Wall]
+  100[Wall]
     %% face_code_ref=Missing NodePath
-  123[Wall]
+  101[Wall]
     %% face_code_ref=Missing NodePath
-  124[Wall]
+  102[Wall]
     %% face_code_ref=Missing NodePath
   1 <--x 12
   1 <--x 13
   84 --- 1
-  101 <--x 1
-  102 <--x 1
-  103 <--x 1
-  104 <--x 1
-  105 <--x 1
-  106 <--x 1
-  107 <--x 1
-  108 <--x 1
-  21 <--x 2
-  22 <--x 2
-  23 <--x 2
-  24 <--x 2
-  25 <--x 2
-  26 <--x 2
-  27 <--x 2
-  28 <--x 2
   84 --- 2
   3 --- 4
   5 --- 3
@@ -310,53 +272,23 @@ flowchart LR
   18 <--x 25
   19 <--x 26
   21 --- 87
-  21 --- 101
-  21 --- 109
   22 --- 88
-  22 --- 102
-  22 --- 110
   23 --- 89
-  23 --- 103
-  23 --- 111
   24 --- 90
-  24 --- 104
-  24 --- 112
   25 --- 91
-  25 --- 105
-  25 --- 113
   26 --- 92
-  26 --- 106
-  26 --- 114
   45 x--> 27
   27 --- 93
-  27 --- 107
-  27 --- 115
   46 x--> 28
   28 --- 94
-  28 --- 108
-  28 --- 116
-  85 <--x 33
   33 --- 95
-  33 --- 117
-  85 <--x 34
   34 --- 96
-  34 --- 118
-  85 <--x 35
   35 --- 97
-  35 --- 119
-  85 <--x 36
-  36 --- 120
-  86 <--x 41
-  41 --- 98
-  41 --- 121
-  86 <--x 42
-  42 --- 99
-  42 --- 122
-  86 <--x 43
-  43 --- 100
-  43 --- 123
-  86 <--x 44
-  44 --- 124
+  36 --- 98
+  41 --- 99
+  42 --- 100
+  43 --- 101
+  44 --- 102
   84 --- 87
   84 --- 88
   84 --- 89
@@ -365,70 +297,12 @@ flowchart LR
   84 --- 92
   84 --- 93
   84 --- 94
-  84 --- 101
-  84 --- 102
-  84 --- 103
-  84 --- 104
-  84 --- 105
-  84 --- 106
-  84 --- 107
-  84 --- 108
-  84 --- 109
-  84 --- 110
-  84 --- 111
-  84 --- 112
-  84 --- 113
-  84 --- 114
-  84 --- 115
-  84 --- 116
   85 --- 95
   85 --- 96
   85 --- 97
-  85 --- 117
-  85 --- 118
-  85 --- 119
-  85 --- 120
-  86 --- 98
+  85 --- 98
   86 --- 99
   86 --- 100
-  86 --- 121
-  86 --- 122
-  86 --- 123
-  86 --- 124
-  109 --- 87
-  87 x--> 109
-  88 x--> 110
-  110 --- 88
-  89 x--> 111
-  111 --- 89
-  90 x--> 112
-  112 --- 90
-  91 x--> 113
-  113 --- 91
-  92 x--> 114
-  114 --- 92
-  93 x--> 115
-  115 --- 93
-  94 x--> 116
-  116 --- 94
-  95 x--> 117
-  118 --- 95
-  119 --- 96
-  96 x--> 119
-  97 x--> 120
-  120 --- 97
-  98 x--> 121
-  122 --- 98
-  123 --- 99
-  99 x--> 123
-  100 x--> 124
-  124 --- 100
-  109 --- 101
-  110 --- 102
-  111 --- 103
-  112 --- 104
-  113 --- 105
-  114 --- 106
-  115 --- 107
-  116 --- 108
+  86 --- 101
+  86 --- 102
 ```

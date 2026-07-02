@@ -156,47 +156,25 @@ flowchart LR
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   72["Sweep Revolve<br>[2403, 2431, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  73["SweepEdge Adjacent"]
-  74["SweepEdge Adjacent"]
-  75["SweepEdge Adjacent"]
-  76["SweepEdge Adjacent"]
-  77["SweepEdge Adjacent"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Adjacent"]
-  80["SweepEdge Opposite"]
-  81["SweepEdge Opposite"]
-  82["SweepEdge Opposite"]
-  83["SweepEdge Opposite"]
-  84["SweepEdge Opposite"]
-  85[Wall]
+  73[Wall]
     %% face_code_ref=Missing NodePath
-  86[Wall]
+  74[Wall]
     %% face_code_ref=Missing NodePath
-  87[Wall]
+  75[Wall]
     %% face_code_ref=Missing NodePath
-  88[Wall]
+  76[Wall]
     %% face_code_ref=Missing NodePath
-  89[Wall]
+  77[Wall]
     %% face_code_ref=Missing NodePath
-  90[Wall]
+  78[Wall]
     %% face_code_ref=Missing NodePath
-  91[Wall]
+  79[Wall]
     %% face_code_ref=Missing NodePath
-  92[Wall]
+  80[Wall]
     %% face_code_ref=Missing NodePath
   65 --- 1
-  80 <--x 1
-  81 <--x 1
-  82 <--x 1
-  83 <--x 1
   71 --- 2
-  84 <--x 2
-  22 <--x 3
-  23 <--x 3
-  24 <--x 3
-  25 <--x 3
   65 --- 3
-  27 <--x 4
   71 --- 4
   6 --- 5
   7 --- 5
@@ -281,72 +259,27 @@ flowchart LR
   21 <--x 42
   36 x--> 22
   22 --- 73
-  22 --- 80
-  22 --- 85
   37 x--> 23
   23 --- 74
-  23 --- 81
-  23 --- 86
   38 x--> 24
   24 --- 75
-  24 --- 82
-  24 --- 87
   39 x--> 25
   25 --- 76
-  25 --- 83
-  25 --- 88
   26 <--x 27
   27 --- 77
-  27 --- 84
-  27 --- 89
   28 <--x 32
   29 <--x 33
   30 <--x 34
   31 <--x 35
-  72 <--x 32
-  32 --- 90
-  72 <--x 34
-  34 --- 78
-  34 --- 91
-  72 <--x 35
-  35 --- 79
-  35 --- 92
+  32 --- 78
+  34 --- 79
+  35 --- 80
   65 --- 73
   65 --- 74
   65 --- 75
   65 --- 76
-  65 --- 80
-  65 --- 81
-  65 --- 82
-  65 --- 83
-  65 --- 85
-  65 --- 86
-  65 --- 87
-  65 --- 88
   71 --- 77
-  71 --- 84
-  71 --- 89
   72 --- 78
   72 --- 79
-  72 --- 90
-  72 --- 91
-  72 --- 92
-  85 --- 73
-  73 x--> 88
-  74 x--> 85
-  86 --- 74
-  75 x--> 86
-  87 --- 75
-  76 x--> 87
-  88 --- 76
-  89 --- 77
-  91 <--x 78
-  79 x--> 90
-  92 <--x 79
-  79 x--> 92
-  85 --- 80
-  86 --- 81
-  87 --- 82
-  88 --- 83
-  89 --- 84
+  72 --- 80
 ```

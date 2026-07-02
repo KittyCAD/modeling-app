@@ -161,122 +161,58 @@ flowchart LR
     %% [ProgramBodyItem { index: 9 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   74["Sweep RevolveAboutEdge<br>[2443, 2488, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  75["SweepEdge Adjacent"]
-  76["SweepEdge Adjacent"]
-  77["SweepEdge Adjacent"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Adjacent"]
-  80["SweepEdge Adjacent"]
-  81["SweepEdge Adjacent"]
-  82["SweepEdge Adjacent"]
-  83["SweepEdge Adjacent"]
-  84["SweepEdge Adjacent"]
-  85["SweepEdge Adjacent"]
-  86["SweepEdge Adjacent"]
-  87["SweepEdge Adjacent"]
-  88["SweepEdge Adjacent"]
-  89["SweepEdge Adjacent"]
-  90["SweepEdge Adjacent"]
-  91["SweepEdge Opposite"]
-  92["SweepEdge Opposite"]
-  93["SweepEdge Opposite"]
-  94["SweepEdge Opposite"]
-  95["SweepEdge Opposite"]
-  96["SweepEdge Opposite"]
-  97["SweepEdge Opposite"]
-  98["SweepEdge Opposite"]
-  99["SweepEdge Opposite"]
-  100["SweepEdge Opposite"]
-  101["SweepEdge Opposite"]
-  102["SweepEdge Opposite"]
-  103["SweepEdge Opposite"]
-  104["SweepEdge Opposite"]
-  105["SweepEdge Opposite"]
-  106["SweepEdge Opposite"]
-  107[Wall]
+  75[Wall]
     %% face_code_ref=[ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  108[Wall]
+  76[Wall]
     %% face_code_ref=Missing NodePath
-  109[Wall]
+  77[Wall]
     %% face_code_ref=Missing NodePath
-  110[Wall]
+  78[Wall]
     %% face_code_ref=Missing NodePath
-  111[Wall]
+  79[Wall]
     %% face_code_ref=Missing NodePath
-  112[Wall]
+  80[Wall]
     %% face_code_ref=Missing NodePath
-  113[Wall]
+  81[Wall]
     %% face_code_ref=Missing NodePath
-  114[Wall]
+  82[Wall]
     %% face_code_ref=Missing NodePath
-  115[Wall]
+  83[Wall]
     %% face_code_ref=Missing NodePath
-  116[Wall]
+  84[Wall]
     %% face_code_ref=Missing NodePath
-  117[Wall]
+  85[Wall]
     %% face_code_ref=Missing NodePath
-  118[Wall]
+  86[Wall]
     %% face_code_ref=Missing NodePath
-  119[Wall]
+  87[Wall]
     %% face_code_ref=Missing NodePath
-  120[Wall]
+  88[Wall]
     %% face_code_ref=Missing NodePath
-  121[Wall]
+  89[Wall]
     %% face_code_ref=Missing NodePath
-  122[Wall]
+  90[Wall]
     %% face_code_ref=Missing NodePath
   70 --- 1
-  91 <--x 1
-  92 <--x 1
-  93 <--x 1
   71 --- 2
-  99 <--x 2
-  100 <--x 2
-  101 <--x 2
-  102 <--x 2
   72 --- 3
-  94 <--x 3
-  98 <--x 3
-  105 <--x 3
   73 --- 4
-  103 <--x 4
-  104 <--x 4
-  106 <--x 4
   74 --- 5
-  95 <--x 5
-  96 <--x 5
-  97 <--x 5
-  26 <--x 6
-  27 <--x 6
-  28 <--x 6
   70 --- 6
-  43 <--x 7
-  44 <--x 7
-  45 <--x 7
-  46 <--x 7
   71 --- 7
-  30 <--x 8
-  38 <--x 8
-  58 <--x 8
   72 --- 8
-  56 <--x 9
-  57 <--x 9
-  59 <--x 9
   73 --- 9
-  33 <--x 10
-  34 <--x 10
-  35 <--x 10
   74 --- 10
   11 --- 25
   11 --- 60
-  107 --- 11
+  75 --- 11
   12 --- 26
   12 --- 27
   12 --- 28
   12 --- 29
   12 --- 61
   12 ---- 70
-  107 --- 12
+  75 --- 12
   23 --- 13
   13 --- 31
   13 --- 32
@@ -306,7 +242,7 @@ flowchart LR
   17 ---- 71
   18 --- 49
   18 --- 50
-  107 --- 18
+  75 --- 18
   22 --- 19
   19 --- 30
   19 --- 38
@@ -320,157 +256,45 @@ flowchart LR
   20 --- 54
   20 --- 55
   20 --- 67
-  107 --- 20
+  75 --- 20
   21 --- 24
   21 --- 56
   21 --- 57
   21 --- 59
   21 --- 68
   21 ---- 73
-  107 --- 21
-  26 --- 75
-  26 --- 91
-  26 --- 108
-  27 --- 76
-  27 --- 92
-  27 --- 109
-  28 --- 77
-  28 --- 93
-  28 --- 110
-  30 --- 78
-  30 --- 94
-  30 --- 107
+  75 --- 21
+  26 --- 76
+  27 --- 77
+  28 --- 78
+  30 --- 75
   33 --- 79
-  33 --- 95
-  33 --- 111
   34 --- 80
-  34 --- 96
-  34 --- 112
   35 --- 81
-  35 --- 97
-  35 --- 113
   38 --- 82
-  38 --- 98
-  38 --- 114
   43 --- 83
-  43 --- 99
-  43 --- 115
   44 --- 84
-  44 --- 100
-  44 --- 116
   45 --- 85
-  45 --- 101
-  45 --- 117
   46 --- 86
-  46 --- 102
-  46 --- 118
   56 --- 87
-  56 --- 103
-  56 --- 119
   57 --- 88
-  57 --- 104
-  57 --- 120
   58 --- 89
-  58 --- 105
-  58 --- 121
   59 --- 90
-  59 --- 106
-  59 --- 122
-  107 x--> 69
-  70 --- 75
+  75 x--> 69
   70 --- 76
   70 --- 77
-  70 --- 91
-  70 --- 92
-  70 --- 93
-  70 --- 108
-  70 --- 109
-  70 --- 110
+  70 --- 78
   71 --- 83
   71 --- 84
   71 --- 85
   71 --- 86
-  71 --- 99
-  71 --- 100
-  71 --- 101
-  71 --- 102
-  71 --- 115
-  71 --- 116
-  71 --- 117
-  71 --- 118
-  72 --- 78
+  72 --- 75
   72 --- 82
   72 --- 89
-  72 --- 94
-  72 --- 98
-  72 --- 105
-  72 --- 107
-  72 --- 114
-  72 --- 121
   73 --- 87
   73 --- 88
   73 --- 90
-  73 --- 103
-  73 --- 104
-  73 --- 106
-  73 --- 119
-  73 --- 120
-  73 --- 122
   74 --- 79
   74 --- 80
   74 --- 81
-  74 --- 95
-  74 --- 96
-  74 --- 97
-  74 --- 111
-  74 --- 112
-  74 --- 113
-  107 --- 75
-  75 x--> 107
-  108 --- 76
-  76 x--> 108
-  77 x--> 109
-  109 --- 77
-  110 --- 78
-  78 x--> 110
-  111 --- 79
-  79 x--> 111
-  112 --- 80
-  80 x--> 112
-  81 x--> 113
-  113 --- 81
-  114 --- 82
-  82 x--> 114
-  115 --- 83
-  83 x--> 115
-  116 --- 84
-  84 x--> 116
-  117 --- 85
-  85 x--> 117
-  86 x--> 118
-  118 --- 86
-  119 --- 87
-  87 x--> 119
-  120 --- 88
-  88 x--> 120
-  89 x--> 121
-  121 --- 89
-  90 x--> 122
-  122 --- 90
-  107 --- 91
-  108 --- 92
-  109 --- 93
-  110 --- 94
-  111 --- 95
-  112 --- 96
-  113 --- 97
-  114 --- 98
-  115 --- 99
-  116 --- 100
-  117 --- 101
-  118 --- 102
-  119 --- 103
-  120 --- 104
-  121 --- 105
-  122 --- 106
 ```

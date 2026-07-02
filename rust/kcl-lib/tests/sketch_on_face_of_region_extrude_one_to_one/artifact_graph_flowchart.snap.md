@@ -92,46 +92,22 @@ flowchart LR
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   42["Sweep Extrusion<br>[523, 558, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  43["SweepEdge Adjacent"]
-  44["SweepEdge Adjacent"]
-  45["SweepEdge Adjacent"]
-  46["SweepEdge Adjacent"]
-  47["SweepEdge Adjacent"]
-  48["SweepEdge Adjacent"]
-  49["SweepEdge Adjacent"]
-  50["SweepEdge Opposite"]
-  51["SweepEdge Opposite"]
-  52["SweepEdge Opposite"]
-  53["SweepEdge Opposite"]
-  54["SweepEdge Opposite"]
-  55["SweepEdge Opposite"]
-  56["SweepEdge Opposite"]
-  57[Wall]
+  43[Wall]
     %% face_code_ref=Missing NodePath
-  58[Wall]
+  44[Wall]
     %% face_code_ref=Missing NodePath
-  59[Wall]
+  45[Wall]
     %% face_code_ref=Missing NodePath
-  60[Wall]
+  46[Wall]
     %% face_code_ref=Missing NodePath
-  61[Wall]
+  47[Wall]
     %% face_code_ref=Missing NodePath
-  62[Wall]
+  48[Wall]
     %% face_code_ref=Missing NodePath
-  63[Wall]
+  49[Wall]
     %% face_code_ref=Missing NodePath
   41 --- 1
-  50 <--x 1
-  51 <--x 1
-  52 <--x 1
-  53 <--x 1
   42 --- 2
-  54 <--x 2
-  55 <--x 2
-  56 <--x 2
-  16 <--x 3
-  17 <--x 3
-  18 <--x 3
   42 --- 3
   7 x--> 4
   4 <--x 10
@@ -139,7 +115,7 @@ flowchart LR
   4 <--x 12
   4 <--x 13
   4 ---- 41
-  57 x--> 4
+  43 x--> 4
   6 x--> 5
   8 x--> 5
   5 <--x 16
@@ -156,81 +132,28 @@ flowchart LR
   7 --- 21
   7 --- 22
   24 --- 7
-  57 --- 7
+  43 --- 7
   8 <--x 23
   9 <--x 16
   19 x--> 10
-  10 --- 43
-  10 --- 50
-  10 x--> 57
-  10 --- 58
+  10 --- 44
   20 x--> 11
-  11 --- 44
-  11 --- 51
-  11 x--> 57
-  11 --- 59
+  11 --- 45
   21 x--> 12
-  12 --- 45
-  12 --- 52
-  12 x--> 57
-  12 --- 60
+  12 --- 46
   22 x--> 13
-  13 --- 46
-  13 --- 53
-  13 x--> 57
-  13 --- 61
+  13 --- 47
   14 <--x 17
   15 <--x 18
-  16 --- 47
-  16 --- 54
-  16 --- 57
+  16 --- 43
   17 --- 48
-  17 --- 55
-  17 --- 62
   18 --- 49
-  18 --- 56
-  18 --- 63
-  57 x--> 24
-  41 --- 43
+  43 x--> 24
   41 --- 44
   41 --- 45
   41 --- 46
-  41 --- 50
-  41 --- 51
-  41 --- 52
-  41 --- 53
-  41 --- 58
-  41 --- 59
-  41 --- 60
-  41 --- 61
-  42 --- 47
+  41 --- 47
+  42 --- 43
   42 --- 48
   42 --- 49
-  42 --- 54
-  42 --- 55
-  42 --- 56
-  42 --- 57
-  42 --- 62
-  42 --- 63
-  57 --- 43
-  43 x--> 57
-  44 x--> 58
-  58 --- 44
-  45 x--> 59
-  59 --- 45
-  46 x--> 60
-  60 --- 46
-  47 x--> 61
-  61 --- 47
-  48 x--> 62
-  62 --- 48
-  63 --- 49
-  49 x--> 63
-  57 --- 50
-  58 --- 51
-  59 --- 52
-  60 --- 53
-  61 --- 54
-  62 --- 55
-  63 --- 56
 ```

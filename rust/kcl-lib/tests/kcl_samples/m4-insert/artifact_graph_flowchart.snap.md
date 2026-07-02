@@ -138,41 +138,29 @@ flowchart LR
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 49 }, ExpressionStatementExpr]
   67["Sweep Revolve<br>[3678, 3732, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  68["SweepEdge Adjacent"]
-  69["SweepEdge Adjacent"]
-  70["SweepEdge Adjacent"]
-  71["SweepEdge Adjacent"]
-  72["SweepEdge Adjacent"]
-  73["SweepEdge Adjacent"]
-  74["SweepEdge Adjacent"]
-  75["SweepEdge Adjacent"]
-  76["SweepEdge Adjacent"]
-  77["SweepEdge Adjacent"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Adjacent"]
-  80[Wall]
+  68[Wall]
     %% face_code_ref=Missing NodePath
-  81[Wall]
+  69[Wall]
     %% face_code_ref=Missing NodePath
-  82[Wall]
+  70[Wall]
     %% face_code_ref=Missing NodePath
-  83[Wall]
+  71[Wall]
     %% face_code_ref=Missing NodePath
-  84[Wall]
+  72[Wall]
     %% face_code_ref=Missing NodePath
-  85[Wall]
+  73[Wall]
     %% face_code_ref=Missing NodePath
-  86[Wall]
+  74[Wall]
     %% face_code_ref=Missing NodePath
-  87[Wall]
+  75[Wall]
     %% face_code_ref=Missing NodePath
-  88[Wall]
+  76[Wall]
     %% face_code_ref=Missing NodePath
-  89[Wall]
+  77[Wall]
     %% face_code_ref=Missing NodePath
-  90[Wall]
+  78[Wall]
     %% face_code_ref=Missing NodePath
-  91[Wall]
+  79[Wall]
     %% face_code_ref=Missing NodePath
   2 x--> 1
   3 x--> 1
@@ -212,46 +200,22 @@ flowchart LR
   9 <--x 17
   10 <--x 18
   11 <--x 19
-  67 <--x 12
   12 --- 68
-  12 --- 80
-  67 <--x 13
   13 --- 69
-  13 --- 81
-  67 <--x 14
   14 --- 70
-  14 --- 82
-  67 <--x 15
   15 --- 71
-  15 --- 83
-  67 <--x 16
   16 --- 72
-  16 --- 84
-  67 <--x 17
   17 --- 73
-  17 --- 85
-  67 <--x 18
   18 --- 74
-  18 --- 86
-  67 <--x 19
   19 --- 75
-  19 --- 87
   24 x--> 20
-  67 <--x 20
   20 --- 76
-  20 --- 88
   25 x--> 21
-  67 <--x 21
   21 --- 77
-  21 --- 89
   26 x--> 22
-  67 <--x 22
   22 --- 78
-  22 --- 90
   27 x--> 23
-  67 <--x 23
   23 --- 79
-  23 --- 91
   67 --- 68
   67 --- 69
   67 --- 70
@@ -264,40 +228,4 @@ flowchart LR
   67 --- 77
   67 --- 78
   67 --- 79
-  67 --- 80
-  67 --- 81
-  67 --- 82
-  67 --- 83
-  67 --- 84
-  67 --- 85
-  67 --- 86
-  67 --- 87
-  67 --- 88
-  67 --- 89
-  67 --- 90
-  67 --- 91
-  80 --- 68
-  68 x--> 80
-  81 --- 69
-  69 x--> 81
-  82 --- 70
-  70 x--> 82
-  83 --- 71
-  71 x--> 83
-  84 --- 72
-  72 x--> 84
-  85 --- 73
-  73 x--> 85
-  86 --- 74
-  74 x--> 86
-  87 --- 75
-  75 x--> 87
-  88 --- 76
-  76 x--> 88
-  89 --- 77
-  77 x--> 89
-  90 --- 78
-  78 x--> 90
-  79 x--> 91
-  91 --- 79
 ```

@@ -132,32 +132,20 @@ flowchart LR
     %% [ProgramBodyItem { index: 21 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   60["Sweep Revolve<br>[1235, 1280, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  61["SweepEdge Adjacent"]
-  62["SweepEdge Adjacent"]
-  63["SweepEdge Adjacent"]
-  64["SweepEdge Opposite"]
-  65["SweepEdge Opposite"]
-  66["SweepEdge Opposite"]
-  67[Wall]
+  61[Wall]
     %% face_code_ref=Missing NodePath
-  68[Wall]
+  62[Wall]
     %% face_code_ref=Missing NodePath
-  69[Wall]
+  63[Wall]
     %% face_code_ref=Missing NodePath
-  70[Wall]
+  64[Wall]
     %% face_code_ref=Missing NodePath
-  43 <--x 1
   59 --- 1
-  44 <--x 2
   59 x--> 2
-  45 <--x 3
   59 x--> 3
   59 --- 4
-  64 <--x 4
   59 x--> 5
-  65 <--x 5
   59 x--> 6
-  66 <--x 6
   12 x--> 7
   7 --- 13
   7 --- 16
@@ -202,36 +190,17 @@ flowchart LR
   59 <--x 37
   38 <--x 48
   39 <--x 49
-  47 x--> 40
-  60 <--x 40
-  40 --- 67
-  46 x--> 41
+  46 x--> 40
+  47 x--> 41
+  41 --- 61
   42 <--x 43
   42 <--x 44
   42 <--x 45
-  43 --- 61
-  43 --- 64
-  43 --- 68
-  44 --- 62
-  44 --- 65
-  44 --- 69
-  45 --- 63
-  45 --- 66
-  45 --- 70
-  59 --- 61
-  59 <--x 62
+  43 --- 62
+  44 --- 63
+  45 --- 64
+  59 --- 62
   59 <--x 63
-  59 --- 64
-  59 <--x 65
-  59 <--x 66
-  59 --- 68
-  59 <--x 69
-  59 <--x 70
-  60 --- 67
-  68 --- 61
-  69 --- 62
-  70 --- 63
-  68 --- 64
-  69 --- 65
-  70 --- 66
+  59 <--x 64
+  60 --- 61
 ```

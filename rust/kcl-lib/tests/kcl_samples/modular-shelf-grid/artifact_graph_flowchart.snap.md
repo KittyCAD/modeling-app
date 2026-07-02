@@ -176,57 +176,25 @@ flowchart LR
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   84["Sweep Extrusion<br>[4022, 4072, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 18 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  85["SweepEdge Adjacent"]
-  86["SweepEdge Adjacent"]
-  87["SweepEdge Adjacent"]
-  88["SweepEdge Adjacent"]
-  89["SweepEdge Adjacent"]
-  90["SweepEdge Adjacent"]
-  91["SweepEdge Adjacent"]
-  92["SweepEdge Adjacent"]
-  93["SweepEdge Opposite"]
-  94["SweepEdge Opposite"]
-  95["SweepEdge Opposite"]
-  96["SweepEdge Opposite"]
-  97["SweepEdge Opposite"]
-  98["SweepEdge Opposite"]
-  99["SweepEdge Opposite"]
-  100["SweepEdge Opposite"]
-  101[Wall]
+  85[Wall]
     %% face_code_ref=Missing NodePath
-  102[Wall]
+  86[Wall]
     %% face_code_ref=Missing NodePath
-  103[Wall]
+  87[Wall]
     %% face_code_ref=Missing NodePath
-  104[Wall]
+  88[Wall]
     %% face_code_ref=Missing NodePath
-  105[Wall]
+  89[Wall]
     %% face_code_ref=Missing NodePath
-  106[Wall]
+  90[Wall]
     %% face_code_ref=Missing NodePath
-  107[Wall]
+  91[Wall]
     %% face_code_ref=Missing NodePath
-  108[Wall]
+  92[Wall]
     %% face_code_ref=Missing NodePath
   83 --- 1
-  93 <--x 1
-  94 <--x 1
-  95 <--x 1
-  96 <--x 1
   84 --- 2
-  97 <--x 2
-  98 <--x 2
-  99 <--x 2
-  100 <--x 2
-  41 <--x 3
-  42 <--x 3
-  43 <--x 3
-  44 <--x 3
   83 --- 3
-  49 <--x 4
-  50 <--x 4
-  51 <--x 4
-  52 <--x 4
   84 --- 4
   7 x--> 5
   5 --- 9
@@ -273,79 +241,23 @@ flowchart LR
   39 <--x 43
   40 <--x 44
   41 --- 85
-  41 --- 93
-  41 --- 101
   42 --- 86
-  42 --- 94
-  42 --- 102
   43 --- 87
-  43 --- 95
-  43 --- 103
   44 --- 88
-  44 --- 96
-  44 --- 104
   45 <--x 49
   46 <--x 50
   47 <--x 51
   48 <--x 52
   49 --- 89
-  49 --- 97
-  49 --- 105
   50 --- 90
-  50 --- 98
-  50 --- 106
   51 --- 91
-  51 --- 99
-  51 --- 107
   52 --- 92
-  52 --- 100
-  52 --- 108
   83 --- 85
   83 --- 86
   83 --- 87
   83 --- 88
-  83 --- 93
-  83 --- 94
-  83 --- 95
-  83 --- 96
-  83 --- 101
-  83 --- 102
-  83 --- 103
-  83 --- 104
   84 --- 89
   84 --- 90
   84 --- 91
   84 --- 92
-  84 --- 97
-  84 --- 98
-  84 --- 99
-  84 --- 100
-  84 --- 105
-  84 --- 106
-  84 --- 107
-  84 --- 108
-  101 --- 85
-  85 x--> 101
-  86 x--> 102
-  102 --- 86
-  87 x--> 103
-  103 --- 87
-  88 x--> 104
-  104 --- 88
-  105 --- 89
-  89 x--> 105
-  90 x--> 106
-  106 --- 90
-  91 x--> 107
-  107 --- 91
-  92 x--> 108
-  108 --- 92
-  101 --- 93
-  102 --- 94
-  103 --- 95
-  104 --- 96
-  105 --- 97
-  106 --- 98
-  107 --- 99
-  108 --- 100
 ```

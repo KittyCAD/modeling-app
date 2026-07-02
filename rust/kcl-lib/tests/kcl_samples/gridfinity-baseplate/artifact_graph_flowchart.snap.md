@@ -158,70 +158,30 @@ flowchart LR
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   76["Sweep Revolve<br>[2782, 2839, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  77["SweepEdge Adjacent"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Adjacent"]
-  80["SweepEdge Adjacent"]
-  81["SweepEdge Adjacent"]
-  82["SweepEdge Adjacent"]
-  83["SweepEdge Adjacent"]
-  84["SweepEdge Adjacent"]
-  85["SweepEdge Adjacent"]
-  86["SweepEdge Adjacent"]
-  87["SweepEdge Opposite"]
-  88["SweepEdge Opposite"]
-  89["SweepEdge Opposite"]
-  90["SweepEdge Opposite"]
-  91["SweepEdge Opposite"]
-  92["SweepEdge Opposite"]
-  93["SweepEdge Opposite"]
-  94["SweepEdge Opposite"]
-  95["SweepEdge Opposite"]
-  96["SweepEdge Opposite"]
-  97[Wall]
+  77[Wall]
     %% face_code_ref=Missing NodePath
-  98[Wall]
+  78[Wall]
     %% face_code_ref=Missing NodePath
-  99[Wall]
+  79[Wall]
     %% face_code_ref=Missing NodePath
-  100[Wall]
+  80[Wall]
     %% face_code_ref=Missing NodePath
-  101[Wall]
+  81[Wall]
     %% face_code_ref=Missing NodePath
-  102[Wall]
+  82[Wall]
     %% face_code_ref=Missing NodePath
-  103[Wall]
+  83[Wall]
     %% face_code_ref=Missing NodePath
-  104[Wall]
+  84[Wall]
     %% face_code_ref=Missing NodePath
-  105[Wall]
+  85[Wall]
     %% face_code_ref=Missing NodePath
-  106[Wall]
+  86[Wall]
     %% face_code_ref=Missing NodePath
   75 --- 1
-  87 <--x 1
-  88 <--x 1
-  89 <--x 1
-  90 <--x 1
-  91 <--x 1
-  41 <--x 2
-  42 <--x 2
-  43 <--x 2
-  44 <--x 2
-  45 <--x 2
   76 --- 2
-  36 <--x 3
-  37 <--x 3
-  38 <--x 3
-  39 <--x 3
-  40 <--x 3
   75 --- 3
   76 --- 4
-  92 <--x 4
-  93 <--x 4
-  94 <--x 4
-  95 <--x 4
-  96 <--x 4
   7 x--> 5
   5 --- 8
   5 --- 13
@@ -261,101 +221,31 @@ flowchart LR
   35 <--x 36
   35 <--x 41
   36 --- 77
-  36 --- 87
-  36 --- 97
   46 x--> 37
   37 --- 78
-  37 --- 88
-  37 --- 98
   47 x--> 38
   38 --- 79
-  38 --- 89
-  38 --- 99
   48 x--> 39
   39 --- 80
-  39 --- 90
-  39 --- 100
   49 x--> 40
   40 --- 81
-  40 --- 91
-  40 --- 101
   41 --- 82
-  41 --- 92
-  41 --- 102
   46 x--> 42
   42 --- 83
-  42 --- 93
-  42 --- 103
   47 x--> 43
   43 --- 84
-  43 --- 94
-  43 --- 104
   48 x--> 44
   44 --- 85
-  44 --- 95
-  44 --- 105
   49 x--> 45
   45 --- 86
-  45 --- 96
-  45 --- 106
   75 --- 77
   75 --- 78
   75 --- 79
   75 --- 80
   75 --- 81
-  75 --- 87
-  75 --- 88
-  75 --- 89
-  75 --- 90
-  75 --- 91
-  75 --- 97
-  75 --- 98
-  75 --- 99
-  75 --- 100
-  75 --- 101
   76 --- 82
   76 --- 83
   76 --- 84
   76 --- 85
   76 --- 86
-  76 --- 92
-  76 --- 93
-  76 --- 94
-  76 --- 95
-  76 --- 96
-  76 --- 102
-  76 --- 103
-  76 --- 104
-  76 --- 105
-  76 --- 106
-  97 --- 77
-  77 x--> 97
-  98 --- 78
-  78 x--> 98
-  99 --- 79
-  79 x--> 99
-  100 --- 80
-  80 x--> 100
-  81 x--> 101
-  101 --- 81
-  102 --- 82
-  82 x--> 102
-  103 --- 83
-  83 x--> 103
-  104 --- 84
-  84 x--> 104
-  105 --- 85
-  85 x--> 105
-  86 x--> 106
-  106 --- 86
-  97 --- 87
-  98 --- 88
-  99 --- 89
-  100 --- 90
-  101 --- 91
-  102 --- 92
-  103 --- 93
-  104 --- 94
-  105 --- 95
-  106 --- 96
 ```

@@ -118,38 +118,27 @@ flowchart LR
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 40 }, ExpressionStatementExpr]
   57["Sweep Revolve<br>[2624, 2668, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  58["SweepEdge Adjacent"]
-  59["SweepEdge Adjacent"]
-  60["SweepEdge Adjacent"]
-  61["SweepEdge Adjacent"]
-  62["SweepEdge Adjacent"]
-  63["SweepEdge Adjacent"]
-  64["SweepEdge Adjacent"]
-  65["SweepEdge Adjacent"]
-  66["SweepEdge Adjacent"]
-  67["SweepEdge Adjacent"]
-  68["SweepEdge Adjacent"]
-  69[Wall]
+  58[Wall]
     %% face_code_ref=Missing NodePath
-  70[Wall]
+  59[Wall]
     %% face_code_ref=Missing NodePath
-  71[Wall]
+  60[Wall]
     %% face_code_ref=Missing NodePath
-  72[Wall]
+  61[Wall]
     %% face_code_ref=Missing NodePath
-  73[Wall]
+  62[Wall]
     %% face_code_ref=Missing NodePath
-  74[Wall]
+  63[Wall]
     %% face_code_ref=Missing NodePath
-  75[Wall]
+  64[Wall]
     %% face_code_ref=Missing NodePath
-  76[Wall]
+  65[Wall]
     %% face_code_ref=Missing NodePath
-  77[Wall]
+  66[Wall]
     %% face_code_ref=Missing NodePath
-  78[Wall]
+  67[Wall]
     %% face_code_ref=Missing NodePath
-  79[Wall]
+  68[Wall]
     %% face_code_ref=Missing NodePath
   2 x--> 1
   3 x--> 1
@@ -184,45 +173,23 @@ flowchart LR
   6 <--x 11
   7 <--x 12
   8 <--x 13
-  57 <--x 9
   9 --- 58
-  9 --- 69
-  57 <--x 10
   10 --- 59
-  10 --- 70
-  57 <--x 11
   11 --- 60
-  11 --- 71
-  57 <--x 12
   12 --- 61
-  12 --- 72
-  57 <--x 13
   13 --- 62
-  13 --- 73
   20 x--> 14
-  57 <--x 14
   14 --- 63
-  14 --- 74
   21 x--> 15
-  57 <--x 15
   15 --- 64
-  15 --- 75
   22 x--> 16
-  57 <--x 16
   16 --- 65
-  16 --- 76
   23 x--> 17
-  57 <--x 17
   17 --- 66
-  17 --- 77
   24 x--> 18
-  57 <--x 18
   18 --- 67
-  18 --- 78
   25 x--> 19
-  57 <--x 19
   19 --- 68
-  19 --- 79
   57 --- 58
   57 --- 59
   57 --- 60
@@ -234,37 +201,4 @@ flowchart LR
   57 --- 66
   57 --- 67
   57 --- 68
-  57 --- 69
-  57 --- 70
-  57 --- 71
-  57 --- 72
-  57 --- 73
-  57 --- 74
-  57 --- 75
-  57 --- 76
-  57 --- 77
-  57 --- 78
-  57 --- 79
-  69 --- 58
-  58 x--> 69
-  70 --- 59
-  59 x--> 70
-  71 --- 60
-  60 x--> 71
-  72 --- 61
-  61 x--> 72
-  73 --- 62
-  62 x--> 73
-  74 --- 63
-  63 x--> 74
-  75 --- 64
-  64 x--> 75
-  76 --- 65
-  65 x--> 76
-  77 --- 66
-  66 x--> 77
-  78 --- 67
-  67 x--> 78
-  68 x--> 79
-  79 --- 68
 ```

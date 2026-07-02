@@ -766,5 +766,3 @@ extrude002 = extrude(
   touch-action="pan-y"
 >
 </model-viewer>
-
-

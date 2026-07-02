@@ -104,55 +104,23 @@ flowchart LR
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 35 }, ExpressionStatementExpr]
   50["Sweep Extrusion<br>[3180, 3225, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  51["SweepEdge Adjacent"]
-  52["SweepEdge Adjacent"]
-  53["SweepEdge Adjacent"]
-  54["SweepEdge Adjacent"]
-  55["SweepEdge Adjacent"]
-  56["SweepEdge Adjacent"]
-  57["SweepEdge Adjacent"]
-  58["SweepEdge Adjacent"]
-  59["SweepEdge Opposite"]
-  60["SweepEdge Opposite"]
-  61["SweepEdge Opposite"]
-  62["SweepEdge Opposite"]
-  63["SweepEdge Opposite"]
-  64["SweepEdge Opposite"]
-  65["SweepEdge Opposite"]
-  66["SweepEdge Opposite"]
-  67[Wall]
+  51[Wall]
     %% face_code_ref=Missing NodePath
-  68[Wall]
+  52[Wall]
     %% face_code_ref=Missing NodePath
-  69[Wall]
+  53[Wall]
     %% face_code_ref=Missing NodePath
-  70[Wall]
+  54[Wall]
     %% face_code_ref=Missing NodePath
-  71[Wall]
+  55[Wall]
     %% face_code_ref=Missing NodePath
-  72[Wall]
+  56[Wall]
     %% face_code_ref=Missing NodePath
-  73[Wall]
+  57[Wall]
     %% face_code_ref=Missing NodePath
-  74[Wall]
+  58[Wall]
     %% face_code_ref=Missing NodePath
   50 --- 1
-  59 <--x 1
-  60 <--x 1
-  61 <--x 1
-  62 <--x 1
-  63 <--x 1
-  64 <--x 1
-  65 <--x 1
-  66 <--x 1
-  9 <--x 2
-  10 <--x 2
-  11 <--x 2
-  12 <--x 2
-  13 <--x 2
-  14 <--x 2
-  15 <--x 2
-  16 <--x 2
   50 --- 2
   4 x--> 3
   5 x--> 3
@@ -180,34 +148,18 @@ flowchart LR
   7 <--x 10
   8 <--x 11
   9 --- 51
-  9 --- 59
-  9 --- 67
   10 --- 52
-  10 --- 60
-  10 --- 68
   11 --- 53
-  11 --- 61
-  11 --- 69
   17 x--> 12
   12 --- 54
-  12 --- 62
-  12 --- 70
   18 x--> 13
   13 --- 55
-  13 --- 63
-  13 --- 71
   19 x--> 14
   14 --- 56
-  14 --- 64
-  14 --- 72
   20 x--> 15
   15 --- 57
-  15 --- 65
-  15 --- 73
   21 x--> 16
   16 --- 58
-  16 --- 66
-  16 --- 74
   50 --- 51
   50 --- 52
   50 --- 53
@@ -216,44 +168,4 @@ flowchart LR
   50 --- 56
   50 --- 57
   50 --- 58
-  50 --- 59
-  50 --- 60
-  50 --- 61
-  50 --- 62
-  50 --- 63
-  50 --- 64
-  50 --- 65
-  50 --- 66
-  50 --- 67
-  50 --- 68
-  50 --- 69
-  50 --- 70
-  50 --- 71
-  50 --- 72
-  50 --- 73
-  50 --- 74
-  67 --- 51
-  51 x--> 67
-  68 --- 52
-  52 x--> 68
-  69 --- 53
-  53 x--> 69
-  70 --- 54
-  54 x--> 70
-  71 --- 55
-  55 x--> 71
-  72 --- 56
-  56 x--> 72
-  73 --- 57
-  57 x--> 73
-  58 x--> 74
-  74 --- 58
-  67 --- 59
-  68 --- 60
-  69 --- 61
-  70 --- 62
-  71 --- 63
-  72 --- 64
-  73 --- 65
-  74 --- 66
 ```

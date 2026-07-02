@@ -572,321 +572,121 @@ flowchart LR
     %% [ProgramBodyItem { index: 23 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   270["Sweep Extrusion<br>[9552, 9604, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 27 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  271["SweepEdge Adjacent"]
-  272["SweepEdge Adjacent"]
-  273["SweepEdge Adjacent"]
-  274["SweepEdge Adjacent"]
-  275["SweepEdge Adjacent"]
-  276["SweepEdge Adjacent"]
-  277["SweepEdge Adjacent"]
-  278["SweepEdge Adjacent"]
-  279["SweepEdge Adjacent"]
-  280["SweepEdge Adjacent"]
-  281["SweepEdge Adjacent"]
-  282["SweepEdge Adjacent"]
-  283["SweepEdge Adjacent"]
-  284["SweepEdge Adjacent"]
-  285["SweepEdge Adjacent"]
-  286["SweepEdge Adjacent"]
-  287["SweepEdge Adjacent"]
-  288["SweepEdge Adjacent"]
-  289["SweepEdge Adjacent"]
-  290["SweepEdge Adjacent"]
-  291["SweepEdge Adjacent"]
-  292["SweepEdge Adjacent"]
-  293["SweepEdge Adjacent"]
-  294["SweepEdge Adjacent"]
-  295["SweepEdge Adjacent"]
-  296["SweepEdge Adjacent"]
-  297["SweepEdge Adjacent"]
-  298["SweepEdge Adjacent"]
-  299["SweepEdge Adjacent"]
-  300["SweepEdge Adjacent"]
-  301["SweepEdge Adjacent"]
-  302["SweepEdge Adjacent"]
-  303["SweepEdge Adjacent"]
-  304["SweepEdge Adjacent"]
-  305["SweepEdge Adjacent"]
-  306["SweepEdge Adjacent"]
-  307["SweepEdge Adjacent"]
-  308["SweepEdge Adjacent"]
-  309["SweepEdge Adjacent"]
-  310["SweepEdge Adjacent"]
-  311["SweepEdge Adjacent"]
-  312["SweepEdge Adjacent"]
-  313["SweepEdge Adjacent"]
-  314["SweepEdge Adjacent"]
-  315["SweepEdge Adjacent"]
-  316["SweepEdge Adjacent"]
-  317["SweepEdge Adjacent"]
-  318["SweepEdge Adjacent"]
-  319["SweepEdge Adjacent"]
-  320["SweepEdge Adjacent"]
-  321["SweepEdge Opposite"]
-  322["SweepEdge Opposite"]
-  323["SweepEdge Opposite"]
-  324["SweepEdge Opposite"]
-  325["SweepEdge Opposite"]
-  326["SweepEdge Opposite"]
-  327["SweepEdge Opposite"]
-  328["SweepEdge Opposite"]
-  329["SweepEdge Opposite"]
-  330["SweepEdge Opposite"]
-  331["SweepEdge Opposite"]
-  332["SweepEdge Opposite"]
-  333["SweepEdge Opposite"]
-  334["SweepEdge Opposite"]
-  335["SweepEdge Opposite"]
-  336["SweepEdge Opposite"]
-  337["SweepEdge Opposite"]
-  338["SweepEdge Opposite"]
-  339["SweepEdge Opposite"]
-  340["SweepEdge Opposite"]
-  341["SweepEdge Opposite"]
-  342["SweepEdge Opposite"]
-  343["SweepEdge Opposite"]
-  344["SweepEdge Opposite"]
-  345["SweepEdge Opposite"]
-  346["SweepEdge Opposite"]
-  347["SweepEdge Opposite"]
-  348["SweepEdge Opposite"]
-  349["SweepEdge Opposite"]
-  350["SweepEdge Opposite"]
-  351["SweepEdge Opposite"]
-  352["SweepEdge Opposite"]
-  353["SweepEdge Opposite"]
-  354["SweepEdge Opposite"]
-  355["SweepEdge Opposite"]
-  356["SweepEdge Opposite"]
-  357["SweepEdge Opposite"]
-  358["SweepEdge Opposite"]
-  359["SweepEdge Opposite"]
-  360["SweepEdge Opposite"]
-  361["SweepEdge Opposite"]
-  362["SweepEdge Opposite"]
-  363["SweepEdge Opposite"]
-  364["SweepEdge Opposite"]
-  365["SweepEdge Opposite"]
-  366["SweepEdge Opposite"]
-  367["SweepEdge Opposite"]
-  368["SweepEdge Opposite"]
-  369["SweepEdge Opposite"]
-  370["SweepEdge Opposite"]
-  371[Wall]
+  271[Wall]
     %% face_code_ref=Missing NodePath
-  372[Wall]
+  272[Wall]
     %% face_code_ref=Missing NodePath
-  373[Wall]
+  273[Wall]
     %% face_code_ref=Missing NodePath
-  374[Wall]
+  274[Wall]
     %% face_code_ref=Missing NodePath
-  375[Wall]
+  275[Wall]
     %% face_code_ref=Missing NodePath
-  376[Wall]
+  276[Wall]
     %% face_code_ref=Missing NodePath
-  377[Wall]
+  277[Wall]
     %% face_code_ref=Missing NodePath
-  378[Wall]
+  278[Wall]
     %% face_code_ref=Missing NodePath
-  379[Wall]
+  279[Wall]
     %% face_code_ref=Missing NodePath
-  380[Wall]
+  280[Wall]
     %% face_code_ref=Missing NodePath
-  381[Wall]
+  281[Wall]
     %% face_code_ref=Missing NodePath
-  382[Wall]
+  282[Wall]
     %% face_code_ref=Missing NodePath
-  383[Wall]
+  283[Wall]
     %% face_code_ref=Missing NodePath
-  384[Wall]
+  284[Wall]
     %% face_code_ref=Missing NodePath
-  385[Wall]
+  285[Wall]
     %% face_code_ref=Missing NodePath
-  386[Wall]
+  286[Wall]
     %% face_code_ref=Missing NodePath
-  387[Wall]
+  287[Wall]
     %% face_code_ref=Missing NodePath
-  388[Wall]
+  288[Wall]
     %% face_code_ref=Missing NodePath
-  389[Wall]
+  289[Wall]
     %% face_code_ref=Missing NodePath
-  390[Wall]
+  290[Wall]
     %% face_code_ref=Missing NodePath
-  391[Wall]
+  291[Wall]
     %% face_code_ref=Missing NodePath
-  392[Wall]
+  292[Wall]
     %% face_code_ref=Missing NodePath
-  393[Wall]
+  293[Wall]
     %% face_code_ref=Missing NodePath
-  394[Wall]
+  294[Wall]
     %% face_code_ref=Missing NodePath
-  395[Wall]
+  295[Wall]
     %% face_code_ref=Missing NodePath
-  396[Wall]
+  296[Wall]
     %% face_code_ref=Missing NodePath
-  397[Wall]
+  297[Wall]
     %% face_code_ref=Missing NodePath
-  398[Wall]
+  298[Wall]
     %% face_code_ref=Missing NodePath
-  399[Wall]
+  299[Wall]
     %% face_code_ref=Missing NodePath
-  400[Wall]
+  300[Wall]
     %% face_code_ref=Missing NodePath
-  401[Wall]
+  301[Wall]
     %% face_code_ref=Missing NodePath
-  402[Wall]
+  302[Wall]
     %% face_code_ref=Missing NodePath
-  403[Wall]
+  303[Wall]
     %% face_code_ref=Missing NodePath
-  404[Wall]
+  304[Wall]
     %% face_code_ref=Missing NodePath
-  405[Wall]
+  305[Wall]
     %% face_code_ref=Missing NodePath
-  406[Wall]
+  306[Wall]
     %% face_code_ref=Missing NodePath
-  407[Wall]
+  307[Wall]
     %% face_code_ref=Missing NodePath
-  408[Wall]
+  308[Wall]
     %% face_code_ref=Missing NodePath
-  409[Wall]
+  309[Wall]
     %% face_code_ref=Missing NodePath
-  410[Wall]
+  310[Wall]
     %% face_code_ref=Missing NodePath
-  411[Wall]
+  311[Wall]
     %% face_code_ref=Missing NodePath
-  412[Wall]
+  312[Wall]
     %% face_code_ref=Missing NodePath
-  413[Wall]
+  313[Wall]
     %% face_code_ref=Missing NodePath
-  414[Wall]
+  314[Wall]
     %% face_code_ref=Missing NodePath
-  415[Wall]
+  315[Wall]
     %% face_code_ref=Missing NodePath
-  416[Wall]
+  316[Wall]
     %% face_code_ref=Missing NodePath
-  417[Wall]
+  317[Wall]
     %% face_code_ref=Missing NodePath
-  418[Wall]
+  318[Wall]
     %% face_code_ref=Missing NodePath
-  419[Wall]
+  319[Wall]
     %% face_code_ref=Missing NodePath
-  420[Wall]
+  320[Wall]
     %% face_code_ref=Missing NodePath
   263 --- 1
-  321 <--x 1
-  322 <--x 1
-  323 <--x 1
-  324 <--x 1
   264 --- 2
-  325 <--x 2
-  326 <--x 2
-  327 <--x 2
-  328 <--x 2
-  329 <--x 2
-  330 <--x 2
-  331 <--x 2
-  332 <--x 2
-  333 <--x 2
-  334 <--x 2
   265 --- 3
-  335 <--x 3
-  336 <--x 3
-  337 <--x 3
-  338 <--x 3
-  339 <--x 3
-  340 <--x 3
   266 --- 4
-  341 <--x 4
-  342 <--x 4
-  343 <--x 4
-  344 <--x 4
-  345 <--x 4
-  346 <--x 4
-  347 <--x 4
-  348 <--x 4
-  349 <--x 4
-  350 <--x 4
-  351 <--x 4
-  352 <--x 4
-  353 <--x 4
-  354 <--x 4
-  355 <--x 4
-  356 <--x 4
-  357 <--x 4
-  358 <--x 4
-  359 <--x 4
-  360 <--x 4
   267 --- 5
-  361 <--x 5
-  362 <--x 5
-  363 <--x 5
-  364 <--x 5
   268 --- 6
-  365 <--x 6
-  366 <--x 6
-  367 <--x 6
-  368 <--x 6
   269 --- 7
-  369 <--x 7
   270 --- 8
-  370 <--x 8
-  44 <--x 9
-  45 <--x 9
-  46 <--x 9
-  47 <--x 9
   263 --- 9
-  59 <--x 10
-  60 <--x 10
-  61 <--x 10
-  62 <--x 10
-  63 <--x 10
-  64 <--x 10
-  65 <--x 10
-  66 <--x 10
-  67 <--x 10
-  68 <--x 10
   264 --- 10
-  76 <--x 11
-  77 <--x 11
-  78 <--x 11
-  79 <--x 11
-  80 <--x 11
-  81 <--x 11
   265 --- 11
-  100 <--x 12
-  101 <--x 12
-  102 <--x 12
-  103 <--x 12
-  104 <--x 12
-  105 <--x 12
-  106 <--x 12
-  107 <--x 12
-  108 <--x 12
-  109 <--x 12
-  110 <--x 12
-  111 <--x 12
-  112 <--x 12
-  113 <--x 12
-  114 <--x 12
-  115 <--x 12
-  116 <--x 12
-  117 <--x 12
-  118 <--x 12
-  119 <--x 12
   266 --- 12
-  124 <--x 13
-  125 <--x 13
-  126 <--x 13
-  127 <--x 13
   267 --- 13
-  132 <--x 14
-  133 <--x 14
-  134 <--x 14
-  135 <--x 14
   268 --- 14
-  137 <--x 15
   269 --- 15
-  139 <--x 16
   270 --- 16
   22 --- 17
   23 --- 17
@@ -1051,17 +851,9 @@ flowchart LR
   42 <--x 46
   43 <--x 47
   44 --- 271
-  44 --- 321
-  44 --- 371
   45 --- 272
-  45 --- 322
-  45 --- 372
   46 --- 273
-  46 --- 323
-  46 --- 373
   47 --- 274
-  47 --- 324
-  47 --- 374
   48 <--x 59
   49 <--x 60
   50 <--x 61
@@ -1074,35 +866,15 @@ flowchart LR
   57 <--x 67
   58 <--x 68
   59 --- 275
-  59 --- 325
-  59 --- 375
   60 --- 276
-  60 --- 326
-  60 --- 376
   61 --- 277
-  61 --- 327
-  61 --- 377
   62 --- 278
-  62 --- 328
-  62 --- 378
   63 --- 279
-  63 --- 329
-  63 --- 379
   64 --- 280
-  64 --- 330
-  64 --- 380
   65 --- 281
-  65 --- 331
-  65 --- 381
   66 --- 282
-  66 --- 332
-  66 --- 382
   67 --- 283
-  67 --- 333
-  67 --- 383
   68 --- 284
-  68 --- 334
-  68 --- 384
   69 <--x 76
   70 <--x 101
   71 <--x 77
@@ -1111,23 +883,11 @@ flowchart LR
   74 <--x 80
   75 <--x 81
   76 --- 285
-  76 --- 335
-  76 --- 385
   77 --- 286
-  77 --- 336
-  77 --- 386
   78 --- 287
-  78 --- 337
-  78 --- 387
   79 --- 288
-  79 --- 338
-  79 --- 388
   80 --- 289
-  80 --- 339
-  80 --- 389
   81 --- 290
-  81 --- 340
-  81 --- 390
   82 <--x 102
   83 <--x 103
   84 <--x 104
@@ -1147,117 +907,49 @@ flowchart LR
   98 <--x 118
   99 <--x 119
   100 --- 291
-  100 --- 341
-  100 --- 391
   101 --- 292
-  101 --- 342
-  101 --- 392
   102 --- 293
-  102 --- 343
-  102 --- 393
   103 --- 294
-  103 --- 344
-  103 --- 394
   104 --- 295
-  104 --- 345
-  104 --- 395
   105 --- 296
-  105 --- 346
-  105 --- 396
   106 --- 297
-  106 --- 347
-  106 --- 397
   107 --- 298
-  107 --- 348
-  107 --- 398
   108 --- 299
-  108 --- 349
-  108 --- 399
   109 --- 300
-  109 --- 350
-  109 --- 400
   110 --- 301
-  110 --- 351
-  110 --- 401
   111 --- 302
-  111 --- 352
-  111 --- 402
   112 --- 303
-  112 --- 353
-  112 --- 403
   113 --- 304
-  113 --- 354
-  113 --- 404
   114 --- 305
-  114 --- 355
-  114 --- 405
   115 --- 306
-  115 --- 356
-  115 --- 406
   116 --- 307
-  116 --- 357
-  116 --- 407
   117 --- 308
-  117 --- 358
-  117 --- 408
   118 --- 309
-  118 --- 359
-  118 --- 409
   119 --- 310
-  119 --- 360
-  119 --- 410
   120 <--x 124
   121 <--x 125
   122 <--x 126
   123 <--x 127
   124 --- 311
-  124 --- 361
-  124 --- 411
   125 --- 312
-  125 --- 362
-  125 --- 412
   126 --- 313
-  126 --- 363
-  126 --- 413
   127 --- 314
-  127 --- 364
-  127 --- 414
   128 <--x 132
   129 <--x 133
   130 <--x 134
   131 <--x 135
   132 --- 315
-  132 --- 365
-  132 --- 415
   133 --- 316
-  133 --- 366
-  133 --- 416
   134 --- 317
-  134 --- 367
-  134 --- 417
   135 --- 318
-  135 --- 368
-  135 --- 418
   136 <--x 137
   137 --- 319
-  137 --- 369
-  137 --- 419
   138 <--x 139
   139 --- 320
-  139 --- 370
-  139 --- 420
   263 --- 271
   263 --- 272
   263 --- 273
   263 --- 274
-  263 --- 321
-  263 --- 322
-  263 --- 323
-  263 --- 324
-  263 --- 371
-  263 --- 372
-  263 --- 373
-  263 --- 374
   264 --- 275
   264 --- 276
   264 --- 277
@@ -1268,44 +960,12 @@ flowchart LR
   264 --- 282
   264 --- 283
   264 --- 284
-  264 --- 325
-  264 --- 326
-  264 --- 327
-  264 --- 328
-  264 --- 329
-  264 --- 330
-  264 --- 331
-  264 --- 332
-  264 --- 333
-  264 --- 334
-  264 --- 375
-  264 --- 376
-  264 --- 377
-  264 --- 378
-  264 --- 379
-  264 --- 380
-  264 --- 381
-  264 --- 382
-  264 --- 383
-  264 --- 384
   265 --- 285
   265 --- 286
   265 --- 287
   265 --- 288
   265 --- 289
   265 --- 290
-  265 --- 335
-  265 --- 336
-  265 --- 337
-  265 --- 338
-  265 --- 339
-  265 --- 340
-  265 --- 385
-  265 --- 386
-  265 --- 387
-  265 --- 388
-  265 --- 389
-  265 --- 390
   266 --- 291
   266 --- 292
   266 --- 293
@@ -1326,222 +986,14 @@ flowchart LR
   266 --- 308
   266 --- 309
   266 --- 310
-  266 --- 341
-  266 --- 342
-  266 --- 343
-  266 --- 344
-  266 --- 345
-  266 --- 346
-  266 --- 347
-  266 --- 348
-  266 --- 349
-  266 --- 350
-  266 --- 351
-  266 --- 352
-  266 --- 353
-  266 --- 354
-  266 --- 355
-  266 --- 356
-  266 --- 357
-  266 --- 358
-  266 --- 359
-  266 --- 360
-  266 --- 391
-  266 --- 392
-  266 --- 393
-  266 --- 394
-  266 --- 395
-  266 --- 396
-  266 --- 397
-  266 --- 398
-  266 --- 399
-  266 --- 400
-  266 --- 401
-  266 --- 402
-  266 --- 403
-  266 --- 404
-  266 --- 405
-  266 --- 406
-  266 --- 407
-  266 --- 408
-  266 --- 409
-  266 --- 410
   267 --- 311
   267 --- 312
   267 --- 313
   267 --- 314
-  267 --- 361
-  267 --- 362
-  267 --- 363
-  267 --- 364
-  267 --- 411
-  267 --- 412
-  267 --- 413
-  267 --- 414
   268 --- 315
   268 --- 316
   268 --- 317
   268 --- 318
-  268 --- 365
-  268 --- 366
-  268 --- 367
-  268 --- 368
-  268 --- 415
-  268 --- 416
-  268 --- 417
-  268 --- 418
   269 --- 319
-  269 --- 369
-  269 --- 419
   270 --- 320
-  270 --- 370
-  270 --- 420
-  371 --- 271
-  271 x--> 371
-  372 --- 272
-  272 x--> 372
-  373 --- 273
-  273 x--> 373
-  274 x--> 374
-  374 --- 274
-  375 --- 275
-  275 x--> 375
-  376 --- 276
-  276 x--> 376
-  377 --- 277
-  277 x--> 377
-  378 --- 278
-  278 x--> 378
-  379 --- 279
-  279 x--> 379
-  380 --- 280
-  280 x--> 380
-  381 --- 281
-  281 x--> 381
-  382 --- 282
-  282 x--> 382
-  383 --- 283
-  283 x--> 383
-  284 x--> 384
-  384 --- 284
-  385 --- 285
-  285 x--> 385
-  386 --- 286
-  286 x--> 386
-  387 --- 287
-  287 x--> 387
-  388 --- 288
-  288 x--> 388
-  389 --- 289
-  289 x--> 389
-  290 x--> 390
-  390 --- 290
-  391 --- 291
-  291 x--> 391
-  392 --- 292
-  292 x--> 392
-  393 --- 293
-  293 x--> 393
-  394 --- 294
-  294 x--> 394
-  395 --- 295
-  295 x--> 395
-  396 --- 296
-  296 x--> 396
-  397 --- 297
-  297 x--> 397
-  398 --- 298
-  298 x--> 398
-  399 --- 299
-  299 x--> 399
-  400 --- 300
-  300 x--> 400
-  401 --- 301
-  301 x--> 401
-  402 --- 302
-  302 x--> 402
-  403 --- 303
-  303 x--> 403
-  404 --- 304
-  304 x--> 404
-  405 --- 305
-  305 x--> 405
-  406 --- 306
-  306 x--> 406
-  407 --- 307
-  307 x--> 407
-  408 --- 308
-  308 x--> 408
-  409 --- 309
-  309 x--> 409
-  310 x--> 410
-  410 --- 310
-  411 --- 311
-  311 x--> 411
-  412 --- 312
-  312 x--> 412
-  413 --- 313
-  313 x--> 413
-  314 x--> 414
-  414 --- 314
-  415 --- 315
-  315 x--> 415
-  416 --- 316
-  316 x--> 416
-  417 --- 317
-  317 x--> 417
-  318 x--> 418
-  418 --- 318
-  419 --- 319
-  420 --- 320
-  371 --- 321
-  372 --- 322
-  373 --- 323
-  374 --- 324
-  375 --- 325
-  376 --- 326
-  377 --- 327
-  378 --- 328
-  379 --- 329
-  380 --- 330
-  381 --- 331
-  382 --- 332
-  383 --- 333
-  384 --- 334
-  385 --- 335
-  386 --- 336
-  387 --- 337
-  388 --- 338
-  389 --- 339
-  390 --- 340
-  391 --- 341
-  392 --- 342
-  393 --- 343
-  394 --- 344
-  395 --- 345
-  396 --- 346
-  397 --- 347
-  398 --- 348
-  399 --- 349
-  400 --- 350
-  401 --- 351
-  402 --- 352
-  403 --- 353
-  404 --- 354
-  405 --- 355
-  406 --- 356
-  407 --- 357
-  408 --- 358
-  409 --- 359
-  410 --- 360
-  411 --- 361
-  412 --- 362
-  413 --- 363
-  414 --- 364
-  415 --- 365
-  416 --- 366
-  417 --- 367
-  418 --- 368
-  419 --- 369
-  420 --- 370
 ```

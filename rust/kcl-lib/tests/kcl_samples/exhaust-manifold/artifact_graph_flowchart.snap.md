@@ -506,135 +506,55 @@ flowchart LR
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   243["Sweep Sweep<br>[5525, 5570, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  244["SweepEdge Adjacent"]
-  245["SweepEdge Adjacent"]
-  246["SweepEdge Adjacent"]
-  247["SweepEdge Adjacent"]
-  248["SweepEdge Adjacent"]
-  249["SweepEdge Adjacent"]
-  250["SweepEdge Adjacent"]
-  251["SweepEdge Adjacent"]
-  252["SweepEdge Adjacent"]
-  253["SweepEdge Adjacent"]
-  254["SweepEdge Adjacent"]
-  255["SweepEdge Adjacent"]
-  256["SweepEdge Adjacent"]
-  257["SweepEdge Adjacent"]
-  258["SweepEdge Adjacent"]
-  259["SweepEdge Adjacent"]
-  260["SweepEdge Adjacent"]
-  261["SweepEdge Adjacent"]
-  262["SweepEdge Adjacent"]
-  263["SweepEdge Adjacent"]
-  264["SweepEdge Opposite"]
-  265["SweepEdge Opposite"]
-  266["SweepEdge Opposite"]
-  267["SweepEdge Opposite"]
-  268["SweepEdge Opposite"]
-  269["SweepEdge Opposite"]
-  270["SweepEdge Opposite"]
-  271["SweepEdge Opposite"]
-  272["SweepEdge Opposite"]
-  273["SweepEdge Opposite"]
-  274["SweepEdge Opposite"]
-  275["SweepEdge Opposite"]
-  276["SweepEdge Opposite"]
-  277["SweepEdge Opposite"]
-  278["SweepEdge Opposite"]
-  279["SweepEdge Opposite"]
-  280["SweepEdge Opposite"]
-  281["SweepEdge Opposite"]
-  282["SweepEdge Opposite"]
-  283["SweepEdge Opposite"]
-  284[Wall]
+  244[Wall]
     %% face_code_ref=Missing NodePath
-  285[Wall]
+  245[Wall]
     %% face_code_ref=Missing NodePath
-  286[Wall]
+  246[Wall]
     %% face_code_ref=Missing NodePath
-  287[Wall]
+  247[Wall]
     %% face_code_ref=Missing NodePath
-  288[Wall]
+  248[Wall]
     %% face_code_ref=Missing NodePath
-  289[Wall]
+  249[Wall]
     %% face_code_ref=Missing NodePath
-  290[Wall]
+  250[Wall]
     %% face_code_ref=Missing NodePath
-  291[Wall]
+  251[Wall]
     %% face_code_ref=Missing NodePath
-  292[Wall]
+  252[Wall]
     %% face_code_ref=Missing NodePath
-  293[Wall]
+  253[Wall]
     %% face_code_ref=Missing NodePath
-  294[Wall]
+  254[Wall]
     %% face_code_ref=Missing NodePath
-  295[Wall]
+  255[Wall]
     %% face_code_ref=Missing NodePath
-  296[Wall]
+  256[Wall]
     %% face_code_ref=Missing NodePath
-  297[Wall]
+  257[Wall]
     %% face_code_ref=Missing NodePath
-  298[Wall]
+  258[Wall]
     %% face_code_ref=Missing NodePath
-  299[Wall]
+  259[Wall]
     %% face_code_ref=Missing NodePath
-  300[Wall]
+  260[Wall]
     %% face_code_ref=Missing NodePath
-  301[Wall]
+  261[Wall]
     %% face_code_ref=Missing NodePath
-  302[Wall]
+  262[Wall]
     %% face_code_ref=Missing NodePath
-  303[Wall]
+  263[Wall]
     %% face_code_ref=Missing NodePath
   241 --- 1
-  264 <--x 1
-  265 <--x 1
-  266 <--x 1
-  267 <--x 1
-  268 <--x 1
-  269 <--x 1
-  270 <--x 1
-  271 <--x 1
-  272 <--x 1
-  273 <--x 1
-  274 <--x 1
-  275 <--x 1
-  276 <--x 1
-  277 <--x 1
-  278 <--x 1
-  279 <--x 1
   242 --- 2
-  280 <--x 2
   242 x--> 3
-  281 <--x 3
   243 --- 4
-  282 <--x 4
   243 x--> 5
-  283 <--x 5
-  27 <--x 6
-  28 <--x 6
-  29 <--x 6
-  30 <--x 6
-  31 <--x 6
-  32 <--x 6
-  33 <--x 6
-  34 <--x 6
-  35 <--x 6
-  36 <--x 6
-  37 <--x 6
-  38 <--x 6
-  39 <--x 6
-  40 <--x 6
-  41 <--x 6
-  42 <--x 6
   241 --- 6
-  45 <--x 7
   242 --- 7
-  46 <--x 8
   242 x--> 8
-  54 <--x 9
   243 --- 9
-  56 <--x 10
   243 x--> 10
   20 x--> 11
   25 x--> 11
@@ -728,84 +648,44 @@ flowchart LR
   25 <--x 88
   57 x--> 27
   27 --- 244
-  27 --- 264
-  27 --- 284
   58 x--> 28
   28 --- 245
-  28 --- 265
-  28 --- 285
   59 x--> 29
   29 --- 246
-  29 --- 266
-  29 --- 286
   60 x--> 30
   30 --- 247
-  30 --- 267
-  30 --- 287
   62 x--> 31
   31 --- 248
-  31 --- 268
-  31 --- 288
   63 x--> 32
   32 --- 249
-  32 --- 269
-  32 --- 289
   64 x--> 33
   33 --- 250
-  33 --- 270
-  33 --- 290
   65 x--> 34
   34 --- 251
-  34 --- 271
-  34 --- 291
   66 x--> 35
   35 --- 252
-  35 --- 272
-  35 --- 292
   67 x--> 36
   36 --- 253
-  36 --- 273
-  36 --- 293
   68 x--> 37
   37 --- 254
-  37 --- 274
-  37 --- 294
   69 x--> 38
   38 --- 255
-  38 --- 275
-  38 --- 295
   70 x--> 39
   39 --- 256
-  39 --- 276
-  39 --- 296
   72 x--> 40
   40 --- 257
-  40 --- 277
-  40 --- 297
   73 x--> 41
   41 --- 258
-  41 --- 278
-  41 --- 298
   74 x--> 42
   42 --- 259
-  42 --- 279
-  42 --- 299
   43 <--x 45
   43 <--x 46
   45 --- 260
-  45 --- 280
-  45 --- 300
   46 --- 261
-  46 --- 281
-  46 --- 301
   52 <--x 54
   52 <--x 56
   54 --- 262
-  54 --- 282
-  54 --- 302
   56 --- 263
-  56 --- 283
-  56 --- 303
   241 --- 244
   241 --- 245
   241 --- 246
@@ -822,104 +702,8 @@ flowchart LR
   241 --- 257
   241 --- 258
   241 --- 259
-  241 --- 264
-  241 --- 265
-  241 --- 266
-  241 --- 267
-  241 --- 268
-  241 --- 269
-  241 --- 270
-  241 --- 271
-  241 --- 272
-  241 --- 273
-  241 --- 274
-  241 --- 275
-  241 --- 276
-  241 --- 277
-  241 --- 278
-  241 --- 279
-  241 --- 284
-  241 --- 285
-  241 --- 286
-  241 --- 287
-  241 --- 288
-  241 --- 289
-  241 --- 290
-  241 --- 291
-  241 --- 292
-  241 --- 293
-  241 --- 294
-  241 --- 295
-  241 --- 296
-  241 --- 297
-  241 --- 298
-  241 --- 299
   242 --- 260
   242 <--x 261
-  242 --- 280
-  242 <--x 281
-  242 --- 300
-  242 <--x 301
   243 --- 262
   243 <--x 263
-  243 --- 282
-  243 <--x 283
-  243 --- 302
-  243 <--x 303
-  284 --- 244
-  244 x--> 284
-  245 x--> 285
-  285 --- 245
-  246 x--> 286
-  286 --- 246
-  247 x--> 287
-  287 --- 247
-  248 x--> 288
-  288 --- 248
-  249 x--> 289
-  289 --- 249
-  250 x--> 290
-  290 --- 250
-  251 x--> 291
-  291 --- 251
-  252 x--> 292
-  292 --- 252
-  253 x--> 293
-  293 --- 253
-  254 x--> 294
-  294 --- 254
-  255 x--> 295
-  295 --- 255
-  256 x--> 296
-  296 --- 256
-  257 x--> 297
-  297 --- 257
-  258 x--> 298
-  298 --- 258
-  259 x--> 299
-  299 --- 259
-  300 --- 260
-  301 --- 261
-  302 --- 262
-  303 --- 263
-  284 --- 264
-  285 --- 265
-  286 --- 266
-  287 --- 267
-  288 --- 268
-  289 --- 269
-  290 --- 270
-  291 --- 271
-  292 --- 272
-  293 --- 273
-  294 --- 274
-  295 --- 275
-  296 --- 276
-  297 --- 277
-  298 --- 278
-  299 --- 279
-  300 --- 280
-  301 --- 281
-  302 --- 282
-  303 --- 283
 ```

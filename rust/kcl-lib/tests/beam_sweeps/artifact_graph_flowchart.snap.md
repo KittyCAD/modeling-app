@@ -254,46 +254,26 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 3 }, ReturnStatementArg]
   111["Sweep Sweep<br>[821, 948, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 3 }, ReturnStatementArg]
-  112["SweepEdge Adjacent"]
-  113["SweepEdge Adjacent"]
-  114["SweepEdge Adjacent"]
-  115["SweepEdge Adjacent"]
-  116["SweepEdge Adjacent"]
-  117["SweepEdge Opposite"]
-  118["SweepEdge Opposite"]
-  119["SweepEdge Opposite"]
-  120["SweepEdge Opposite"]
-  121["SweepEdge Opposite"]
-  122[Wall]
+  112[Wall]
     %% face_code_ref=Missing NodePath
-  123[Wall]
+  113[Wall]
     %% face_code_ref=Missing NodePath
-  124[Wall]
+  114[Wall]
     %% face_code_ref=Missing NodePath
-  125[Wall]
+  115[Wall]
     %% face_code_ref=Missing NodePath
-  126[Wall]
+  116[Wall]
     %% face_code_ref=Missing NodePath
-  48 <--x 1
   107 --- 1
-  49 <--x 2
   108 --- 2
-  50 <--x 3
   109 --- 3
-  51 <--x 4
   110 --- 4
-  52 <--x 5
   111 --- 5
   107 --- 6
-  117 <--x 6
   108 --- 7
-  118 <--x 7
   109 --- 8
-  119 <--x 8
   110 --- 9
-  120 <--x 9
   111 --- 10
-  121 <--x 10
   17 x--> 11
   28 x--> 11
   11 <--x 48
@@ -368,43 +348,13 @@ flowchart LR
   41 <--x 51
   42 <--x 52
   48 --- 112
-  48 --- 117
-  48 --- 122
   49 --- 113
-  49 --- 118
-  49 --- 123
   50 --- 114
-  50 --- 119
-  50 --- 124
   51 --- 115
-  51 --- 120
-  51 --- 125
   52 --- 116
-  52 --- 121
-  52 --- 126
   107 --- 112
-  107 --- 117
-  107 --- 122
   108 --- 113
-  108 --- 118
-  108 --- 123
   109 --- 114
-  109 --- 119
-  109 --- 124
   110 --- 115
-  110 --- 120
-  110 --- 125
   111 --- 116
-  111 --- 121
-  111 --- 126
-  122 --- 112
-  123 --- 113
-  124 --- 114
-  125 --- 115
-  126 --- 116
-  122 --- 117
-  123 --- 118
-  124 --- 119
-  125 --- 120
-  126 --- 121
 ```

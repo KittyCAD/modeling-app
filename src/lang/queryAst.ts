@@ -2020,18 +2020,13 @@ export function findOperationArtifact(
       // When multiple edgeCuts match (e.g. two fillets with same codeRef range), prefer the one
       // whose segment touches the start cap so editing the second fillet (start-cap edge) gets the right artifact.
       const withStartCap = matchingEdgeCuts.find((edgeCut) => {
-        const edgeIds = (edgeCut as { edge_ids?: string[] }).edge_ids
-        const segId = edgeIds?.length
-          ? edgeIds[0]
-          : (edgeCut as { consumedEdgeId?: string }).consumedEdgeId
+        const segId = getSegmentForEdgeCut(edgeCut.id, artifactGraph)?.id
         if (!segId) return false
         const seg = getArtifactOfTypes(
           { key: segId, types: ['segment'] },
           artifactGraph
         )
         if (err(seg)) return false
-        const segWithFaces = seg as { commonSurfaceIds?: string[] }
-        if (!segWithFaces.commonSurfaceIds?.length) return false
         const commonFaces = getCommonFacesForEdge(seg, artifactGraph)
         if (err(commonFaces)) return false
         return commonFaces.some(
@@ -2555,7 +2550,7 @@ export function getEdgeCutMeta(
     ((artifact as { subType?: string }).subType === 'chamfer' ||
       (artifact as { subType?: string }).subType === 'fillet')
   ) {
-    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact)
+    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact, artifactGraph)
     if (consumedEdgeId == null || consumedEdgeId === '') return null
     const rawConsumedArtifact = artifactGraph.get(consumedEdgeId)
     let consumedArtifact: SegmentArtifact | null =
@@ -2563,7 +2558,7 @@ export function getEdgeCutMeta(
 
     if (!consumedArtifact) {
       const segmentViaWallOrCap = getSegmentForEdgeCut(
-        consumedEdgeId,
+        artifact.id,
         artifactGraph
       )
       if (!segmentViaWallOrCap) {
@@ -2698,14 +2693,6 @@ export function getSketchSegmentNameFromSourceSurface(
   let selectedSegment: Extract<Artifact, { type: 'segment' }> | null = null
   if (segmentArtifact.type === 'segment') {
     selectedSegment = segmentArtifact
-  } else if (segmentArtifact.type === 'sweepEdge') {
-    const segment = getArtifactOfTypes(
-      { key: segmentArtifact.segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(segment) && segment.type === 'segment') {
-      selectedSegment = segment
-    }
   } else if (segmentArtifact.type === 'wall') {
     const segment = getArtifactOfTypes(
       { key: segmentArtifact.segId, types: ['segment'] },
@@ -2801,11 +2788,9 @@ export function getRegionSketchTagExprFromSourceSurface(
   const segmentId =
     segmentArtifact.type === 'segment'
       ? segmentArtifact.id
-      : segmentArtifact.type === 'sweepEdge'
+      : segmentArtifact.type === 'wall'
         ? segmentArtifact.segId
-        : segmentArtifact.type === 'wall'
-          ? segmentArtifact.segId
-          : null
+        : null
   if (!segmentId) {
     return null
   }

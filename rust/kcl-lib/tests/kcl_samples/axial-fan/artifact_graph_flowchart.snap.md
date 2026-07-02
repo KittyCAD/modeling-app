@@ -3,7 +3,7 @@ flowchart LR
   subgraph path14 [Path]
     14["Path Region<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    55["Segment<br>[238, 276, 0]"]
+    61["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
   end
   subgraph path15 [Path]
@@ -29,22 +29,6 @@ flowchart LR
   subgraph path16 [Path]
     16["Path Region<br>[238, 276, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }]
-    56["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    57["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    58["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    59["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    60["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-    61["Segment<br>[238, 276, 0]"]
-      %% [ProgramBodyItem { index: 0 }]
-  end
-  subgraph path17 [Path]
-    17["Path Region<br>[238, 276, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 0 }]
     47["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
     48["Segment<br>[238, 276, 0]"]
@@ -57,9 +41,25 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }]
     52["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
+  end
+  subgraph path17 [Path]
+    17["Path Region<br>[238, 276, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }]
     53["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
     54["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    55["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    56["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    57["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    58["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    59["Segment<br>[238, 276, 0]"]
+      %% [ProgramBodyItem { index: 0 }]
+    60["Segment<br>[238, 276, 0]"]
       %% [ProgramBodyItem { index: 0 }]
   end
   subgraph path18 [Path]
@@ -77,6 +77,18 @@ flowchart LR
   subgraph path20 [Path]
     20["Path Region<br>[305, 328, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }]
+    107["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    108["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    109["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+    110["Segment<br>[305, 328, 0]"]
+      %% [ProgramBodyItem { index: 2 }]
+  end
+  subgraph path21 [Path]
+    21["Path Region<br>[305, 328, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 2 }]
     95["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
     96["Segment<br>[305, 328, 0]"]
@@ -84,10 +96,6 @@ flowchart LR
     97["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
     98["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-  end
-  subgraph path21 [Path]
-    21["Path Region<br>[305, 328, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }]
     99["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
@@ -104,14 +112,6 @@ flowchart LR
     105["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
     106["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    107["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    108["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    109["Segment<br>[305, 328, 0]"]
-      %% [ProgramBodyItem { index: 2 }]
-    110["Segment<br>[305, 328, 0]"]
       %% [ProgramBodyItem { index: 2 }]
   end
   subgraph path22 [Path]
@@ -626,9 +626,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 35 }, ExpressionStatementExpr]
   297["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  298["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: true"]
+  298["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }]
-  299["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: false"]
+  299["Sweep Extrusion<br>[238, 276, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 0 }]
   300["Sweep Extrusion<br>[277, 304, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }]
@@ -640,213 +640,105 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }]
   304["Sweep Revolve<br>[305, 328, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }]
-  305["SweepEdge Adjacent"]
-  306["SweepEdge Adjacent"]
-  307["SweepEdge Adjacent"]
-  308["SweepEdge Adjacent"]
-  309["SweepEdge Adjacent"]
-  310["SweepEdge Adjacent"]
-  311["SweepEdge Adjacent"]
-  312["SweepEdge Adjacent"]
-  313["SweepEdge Adjacent"]
-  314["SweepEdge Adjacent"]
-  315["SweepEdge Adjacent"]
-  316["SweepEdge Adjacent"]
-  317["SweepEdge Adjacent"]
-  318["SweepEdge Adjacent"]
-  319["SweepEdge Adjacent"]
-  320["SweepEdge Adjacent"]
-  321["SweepEdge Adjacent"]
-  322["SweepEdge Adjacent"]
-  323["SweepEdge Adjacent"]
-  324["SweepEdge Adjacent"]
-  325["SweepEdge Adjacent"]
-  326["SweepEdge Adjacent"]
-  327["SweepEdge Adjacent"]
-  328["SweepEdge Adjacent"]
-  329["SweepEdge Adjacent"]
-  330["SweepEdge Adjacent"]
-  331["SweepEdge Adjacent"]
-  332["SweepEdge Adjacent"]
-  333["SweepEdge Adjacent"]
-  334["SweepEdge Adjacent"]
-  335["SweepEdge Adjacent"]
-  336["SweepEdge Adjacent"]
-  337["SweepEdge Adjacent"]
-  338["SweepEdge Adjacent"]
-  339["SweepEdge Adjacent"]
-  340["SweepEdge Adjacent"]
-  341["SweepEdge Adjacent"]
-  342["SweepEdge Adjacent"]
-  343["SweepEdge Adjacent"]
-  344["SweepEdge Opposite"]
-  345["SweepEdge Opposite"]
-  346["SweepEdge Opposite"]
-  347["SweepEdge Opposite"]
-  348["SweepEdge Opposite"]
-  349["SweepEdge Opposite"]
-  350["SweepEdge Opposite"]
-  351["SweepEdge Opposite"]
-  352["SweepEdge Opposite"]
-  353["SweepEdge Opposite"]
-  354["SweepEdge Opposite"]
-  355["SweepEdge Opposite"]
-  356["SweepEdge Opposite"]
-  357["SweepEdge Opposite"]
-  358["SweepEdge Opposite"]
-  359["SweepEdge Opposite"]
-  360["SweepEdge Opposite"]
-  361["SweepEdge Opposite"]
-  362["SweepEdge Opposite"]
-  363["SweepEdge Opposite"]
-  364["SweepEdge Opposite"]
-  365["SweepEdge Opposite"]
-  366["SweepEdge Opposite"]
-  367[Wall]
+  305[Wall]
     %% face_code_ref=Missing NodePath
-  368[Wall]
+  306[Wall]
     %% face_code_ref=Missing NodePath
-  369[Wall]
+  307[Wall]
     %% face_code_ref=Missing NodePath
-  370[Wall]
+  308[Wall]
     %% face_code_ref=Missing NodePath
-  371[Wall]
+  309[Wall]
     %% face_code_ref=Missing NodePath
-  372[Wall]
+  310[Wall]
     %% face_code_ref=Missing NodePath
-  373[Wall]
+  311[Wall]
     %% face_code_ref=Missing NodePath
-  374[Wall]
+  312[Wall]
     %% face_code_ref=Missing NodePath
-  375[Wall]
+  313[Wall]
     %% face_code_ref=Missing NodePath
-  376[Wall]
+  314[Wall]
     %% face_code_ref=Missing NodePath
-  377[Wall]
+  315[Wall]
     %% face_code_ref=Missing NodePath
-  378[Wall]
+  316[Wall]
     %% face_code_ref=Missing NodePath
-  379[Wall]
+  317[Wall]
     %% face_code_ref=Missing NodePath
-  380[Wall]
+  318[Wall]
     %% face_code_ref=Missing NodePath
-  381[Wall]
+  319[Wall]
     %% face_code_ref=Missing NodePath
-  382[Wall]
+  320[Wall]
     %% face_code_ref=Missing NodePath
-  383[Wall]
+  321[Wall]
     %% face_code_ref=Missing NodePath
-  384[Wall]
+  322[Wall]
     %% face_code_ref=Missing NodePath
-  385[Wall]
+  323[Wall]
     %% face_code_ref=Missing NodePath
-  386[Wall]
+  324[Wall]
     %% face_code_ref=Missing NodePath
-  387[Wall]
+  325[Wall]
     %% face_code_ref=Missing NodePath
-  388[Wall]
+  326[Wall]
     %% face_code_ref=Missing NodePath
-  389[Wall]
+  327[Wall]
     %% face_code_ref=Missing NodePath
-  390[Wall]
+  328[Wall]
     %% face_code_ref=Missing NodePath
-  391[Wall]
+  329[Wall]
     %% face_code_ref=Missing NodePath
-  392[Wall]
+  330[Wall]
     %% face_code_ref=Missing NodePath
-  393[Wall]
+  331[Wall]
     %% face_code_ref=Missing NodePath
-  394[Wall]
+  332[Wall]
     %% face_code_ref=Missing NodePath
-  395[Wall]
+  333[Wall]
     %% face_code_ref=Missing NodePath
-  396[Wall]
+  334[Wall]
     %% face_code_ref=Missing NodePath
-  397[Wall]
+  335[Wall]
     %% face_code_ref=Missing NodePath
-  398[Wall]
+  336[Wall]
     %% face_code_ref=Missing NodePath
-  399[Wall]
+  337[Wall]
     %% face_code_ref=Missing NodePath
-  400[Wall]
+  338[Wall]
     %% face_code_ref=Missing NodePath
-  401[Wall]
+  339[Wall]
     %% face_code_ref=Missing NodePath
-  402[Wall]
+  340[Wall]
     %% face_code_ref=Missing NodePath
-  403[Wall]
+  341[Wall]
     %% face_code_ref=Missing NodePath
-  404[Wall]
+  342[Wall]
     %% face_code_ref=Missing NodePath
-  405[Wall]
+  343[Wall]
     %% face_code_ref=Missing NodePath
-  406[Wall]
+  344[Wall]
     %% face_code_ref=Missing NodePath
   1 <--x 14
   1 --- 22
   1 <--x 127
   297 --- 1
-  352 <--x 1
-  353 <--x 1
-  354 <--x 1
-  355 <--x 1
-  356 <--x 1
-  357 <--x 1
-  358 <--x 1
-  359 <--x 1
   298 --- 2
-  344 <--x 2
-  345 <--x 2
-  346 <--x 2
-  347 <--x 2
-  348 <--x 2
-  349 <--x 2
-  350 <--x 2
-  351 <--x 2
   299 --- 3
-  360 <--x 3
   300 --- 4
-  361 <--x 4
   301 --- 5
-  362 <--x 5
   302 --- 6
-  363 <--x 6
-  364 <--x 6
-  365 <--x 6
-  366 <--x 6
-  39 <--x 7
-  40 <--x 7
-  41 <--x 7
-  42 <--x 7
-  43 <--x 7
-  44 <--x 7
-  45 <--x 7
-  46 <--x 7
   297 --- 7
-  47 <--x 8
-  48 <--x 8
-  49 <--x 8
-  50 <--x 8
-  51 <--x 8
-  52 <--x 8
-  53 <--x 8
-  54 <--x 8
   298 --- 8
-  55 <--x 9
   299 --- 9
-  91 <--x 10
   300 --- 10
-  92 <--x 11
   301 --- 11
-  95 <--x 12
-  96 <--x 12
-  97 <--x 12
-  98 <--x 12
   302 --- 12
   15 --- 13
   16 --- 13
   22 x--> 14
-  14 <--x 55
+  14 <--x 61
   14 ---- 297
   23 x--> 15
   32 x--> 15
@@ -861,24 +753,24 @@ flowchart LR
   15 ---- 298
   24 x--> 16
   33 x--> 16
-  16 <--x 56
-  16 <--x 57
-  16 <--x 58
-  16 <--x 59
-  16 <--x 60
-  16 <--x 61
+  16 <--x 47
+  16 <--x 48
+  16 <--x 49
+  16 <--x 50
+  16 <--x 51
+  16 <--x 52
   16 ---- 303
   25 x--> 17
   17 --- 30
   34 x--> 17
-  17 <--x 47
-  17 <--x 48
-  17 <--x 49
-  17 <--x 50
-  17 <--x 51
-  17 <--x 52
   17 <--x 53
   17 <--x 54
+  17 <--x 55
+  17 <--x 56
+  17 <--x 57
+  17 <--x 58
+  17 <--x 59
+  17 <--x 60
   17 ---- 299
   26 x--> 18
   35 x--> 18
@@ -891,13 +783,17 @@ flowchart LR
   28 x--> 20
   20 --- 31
   37 x--> 20
-  20 <--x 95
-  20 <--x 96
-  20 <--x 97
-  20 <--x 98
+  20 <--x 107
+  20 <--x 108
+  20 <--x 109
+  20 <--x 110
   20 ---- 302
   29 x--> 21
   38 x--> 21
+  21 <--x 95
+  21 <--x 96
+  21 <--x 97
+  21 <--x 98
   21 <--x 99
   21 <--x 100
   21 <--x 101
@@ -906,10 +802,6 @@ flowchart LR
   21 <--x 104
   21 <--x 105
   21 <--x 106
-  21 <--x 107
-  21 <--x 108
-  21 <--x 109
-  21 <--x 110
   21 ---- 304
   22 --- 89
   22 --- 90
@@ -984,164 +876,85 @@ flowchart LR
   38 <--x 134
   67 x--> 39
   39 --- 305
-  39 --- 344
-  39 --- 367
   68 x--> 40
   40 --- 306
-  40 --- 345
-  40 --- 368
   69 x--> 41
   41 --- 307
-  41 --- 346
-  41 --- 369
   70 x--> 42
   42 --- 308
-  42 --- 347
-  42 --- 370
   71 x--> 43
   43 --- 309
-  43 --- 348
-  43 --- 371
   72 x--> 44
   44 --- 310
-  44 --- 349
-  44 --- 372
   73 x--> 45
   45 --- 311
-  45 --- 350
-  45 --- 373
   74 x--> 46
   46 --- 312
-  46 --- 351
-  46 --- 374
   75 x--> 47
   47 --- 313
-  47 --- 352
-  47 --- 375
   76 x--> 48
   48 --- 314
-  48 --- 353
-  48 --- 376
   77 x--> 49
   49 --- 315
-  49 --- 354
-  49 --- 377
   78 x--> 50
   50 --- 316
-  50 --- 355
-  50 --- 378
   79 x--> 51
   51 --- 317
-  51 --- 356
-  51 --- 379
   80 x--> 52
   52 --- 318
-  52 --- 357
-  52 --- 380
   81 x--> 53
   53 --- 319
-  53 --- 358
-  53 --- 381
   82 x--> 54
   54 --- 320
-  54 --- 359
-  54 --- 382
   83 x--> 55
   55 --- 321
-  55 --- 360
-  55 --- 383
   84 x--> 56
-  303 <--x 56
   56 --- 322
-  56 --- 384
   85 x--> 57
-  303 <--x 57
   57 --- 323
-  57 --- 385
   86 x--> 58
-  303 <--x 58
   58 --- 324
-  58 --- 386
   87 x--> 59
-  303 <--x 59
   59 --- 325
-  59 --- 387
   88 x--> 60
-  303 <--x 60
   60 --- 326
-  60 --- 388
   90 x--> 61
-  303 <--x 61
   61 --- 327
-  61 --- 389
   93 x--> 91
   91 --- 328
-  91 --- 361
-  91 --- 390
   94 x--> 92
   92 --- 329
-  92 --- 362
-  92 --- 391
   111 x--> 95
-  95 --- 330
-  95 --- 363
-  95 --- 392
   112 x--> 96
-  96 --- 331
-  96 --- 364
-  96 --- 393
+  96 --- 330
   113 x--> 97
-  97 --- 332
-  97 --- 365
-  97 --- 394
+  97 --- 331
   114 x--> 98
-  98 --- 333
-  98 --- 366
-  98 --- 395
+  98 --- 332
   115 x--> 99
+  99 --- 333
   116 x--> 100
-  304 <--x 100
   100 --- 334
-  100 --- 396
   117 x--> 101
-  304 <--x 101
   101 --- 335
-  101 --- 397
   118 x--> 102
-  304 <--x 102
   102 --- 336
-  102 --- 398
   119 x--> 103
-  304 <--x 103
   103 --- 337
-  103 --- 399
   120 x--> 104
-  304 <--x 104
   104 --- 338
-  104 --- 400
   121 x--> 105
-  304 <--x 105
   105 --- 339
-  105 --- 401
   122 x--> 106
-  304 <--x 106
   106 --- 340
-  106 --- 402
   123 x--> 107
-  304 <--x 107
   107 --- 341
-  107 --- 403
   124 x--> 108
-  304 <--x 108
   108 --- 342
-  108 --- 404
   125 x--> 109
-  304 <--x 109
   109 --- 343
-  109 --- 405
   126 x--> 110
-  304 <--x 110
-  110 --- 406
+  110 --- 344
   297 --- 313
   297 --- 314
   297 --- 315
@@ -1150,79 +963,27 @@ flowchart LR
   297 --- 318
   297 --- 319
   297 --- 320
-  297 --- 352
-  297 --- 353
-  297 --- 354
-  297 --- 355
-  297 --- 356
-  297 --- 357
-  297 --- 358
-  297 --- 359
-  297 --- 381
-  297 --- 382
-  297 --- 383
-  297 --- 384
-  297 --- 385
-  297 --- 386
-  297 --- 387
-  297 --- 388
-  298 --- 305
-  298 --- 306
-  298 --- 307
-  298 --- 308
-  298 --- 309
-  298 --- 310
-  298 --- 311
-  298 --- 312
-  298 --- 344
-  298 --- 345
-  298 --- 346
-  298 --- 347
-  298 --- 348
-  298 --- 349
-  298 --- 350
-  298 --- 351
-  298 --- 373
-  298 --- 374
-  298 --- 375
-  298 --- 376
-  298 --- 377
-  298 --- 378
-  298 --- 379
-  298 --- 380
-  299 --- 321
-  299 --- 360
-  299 --- 389
+  298 --- 321
+  299 --- 305
+  299 --- 306
+  299 --- 307
+  299 --- 308
+  299 --- 309
+  299 --- 310
+  299 --- 311
+  299 --- 312
   300 --- 328
-  300 --- 361
-  300 --- 390
   301 --- 329
-  301 --- 362
-  301 --- 391
   302 --- 330
   302 --- 331
   302 --- 332
   302 --- 333
-  302 --- 363
-  302 --- 364
-  302 --- 365
-  302 --- 366
-  302 --- 403
-  302 --- 404
-  302 --- 405
-  302 --- 406
   303 --- 322
   303 --- 323
   303 --- 324
   303 --- 325
   303 --- 326
   303 --- 327
-  303 --- 367
-  303 --- 368
-  303 --- 369
-  303 --- 370
-  303 --- 371
-  303 --- 372
   304 --- 334
   304 --- 335
   304 --- 336
@@ -1233,121 +994,5 @@ flowchart LR
   304 --- 341
   304 --- 342
   304 --- 343
-  304 --- 392
-  304 --- 393
-  304 --- 394
-  304 --- 395
-  304 --- 396
-  304 --- 397
-  304 --- 398
-  304 --- 399
-  304 --- 400
-  304 --- 401
-  304 --- 402
-  367 --- 305
-  305 x--> 380
-  368 --- 306
-  306 x--> 373
-  369 --- 307
-  307 x--> 374
-  370 --- 308
-  308 x--> 375
-  371 --- 309
-  309 x--> 376
-  372 --- 310
-  310 x--> 377
-  373 --- 311
-  311 x--> 378
-  374 --- 312
-  312 x--> 379
-  375 --- 313
-  313 x--> 388
-  376 --- 314
-  314 x--> 381
-  377 --- 315
-  315 x--> 382
-  378 --- 316
-  316 x--> 383
-  379 --- 317
-  317 x--> 384
-  380 --- 318
-  318 x--> 385
-  381 --- 319
-  319 x--> 386
-  382 --- 320
-  320 x--> 387
-  383 --- 321
-  322 x--> 368
-  384 --- 322
-  323 x--> 369
-  385 --- 323
-  324 x--> 370
-  386 --- 324
-  325 x--> 371
-  387 --- 325
-  326 x--> 372
-  388 --- 326
-  327 x--> 367
-  389 --- 327
-  390 --- 328
-  391 --- 329
-  403 --- 330
-  330 x--> 406
-  331 x--> 403
-  404 --- 331
-  332 x--> 404
-  405 --- 332
-  333 x--> 405
-  406 --- 333
-  393 <--x 334
-  394 <--x 335
-  335 x--> 394
-  335 x--> 395
-  395 <--x 336
-  336 x--> 395
-  336 x--> 396
-  396 <--x 337
-  337 x--> 396
-  337 x--> 397
-  397 <--x 338
-  338 x--> 397
-  338 x--> 398
-  398 <--x 339
-  339 x--> 398
-  339 x--> 399
-  399 <--x 340
-  340 x--> 399
-  340 x--> 400
-  400 <--x 341
-  341 x--> 400
-  341 x--> 401
-  401 <--x 342
-  342 x--> 401
-  342 x--> 402
-  343 x--> 392
-  402 <--x 343
-  343 x--> 402
-  373 --- 344
-  374 --- 345
-  375 --- 346
-  376 --- 347
-  377 --- 348
-  378 --- 349
-  379 --- 350
-  380 --- 351
-  381 --- 352
-  382 --- 353
-  383 --- 354
-  384 --- 355
-  385 --- 356
-  386 --- 357
-  387 --- 358
-  388 --- 359
-  389 --- 360
-  390 --- 361
-  391 --- 362
-  403 --- 363
-  404 --- 364
-  405 --- 365
-  406 --- 366
+  304 --- 344
 ```

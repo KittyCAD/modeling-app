@@ -120,127 +120,47 @@ flowchart LR
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 20 }, ExpressionStatementExpr]
   58["Sweep Extrusion<br>[2194, 2233, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  59["SweepEdge Adjacent"]
-  60["SweepEdge Adjacent"]
-  61["SweepEdge Adjacent"]
-  62["SweepEdge Adjacent"]
-  63["SweepEdge Adjacent"]
-  64["SweepEdge Adjacent"]
-  65["SweepEdge Adjacent"]
-  66["SweepEdge Adjacent"]
-  67["SweepEdge Adjacent"]
-  68["SweepEdge Adjacent"]
-  69["SweepEdge Adjacent"]
-  70["SweepEdge Adjacent"]
-  71["SweepEdge Adjacent"]
-  72["SweepEdge Adjacent"]
-  73["SweepEdge Adjacent"]
-  74["SweepEdge Adjacent"]
-  75["SweepEdge Adjacent"]
-  76["SweepEdge Adjacent"]
-  77["SweepEdge Adjacent"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Opposite"]
-  80["SweepEdge Opposite"]
-  81["SweepEdge Opposite"]
-  82["SweepEdge Opposite"]
-  83["SweepEdge Opposite"]
-  84["SweepEdge Opposite"]
-  85["SweepEdge Opposite"]
-  86["SweepEdge Opposite"]
-  87["SweepEdge Opposite"]
-  88["SweepEdge Opposite"]
-  89["SweepEdge Opposite"]
-  90["SweepEdge Opposite"]
-  91["SweepEdge Opposite"]
-  92["SweepEdge Opposite"]
-  93["SweepEdge Opposite"]
-  94["SweepEdge Opposite"]
-  95["SweepEdge Opposite"]
-  96["SweepEdge Opposite"]
-  97["SweepEdge Opposite"]
-  98["SweepEdge Opposite"]
-  99[Wall]
+  59[Wall]
     %% face_code_ref=Missing NodePath
-  100[Wall]
+  60[Wall]
     %% face_code_ref=Missing NodePath
-  101[Wall]
+  61[Wall]
     %% face_code_ref=Missing NodePath
-  102[Wall]
+  62[Wall]
     %% face_code_ref=Missing NodePath
-  103[Wall]
+  63[Wall]
     %% face_code_ref=Missing NodePath
-  104[Wall]
+  64[Wall]
     %% face_code_ref=Missing NodePath
-  105[Wall]
+  65[Wall]
     %% face_code_ref=Missing NodePath
-  106[Wall]
+  66[Wall]
     %% face_code_ref=Missing NodePath
-  107[Wall]
+  67[Wall]
     %% face_code_ref=Missing NodePath
-  108[Wall]
+  68[Wall]
     %% face_code_ref=Missing NodePath
-  109[Wall]
+  69[Wall]
     %% face_code_ref=Missing NodePath
-  110[Wall]
+  70[Wall]
     %% face_code_ref=Missing NodePath
-  111[Wall]
+  71[Wall]
     %% face_code_ref=Missing NodePath
-  112[Wall]
+  72[Wall]
     %% face_code_ref=Missing NodePath
-  113[Wall]
+  73[Wall]
     %% face_code_ref=Missing NodePath
-  114[Wall]
+  74[Wall]
     %% face_code_ref=Missing NodePath
-  115[Wall]
+  75[Wall]
     %% face_code_ref=Missing NodePath
-  116[Wall]
+  76[Wall]
     %% face_code_ref=Missing NodePath
-  117[Wall]
+  77[Wall]
     %% face_code_ref=Missing NodePath
-  118[Wall]
+  78[Wall]
     %% face_code_ref=Missing NodePath
   58 --- 1
-  79 <--x 1
-  80 <--x 1
-  81 <--x 1
-  82 <--x 1
-  83 <--x 1
-  84 <--x 1
-  85 <--x 1
-  86 <--x 1
-  87 <--x 1
-  88 <--x 1
-  89 <--x 1
-  90 <--x 1
-  91 <--x 1
-  92 <--x 1
-  93 <--x 1
-  94 <--x 1
-  95 <--x 1
-  96 <--x 1
-  97 <--x 1
-  98 <--x 1
-  23 <--x 2
-  24 <--x 2
-  25 <--x 2
-  26 <--x 2
-  27 <--x 2
-  28 <--x 2
-  29 <--x 2
-  30 <--x 2
-  31 <--x 2
-  32 <--x 2
-  33 <--x 2
-  34 <--x 2
-  35 <--x 2
-  36 <--x 2
-  37 <--x 2
-  38 <--x 2
-  39 <--x 2
-  40 <--x 2
-  41 <--x 2
-  42 <--x 2
   58 --- 2
   4 x--> 3
   5 x--> 3
@@ -306,68 +226,28 @@ flowchart LR
   21 <--x 38
   22 <--x 39
   23 --- 59
-  23 --- 79
-  23 --- 99
   24 --- 60
-  24 --- 80
-  24 --- 100
   25 --- 61
-  25 --- 81
-  25 --- 101
   26 --- 62
-  26 --- 82
-  26 --- 102
   27 --- 63
-  27 --- 83
-  27 --- 103
   28 --- 64
-  28 --- 84
-  28 --- 104
   29 --- 65
-  29 --- 85
-  29 --- 105
   30 --- 66
-  30 --- 86
-  30 --- 106
   31 --- 67
-  31 --- 87
-  31 --- 107
   32 --- 68
-  32 --- 88
-  32 --- 108
   33 --- 69
-  33 --- 89
-  33 --- 109
   34 --- 70
-  34 --- 90
-  34 --- 110
   35 --- 71
-  35 --- 91
-  35 --- 111
   36 --- 72
-  36 --- 92
-  36 --- 112
   37 --- 73
-  37 --- 93
-  37 --- 113
   38 --- 74
-  38 --- 94
-  38 --- 114
   39 --- 75
-  39 --- 95
-  39 --- 115
   43 x--> 40
   40 --- 76
-  40 --- 96
-  40 --- 116
   44 x--> 41
   41 --- 77
-  41 --- 97
-  41 --- 117
   45 x--> 42
   42 --- 78
-  42 --- 98
-  42 --- 118
   58 --- 59
   58 --- 60
   58 --- 61
@@ -388,104 +268,4 @@ flowchart LR
   58 --- 76
   58 --- 77
   58 --- 78
-  58 --- 79
-  58 --- 80
-  58 --- 81
-  58 --- 82
-  58 --- 83
-  58 --- 84
-  58 --- 85
-  58 --- 86
-  58 --- 87
-  58 --- 88
-  58 --- 89
-  58 --- 90
-  58 --- 91
-  58 --- 92
-  58 --- 93
-  58 --- 94
-  58 --- 95
-  58 --- 96
-  58 --- 97
-  58 --- 98
-  58 --- 99
-  58 --- 100
-  58 --- 101
-  58 --- 102
-  58 --- 103
-  58 --- 104
-  58 --- 105
-  58 --- 106
-  58 --- 107
-  58 --- 108
-  58 --- 109
-  58 --- 110
-  58 --- 111
-  58 --- 112
-  58 --- 113
-  58 --- 114
-  58 --- 115
-  58 --- 116
-  58 --- 117
-  58 --- 118
-  99 --- 59
-  59 x--> 99
-  60 x--> 100
-  100 --- 60
-  61 x--> 101
-  101 --- 61
-  62 x--> 102
-  102 --- 62
-  63 x--> 103
-  103 --- 63
-  64 x--> 104
-  104 --- 64
-  65 x--> 105
-  105 --- 65
-  66 x--> 106
-  106 --- 66
-  67 x--> 107
-  107 --- 67
-  68 x--> 108
-  108 --- 68
-  69 x--> 109
-  109 --- 69
-  70 x--> 110
-  110 --- 70
-  71 x--> 111
-  111 --- 71
-  72 x--> 112
-  112 --- 72
-  73 x--> 113
-  113 --- 73
-  74 x--> 114
-  114 --- 74
-  75 x--> 115
-  115 --- 75
-  76 x--> 116
-  116 --- 76
-  77 x--> 117
-  117 --- 77
-  78 x--> 118
-  118 --- 78
-  99 --- 79
-  100 --- 80
-  101 --- 81
-  102 --- 82
-  103 --- 83
-  104 --- 84
-  105 --- 85
-  106 --- 86
-  107 --- 87
-  108 --- 88
-  109 --- 89
-  110 --- 90
-  111 --- 91
-  112 --- 92
-  113 --- 93
-  114 --- 94
-  115 --- 95
-  116 --- 96
-  117 --- 97
-  118 --- 98
 ```

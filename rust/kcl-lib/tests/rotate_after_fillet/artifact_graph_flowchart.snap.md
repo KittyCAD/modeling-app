@@ -55,64 +55,31 @@ flowchart LR
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   26["Sweep Extrusion<br>[415, 448, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Adjacent"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Adjacent"]
-  32["SweepEdge Adjacent"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Opposite"]
-  38["SweepEdge Opposite"]
-  39["SweepEdge Opposite"]
-  40["SweepEdge Opposite"]
-  41["SweepEdge Opposite"]
-  42["SweepEdge Opposite"]
-  43[Wall]
+  27[Wall]
     %% face_code_ref=Missing NodePath
-  44[Wall]
+  28[Wall]
     %% face_code_ref=Missing NodePath
-  45[Wall]
+  29[Wall]
     %% face_code_ref=Missing NodePath
-  46[Wall]
+  30[Wall]
     %% face_code_ref=Missing NodePath
-  47[Wall]
+  31[Wall]
     %% face_code_ref=Missing NodePath
-  48[Wall]
+  32[Wall]
     %% face_code_ref=Missing NodePath
-  49[Wall]
+  33[Wall]
     %% face_code_ref=Missing NodePath
-  50[Wall]
+  34[Wall]
     %% face_code_ref=Missing NodePath
   1 --- 7
-  13 <--x 1
-  14 <--x 1
   1 <--x 22
   26 --- 1
   25 --- 2
-  35 <--x 2
   3 --- 9
-  11 <--x 3
-  12 <--x 3
-  15 <--x 3
-  16 <--x 3
-  17 <--x 3
-  18 <--x 3
   3 <--x 23
   26 --- 3
-  38 <--x 3
   24 --- 4
-  36 <--x 4
-  37 <--x 4
-  39 <--x 4
-  40 <--x 4
-  41 <--x 4
-  42 <--x 4
-  35 x--> 5
-  14 --- 6
+  14 <--x 6
   7 --- 13
   7 --- 19
   7 ---- 25
@@ -129,73 +96,19 @@ flowchart LR
   9 --- 21
   9 ---- 24
   11 --- 27
-  11 --- 36
-  11 --- 43
   12 --- 28
-  12 --- 37
-  12 --- 44
   13 --- 29
-  13 --- 35
-  13 --- 45
   14 --- 30
-  14 --- 38
-  14 --- 46
   15 --- 31
-  15 --- 39
-  15 --- 47
   16 --- 32
-  16 --- 40
-  16 --- 48
   17 --- 33
-  17 --- 41
-  17 --- 49
   18 --- 34
-  18 --- 42
-  18 --- 50
   24 --- 27
   24 --- 28
   24 --- 31
   24 --- 32
   24 --- 33
   24 --- 34
-  24 --- 36
-  24 --- 37
-  24 --- 39
-  24 --- 40
-  24 --- 41
-  24 --- 42
-  24 --- 43
-  24 --- 44
-  24 --- 47
-  24 --- 48
-  24 --- 49
-  24 --- 50
   25 --- 29
-  25 --- 35
-  25 --- 45
   26 --- 30
-  26 --- 38
-  26 --- 46
-  43 --- 27
-  27 x--> 43
-  44 --- 28
-  28 x--> 44
-  45 --- 29
-  46 --- 30
-  47 --- 31
-  31 x--> 47
-  48 --- 32
-  32 x--> 48
-  49 --- 33
-  33 x--> 49
-  34 x--> 50
-  50 --- 34
-  43 --- 35
-  44 --- 36
-  45 --- 37
-  46 --- 38
-  47 --- 39
-  48 --- 40
-  49 --- 41
-  50 --- 42
 ```

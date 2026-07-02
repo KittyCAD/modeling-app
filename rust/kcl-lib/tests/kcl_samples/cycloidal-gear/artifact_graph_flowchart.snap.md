@@ -160,51 +160,23 @@ flowchart LR
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   76["Sweep ExtrusionTwist<br>[4112, 4215, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  77["SweepEdge Adjacent"]
-  78["SweepEdge Adjacent"]
-  79["SweepEdge Adjacent"]
-  80["SweepEdge Adjacent"]
-  81["SweepEdge Adjacent"]
-  82["SweepEdge Adjacent"]
-  83["SweepEdge Adjacent"]
-  84["SweepEdge Opposite"]
-  85["SweepEdge Opposite"]
-  86["SweepEdge Opposite"]
-  87["SweepEdge Opposite"]
-  88["SweepEdge Opposite"]
-  89["SweepEdge Opposite"]
-  90["SweepEdge Opposite"]
-  91[Wall]
+  77[Wall]
     %% face_code_ref=Missing NodePath
-  92[Wall]
+  78[Wall]
     %% face_code_ref=Missing NodePath
-  93[Wall]
+  79[Wall]
     %% face_code_ref=Missing NodePath
-  94[Wall]
+  80[Wall]
     %% face_code_ref=Missing NodePath
-  95[Wall]
+  81[Wall]
     %% face_code_ref=Missing NodePath
-  96[Wall]
+  82[Wall]
     %% face_code_ref=Missing NodePath
-  97[Wall]
+  83[Wall]
     %% face_code_ref=Missing NodePath
   75 --- 1
-  90 <--x 1
   76 --- 2
-  84 <--x 2
-  85 <--x 2
-  86 <--x 2
-  87 <--x 2
-  88 <--x 2
-  89 <--x 2
-  25 <--x 3
   75 --- 3
-  19 <--x 4
-  20 <--x 4
-  21 <--x 4
-  22 <--x 4
-  23 <--x 4
-  24 <--x 4
   76 --- 4
   6 --- 5
   7 --- 5
@@ -242,65 +214,17 @@ flowchart LR
   17 <--x 24
   18 <--x 25
   19 --- 77
-  19 --- 84
-  19 --- 91
   20 --- 78
-  20 --- 85
-  20 --- 92
   21 --- 79
-  21 --- 86
-  21 --- 93
   22 --- 80
-  22 --- 87
-  22 --- 94
   23 --- 81
-  23 --- 88
-  23 --- 95
   24 --- 82
-  24 --- 89
-  24 --- 96
   25 --- 83
-  25 --- 90
-  25 --- 97
   75 --- 83
-  75 --- 90
-  75 --- 97
   76 --- 77
   76 --- 78
   76 --- 79
   76 --- 80
   76 --- 81
   76 --- 82
-  76 --- 84
-  76 --- 85
-  76 --- 86
-  76 --- 87
-  76 --- 88
-  76 --- 89
-  76 --- 91
-  76 --- 92
-  76 --- 93
-  76 --- 94
-  76 --- 95
-  76 --- 96
-  91 --- 77
-  77 x--> 91
-  78 x--> 92
-  92 --- 78
-  79 x--> 93
-  93 --- 79
-  80 x--> 94
-  94 --- 80
-  81 x--> 95
-  95 --- 81
-  82 x--> 96
-  96 --- 82
-  97 --- 83
-  91 --- 84
-  92 --- 85
-  93 --- 86
-  94 --- 87
-  95 --- 88
-  96 --- 89
-  97 --- 90
 ```

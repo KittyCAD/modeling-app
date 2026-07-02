@@ -84,43 +84,19 @@ flowchart LR
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 27 }, ExpressionStatementExpr]
   40["Sweep Extrusion<br>[2260, 2301, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  41["SweepEdge Adjacent"]
-  42["SweepEdge Adjacent"]
-  43["SweepEdge Adjacent"]
-  44["SweepEdge Adjacent"]
-  45["SweepEdge Adjacent"]
-  46["SweepEdge Adjacent"]
-  47["SweepEdge Opposite"]
-  48["SweepEdge Opposite"]
-  49["SweepEdge Opposite"]
-  50["SweepEdge Opposite"]
-  51["SweepEdge Opposite"]
-  52["SweepEdge Opposite"]
-  53[Wall]
+  41[Wall]
     %% face_code_ref=Missing NodePath
-  54[Wall]
+  42[Wall]
     %% face_code_ref=Missing NodePath
-  55[Wall]
+  43[Wall]
     %% face_code_ref=Missing NodePath
-  56[Wall]
+  44[Wall]
     %% face_code_ref=Missing NodePath
-  57[Wall]
+  45[Wall]
     %% face_code_ref=Missing NodePath
-  58[Wall]
+  46[Wall]
     %% face_code_ref=Missing NodePath
   40 --- 1
-  47 <--x 1
-  48 <--x 1
-  49 <--x 1
-  50 <--x 1
-  51 <--x 1
-  52 <--x 1
-  10 <--x 2
-  11 <--x 2
-  12 <--x 2
-  13 <--x 2
-  14 <--x 2
-  15 <--x 2
   40 --- 2
   4 x--> 3
   5 x--> 3
@@ -145,60 +121,18 @@ flowchart LR
   7 <--x 11
   8 <--x 12
   10 --- 41
-  10 --- 47
-  10 --- 53
   11 --- 42
-  11 --- 48
-  11 --- 54
   12 --- 43
-  12 --- 49
-  12 --- 55
   16 x--> 13
   13 --- 44
-  13 --- 50
-  13 --- 56
   17 x--> 14
   14 --- 45
-  14 --- 51
-  14 --- 57
   18 x--> 15
   15 --- 46
-  15 --- 52
-  15 --- 58
   40 --- 41
   40 --- 42
   40 --- 43
   40 --- 44
   40 --- 45
   40 --- 46
-  40 --- 47
-  40 --- 48
-  40 --- 49
-  40 --- 50
-  40 --- 51
-  40 --- 52
-  40 --- 53
-  40 --- 54
-  40 --- 55
-  40 --- 56
-  40 --- 57
-  40 --- 58
-  53 --- 41
-  41 x--> 53
-  42 x--> 54
-  54 --- 42
-  43 x--> 55
-  55 --- 43
-  44 x--> 56
-  56 --- 44
-  45 x--> 57
-  57 --- 45
-  46 x--> 58
-  58 --- 46
-  53 --- 47
-  54 --- 48
-  55 --- 49
-  56 --- 50
-  57 --- 51
-  58 --- 52
 ```

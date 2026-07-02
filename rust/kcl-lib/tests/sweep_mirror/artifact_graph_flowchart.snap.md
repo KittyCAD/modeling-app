@@ -102,32 +102,16 @@ flowchart LR
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   47["Sweep Sweep<br>[2010, 2039, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  48["SweepEdge Adjacent"]
-  49["SweepEdge Adjacent"]
-  50["SweepEdge Adjacent"]
-  51["SweepEdge Adjacent"]
-  52["SweepEdge Opposite"]
-  53["SweepEdge Opposite"]
-  54["SweepEdge Opposite"]
-  55["SweepEdge Opposite"]
-  56[Wall]
+  48[Wall]
     %% face_code_ref=Missing NodePath
-  57[Wall]
+  49[Wall]
     %% face_code_ref=Missing NodePath
-  58[Wall]
+  50[Wall]
     %% face_code_ref=Missing NodePath
-  59[Wall]
+  51[Wall]
     %% face_code_ref=Missing NodePath
-  10 <--x 1
-  11 <--x 1
-  12 <--x 1
-  13 <--x 1
   46 --- 1
   46 --- 2
-  52 <--x 2
-  53 <--x 2
-  54 <--x 2
-  55 <--x 2
   6 x--> 3
   9 x--> 3
   3 <--x 10
@@ -155,42 +139,14 @@ flowchart LR
   9 <--x 23
   14 x--> 10
   10 --- 48
-  10 --- 52
-  10 --- 56
   19 x--> 11
   11 --- 49
-  11 --- 53
-  11 --- 57
   20 x--> 12
   12 --- 50
-  12 --- 54
-  12 --- 58
   21 x--> 13
   13 --- 51
-  13 --- 55
-  13 --- 59
   46 --- 48
   46 --- 49
   46 --- 50
   46 --- 51
-  46 --- 52
-  46 --- 53
-  46 --- 54
-  46 --- 55
-  46 --- 56
-  46 --- 57
-  46 --- 58
-  46 --- 59
-  56 --- 48
-  48 x--> 56
-  49 x--> 57
-  57 --- 49
-  50 x--> 58
-  58 --- 50
-  51 x--> 59
-  59 --- 51
-  56 --- 52
-  57 --- 53
-  58 --- 54
-  59 --- 55
 ```

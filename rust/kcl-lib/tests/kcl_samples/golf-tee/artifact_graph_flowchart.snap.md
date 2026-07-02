@@ -68,16 +68,13 @@ flowchart LR
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 20 }, ExpressionStatementExpr]
   32["Sweep Revolve<br>[2035, 2076, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Adjacent"]
-  35["SweepEdge Adjacent"]
+  33[Wall]
+    %% face_code_ref=Missing NodePath
+  34[Wall]
+    %% face_code_ref=Missing NodePath
+  35[Wall]
+    %% face_code_ref=Missing NodePath
   36[Wall]
-    %% face_code_ref=Missing NodePath
-  37[Wall]
-    %% face_code_ref=Missing NodePath
-  38[Wall]
-    %% face_code_ref=Missing NodePath
-  39[Wall]
     %% face_code_ref=Missing NodePath
   2 x--> 1
   3 x--> 1
@@ -96,33 +93,16 @@ flowchart LR
   14 --- 2
   3 <--x 14
   4 <--x 5
-  32 <--x 5
   5 --- 33
-  5 --- 36
   10 x--> 6
-  32 <--x 6
-  6 --- 37
-  12 x--> 7
-  32 <--x 7
-  7 --- 34
-  7 --- 38
-  13 x--> 8
-  32 <--x 8
+  6 --- 34
+  11 x--> 7
+  12 x--> 8
   8 --- 35
-  8 --- 39
-  11 x--> 9
+  13 x--> 9
+  9 --- 36
   32 --- 33
   32 --- 34
   32 --- 35
   32 --- 36
-  32 --- 37
-  32 --- 38
-  32 --- 39
-  37 <--x 33
-  38 <--x 34
-  34 x--> 38
-  34 x--> 39
-  35 x--> 36
-  39 <--x 35
-  35 x--> 39
 ```

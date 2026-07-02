@@ -318,64 +318,42 @@ flowchart LR
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   150["Sweep Revolve<br>[8968, 8997, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 24 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  151["SweepEdge Adjacent"]
-  152["SweepEdge Adjacent"]
-  153["SweepEdge Adjacent"]
-  154["SweepEdge Adjacent"]
-  155["SweepEdge Adjacent"]
-  156["SweepEdge Adjacent"]
-  157["SweepEdge Adjacent"]
-  158["SweepEdge Adjacent"]
-  159["SweepEdge Adjacent"]
-  160["SweepEdge Adjacent"]
-  161["SweepEdge Adjacent"]
-  162["SweepEdge Adjacent"]
-  163["SweepEdge Adjacent"]
-  164["SweepEdge Opposite"]
-  165["SweepEdge Opposite"]
-  166["SweepEdge Opposite"]
-  167[Wall]
+  151[Wall]
     %% face_code_ref=Missing NodePath
-  168[Wall]
+  152[Wall]
     %% face_code_ref=Missing NodePath
-  169[Wall]
+  153[Wall]
     %% face_code_ref=Missing NodePath
-  170[Wall]
+  154[Wall]
     %% face_code_ref=Missing NodePath
-  171[Wall]
+  155[Wall]
     %% face_code_ref=Missing NodePath
-  172[Wall]
+  156[Wall]
     %% face_code_ref=Missing NodePath
-  173[Wall]
+  157[Wall]
     %% face_code_ref=Missing NodePath
-  174[Wall]
+  158[Wall]
     %% face_code_ref=Missing NodePath
-  175[Wall]
+  159[Wall]
     %% face_code_ref=Missing NodePath
-  176[Wall]
+  160[Wall]
     %% face_code_ref=Missing NodePath
-  177[Wall]
+  161[Wall]
     %% face_code_ref=Missing NodePath
-  178[Wall]
+  162[Wall]
     %% face_code_ref=Missing NodePath
-  179[Wall]
+  163[Wall]
     %% face_code_ref=Missing NodePath
-  180[Wall]
+  164[Wall]
     %% face_code_ref=Missing NodePath
-  181[Wall]
+  165[Wall]
     %% face_code_ref=Missing NodePath
   147 --- 1
-  164 <--x 1
   147 x--> 2
-  165 <--x 2
-  45 <--x 3
   148 --- 3
-  25 <--x 4
   147 --- 4
-  42 <--x 5
   147 x--> 5
   148 --- 6
-  166 <--x 6
   11 --- 7
   12 --- 7
   8 --- 9
@@ -447,8 +425,6 @@ flowchart LR
   24 <--x 61
   44 x--> 25
   25 --- 151
-  25 --- 164
-  25 --- 167
   26 <--x 34
   27 <--x 35
   28 <--x 36
@@ -457,111 +433,41 @@ flowchart LR
   31 <--x 39
   32 <--x 40
   33 <--x 41
-  149 <--x 34
   34 --- 152
-  34 --- 168
-  149 <--x 35
   35 --- 153
-  35 --- 169
-  149 <--x 36
   36 --- 154
-  36 --- 170
-  149 <--x 37
   37 --- 155
-  37 --- 171
-  149 <--x 38
   38 --- 156
-  38 --- 172
-  149 <--x 39
   39 --- 157
-  39 --- 173
-  149 <--x 41
-  41 --- 174
+  41 --- 158
   44 x--> 42
-  42 --- 158
-  42 --- 165
-  42 --- 175
+  42 --- 159
   43 <--x 45
-  45 --- 159
-  45 --- 166
-  45 --- 176
+  45 --- 160
   46 <--x 52
   47 <--x 53
   48 <--x 54
   49 <--x 55
   50 <--x 56
   51 <--x 57
-  150 <--x 52
-  52 --- 160
-  52 --- 177
-  150 <--x 54
-  54 --- 161
-  54 --- 178
-  150 <--x 55
-  55 --- 162
-  55 --- 179
-  150 <--x 56
-  56 --- 163
-  56 --- 180
-  150 <--x 57
-  57 --- 181
+  52 --- 161
+  54 --- 162
+  55 --- 163
+  56 --- 164
+  57 --- 165
   147 --- 151
-  147 <--x 158
-  147 --- 164
-  147 <--x 165
-  147 --- 167
-  147 <--x 175
-  148 --- 159
-  148 --- 166
-  148 --- 176
+  147 <--x 159
+  148 --- 160
   149 --- 152
   149 --- 153
   149 --- 154
   149 --- 155
   149 --- 156
   149 --- 157
-  149 --- 168
-  149 --- 169
-  149 --- 170
-  149 --- 171
-  149 --- 172
-  149 --- 173
-  149 --- 174
-  150 --- 160
+  149 --- 158
   150 --- 161
   150 --- 162
   150 --- 163
-  150 --- 177
-  150 --- 178
-  150 --- 179
-  150 --- 180
-  150 --- 181
-  167 --- 151
-  171 <--x 152
-  169 --- 153
-  153 x--> 170
-  154 x--> 168
-  170 --- 154
-  172 <--x 155
-  155 x--> 172
-  155 x--> 173
-  173 <--x 156
-  156 x--> 173
-  156 x--> 174
-  157 x--> 169
-  174 <--x 157
-  157 x--> 174
-  175 --- 158
-  176 --- 159
-  178 --- 160
-  160 x--> 179
-  179 --- 161
-  161 x--> 180
-  180 --- 162
-  162 x--> 181
-  163 x--> 177
-  181 --- 163
-  167 --- 164
-  175 --- 165
-  176 --- 166
+  150 --- 164
+  150 --- 165
 ```

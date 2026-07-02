@@ -769,7 +769,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             required: (context) =>
               ['Edge'].includes(context.argumentsToSubmit.axisOrEdge as string),
             inputType: 'selection',
-            selectionTypes: ['segment', 'sweepEdge', 'edgeCutEdge'],
+            selectionTypes: ['segment'],
             multiple: false,
             hidden: (context) =>
               isEditingNode(context) ||
@@ -1102,7 +1102,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         edge: {
           inputType: 'selection',
-          selectionTypes: ['segment', 'sweepEdge'],
+          selectionTypes: ['segment'],
           multiple: false,
           required: (context) =>
             ['Edge'].includes(context.argumentsToSubmit.mode as string),
@@ -1312,12 +1312,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           selection: {
             inputType: 'selection',
-            selectionTypes: [
-              'segment',
-              'sweepEdge',
-              'primitiveEdge',
-              'enginePrimitiveEdge',
-            ],
+            selectionTypes: ['segment', 'primitiveEdge', 'enginePrimitiveEdge'],
             multiple: true,
             required: true,
             skip: false,
@@ -1614,8 +1609,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               'edgeCut',
               'enginePrimitiveFace',
               'segment',
-              'sweepEdge',
-              'edgeCutEdge',
             ],
             clearSelectionFirst: true,
             multiple: false,
@@ -1737,7 +1730,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1762,7 +1755,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1787,7 +1780,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1841,7 +1834,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1867,7 +1860,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1893,7 +1886,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1918,7 +1911,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       overrides: {
         objects: {
           inputType: 'selection',
-          selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+          selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
           multiple: true,
           required: true,
           hidden: isEditingNodeSelection,
@@ -1943,7 +1936,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1969,7 +1962,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -1998,7 +1991,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2027,7 +2020,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2056,7 +2049,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,
@@ -2081,7 +2074,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             inputType: 'selection',
-            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment', 'sweepEdge'],
+            selectionTypes: ['cap', 'wall', 'edgeCut', 'segment'],
             multiple: true,
             required: true,
             hidden: isEditingNodeSelection,

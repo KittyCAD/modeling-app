@@ -42,10 +42,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 10 }, ExpressionStatementExpr]
   19["Sweep Revolve<br>[884, 928, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  20["SweepEdge Adjacent"]
-  21[Wall]
+  20[Wall]
     %% face_code_ref=Missing NodePath
-  22[Wall]
+  21[Wall]
     %% face_code_ref=Missing NodePath
   2 x--> 1
   3 x--> 1
@@ -62,14 +61,8 @@ flowchart LR
   4 <--x 7
   5 <--x 8
   6 <--x 9
-  19 <--x 8
   8 --- 20
-  8 --- 21
-  19 <--x 9
-  9 --- 22
+  9 --- 21
   19 --- 20
   19 --- 21
-  19 --- 22
-  20 x--> 21
-  22 --- 20
 ```
