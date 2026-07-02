@@ -12,8 +12,14 @@ export fn bolt() {
   // Create the head of the cap screw
   boltHead = startSketchOn(XZ)
     |> circle(center = [0, 0], radius = boltHeadDiameter / 2, tag = $topEdge)
-    |> extrude(length = -boltHeadLength)
-    |> fillet(radius = 0.020, tags = [topEdge, getOppositeEdge(topEdge)])
+    |> extrude(length = -boltHeadLength, tagEnd = $boltEnd, tagStart = $boltStart)
+    |> fillet(
+         radius = 0.020,
+         edges = [
+           { sideFaces = [boltEnd, topEdge] },
+           { sideFaces = [boltStart, topEdge] }
+         ],
+       )
 
   // Define the sketch of the hex pattern on the screw head and extrude into the head
   hexPatternSketch = startSketchOn(boltHead, face = START)

@@ -276,15 +276,6 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -461,15 +452,6 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -638,15 +620,6 @@ description: Artifact commands wheel-hub.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }
@@ -903,15 +876,6 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "boolean_subtract",
         "target_ids": [
           "[uuid]"
@@ -1155,15 +1119,6 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -1315,15 +1270,6 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "entity_circular_pattern",
         "entity_id": "[uuid]",
         "axis": {
@@ -1354,31 +1300,15 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "chamfer": {
@@ -1397,31 +1327,15 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "chamfer": {
@@ -1666,15 +1580,6 @@ description: Artifact commands wheel-hub.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_set_material_params_pbr",
         "object_id": "[uuid]",
         "color": {
@@ -1818,15 +1723,6 @@ description: Artifact commands wheel-hub.kcl
       "range": [],
       "command": {
         "type": "solid3d_get_extrusion_face_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
       }

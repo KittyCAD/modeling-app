@@ -1055,10 +1055,28 @@ function getTagsBaseFromTagElement(el: Expr): Expr | null {
   return innerMember.object
 }
 
+function isNestedScopePath(pathToNode: PathToNode): boolean {
+  return pathToNode.some(
+    ([, owner]) =>
+      owner === 'FunctionExpression' ||
+      owner === 'SketchBlock' ||
+      owner === 'Block' ||
+      owner === 'IfExpression'
+  )
+}
+
 function findDeprecatedEdgeStdlibCallForVariable(
   program: Program,
-  variableName: string
+  variableName: string,
+  referencePath: PathToNode
 ): { call: Node<CallExpressionKw>; tagsBaseExpr: Expr | null } | null {
+  // Variable lookup is currently top-level only. In nested scopes, a local
+  // binding may shadow a top-level helper, so skip instead of risking an
+  // incorrect migration.
+  if (isNestedScopePath(referencePath)) {
+    return null
+  }
+
   for (const item of program.body ?? []) {
     if (item.type !== 'VariableDeclaration') continue
     if (item.declaration.id?.name !== variableName) continue
@@ -1182,35 +1200,42 @@ function walkExpr(
   } else if (expr.type === 'MemberExpression') {
     walkExpr(expr.object, visitor, options, pathPrefix)
     walkExpr(expr.property, visitor, options, pathPrefix)
+  } else if (expr.type === 'FunctionExpression') {
+    visitProgramExpressions(expr.body, visitor, options, [
+      ...(pathPrefix ?? []),
+      ['body', 'FunctionExpression'],
+    ])
   }
 }
 
 function visitProgramExpressions(
   program: Program,
   visitor: ExprVisitor,
-  options: ExprWalkOptions
+  options: ExprWalkOptions,
+  pathPrefix: PathToNode = []
 ): void {
   const body = program.body ?? []
   for (let statementIndex = 0; statementIndex < body.length; statementIndex++) {
     const item = body[statementIndex]
-    const pathPrefix: PathToNode = [
+    const statementPathPrefix: PathToNode = [
+      ...pathPrefix,
       ['body', ''],
       [statementIndex, 'index'],
     ]
     if (item.type === 'VariableDeclaration' && item.declaration?.init) {
       visitExpr(item.declaration.init, visitor, options, [
-        ...pathPrefix,
+        ...statementPathPrefix,
         ['declaration', 'VariableDeclaration'],
         ['init', ''],
       ])
     } else if (item.type === 'ExpressionStatement' && item.expression) {
       visitExpr(item.expression, visitor, options, [
-        ...pathPrefix,
+        ...statementPathPrefix,
         ['expression', 'ExpressionStatement'],
       ])
     } else if (item.type === 'ReturnStatement' && item.argument) {
       visitExpr(item.argument, visitor, options, [
-        ...pathPrefix,
+        ...statementPathPrefix,
         ['argument', 'ReturnStatement'],
       ])
     }
@@ -1226,20 +1251,44 @@ function sourceRangesOverlap(
   return a[2] === b[2] && a[0] < b[1] && b[0] < a[1]
 }
 
-function filterCallsBySourceRange<T extends { range: Z0006SourceRange }>(
-  calls: T[],
-  sourceRange?: Z0006SourceRange
-): T[] {
+function filterCallsBySourceRange<
+  T extends { range: Z0006SourceRange; triggerRanges?: Z0006SourceRange[] },
+>(calls: T[], sourceRange?: Z0006SourceRange): T[] {
   if (!sourceRange) return calls
-  return calls.filter((call) => sourceRangesOverlap(call.range, sourceRange))
+  return calls.filter(
+    (call) =>
+      sourceRangesOverlap(call.range, sourceRange) ||
+      call.triggerRanges?.some((range) =>
+        sourceRangesOverlap(range, sourceRange)
+      )
+  )
 }
 
 interface UnifiedCallToFix {
   range: Z0006SourceRange
+  triggerRanges?: Z0006SourceRange[]
   orderedPayloads: FilletEdgeRefPayload[]
+  orderedEdgeRefExprs: Expr[]
   hasExistingEdgeRefs: boolean
   tagsBaseExpr?: Expr | null
 }
+
+function createEdgeRefFromGetCommonEdgeCall(
+  call: Node<CallExpressionKw>
+): Expr | null {
+  if (getCalleeName(call) !== 'getCommonEdge') return null
+
+  const facesArg = findKwArg('faces', call)
+  if (!facesArg || facesArg.type !== 'ArrayExpression') return null
+
+  const sideFaces = facesArg.elements ?? []
+  if (sideFaces.length === 0) return null
+
+  return createObjectExpression({
+    sideFaces: createArrayExpression(structuredClone(sideFaces)),
+  })
+}
+
 function findFilletChamferCallsToFixUnified(
   program: Program,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1248,7 +1297,7 @@ function findFilletChamferCallsToFixUnified(
 ): UnifiedCallToFix[] {
   const results: UnifiedCallToFix[] = []
 
-  const processExpr: ExprVisitor = (expr, _pathPrefix, walk) => {
+  const processExpr: ExprVisitor = (expr, pathPrefix, walk) => {
     if (expr.type !== 'CallExpressionKw') {
       walk(expr)
       return
@@ -1262,7 +1311,10 @@ function findFilletChamferCallsToFixUnified(
     const elements = getTagsElementsFromCall(call)
     const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
     const orderedPayloads: FilletEdgeRefPayload[] = []
+    const orderedEdgeRefExprs: Expr[] = []
+    const triggerRanges: Z0006SourceRange[] = []
     let tagsBaseExpr: Expr | null = null
+    let hasUnconvertedTagsElement = false
 
     if (elements?.length) {
       for (const el of elements) {
@@ -1275,15 +1327,25 @@ function findFilletChamferCallsToFixUnified(
         if (inner) {
           const innerCallee = getCalleeName(inner)
           if (isDeprecatedEdgeStdlib(innerCallee)) {
+            const edgeRefExpr = createEdgeRefFromGetCommonEdgeCall(inner)
+            if (edgeRefExpr) {
+              orderedEdgeRefExprs.push(edgeRefExpr)
+              continue
+            }
+
             const meta = edgeRefactorMetadata.find((m) =>
               sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
             )
-            if (meta) {
+            if (meta?.faceIds) {
+              triggerRanges.push([inner.start, inner.end, inner.moduleId])
               orderedPayloads.push({
                 side_faces: meta.faceIds,
-                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
               })
+            } else {
+              hasUnconvertedTagsElement = true
             }
+          } else {
+            hasUnconvertedTagsElement = true
           }
         } else if (el.type === 'Name') {
           const tagName = el.name.name
@@ -1292,7 +1354,7 @@ function findFilletChamferCallsToFixUnified(
             callSourceRangeMatches(m, call.start, call.end, moduleId)
           )
           const tagEntry = directMeta?.tags?.find(
-            (t) => t.tagIdentifier === tagName
+            (t: { tagIdentifier: string }) => t.tagIdentifier === tagName
           )
           if (tagEntry) {
             orderedPayloads.push({ side_faces: tagEntry.faceIds })
@@ -1301,7 +1363,8 @@ function findFilletChamferCallsToFixUnified(
 
           const deprecatedCall = findDeprecatedEdgeStdlibCallForVariable(
             program,
-            tagName
+            tagName,
+            pathPrefix ?? []
           )
           if (deprecatedCall) {
             if (tagsBaseExpr === null && deprecatedCall.tagsBaseExpr) {
@@ -1316,22 +1379,40 @@ function findFilletChamferCallsToFixUnified(
                 deprecatedCall.call.moduleId
               )
             )
-            if (meta) {
+            if (meta?.faceIds) {
+              triggerRanges.push([
+                deprecatedCall.call.start,
+                deprecatedCall.call.end,
+                deprecatedCall.call.moduleId,
+              ])
               orderedPayloads.push({
                 side_faces: meta.faceIds,
-                end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
               })
+            } else {
+              hasUnconvertedTagsElement = true
             }
+          } else {
+            hasUnconvertedTagsElement = true
           }
+        } else {
+          hasUnconvertedTagsElement = true
         }
       }
     }
 
-    if (orderedPayloads.length > 0 || existingEdgeRefExprs.length > 0) {
+    if (
+      elements?.length &&
+      !hasUnconvertedTagsElement &&
+      (orderedPayloads.length > 0 ||
+        orderedEdgeRefExprs.length > 0 ||
+        existingEdgeRefExprs.length > 0)
+    ) {
       const moduleId = call.moduleId
       results.push({
         range: [call.start, call.end, moduleId],
+        triggerRanges,
         orderedPayloads,
+        orderedEdgeRefExprs,
         hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
         tagsBaseExpr: tagsBaseExpr ?? undefined,
       })
@@ -1371,6 +1452,12 @@ interface GdtDistanceEndpointCallToFix {
     label: 'from' | 'to'
     payload: FilletEdgeRefPayload
   }>
+  pathToCall?: PathToNode
+}
+
+interface BoundedEdgeCallToFix {
+  range: Z0006SourceRange
+  payload: FilletEdgeRefPayload
   pathToCall?: PathToNode
 }
 
@@ -1429,7 +1516,7 @@ export function findRevolveHelixCallsToFix(
     const moduleId = call.moduleId
     const callStart = call.start
     const callEnd = call.end
-    if (meta) {
+    if (meta?.faceIds) {
       results.push({
         range: [callStart, callEnd, moduleId],
         faceIds: [meta.faceIds[0], meta.faceIds[1]],
@@ -1496,7 +1583,7 @@ export function findExtrudeToCallsToFix(
     const moduleId = call.moduleId
     const callStart = call.start
     const callEnd = call.end
-    if (meta) {
+    if (meta?.faceIds) {
       results.push({
         range: [callStart, callEnd, moduleId],
         faceIds: [meta.faceIds[0], meta.faceIds[1]],
@@ -1553,14 +1640,13 @@ export function findGdtEdgesCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta) {
+        if (!meta?.faceIds) {
           hasUnconvertedEdgesElement = true
           continue
         }
 
         orderedPayloads.push({
           side_faces: meta.faceIds,
-          end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
         })
       }
 
@@ -1609,13 +1695,12 @@ export function findGdtDistanceEndpointCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta) continue
+        if (!meta?.faceIds) continue
 
         endpoints.push({
           label,
           payload: {
             side_faces: meta.faceIds,
-            end_faces: getEndFaceIdsForEdgeIdMeta(meta, artifactGraph),
           },
         })
       }
@@ -1625,6 +1710,47 @@ export function findGdtDistanceEndpointCallsToFix(
       results.push({
         range: [call.start, call.end, call.moduleId],
         endpoints,
+        pathToCall: pathToNode,
+      })
+    },
+  })
+
+  return results
+}
+
+export function findBoundedEdgeCallsToFix(
+  program: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+): BoundedEdgeCallToFix[] {
+  const results: BoundedEdgeCallToFix[] = []
+
+  traverse(program, {
+    enter(node, pathToNode) {
+      if (node.type !== 'CallExpressionKw') return
+
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (calleeName !== 'getBoundedEdge') return
+
+      const edgeArg = call.arguments?.find((a) => getLabelName(a) === 'edge')
+      if (!edgeArg?.arg) return
+
+      const inner = getCallFromExpr(edgeArg.arg)
+      if (!inner) return
+
+      const innerCallee = getCalleeName(inner)
+      if (!isDeprecatedEdgeStdlib(innerCallee)) return
+
+      const meta = edgeRefactorMetadata.find((m) =>
+        sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
+      )
+      if (!meta?.faceIds) return
+
+      results.push({
+        range: [call.start, call.end, call.moduleId],
+        payload: {
+          side_faces: meta.faceIds,
+        },
         pathToCall: pathToNode,
       })
     },
@@ -1839,6 +1965,47 @@ function refactorGdtDistanceEndpointsToEdgeSpecifiersInPlace(
   return modifiedAst
 }
 
+function refactorBoundedEdgeEdgeArgToEdgeSpecifierInPlace(
+  modifiedAst: Node<Program>,
+  toFix: BoundedEdgeCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  if (toFix.length === 0) return modifiedAst
+
+  for (let index = 0; index < toFix.length; index++) {
+    const { payload, pathToCall } = toFix[index]
+    const path = pathToCall?.length ? pathToCall : pathList[index]
+    const result = createEdgeRefObjectExpression(
+      payload,
+      wasmInstance,
+      modifiedAst,
+      artifactGraph
+    )
+    if (err(result)) continue
+
+    const nextAst = result.modifiedAst
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      nextAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (err(nodeResult)) continue
+
+    const callNode = nodeResult.node
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => getLabelName(a) !== 'edge'
+    )
+    newArgs.push(createLabeledArg('edge', result.expr))
+    callNode.arguments = newArgs
+    modifiedAst = nextAst
+  }
+
+  return modifiedAst
+}
+
 export function refactorZ0006Unified(
   ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1872,12 +2039,17 @@ export function refactorZ0006Unified(
     findGdtDistanceEndpointCallsToFix(ast, edgeRefactorMetadata, artifactGraph),
     sourceRange
   )
+  const toFixBoundedEdge = filterCallsBySourceRange(
+    findBoundedEdgeCallsToFix(ast, edgeRefactorMetadata),
+    sourceRange
+  )
   if (
     toFixFC.length === 0 &&
     toFixRH.length === 0 &&
     toFixET.length === 0 &&
     toFixGdtEdges.length === 0 &&
-    toFixGdtDistanceEndpoints.length === 0
+    toFixGdtDistanceEndpoints.length === 0 &&
+    toFixBoundedEdge.length === 0
   ) {
     return new Error('No Z0006 fixes to apply')
   }
@@ -1891,11 +2063,12 @@ export function refactorZ0006Unified(
   for (const {
     range,
     orderedPayloads,
+    orderedEdgeRefExprs,
     hasExistingEdgeRefs,
     tagsBaseExpr,
   } of toFixFC) {
     const path = getNodePathFromSourceRange(modifiedAst, range)
-    const edgeRefExprs: Expr[] = []
+    const edgeRefExprs: Expr[] = structuredClone(orderedEdgeRefExprs)
     let nextAst = structuredClone(modifiedAst)
     let failedToCreateEdgeRef = false
     for (const payload of orderedPayloads) {
@@ -1995,6 +2168,18 @@ export function refactorZ0006Unified(
     modifiedAst,
     toFixGdtDistanceEndpoints,
     toFixGdtDistanceEndpoints.map((item) =>
+      item.pathToCall?.length
+        ? item.pathToCall
+        : getNodePathFromSourceRange(ast, item.range)
+    ),
+    artifactGraph,
+    wasmInstance
+  )
+
+  modifiedAst = refactorBoundedEdgeEdgeArgToEdgeSpecifierInPlace(
+    modifiedAst,
+    toFixBoundedEdge,
+    toFixBoundedEdge.map((item) =>
       item.pathToCall?.length
         ? item.pathToCall
         : getNodePathFromSourceRange(ast, item.range)

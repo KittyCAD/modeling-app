@@ -1,34 +1,44 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[330, 363, 0]<br>Consumed: false"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  end
   subgraph path3 [Path]
-    3["Path<br>[369, 423, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    4["Segment<br>[369, 423, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    5[Solid2d]
+    3["Path Region<br>[477, 512, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    7["Segment<br>[477, 512, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  1["Plane<br>[256, 273, 0]"]
+  subgraph path4 [Path]
+    4["Path<br>[249, 425, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    6["Segment<br>[279, 342, 0]"]
+      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  end
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  5["Plane<br>[249, 425, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  6["Sweep Extrusion<br>[477, 510, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  7[Wall]
+  8["SketchBlock<br>[249, 425, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  9["SketchBlockConstraint Coincident<br>[345, 381, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
+  10["SketchBlockConstraint Radius<br>[384, 423, 0]"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, ExpressionStatementExpr]
+  11["Sweep Extrusion<br>[537, 569, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  12[Wall]
     %% face_code_ref=Missing NodePath
-  8["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  9["Cap End"]
-    %% face_code_ref=Missing NodePath
-  1 --- 2
-  1 --- 3
-  3 --- 4
-  3 --- 5
-  3 ---- 6
-  4 --- 7
-  4 x--> 8
-  6 --- 7
-  6 --- 8
-  6 --- 9
+  11 --- 1
+  11 --- 2
+  4 x--> 3
+  5 x--> 3
+  3 <--x 7
+  3 ---- 11
+  5 --- 4
+  4 --- 6
+  8 --- 4
+  5 <--x 8
+  6 <--x 7
+  7 --- 12
+  11 --- 12
 ```

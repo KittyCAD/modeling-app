@@ -58,7 +58,15 @@ legExtrudedBody = extrude(legRegion, length = legHeight, tagStart = $legCapStart
 
 // Round the foot: use a slightly smaller radius to avoid fillet errors.
 legFilletRadius = legRadius * 0.9
-legBody = fillet(legExtrudedBody, tags = getCommonEdge(faces = [legRegion.tags.circle1, legCapStart]), radius = legFilletRadius)
+legBody = fillet(
+  legExtrudedBody,
+  radius = legFilletRadius,
+  edges = [
+    {
+      sideFaces = [legRegion.tags.circle1, legCapStart]
+    }
+  ],
+)
 hide(legSketch)
 
 // Position and array the legs.
@@ -100,7 +108,14 @@ earProfile = sketch(on = earPlane) {
 earRegion = region(segments = [earProfile.circle1])
 hide(earProfile)
 earBody = extrude(earRegion, length = earHeight, tagEnd = $earCapEnd)
-  |> fillet(tags = getCommonEdge(faces = [earRegion.tags.circle1, earCapEnd]), radius = earFilletRadius)
+  |> fillet(
+       radius = earFilletRadius,
+       edges = [
+         {
+           sideFaces = [earRegion.tags.circle1, earCapEnd]
+         }
+       ],
+     )
   |> translate(x = 0, y = -earOffsetForward, z = earElevation)
   |> rotate(
        roll = 0,
@@ -134,7 +149,14 @@ tailProfile = sketch(on = tailPlane) {
 tailRegion = region(segments = [tailProfile.circle1])
 hide(tailProfile)
 tailBody = extrude(tailRegion, length = -tailLength, tagStart = $tailCapStart)
-  |> fillet(tags = getCommonEdge(faces = [tailRegion.tags.circle1, tailCapStart]), radius = tailFilletRadius)
+  |> fillet(
+       radius = tailFilletRadius,
+       edges = [
+         {
+           sideFaces = [tailRegion.tags.circle1, tailCapStart]
+         }
+       ],
+     )
   |> rotate(roll = -10, pitch = 0, yaw = 0)
   |> translate(
        x = 0,

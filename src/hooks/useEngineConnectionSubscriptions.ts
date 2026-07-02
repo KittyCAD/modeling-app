@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { SourceRange } from '@src/lang/wasm'
+import { useApp } from '@src/lib/boot'
+import { SEGMENTS_BASED_REGIONS_FEATURE_FLAG } from '@src/lib/constants'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { selectSketchPlane } from '@src/lib/selectSketchPlane'
 import {
@@ -17,6 +19,11 @@ const HOVER_ENTITY_REFERENCE_DEBOUNCE_MS = 250
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
+  const { userFeatures } = useApp()
+  const useSegmentsBasedRegions = userFeatures.useHas(
+    SEGMENTS_BASED_REGIONS_FEATURE_FLAG,
+    false
+  )
   const { engineCommandManager, kclManager, rustContext, wasmInstance } =
     context
   const stateRef = useRef(state)
@@ -221,6 +228,7 @@ export function useEngineConnectionSubscriptions() {
             kclManager,
             rustContext,
             wasmInstance,
+            useSegmentsBasedRegions,
           })
           // Check state again, in case we went into sketch mode before the query returned.
           // This is probably rare, but we do go into sketch mode on double click.
@@ -247,6 +255,7 @@ export function useEngineConnectionSubscriptions() {
     engineCommandManager,
     rustContext,
     wasmInstance,
+    useSegmentsBasedRegions,
   ])
 
   useEffect(() => {

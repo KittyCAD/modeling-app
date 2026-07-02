@@ -228,15 +228,6 @@ description: Artifact commands gdt-tutorial.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -302,18 +293,6 @@ description: Artifact commands gdt-tutorial.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "make_plane",
         "origin": {
           "x": 0.0,
@@ -348,12 +327,22 @@ description: Artifact commands gdt-tutorial.kcl
           "position": null,
           "units": "mm",
           "dimension": {
-            "from_entity_id": "[uuid]",
+            "from_edge_reference": {
+              "side_faces": [
+                "[uuid]",
+                "[uuid]"
+              ]
+            },
             "from_entity_pos": {
               "x": 0.0,
               "y": 0.0
             },
-            "to_entity_id": "[uuid]",
+            "to_edge_reference": {
+              "side_faces": [
+                "[uuid]",
+                "[uuid]"
+              ]
+            },
             "to_entity_pos": {
               "x": 1.0,
               "y": 0.0

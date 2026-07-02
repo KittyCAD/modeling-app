@@ -30,7 +30,9 @@
  */
 import { join } from 'path'
 import type { KclManager } from '@src/lang/KclManager'
+import { hydrateEdgeRefactorMetadata } from '@src/lang/lintRefactorActions'
 import {
+  findBoundedEdgeCallsToFix,
   findExtrudeToCallsToFix,
   findGdtDistanceEndpointCallsToFix,
   findGdtEdgesCallsToFix,
@@ -50,6 +52,7 @@ import type {
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
@@ -328,6 +331,21 @@ const KCL_GET_NEXT_ADJACENT_EDGE = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getNextAdjacentEdge(e1)])
 `
 
+const KCL_GET_NEXT_ADJACENT_EDGE_VARIABLES = `base = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10], tag = $e2)
+  |> line(endAbsolute = [0, 10], tag = $e3)
+  |> line(endAbsolute = [0, 0], tag = $e4)
+  |> close()
+  |> extrude(length = 5)
+
+edge001 = getNextAdjacentEdge(e1)
+edge002 = getNextAdjacentEdge(e2)
+
+result = fillet(base, radius = 1, tags = [edge001, edge002])
+`
+
 const KCL_GET_PREVIOUS_ADJACENT_EDGE = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -378,6 +396,12 @@ gdt001 = gdt::distance(
   from = getCommonEdge(faces = [e1, cap1]),
   to = getCommonEdge(faces = [e2, cap1]),
   tolerance = 0.1mm,
+)
+`
+
+const KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE = `bounded001 = getBoundedEdge(
+  surface001,
+  edge = getCommonEdge(faces = [face1, face2]),
 )
 `
 
@@ -853,6 +877,69 @@ describe('refactorZ0006Unified', () => {
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
     })
 
+    it('finds getBoundedEdge edge calls with deprecated stdlib for Z0006 refactor', () => {
+      const ast = assertParse(
+        KCL_GET_BOUNDED_EDGE_GET_COMMON_EDGE,
+        wasmInstance
+      )
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+
+      const toFix = findBoundedEdgeCallsToFix(ast, metadata)
+
+      expect(toFix).toHaveLength(1)
+      expect(toFix[0]?.payload.side_faces).toHaveLength(2)
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('hydrates edge refactor metadata from object and edge IDs when face IDs are missing', async () => {
+      const sentCommands: unknown[] = []
+      const engineCommandManager = {
+        sendSceneCommand: async (command: unknown) => {
+          sentCommands.push(command)
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'solid3d_get_all_edge_faces',
+                  data: {
+                    faces: ['face-1', 'face-2'],
+                  },
+                },
+              },
+            },
+          }
+        },
+      }
+      const metadata = [
+        {
+          edgeId: 'edge-1',
+          objectId: 'body-1',
+          sourceRange: [0, 10, 0],
+          stdlibFn: 'getOppositeEdge',
+        },
+      ] as EdgeRefactorMeta[]
+
+      const hydrated = await hydrateEdgeRefactorMetadata({
+        edgeRefactorMetadata: metadata,
+        engineCommandManager: engineCommandManager as any,
+      })
+
+      expect(hydrated[0]?.faceIds).toEqual(['face-1', 'face-2'])
+      expect(sentCommands).toHaveLength(1)
+    })
+
     it('refactors GD&T edges with provided metadata without requiring engine execution', () => {
       const ast = assertParse(KCL_GDT_GET_COMMON_EDGE, wasmInstance)
       const graph = createTaggedWallAndCapGraph(ast, KCL_GDT_GET_COMMON_EDGE, {
@@ -1065,6 +1152,38 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
       expect(result.message).toContain('No Z0006 fixes to apply')
     })
 
+    it('refactors getCommonEdge in function bodies without execution metadata', () => {
+      const code = `fn bracket() {
+  profile = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> xLine(length = 10, tag = $baseInside)
+    |> yLine(length = 10, tag = $hookInside)
+    |> close()
+  body = extrude(profile, length = 5)
+    |> fillet(
+         radius = 1,
+         tags = [
+           getCommonEdge(faces = [baseInside, hookInside])
+         ],
+       )
+  return body
+}
+part = bracket()
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+
+      const result = refactorZ0006Unified(ast, [], [], graph, wasmInstance)
+
+      expect(err(result)).toBe(false)
+      if (err(result)) throw result
+      const n = norm(result)
+      expect(n).toContain('fillet(')
+      expect(n).toContain('edges = [')
+      expect(n).toContain('sideFaces = [baseInside, hookInside]')
+      expect(n).not.toContain('getCommonEdge')
+    })
+
     it('does not migrate a nested fillet tag variable using a shadowed top-level edge helper', () => {
       const code = KCL_SHADOWED_EDGE_HELPER_VARIABLE
       const ast = assertParse(code, wasmInstance)
@@ -1167,7 +1286,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
   describe('integration (engine required)', () => {
     let instanceInThisFile: ModuleType = null!
     let kclManagerInThisFile: KclManager = null!
-    let engineCommandManagerInThisFile: { tearDown: () => void } = null!
+    let engineCommandManagerInThisFile: ConnectionManager = null!
 
     beforeEach(async () => {
       if (instanceInThisFile) return
@@ -1190,9 +1309,13 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
         execState.edgeRefactorMetadata?.length ?? 0
       ).toBeGreaterThanOrEqual(1)
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
+      const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
+        edgeRefactorMetadata: execState.edgeRefactorMetadata ?? [],
+        engineCommandManager: engineCommandManagerInThisFile,
+      })
       const refactored = refactorZ0006Unified(
         ast,
-        execState.edgeRefactorMetadata ?? [],
+        hydratedEdgeRefactorMetadata,
         execState.directTagFilletMetadata ?? [],
         execState.artifactGraph,
         instanceInThisFile
@@ -1200,6 +1323,25 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
       expect(err(refactored)).toBe(false)
       if (err(refactored)) throw refactored
       return refactored
+    }
+
+    async function refactorExecutedAst(
+      ast: ReturnType<typeof assertParse>,
+      sourceRange?: [number, number, number]
+    ): Promise<string | Error> {
+      const execState = kclManagerInThisFile.execState
+      const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
+        edgeRefactorMetadata: execState.edgeRefactorMetadata ?? [],
+        engineCommandManager: engineCommandManagerInThisFile,
+      })
+      return refactorZ0006Unified(
+        ast,
+        hydratedEdgeRefactorMetadata,
+        execState.directTagFilletMetadata ?? [],
+        execState.artifactGraph,
+        instanceInThisFile,
+        sourceRange
+      )
     }
 
     const deprecatedFilletCases = [
@@ -1226,6 +1368,17 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
         name: 'refactors getNextAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
         kcl: KCL_GET_NEXT_ADJACENT_EDGE,
         expected: ['fillet(', 'edges = [', 'sideFaces = [e1, seg01]'],
+      },
+      {
+        name: 'refactors getNextAdjacentEdge variables in fillet to edgeRefs',
+        kcl: KCL_GET_NEXT_ADJACENT_EDGE_VARIABLES,
+        expected: [
+          'result = fillet(',
+          'base,',
+          'edges = [',
+          'sideFaces = [e1, e2]',
+          'sideFaces = [e2, e3]',
+        ],
       },
       {
         name: 'refactors getPreviousAdjacentEdge in fillet to edgeRefs with tag names not UUIDs',
@@ -1255,6 +1408,38 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
     }
 
     it(
+      'refactors getNextAdjacentEdge variables when scoped to the helper lint range',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_GET_NEXT_ADJACENT_EDGE_VARIABLES,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
+          edgeRefactorMetadata: execState.edgeRefactorMetadata ?? [],
+          engineCommandManager: engineCommandManagerInThisFile,
+        })
+        const refactored = refactorZ0006Unified(
+          ast,
+          hydratedEdgeRefactorMetadata,
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile,
+          sourceRangeForCall(ast, 'getNextAdjacentEdge')
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        const n = norm(refactored)
+        expect(n).toContain('result = fillet(')
+        expect(n).toContain('edges = [')
+        expect(n).toContain('sideFaces = [e1, e2]')
+        expect(n).toContain('sideFaces = [e2, e3]')
+      }
+    )
+
+    it(
       'refactors extrude to = getCommonEdge(...) to to = { sideFaces = [facetag0, facetag1] }',
       { timeout: 30_000 },
       async () => {
@@ -1268,13 +1453,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           execState.edgeRefactorMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
@@ -1296,13 +1475,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           expect(execState.artifactGraph.size).toBeGreaterThan(0)
           return
         }
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1336,13 +1509,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
         ).toBeGreaterThanOrEqual(1)
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
 
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
 
@@ -1353,7 +1520,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
         expect(n).toContain(
           'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
         )
-        expect(n).toContain('endFaces = [startCap]')
+        expect(n).not.toContain('endFaces')
         expect(n).not.toContain(removed)
       })
     }
@@ -1414,13 +1581,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           return
         }
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1454,13 +1615,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           return
         }
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1482,13 +1637,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           execState.directTagFilletMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1511,13 +1660,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           return
         }
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1580,13 +1723,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           expect(execState.artifactGraph.size).toBeGreaterThan(0)
           return
         }
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1614,13 +1751,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
         expect(
           execState.directTagFilletMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1644,14 +1775,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           instanceInThisFile
         )
         await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1703,13 +1827,7 @@ second = gdt::straightness(base, edges = [getCommonEdge(faces = [e1, cap1])], to
           metadataDebug
         ).toBe(true)
 
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
 
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored

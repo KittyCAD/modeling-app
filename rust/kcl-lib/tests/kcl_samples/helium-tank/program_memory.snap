@@ -370,10 +370,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4687,
-            "end": 4697,
+            "commentStart": 4707,
+            "end": 4717,
             "moduleId": 0,
-            "start": 4687,
+            "start": 4707,
             "type": "TagDeclarator",
             "value": "outerLine1"
           },
@@ -384,10 +384,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4768,
-            "end": 4777,
+            "commentStart": 4788,
+            "end": 4797,
             "moduleId": 0,
-            "start": 4768,
+            "start": 4788,
             "type": "TagDeclarator",
             "value": "outerArc2"
           },
@@ -398,10 +398,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4932,
-            "end": 4941,
+            "commentStart": 4952,
+            "end": 4961,
             "moduleId": 0,
-            "start": 4932,
+            "start": 4952,
             "type": "TagDeclarator",
             "value": "outerArc3"
           },
@@ -412,10 +412,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5099,
-            "end": 5109,
+            "commentStart": 5119,
+            "end": 5129,
             "moduleId": 0,
-            "start": 5099,
+            "start": 5119,
             "type": "TagDeclarator",
             "value": "outerLine4"
           },
@@ -426,10 +426,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5236,
-            "end": 5245,
+            "commentStart": 5256,
+            "end": 5265,
             "moduleId": 0,
-            "start": 5236,
+            "start": 5256,
             "type": "TagDeclarator",
             "value": "outerArc5"
           },
@@ -440,10 +440,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5401,
-            "end": 5411,
+            "commentStart": 5421,
+            "end": 5431,
             "moduleId": 0,
-            "start": 5401,
+            "start": 5421,
             "type": "TagDeclarator",
             "value": "outerLine6"
           },
@@ -454,10 +454,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5536,
-            "end": 5546,
+            "commentStart": 5556,
+            "end": 5566,
             "moduleId": 0,
-            "start": 5536,
+            "start": 5556,
             "type": "TagDeclarator",
             "value": "outerLine8"
           },
@@ -468,10 +468,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5621,
-            "end": 5631,
+            "commentStart": 5641,
+            "end": 5651,
             "moduleId": 0,
-            "start": 5621,
+            "start": 5641,
             "type": "TagDeclarator",
             "value": "outerArc10"
           },
@@ -482,10 +482,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5735,
-            "end": 5746,
+            "commentStart": 5755,
+            "end": 5766,
             "moduleId": 0,
-            "start": 5735,
+            "start": 5755,
             "type": "TagDeclarator",
             "value": "outerLine11"
           },
@@ -496,10 +496,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6163,
-            "end": 6173,
+            "commentStart": 6183,
+            "end": 6193,
             "moduleId": 0,
-            "start": 6163,
+            "start": 6183,
             "type": "TagDeclarator",
             "value": "innerLine1"
           },
@@ -510,10 +510,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6246,
-            "end": 6255,
+            "commentStart": 6266,
+            "end": 6275,
             "moduleId": 0,
-            "start": 6246,
+            "start": 6266,
             "type": "TagDeclarator",
             "value": "innerArc2"
           },
@@ -535,10 +535,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.500435534128729
             ],
             "tag": {
-              "commentStart": 4687,
-              "end": 4697,
+              "commentStart": 4707,
+              "end": 4717,
               "moduleId": 0,
-              "start": 4687,
+              "start": 4707,
               "type": "TagDeclarator",
               "value": "outerLine1"
             },
@@ -565,10 +565,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.500670785495061,
             "tag": {
-              "commentStart": 4768,
-              "end": 4777,
+              "commentStart": 4788,
+              "end": 4797,
               "moduleId": 0,
-              "start": 4768,
+              "start": 4788,
               "type": "TagDeclarator",
               "value": "outerArc2"
             },
@@ -595,10 +595,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.24895806191111336,
             "tag": {
-              "commentStart": 4932,
-              "end": 4941,
+              "commentStart": 4952,
+              "end": 4961,
               "moduleId": 0,
-              "start": 4932,
+              "start": 4952,
               "type": "TagDeclarator",
               "value": "outerArc3"
             },
@@ -619,10 +619,10 @@ description: Variables in memory after executing helium-tank.kcl
               3.9298462310815965
             ],
             "tag": {
-              "commentStart": 5099,
-              "end": 5109,
+              "commentStart": 5119,
+              "end": 5129,
               "moduleId": 0,
-              "start": 5099,
+              "start": 5119,
               "type": "TagDeclarator",
               "value": "outerLine4"
             },
@@ -649,10 +649,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.25167040583486594,
             "tag": {
-              "commentStart": 5236,
-              "end": 5245,
+              "commentStart": 5256,
+              "end": 5265,
               "moduleId": 0,
-              "start": 5236,
+              "start": 5256,
               "type": "TagDeclarator",
               "value": "outerArc5"
             },
@@ -673,10 +673,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.410734970189002
             ],
             "tag": {
-              "commentStart": 5401,
-              "end": 5411,
+              "commentStart": 5421,
+              "end": 5431,
               "moduleId": 0,
-              "start": 5401,
+              "start": 5421,
               "type": "TagDeclarator",
               "value": "outerLine6"
             },
@@ -697,10 +697,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.1998536637221635
             ],
             "tag": {
-              "commentStart": 5536,
-              "end": 5546,
+              "commentStart": 5556,
+              "end": 5566,
               "moduleId": 0,
-              "start": 5536,
+              "start": 5556,
               "type": "TagDeclarator",
               "value": "outerLine8"
             },
@@ -727,10 +727,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.50067078572339,
             "tag": {
-              "commentStart": 5621,
-              "end": 5631,
+              "commentStart": 5641,
+              "end": 5651,
               "moduleId": 0,
-              "start": 5621,
+              "start": 5641,
               "type": "TagDeclarator",
               "value": "outerArc10"
             },
@@ -751,10 +751,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.500435534128689
             ],
             "tag": {
-              "commentStart": 5735,
-              "end": 5746,
+              "commentStart": 5755,
+              "end": 5766,
               "moduleId": 0,
-              "start": 5735,
+              "start": 5755,
               "type": "TagDeclarator",
               "value": "outerLine11"
             },
@@ -775,10 +775,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.628104487837657
             ],
             "tag": {
-              "commentStart": 6163,
-              "end": 6173,
+              "commentStart": 6183,
+              "end": 6193,
               "moduleId": 0,
-              "start": 6163,
+              "start": 6183,
               "type": "TagDeclarator",
               "value": "innerLine1"
             },
@@ -805,10 +805,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.6270739573605,
             "tag": {
-              "commentStart": 6246,
-              "end": 6255,
+              "commentStart": 6266,
+              "end": 6275,
               "moduleId": 0,
-              "start": 6246,
+              "start": 6266,
               "type": "TagDeclarator",
               "value": "innerArc2"
             },
@@ -980,10 +980,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4687,
-            "end": 4697,
+            "commentStart": 4707,
+            "end": 4717,
             "moduleId": 0,
-            "start": 4687,
+            "start": 4707,
             "type": "TagDeclarator",
             "value": "outerLine1"
           },
@@ -994,10 +994,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4768,
-            "end": 4777,
+            "commentStart": 4788,
+            "end": 4797,
             "moduleId": 0,
-            "start": 4768,
+            "start": 4788,
             "type": "TagDeclarator",
             "value": "outerArc2"
           },
@@ -1008,10 +1008,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4932,
-            "end": 4941,
+            "commentStart": 4952,
+            "end": 4961,
             "moduleId": 0,
-            "start": 4932,
+            "start": 4952,
             "type": "TagDeclarator",
             "value": "outerArc3"
           },
@@ -1022,10 +1022,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5099,
-            "end": 5109,
+            "commentStart": 5119,
+            "end": 5129,
             "moduleId": 0,
-            "start": 5099,
+            "start": 5119,
             "type": "TagDeclarator",
             "value": "outerLine4"
           },
@@ -1036,10 +1036,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5236,
-            "end": 5245,
+            "commentStart": 5256,
+            "end": 5265,
             "moduleId": 0,
-            "start": 5236,
+            "start": 5256,
             "type": "TagDeclarator",
             "value": "outerArc5"
           },
@@ -1050,10 +1050,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5401,
-            "end": 5411,
+            "commentStart": 5421,
+            "end": 5431,
             "moduleId": 0,
-            "start": 5401,
+            "start": 5421,
             "type": "TagDeclarator",
             "value": "outerLine6"
           },
@@ -1064,10 +1064,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5536,
-            "end": 5546,
+            "commentStart": 5556,
+            "end": 5566,
             "moduleId": 0,
-            "start": 5536,
+            "start": 5556,
             "type": "TagDeclarator",
             "value": "outerLine8"
           },
@@ -1078,10 +1078,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5621,
-            "end": 5631,
+            "commentStart": 5641,
+            "end": 5651,
             "moduleId": 0,
-            "start": 5621,
+            "start": 5641,
             "type": "TagDeclarator",
             "value": "outerArc10"
           },
@@ -1092,10 +1092,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5735,
-            "end": 5746,
+            "commentStart": 5755,
+            "end": 5766,
             "moduleId": 0,
-            "start": 5735,
+            "start": 5755,
             "type": "TagDeclarator",
             "value": "outerLine11"
           },
@@ -1106,10 +1106,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6163,
-            "end": 6173,
+            "commentStart": 6183,
+            "end": 6193,
             "moduleId": 0,
-            "start": 6163,
+            "start": 6183,
             "type": "TagDeclarator",
             "value": "innerLine1"
           },
@@ -1120,10 +1120,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6246,
-            "end": 6255,
+            "commentStart": 6266,
+            "end": 6275,
             "moduleId": 0,
-            "start": 6246,
+            "start": 6266,
             "type": "TagDeclarator",
             "value": "innerArc2"
           },
@@ -1145,10 +1145,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.500435534128729
             ],
             "tag": {
-              "commentStart": 4687,
-              "end": 4697,
+              "commentStart": 4707,
+              "end": 4717,
               "moduleId": 0,
-              "start": 4687,
+              "start": 4707,
               "type": "TagDeclarator",
               "value": "outerLine1"
             },
@@ -1175,10 +1175,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.500670785495061,
             "tag": {
-              "commentStart": 4768,
-              "end": 4777,
+              "commentStart": 4788,
+              "end": 4797,
               "moduleId": 0,
-              "start": 4768,
+              "start": 4788,
               "type": "TagDeclarator",
               "value": "outerArc2"
             },
@@ -1205,10 +1205,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.24895806191111336,
             "tag": {
-              "commentStart": 4932,
-              "end": 4941,
+              "commentStart": 4952,
+              "end": 4961,
               "moduleId": 0,
-              "start": 4932,
+              "start": 4952,
               "type": "TagDeclarator",
               "value": "outerArc3"
             },
@@ -1229,10 +1229,10 @@ description: Variables in memory after executing helium-tank.kcl
               3.9298462310815965
             ],
             "tag": {
-              "commentStart": 5099,
-              "end": 5109,
+              "commentStart": 5119,
+              "end": 5129,
               "moduleId": 0,
-              "start": 5099,
+              "start": 5119,
               "type": "TagDeclarator",
               "value": "outerLine4"
             },
@@ -1259,10 +1259,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.25167040583486594,
             "tag": {
-              "commentStart": 5236,
-              "end": 5245,
+              "commentStart": 5256,
+              "end": 5265,
               "moduleId": 0,
-              "start": 5236,
+              "start": 5256,
               "type": "TagDeclarator",
               "value": "outerArc5"
             },
@@ -1283,10 +1283,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.410734970189002
             ],
             "tag": {
-              "commentStart": 5401,
-              "end": 5411,
+              "commentStart": 5421,
+              "end": 5431,
               "moduleId": 0,
-              "start": 5401,
+              "start": 5421,
               "type": "TagDeclarator",
               "value": "outerLine6"
             },
@@ -1307,10 +1307,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.1998536637221635
             ],
             "tag": {
-              "commentStart": 5536,
-              "end": 5546,
+              "commentStart": 5556,
+              "end": 5566,
               "moduleId": 0,
-              "start": 5536,
+              "start": 5556,
               "type": "TagDeclarator",
               "value": "outerLine8"
             },
@@ -1337,10 +1337,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.50067078572339,
             "tag": {
-              "commentStart": 5621,
-              "end": 5631,
+              "commentStart": 5641,
+              "end": 5651,
               "moduleId": 0,
-              "start": 5621,
+              "start": 5641,
               "type": "TagDeclarator",
               "value": "outerArc10"
             },
@@ -1361,10 +1361,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.500435534128689
             ],
             "tag": {
-              "commentStart": 5735,
-              "end": 5746,
+              "commentStart": 5755,
+              "end": 5766,
               "moduleId": 0,
-              "start": 5735,
+              "start": 5755,
               "type": "TagDeclarator",
               "value": "outerLine11"
             },
@@ -1385,10 +1385,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.628104487837657
             ],
             "tag": {
-              "commentStart": 6163,
-              "end": 6173,
+              "commentStart": 6183,
+              "end": 6193,
               "moduleId": 0,
-              "start": 6163,
+              "start": 6183,
               "type": "TagDeclarator",
               "value": "innerLine1"
             },
@@ -1415,10 +1415,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.6270739573605,
             "tag": {
-              "commentStart": 6246,
-              "end": 6255,
+              "commentStart": 6266,
+              "end": 6275,
               "moduleId": 0,
-              "start": 6246,
+              "start": 6266,
               "type": "TagDeclarator",
               "value": "innerArc2"
             },
@@ -1627,10 +1627,10 @@ description: Variables in memory after executing helium-tank.kcl
             4.500435534128729
           ],
           "tag": {
-            "commentStart": 4687,
-            "end": 4697,
+            "commentStart": 4707,
+            "end": 4717,
             "moduleId": 0,
-            "start": 4687,
+            "start": 4707,
             "type": "TagDeclarator",
             "value": "outerLine1"
           },
@@ -1657,10 +1657,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 4.500670785495061,
           "tag": {
-            "commentStart": 4768,
-            "end": 4777,
+            "commentStart": 4788,
+            "end": 4797,
             "moduleId": 0,
-            "start": 4768,
+            "start": 4788,
             "type": "TagDeclarator",
             "value": "outerArc2"
           },
@@ -1687,10 +1687,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 0.24895806191111336,
           "tag": {
-            "commentStart": 4932,
-            "end": 4941,
+            "commentStart": 4952,
+            "end": 4961,
             "moduleId": 0,
-            "start": 4932,
+            "start": 4952,
             "type": "TagDeclarator",
             "value": "outerArc3"
           },
@@ -1711,10 +1711,10 @@ description: Variables in memory after executing helium-tank.kcl
             3.9298462310815965
           ],
           "tag": {
-            "commentStart": 5099,
-            "end": 5109,
+            "commentStart": 5119,
+            "end": 5129,
             "moduleId": 0,
-            "start": 5099,
+            "start": 5119,
             "type": "TagDeclarator",
             "value": "outerLine4"
           },
@@ -1741,10 +1741,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 0.25167040583486594,
           "tag": {
-            "commentStart": 5236,
-            "end": 5245,
+            "commentStart": 5256,
+            "end": 5265,
             "moduleId": 0,
-            "start": 5236,
+            "start": 5256,
             "type": "TagDeclarator",
             "value": "outerArc5"
           },
@@ -1765,10 +1765,10 @@ description: Variables in memory after executing helium-tank.kcl
             5.410734970189002
           ],
           "tag": {
-            "commentStart": 5401,
-            "end": 5411,
+            "commentStart": 5421,
+            "end": 5431,
             "moduleId": 0,
-            "start": 5401,
+            "start": 5421,
             "type": "TagDeclarator",
             "value": "outerLine6"
           },
@@ -1789,10 +1789,10 @@ description: Variables in memory after executing helium-tank.kcl
             5.1998536637221635
           ],
           "tag": {
-            "commentStart": 5536,
-            "end": 5546,
+            "commentStart": 5556,
+            "end": 5566,
             "moduleId": 0,
-            "start": 5536,
+            "start": 5556,
             "type": "TagDeclarator",
             "value": "outerLine8"
           },
@@ -1819,10 +1819,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 4.50067078572339,
           "tag": {
-            "commentStart": 5621,
-            "end": 5631,
+            "commentStart": 5641,
+            "end": 5651,
             "moduleId": 0,
-            "start": 5621,
+            "start": 5641,
             "type": "TagDeclarator",
             "value": "outerArc10"
           },
@@ -1843,10 +1843,10 @@ description: Variables in memory after executing helium-tank.kcl
             4.500435534128689
           ],
           "tag": {
-            "commentStart": 5735,
-            "end": 5746,
+            "commentStart": 5755,
+            "end": 5766,
             "moduleId": 0,
-            "start": 5735,
+            "start": 5755,
             "type": "TagDeclarator",
             "value": "outerLine11"
           },
@@ -1867,10 +1867,10 @@ description: Variables in memory after executing helium-tank.kcl
             4.628104487837657
           ],
           "tag": {
-            "commentStart": 6163,
-            "end": 6173,
+            "commentStart": 6183,
+            "end": 6193,
             "moduleId": 0,
-            "start": 6163,
+            "start": 6183,
             "type": "TagDeclarator",
             "value": "innerLine1"
           },
@@ -1897,10 +1897,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 4.6270739573605,
           "tag": {
-            "commentStart": 6246,
-            "end": 6255,
+            "commentStart": 6266,
+            "end": 6275,
             "moduleId": 0,
-            "start": 6246,
+            "start": 6266,
             "type": "TagDeclarator",
             "value": "innerArc2"
           },
@@ -3893,10 +3893,10 @@ description: Variables in memory after executing helium-tank.kcl
                     4.500435534128729
                   ],
                   "tag": {
-                    "commentStart": 4687,
-                    "end": 4697,
+                    "commentStart": 4707,
+                    "end": 4717,
                     "moduleId": 0,
-                    "start": 4687,
+                    "start": 4707,
                     "type": "TagDeclarator",
                     "value": "outerLine1"
                   },
@@ -3923,10 +3923,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.500670785495061,
                   "tag": {
-                    "commentStart": 4768,
-                    "end": 4777,
+                    "commentStart": 4788,
+                    "end": 4797,
                     "moduleId": 0,
-                    "start": 4768,
+                    "start": 4788,
                     "type": "TagDeclarator",
                     "value": "outerArc2"
                   },
@@ -3953,10 +3953,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.24895806191111336,
                   "tag": {
-                    "commentStart": 4932,
-                    "end": 4941,
+                    "commentStart": 4952,
+                    "end": 4961,
                     "moduleId": 0,
-                    "start": 4932,
+                    "start": 4952,
                     "type": "TagDeclarator",
                     "value": "outerArc3"
                   },
@@ -3977,10 +3977,10 @@ description: Variables in memory after executing helium-tank.kcl
                     3.9298462310815965
                   ],
                   "tag": {
-                    "commentStart": 5099,
-                    "end": 5109,
+                    "commentStart": 5119,
+                    "end": 5129,
                     "moduleId": 0,
-                    "start": 5099,
+                    "start": 5119,
                     "type": "TagDeclarator",
                     "value": "outerLine4"
                   },
@@ -4007,10 +4007,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.25167040583486594,
                   "tag": {
-                    "commentStart": 5236,
-                    "end": 5245,
+                    "commentStart": 5256,
+                    "end": 5265,
                     "moduleId": 0,
-                    "start": 5236,
+                    "start": 5256,
                     "type": "TagDeclarator",
                     "value": "outerArc5"
                   },
@@ -4031,10 +4031,10 @@ description: Variables in memory after executing helium-tank.kcl
                     5.410734970189002
                   ],
                   "tag": {
-                    "commentStart": 5401,
-                    "end": 5411,
+                    "commentStart": 5421,
+                    "end": 5431,
                     "moduleId": 0,
-                    "start": 5401,
+                    "start": 5421,
                     "type": "TagDeclarator",
                     "value": "outerLine6"
                   },
@@ -4072,10 +4072,10 @@ description: Variables in memory after executing helium-tank.kcl
                     5.1998536637221635
                   ],
                   "tag": {
-                    "commentStart": 5536,
-                    "end": 5546,
+                    "commentStart": 5556,
+                    "end": 5566,
                     "moduleId": 0,
-                    "start": 5536,
+                    "start": 5556,
                     "type": "TagDeclarator",
                     "value": "outerLine8"
                   },
@@ -4119,10 +4119,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.50067078572339,
                   "tag": {
-                    "commentStart": 5621,
-                    "end": 5631,
+                    "commentStart": 5641,
+                    "end": 5651,
                     "moduleId": 0,
-                    "start": 5621,
+                    "start": 5641,
                     "type": "TagDeclarator",
                     "value": "outerArc10"
                   },
@@ -4143,10 +4143,10 @@ description: Variables in memory after executing helium-tank.kcl
                     4.500435534128689
                   ],
                   "tag": {
-                    "commentStart": 5735,
-                    "end": 5746,
+                    "commentStart": 5755,
+                    "end": 5766,
                     "moduleId": 0,
-                    "start": 5735,
+                    "start": 5755,
                     "type": "TagDeclarator",
                     "value": "outerLine11"
                   },
@@ -4184,10 +4184,10 @@ description: Variables in memory after executing helium-tank.kcl
                     4.628104487837657
                   ],
                   "tag": {
-                    "commentStart": 6163,
-                    "end": 6173,
+                    "commentStart": 6183,
+                    "end": 6193,
                     "moduleId": 0,
-                    "start": 6163,
+                    "start": 6183,
                     "type": "TagDeclarator",
                     "value": "innerLine1"
                   },
@@ -4214,10 +4214,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.6270739573605,
                   "tag": {
-                    "commentStart": 6246,
-                    "end": 6255,
+                    "commentStart": 6266,
+                    "end": 6275,
                     "moduleId": 0,
-                    "start": 6246,
+                    "start": 6266,
                     "type": "TagDeclarator",
                     "value": "innerArc2"
                   },
@@ -4244,10 +4244,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.12530977191823103,
                   "tag": {
-                    "commentStart": 6411,
-                    "end": 6420,
+                    "commentStart": 6431,
+                    "end": 6440,
                     "moduleId": 0,
-                    "start": 6411,
+                    "start": 6431,
                     "type": "TagDeclarator",
                     "value": "innerArc3"
                   },
@@ -4285,10 +4285,10 @@ description: Variables in memory after executing helium-tank.kcl
                     3.9097789153387414
                   ],
                   "tag": {
-                    "commentStart": 6578,
-                    "end": 6588,
+                    "commentStart": 6598,
+                    "end": 6608,
                     "moduleId": 0,
-                    "start": 6578,
+                    "start": 6598,
                     "type": "TagDeclarator",
                     "value": "innerLine4"
                   },
@@ -4315,10 +4315,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.12073176148341916,
                   "tag": {
-                    "commentStart": 6716,
-                    "end": 6725,
+                    "commentStart": 6736,
+                    "end": 6745,
                     "moduleId": 0,
-                    "start": 6716,
+                    "start": 6736,
                     "type": "TagDeclarator",
                     "value": "innerArc5"
                   },
@@ -4339,10 +4339,10 @@ description: Variables in memory after executing helium-tank.kcl
                     5.280161266104285
                   ],
                   "tag": {
-                    "commentStart": 6882,
-                    "end": 6892,
+                    "commentStart": 6902,
+                    "end": 6912,
                     "moduleId": 0,
-                    "start": 6882,
+                    "start": 6902,
                     "type": "TagDeclarator",
                     "value": "innerLine6"
                   },
@@ -4380,10 +4380,10 @@ description: Variables in memory after executing helium-tank.kcl
                     5.180003106289127
                   ],
                   "tag": {
-                    "commentStart": 7017,
-                    "end": 7027,
+                    "commentStart": 7037,
+                    "end": 7047,
                     "moduleId": 0,
-                    "start": 7017,
+                    "start": 7037,
                     "type": "TagDeclarator",
                     "value": "innerLine8"
                   },
@@ -4427,10 +4427,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.6270739491858315,
                   "tag": {
-                    "commentStart": 7103,
-                    "end": 7113,
+                    "commentStart": 7123,
+                    "end": 7133,
                     "moduleId": 0,
-                    "start": 7103,
+                    "start": 7123,
                     "type": "TagDeclarator",
                     "value": "innerArc10"
                   },
@@ -4451,10 +4451,10 @@ description: Variables in memory after executing helium-tank.kcl
                     4.628104487837058
                   ],
                   "tag": {
-                    "commentStart": 7218,
-                    "end": 7229,
+                    "commentStart": 7238,
+                    "end": 7249,
                     "moduleId": 0,
-                    "start": 7218,
+                    "start": 7238,
                     "type": "TagDeclarator",
                     "value": "innerLine11"
                   },
@@ -4498,10 +4498,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.2514893198016617,
                   "tag": {
-                    "commentStart": 7648,
-                    "end": 7652,
+                    "commentStart": 7668,
+                    "end": 7672,
                     "moduleId": 0,
-                    "start": 7648,
+                    "start": 7668,
                     "type": "TagDeclarator",
                     "value": "arc1"
                   },
@@ -4545,10 +4545,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.12091733921054319,
                   "tag": {
-                    "commentStart": 7759,
-                    "end": 7763,
+                    "commentStart": 7779,
+                    "end": 7783,
                     "moduleId": 0,
-                    "start": 7759,
+                    "start": 7779,
                     "type": "TagDeclarator",
                     "value": "arc2"
                   },
@@ -4592,10 +4592,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.24895806267506587,
                   "tag": {
-                    "commentStart": 7957,
-                    "end": 7961,
+                    "commentStart": 7977,
+                    "end": 7981,
                     "moduleId": 0,
-                    "start": 7957,
+                    "start": 7977,
                     "type": "TagDeclarator",
                     "value": "arc3"
                   },
@@ -4639,10 +4639,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.1253097721008913,
                   "tag": {
-                    "commentStart": 8112,
-                    "end": 8116,
+                    "commentStart": 8132,
+                    "end": 8136,
                     "moduleId": 0,
-                    "start": 8112,
+                    "start": 8132,
                     "type": "TagDeclarator",
                     "value": "arc4"
                   },
@@ -6023,10 +6023,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4687,
-            "end": 4697,
+            "commentStart": 4707,
+            "end": 4717,
             "moduleId": 0,
-            "start": 4687,
+            "start": 4707,
             "type": "TagDeclarator",
             "value": "outerLine1"
           },
@@ -6037,10 +6037,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4768,
-            "end": 4777,
+            "commentStart": 4788,
+            "end": 4797,
             "moduleId": 0,
-            "start": 4768,
+            "start": 4788,
             "type": "TagDeclarator",
             "value": "outerArc2"
           },
@@ -6051,10 +6051,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4932,
-            "end": 4941,
+            "commentStart": 4952,
+            "end": 4961,
             "moduleId": 0,
-            "start": 4932,
+            "start": 4952,
             "type": "TagDeclarator",
             "value": "outerArc3"
           },
@@ -6065,10 +6065,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5099,
-            "end": 5109,
+            "commentStart": 5119,
+            "end": 5129,
             "moduleId": 0,
-            "start": 5099,
+            "start": 5119,
             "type": "TagDeclarator",
             "value": "outerLine4"
           },
@@ -6079,10 +6079,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5236,
-            "end": 5245,
+            "commentStart": 5256,
+            "end": 5265,
             "moduleId": 0,
-            "start": 5236,
+            "start": 5256,
             "type": "TagDeclarator",
             "value": "outerArc5"
           },
@@ -6093,10 +6093,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5401,
-            "end": 5411,
+            "commentStart": 5421,
+            "end": 5431,
             "moduleId": 0,
-            "start": 5401,
+            "start": 5421,
             "type": "TagDeclarator",
             "value": "outerLine6"
           },
@@ -6107,10 +6107,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5536,
-            "end": 5546,
+            "commentStart": 5556,
+            "end": 5566,
             "moduleId": 0,
-            "start": 5536,
+            "start": 5556,
             "type": "TagDeclarator",
             "value": "outerLine8"
           },
@@ -6121,10 +6121,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5621,
-            "end": 5631,
+            "commentStart": 5641,
+            "end": 5651,
             "moduleId": 0,
-            "start": 5621,
+            "start": 5641,
             "type": "TagDeclarator",
             "value": "outerArc10"
           },
@@ -6135,10 +6135,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 5735,
-            "end": 5746,
+            "commentStart": 5755,
+            "end": 5766,
             "moduleId": 0,
-            "start": 5735,
+            "start": 5755,
             "type": "TagDeclarator",
             "value": "outerLine11"
           },
@@ -6149,10 +6149,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6163,
-            "end": 6173,
+            "commentStart": 6183,
+            "end": 6193,
             "moduleId": 0,
-            "start": 6163,
+            "start": 6183,
             "type": "TagDeclarator",
             "value": "innerLine1"
           },
@@ -6163,10 +6163,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 6246,
-            "end": 6255,
+            "commentStart": 6266,
+            "end": 6275,
             "moduleId": 0,
-            "start": 6246,
+            "start": 6266,
             "type": "TagDeclarator",
             "value": "innerArc2"
           },
@@ -6188,10 +6188,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.500435534128729
             ],
             "tag": {
-              "commentStart": 4687,
-              "end": 4697,
+              "commentStart": 4707,
+              "end": 4717,
               "moduleId": 0,
-              "start": 4687,
+              "start": 4707,
               "type": "TagDeclarator",
               "value": "outerLine1"
             },
@@ -6218,10 +6218,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.500670785495061,
             "tag": {
-              "commentStart": 4768,
-              "end": 4777,
+              "commentStart": 4788,
+              "end": 4797,
               "moduleId": 0,
-              "start": 4768,
+              "start": 4788,
               "type": "TagDeclarator",
               "value": "outerArc2"
             },
@@ -6248,10 +6248,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.24895806191111336,
             "tag": {
-              "commentStart": 4932,
-              "end": 4941,
+              "commentStart": 4952,
+              "end": 4961,
               "moduleId": 0,
-              "start": 4932,
+              "start": 4952,
               "type": "TagDeclarator",
               "value": "outerArc3"
             },
@@ -6272,10 +6272,10 @@ description: Variables in memory after executing helium-tank.kcl
               3.9298462310815965
             ],
             "tag": {
-              "commentStart": 5099,
-              "end": 5109,
+              "commentStart": 5119,
+              "end": 5129,
               "moduleId": 0,
-              "start": 5099,
+              "start": 5119,
               "type": "TagDeclarator",
               "value": "outerLine4"
             },
@@ -6302,10 +6302,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.25167040583486594,
             "tag": {
-              "commentStart": 5236,
-              "end": 5245,
+              "commentStart": 5256,
+              "end": 5265,
               "moduleId": 0,
-              "start": 5236,
+              "start": 5256,
               "type": "TagDeclarator",
               "value": "outerArc5"
             },
@@ -6326,10 +6326,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.410734970189002
             ],
             "tag": {
-              "commentStart": 5401,
-              "end": 5411,
+              "commentStart": 5421,
+              "end": 5431,
               "moduleId": 0,
-              "start": 5401,
+              "start": 5421,
               "type": "TagDeclarator",
               "value": "outerLine6"
             },
@@ -6350,10 +6350,10 @@ description: Variables in memory after executing helium-tank.kcl
               5.1998536637221635
             ],
             "tag": {
-              "commentStart": 5536,
-              "end": 5546,
+              "commentStart": 5556,
+              "end": 5566,
               "moduleId": 0,
-              "start": 5536,
+              "start": 5556,
               "type": "TagDeclarator",
               "value": "outerLine8"
             },
@@ -6380,10 +6380,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.50067078572339,
             "tag": {
-              "commentStart": 5621,
-              "end": 5631,
+              "commentStart": 5641,
+              "end": 5651,
               "moduleId": 0,
-              "start": 5621,
+              "start": 5641,
               "type": "TagDeclarator",
               "value": "outerArc10"
             },
@@ -6404,10 +6404,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.500435534128689
             ],
             "tag": {
-              "commentStart": 5735,
-              "end": 5746,
+              "commentStart": 5755,
+              "end": 5766,
               "moduleId": 0,
-              "start": 5735,
+              "start": 5755,
               "type": "TagDeclarator",
               "value": "outerLine11"
             },
@@ -6428,10 +6428,10 @@ description: Variables in memory after executing helium-tank.kcl
               4.628104487837657
             ],
             "tag": {
-              "commentStart": 6163,
-              "end": 6173,
+              "commentStart": 6183,
+              "end": 6193,
               "moduleId": 0,
-              "start": 6163,
+              "start": 6183,
               "type": "TagDeclarator",
               "value": "innerLine1"
             },
@@ -6458,10 +6458,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.6270739573605,
             "tag": {
-              "commentStart": 6246,
-              "end": 6255,
+              "commentStart": 6266,
+              "end": 6275,
               "moduleId": 0,
-              "start": 6246,
+              "start": 6266,
               "type": "TagDeclarator",
               "value": "innerArc2"
             },
@@ -6636,10 +6636,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4687,
-                "end": 4697,
+                "commentStart": 4707,
+                "end": 4717,
                 "moduleId": 0,
-                "start": 4687,
+                "start": 4707,
                 "type": "TagDeclarator",
                 "value": "outerLine1"
               },
@@ -6650,10 +6650,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4768,
-                "end": 4777,
+                "commentStart": 4788,
+                "end": 4797,
                 "moduleId": 0,
-                "start": 4768,
+                "start": 4788,
                 "type": "TagDeclarator",
                 "value": "outerArc2"
               },
@@ -6664,10 +6664,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4932,
-                "end": 4941,
+                "commentStart": 4952,
+                "end": 4961,
                 "moduleId": 0,
-                "start": 4932,
+                "start": 4952,
                 "type": "TagDeclarator",
                 "value": "outerArc3"
               },
@@ -6678,10 +6678,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5099,
-                "end": 5109,
+                "commentStart": 5119,
+                "end": 5129,
                 "moduleId": 0,
-                "start": 5099,
+                "start": 5119,
                 "type": "TagDeclarator",
                 "value": "outerLine4"
               },
@@ -6692,10 +6692,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5236,
-                "end": 5245,
+                "commentStart": 5256,
+                "end": 5265,
                 "moduleId": 0,
-                "start": 5236,
+                "start": 5256,
                 "type": "TagDeclarator",
                 "value": "outerArc5"
               },
@@ -6706,10 +6706,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5401,
-                "end": 5411,
+                "commentStart": 5421,
+                "end": 5431,
                 "moduleId": 0,
-                "start": 5401,
+                "start": 5421,
                 "type": "TagDeclarator",
                 "value": "outerLine6"
               },
@@ -6720,10 +6720,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5536,
-                "end": 5546,
+                "commentStart": 5556,
+                "end": 5566,
                 "moduleId": 0,
-                "start": 5536,
+                "start": 5556,
                 "type": "TagDeclarator",
                 "value": "outerLine8"
               },
@@ -6734,10 +6734,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5621,
-                "end": 5631,
+                "commentStart": 5641,
+                "end": 5651,
                 "moduleId": 0,
-                "start": 5621,
+                "start": 5641,
                 "type": "TagDeclarator",
                 "value": "outerArc10"
               },
@@ -6748,10 +6748,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5735,
-                "end": 5746,
+                "commentStart": 5755,
+                "end": 5766,
                 "moduleId": 0,
-                "start": 5735,
+                "start": 5755,
                 "type": "TagDeclarator",
                 "value": "outerLine11"
               },
@@ -6762,10 +6762,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6163,
-                "end": 6173,
+                "commentStart": 6183,
+                "end": 6193,
                 "moduleId": 0,
-                "start": 6163,
+                "start": 6183,
                 "type": "TagDeclarator",
                 "value": "innerLine1"
               },
@@ -6776,10 +6776,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6246,
-                "end": 6255,
+                "commentStart": 6266,
+                "end": 6275,
                 "moduleId": 0,
-                "start": 6246,
+                "start": 6266,
                 "type": "TagDeclarator",
                 "value": "innerArc2"
               },
@@ -6801,10 +6801,10 @@ description: Variables in memory after executing helium-tank.kcl
                   4.500435534128729
                 ],
                 "tag": {
-                  "commentStart": 4687,
-                  "end": 4697,
+                  "commentStart": 4707,
+                  "end": 4717,
                   "moduleId": 0,
-                  "start": 4687,
+                  "start": 4707,
                   "type": "TagDeclarator",
                   "value": "outerLine1"
                 },
@@ -6831,10 +6831,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.500670785495061,
                 "tag": {
-                  "commentStart": 4768,
-                  "end": 4777,
+                  "commentStart": 4788,
+                  "end": 4797,
                   "moduleId": 0,
-                  "start": 4768,
+                  "start": 4788,
                   "type": "TagDeclarator",
                   "value": "outerArc2"
                 },
@@ -6861,10 +6861,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 0.24895806191111336,
                 "tag": {
-                  "commentStart": 4932,
-                  "end": 4941,
+                  "commentStart": 4952,
+                  "end": 4961,
                   "moduleId": 0,
-                  "start": 4932,
+                  "start": 4952,
                   "type": "TagDeclarator",
                   "value": "outerArc3"
                 },
@@ -6885,10 +6885,10 @@ description: Variables in memory after executing helium-tank.kcl
                   3.9298462310815965
                 ],
                 "tag": {
-                  "commentStart": 5099,
-                  "end": 5109,
+                  "commentStart": 5119,
+                  "end": 5129,
                   "moduleId": 0,
-                  "start": 5099,
+                  "start": 5119,
                   "type": "TagDeclarator",
                   "value": "outerLine4"
                 },
@@ -6915,10 +6915,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 0.25167040583486594,
                 "tag": {
-                  "commentStart": 5236,
-                  "end": 5245,
+                  "commentStart": 5256,
+                  "end": 5265,
                   "moduleId": 0,
-                  "start": 5236,
+                  "start": 5256,
                   "type": "TagDeclarator",
                   "value": "outerArc5"
                 },
@@ -6939,10 +6939,10 @@ description: Variables in memory after executing helium-tank.kcl
                   5.410734970189002
                 ],
                 "tag": {
-                  "commentStart": 5401,
-                  "end": 5411,
+                  "commentStart": 5421,
+                  "end": 5431,
                   "moduleId": 0,
-                  "start": 5401,
+                  "start": 5421,
                   "type": "TagDeclarator",
                   "value": "outerLine6"
                 },
@@ -6963,10 +6963,10 @@ description: Variables in memory after executing helium-tank.kcl
                   5.1998536637221635
                 ],
                 "tag": {
-                  "commentStart": 5536,
-                  "end": 5546,
+                  "commentStart": 5556,
+                  "end": 5566,
                   "moduleId": 0,
-                  "start": 5536,
+                  "start": 5556,
                   "type": "TagDeclarator",
                   "value": "outerLine8"
                 },
@@ -6993,10 +6993,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.50067078572339,
                 "tag": {
-                  "commentStart": 5621,
-                  "end": 5631,
+                  "commentStart": 5641,
+                  "end": 5651,
                   "moduleId": 0,
-                  "start": 5621,
+                  "start": 5641,
                   "type": "TagDeclarator",
                   "value": "outerArc10"
                 },
@@ -7017,10 +7017,10 @@ description: Variables in memory after executing helium-tank.kcl
                   4.500435534128689
                 ],
                 "tag": {
-                  "commentStart": 5735,
-                  "end": 5746,
+                  "commentStart": 5755,
+                  "end": 5766,
                   "moduleId": 0,
-                  "start": 5735,
+                  "start": 5755,
                   "type": "TagDeclarator",
                   "value": "outerLine11"
                 },
@@ -7041,10 +7041,10 @@ description: Variables in memory after executing helium-tank.kcl
                   4.628104487837657
                 ],
                 "tag": {
-                  "commentStart": 6163,
-                  "end": 6173,
+                  "commentStart": 6183,
+                  "end": 6193,
                   "moduleId": 0,
-                  "start": 6163,
+                  "start": 6183,
                   "type": "TagDeclarator",
                   "value": "innerLine1"
                 },
@@ -7071,10 +7071,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.6270739573605,
                 "tag": {
-                  "commentStart": 6246,
-                  "end": 6255,
+                  "commentStart": 6266,
+                  "end": 6275,
                   "moduleId": 0,
-                  "start": 6246,
+                  "start": 6266,
                   "type": "TagDeclarator",
                   "value": "innerArc2"
                 },
@@ -7246,10 +7246,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4687,
-                "end": 4697,
+                "commentStart": 4707,
+                "end": 4717,
                 "moduleId": 0,
-                "start": 4687,
+                "start": 4707,
                 "type": "TagDeclarator",
                 "value": "outerLine1"
               },
@@ -7260,10 +7260,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4768,
-                "end": 4777,
+                "commentStart": 4788,
+                "end": 4797,
                 "moduleId": 0,
-                "start": 4768,
+                "start": 4788,
                 "type": "TagDeclarator",
                 "value": "outerArc2"
               },
@@ -7274,10 +7274,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 4932,
-                "end": 4941,
+                "commentStart": 4952,
+                "end": 4961,
                 "moduleId": 0,
-                "start": 4932,
+                "start": 4952,
                 "type": "TagDeclarator",
                 "value": "outerArc3"
               },
@@ -7288,10 +7288,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5099,
-                "end": 5109,
+                "commentStart": 5119,
+                "end": 5129,
                 "moduleId": 0,
-                "start": 5099,
+                "start": 5119,
                 "type": "TagDeclarator",
                 "value": "outerLine4"
               },
@@ -7302,10 +7302,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5236,
-                "end": 5245,
+                "commentStart": 5256,
+                "end": 5265,
                 "moduleId": 0,
-                "start": 5236,
+                "start": 5256,
                 "type": "TagDeclarator",
                 "value": "outerArc5"
               },
@@ -7316,10 +7316,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5401,
-                "end": 5411,
+                "commentStart": 5421,
+                "end": 5431,
                 "moduleId": 0,
-                "start": 5401,
+                "start": 5421,
                 "type": "TagDeclarator",
                 "value": "outerLine6"
               },
@@ -7330,10 +7330,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5536,
-                "end": 5546,
+                "commentStart": 5556,
+                "end": 5566,
                 "moduleId": 0,
-                "start": 5536,
+                "start": 5556,
                 "type": "TagDeclarator",
                 "value": "outerLine8"
               },
@@ -7344,10 +7344,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5621,
-                "end": 5631,
+                "commentStart": 5641,
+                "end": 5651,
                 "moduleId": 0,
-                "start": 5621,
+                "start": 5641,
                 "type": "TagDeclarator",
                 "value": "outerArc10"
               },
@@ -7358,10 +7358,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 5735,
-                "end": 5746,
+                "commentStart": 5755,
+                "end": 5766,
                 "moduleId": 0,
-                "start": 5735,
+                "start": 5755,
                 "type": "TagDeclarator",
                 "value": "outerLine11"
               },
@@ -7372,10 +7372,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6163,
-                "end": 6173,
+                "commentStart": 6183,
+                "end": 6193,
                 "moduleId": 0,
-                "start": 6163,
+                "start": 6183,
                 "type": "TagDeclarator",
                 "value": "innerLine1"
               },
@@ -7386,10 +7386,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 6246,
-                "end": 6255,
+                "commentStart": 6266,
+                "end": 6275,
                 "moduleId": 0,
-                "start": 6246,
+                "start": 6266,
                 "type": "TagDeclarator",
                 "value": "innerArc2"
               },
@@ -7411,10 +7411,10 @@ description: Variables in memory after executing helium-tank.kcl
                   4.500435534128729
                 ],
                 "tag": {
-                  "commentStart": 4687,
-                  "end": 4697,
+                  "commentStart": 4707,
+                  "end": 4717,
                   "moduleId": 0,
-                  "start": 4687,
+                  "start": 4707,
                   "type": "TagDeclarator",
                   "value": "outerLine1"
                 },
@@ -7441,10 +7441,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.500670785495061,
                 "tag": {
-                  "commentStart": 4768,
-                  "end": 4777,
+                  "commentStart": 4788,
+                  "end": 4797,
                   "moduleId": 0,
-                  "start": 4768,
+                  "start": 4788,
                   "type": "TagDeclarator",
                   "value": "outerArc2"
                 },
@@ -7471,10 +7471,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 0.24895806191111336,
                 "tag": {
-                  "commentStart": 4932,
-                  "end": 4941,
+                  "commentStart": 4952,
+                  "end": 4961,
                   "moduleId": 0,
-                  "start": 4932,
+                  "start": 4952,
                   "type": "TagDeclarator",
                   "value": "outerArc3"
                 },
@@ -7495,10 +7495,10 @@ description: Variables in memory after executing helium-tank.kcl
                   3.9298462310815965
                 ],
                 "tag": {
-                  "commentStart": 5099,
-                  "end": 5109,
+                  "commentStart": 5119,
+                  "end": 5129,
                   "moduleId": 0,
-                  "start": 5099,
+                  "start": 5119,
                   "type": "TagDeclarator",
                   "value": "outerLine4"
                 },
@@ -7525,10 +7525,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 0.25167040583486594,
                 "tag": {
-                  "commentStart": 5236,
-                  "end": 5245,
+                  "commentStart": 5256,
+                  "end": 5265,
                   "moduleId": 0,
-                  "start": 5236,
+                  "start": 5256,
                   "type": "TagDeclarator",
                   "value": "outerArc5"
                 },
@@ -7549,10 +7549,10 @@ description: Variables in memory after executing helium-tank.kcl
                   5.410734970189002
                 ],
                 "tag": {
-                  "commentStart": 5401,
-                  "end": 5411,
+                  "commentStart": 5421,
+                  "end": 5431,
                   "moduleId": 0,
-                  "start": 5401,
+                  "start": 5421,
                   "type": "TagDeclarator",
                   "value": "outerLine6"
                 },
@@ -7573,10 +7573,10 @@ description: Variables in memory after executing helium-tank.kcl
                   5.1998536637221635
                 ],
                 "tag": {
-                  "commentStart": 5536,
-                  "end": 5546,
+                  "commentStart": 5556,
+                  "end": 5566,
                   "moduleId": 0,
-                  "start": 5536,
+                  "start": 5556,
                   "type": "TagDeclarator",
                   "value": "outerLine8"
                 },
@@ -7603,10 +7603,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.50067078572339,
                 "tag": {
-                  "commentStart": 5621,
-                  "end": 5631,
+                  "commentStart": 5641,
+                  "end": 5651,
                   "moduleId": 0,
-                  "start": 5621,
+                  "start": 5641,
                   "type": "TagDeclarator",
                   "value": "outerArc10"
                 },
@@ -7627,10 +7627,10 @@ description: Variables in memory after executing helium-tank.kcl
                   4.500435534128689
                 ],
                 "tag": {
-                  "commentStart": 5735,
-                  "end": 5746,
+                  "commentStart": 5755,
+                  "end": 5766,
                   "moduleId": 0,
-                  "start": 5735,
+                  "start": 5755,
                   "type": "TagDeclarator",
                   "value": "outerLine11"
                 },
@@ -7651,10 +7651,10 @@ description: Variables in memory after executing helium-tank.kcl
                   4.628104487837657
                 ],
                 "tag": {
-                  "commentStart": 6163,
-                  "end": 6173,
+                  "commentStart": 6183,
+                  "end": 6193,
                   "moduleId": 0,
-                  "start": 6163,
+                  "start": 6183,
                   "type": "TagDeclarator",
                   "value": "innerLine1"
                 },
@@ -7681,10 +7681,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.6270739573605,
                 "tag": {
-                  "commentStart": 6246,
-                  "end": 6255,
+                  "commentStart": 6266,
+                  "end": 6275,
                   "moduleId": 0,
-                  "start": 6246,
+                  "start": 6266,
                   "type": "TagDeclarator",
                   "value": "innerArc2"
                 },
@@ -7968,10 +7968,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9731,
-            "end": 9738,
+            "commentStart": 9751,
+            "end": 9758,
             "moduleId": 0,
-            "start": 9731,
+            "start": 9751,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -7999,10 +7999,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.12500000001,
             "tag": {
-              "commentStart": 9731,
-              "end": 9738,
+              "commentStart": 9751,
+              "end": 9758,
               "moduleId": 0,
-              "start": 9731,
+              "start": 9751,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -8093,10 +8093,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9731,
-                "end": 9738,
+                "commentStart": 9751,
+                "end": 9758,
                 "moduleId": 0,
-                "start": 9731,
+                "start": 9751,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8124,10 +8124,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 0.12500000001,
                 "tag": {
-                  "commentStart": 9731,
-                  "end": 9738,
+                  "commentStart": 9751,
+                  "end": 9758,
                   "moduleId": 0,
-                  "start": 9731,
+                  "start": 9751,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8215,10 +8215,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 9731,
-                "end": 9738,
+                "commentStart": 9751,
+                "end": 9758,
                 "moduleId": 0,
-                "start": 9731,
+                "start": 9751,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -8246,10 +8246,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 0.12500000001,
                 "tag": {
-                  "commentStart": 9731,
-                  "end": 9738,
+                  "commentStart": 9751,
+                  "end": 9758,
                   "moduleId": 0,
-                  "start": 9731,
+                  "start": 9751,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -8382,10 +8382,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 0.12500000001,
           "tag": {
-            "commentStart": 9731,
-            "end": 9738,
+            "commentStart": 9751,
+            "end": 9758,
             "moduleId": 0,
-            "start": 9731,
+            "start": 9751,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -8604,10 +8604,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.12500000001,
                   "tag": {
-                    "commentStart": 9731,
-                    "end": 9738,
+                    "commentStart": 9751,
+                    "end": 9758,
                     "moduleId": 0,
-                    "start": 9731,
+                    "start": 9751,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -8696,10 +8696,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10302,
-            "end": 10309,
+            "commentStart": 10322,
+            "end": 10329,
             "moduleId": 0,
-            "start": 10302,
+            "start": 10322,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -8727,10 +8727,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.736842105469474,
             "tag": {
-              "commentStart": 10302,
-              "end": 10309,
+              "commentStart": 10322,
+              "end": 10329,
               "moduleId": 0,
-              "start": 10302,
+              "start": 10322,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -8818,10 +8818,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10689,
-            "end": 10696,
+            "commentStart": 10709,
+            "end": 10716,
             "moduleId": 0,
-            "start": 10689,
+            "start": 10709,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -8849,10 +8849,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.636842105469475,
             "tag": {
-              "commentStart": 10689,
-              "end": 10696,
+              "commentStart": 10709,
+              "end": 10716,
               "moduleId": 0,
-              "start": 10689,
+              "start": 10709,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -8950,10 +8950,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 4.636842105469475,
           "tag": {
-            "commentStart": 10689,
-            "end": 10696,
+            "commentStart": 10709,
+            "end": 10716,
             "moduleId": 0,
-            "start": 10689,
+            "start": 10709,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9172,10 +9172,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.636842105469475,
                   "tag": {
-                    "commentStart": 10689,
-                    "end": 10696,
+                    "commentStart": 10709,
+                    "end": 10716,
                     "moduleId": 0,
-                    "start": 10689,
+                    "start": 10709,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -9264,10 +9264,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 10302,
-            "end": 10309,
+            "commentStart": 10322,
+            "end": 10329,
             "moduleId": 0,
-            "start": 10302,
+            "start": 10322,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9295,10 +9295,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.736842105469474,
             "tag": {
-              "commentStart": 10302,
-              "end": 10309,
+              "commentStart": 10322,
+              "end": 10329,
               "moduleId": 0,
-              "start": 10302,
+              "start": 10322,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -9396,10 +9396,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 4.736842105469474,
           "tag": {
-            "commentStart": 10302,
-            "end": 10309,
+            "commentStart": 10322,
+            "end": 10329,
             "moduleId": 0,
-            "start": 10302,
+            "start": 10322,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9618,10 +9618,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.736842105469474,
                   "tag": {
-                    "commentStart": 10302,
-                    "end": 10309,
+                    "commentStart": 10322,
+                    "end": 10329,
                     "moduleId": 0,
-                    "start": 10302,
+                    "start": 10322,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -9769,10 +9769,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8767,
-            "end": 8774,
+            "commentStart": 8787,
+            "end": 8794,
             "moduleId": 0,
-            "start": 8767,
+            "start": 8787,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9800,10 +9800,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.7500000002,
             "tag": {
-              "commentStart": 8767,
-              "end": 8774,
+              "commentStart": 8787,
+              "end": 8794,
               "moduleId": 0,
-              "start": 8767,
+              "start": 8787,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -9891,10 +9891,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 9127,
-            "end": 9134,
+            "commentStart": 9147,
+            "end": 9154,
             "moduleId": 0,
-            "start": 9127,
+            "start": 9147,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -9922,10 +9922,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.6500000002,
             "tag": {
-              "commentStart": 9127,
-              "end": 9134,
+              "commentStart": 9147,
+              "end": 9154,
               "moduleId": 0,
-              "start": 9127,
+              "start": 9147,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -10023,10 +10023,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 4.6500000002,
           "tag": {
-            "commentStart": 9127,
-            "end": 9134,
+            "commentStart": 9147,
+            "end": 9154,
             "moduleId": 0,
-            "start": 9127,
+            "start": 9147,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10245,10 +10245,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.6500000002,
                   "tag": {
-                    "commentStart": 9127,
-                    "end": 9134,
+                    "commentStart": 9147,
+                    "end": 9154,
                     "moduleId": 0,
-                    "start": 9127,
+                    "start": 9147,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -10337,10 +10337,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 8767,
-            "end": 8774,
+            "commentStart": 8787,
+            "end": 8794,
             "moduleId": 0,
-            "start": 8767,
+            "start": 8787,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10368,10 +10368,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 4.7500000002,
             "tag": {
-              "commentStart": 8767,
-              "end": 8774,
+              "commentStart": 8787,
+              "end": 8794,
               "moduleId": 0,
-              "start": 8767,
+              "start": 8787,
               "type": "TagDeclarator",
               "value": "circle1"
             },
@@ -10469,10 +10469,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 4.7500000002,
           "tag": {
-            "commentStart": 8767,
-            "end": 8774,
+            "commentStart": 8787,
+            "end": 8794,
             "moduleId": 0,
-            "start": 8767,
+            "start": 8787,
             "type": "TagDeclarator",
             "value": "circle1"
           },
@@ -10691,10 +10691,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 4.7500000002,
                   "tag": {
-                    "commentStart": 8767,
-                    "end": 8774,
+                    "commentStart": 8787,
+                    "end": 8794,
                     "moduleId": 0,
-                    "start": 8767,
+                    "start": 8787,
                     "type": "TagDeclarator",
                     "value": "circle1"
                   },
@@ -10786,10 +10786,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10302,
-                "end": 10309,
+                "commentStart": 10322,
+                "end": 10329,
                 "moduleId": 0,
-                "start": 10302,
+                "start": 10322,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10817,10 +10817,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.736842105469474,
                 "tag": {
-                  "commentStart": 10302,
-                  "end": 10309,
+                  "commentStart": 10322,
+                  "end": 10329,
                   "moduleId": 0,
-                  "start": 10302,
+                  "start": 10322,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -10908,10 +10908,10 @@ description: Variables in memory after executing helium-tank.kcl
               "id": "[uuid]",
               "sourceRange": [],
               "tag": {
-                "commentStart": 10302,
-                "end": 10309,
+                "commentStart": 10322,
+                "end": 10329,
                 "moduleId": 0,
-                "start": 10302,
+                "start": 10322,
                 "type": "TagDeclarator",
                 "value": "circle1"
               },
@@ -10939,10 +10939,10 @@ description: Variables in memory after executing helium-tank.kcl
                 ],
                 "radius": 4.736842105469474,
                 "tag": {
-                  "commentStart": 10302,
-                  "end": 10309,
+                  "commentStart": 10322,
+                  "end": 10329,
                   "moduleId": 0,
-                  "start": 10302,
+                  "start": 10322,
                   "type": "TagDeclarator",
                   "value": "circle1"
                 },
@@ -15700,22 +15700,6 @@ description: Variables in memory after executing helium-tank.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 0.1,
-            "ty": {
-              "type": "Default",
-              "len": "in",
-              "angle": "degrees"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "in",
       "sectional": false
     }
@@ -16093,10 +16077,10 @@ description: Variables in memory after executing helium-tank.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4207,
-            "end": 4218,
+            "commentStart": 4227,
+            "end": 4238,
             "moduleId": 0,
-            "start": 4207,
+            "start": 4227,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -16124,10 +16108,10 @@ description: Variables in memory after executing helium-tank.kcl
             ],
             "radius": 0.3846153847621795,
             "tag": {
-              "commentStart": 4207,
-              "end": 4218,
+              "commentStart": 4227,
+              "end": 4238,
               "moduleId": 0,
-              "start": 4207,
+              "start": 4227,
               "type": "TagDeclarator",
               "value": "innerCircle"
             },
@@ -16262,10 +16246,10 @@ description: Variables in memory after executing helium-tank.kcl
           ],
           "radius": 0.3846153847621795,
           "tag": {
-            "commentStart": 4207,
-            "end": 4218,
+            "commentStart": 4227,
+            "end": 4238,
             "moduleId": 0,
-            "start": 4207,
+            "start": 4227,
             "type": "TagDeclarator",
             "value": "innerCircle"
           },
@@ -16488,10 +16472,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.4166666668373077,
                   "tag": {
-                    "commentStart": 4077,
-                    "end": 4088,
+                    "commentStart": 4097,
+                    "end": 4108,
                     "moduleId": 0,
-                    "start": 4077,
+                    "start": 4097,
                     "type": "TagDeclarator",
                     "value": "outerCircle"
                   },
@@ -16535,10 +16519,10 @@ description: Variables in memory after executing helium-tank.kcl
                   ],
                   "radius": 0.3846153847621795,
                   "tag": {
-                    "commentStart": 4207,
-                    "end": 4218,
+                    "commentStart": 4227,
+                    "end": 4238,
                     "moduleId": 0,
-                    "start": 4207,
+                    "start": 4227,
                     "type": "TagDeclarator",
                     "value": "innerCircle"
                   },

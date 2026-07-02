@@ -1546,6 +1546,7 @@ describe('getSelectionTypeDisplayText', () => {
           kclManager: { ast, artifactGraph } as any,
           rustContext: { defaultPlanes: null } as any,
           wasmInstance: instance,
+          useSegmentsBasedRegions: false,
         }
       )
     ).resolves.toEqual({

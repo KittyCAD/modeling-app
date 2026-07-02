@@ -28,8 +28,15 @@ sketch018 = startSketchOn(extrude017, face = END)
        tag = $referenceEdge6,
      )
 
-extrude018 = extrude(sketch018, length = 0.15)
-  |> fillet(radius = 0.1, tags = [getOppositeEdge(referenceEdge6)])
+extrude018 = extrude(sketch018, length = 0.15, tagEnd = $capEnd001)
+  |> fillet(
+       radius = 0.1,
+       edges = [
+         {
+           sideFaces = [referenceEdge6, capEnd001]
+         }
+       ],
+     )
 
 // Draw Bolt Pattern on J3 Robot Arm
 sketch019 = startSketchOn(extrude018, face = END)

@@ -63,11 +63,11 @@ mountingPlateSketch = startSketchOn(XY)
 mountingPlate = extrude(mountingPlateSketch, length = thickness)
   |> chamfer(
        length = chamferLength,
-       tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
+       edges = [
+         { sideFaces = [edge1, edge2] },
+         { sideFaces = [edge2, edge3] },
+         { sideFaces = [edge3, edge4] },
+         { sideFaces = [edge1, edge4] }
        ],
      )
 
@@ -101,9 +101,9 @@ fn cube(pos, scale) {
 
 part001 = cube(pos = [0, 0], scale = 20)
   |> close(tag = $line1)
-  |> extrude(length = 20)
+  |> extrude(length = 20, tagEnd = $capEnd001)
   // We tag the chamfer to reference it later.
-  |> chamfer(length = 10, tags = [getOppositeEdge(line1)], tag = $chamfer1)
+  |> chamfer(length = 10, edges = [{ sideFaces = [line1, capEnd001] }], tag = $chamfer1)
 
 sketch001 = startSketchOn(part001, face = chamfer1)
   |> startProfile(at = [10, 10])
@@ -144,8 +144,8 @@ fn cube(pos, scale) {
 
 part001 = cube(pos = [0, 0], scale = 20)
   |> close(tag = $line1)
-  |> extrude(length = 20)
-  |> chamfer(length = 10, angle = 30deg, tags = [getOppositeEdge(line1)])
+  |> extrude(length = 20, tagEnd = $capEnd001)
+  |> chamfer(length = 10, angle = 30deg, edges = [{ sideFaces = [line1, capEnd001] }])
 
 ```
 
@@ -184,12 +184,12 @@ block = extrude(region(point = [3mm, 2mm], sketch = baseProfile), length = 3mm, 
 tabProfile = startSketchOn(block, face = top)
   |> startProfile(at = [1mm, 1mm])
   |> line(end = [4mm, 0mm], tag = $tabEdge)
-  |> line(end = [0mm, 1mm])
+  |> line(end = [0mm, 1mm], tag = $seg01)
   |> line(end = [-4mm, 0mm])
   |> close()
 
 blockWithTab = extrude(tabProfile, length = 1mm)
-chamfered = chamfer(blockWithTab, length = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+chamfered = chamfer(blockWithTab, length = 0.5mm, edges = [{ sideFaces = [tabEdge, seg01] }])
 
 ```
 

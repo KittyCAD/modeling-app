@@ -16,10 +16,30 @@ removableSticker = startSketchOn(-XY)
   |> appearance(color = "#021b55")
   |> chamfer(
        length = 3,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001)
+       edges = [
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentB001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB001,
+             rectangleSegmentC001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentD001
+           ]
+         }
        ],
      )

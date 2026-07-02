@@ -60,11 +60,11 @@ mountingPlateSketch = startSketchOn(XY)
 mountingPlate = extrude(mountingPlateSketch, length = thickness)
   |> fillet(
        radius = filletRadius,
-       tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
+       edges = [
+         { sideFaces = [edge1, edge2] },
+         { sideFaces = [edge2, edge3] },
+         { sideFaces = [edge3, edge4] },
+         { sideFaces = [edge1, edge4] }
        ],
      )
 
@@ -101,11 +101,11 @@ mountingPlate = extrude(mountingPlateSketch, length = thickness)
   |> fillet(
        radius = filletRadius,
        tolerance = 0.000001,
-       tags = [
-         getNextAdjacentEdge(edge1),
-         getNextAdjacentEdge(edge2),
-         getNextAdjacentEdge(edge3),
-         getNextAdjacentEdge(edge4)
+       edges = [
+         { sideFaces = [edge1, edge2] },
+         { sideFaces = [edge2, edge3] },
+         { sideFaces = [edge3, edge4] },
+         { sideFaces = [edge1, edge4] }
        ],
      )
 
@@ -146,12 +146,12 @@ block = extrude(region(point = [3mm, 2mm], sketch = blockProfile), length = 3, t
 tabProfile = startSketchOn(block, face = top)
   |> startProfile(at = [1mm, 1mm])
   |> line(end = [4mm, 0mm], tag = $tabEdge)
-  |> line(end = [0mm, 1mm])
+  |> line(end = [0mm, 1mm], tag = $seg01)
   |> line(end = [-4mm, 0mm])
   |> close()
 
 blockWithTab = extrude(tabProfile, length = 1mm)
-filletedBlock = fillet(blockWithTab, radius = 0.5mm, tags = [getNextAdjacentEdge(tabEdge)])
+filletedBlock = fillet(blockWithTab, radius = 0.5mm, edges = [{ sideFaces = [tabEdge, seg01] }])
 
 ```
 

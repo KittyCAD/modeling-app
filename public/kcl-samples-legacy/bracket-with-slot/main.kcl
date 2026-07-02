@@ -39,19 +39,19 @@ bracketBodySolid = extrude(
 )
 
 // bend fillets
-insideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg01, seg02]), radius = insideBendRadius)
-outsideBendFillet = fillet(bracketBodySolid, tags = getCommonEdge(faces = [seg03, seg04]), radius = outsideBendRadius)
+insideBendFillet = fillet(bracketBodySolid, radius = insideBendRadius, edges = [{ sideFaces = [seg01, seg02] }])
+outsideBendFillet = fillet(bracketBodySolid, radius = outsideBendRadius, edges = [{ sideFaces = [seg03, seg04] }])
 
 // end rounds
 freeEndCornerFillets = fillet(
   bracketBodySolid,
-  tags = [
-    getCommonEdge(faces = [seg05, capEnd]),
-    getCommonEdge(faces = [seg05, capStart]),
-    getCommonEdge(faces = [seg06, capEnd]),
-    getCommonEdge(faces = [seg06, capStart])
-  ],
   radius = halfBracketWidth,
+  edges = [
+    { sideFaces = [seg05, capEnd] },
+    { sideFaces = [seg05, capStart] },
+    { sideFaces = [seg06, capEnd] },
+    { sideFaces = [seg06, capStart] }
+  ],
 )
 
 // tab hole
@@ -69,12 +69,12 @@ slotWidth = fastenerHoleDiameter
 slotOverallLength = fastenerHoleDiameter * 3
 slotSketch = startSketchOn(XY)
 slotProfile = startProfile(
-       slotSketch,
-       at = [
-         slotCenterOffsetFromBend,
-         -slotWidth / 2
-       ],
-     )
+  slotSketch,
+  at = [
+    slotCenterOffsetFromBend,
+    -slotWidth / 2
+  ],
+)
   |> xLine(length = -slotOverallLength)
   |> tangentialArc(end = [0, slotWidth], tag = $seg08)
   |> angledLine(angle = tangentToEnd(seg08), length = slotOverallLength)

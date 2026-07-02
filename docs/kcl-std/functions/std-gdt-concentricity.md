@@ -111,10 +111,12 @@ controlledSketch = sketch(on = XY) {
 }
 
 controlledCylinder = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 10mm, tagEnd = $top)
-topEdge = getCommonEdge(faces = [
-  controlledCylinder.sketch.tags.perimeter,
-  top
-])
+topEdge = {
+  sideFaces = [
+    controlledCylinder.sketch.tags.perimeter,
+    top
+  ]
+}
 
 gdt::datum(
   face = datumCylinder.sketch.tags.perimeter,

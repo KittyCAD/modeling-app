@@ -187,15 +187,55 @@ startSketchOn(motorHousing, face = END)
   |> appearance(color = "#a55e2c")
   |> fillet(
        radius = abs(fanSize - mountingHoleSpacing) / 2,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001),
-         getNextAdjacentEdge(rectangleSegmentA002),
-         getNextAdjacentEdge(rectangleSegmentB002),
-         getNextAdjacentEdge(rectangleSegmentC002),
-         getNextAdjacentEdge(rectangleSegmentD002)
+       edges = [
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentB001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB001,
+             rectangleSegmentC001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentB002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB002,
+             rectangleSegmentC002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC002,
+             rectangleSegmentD002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentD002
+           ]
+         }
        ],
      )
 `
@@ -345,15 +385,55 @@ startSketchOn(motorHousing, face = END)
   |> appearance(color = "#800080") // Changed color to purple
   |> fillet(
        radius = abs(fanSize - mountingHoleSpacing) / 2,
-       tags = [
-         getNextAdjacentEdge(rectangleSegmentA001),
-         getNextAdjacentEdge(rectangleSegmentB001),
-         getNextAdjacentEdge(rectangleSegmentC001),
-         getNextAdjacentEdge(rectangleSegmentD001),
-         getNextAdjacentEdge(rectangleSegmentA002),
-         getNextAdjacentEdge(rectangleSegmentB002),
-         getNextAdjacentEdge(rectangleSegmentC002),
-         getNextAdjacentEdge(rectangleSegmentD002)
+       edges = [
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentB001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB001,
+             rectangleSegmentC001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA001,
+             rectangleSegmentD001
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentB002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentB002,
+             rectangleSegmentC002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentC002,
+             rectangleSegmentD002
+           ]
+         },
+         {
+           sideFaces = [
+             rectangleSegmentA002,
+             rectangleSegmentD002
+           ]
+         }
        ],
      )
 `
@@ -456,9 +536,15 @@ loft(crossSections)
 topFacePlane = offsetPlane(XY, offset = 4)
 motorBody = startSketchOn(topFacePlane)
   |> circle(center = [0, 0], radius = 10, tag = $seg04)
-  |> extrude(length = 17)
+  |> extrude(length = 17, tagEnd = $capEnd001, tagStart = $capStart001)
   |> appearance(color = "#021b55")
-  |> fillet(radius = 2, tags = [getOppositeEdge(seg04), seg04])
+  |> fillet(
+       radius = 2,
+       edges = [
+         { sideFaces = [seg04, capEnd001] },
+         { sideFaces = [seg04, capStart001] }
+       ],
+     )
 startSketchOn(offsetPlane(XY, offset = 21))
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 3.8)
@@ -563,9 +649,15 @@ loft(crossSections)
 topFacePlane = offsetPlane(XY, offset = 4)
 motorBody = startSketchOn(topFacePlane)
   |> circle(center = [0, 0], radius = 10, tag = $seg04)
-  |> extrude(length = 17)
+  |> extrude(length = 17, tagEnd = $capEnd001, tagStart = $capStart001)
   |> appearance(color = "#021b55")
-  |> fillet(radius = 2, tags = [getOppositeEdge(seg04), seg04])
+  |> fillet(
+       radius = 2,
+       edges = [
+         { sideFaces = [seg04, capEnd001] },
+         { sideFaces = [seg04, capStart001] }
+       ],
+     )
 startSketchOn(offsetPlane(XY, offset = 21))
   |> circle(center = [0, 0], radius = 1)
   |> extrude(length = 3.8)

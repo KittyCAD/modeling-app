@@ -1,14 +1,7 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[46, 98, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    3["Segment<br>[46, 98, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    4[Solid2d]
-  end
-  subgraph path10 [Path]
-    10["Path<br>[140, 188, 0]<br>Consumed: true"]
+  subgraph path6 [Path]
+    6["Path<br>[140, 188, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
     11["Segment<br>[194, 240, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -20,70 +13,72 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     15["Segment<br>[421, 428, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    16[Solid2d]
+    17[Solid2d]
   end
-  1["Plane<br>[23, 40, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  5["Sweep Extrusion<br>[104, 123, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  6[Wall]
+  subgraph path7 [Path]
+    7["Path<br>[46, 98, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    16["Segment<br>[46, 98, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    18[Solid2d]
+  end
+  1["Cap End"]
     %% face_code_ref=Missing NodePath
-  7["Cap Start"]
+  2["Cap End"]
     %% face_code_ref=Missing NodePath
-  8["Cap End"]
+  3["Cap Start"]
     %% face_code_ref=Missing NodePath
-  9["Plane<br>[153, 170, 0]"]
+  4["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  5["CompositeSolid Subtract<br>[467, 499, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  8["Plane<br>[153, 170, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
-  17["Sweep Extrusion<br>[434, 454, 0]<br>Consumed: true"]
+  9["Plane<br>[23, 40, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  10["PrimitiveFace<br>[513, 550, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  19["Sweep Extrusion<br>[104, 123, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  20["Sweep Extrusion<br>[434, 454, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-  18[Wall]
-    %% face_code_ref=Missing NodePath
-  19[Wall]
-    %% face_code_ref=Missing NodePath
-  20[Wall]
-    %% face_code_ref=Missing NodePath
   21[Wall]
     %% face_code_ref=Missing NodePath
-  22["Cap Start"]
+  22[Wall]
     %% face_code_ref=Missing NodePath
-  23["Cap End"]
+  23[Wall]
     %% face_code_ref=Missing NodePath
-  24["CompositeSolid Subtract<br>[467, 499, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  25["PrimitiveFace<br>[513, 550, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  2 ---- 5
-  2 --- 24
-  3 --- 6
-  3 x--> 7
-  5 --- 6
-  5 --- 7
-  5 --- 8
-  9 --- 10
-  10 --- 11
-  10 --- 12
-  10 --- 13
-  10 --- 14
-  10 --- 15
-  10 --- 16
-  10 ---- 17
-  10 --- 24
-  11 --- 18
-  11 x--> 22
-  12 --- 19
-  12 x--> 22
-  13 --- 20
-  13 x--> 22
-  14 --- 21
-  14 x--> 22
-  17 --- 18
-  17 --- 19
-  17 --- 20
-  17 --- 21
-  17 --- 22
-  17 --- 23
-  24 <--x 25
+  24[Wall]
+    %% face_code_ref=Missing NodePath
+  25[Wall]
+    %% face_code_ref=Missing NodePath
+  19 --- 1
+  20 --- 2
+  19 --- 3
+  20 --- 4
+  6 --- 5
+  7 --- 5
+  5 <--x 10
+  8 --- 6
+  6 --- 11
+  6 --- 12
+  6 --- 13
+  6 --- 14
+  6 --- 15
+  6 --- 17
+  6 ---- 20
+  9 --- 7
+  7 --- 16
+  7 --- 18
+  7 ---- 19
+  11 --- 21
+  12 --- 22
+  13 --- 23
+  14 --- 24
+  16 --- 25
+  19 --- 25
+  20 --- 21
+  20 --- 22
+  20 --- 23
+  20 --- 24
 ```

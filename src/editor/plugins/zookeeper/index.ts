@@ -42,6 +42,7 @@ type ZookeeperPatchEffectProps = {
   patch: ZookeeperEditPatch
   direction: ZookeeperPatchReplayDirection
   activeFilePath?: string
+  snapshotFiles?: readonly ZookeeperSnapshotFileReplay[]
 }
 
 type ZookeeperPatchFileReplay = {
@@ -81,6 +82,8 @@ export type PreparedZookeeperPatchFileReplay = {
   nextContent: string | null
 }
 
+export type ZookeeperSnapshotFileReplay = PreparedZookeeperPatchFileReplay
+
 type ZookeeperPatchReplayOptions = {
   fileContentOverrides?: Map<string, string>
   alreadyReplayedFilePaths?: Set<string>
@@ -109,10 +112,12 @@ export function zookeeperEditPatchHistoryEvent({
   projectPath,
   patch,
   activeFilePath,
+  snapshotFiles,
 }: {
   projectPath: string
   patch: ZookeeperEditPatch
   activeFilePath?: string
+  snapshotFiles?: readonly ZookeeperSnapshotFileReplay[]
 }): TransactionSpecNoChanges {
   return {
     effects: zookeeperEditPatchEffect.of({
@@ -120,6 +125,7 @@ export function zookeeperEditPatchHistoryEvent({
       patch,
       direction: 'redo',
       activeFilePath,
+      snapshotFiles,
     }),
     annotations: [zookeeperPatchIgnoreAnnotationType.of(true)],
   }
@@ -251,18 +257,31 @@ async function replayZookeeperEditPatch({
     replayFiles: readonly PreparedZookeeperPatchFileReplay[]
   ) => void | Promise<void>
 }) {
-  const replayFiles = getZookeeperPatchFileReplays(effectProps)
-  if (isErr(replayFiles)) {
-    return Promise.reject(replayFiles)
-  }
   const alreadyReplayedFilePaths = new Set<string>()
   if (effectProps.activeFilePath === kclManager.path) {
     alreadyReplayedFilePaths.add(kclManager.path)
   }
-  const preparedReplayFiles = await prepareZookeeperPatchReplay(replayFiles, {
+  const replayOptions = {
     alreadyReplayedFilePaths,
     fileContentOverrides: new Map([[kclManager.path, kclManager.code]]),
-  })
+  }
+  let preparedReplayFiles: PreparedZookeeperPatchFileReplay[]
+  if (effectProps.snapshotFiles?.length) {
+    preparedReplayFiles = await prepareZookeeperSnapshotReplay(
+      effectProps.snapshotFiles,
+      effectProps.direction,
+      replayOptions
+    )
+  } else {
+    const replayFiles = getZookeeperPatchFileReplays(effectProps)
+    if (isErr(replayFiles)) {
+      return Promise.reject(replayFiles)
+    }
+    preparedReplayFiles = await prepareZookeeperPatchReplay(
+      replayFiles,
+      replayOptions
+    )
+  }
   const currentFileReplay = preparedReplayFiles.find(
     (replayFile) => replayFile.absolutePath === kclManager.path
   )
@@ -377,6 +396,71 @@ function getZookeeperPatchFileReplays({
   }
 
   return replays
+}
+
+async function prepareZookeeperSnapshotReplay(
+  snapshotFiles: readonly ZookeeperSnapshotFileReplay[],
+  direction: ZookeeperPatchReplayDirection,
+  {
+    alreadyReplayedFilePaths,
+    fileContentOverrides,
+  }: ZookeeperPatchReplayOptions = {}
+): Promise<PreparedZookeeperPatchFileReplay[]> {
+  const preparedReplayFiles: PreparedZookeeperPatchFileReplay[] = []
+
+  for (const snapshotFile of snapshotFiles) {
+    const previousContent =
+      direction === 'undo'
+        ? snapshotFile.nextContent
+        : snapshotFile.previousContent
+    const nextContent =
+      direction === 'undo'
+        ? snapshotFile.previousContent
+        : snapshotFile.nextContent
+    const diskContent = await readTextFileIfExists(snapshotFile.absolutePath)
+    const currentContent =
+      fileContentOverrides?.get(snapshotFile.absolutePath) ?? diskContent
+
+    if (isZookeeperReplayContentSame(currentContent, previousContent)) {
+      preparedReplayFiles.push({
+        relativePath: snapshotFile.relativePath,
+        absolutePath: snapshotFile.absolutePath,
+        previousContent,
+        nextContent,
+      })
+      continue
+    }
+
+    if (
+      alreadyReplayedFilePaths?.has(snapshotFile.absolutePath) &&
+      isZookeeperReplayContentSame(currentContent, nextContent)
+    ) {
+      preparedReplayFiles.push({
+        relativePath: snapshotFile.relativePath,
+        absolutePath: snapshotFile.absolutePath,
+        previousContent: currentContent,
+        nextContent: currentContent,
+      })
+      continue
+    }
+
+    return Promise.reject(
+      zookeeperPatchConflictError(snapshotFile.relativePath)
+    )
+  }
+
+  return preparedReplayFiles
+}
+
+function isZookeeperReplayContentSame(
+  currentContent: string | null,
+  expectedContent: string | null
+) {
+  if (currentContent === null || expectedContent === null) {
+    return currentContent === expectedContent
+  }
+
+  return isCodeTheSame(currentContent, expectedContent)
 }
 
 function getZookeeperPatchReplayContents(

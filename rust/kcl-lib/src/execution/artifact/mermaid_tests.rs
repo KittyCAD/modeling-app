@@ -1,4 +1,5 @@
 //! Test-only helpers for rendering the artifact graph as Mermaid diagrams.
+use std::collections::BTreeMap;
 use std::fmt::Write;
 
 use super::*;
@@ -7,7 +8,7 @@ type NodeId = u32;
 
 type Edges = IndexMap<(NodeId, NodeId), EdgeInfo>;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct EdgeInfo {
     direction: EdgeDirection,
     flow: EdgeFlow,
@@ -256,8 +257,11 @@ impl ArtifactGraph {
         let mut next_id = 1_u32;
         let mut stable_id_map = AHashMap::default();
 
-        for id in self.map.keys() {
-            stable_id_map.insert(*id, next_id);
+        let mut artifact_ids = self.map.keys().copied().collect::<Vec<_>>();
+        artifact_ids.sort_by_key(|id| self.flowchart_sort_key(*id));
+
+        for id in artifact_ids {
+            stable_id_map.insert(id, next_id);
             next_id = next_id.checked_add(1).unwrap();
         }
 
@@ -284,7 +288,10 @@ impl ArtifactGraph {
         let mut groups = IndexMap::new();
         let mut ungrouped = Vec::new();
 
-        for artifact in self.map.values() {
+        let mut artifacts = self.map.values().collect::<Vec<_>>();
+        artifacts.sort_by_key(|artifact| *stable_id_map.get(&artifact.id()).unwrap());
+
+        for artifact in artifacts {
             let id = artifact.id();
 
             let grouped = match artifact {
@@ -323,10 +330,14 @@ impl ArtifactGraph {
             }
         }
 
-        for (group_id, artifact_ids) in groups {
+        let mut groups = groups.into_iter().collect::<Vec<_>>();
+        groups.sort_by_key(|(group_id, _)| *stable_id_map.get(group_id).unwrap());
+
+        for (group_id, mut artifact_ids) in groups {
             let group_id = *stable_id_map.get(&group_id).unwrap();
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
             let indented = format!("{prefix}  ");
+            artifact_ids.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
             for artifact_id in artifact_ids {
                 let artifact = self.map.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
@@ -335,6 +346,7 @@ impl ArtifactGraph {
             writeln!(output, "{prefix}end")?;
         }
 
+        ungrouped.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
         for artifact_id in ungrouped {
             let artifact = self.map.get(&artifact_id).unwrap();
             let id = *stable_id_map.get(&artifact_id).unwrap();
@@ -342,6 +354,74 @@ impl ArtifactGraph {
         }
 
         Ok(())
+    }
+
+    fn flowchart_sort_key(&self, id: ArtifactId) -> String {
+        let Some(artifact) = self.map.get(&id) else {
+            return String::new();
+        };
+
+        let mut neighbors = artifact
+            .back_edges()
+            .into_iter()
+            .chain(artifact.child_ids())
+            .filter_map(|id| self.map.get(&id))
+            .map(Self::flowchart_basic_sort_key)
+            .collect::<Vec<_>>();
+        neighbors.sort();
+
+        format!(
+            "{}|neighbors={}",
+            Self::flowchart_basic_sort_key(artifact),
+            neighbors.join(",")
+        )
+    }
+
+    fn flowchart_basic_sort_key(artifact: &Artifact) -> String {
+        fn code_ref_key(code_ref: &CodeRef) -> String {
+            let range = code_ref.range;
+            format!("{}:{}:{}", range.module_id().as_usize(), range.start(), range.end())
+        }
+
+        match artifact {
+            Artifact::CompositeSolid(composite_solid) => {
+                format!(
+                    "CompositeSolid:{:?}:{}",
+                    composite_solid.sub_type,
+                    code_ref_key(&composite_solid.code_ref)
+                )
+            }
+            Artifact::Plane(plane) => format!("Plane:{}", code_ref_key(&plane.code_ref)),
+            Artifact::Path(path) => format!("Path:{:?}:{}", path.sub_type, code_ref_key(&path.code_ref)),
+            Artifact::Segment(segment) => format!("Segment:{}", code_ref_key(&segment.code_ref)),
+            Artifact::Solid2d(_) => "Solid2d".to_owned(),
+            Artifact::PrimitiveFace(face) => format!("PrimitiveFace:{}", code_ref_key(&face.code_ref)),
+            Artifact::PrimitiveEdge(edge) => format!("PrimitiveEdge:{}", code_ref_key(&edge.code_ref)),
+            Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
+                format!("StartSketchOnFace:{}", code_ref_key(code_ref))
+            }
+            Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
+                format!("StartSketchOnPlane:{}", code_ref_key(code_ref))
+            }
+            Artifact::SketchBlock(SketchBlock { code_ref, .. }) => format!("SketchBlock:{}", code_ref_key(code_ref)),
+            Artifact::SketchBlockConstraint(constraint) => {
+                format!(
+                    "SketchBlockConstraint:{:?}:{}",
+                    constraint.constraint_type,
+                    code_ref_key(&constraint.code_ref)
+                )
+            }
+            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => format!("PlaneOfFace:{}", code_ref_key(code_ref)),
+            Artifact::Sweep(sweep) => format!("Sweep:{:?}:{}", sweep.sub_type, code_ref_key(&sweep.code_ref)),
+            Artifact::Wall(_) => "Wall".to_owned(),
+            Artifact::Cap(cap) => format!("Cap:{:?}", cap.sub_type),
+            Artifact::EdgeCut(edge_cut) => {
+                format!("EdgeCut:{:?}:{}", edge_cut.sub_type, code_ref_key(&edge_cut.code_ref))
+            }
+            Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
+            Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
+            Artifact::Pattern(pattern) => format!("Pattern:{:?}:{}", pattern.sub_type, code_ref_key(&pattern.code_ref)),
+        }
     }
 
     fn flowchart_node<W: Write>(
@@ -597,8 +677,66 @@ impl ArtifactGraph {
             }
         }
 
-        // Output the edges.
         edges.par_sort_by(|ak, _, bk, _| if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) });
+        let mut edges = edges.into_iter().collect::<Vec<_>>();
+
+        let reverse_stable_id_map = stable_id_map
+            .iter()
+            .map(|(artifact_id, node_id)| (*node_id, *artifact_id))
+            .collect::<AHashMap<_, _>>();
+        let node_key = |node_id: NodeId| {
+            reverse_stable_id_map
+                .get(&node_id)
+                .and_then(|artifact_id| self.map.get(artifact_id))
+                .map(Self::flowchart_basic_sort_key)
+                .unwrap_or_default()
+        };
+
+        // Generated topology can contain multiple nodes that are identical in
+        // the rendered graph. Pair those duplicate source/target classes by
+        // node ID so symmetric engine response ordering does not flip snapshots.
+        let mut edge_groups = BTreeMap::<String, Vec<usize>>::new();
+        for (index, ((source_id, target_id), edge)) in edges.iter().enumerate() {
+            edge_groups
+                .entry(format!(
+                    "{}|{}|{:?}|{:?}|{:?}",
+                    node_key(*source_id),
+                    node_key(*target_id),
+                    edge.direction,
+                    edge.flow,
+                    edge.kind
+                ))
+                .or_default()
+                .push(index);
+        }
+        for group in edge_groups.values() {
+            if group.len() < 2 {
+                continue;
+            }
+
+            let mut source_ids = group.iter().map(|index| edges[*index].0.0).collect::<Vec<_>>();
+            let mut target_ids = group.iter().map(|index| edges[*index].0.1).collect::<Vec<_>>();
+            source_ids.sort_unstable();
+            source_ids.dedup();
+            target_ids.sort_unstable();
+            target_ids.dedup();
+
+            if source_ids.len() != group.len() || target_ids.len() != group.len() {
+                continue;
+            }
+
+            let mut group = group.clone();
+            group.sort_by_key(|index| edges[*index].0.0);
+            for (index, (source_id, target_id)) in group.into_iter().zip(source_ids.into_iter().zip(target_ids)) {
+                edges[index].0 = (source_id, target_id);
+            }
+        }
+
+        edges.sort_by(|a, b| {
+            let ak = a.0;
+            let bk = b.0;
+            if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) }
+        });
         for ((source_id, target_id), edge) in edges {
             let extra = match edge.kind {
                 // Extra length.  This is needed to make the graph layout more

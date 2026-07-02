@@ -27,12 +27,12 @@ crashBoxOuterWidth = 400
 
 sketchCrashBox = startSketchOn(XY)
 profileCrashBoxOuter = startProfile(
-       sketchCrashBox,
-       at = [
-         -crashBoxOuterWidth / 2,
-         -crashBoxOuterWidth / 2
-       ],
-     )
+  sketchCrashBox,
+  at = [
+    -crashBoxOuterWidth / 2,
+    -crashBoxOuterWidth / 2
+  ],
+)
   |> angledLine(angle = 0deg, length = crashBoxOuterWidth, tag = $rectangleSegmentA001)
   |> angledLine(angle = segAng(rectangleSegmentA001) + 90deg, length = crashBoxOuterWidth, tag = $seg03)
   |> angledLine(angle = segAng(rectangleSegmentA001), length = -segLen(rectangleSegmentA001), tag = $seg01)
@@ -45,13 +45,17 @@ crashBoxSolid = extrude(profileCrashBoxOuter, length = crashBoxExtrudeLength)
 // Optional exterior edge softening
 filletCrashBoxCorners = fillet(
   crashBoxSolid,
-  tags = [
-    getCommonEdge(faces = [seg01, seg02]),
-    getCommonEdge(faces = [rectangleSegmentA001, seg02]),
-    getCommonEdge(faces = [rectangleSegmentA001, seg03]),
-    getCommonEdge(faces = [seg03, seg01])
-  ],
   radius = 60,
+  edges = [
+    { sideFaces = [seg01, seg02] },
+    {
+      sideFaces = [rectangleSegmentA001, seg02]
+    },
+    {
+      sideFaces = [rectangleSegmentA001, seg03]
+    },
+    { sideFaces = [seg03, seg01] }
+  ],
 )
 
 // Shell the crash box from both ends to create a constant wall thickness
@@ -82,11 +86,11 @@ beamSolid = extrude(
 // Ease the beam pocket edges for a better fit
 filletBeamEnds = fillet(
   beamSolid,
-  tags = [
-    getCommonEdge(faces = [seg04, capStart001]),
-    getCommonEdge(faces = [seg04, capEnd001])
-  ],
   radius = 80,
+  edges = [
+    { sideFaces = [seg04, capStart001] },
+    { sideFaces = [seg04, capEnd001] }
+  ],
 )
 
 // -----------------------------

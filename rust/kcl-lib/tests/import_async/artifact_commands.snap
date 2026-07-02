@@ -843,15 +843,6 @@ description: Artifact commands import_async.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_adjacency_info",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "set_object_transform",
         "object_id": "[uuid]",
         "transforms": [

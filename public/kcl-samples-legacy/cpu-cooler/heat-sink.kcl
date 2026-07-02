@@ -130,11 +130,11 @@ mountingBracket = startSketchOn(XZ)
      )
   |> fillet(
        radius = 2,
-       tags = [
-         getCommonEdge(faces = [seg07, capEnd001]),
-         getCommonEdge(faces = [seg08, capEnd001]),
-         getCommonEdge(faces = [seg08, capStart001]),
-         getCommonEdge(faces = [seg07, capStart001])
+       edges = [
+         { sideFaces = [seg07, capEnd001] },
+         { sideFaces = [seg08, capEnd001] },
+         { sideFaces = [seg08, capStart001] },
+         { sideFaces = [seg07, capStart001] }
        ],
      )
 
@@ -142,12 +142,7 @@ mountingBracket = startSketchOn(XZ)
 thruHole = startSketchOn(mountingBracket, face = seg05E)
   |> circle(center = [70, 0], radius = 3.4 / 2, tag = $seg06E)
   |> extrude(length = -sheetThickness)
-  |> chamfer(
-       length = sheetThickness * 0.75,
-       tags = [
-         getCommonEdge(faces = [seg05E, seg06E])
-       ],
-     )
+  |> chamfer(length = sheetThickness * 0.75, edges = [{ sideFaces = [seg05E, seg06E] }])
 
   // Duplicate the bracket to the other side of the heat sink base
   |> patternCircular3d(

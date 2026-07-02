@@ -27,23 +27,18 @@ hub = startSketchOn(XY)
        tagStart = $capStart001,
      )
   |> fillet(
-       tags = [
-         getCommonEdge(faces = [seg01, capEnd001]),
-         getCommonEdge(faces = [seg01, capStart001])
-       ],
        radius = hubThickness / 6,
+       edges = [
+         { sideFaces = [seg01, capEnd001] },
+         { sideFaces = [seg01, capStart001] }
+       ],
      )
 
 // Bore a central hole from the hub. Chamfer the interior edges
 hubBore = startSketchOn(hub, face = END)
   |> circle(diameter = hubDiameter / 4, tag = $seg02)
   |> extrude(length = -hubThickness)
-  |> chamfer(
-       tags = [
-         getCommonEdge(faces = [capEnd001, seg02])
-       ],
-       length = hubThickness / 10,
-     )
+  |> chamfer(length = hubThickness / 10, edges = [{ sideFaces = [capEnd001, seg02] }])
 
 // Sketch the design space of each propeller blade, and revolve around the neutral axis
 bladeRevolve = startSketchOn(YZ)

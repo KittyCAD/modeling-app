@@ -292,7 +292,7 @@ cylinder2 = circle(sketch004, center = [0.5, 0.5], radius = 0.25)
 // extrude a circle to a tagged edge (cyan cylinder)
 sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
 cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
-  |> extrude(to = getCommonEdge(faces = [facetag0, facetag1]))
+  |> extrude(to = { sideFaces = [facetag0, facetag1] })
   |> appearance(color = '#00FFFF')
 
 // extrude a circle to a plane (magenta cylinder)
@@ -766,4 +766,3 @@ extrude002 = extrude(
   touch-action="pan-y"
 >
 </model-viewer>
-

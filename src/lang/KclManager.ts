@@ -12,6 +12,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { hydrateEdgeRefactorMetadata } from '@src/lang/lintRefactorActions'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
@@ -83,7 +84,6 @@ import {
   redoDepth,
   undoDepth,
 } from '@codemirror/commands'
-import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
@@ -1244,9 +1244,13 @@ export class KclManager extends File {
     if (!this.artifactGraph?.size) return false
 
     const instance = await this.wasmInstancePromise
+    const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
+      edgeRefactorMetadata: execState.edgeRefactorMetadata,
+      engineCommandManager: this.engineCommandManager,
+    })
     const newSource = refactorZ0006Unified(
       this.ast,
-      execState.edgeRefactorMetadata ?? [],
+      hydratedEdgeRefactorMetadata,
       execState.directTagFilletMetadata ?? [],
       this.artifactGraph,
       instance
@@ -2423,6 +2427,7 @@ export class KclManager extends File {
           edgeRefactorMetadata: execState.edgeRefactorMetadata,
           directTagFilletMetadata: execState.directTagFilletMetadata,
           artifactGraph: execState.artifactGraph,
+          engineCommandManager: this.engineCommandManager,
         })
       )
       if (this.sceneEntitiesManager) {
@@ -2856,51 +2861,7 @@ export class KclManager extends File {
   get copilotEnabled(): boolean {
     return this._copilotEnabled
   }
-  // Invoked when editorView is created and each time when it is updated (eg. user is sketching)..
-  // setEditorView(editorView: EditorView) {
-  //   this.overrideTreeHighlighterUpdateForPerformanceTracking()
-  // }
 
-  /** TODO: Investigate if this is still needed in the new world */
-  overrideTreeHighlighterUpdateForPerformanceTracking() {
-    // @ts-ignore
-    this._editorView?.plugins.forEach((e) => {
-      let sawATreeDiff = false
-      // we cannot use <>.constructor.name since it will get destroyed
-      // when packaging the application.
-      const isTreeHighlightPlugin =
-        e?.value &&
-        e.value?.hasOwnProperty('tree') &&
-        e.value?.hasOwnProperty('decoratedTo') &&
-        e.value?.hasOwnProperty('decorations')
-      if (isTreeHighlightPlugin) {
-        let originalUpdate = e.value.update
-        // @ts-ignore
-        function performanceTrackingUpdate(args) {
-          /**
-           * TreeHighlighter.update will be called multiple times on start up.
-           * We do not want to track the highlight performance of an empty update.
-           * mark the syntax highlight one time when the new tree comes in with the
-           * initial code
-           */
-          const treeIsDifferent =
-            // @ts-ignore
-            !sawATreeDiff && this.tree !== syntaxTree(args.state)
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/willSyntaxHighlight')
-          }
-          // Call the original function
-          // @ts-ignore
-          originalUpdate.apply(this, [args])
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/didSyntaxHighlight')
-            sawATreeDiff = true
-          }
-        }
-        e.value.update = performanceTrackingUpdate
-      }
-    })
-  }
   get isAllTextSelected() {
     return this._isAllTextSelected
   }
