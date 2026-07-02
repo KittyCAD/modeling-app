@@ -128,8 +128,8 @@ describe('copilotPlugin', () => {
     }
 
     view = createCopilotView({
-      doc: 'lengt',
-      selection: 5,
+      doc: '',
+      selection: 0,
       client,
       extensions: [
         autocompletion({
@@ -139,7 +139,7 @@ describe('copilotPlugin', () => {
     })
     view.focus()
 
-    dispatchInput(view, 5, 'h')
+    dispatchInput(view, 0, 'length')
     await vi.advanceTimersByTimeAsync(600)
 
     expect(view.state.doc.toString()).toBe('length=)')
@@ -170,13 +170,13 @@ describe('copilotPlugin', () => {
     })
 
     view = createCopilotView({
-      doc: 'fo',
-      selection: 2,
+      doc: '',
+      selection: 0,
       client,
     })
     view.focus()
 
-    dispatchInput(view, 2, 'o')
+    dispatchInput(view, 0, 'foo')
     await vi.advanceTimersByTimeAsync(600)
 
     expect(view.state.doc.toString()).toBe('foo =)')
@@ -205,13 +205,13 @@ describe('copilotPlugin', () => {
     })
 
     view = createCopilotView({
-      doc: 'fo',
-      selection: 2,
+      doc: '',
+      selection: 0,
       client,
     })
     view.focus()
 
-    dispatchInput(view, 2, 'o')
+    dispatchInput(view, 0, 'foo')
     await vi.advanceTimersByTimeAsync(600)
 
     expect(view.state.doc.toString()).toBe('foobar')
