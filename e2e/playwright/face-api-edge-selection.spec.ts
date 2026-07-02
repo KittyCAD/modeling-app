@@ -284,8 +284,21 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
+    await page.evaluate(() => {
+      window.engineCommandManager?.clearCommandLogs()
+    })
     await editor.replaceCode('', testCode)
-    await scene.settled(cmdBar)
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() =>
+            window.engineCommandManager?.commandLogs.some(
+              (log) => log.type === 'execution-done'
+            )
+          ),
+        { timeout: 30_000 }
+      )
+      .toBe(true)
     await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera position for optimal edge viewing
