@@ -226,6 +226,53 @@ const prepareBulkProjectWrite = async ({
   }
 }
 
+function getDefaultRequestedFileName({
+  context,
+  requestedProjectName,
+}: {
+  context: SystemIOContext
+  requestedProjectName?: string
+}) {
+  const project = context.folders?.find(
+    (folder) => folder.name === requestedProjectName
+  )
+  const defaultFile = project?.default_file
+  if (!project || !defaultFile) {
+    return ''
+  }
+
+  const projectPathPrefix = project.path.endsWith(fsZds.sep)
+    ? project.path
+    : `${project.path}${fsZds.sep}`
+  if (defaultFile.startsWith(projectPathPrefix)) {
+    return fsZds.relative(project.path, defaultFile).replace(/^[\\/]+/, '')
+  }
+
+  return (
+    parentPathRelativeToProject(defaultFile, context.projectDirectoryPath) ||
+    defaultFile.replace(/^[\\/]+/, '')
+  )
+}
+
+export const reloadExecutingEditorAfterBulkWrite = async ({
+  context,
+  writtenFilePaths,
+}: {
+  context: SystemIOContext
+  writtenFilePaths: string[]
+}) => {
+  const executingEditor = context.app.project?.executingEditor.value
+  if (!executingEditor) {
+    return
+  }
+
+  if (!writtenFilePaths.includes(executingEditor.path)) {
+    return
+  }
+
+  await executingEditor.reloadFromDisk()
+}
+
 const sharedBulkCreateWorkflow = async ({
   input,
 }: {
@@ -247,6 +294,7 @@ const sharedBulkCreateWorkflow = async ({
     wasmInstance: input.wasmInstance,
   })
 
+  const writtenFilePaths: string[] = []
   for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
     const file = input.files[fileIndex]
     const requestedFileName = file.requestedFileName
@@ -263,6 +311,8 @@ const sharedBulkCreateWorkflow = async ({
           })
         ).name
 
+    writtenFilePaths.push(fsZds.join(projectRoot, fileName))
+
     // Create the project around the file if newProject
     await createNewProjectDirectory(
       newProjectName,
@@ -273,6 +323,11 @@ const sharedBulkCreateWorkflow = async ({
       projectDirectoryPath
     )
   }
+  await reloadExecutingEditorAfterBulkWrite({
+    context: input.context,
+    writtenFilePaths,
+  })
+
   const numberOfFiles = input.files.length
   const fileText = numberOfFiles > 1 ? 'files' : 'file'
   const message = input.override
@@ -330,11 +385,17 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     }
 
     await fsZds.mkdir(projectRoot, { recursive: true })
+    const writtenFilePaths: string[] = []
     for (const file of input.files) {
       const targetPath = fsZds.join(projectRoot, file.requestedFileName)
       await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
       await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
+      writtenFilePaths.push(targetPath)
     }
+    await reloadExecutingEditorAfterBulkWrite({
+      context: input.context,
+      writtenFilePaths,
+    })
 
     if (requestedFileNameWithExtension) {
       const entrypointPath = fsZds.join(
@@ -1100,6 +1161,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
           requestedProjectName: input.requestedProjectName || '',
+          requestedFileName: getDefaultRequestedFileName({
+            context: input.context,
+            requestedProjectName: input.requestedProjectName,
+          }),
         }
         return response
       }
@@ -1233,6 +1298,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           message: input.successMessage || 'Moved successfully',
           requestedAbsolutePath: '',
           requestedProjectName: input.requestedProjectName || '',
+          requestedFileName: getDefaultRequestedFileName({
+            context: input.context,
+            requestedProjectName: input.requestedProjectName,
+          }),
           target: input.target,
         }
       }

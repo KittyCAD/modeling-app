@@ -6,12 +6,14 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   getCloudProjectFolderRenameName,
+  reloadExecutingEditorAfterBulkWrite,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  type SystemIOContext,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -279,6 +281,94 @@ describe('systemIOMachine - XState', () => {
         expect(actor.getSnapshot().context.requestedFileName).toBe(
           requestedFileNameBefore
         )
+        actor.stop()
+      })
+      it('requests default file navigation after archiving the active file', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.moveRecursive]: fromPromise(
+                async ({ input }) => ({
+                  message: 'Archived successfully',
+                  requestedAbsolutePath: '',
+                  requestedProjectName: input.requestedProjectName || '',
+                  requestedFileName: 'main.kcl',
+                  target: input.target,
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        actor.send({
+          type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+          data: {
+            src: '/projects/demo-project/fileToDelete.kcl',
+            target: '/projects/.archive/demo-project/fileToDelete.kcl',
+            requestedProjectName: 'demo-project',
+          },
+        })
+
+        await waitFor(
+          actor,
+          (state) => state.context.requestedFileName.file === 'main.kcl'
+        )
+
+        expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+          project: 'demo-project',
+          file: 'main.kcl',
+        })
+        actor.stop()
+      })
+      it('requests default file navigation after deleting the active file', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
+                async ({ input }) => ({
+                  message: 'File deleted successfully',
+                  requestedPath: input.requestedPath,
+                  requestedProjectName: input.requestedProjectName || '',
+                  requestedFileName: 'main.kcl',
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        actor.send({
+          type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
+          data: {
+            requestedPath: '/projects/demo-project/fileToDelete.kcl',
+            requestedProjectName: 'demo-project',
+          },
+        })
+
+        await waitFor(
+          actor,
+          (state) => state.context.requestedFileName.file === 'main.kcl'
+        )
+
+        expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+          project: 'demo-project',
+          file: 'main.kcl',
+        })
         actor.stop()
       })
       it('should accept externally synced folders while idle', async () => {
@@ -1191,6 +1281,51 @@ describe('systemIOMachine - XState', () => {
         } finally {
           actor.stop()
         }
+      })
+    })
+    describe('when bulk writing the active file', () => {
+      it('should reload the executing editor after overwriting its file', async () => {
+        const reloadFromDisk = vi.fn().mockResolvedValue(undefined)
+
+        await reloadExecutingEditorAfterBulkWrite({
+          context: {
+            app: {
+              project: {
+                executingEditor: {
+                  value: {
+                    path: '/projects/demo/main.kcl',
+                    reloadFromDisk,
+                  },
+                },
+              },
+            },
+          } as unknown as SystemIOContext,
+          writtenFilePaths: ['/projects/demo/main.kcl'],
+        })
+
+        expect(reloadFromDisk).toHaveBeenCalledTimes(1)
+      })
+
+      it('should not reload the executing editor after writing another file', async () => {
+        const reloadFromDisk = vi.fn().mockResolvedValue(undefined)
+
+        await reloadExecutingEditorAfterBulkWrite({
+          context: {
+            app: {
+              project: {
+                executingEditor: {
+                  value: {
+                    path: '/projects/demo/main.kcl',
+                    reloadFromDisk,
+                  },
+                },
+              },
+            },
+          } as unknown as SystemIOContext,
+          writtenFilePaths: ['/projects/demo/other.kcl'],
+        })
+
+        expect(reloadFromDisk).not.toHaveBeenCalled()
       })
     })
     describe('when setting default project folder name', () => {

@@ -8,12 +8,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
-import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import {
-  type PreparedZookeeperPatchFileReplay,
-  buildZookeeperHistoryExtension,
-} from '@src/editor/plugins/zookeeper'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
@@ -81,6 +76,10 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
+  type ProjectSessionService,
+  projectSessionService,
+} from '@src/registry/contracts/projectSession'
+import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
@@ -104,28 +103,6 @@ import { createActor } from 'xstate'
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
-
-function zookeeperReplayChangesProjectFileSet(
-  replayFiles: readonly PreparedZookeeperPatchFileReplay[]
-) {
-  return replayFiles.some(
-    (replayFile) =>
-      replayFile.previousContent === null || replayFile.nextContent === null
-  )
-}
-
-function getZookeeperReplayFallbackFilePath(
-  project: ZDSProject,
-  deletedPaths: Set<string>
-) {
-  const defaultFile = project.projectIORefSignal.value.default_file
-  const candidates = [
-    defaultFile,
-    ...project.files.map((file) => file.path),
-  ].filter((path, index, paths) => paths.indexOf(path) === index)
-
-  return candidates.find((path) => path && !deletedPaths.has(path))
-}
 
 function isPlaywrightRuntime() {
   return typeof window !== 'undefined' && isPlaywright()
@@ -278,6 +255,8 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
+  /** The currently-opened project and editor lifecycle system */
+  projectSession: ProjectSessionService
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -306,6 +285,9 @@ export class App implements AppSubsystems {
         app: this,
       },
     }).start()
+    this.projectSession = this.registry.get(projectSessionService)
+    this.projectSignal = this.projectSession.openedProject
+    this.projectSession.bindApp(this)
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -568,90 +550,10 @@ export class App implements AppSubsystems {
   }
 
   async openProject(projectIORef: Project) {
-    this.disposeProjectHistoryExtensions?.()
-    const projectIORefSignal = signal(projectIORef)
-    this.project = await ZDSProject.open(projectIORefSignal, this)
-
-    // These extensions make global project operations un/redoable.
-    this.disposeProjectHistoryExtensions = effect(() => {
-      const project = this.project
-      const executingEditor = project?.executingEditor.value
-      if (!project || !executingEditor) {
-        return
-      }
-
-      const disposeFSHistory = buildFSHistoryExtension(
-        this.systemIOActor,
-        executingEditor
-      )
-      const disposeZookeeperHistory = buildZookeeperHistoryExtension({
-        kclManager: executingEditor,
-        onCurrentFileDelete: async (deletedPaths) => {
-          const fallbackPath = getZookeeperReplayFallbackFilePath(
-            project,
-            deletedPaths
-          )
-          if (!fallbackPath) {
-            return Promise.reject(
-              new Error(
-                'Cannot replay this Zookeeper edit because no fallback KCL file is available.'
-              )
-            )
-          }
-
-          await project.openEditor(fallbackPath, executingEditor)
-        },
-        onActiveFileRestore: async (restoredPath, restoredContents) => {
-          await project.openEditor(
-            restoredPath,
-            executingEditor,
-            restoredContents
-          )
-        },
-        onProjectFilesReplay: async (replayFiles) => {
-          await project.syncReplayedFilesToRust(replayFiles)
-          if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
-          }
-        },
-      })
-
-      return () => {
-        disposeFSHistory()
-        disposeZookeeperHistory()
-      }
-    })
-
-    // TODO: Rework the systemIOActor to fit into the system better,
-    // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
-      }
-    })
-
-    this.unsubscribeFromSettings = this.settings.actor.subscribe(
-      this.onSettingsUpdate
-    )
-
-    return this.project
+    return this.projectSession.openProject(projectIORef)
   }
-  private unsubscribeFromSettings: Subscription | undefined = undefined
-  private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   closeProject() {
-    this.disposeProjectHistoryExtensions?.()
-    this.disposeProjectHistoryExtensions = undefined
-    this.unsubscribeFromSettings?.unsubscribe()
-    this.unsubscribeFromSettings = undefined
-    this.project?.close()
-    this.project = undefined
+    this.projectSession.closeProject()
   }
 
   syncUserFeaturesFromAuth = (

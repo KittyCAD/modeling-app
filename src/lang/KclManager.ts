@@ -390,6 +390,14 @@ export class ZDSProject {
       .find(([p]) => p.value === path)
   }
 
+  private deleteEditorReferences(editor: KclManager, exceptPath?: string) {
+    for (const [pathSignal, foundEditor] of this.editors.entries()) {
+      if (foundEditor === editor && pathSignal.value !== exceptPath) {
+        this.editors.delete(pathSignal)
+      }
+    }
+  }
+
   // Saving some keystrokes
   private set = this.editors.set.bind(this.editors)
 
@@ -407,12 +415,15 @@ export class ZDSProject {
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
-    if (
-      found &&
-      (!providedEditor || found !== providedEditor || found.path === path)
-    ) {
+    if (found && found.path === path) {
+      if (isExecuting) {
+        this.executingPath = path
+      }
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
+    }
+    if (foundEditor) {
+      this.editors.delete(foundEditor[0])
     }
 
     const systemDeps: SystemDeps = {
@@ -460,6 +471,7 @@ export class ZDSProject {
     if (newEditor.path !== path) {
       newEditor.path = path
     }
+    this.deleteEditorReferences(newEditor, path)
 
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
@@ -1993,7 +2005,7 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
-    providedEditor.watch()
+    providedEditor.reactivateFileLifecycle()
     return providedEditor
   }
 
@@ -2030,10 +2042,7 @@ export class KclManager extends File {
       zookeeperHistoryExtension(),
     ])
     this._editorView = this.createEditorView(initialCode)
-    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
-      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
-    })
-    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    this.subscribeToSettingsUpdates()
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -2070,9 +2079,23 @@ export class KclManager extends File {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
+    this.settingsSubscription = undefined
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
+  }
+
+  public reactivateFileLifecycle() {
+    this.subscribeToSettingsUpdates()
+    this.watch()
+  }
+
+  private subscribeToSettingsUpdates() {
+    this.settingsSubscription?.unsubscribe()
+    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    })
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
   }
 
   private markFileCodeAsSynced(code: string) {
@@ -3574,6 +3597,36 @@ export class KclManager extends File {
     this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
     this.setDiagnosticsForCurrentErrors()
   }
+
+  async reloadFromDisk(
+    options: Partial<UpdateCodeEditorOptions> = {}
+  ): Promise<void> {
+    const code = normalizeLineEndings(await this.read())
+    if (isCodeTheSame(code, this.code)) {
+      this.markFileCodeAsSynced(code)
+      return
+    }
+
+    if (this.hasUnsavedLocalChanges()) {
+      console.warn(
+        'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
+      )
+      toast.error(
+        'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
+      )
+      return
+    }
+
+    this.updateCodeEditor(code, {
+      shouldExecute: true,
+      shouldClearHistory: true,
+      shouldResetCamera: true,
+      ...options,
+      shouldWriteToDisk: false,
+    })
+    this.markFileCodeAsSynced(code)
+  }
+
   async writeToFile(
     newCode = this.codeSignal.value,
     requestedDocumentVersion = this._documentVersion,
