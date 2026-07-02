@@ -22,8 +22,11 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import { modelingMachine } from '@src/machines/modelingMachine'
-import { dummyInitSketchGraphDelta } from '@src/machines/modelingSharedContext'
-import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import {
+  dummyInitSketchGraphDelta,
+  generateModelingMachineDefaultContext,
+  modelingMachineInitialInternalContext,
+} from '@src/machines/modelingSharedContext'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
@@ -42,6 +45,12 @@ let rustContextInThisFile: RustContext = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
 
+const TESTS_WITHOUT_ENGINE_WORLD = [
+  'routes a cursor inside a sketch block segment to sketch solve edit',
+  'shows default planes again when canceling sketch plane selection on a blank scene',
+  'hides default planes when canceling sketch plane selection with geometry present',
+]
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -49,6 +58,16 @@ let machineManagerInThisFile: MachineManager = null!
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeEach(async () => {
+  const currentTestName = expect.getState().currentTestName
+  if (
+    currentTestName &&
+    TESTS_WITHOUT_ENGINE_WORLD.some((testName) =>
+      currentTestName.includes(testName)
+    )
+  ) {
+    return
+  }
+
   if (instanceInThisFile) {
     return
   }
@@ -70,7 +89,7 @@ beforeEach(async () => {
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile?.tearDown()
 })
 
 describe('modelingMachine.test.ts', () => {
@@ -1518,6 +1537,213 @@ sketch001 = sketch(on = YZ) {
         expect(toastErrorSpy).toHaveBeenCalledWith(
           'Unable to enter sketch while KCL has parse errors.'
         )
+      })
+
+      it('routes a cursor inside a sketch block segment to sketch solve edit', async () => {
+        const pathToNode = [['body', '']] as any
+        const sketchBlockCodeRef = {
+          range: [0, 100, 0] as [number, number, number],
+          pathToNode,
+          nodePath: { steps: [] },
+        }
+        const segmentCodeRef = {
+          range: [35, 85, 0] as [number, number, number],
+          pathToNode,
+          nodePath: { steps: [] },
+        }
+        const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
+          type: 'sketchBlock',
+          id: 'sketch-block-1',
+          codeRef: sketchBlockCodeRef,
+          planeId: 'plane-1',
+          sketchId: 7,
+        }
+        const path: Artifact = {
+          type: 'path',
+          subType: 'sketch',
+          id: 'path-1',
+          codeRef: sketchBlockCodeRef,
+          planeId: 'plane-1',
+          segIds: ['segment-1'],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: sketchBlock.id,
+        }
+        const segment: Artifact = {
+          type: 'segment',
+          id: 'segment-1',
+          pathId: path.id,
+          edgeIds: [],
+          commonSurfaceIds: [],
+          codeRef: segmentCodeRef,
+        }
+        const artifactGraph: ArtifactGraph = new Map()
+        artifactGraph.set(sketchBlock.id, sketchBlock)
+        artifactGraph.set(path.id, path)
+        artifactGraph.set(segment.id, segment)
+
+        const context = {
+          ...modelingMachineInitialInternalContext,
+          selectionRanges: {
+            graphSelections: [
+              {
+                artifact: segment,
+                codeRef: {
+                  range: [45, 45, 0],
+                  pathToNode,
+                },
+              },
+            ],
+            otherSelections: [],
+          },
+          kclManager: {
+            artifactGraph,
+            hidePlanes: vi.fn(),
+            showPlanes: vi.fn(),
+            sceneInfra: {
+              animate: vi.fn(),
+              resetMouseListeners: vi.fn(),
+              setCallbacks: vi.fn(),
+              camControls: {
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {},
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        } as any
+
+        let receivedInput: any
+        let actorStarted = false
+        const machine = modelingMachine.provide({
+          actors: {
+            'animate-to-existing-sketch-solve': fromPromise(
+              async ({ input }) => {
+                receivedInput = input
+                actorStarted = true
+                return await new Promise<any>(() => {})
+              }
+            ),
+          },
+        })
+
+        const actor = createActor(machine, { input: context }).start()
+
+        actor.send({ type: 'Enter sketch' })
+
+        await waitForCondition(() => actorStarted)
+
+        expect(actor.getSnapshot().value).toBe(
+          'animating to existing sketch solve'
+        )
+        expect(receivedInput).toEqual(
+          expect.objectContaining({
+            artifactId: sketchBlock.id,
+          })
+        )
+
+        actor.stop()
+      })
+
+      const createSketchPlaneSelectionContext = ({
+        artifactGraph = new Map(),
+      }: {
+        artifactGraph?: Map<unknown, unknown>
+      } = {}) =>
+        ({
+          ...modelingMachineInitialInternalContext,
+          kclManager: {
+            artifactGraph,
+            hasErrors: vi.fn(() => false),
+            hidePlanes: vi.fn(),
+            setCopilotEnabled: vi.fn(),
+            setSelectionFilter: vi.fn(),
+            setSelectionFilterToDefault: vi.fn(),
+            showPlanes: vi.fn(),
+            sceneInfra: {
+              animate: vi.fn(),
+              stop: vi.fn(),
+              resetMouseListeners: vi.fn(),
+              setCallbacks: vi.fn(),
+              camControls: {
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {},
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        })
+
+      it('shows default planes again when canceling sketch plane selection on a blank scene', async () => {
+        const context = createSketchPlaneSelectionContext()
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        await waitForCondition(
+          () => actor.getSnapshot().value === 'Sketch no face'
+        )
+
+        actor.send({ type: 'Cancel' })
+
+        await waitForCondition(() => {
+          return (
+            JSON.stringify(actor.getSnapshot().value) ===
+            JSON.stringify({ idle: 'showPlanes' })
+          )
+        })
+
+        expect(context.kclManager.hidePlanes).toHaveBeenCalled()
+        expect(context.kclManager.showPlanes).toHaveBeenCalledTimes(2)
+
+        actor.stop()
+      })
+
+      it('hides default planes when canceling sketch plane selection with geometry present', async () => {
+        const context = {
+          ...createSketchPlaneSelectionContext({
+            artifactGraph: new Map([['artifact-id', {}]]),
+          }),
+        }
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        await waitForCondition(
+          () => actor.getSnapshot().value === 'Sketch no face'
+        )
+
+        actor.send({ type: 'Cancel' })
+
+        await waitForCondition(() => {
+          return (
+            JSON.stringify(actor.getSnapshot().value) ===
+            JSON.stringify({ idle: 'hidePlanes' })
+          )
+        })
+
+        expect(context.kclManager.hidePlanes).toHaveBeenCalled()
+        expect(context.kclManager.showPlanes).toHaveBeenCalledTimes(1)
+
+        actor.stop()
       })
     })
 

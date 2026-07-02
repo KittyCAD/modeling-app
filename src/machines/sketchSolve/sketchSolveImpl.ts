@@ -39,6 +39,7 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import { selectionDispatchedBySketchSolveEvent } from '@src/editor/plugins/sketchSelection'
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
+import { getSketchBlockForArtifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -1537,9 +1538,10 @@ export function isSketchBlockSelected(
   const first = selectionRanges.graphSelections[0]
   if (!first) return false
   const resolved = resolveToCodeRef(first, artifactGraph)
-  const artifact = resolved?.artifact
+  const sketchBlock = getSketchBlockForArtifact(resolved?.artifact, artifactGraph)
   return (
-    artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
+    sketchBlock?.type === 'sketchBlock' &&
+    typeof sketchBlock.sketchId === 'number'
   )
 }
 

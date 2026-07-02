@@ -1,64 +1,64 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[278, 370, 0]<br>Consumed: true"]
+  subgraph path3 [Path]
+    3["Path<br>[278, 370, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    3["Segment<br>[278, 370, 0]"]
+    6["Segment<br>[278, 370, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    4[Solid2d]
+    8[Solid2d]
   end
-  subgraph path5 [Path]
-    5["Path<br>[433, 525, 0]<br>Consumed: true"]
+  subgraph path4 [Path]
+    4["Path<br>[433, 525, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[433, 525, 0]"]
+    7["Segment<br>[433, 525, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    7[Solid2d]
+    9[Solid2d]
   end
-  1["Plane<br>[197, 214, 0]"]
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  5["Plane<br>[197, 214, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  8["Sweep Extrusion<br>[702, 739, 0]<br>Consumed: false"]
+  10["Sweep Extrusion<br>[702, 739, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  9[Wall]
-    %% face_code_ref=Missing NodePath
-  10[Wall]
-    %% face_code_ref=Missing NodePath
-  11["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  12["Cap End"]
-    %% face_code_ref=Missing NodePath
+  11["SweepEdge Adjacent"]
+  12["SweepEdge Adjacent"]
   13["SweepEdge Opposite"]
-  14["SweepEdge Adjacent"]
-  15["SweepEdge Opposite"]
-  16["SweepEdge Adjacent"]
-  1 --- 2
-  1 --- 5
-  2 --- 3
-  2 --- 4
-  5 --- 2
-  2 ---- 8
-  3 --- 9
-  3 x--> 11
-  3 --- 13
-  3 --- 14
-  5 --- 6
-  5 --- 7
-  5 x---> 8
-  6 --- 10
-  6 x--> 11
+  14["SweepEdge Opposite"]
+  15[Wall]
+    %% face_code_ref=Missing NodePath
+  16[Wall]
+    %% face_code_ref=Missing NodePath
+  10 --- 1
+  13 <--x 1
+  14 <--x 1
+  6 <--x 2
+  7 <--x 2
+  10 --- 2
+  4 --- 3
+  5 --- 3
+  3 --- 6
+  3 --- 8
+  3 ---- 10
+  5 --- 4
+  4 --- 7
+  4 --- 9
+  4 x---> 10
+  6 --- 11
+  6 --- 13
   6 --- 15
-  6 --- 16
-  8 --- 9
-  8 --- 10
-  8 --- 11
-  8 --- 12
-  8 --- 13
-  8 --- 14
-  8 --- 15
-  8 --- 16
-  9 --- 13
-  9 --- 14
+  7 --- 12
+  7 --- 14
+  7 --- 16
+  10 --- 11
+  10 --- 12
+  10 --- 13
+  10 --- 14
   10 --- 15
   10 --- 16
-  13 <--x 12
-  15 <--x 12
+  15 --- 11
+  16 --- 12
+  15 --- 13
+  16 --- 14
 ```
