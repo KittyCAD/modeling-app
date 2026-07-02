@@ -187,6 +187,7 @@ import {
   getPathsFromPlaneArtifact,
   getPlaneFromArtifact,
   getSketchBlockArtifactForPathToNode,
+  getSketchBlockForArtifact,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import { addTagForSketchOnFace } from '@src/lang/std/sketch'
@@ -742,6 +743,9 @@ export const modelingMachine = setup({
     'should use sketch solve mode': ({ context }) => {
       return context.store.useSketchSolveMode?.current === true
     },
+    'Artifact graph is empty': ({ context }) => {
+      return context.kclManager.artifactGraph.size === 0
+    },
     'Selection is sketchBlock': ({
       context: { selectionRanges, kclManager },
       event,
@@ -1109,6 +1113,9 @@ export const modelingMachine = setup({
           up: { x: 0, y: 0, z: 1 },
         },
       })
+    },
+    'stop scene infra': ({ context }) => {
+      context.kclManager.sceneInfra.stop()
     },
     'set new sketch metadata': assign(({ event }) => {
       if (
@@ -8212,6 +8219,26 @@ export const modelingMachine = setup({
 
       exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
+        Cancel: [
+          {
+            guard: 'Artifact graph is empty',
+            target: '#Modeling.idle.showPlanes',
+            actions: [
+              'reset sketch metadata',
+              'enable copilot',
+              'stop scene infra',
+            ],
+          },
+          {
+            target: '#Modeling.idle.hidePlanes',
+            actions: [
+              'reset sketch metadata',
+              'enable copilot',
+              'stop scene infra',
+            ],
+          },
+        ],
+
         'Select sketch plane': {
           target: 'animating to plane',
           actions: ['reset sketch metadata'],
@@ -9451,9 +9478,13 @@ export const modelingMachine = setup({
                 )
               : null
             const artifact = firstResolved?.artifact
-            if (artifact?.type === 'sketchBlock' && artifact.id) {
+            const sketchBlock = getSketchBlockForArtifact(
+              artifact,
+              context.kclManager.artifactGraph
+            )
+            if (sketchBlock?.id) {
               return {
-                artifactId: artifact.id,
+                artifactId: sketchBlock.id,
                 kclManager: context.kclManager,
                 rustContext: context.rustContext,
                 engineCommandManager: context.engineCommandManager,

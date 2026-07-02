@@ -1333,6 +1333,25 @@ part = bracket()
       return refactored
     }
 
+    async function refactorExecutedAst(
+      ast: ReturnType<typeof assertParse>,
+      sourceRange?: [number, number, number]
+    ): Promise<string | Error> {
+      const execState = kclManagerInThisFile.execState
+      const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
+        edgeRefactorMetadata: execState.edgeRefactorMetadata ?? [],
+        engineCommandManager: engineCommandManagerInThisFile,
+      })
+      return refactorZ0006Unified(
+        ast,
+        hydratedEdgeRefactorMetadata,
+        execState.directTagFilletMetadata ?? [],
+        execState.artifactGraph,
+        instanceInThisFile,
+        sourceRange
+      )
+    }
+
     const deprecatedFilletCases = [
       {
         name: 'refactors getOppositeEdge in fillet to edgeRefs with tag names (e1, capEnd001) not UUIDs',
@@ -1442,13 +1461,7 @@ part = bracket()
           execState.edgeRefactorMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
@@ -1470,13 +1483,7 @@ part = bracket()
           expect(execState.artifactGraph.size).toBeGreaterThan(0)
           return
         }
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1510,13 +1517,7 @@ part = bracket()
         ).toBeGreaterThanOrEqual(1)
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
 
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
 
@@ -1588,13 +1589,7 @@ part = bracket()
           return
         }
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1628,13 +1623,7 @@ part = bracket()
           return
         }
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1656,13 +1645,7 @@ part = bracket()
           execState.directTagFilletMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1685,13 +1668,7 @@ part = bracket()
           return
         }
         expect(execState.artifactGraph.size).toBeGreaterThan(0)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1754,13 +1731,7 @@ part = bracket()
           expect(execState.artifactGraph.size).toBeGreaterThan(0)
           return
         }
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1788,13 +1759,7 @@ part = bracket()
         expect(
           execState.directTagFilletMetadata?.length ?? 0
         ).toBeGreaterThanOrEqual(1)
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1818,14 +1783,7 @@ part = bracket()
           instanceInThisFile
         )
         await kclManagerInThisFile.executeAst({ ast })
-        const execState = kclManagerInThisFile.execState
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
@@ -1877,13 +1835,7 @@ part = bracket()
           metadataDebug
         ).toBe(true)
 
-        const refactored = refactorZ0006Unified(
-          ast,
-          execState.edgeRefactorMetadata ?? [],
-          execState.directTagFilletMetadata ?? [],
-          execState.artifactGraph,
-          instanceInThisFile
-        )
+        const refactored = await refactorExecutedAst(ast)
 
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
