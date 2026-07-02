@@ -1,8 +1,7 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { getAngleDiff } from '@src/lib/utils'
-import { getPolarAngle2d } from '@src/lib/utils2d'
+import { getAngleDiff, getPolarAngle2d } from '@src/lib/utils2d'
 import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {

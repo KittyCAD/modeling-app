@@ -701,6 +701,49 @@ export default class RustContext {
     }
   }
 
+  async editAngleConstraint(
+    version: ApiVersion,
+    sketch: ApiObjectId,
+    constraintId: ApiObjectId,
+    constraint: Extract<ApiConstraint, { type: 'Angle' }>,
+    settings: DeepPartial<Configuration>,
+    createCheckpoint = false,
+    commitSolverResults = true
+  ): Promise<SketchMutationResult> {
+    const instance =
+      (await this._checkContextInstance()) as ContextWithAngleConstraintEdit
+
+    try {
+      if (!commitSolverResults && createCheckpoint) {
+        return Promise.reject(
+          new Error('Preview angle edits cannot create sketch checkpoints')
+        )
+      }
+
+      const result = await instance.edit_angle_constraint(
+        JSON.stringify(version),
+        JSON.stringify(sketch),
+        JSON.stringify(constraintId),
+        JSON.stringify(constraint),
+        JSON.stringify(settings),
+        createCheckpoint,
+        commitSolverResults
+      )
+      const checkpointId = normalizeSketchCheckpointId(result.checkpointId)
+      if (checkpointId instanceof Error) {
+        return Promise.reject(checkpointId)
+      }
+      return {
+        kclSource: result.sourceDelta,
+        sceneGraphDelta: result.sceneGraphDelta,
+        checkpointId,
+      }
+    } catch (e: any) {
+      const err = errFromErrWithOutputs(e)
+      return Promise.reject(err)
+    }
+  }
+
   async editDistanceConstraintLabelPosition(
     version: ApiVersion,
     sketch: ApiObjectId,
@@ -906,6 +949,22 @@ type SketchMutationResult = {
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
   checkpointId?: number | null
+}
+
+type ContextWithAngleConstraintEdit = Context & {
+  edit_angle_constraint(
+    versionJson: string,
+    sketchJson: string,
+    constraintIdJson: string,
+    constraintJson: string,
+    settings: string,
+    createCheckpoint: boolean,
+    commitSolverResults: boolean
+  ): Promise<{
+    sourceDelta: SourceDelta
+    sceneGraphDelta: SceneGraphDelta
+    checkpointId?: number | null
+  }>
 }
 
 type SetProgramOutcome =

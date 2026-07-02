@@ -10,7 +10,7 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import { getResolvedTheme } from '@src/lib/theme'
-import { dot2d, polar2d, subVec } from '@src/lib/utils2d'
+import { TAU, dot2d, normalizeAngle, polar2d, subVec } from '@src/lib/utils2d'
 import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 import {
   CONSTRAINT_COLOR,
@@ -24,6 +24,7 @@ import type { Line2 } from 'three/examples/jsm/lines/Line2'
 export const ANGLE_CONSTRAINT_ARC_BODY_ROLE = 'angle-constraint-arc-body'
 export const ANGLE_CONSTRAINT_GUIDE_BODY_ROLE = 'angle-constraint-guide-body'
 const ARROW_LENGTH_PX = 10
+const ANGLE_EPSILON = 1e-8
 
 export type LineSegment = readonly [Coords2d, Coords2d]
 
@@ -31,6 +32,7 @@ export type ArcLineInfo = {
   line1: LineSegment
   line2: LineSegment
   labelPosition: Coords2d
+  labelAngle?: number
   center: Coords2d
   radius: number
   startAngle: number
@@ -46,8 +48,6 @@ export function updateArcDimensionLine(
   angleValue: ApiNumber
 ) {
   const { center, radius, startAngle, sweepAngle: sweep } = renderInput
-  const arcLengthPx = (radius * sweep) / scale
-
   const label = group.children.find(isSpriteLabel)
   if (!label) {
     return
@@ -69,8 +69,17 @@ export function updateArcDimensionLine(
   )
   const arrowSpanPx = ARROW_LENGTH_PX * 2
   const gapWidthPx = labelTextWidthPx
+  const labelOffset = getArcLabelOffset(
+    startAngle,
+    sweep,
+    renderInput.labelAngle
+  )
+  const renderedSweep = Math.max(sweep, labelOffset) - Math.min(0, labelOffset)
+  const arcLengthPx = (radius * renderedSweep) / scale
+  const hasExplicitLabelPosition = renderInput.labelAngle !== undefined
   const showArrows = arcLengthPx >= arrowSpanPx
-  const showGap = arcLengthPx >= gapWidthPx + arrowSpanPx
+  const showGap =
+    hasExplicitLabelPosition || arcLengthPx >= gapWidthPx + arrowSpanPx
 
   // Set visibility
   for (const child of group.children) {
@@ -84,10 +93,6 @@ export function updateArcDimensionLine(
   }
 
   const halfGapAngle = showGap ? (gapWidthPx * 0.5 * scale) / radius : 0
-
-  const labelOffset = sweep * 0.5
-  const section1EndAngle = startAngle + labelOffset - halfGapAngle
-  const section2StartAngle = startAngle + labelOffset + halfGapAngle
   const endAngle = startAngle + sweep
 
   const arcLines = group.children.filter(
@@ -95,8 +100,22 @@ export function updateArcDimensionLine(
       child.userData.type === DISTANCE_CONSTRAINT_BODY &&
       child.userData.role === ANGLE_CONSTRAINT_ARC_BODY_ROLE
   ) as Line2[]
-  updateArc(arcLines[0], center, radius, startAngle, section1EndAngle)
-  updateArc(arcLines[1], center, radius, section2StartAngle, endAngle)
+  const bodySections = getArcBodySections(
+    startAngle,
+    sweep,
+    labelOffset,
+    halfGapAngle
+  )
+  for (let i = 0; i < arcLines.length; i++) {
+    const section = bodySections[i]
+    if (!section) {
+      arcLines[i].visible = false
+      continue
+    }
+
+    arcLines[i].visible = true
+    updateArc(arcLines[i], center, radius, section[0], section[1])
+  }
 
   const startPoint = polar2d(center, radius, startAngle)
   const endPoint = polar2d(center, radius, endAngle)
@@ -135,6 +154,53 @@ export function updateArcDimensionLine(
   ) as Line2[]
   updateGuideLine(guideLines[0], renderInput.line1, startPoint)
   updateGuideLine(guideLines[1], renderInput.line2, endPoint)
+}
+
+export function getArcLabelOffset(
+  startAngle: number,
+  sweep: number,
+  labelAngle?: number
+) {
+  if (labelAngle === undefined) {
+    return sweep * 0.5
+  }
+
+  const offset = normalizeAngle(labelAngle - startAngle)
+  if (offset <= sweep + ANGLE_EPSILON) {
+    return Math.min(offset, sweep)
+  }
+
+  const overdrawAfterEnd = offset - sweep
+  const overdrawBeforeStart = TAU - offset
+  return overdrawBeforeStart < overdrawAfterEnd ? offset - TAU : offset
+}
+
+export function getArcBodySections(
+  startAngle: number,
+  sweep: number,
+  labelOffset: number,
+  halfGapAngle: number
+): [number, number][] {
+  const endAngle = startAngle + sweep
+  const gapStartAngle = startAngle + labelOffset - halfGapAngle
+  const gapEndAngle = startAngle + labelOffset + halfGapAngle
+
+  if (labelOffset < 0) {
+    return compactArcSections([[gapEndAngle, endAngle]])
+  }
+
+  if (labelOffset > sweep) {
+    return compactArcSections([[startAngle, gapStartAngle]])
+  }
+
+  return compactArcSections([
+    [startAngle, Math.max(startAngle, gapStartAngle)],
+    [Math.min(endAngle, gapEndAngle), endAngle],
+  ])
+}
+
+function compactArcSections(sections: [number, number][]) {
+  return sections.filter(([start, end]) => end - start > ANGLE_EPSILON)
 }
 
 function updateArc(

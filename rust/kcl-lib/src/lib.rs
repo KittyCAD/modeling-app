@@ -207,6 +207,7 @@ pub mod front {
     pub(crate) use crate::frontend::modify::next_free_name_using_max;
     pub use crate::frontend::sketch::ExecResult;
     pub use crate::frontend::{
+        EditAngleConstraintOptions,
         EditDistanceConstraintLabelPositionOptions,
         EditSegmentsOptions,
         FrontendState,
