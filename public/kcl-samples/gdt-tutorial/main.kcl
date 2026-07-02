@@ -36,13 +36,15 @@ gdt::datum(
 )
 
 gdt::distance(
-  edges = [
-    getCommonEdge(faces = [region001.tags.line3, capEnd001])
-  ],
   tolerance = 0.1mm,
   framePosition = [0, 30],
   framePlane = XZ,
   fontSize = 9.3333mm,
+  edges = [
+    {
+      sideFaces = [region001.tags.line3, capEnd001]
+    }
+  ],
 )
 
 gdt::flatness(

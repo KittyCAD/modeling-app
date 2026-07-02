@@ -17,11 +17,11 @@ body = startSketchOn(XZ)
   |> extrude(length = thickness)
   |> chamfer(
        length = chamferLength,
-       tags = [
-         getNextAdjacentEdge(chamfer1),
-         getNextAdjacentEdge(chamfer2),
-         getNextAdjacentEdge(chamfer3),
-         getNextAdjacentEdge(chamfer4)
+       edges = [
+         { sideFaces = [chamfer2, chamfer1] },
+         { sideFaces = [chamfer3, chamfer2] },
+         { sideFaces = [chamfer4, chamfer3] },
+         { sideFaces = [chamfer4, chamfer1] }
        ],
      )
 

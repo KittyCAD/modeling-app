@@ -55,28 +55,43 @@ pegSketch = sketch(on = offsetPlane(XY, offset = magnetThickness * 1.5)) {
 }
 pegRegion = region(segments = [pegSketch.circle1])
 holder = extrude(pegRegion, length = spongeThickness - magnetThickness, tagEnd = $capEnd001)
-  |> fillet(tags = getCommonEdge(faces = [pegRegion.tags.circle1, capEnd001]), radius = 2)
+  |> fillet(
+       radius = 2,
+       edges = [
+         {
+           sideFaces = [pegRegion.tags.circle1, capEnd001]
+         }
+       ],
+     )
   |> patternCircular3d(instances = 2, axis = Z, center = [0, 0, 0])
 
 fillet001 = fillet(
   base,
-  tags = [
-    getCommonEdge(faces = [
-      baseRegion.tags.line2,
-      baseRegion.tags.line1
-    ]),
-    getCommonEdge(faces = [
-      baseRegion.tags.line3,
-      baseRegion.tags.line1
-    ]),
-    getCommonEdge(faces = [
-      baseRegion.tags.line3,
-      baseRegion.tags.line4
-    ]),
-    getCommonEdge(faces = [
-      baseRegion.tags.line4,
-      baseRegion.tags.line2
-    ])
-  ],
   radius = 5,
+  edges = [
+    {
+      sideFaces = [
+        baseRegion.tags.line2,
+        baseRegion.tags.line1
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.line3,
+        baseRegion.tags.line1
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.line3,
+        baseRegion.tags.line4
+      ]
+    },
+    {
+      sideFaces = [
+        baseRegion.tags.line4,
+        baseRegion.tags.line2
+      ]
+    }
+  ],
 )

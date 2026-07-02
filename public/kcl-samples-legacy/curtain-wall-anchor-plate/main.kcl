@@ -27,14 +27,16 @@ fn lProfileFn(lengthBase, lengthHook, width, thickness) {
   profileBody = extrude(profileShape, length = width)
     |> fillet(
          radius = thickness,
-         tags = [
-           getCommonEdge(faces = [baseInside, hookInside])
+         edges = [
+           { sideFaces = [baseInside, hookInside] }
          ],
        )
     |> fillet(
          radius = thickness * 2,
-         tags = [
-           getCommonEdge(faces = [baseOutside, hookOutside])
+         edges = [
+           {
+             sideFaces = [baseOutside, hookOutside]
+           }
          ],
        )
   return profileBody
@@ -100,12 +102,12 @@ wideHoleOffset = 30
 // Two slots mirrored across the plate width
 wideHolePlane = startSketchOn(XY)
 wideHoleShape = startProfile(
-       wideHolePlane,
-       at = [
-         -(wideHoleLength - wideHoleWidth) / 2,
-         wideHoleWidth / 2
-       ],
-     )
+  wideHolePlane,
+  at = [
+    -(wideHoleLength - wideHoleWidth) / 2,
+    wideHoleWidth / 2
+  ],
+)
   |> xLine(length = wideHoleLength - wideHoleWidth)
   |> tangentialArc(endAbsolute = [
        (wideHoleLength - wideHoleWidth) / 2,

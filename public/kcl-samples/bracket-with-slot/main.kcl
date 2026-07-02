@@ -73,31 +73,47 @@ bracketBodySolid = extrude(
 // Step 3: Add fillets
 insideBendFillet = fillet(
   bracketBodySolid,
-  tags = getCommonEdge(faces = [
-    outlineRegion.tags.line5,
-    outlineRegion.tags.line4
-  ]),
   radius = insideBendRadius,
+  edges = [
+    {
+      sideFaces = [
+        outlineRegion.tags.line5,
+        outlineRegion.tags.line4
+      ]
+    }
+  ],
 )
 
 outsideBendFillet = fillet(
   insideBendFillet,
-  tags = getCommonEdge(faces = [
-    outlineRegion.tags.line1,
-    outlineRegion.tags.line2
-  ]),
   radius = insideBendRadius + sheetMetalThickness,
+  edges = [
+    {
+      sideFaces = [
+        outlineRegion.tags.line1,
+        outlineRegion.tags.line2
+      ]
+    }
+  ],
 )
 
 freeEndCornerFillets = fillet(
   outsideBendFillet,
-  tags = [
-    edgeId(outsideBendFillet, closestTo = [2mm, 20mm, 70mm]),
-    edgeId(outsideBendFillet, closestTo = [2mm, -20mm, 70mm]),
-    edgeId(outsideBendFillet, closestTo = [170mm, 20mm, 2mm]),
-    edgeId(outsideBendFillet, closestTo = [170mm, -20mm, 2mm])
-  ],
   radius = halfBracketWidth,
+  edges = [
+    {
+      sideFaces = [outlineRegion.tags.line3, capStart]
+    },
+    {
+      sideFaces = [outlineRegion.tags.line3, capEnd]
+    },
+    {
+      sideFaces = [outlineRegion.tags.line6, capStart]
+    },
+    {
+      sideFaces = [outlineRegion.tags.line6, capEnd]
+    }
+  ],
 )
 
 // Step 4: Countersunk tab hole via subtractive feature

@@ -41,7 +41,7 @@ bracketBody = startSketchOn(XZ)
   |> xLine(length = thickness, tag = $seg05)
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $seg06)
   |> close()
-  |> extrude(length = width)
+  |> extrude(length = width, tagStart = $capStart001, tagEnd = $capEnd001)
 
 // Add mounting holes to mount to the shelf
 shelfMountingHoles = startSketchOn(bracketBody, face = seg03)
@@ -69,17 +69,17 @@ wallMountingHoles = startSketchOn(bracketBody, face = seg04)
   |> extrude(length = -thickness - 0.1)
 
 // Apply bends
-fillet(bracketBody, radius = extBendRadius, tags = [getNextAdjacentEdge(seg03)])
-fillet(bracketBody, radius = bendRadius, tags = [getNextAdjacentEdge(seg06)])
+fillet(bracketBody, radius = extBendRadius, edges = [{ sideFaces = [seg03, seg04] }])
+fillet(bracketBody, radius = bendRadius, edges = [{ sideFaces = [seg01, seg06] }])
 
 // Apply corner fillets
 fillet(
   bracketBody,
   radius = filletRadius,
-  tags = [
-    seg02,
-    getOppositeEdge(seg02),
-    seg05,
-    getOppositeEdge(seg05)
+  edges = [
+    { sideFaces = [seg02, capStart001] },
+    { sideFaces = [seg02, capEnd001] },
+    { sideFaces = [seg05, capStart001] },
+    { sideFaces = [seg05, capEnd001] }
   ],
 )
