@@ -573,18 +573,28 @@ function shouldIgnoreKeyboardEvent(
   }
 
   return (
-    scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
-    isEventFromEditableTarget(event.target)
+    isEventFromFormControl(event.target) ||
+    (scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
+      isEventFromContentEditableTarget(event.target))
   )
 }
 
 function isEventFromEditableTarget(target: EventTarget | null) {
+  return (
+    isEventFromContentEditableTarget(target) || isEventFromFormControl(target)
+  )
+}
+
+function isEventFromContentEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
   }
 
+  return target.isContentEditable
+}
+
+function isEventFromFormControl(target: EventTarget | null) {
   return (
-    target.isContentEditable ||
     target instanceof HTMLInputElement ||
     target instanceof HTMLTextAreaElement ||
     target instanceof HTMLSelectElement
