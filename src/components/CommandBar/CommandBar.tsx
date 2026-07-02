@@ -8,6 +8,7 @@ import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Loading from '@src/components/Loading'
+import ModelingDialog from '@src/components/ModelingDialog/ModelingDialog'
 import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
@@ -25,6 +26,9 @@ export const CommandBar = () => {
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
+  const isModelingDialogCommand =
+    selectedCommand?.groupId === 'modeling' &&
+    selectedCommand.useModelingDialog === true
 
   // The command palette used to have light dismiss behavior, but we've decided
   // it's not a great fit for workflows where the user may want to review other
@@ -153,7 +157,11 @@ export const CommandBar = () => {
           leaveTo="opacity-0 scale-95"
         >
           <WrapperComponent.Panel
-            className="relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70"
+            className={
+              isModelingDialogCommand
+                ? 'relative z-50 pointer-events-none w-full pt-2 mx-auto bg-transparent border-none shadow-none max-w-none'
+                : 'relative z-50 pointer-events-auto w-full max-w-xl pt-2 mx-auto border rounded rounded-tl-none shadow-lg bg-chalkboard-10 dark:bg-chalkboard-100 dark:border-chalkboard-70'
+            }
             as="div"
             data-testid="command-bar"
           >
@@ -168,6 +176,8 @@ export const CommandBar = () => {
                   )
                 })}
               />
+            ) : isModelingDialogCommand ? (
+              <ModelingDialog />
             ) : commandBarState.matches('Gathering arguments') ? (
               <CommandBarArgument stepBack={stepBack} />
             ) : (
@@ -185,23 +195,27 @@ export const CommandBar = () => {
                 )}
               </>
             )}
-            <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
-              <button
-                type="button"
-                data-testid="command-bar-close-button"
-                onClick={() => cmd.send({ type: 'Close' })}
-                className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
-              >
-                <CustomIcon
-                  name="close"
-                  className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
-                />
-                <Tooltip position="bottom">
-                  Cancel{' '}
-                  <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">esc</kbd>
-                </Tooltip>
-              </button>
-            </div>
+            {!isModelingDialogCommand && (
+              <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
+                <button
+                  type="button"
+                  data-testid="command-bar-close-button"
+                  onClick={() => cmd.send({ type: 'Close' })}
+                  className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"
+                >
+                  <CustomIcon
+                    name="close"
+                    className="w-5 h-5 rounded-sm bg-destroy-10 text-destroy-80 dark:bg-destroy-80 dark:text-destroy-10 group-hover:brightness-110"
+                  />
+                  <Tooltip position="bottom">
+                    Cancel{' '}
+                    <kbd className="hotkey ml-4 dark:!bg-chalkboard-80">
+                      esc
+                    </kbd>
+                  </Tooltip>
+                </button>
+              </div>
+            )}
           </WrapperComponent.Panel>
         </Transition.Child>
       </WrapperComponent>

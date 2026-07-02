@@ -16,6 +16,7 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import { MODELING_AREA_CONTAINER_ID } from '@src/lib/layout/modelingArea'
 import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
 import { togglePaneLayoutNode } from '@src/lib/layout/utils'
 import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
@@ -34,7 +35,10 @@ function ModelingArea() {
     (1 - sketchSolveStreamDimming) * 100
   )
   return (
-    <div className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden">
+    <div
+      id={MODELING_AREA_CONTAINER_ID}
+      className="relative z-0 min-w-64 flex flex-col flex-1 items-center overflow-hidden"
+    >
       <Toolbar />
       <ConnectionStream
         authToken={authToken}

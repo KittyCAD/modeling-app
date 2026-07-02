@@ -1183,8 +1183,8 @@ export function setSettingsAtLevel(
  * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
  * so this works synchronously.
  */
-export function shouldHideSetting(
-  setting: Setting<unknown>,
+export function shouldHideSetting<T>(
+  setting: Setting<T>,
   settingsLevel: SettingsLevel
 ): boolean {
   // Async functions should have been resolved in loadAndValidateSettings,
@@ -1208,8 +1208,8 @@ export function shouldHideSetting(
  * Async hideOnPlatform functions should have been resolved in loadAndValidateSettings,
  * so this works synchronously.
  */
-export function shouldShowSettingInput(
-  setting: Setting<unknown>,
+export function shouldShowSettingInput<T>(
+  setting: Setting<T>,
   settingsLevel: SettingsLevel
 ): boolean {
   const isHidden = shouldHideSetting(setting, settingsLevel)
