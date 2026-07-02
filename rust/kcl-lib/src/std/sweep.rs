@@ -5,7 +5,9 @@ use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::BodyType;
+use kcmc::shared::Point3d as KPoint3d;
 use kittycad_modeling_cmds::id::ModelingCmdId;
+use kittycad_modeling_cmds::shared::DirectionType;
 use kittycad_modeling_cmds::shared::RelativeTo;
 use kittycad_modeling_cmds::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::{self as kcmc};
@@ -26,9 +28,11 @@ use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::types::ArrayLen;
+use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
+use crate::std::axis_or_reference::Axis3dOrPoint3d;
 use crate::std::extrude::BeingExtruded;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::coerce_extrude_targets;
@@ -89,6 +93,14 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args.get_kw_arg_opt("translateProfileToPath", &RuntimeType::bool(), exec_state)?;
     let orient_profile_perpendicular: Option<bool> =
         args.get_kw_arg_opt("orientProfilePerpendicular", &RuntimeType::bool(), exec_state)?;
+    let projected_axis: Option<Axis3dOrPoint3d> = args.get_kw_arg_opt(
+        "projectedAxis",
+        &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
+            RuntimeType::point3d(),
+        ]),
+        exec_state,
+    )?;
 
     let path = match path {
         SweepPath::Segments(segments) => InnerSweepPath::Sketch(
@@ -120,6 +132,7 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         tag_start,
         tag_end,
         body_type,
+        projected_axis,
         version,
         exec_state,
         args,
@@ -176,6 +189,7 @@ async fn inner_sweep(
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     body_type: Option<BodyType>,
+    projected_axis: Option<Axis3dOrPoint3d>,
     version: Option<u32>,
     exec_state: &mut ExecState,
     args: Args,
@@ -250,6 +264,27 @@ async fn inner_sweep(
         }
     };
 
+    let projected_axis = if let Some(axis) = projected_axis {
+        match axis {
+            Axis3dOrPoint3d::Axis { direction, .. } => Some(DirectionType::Axis {
+                direction: KPoint3d {
+                    x: direction[0].n,
+                    y: direction[1].n,
+                    z: direction[2].n,
+                },
+            }),
+            Axis3dOrPoint3d::Point(point) => Some(DirectionType::Axis {
+                direction: KPoint3d {
+                    x: point[0].n,
+                    y: point[1].n,
+                    z: point[2].n,
+                },
+            }),
+        }
+    } else {
+        None
+    };
+
     let mut solids = Vec::new();
     for sketch in &sketches {
         let sweep_cmd_id = exec_state.next_uuid();
@@ -266,6 +301,7 @@ async fn inner_sweep(
                 .maybe_orient_profile_perpendicular(profile_transform.orient_profile_perpendicular())
                 .maybe_translate_profile_to_path(profile_transform.translate_profile_to_path())
                 .body_type(body_type)
+                .maybe_projected_axis(projected_axis)
                 .maybe_version(version)
                 .build(),
         );
