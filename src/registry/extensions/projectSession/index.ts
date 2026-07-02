@@ -186,10 +186,10 @@ const projectSessionExtension = defineRegistryItemFactory(() => {
             )
           }
 
-          await openEditor(fallbackPath, { providedEditor: editor })
+          await loadEditorFromHandle(fallbackPath, { providedEditor: editor })
         },
         onActiveFileRestore: async (restoredPath, restoredContents) => {
-          await openEditor(restoredPath, {
+          await loadEditorFromHandle(restoredPath, {
             providedEditor: editor,
             providedCode: restoredContents,
           })
