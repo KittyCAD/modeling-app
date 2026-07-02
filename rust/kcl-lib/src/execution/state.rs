@@ -141,6 +141,66 @@ pub(super) struct ArtifactState {
     pub graph: ArtifactGraph,
 }
 
+/// Which stdlib edge function produced this refactor metadata (for lint/code mod).
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub enum EdgeRefactorStdlibFn {
+    GetOppositeEdge,
+    GetNextAdjacentEdge,
+    GetPreviousAdjacentEdge,
+    GetCommonEdge,
+    EdgeId,
+}
+
+/// Metadata collected when a deprecated edge stdlib function runs, for refactor-to-edgeRefs lint/code mod.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct EdgeRefactorMeta {
+    pub edge_id: Uuid,
+    pub face_ids: [Uuid; 2],
+    pub source_range: SourceRange,
+    pub stdlib_fn: EdgeRefactorStdlibFn,
+}
+
+/// Metadata for a deprecated edge stdlib function whose edge ID was resolved,
+/// but whose adjacent face IDs could not be recorded at the helper callsite.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct PendingEdgeRefactorMeta {
+    pub edge_id: Uuid,
+    pub source_range: SourceRange,
+    pub stdlib_fn: EdgeRefactorStdlibFn,
+}
+
+/// One tag entry in a fillet/chamfer call that used `tags` directly (for refactor to edgeRefs).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct DirectTagFilletTagEntry {
+    pub tag_identifier: String,
+    pub edge_id: Uuid,
+    pub face_ids: [Uuid; 2],
+}
+
+/// Metadata for one fillet/chamfer call that used `tags` directly (no stdlib call).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct DirectTagFilletMeta {
+    pub call_source_range: SourceRange,
+    pub tags: Vec<DirectTagFilletTagEntry>,
+}
+
+/// Unified metadata stream for Z0006 and future execution-backed refactors.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "kind", content = "data", rename_all = "camelCase")]
+pub enum RefactorMetadata {
+    EdgeRefactor(EdgeRefactorMeta),
+    DirectTagFillet(DirectTagFilletMeta),
+}
+
 /// Artifact state for a single module.
 #[derive(Debug, Clone, Default, PartialEq, Serialize)]
 pub struct ModuleArtifactState {
@@ -169,6 +229,12 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
+    /// Metadata collected during execution for refactor lint/code-mod paths (Z0006 and future).
+    pub refactor_metadata: Vec<RefactorMetadata>,
+    /// Deprecated edge helper callsites that may be completed by a downstream
+    /// operation that knows the target solid.
+    #[serde(skip)]
+    pub(crate) pending_edge_refactor_metadata: Vec<PendingEdgeRefactorMeta>,
 }
 
 #[derive(Debug, Clone)]
@@ -490,6 +556,7 @@ impl ExecState {
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,
+            refactor_metadata: self.global.root_module_artifacts.refactor_metadata.clone(),
             issues: self.global.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
         })
@@ -812,6 +879,107 @@ impl ExecState {
         &self.global.root_module_artifacts
     }
 
+    /// Record metadata from a deprecated edge stdlib call for the Z0006 refactor.
+    ///
+    /// This is intentionally collected unconditionally when artifact graph support is enabled.
+    /// The temporary feature flag only controls whether the lint/action is shown in the app.
+    pub(crate) fn record_edge_refactor_meta(&mut self, meta: EdgeRefactorMeta) {
+        self.mod_local
+            .artifacts
+            .refactor_metadata
+            .push(RefactorMetadata::EdgeRefactor(meta));
+    }
+
+    pub(crate) fn record_pending_edge_refactor_meta(&mut self, meta: PendingEdgeRefactorMeta) {
+        self.mod_local.artifacts.pending_edge_refactor_metadata.push(meta);
+    }
+
+    pub(crate) fn record_edge_refactor_meta_from_pending(
+        &mut self,
+        edge_id: Uuid,
+        source_range: SourceRange,
+        face_ids: [Uuid; 2],
+    ) -> bool {
+        if self.mod_local.artifacts.refactor_metadata.iter().any(|meta| {
+            matches!(
+                meta,
+                RefactorMetadata::EdgeRefactor(meta)
+                    if meta.edge_id == edge_id && meta.source_range == source_range
+            )
+        }) {
+            return true;
+        }
+
+        let exact_pending_meta = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .find(|meta| meta.edge_id == edge_id && meta.source_range == source_range)
+            .cloned();
+
+        let edge_pending_meta = || {
+            let mut matches = self
+                .mod_local
+                .artifacts
+                .pending_edge_refactor_metadata
+                .iter()
+                .filter(|meta| meta.edge_id == edge_id);
+            let pending_meta = matches.next()?.clone();
+            matches.next().is_none().then_some(pending_meta)
+        };
+
+        let Some(pending_meta) = exact_pending_meta.or_else(edge_pending_meta) else {
+            return false;
+        };
+
+        self.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            source_range: pending_meta.source_range,
+            stdlib_fn: pending_meta.stdlib_fn,
+        });
+
+        true
+    }
+
+    /// Record metadata from a fillet/chamfer call that used `tags` directly.
+    ///
+    /// This is intentionally collected unconditionally when artifact graph support is enabled.
+    /// The temporary feature flag only controls whether the lint/action is shown in the app.
+    pub(crate) fn record_direct_tag_fillet_meta(&mut self, meta: DirectTagFilletMeta) {
+        self.mod_local
+            .artifacts
+            .refactor_metadata
+            .push(RefactorMetadata::DirectTagFillet(meta));
+    }
+
+    /// Refactor metadata collected when deprecated edge stdlib functions run (for tests and lint).
+    pub fn edge_refactor_metadata(&self) -> Vec<EdgeRefactorMeta> {
+        self.global
+            .root_module_artifacts
+            .refactor_metadata
+            .iter()
+            .filter_map(|m| match m {
+                RefactorMetadata::EdgeRefactor(meta) => Some(meta.clone()),
+                RefactorMetadata::DirectTagFillet(_) => None,
+            })
+            .collect()
+    }
+
+    /// Direct-tag fillet/chamfer metadata (for Z0006 code mod).
+    pub fn direct_tag_fillet_metadata(&self) -> Vec<DirectTagFilletMeta> {
+        self.global
+            .root_module_artifacts
+            .refactor_metadata
+            .iter()
+            .filter_map(|m| match m {
+                RefactorMetadata::EdgeRefactor(_) => None,
+                RefactorMetadata::DirectTagFillet(meta) => Some(meta.clone()),
+            })
+            .collect()
+    }
+
     pub fn current_default_units(&self) -> NumericType {
         NumericType::Default {
             len: self.length_unit(),
@@ -873,6 +1041,7 @@ impl ExecState {
             self.global.root_module_artifacts.scene_objects.clone(),
             self.global.root_module_artifacts.source_range_to_object.clone(),
             self.global.root_module_artifacts.var_solutions.clone(),
+            self.global.root_module_artifacts.refactor_metadata.clone(),
             module_id_to_module_path,
             self.global.id_to_source.clone(),
             default_planes,
@@ -1040,6 +1209,7 @@ impl ModuleArtifactState {
         self.unprocessed_commands.clear();
         self.commands.clear();
         self.operations.clear();
+        self.refactor_metadata.clear();
     }
 
     pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) {
@@ -1089,6 +1259,7 @@ impl ModuleArtifactState {
         self.artifact_id_to_scene_object
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
+        self.refactor_metadata.extend(other.refactor_metadata);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them

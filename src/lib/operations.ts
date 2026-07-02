@@ -13,7 +13,10 @@ import {
   deleteTermFromUnlabeledArgumentArray,
   deleteTopLevelStatement,
 } from '@src/lang/modifyAst'
-import { retrieveEdgeSelectionsFromOpArgs } from '@src/lang/modifyAst/edges'
+import {
+  retrieveEdgeSelectionsFromEdgeRefs,
+  retrieveEdgeSelectionsFromOpArgs,
+} from '@src/lang/modifyAst/edges'
 import {
   retrieveFaceSelectionsFromOpArgs,
   retrieveHoleBodyArgs,
@@ -687,15 +690,21 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled and faces arguments to solid2d selections
-  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+  // 1. Map the selected edges from either legacy tags or the new edges kwarg.
+  if (!operation.unlabeledArg) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  const selection = retrieveEdgeSelectionsFromOpArgs(
-    operation.labeledArgs.tags,
-    artifactGraph
-  )
+  const edgeArg =
+    operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs
+  const selection = edgeArg
+    ? retrieveEdgeSelectionsFromEdgeRefs(edgeArg, artifactGraph)
+    : operation.labeledArgs?.tags
+      ? retrieveEdgeSelectionsFromOpArgs(
+          operation.labeledArgs.tags,
+          artifactGraph
+        )
+      : new Error(`Couldn't retrieve operation arguments`)
   if (err(selection)) return { reason: selection.message }
 
   // 2. Convert the radius argument from a string to a KCL expression
@@ -750,15 +759,21 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     return { reason: 'Wrong operation type' }
   }
 
-  // 1. Map the unlabeled and faces arguments to solid2d selections
-  if (!operation.unlabeledArg || !operation.labeledArgs?.tags) {
+  // 1. Map the selected edges from either legacy tags or the new edges kwarg.
+  if (!operation.unlabeledArg) {
     return { reason: `Couldn't retrieve operation arguments` }
   }
 
-  const selection = retrieveEdgeSelectionsFromOpArgs(
-    operation.labeledArgs.tags,
-    artifactGraph
-  )
+  const edgeArg =
+    operation.labeledArgs?.edges ?? operation.labeledArgs?.edgeRefs
+  const selection = edgeArg
+    ? retrieveEdgeSelectionsFromEdgeRefs(edgeArg, artifactGraph)
+    : operation.labeledArgs?.tags
+      ? retrieveEdgeSelectionsFromOpArgs(
+          operation.labeledArgs.tags,
+          artifactGraph
+        )
+      : new Error(`Couldn't retrieve operation arguments`)
   if (err(selection)) return { reason: selection.message }
 
   // 2. Convert the length argument from a string to a KCL expression

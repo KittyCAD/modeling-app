@@ -4,7 +4,11 @@ import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { useModelingContext } from '@src/hooks/useModelingContext'
-import { findOperationPlaneArtifact, isOffsetPlane } from '@src/lang/queryAst'
+import {
+  findOperationArtifact,
+  findOperationPlaneArtifact,
+  isOffsetPlane,
+} from '@src/lang/queryAst'
 import { sourceRangeFromRust } from '@src/lang/sourceRange'
 import { getArtifactFromRange } from '@src/lang/std/artifactGraph'
 import { topLevelRange } from '@src/lang/util'
@@ -20,6 +24,7 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import {
   type OperationTreeNode,
   buildOperationTree,
+  findSameVisibleStdLibOperationAfterSourceChange,
   getOperationKey,
   getOperationTreeNodeKey,
   isOperationTreeBranch,
@@ -97,6 +102,18 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
+// Keep automatic edit-time migration disabled until all feature-tree and
+// point-click edit flows support the new edge specifier syntax. Until then,
+// expose Z0006 only as an explicit lint action.
+//
+// IMPORTANT: Edit after auto-fix is only correct if auto-fix doesn't change the
+// operations. The migration can change the KCL, and we need to choose the
+// correct operation to edit.
+// `findSameVisibleStdLibOperationAfterSourceChange()` uses a heuristic, but it
+// may fail since operations don't have an identity that persists across
+// executions. Currently, we don't change the operations in an auto-fix, but
+// this seems brittle.
+const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
@@ -923,22 +940,92 @@ const OperationItem = ({
         })
         return
       }
-      prepareEditCommand({
-        artifactGraph: systemDeps.kclManager.artifactGraph,
-        code: systemDeps.kclManager.code,
-        commandBarActor,
-        operation: item,
-        rustContext: systemDeps.rustContext,
-        artifact,
-      }).catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
+
+      void selectOperation()
+        .then(async () => {
+          const op = item
+          const needsZ0006FixBeforeEdit =
+            ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
+            op.type === 'StdLibCall' &&
+            (op.name === 'fillet' ||
+              op.name === 'chamfer' ||
+              op.name === 'extrude' ||
+              op.name === 'revolve' ||
+              op.name === 'helix')
+
+          let operationToEdit: Operation = item
+          if (needsZ0006FixBeforeEdit) {
+            const beforeOperations = getAllOperations(
+              systemDeps.kclManager.lastSuccessfulOperations
+            )
+            const applied =
+              await systemDeps.kclManager.applyZ0006FixBeforeEdit()
+            if (applied) {
+              const nextOp = findSameVisibleStdLibOperationAfterSourceChange({
+                operation: op,
+                beforeOperations,
+                afterOperations: getAllOperations(
+                  systemDeps.kclManager.lastSuccessfulOperations
+                ),
+              })
+              if (!nextOp) {
+                toast.error(
+                  'Could not safely reselect operation after automatic migration. Please try again.'
+                )
+                return
+              }
+              operationToEdit = nextOp
+            }
+          }
+
+          const opToEdit = operationToEdit
+          const artifactForEdit =
+            operationToEdit !== item
+              ? (() => {
+                  if (
+                    'sourceRange' in opToEdit &&
+                    opToEdit.sourceRange != null &&
+                    isArray(opToEdit.sourceRange) &&
+                    opToEdit.sourceRange.length >= 2
+                  ) {
+                    const sr = opToEdit.sourceRange
+                    const range: SourceRange = [sr[0], sr[1], sr[2] ?? 0]
+                    const fromRange = getArtifactFromRange(
+                      range,
+                      systemDeps.kclManager.artifactGraph
+                    )
+                    if (fromRange) return fromRange
+                  }
+                  if (opToEdit.type === 'StdLibCall') {
+                    return (
+                      findOperationArtifact(
+                        opToEdit,
+                        systemDeps.kclManager.artifactGraph
+                      ) ?? undefined
+                    )
+                  }
+                  return undefined
+                })()
+              : artifact
+
+          return prepareEditCommand({
+            artifactGraph: systemDeps.kclManager.artifactGraph,
+            code: systemDeps.kclManager.code,
+            commandBarActor,
+            operation: operationToEdit,
+            rustContext: systemDeps.rustContext,
+            artifact: artifactForEdit,
+          })
+        })
+        .catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
     }
   }, [
     isModuleOwned,
     item,
     modelingActor,
     commandBarActor,
-    systemDeps.kclManager.artifactGraph,
-    systemDeps.kclManager.code,
+    selectOperation,
+    systemDeps.kclManager,
     systemDeps.rustContext,
   ])
 

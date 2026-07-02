@@ -55,10 +55,16 @@ pub(crate) use state::ConstraintState;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
+pub use state::DirectTagFilletMeta;
+pub use state::DirectTagFilletTagEntry;
+pub use state::EdgeRefactorMeta;
+pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
 pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::PendingEdgeRefactorMeta;
+pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
 use crate::CompilationIssue;
@@ -313,6 +319,8 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
+    /// Execution-backed metadata used by Z0006 and future auto-refactors.
+    pub refactor_metadata: Vec<RefactorMetadata>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
