@@ -6,7 +6,7 @@ KCL Semantic error
 
   × semantic: `bar` is not an argument of `sketch`
    ╭─[3:18]
- 2 │
+ 2 │ 
  3 │ s = sketch(bar = 1, on = XY) {
    ·                  ┬
    ·                  ╰── main
