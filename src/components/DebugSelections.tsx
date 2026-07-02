@@ -126,7 +126,6 @@ function codeRangeToIds(
   const selections = {
     graphSelections: [
       {
-        artifact: {},
         codeRef: {
           range: range,
         },
@@ -170,24 +169,12 @@ function getEntityIdsFromCmds(
     return []
   }
   const engineEvents = eventInfo.engineEvents
-  // A list of engine command is produced, filter out the select_add ones
-  // which contain the entity ids
-  const selectAdds = engineEvents.filter((event) => {
-    if ('cmd' in event && 'type' in event.cmd) {
-      return event.cmd.type === 'select_add'
+  return engineEvents.flatMap((event) => {
+    if ('cmd' in event && event.cmd.type === 'select_add') {
+      return event.cmd.entities
     }
-    return false
+    return []
   })
-  let ids: string[] = []
-  selectAdds.forEach((event) => {
-    if ('cmd' in event && 'type' in event.cmd && 'entities' in event.cmd) {
-      const entities = event.cmd.entities
-      ids = ids.concat(
-        entities.filter((e): e is string => typeof e === 'string')
-      )
-    }
-  })
-  return ids
 }
 
 function idToCodeRange(id: string, deps: SingletonDeps) {

@@ -102,17 +102,20 @@ function deleteSelection(input: unknown) {
   const segmentNodePaths = Object.keys(state.context.segmentOverlays)
   const selections = state.context.selectionRanges.graphSelections.filter(
     (selection) =>
+      selection.codeRef &&
       segmentNodePaths.includes(JSON.stringify(selection.codeRef.pathToNode))
   )
   const orderedSelections = selections.slice().sort((a, b) => {
-    const aStart = a.codeRef.range?.[0] ?? 0
-    const bStart = b.codeRef.range?.[0] ?? 0
+    const aStart = a.codeRef?.range?.[0] ?? 0
+    const bStart = b.codeRef?.range?.[0] ?? 0
     return bStart - aStart
   })
 
   kclManager.sendModelingEvent({
     type: 'Delete segments',
-    data: orderedSelections.map((selection) => selection.codeRef.pathToNode),
+    data: orderedSelections.flatMap((selection) =>
+      selection.codeRef ? [selection.codeRef.pathToNode] : []
+    ),
   })
 
   if (

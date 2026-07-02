@@ -16,6 +16,7 @@ import { getPlaneExprFromSelection } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   getVariableExprsFromSelection,
+  resolveToCodeRef,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type {
@@ -474,10 +475,13 @@ function addObjectTransform({
   const modifiedAst = structuredClone(ast)
 
   // 2. Prepare unlabeled arguments
-  // Map the selection into a list of kcl expressions to be passed as unlabelled argument
-  const artifact = objects.graphSelections[0].artifact
+  const firstResolved =
+    objects.graphSelections[0] != null
+      ? resolveToCodeRef(objects.graphSelections[0], artifactGraph)
+      : null
   const lastChildLookup =
-    artifact?.type !== 'helix' && artifact?.type !== 'sketchBlock'
+    firstResolved?.artifact?.type !== 'helix' &&
+    firstResolved?.artifact?.type !== 'sketchBlock'
   const vars = getVariableExprsFromSelection(
     objects,
     artifactGraph,

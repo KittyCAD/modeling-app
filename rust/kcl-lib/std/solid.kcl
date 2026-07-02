@@ -100,11 +100,10 @@ export fn fillet(
   /// The paths you want to fillet (legacy API)
   @(includeInSnippet = true)
   tags?: [Edge; 1+],
-  /// Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with:
+  /// Array of edge references; each element is an object with:
   /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet
   /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
   /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
-  @(experimental = true)
   edges?: [any],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
@@ -247,11 +246,10 @@ export fn chamfer(
   length: number(Length),
   /// The paths you want to chamfer (legacy API)
   tags?: [Edge; 1+],
-  /// Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with:
+  /// Array of edge references; each element is an object with:
   /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to chamfer
   /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
   /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
-  @(experimental = true)
   edges?: [any],
   /// Chamfering cuts away two faces to create a third face.
   /// If this argument isn't given, the lengths chamfered away from both
@@ -1838,7 +1836,7 @@ export fn deleteFace(
 /// blend([rectangleSegmentA001, rectangleSegmentA002])
 /// ```
 ///
-/// Experimental face API: edge specifier objects are supported for testing, but are not ready for generated or user-facing KCL yet; prefer tagged edges or bounded edges until point-and-click and migration support ships.
+/// Edge specifier objects are also supported.
 /// Sketch block tags work too:
 /// ```kcl,sketchSolve
 /// sketch001 = sketch(on = YZ) {
@@ -1873,7 +1871,7 @@ export fn deleteFace(
 @(impl = std_rust, feature_tree = true)
 export fn blend(
    /// The two edges that will be blended.
-   /// Tagged edges blend the full edge length. Experimental face API: edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are not ready for generated or user-facing KCL yet; prefer tagged edges or bounded edges until point-and-click and migration support ships.
+   /// Tagged edges blend the full edge length. Edge specifier objects can also be used, e.g. `{ sideFaces = [...], endFaces? = [...], index? = 0 }`.
    @edges: [BoundedEdge | TaggedEdge | any; 2],
 ): Solid {}
 

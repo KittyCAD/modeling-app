@@ -345,19 +345,20 @@ export class ConnectionManager extends EventTarget {
   handleOnDataChannelMessage(event: MessageEvent<any>) {
     const result: UnreliableResponses = JSON.parse(event.data)
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
-      // TODO: There is only one response that uses the unreliable channel atm,
-      // highlight_set_entity, if there are more it's likely they will all have the same
-      // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-      // per unreliable subscription.
+      // Hover/highlight responses may arrive out of order on the unreliable
+      // channel. Only apply the newest sequenced result we have seen.
       (callback) => {
+        const sequence = (result.data as { sequence?: number } | undefined)
+          ?.sequence
         if (
           result.type === 'highlight_set_entity' &&
-          result?.data?.sequence &&
-          result?.data.sequence > this.inSequence
+          typeof sequence === 'number'
         ) {
-          this.inSequence = result.data.sequence
-          callback(result)
-        } else if (result.type !== 'highlight_set_entity') {
+          if (sequence > this.inSequence) {
+            this.inSequence = sequence
+            callback(result)
+          }
+        } else {
           callback(result)
         }
       }
@@ -650,7 +651,7 @@ export class ConnectionManager extends EventTarget {
       cmd.type === 'highlight_set_entity' &&
       this.connection.unreliableDataChannel
     ) {
-      cmd.sequence = this.outSequence
+      ;(cmd as any).sequence = this.outSequence
       this.outSequence++
       this.connection.unreliableSend(command)
       return Promise.resolve(null)
@@ -964,9 +965,6 @@ export class ConnectionManager extends EventTarget {
       height: 256,
       setStreamIsReady: () => {
         console.warn('This is a NO OP. Should not be called in web.')
-      },
-      callbackOnUnitTestingConnection: () => {
-        console.log('what is happening, why is rust doing this!')
       },
     })
   }
@@ -1363,6 +1361,22 @@ export class ConnectionManager extends EventTarget {
       })
       return Promise.reject(JSON.stringify(e))
     }
+  }
+
+  /**
+   * When an execution takes place we want to wait until we've got replies for all of the commands.
+   * This is used when we build the artifact map synchronously.
+   * We do not await default_camera_set_perspective (engine often does not send a response, e.g. local e2e).
+   */
+  waitForAllCommands() {
+    const pendingToAwait = Object.values(this.pendingCommands).filter(
+      (p) =>
+        !(
+          p.command?.type === 'modeling_cmd_req' &&
+          p.command?.cmd?.type === 'default_camera_set_perspective'
+        )
+    )
+    return Promise.all(pendingToAwait.map(({ promise }) => promise))
   }
 
   /**

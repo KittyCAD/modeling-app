@@ -3,6 +3,7 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { type ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import {
   findOperationArtifact,
@@ -40,7 +41,6 @@ import {
   stdLibMap,
 } from '@src/lib/operations'
 import type { DefaultPlaneStr } from '@src/lib/planes'
-import { getSelectedDefaultPlane, selectSketchPlane } from '@src/lib/selections'
 import { err, isErr, reportRejection } from '@src/lib/trap'
 import { isArray, isOverlap, stripQuotes, uuidv4 } from '@src/lib/utils'
 import type { ComponentProps, ReactNode } from 'react'
@@ -102,10 +102,6 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
   rustContext: RustContext
 }
 
-// Keep automatic edit-time migration disabled until all feature-tree and
-// point-click edit flows support the new edge specifier syntax. Until then,
-// expose Z0006 only as an explicit lint action.
-//
 // IMPORTANT: Edit after auto-fix is only correct if auto-fix doesn't change the
 // operations. The migration can change the KCL, and we need to choose the
 // correct operation to edit.
@@ -113,7 +109,7 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 // may fail since operations don't have an identity that persists across
 // executions. Currently, we don't change the operations in an auto-fix, but
 // this seems brittle.
-const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
+const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = true
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
@@ -540,7 +536,7 @@ function OperationBranchGroup({
         modelingActor={modelingActor}
         engineCommandManager={engineCommandManager}
         onSelect={onSelect}
-        isModuleOwned={true}
+        isModuleOwned={isModuleOwned}
       />
     )
   }
@@ -581,7 +577,7 @@ function OperationBranchGroup({
             modelingActor={modelingActor}
             engineCommandManager={engineCommandManager}
             onSelect={onSelect}
-            isModuleOwned={true}
+            isModuleOwned={isModuleOwned}
           />
         </div>
       </div>
@@ -1050,7 +1046,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Translate', groupId: 'modeling' },
@@ -1064,7 +1064,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Rotate', groupId: 'modeling' },
@@ -1078,7 +1082,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Scale', groupId: 'modeling' },
@@ -1092,7 +1100,11 @@ const OperationItem = ({
     if (isModuleOwned) return
     selectOperation()
       .then(() => {
-        if (item.type === 'StdLibCall' || item.type === 'GroupBegin') {
+        if (
+          item.type === 'StdLibCall' ||
+          item.type === 'GroupBegin' ||
+          item.type === 'ModuleInstance'
+        ) {
           commandBarActor.send({
             type: 'Find and select command',
             data: { name: 'Clone', groupId: 'modeling' },
@@ -1109,7 +1121,8 @@ const OperationItem = ({
     if (
       item.type === 'StdLibCall' ||
       item.type === 'GroupBegin' ||
-      item.type === 'VariableDeclaration'
+      item.type === 'VariableDeclaration' ||
+      item.type === 'ModuleInstance'
     ) {
       const maybeArtifact =
         getArtifactFromRange(item.sourceRange, kclManager.artifactGraph) ??
@@ -1280,13 +1293,16 @@ const OperationItem = ({
               </ContextMenuItem>,
             ]
           : []),
-        ...(item.type === 'StdLibCall' || item.type === 'GroupBegin'
+        ...(item.type === 'StdLibCall' ||
+        item.type === 'GroupBegin' ||
+        item.type === 'ModuleInstance'
           ? [
               <ContextMenuItem
                 onClick={enterTranslateFlow}
                 data-testid="context-menu-set-translate"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1297,6 +1313,7 @@ const OperationItem = ({
                 data-testid="context-menu-set-rotate"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1307,6 +1324,7 @@ const OperationItem = ({
                 data-testid="context-menu-set-scale"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1317,6 +1335,7 @@ const OperationItem = ({
                 data-testid="context-menu-clone"
                 disabled={
                   item.type !== 'GroupBegin' &&
+                  item.type !== 'ModuleInstance' &&
                   !stdLibMap[item.name]?.supportsTransform
                 }
               >
@@ -1326,7 +1345,8 @@ const OperationItem = ({
           : []),
         ...(item.type === 'StdLibCall' ||
         item.type === 'GroupBegin' ||
-        item.type === 'VariableDeclaration'
+        item.type === 'VariableDeclaration' ||
+        item.type === 'ModuleInstance'
           ? [
               <ContextMenuItem
                 onClick={deleteOperation}
@@ -1486,9 +1506,13 @@ const DefaultPlanes = ({
   const { rustContext, sceneInfra, kclManager } = systemDeps
   const { state: modelingState, send } = useModelingContext()
   const sketchNoFace = modelingState.matches('Sketch no face')
-  const selectedDefaultPlaneId = getSelectedDefaultPlane(
-    modelingState.context.selectionRanges
-  )?.id
+  const selectedDefaultPlaneId =
+    modelingState.context.selectionRanges.otherSelections.find(
+      (selection) =>
+        typeof selection === 'object' &&
+        'id' in selection &&
+        'name' in selection
+    )?.id
 
   const onClickPlane = useCallback(
     (planeId: string) => {

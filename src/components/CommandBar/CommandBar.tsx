@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 
 import CommandBarArgument from '@src/components/CommandBar/CommandBarArgument'
 import CommandBarReview from '@src/components/CommandBar/CommandBarReview'
+import { COMMAND_PALETTE_HOTKEY } from '@src/components/CommandBar/constants'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
 import CommandComboBox from '@src/components/CommandComboBox'
 import { CustomIcon } from '@src/components/CustomIcon'
@@ -12,16 +13,11 @@ import Tooltip from '@src/components/Tooltip'
 import { useApp } from '@src/lib/boot'
 import type { Command, CommandArgument } from '@src/lib/commandTypes'
 import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
-import { keymapService } from '@src/registry/contracts/keymap'
-
-export const COMMAND_PALETTE_HOTKEY = 'mod+k'
 
 export const CommandBar = () => {
   const { pathname } = useLocation()
-  const { commands: cmd, project, registry } = useApp()
-  const keymap = registry.optional(keymapService)
+  const { commands: cmd, project } = useApp()
   const commandBarState = cmd.useState()
-  const isCommandBarOpen = !commandBarState.matches('Closed')
   const {
     context: { selectedCommand, currentArgument, commands },
   } = commandBarState
@@ -38,29 +34,29 @@ export const CommandBar = () => {
     : Dialog
 
   // Close the command bar when navigating
-  // but importantly not when the query parameters change
-  // biome-ignore lint/correctness/useExhaustiveDependencies: this intentionally reacts only to path changes.
+  // but importantly not when the query parameters change.
+  // Do not close when a command is selected (e.g. edit flow from feature tree)
+  // so that programmatic "Find and select command" is not immediately closed.
   useEffect(() => {
-    if (commandBarState.matches('Closed')) {
-      return
-    }
+    if (commandBarState.matches('Closed')) return
+    if (commandBarState.context.selectedCommand) return
     cmd.send({ type: 'Close' })
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [pathname])
 
-  useEffect(() => {
-    if (!keymap || !isCommandBarOpen) {
-      return
-    }
-
-    keymap.applyScope('cmd-palette-open')
-
-    return () => {
-      keymap.removeScope('cmd-palette-open')
-    }
-  }, [isCommandBarOpen, keymap])
-
   // Hook up keyboard shortcuts
+  useHotkeyWrapper(
+    [COMMAND_PALETTE_HOTKEY],
+    () => {
+      if (commandBarState.context.commands.length === 0) return
+      if (commandBarState.matches('Closed')) {
+        cmd.send({ type: 'Open' })
+      } else {
+        cmd.send({ type: 'Close' })
+      }
+    },
+    project?.executingEditor.value ?? undefined
+  )
   useHotkeyWrapper(
     ['esc'],
     () => cmd.send({ type: 'Close' }),
@@ -127,21 +123,25 @@ export const CommandBar = () => {
 
   return (
     <Transition.Root
-      show={isCommandBarOpen || false}
+      show={!commandBarState.matches('Closed') || false}
       afterLeave={() => {
-        if (selectedCommand?.onCancel) {
-          selectedCommand.onCancel()
-        }
+        if (selectedCommand?.onCancel) selectedCommand.onCancel()
         cmd.send({ type: 'Clear' })
       }}
       as={Fragment}
     >
       <WrapperComponent
-        open={isCommandBarOpen || isArgumentThatShouldBeHardToDismiss}
+        open={
+          !commandBarState.matches('Closed') ||
+          isArgumentThatShouldBeHardToDismiss
+        }
         onClose={() => {
           cmd.send({ type: 'Close' })
         }}
-        className={`fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ${isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : ''}`}
+        className={
+          'fixed inset-0 z-50 overflow-y-auto pb-4 pt-1 ' +
+          (isArgumentThatShouldBeHardToDismiss ? 'pointer-events-none' : '')
+        }
         data-testid="command-bar-wrapper"
       >
         <Transition.Child
@@ -187,7 +187,6 @@ export const CommandBar = () => {
             )}
             <div className="flex flex-col gap-2 !absolute right-2 top-2 m-0 p-0 border-none bg-transparent hover:bg-transparent">
               <button
-                type="button"
                 data-testid="command-bar-close-button"
                 onClick={() => cmd.send({ type: 'Close' })}
                 className="group m-0 p-0 border-none bg-transparent hover:bg-transparent"

@@ -27,6 +27,7 @@ import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
 import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
+  artifactToEntityRef,
   findUsesOfTagInPipe,
   getNodeFromPath,
   getVariableExprsFromSelection,
@@ -1033,7 +1034,7 @@ sketch003 = startSketchOn(XZ)
         codeBefore.indexOf(lineOfInterest),
         codeBefore.indexOf(lineOfInterest) + lineOfInterest.length
       )
-      const artifact = { type } as Artifact
+      const artifact = { type } as unknown as Artifact
       const newAst = await deleteFromSelection(
         ast,
         {
@@ -1285,8 +1286,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const selections: Selections = {
       graphSelections: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
       ],
       otherSelections: [],
@@ -1332,8 +1333,8 @@ profile001 = circle(sketch001, center = [0, 0], radius = 1)
     const selections: Selections = {
       graphSelections: [
         {
+          entityRef: artifactToEntityRef(artifact.type, artifact.id),
           codeRef: artifact.codeRef,
-          artifact,
         },
       ],
       otherSelections: [],
@@ -1429,7 +1430,6 @@ extrude001 = extrude(profile001, length = 5)
       const result = sketchBlockOnExtrudedFace(
         ast,
         {
-          artifact: legacyWall,
           codeRef: legacyWallCodeRef!,
         },
         segmentPathToNode,

@@ -195,11 +195,10 @@ describe('MlEphantConversation', () => {
     rendersRequestBubbleThenDisplayResponse('standard')
   })
 
-  test('shows an attachments loading indicator while attachment processing is in progress', () => {
+  test('shows request attachments while processing is in progress', () => {
     render(
       <MlEphantConversation
         isLoading={false}
-        isLoadingAttachments={true}
         conversation={{
           exchanges: [
             {
@@ -234,8 +233,10 @@ describe('MlEphantConversation', () => {
       />
     )
 
+    expect(screen.getByText('Attachments')).toBeInTheDocument()
+    expect(screen.getByText('front-view.png')).toBeInTheDocument()
     expect(
-      screen.getByText('Progressively loading attachments into context...')
+      screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
   })
 
@@ -1014,56 +1015,24 @@ describe('MlEphantConversation', () => {
       ).toBeInTheDocument()
     })
 
-    test('displays screenshot annotation button', () => {
+    test('displays screenshot capture button', () => {
       renderConversation()
       expect(
-        screen.getByTestId('ml-ephant-annotate-screenshot-button')
+        screen.getByTestId('ml-ephant-screenshot-button')
       ).toBeInTheDocument()
-      expect(screen.getByText('Zoodle')).toBeInTheDocument()
+      expect(
+        screen.getByLabelText('Capture viewport screenshot')
+      ).toBeInTheDocument()
     })
 
-    test('adds annotated viewport screenshot as an attachment', async () => {
-      const OriginalImage = globalThis.Image
-      class MockImage {
-        onload: (() => void) | null = null
-        onerror: (() => void) | null = null
-        complete = true
-        naturalWidth = 16
-        naturalHeight = 16
-        width = 16
-        height = 16
+    test('adds captured viewport screenshot as an attachment', async () => {
+      renderConversation()
 
-        set src(_value: string) {
-          queueMicrotask(() => this.onload?.())
-        }
-      }
+      fireEvent.click(screen.getByTestId('ml-ephant-screenshot-button'))
 
-      const drawImageSpy = vi
-        .spyOn(CanvasRenderingContext2D.prototype, 'drawImage')
-        .mockImplementation(() => {})
-      globalThis.Image = MockImage as typeof Image
-      try {
-        renderConversation()
-
-        fireEvent.click(
-          screen.getByTestId('ml-ephant-annotate-screenshot-button')
-        )
-
-        expect(
-          screen.getByTestId('viewport-annotation-overlay')
-        ).toBeInTheDocument()
-
-        const sendButton = screen.getByTestId('viewport-annotation-send-button')
-        await waitFor(() => expect(sendButton).not.toBeDisabled())
-        fireEvent.click(sendButton)
-
-        expect(
-          await screen.findByText('annotated-viewport-screenshot.png')
-        ).toBeInTheDocument()
-      } finally {
-        drawImageSpy.mockRestore()
-        globalThis.Image = OriginalImage
-      }
+      expect(
+        await screen.findByText('viewport-screenshot.png')
+      ).toBeInTheDocument()
     })
 
     test('shows attached files when files are added via drag and drop', async () => {

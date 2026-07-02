@@ -1,6 +1,5 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
-import type { UserFeature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
@@ -13,7 +12,6 @@ import type { ArtifactGraph } from '@src/lang/wasm'
 import type {
   DirectTagFilletMeta,
   EdgeRefactorMeta,
-  ExecCallbacks,
   ExecState,
   Program,
 } from '@src/lang/wasm'
@@ -29,15 +27,6 @@ import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
 export { isToolTip, toolTips } from '@src/lang/toolTips'
 
-const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
-
-function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
-  return (
-    window.app?.userFeatures.has(featureFlagId as UserFeature, defaultValue) ??
-    defaultValue
-  )
-}
-
 interface ExecutionResult {
   logs: string[]
   errors: KCLError[]
@@ -49,16 +38,14 @@ export async function executeAst({
   ast,
   rustContext,
   path,
-  callbacks,
 }: {
   ast: Node<Program>
   rustContext: RustContext
   path?: string
-  callbacks?: ExecCallbacks
 }): Promise<ExecutionResult> {
   try {
     const settings = jsAppSettings(rustContext.settingsActor)
-    const execState = await rustContext.execute(ast, settings, path, callbacks)
+    const execState = await rustContext.execute(ast, settings, path)
     await rustContext.waitForAllEngineModelingCommands()
     return {
       logs: [],
@@ -182,13 +169,6 @@ export async function lintAst({
     if (!shouldShowZ0005) {
       discovered_findings = discovered_findings.filter(
         (lint) => lint.finding.code !== 'Z0005'
-      )
-    }
-
-    const shouldShowZ0006 = userHasFeature(ENABLE_Z0006_LINT_FLAG, false)
-    if (!shouldShowZ0006) {
-      discovered_findings = discovered_findings.filter(
-        (lint) => lint.finding.code !== 'Z0006'
       )
     }
 

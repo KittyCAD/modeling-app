@@ -1,26 +1,22 @@
 import { describe, expect, test, vi } from 'vitest'
 
-import type { Plane } from '@rust/kcl-lib/bindings/Plane'
-import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
-import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
+import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getEventForQueryEntityTypeWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
-  getStableOffsetPlaneData,
   handleSelectionBatch,
-  selectSketchPlane,
+  normalizeEntityReference,
 } from '@src/lib/selections'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import type { Selection } from '@src/machines/modelingSharedTypes'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {
@@ -1685,13 +1681,122 @@ describe('pattern copy selection highlighting', () => {
 })
 
 describe('getSelectionTypeDisplayText', () => {
+  test('normalizes region entity references', () => {
+    expect(
+      normalizeEntityReference({
+        type: 'region',
+        region_id: 'region-1',
+      })
+    ).toEqual({
+      type: 'region',
+      region_id: 'region-1',
+    })
+  })
+
+  test('converts region query responses to engine region selections', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse('', instance)
+    const pathToNode = [['body', '']] as any
+    const codeRef = {
+      range: [0, 0, 0] as SourceRange,
+      pathToNode,
+      nodePath: { steps: [] },
+    }
+    const artifactGraph: ArtifactGraph = new Map([
+      [
+        'sketch-1',
+        {
+          type: 'sketchBlock',
+          id: 'sketch-1',
+          codeRef,
+          planeId: 'plane-1',
+          sketchId: 1,
+        } as unknown as Artifact,
+      ],
+      [
+        'path-1',
+        {
+          type: 'path',
+          subType: 'sketch',
+          id: 'path-1',
+          codeRef,
+          planeId: 'plane-1',
+          segIds: [],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: 'sketch-1',
+        } as unknown as Artifact,
+      ],
+    ])
+    const engineCommandManager = {
+      sendSceneCommand: vi.fn(async (event: any) => {
+        if (event.cmd.type === 'region_get_query_point') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'region_get_query_point',
+                  data: { query_point: { x: 12, y: 34 } },
+                },
+              },
+            },
+          }
+        }
+        if (event.cmd.type === 'entity_get_parent_id') {
+          return {
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: { entity_id: 'path-1' },
+                },
+              },
+            },
+          }
+        }
+        return undefined
+      }),
+    }
+
+    await expect(
+      getEventForQueryEntityTypeWithPoint(
+        {
+          reference: {
+            type: 'region',
+            region_id: 'region-1',
+          },
+        },
+        {
+          engineCommandManager: engineCommandManager as any,
+          kclManager: { ast, artifactGraph } as any,
+          rustContext: { defaultPlanes: null } as any,
+          wasmInstance: instance,
+          useSegmentsBasedRegions: false,
+        }
+      )
+    ).resolves.toEqual({
+      type: 'Set selection',
+      data: {
+        selectionType: 'engineRegionSelection',
+        selection: {
+          type: 'engineRegion',
+          id: 'region-1',
+          point: { x: 12, y: 34 },
+          sketchId: 'sketch-1',
+        },
+      },
+    })
+  })
+
   test('coalesces face-like selections under face', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
+    const selection: Selections = {
       graphSelections: [
-        { artifact: { type: 'wall' } as Artifact, codeRef },
-        { artifact: { type: 'cap' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveFace' } as Artifact, codeRef },
+        { entityRef: { type: 'face', face_id: 'wall-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'cap-1' }, codeRef },
+        { entityRef: { type: 'face', face_id: 'primitive-face-1' }, codeRef },
       ],
       otherSelections: [
         {
@@ -1703,15 +1808,15 @@ describe('getSelectionTypeDisplayText', () => {
       ],
     }
 
-    expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
-      '4 faces'
-    )
+    expect(getSelectionTypeDisplayText({} as any, selection)).toBe('4 faces')
   })
 
   test('does not coalesce region selections under profile', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
-    const selection = {
-      graphSelections: [{ artifact: { type: 'solid2d' } as Artifact, codeRef }],
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'solid2d-1' }, codeRef },
+      ],
       otherSelections: [
         {
           type: 'engineRegion',
@@ -1732,7 +1837,7 @@ describe('getSelectionTypeDisplayText', () => {
     const selection = {
       graphSelections: [
         {
-          artifact: { type: 'path', subType: 'region' } as Artifact,
+          artifact: { type: 'path', subType: 'region' } as unknown as Artifact,
           codeRef,
         },
       ],
@@ -1744,13 +1849,86 @@ describe('getSelectionTypeDisplayText', () => {
     )
   })
 
+  test('resolves solid2d entity refs to region path artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'path-1',
+        {
+          id: 'path-1',
+          type: 'path',
+          subType: 'region',
+        } as unknown as Artifact,
+      ],
+    ])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d', solid2d_id: 'path-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 region')
+  })
+
+  test('resolves solid3d entity refs to sweep artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'sweep-1',
+        {
+          id: 'sweep-1',
+          type: 'sweep',
+        } as unknown as Artifact,
+      ],
+    ])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid3d', solid3d_id: 'sweep-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 sweep')
+  })
+
+  test('resolves solid2d edge refs to helix artifacts before display', () => {
+    const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
+    const artifactGraph = new Map([
+      [
+        'helix-1',
+        {
+          id: 'helix-1',
+          type: 'helix',
+        } as unknown as Artifact,
+      ],
+    ])
+    const selection: Selections = {
+      graphSelections: [
+        { entityRef: { type: 'solid2d_edge', edge_id: 'helix-1' }, codeRef },
+      ],
+      otherSelections: [],
+    }
+
+    expect(
+      getSelectionTypeDisplayText({} as any, selection, artifactGraph)
+    ).toBe('1 helix')
+  })
+
   test('coalesces edge-like selections under edge', () => {
     const codeRef = { range: [0, 0, 0], pathToNode: [] } as any
     const selection = {
       graphSelections: [
-        { artifact: { type: 'segment' } as Artifact, codeRef },
-        { artifact: { type: 'sweepEdge' } as Artifact, codeRef },
-        { artifact: { type: 'primitiveEdge' } as Artifact, codeRef },
+        {
+          entityRef: { type: 'segment', path_id: 'p1', segment_id: 's1' },
+          codeRef,
+        },
+        { entityRef: { type: 'edge', faces: ['f1', 'f2'] }, codeRef },
+        { entityRef: { type: 'solid2d_edge', edge_id: 'e1' }, codeRef },
       ],
       otherSelections: [
         {
@@ -1765,139 +1943,6 @@ describe('getSelectionTypeDisplayText', () => {
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
     )
-  })
-})
-
-describe('getStableOffsetPlaneData', () => {
-  const code = (
-    on: string,
-    planeDefinition = 'offsetPlane(XZ, offset = 0mm)'
-  ) =>
-    `plane001 = ${planeDefinition}
-sketch001 = sketch(on = ${on}) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
-}`
-
-  const normalizeSignedZero = (value: number) =>
-    Object.is(value, -0) ? 0 : value
-
-  const normalizeAxis = (axis: readonly number[]) =>
-    axis.map(normalizeSignedZero)
-
-  const axis = (point: Point3d) => normalizeAxis([point.x, point.y, point.z])
-
-  const getPlaneVariable = (
-    variables: ExecState['variables'],
-    name: string
-  ) => {
-    const variable = variables[name]
-    if (variable?.type !== 'Plane') {
-      throw new Error(`Expected ${name} to be a Plane variable`)
-    }
-    return variable.value
-  }
-
-  const setupStableOffsetPlaneData = async (
-    source: string
-  ): Promise<{
-    result: ReturnType<typeof getStableOffsetPlaneData>
-    plane001: Plane
-    sketchBlockPlaneInfo: PlaneInfo
-    effectiveArtifactHasVariable: boolean
-  }> => {
-    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
-    const ast = assertParse(source, instance)
-    const execState = await enginelessExecutor(ast, rustContext)
-    const sketchBlock = [...execState.artifactGraph.values()].find(
-      (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
-        artifact.type === 'sketchBlock'
-    )
-    if (!sketchBlock?.planeId) {
-      throw new Error('Expected sketch block with a planeId')
-    }
-    const artifact = execState.artifactGraph.get(sketchBlock.planeId)
-    if (artifact?.type !== 'plane') {
-      throw new Error('Expected sketch block planeId to point to a plane')
-    }
-    if (!sketchBlock.planeInfo) {
-      throw new Error('Expected sketch block with evaluated planeInfo')
-    }
-    const result = getStableOffsetPlaneData(artifact, {
-      execState,
-      sceneInfra: {
-        baseUnitMultiplier: 1,
-      } as Pick<SceneInfra, 'baseUnitMultiplier'> as SceneInfra,
-      sketchBlock,
-    })
-
-    return {
-      result,
-      plane001: getPlaneVariable(execState.variables, 'plane001'),
-      sketchBlockPlaneInfo: sketchBlock.planeInfo,
-      effectiveArtifactHasVariable: Object.values(execState.variables).some(
-        (value) =>
-          value?.type === 'Plane' && value.value.artifactId === artifact.id
-      ),
-    }
-  }
-
-  test('uses the Rust-provided zAxis for variable-level plane negation', async () => {
-    const { result, plane001, sketchBlockPlaneInfo } =
-      await setupStableOffsetPlaneData(
-        code('plane001', '-offsetPlane(XZ, offset = 0mm)')
-      )
-
-    expect(axis(plane001.xAxis)).toEqual([-1, 0, 0])
-    expect(axis(plane001.zAxis)).toEqual([0, 1, 0])
-    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
-    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
-
-    if (result === false || result instanceof Error) {
-      throw new Error(`Expected offset plane data, got ${String(result)}`)
-    }
-    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
-  })
-
-  test('keeps the same zAxis for non-negated offset planes', async () => {
-    const {
-      result,
-      plane001,
-      sketchBlockPlaneInfo,
-      effectiveArtifactHasVariable,
-    } = await setupStableOffsetPlaneData(code('plane001'))
-
-    expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
-    expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
-    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([1, 0, 0])
-    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, -1, 0])
-    expect(effectiveArtifactHasVariable).toBe(true)
-
-    if (result === false || result instanceof Error) {
-      throw new Error(`Expected offset plane data, got ${String(result)}`)
-    }
-    expect(result.negated).toBe(false)
-    expect(normalizeAxis(result.zAxis)).toEqual([0, -1, 0])
-  })
-
-  test('resolves sketch use-site negation when the effective plane artifact is not in variables', async () => {
-    const {
-      result,
-      plane001,
-      sketchBlockPlaneInfo,
-      effectiveArtifactHasVariable,
-    } = await setupStableOffsetPlaneData(code('-plane001'))
-
-    expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
-    expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
-    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
-    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
-    expect(effectiveArtifactHasVariable).toBe(false)
-
-    if (result === false || result instanceof Error) {
-      throw new Error(`Expected offset plane data, got ${String(result)}`)
-    }
-    expect(result.negated).toBe(false)
-    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
   })
 })
 

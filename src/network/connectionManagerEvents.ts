@@ -14,7 +14,6 @@ import type {
 import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
-  isHighlightSetEntity_type,
 } from '@src/network/utils'
 
 export const createOnEngineConnectionRestartRequest = ({
@@ -233,17 +232,17 @@ export const createOnEngineConnectionStarted = ({
           Object.values(
             getUnreliableSubscriptions()[result.type] || {}
           ).forEach((callback) => {
-            // TODO: There is only one response that uses the unreliable channel atm,
-            // highlight_set_entity, if there are more it's likely they will all have the same
-            // sequence logic, but I'm not sure if we use a single global sequence or a sequence
-            // per unreliable subscription.
+            // Hover/highlight responses may arrive out of order on the unreliable
+            // channel. Only apply the newest sequenced result we have seen.
             const data = result.data
-            if (isHighlightSetEntity_type(data)) {
-              if (
-                data.sequence !== undefined &&
-                data.sequence > getInSequence()
-              ) {
-                setInSequence(data.sequence)
+            const sequence = (data as { sequence?: number } | undefined)
+              ?.sequence
+            if (
+              result.type === 'highlight_set_entity' &&
+              typeof sequence === 'number'
+            ) {
+              if (sequence > getInSequence()) {
+                setInSequence(sequence)
                 callback(result)
               }
             }

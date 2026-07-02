@@ -3,8 +3,10 @@ import {
   addPatternCircular3D,
   addPatternLinear3D,
 } from '@src/lang/modifyAst/pattern3D'
+import { artifactToEntityRef } from '@src/lang/queryAst'
 import {
   type Artifact,
+  type ArtifactGraph,
   type CodeRef,
   assertParse,
   recast,
@@ -13,7 +15,7 @@ import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
@@ -76,12 +78,23 @@ async function getKclCommandValue(value: string, rustContext: RustContext) {
 
 describe('pattern3D.test.ts', () => {
   function createSelectionFromPathArtifact(
-    artifacts: (Artifact & { codeRef: CodeRef })[]
+    artifacts: (Artifact & { codeRef: CodeRef })[],
+    artifactGraph: ArtifactGraph
   ): Selections {
-    const graphSelections = artifacts.map((artifact) => ({
-      codeRef: artifact.codeRef,
-      artifact,
-    }))
+    const graphSelections = artifacts.map((artifact) => {
+      let id: string | undefined
+      for (const [k, a] of artifactGraph) {
+        if (a === artifact) {
+          id = k
+          break
+        }
+      }
+      return {
+        entityRef:
+          id != null ? artifactToEntityRef(artifact.type, id) : undefined,
+        codeRef: artifact.codeRef,
+      }
+    })
     return {
       graphSelections,
       otherSelections: [],
@@ -105,7 +118,7 @@ describe('pattern3D.test.ts', () => {
     if (artifacts.length === 0) {
       throw new Error('Sweep artifact not found in the graph')
     }
-    const selections = createSelectionFromPathArtifact(artifacts)
+    const selections = createSelectionFromPathArtifact(artifacts, artifactGraph)
     return { ast, selections, artifactGraph }
   }
 

@@ -281,7 +281,6 @@ function buildSegmentCtorWithDrag({
       type: 'Circle',
       center: newCenter,
       start: newStart,
-      construction: baseCtor.construction,
     }
   } else if (baseCtor.type === 'ControlPointSpline') {
     return {

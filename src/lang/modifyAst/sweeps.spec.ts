@@ -2,19 +2,19 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { KclManager } from '@src/lang/KclManager'
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import {
   addExtrude,
   addLoft,
   addRevolve,
   addSweep,
+  getAxisExpression,
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 import {
   type ArtifactGraph,
   type Name,
-  type PathToNode,
   assertParse,
   getAllOperations,
   recast,
@@ -99,7 +99,7 @@ async function getAstAndSketchSelectionsEngineless(
   if (artifacts.length === 0) {
     throw new Error('Artifact not found in the graph')
   }
-  const sketches = createSelectionFromPathArtifact(artifacts)
+  const sketches = createSelectionFromPathArtifact(artifacts, artifactGraph)
   return { artifactGraph, ast, sketches }
 }
 
@@ -625,38 +625,6 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
 )`)
     })
 
-    it('should add an extrude call with draft angle', async () => {
-      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
-        circleProfileCode,
-        instanceInThisFile,
-        kclManagerInThisFile
-      )
-      const length = await getKclCommandValue(
-        '10',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const draftAngle = await getKclCommandValue(
-        '45deg',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const result = addExtrude({
-        ast,
-        sketches,
-        length,
-        draftAngle,
-        artifactGraph,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(circleProfileCode)
-      expect(newCode).toContain(
-        `extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)`
-      )
-    })
-
     it('should edit an extrude call from symmetric true to false and new length', async () => {
       const extrudeCode = `${circleProfileCode}
 extrude001 = extrude(profile001, length = 1, symmetric = true)`
@@ -1099,8 +1067,11 @@ profile002 = startProfile(sketch002, at = [0, 0])
         throw new Error('Artifact not found in the graph')
       }
 
-      const sketches = createSelectionFromPathArtifact([artifact1])
-      const path = createSelectionFromPathArtifact([artifact2])
+      const sketches = createSelectionFromPathArtifact(
+        [artifact1],
+        artifactGraph
+      )
+      const path = createSelectionFromPathArtifact([artifact2], artifactGraph)
       return { ast, artifactGraph, sketches, path }
     }
 
@@ -1563,11 +1534,14 @@ profile003 = startProfile(sketch002, at = [0, 0])
         throw new Error('Artifacts not found in the graph')
       }
 
-      const sketches = createSelectionFromPathArtifact([
-        artifacts[0],
-        artifacts[1],
-      ])
-      const path = createSelectionFromPathArtifact([artifacts[2]])
+      const sketches = createSelectionFromPathArtifact(
+        [artifacts[0], artifacts[1]],
+        artifactGraph
+      )
+      const path = createSelectionFromPathArtifact(
+        [artifacts[2]],
+        artifactGraph
+      )
       const result = addSweep({
         ast,
         artifactGraph,
@@ -2294,10 +2268,16 @@ sketch002 = startSketchOn(extrude001, face = rectangleSegmentA001)
       const artifacts = [...artifactGraph.values()]
       const circleArtifact = artifacts.findLast((a) => a.type === 'path')
       if (!circleArtifact) throw new Error('Circle artifact not found in graph')
-      const sketches = createSelectionFromPathArtifact([circleArtifact])
+      const sketches = createSelectionFromPathArtifact(
+        [circleArtifact],
+        artifactGraph
+      )
       const edgeArtifact = artifacts.find((a) => a.type === 'segment')
       if (!edgeArtifact) throw new Error('Edge artifact not found in graph')
-      const edge = createSelectionFromPathArtifact([edgeArtifact])
+      const edge = createSelectionFromPathArtifact(
+        [edgeArtifact],
+        artifactGraph
+      )
       const angle = await getKclCommandValue(
         '20',
         instanceInThisFile,
@@ -2342,10 +2322,16 @@ sketch002 = startSketchOn(XY)
       const artifacts = [...artifactGraph.values()]
       const circleArtifact = artifacts.findLast((a) => a.type === 'path')
       if (!circleArtifact) throw new Error('Circle artifact not found in graph')
-      const sketches = createSelectionFromPathArtifact([circleArtifact])
+      const sketches = createSelectionFromPathArtifact(
+        [circleArtifact],
+        artifactGraph
+      )
       const edgeArtifact = artifacts.findLast((a) => a.type === 'segment')
       if (!edgeArtifact) throw new Error('Edge artifact not found in graph')
-      const edge = createSelectionFromPathArtifact([edgeArtifact])
+      const edge = createSelectionFromPathArtifact(
+        [edgeArtifact],
+        artifactGraph
+      )
       const angle = await getKclCommandValue(
         '360',
         instanceInThisFile,
@@ -2512,21 +2498,16 @@ profile001 = startProfile(sketch001, at = [0, 0])
       const edgeArtifact = [...artifactGraph.values()].find(
         (a) => a.type === 'segment'
       )
-      const edge: Selections = createSelectionFromPathArtifact([edgeArtifact!])
-      const nodeToEdit: PathToNode = [
-        ['body', ''],
-        [1, 'index'],
-        ['expression', 'ExpressionStatement'],
-        ['body', 'PipeExpression'],
-        [1, 'index'],
-      ]
+      const edge: Selections = createSelectionFromPathArtifact(
+        [edgeArtifact!],
+        artifactGraph
+      )
       const result = getAxisExpression(
         undefined,
         edge,
         ast,
         instanceInThisFile,
-        artifactGraph,
-        nodeToEdit
+        artifactGraph
       )
       if (err(result)) throw result
       expect(result.generatedAxis.type).toEqual('Name')
@@ -2657,10 +2638,16 @@ revolve001 = revolve(region001, angle = 36deg, axis = sketch001.line5)`
       if (!segId) throw new Error('Segment artifact not found')
       const edgeSelection = result.edge?.graphSelections[0]
       if (!edgeSelection) throw new Error('Edge selection not found')
-      if (!edgeSelection.artifact) throw new Error('Edge artifact not found')
       expect(result.axisOrEdge).toEqual('Edge')
       expect(result.edge).toBeDefined()
-      expect(edgeSelection.artifact.id).toEqual(segId.id)
+      const resolvedEdgeSelection = resolveToCodeRef(
+        edgeSelection,
+        artifactGraph
+      )
+      if (!resolvedEdgeSelection?.artifact) {
+        throw new Error('Edge artifact not found')
+      }
+      expect(resolvedEdgeSelection.artifact.id).toEqual(segId.id)
       expect(result.axis).toBeUndefined()
     })
   })

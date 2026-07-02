@@ -7,6 +7,7 @@ import {
   ContextMenuDivider,
   ContextMenuItem,
 } from '@src/components/ContextMenu'
+import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { getSelectedSketchTarget } from '@src/lang/queryAst'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -19,7 +20,6 @@ import {
   setOpenPanes,
 } from '@src/lib/layout'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
-import { selectSketchPlane } from '@src/lib/selections'
 import { reportRejection } from '@src/lib/trap'
 import toast from 'react-hot-toast'
 
@@ -108,10 +108,7 @@ export function useViewControlMenuItems() {
               type: 'Set selection',
               data: {
                 selectionType: 'singleCodeCursor',
-                selection: {
-                  artifact: firstValidSelection.artifact,
-                  codeRef: firstValidSelection.codeRef,
-                },
+                selection: firstValidSelection,
                 scrollIntoView: true,
               },
             })

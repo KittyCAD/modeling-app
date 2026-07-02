@@ -9,6 +9,7 @@ import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
+import { resolveToCodeRef } from '@src/lang/queryAst'
 import type RustContext from '@src/lib/rustContext'
 import type { Themes } from '@src/lib/theme'
 import type {
@@ -38,6 +39,8 @@ import {
 } from '@src/clientSideScene/sceneUtils'
 import { selectionDispatchedBySketchSolveEvent } from '@src/editor/plugins/sketchSelection'
 import { compilationIssuesToDiagnostics } from '@src/lang/errors'
+import { getSketchBlockForArtifact } from '@src/lang/std/artifactGraph'
+import type { ArtifactGraph } from '@src/lang/wasm'
 import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { deferredCallback, isNonNullable, isOverlap } from '@src/lib/utils'
@@ -354,6 +357,11 @@ export function buildSegmentCtorFromObject(
       end: endPoint,
     }
   } else if (isCircleSegment(obj)) {
+    const ctor = obj.kind.segment.ctor
+    if (ctor.type !== 'Circle') {
+      console.error('Failed to find circle ctor for Circle segment', obj)
+      return null
+    }
     const centerPoint = getLinkedPoint({
       objects,
       pointId: obj.kind.segment.center,
@@ -370,7 +378,6 @@ export function buildSegmentCtorFromObject(
       type: 'Circle',
       center: centerPoint,
       start: startPoint,
-      construction: obj.kind.segment.construction,
     }
   } else if (isControlPointSplineSegment(obj)) {
     const points = obj.kind.segment.controls
@@ -1524,10 +1531,20 @@ export async function deleteDraftEntitiesPromise({
   }
 }
 
-export function isSketchBlockSelected(selectionRanges: Selections): boolean {
-  const artifact = selectionRanges.graphSelections[0]?.artifact
+export function isSketchBlockSelected(
+  selectionRanges: Selections,
+  artifactGraph: ArtifactGraph
+): boolean {
+  const first = selectionRanges.graphSelections[0]
+  if (!first) return false
+  const resolved = resolveToCodeRef(first, artifactGraph)
+  const sketchBlock = getSketchBlockForArtifact(
+    resolved?.artifact,
+    artifactGraph
+  )
   return (
-    artifact?.type === 'sketchBlock' && typeof artifact.sketchId === 'number'
+    sketchBlock?.type === 'sketchBlock' &&
+    typeof sketchBlock.sketchId === 'number'
   )
 }
 

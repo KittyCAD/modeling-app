@@ -7,13 +7,14 @@ import {
   createVariableDeclaration,
 } from '@src/lang/create'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { getNodeFromPath } from '@src/lang/queryAst'
+import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-/** Engine-using integration tests of modelingMachine. */
+/** Engine-using integration tests of modelingMachine.
+ * For engineless unit tests, see modelingMachine.test.ts */
 import {
   type Artifact,
   type ArtifactGraph,
@@ -63,9 +64,15 @@ const TESTS_WITHOUT_ENGINE_WORLD = [
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeEach(async () => {
-  const currentTestName = expect.getState().currentTestName ?? ''
-  if (TESTS_WITHOUT_ENGINE_WORLD.some((name) => currentTestName.includes(name)))
+  const currentTestName = expect.getState().currentTestName
+  if (
+    currentTestName &&
+    TESTS_WITHOUT_ENGINE_WORLD.some((testName) =>
+      currentTestName.includes(testName)
+    )
+  ) {
     return
+  }
 
   if (instanceInThisFile) {
     return
@@ -993,7 +1000,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1124,7 +1134,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1264,7 +1277,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1393,7 +1409,10 @@ p3 = [342.51, 216.38],
                 selection: {
                   graphSelections: [
                     {
-                      artifact: artifact,
+                      entityRef: artifactToEntityRef(
+                        artifact.type,
+                        artifact.id
+                      ),
                       codeRef: artifact.codeRef,
                     },
                   ],
@@ -1505,7 +1524,9 @@ sketch001 = sketch(on = YZ) {
         context.store.defaultUnit = { current: 'mm' } as any
         context.projectRef = { current: {} as any }
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({ type: 'Enter sketch' })
         actor.send({
@@ -1532,12 +1553,12 @@ sketch001 = sketch(on = YZ) {
           range: [0, 100, 0] as [number, number, number],
           pathToNode,
           nodePath: { steps: [] },
-        } as any
+        }
         const segmentCodeRef = {
           range: [35, 85, 0] as [number, number, number],
           pathToNode,
           nodePath: { steps: [] },
-        } as any
+        }
         const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
           type: 'sketchBlock',
           id: 'sketch-block-1',
@@ -1574,6 +1595,7 @@ sketch001 = sketch(on = YZ) {
           selectionRanges: {
             graphSelections: [
               {
+                artifact: segment,
                 codeRef: {
                   range: [45, 45, 0],
                   pathToNode,
@@ -1589,6 +1611,7 @@ sketch001 = sketch(on = YZ) {
             sceneInfra: {
               animate: vi.fn(),
               resetMouseListeners: vi.fn(),
+              setCallbacks: vi.fn(),
               camControls: {
                 enablePan: true,
                 enableRotate: true,
@@ -1639,39 +1662,41 @@ sketch001 = sketch(on = YZ) {
         artifactGraph = new Map(),
       }: {
         artifactGraph?: Map<unknown, unknown>
-      } = {}) =>
-        ({
-          ...modelingMachineInitialInternalContext,
-          kclManager: {
-            artifactGraph,
-            hasErrors: vi.fn(() => false),
-            hidePlanes: vi.fn(),
-            setCopilotEnabled: vi.fn(),
-            setSelectionFilter: vi.fn(),
-            setSelectionFilterToDefault: vi.fn(),
-            showPlanes: vi.fn(),
-            sceneInfra: {
-              animate: vi.fn(),
-              stop: vi.fn(),
-              resetMouseListeners: vi.fn(),
-              camControls: {
-                enablePan: true,
-                enableRotate: true,
-                syncDirection: 'engineToClient',
-              },
+      } = {}) => ({
+        ...modelingMachineInitialInternalContext,
+        kclManager: {
+          artifactGraph,
+          hasErrors: vi.fn(() => false),
+          hidePlanes: vi.fn(),
+          setCopilotEnabled: vi.fn(),
+          setSelectionFilter: vi.fn(),
+          setSelectionFilterToDefault: vi.fn(),
+          showPlanes: vi.fn(),
+          sceneInfra: {
+            animate: vi.fn(),
+            stop: vi.fn(),
+            resetMouseListeners: vi.fn(),
+            setCallbacks: vi.fn(),
+            camControls: {
+              enablePan: true,
+              enableRotate: true,
+              syncDirection: 'engineToClient',
             },
           },
-          rustContext: {},
-          engineCommandManager: {},
-          wasmInstance: {},
-          commandBarActor: {},
-          machineManager: {},
-        }) as any
+        },
+        rustContext: {},
+        engineCommandManager: {},
+        wasmInstance: {},
+        commandBarActor: {},
+        machineManager: {},
+      })
 
       it('shows default planes again when canceling sketch plane selection on a blank scene', async () => {
         const context = createSketchPlaneSelectionContext()
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({
           type: 'Enter sketch',
@@ -1704,7 +1729,9 @@ sketch001 = sketch(on = YZ) {
           }),
         }
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({
           type: 'Enter sketch',

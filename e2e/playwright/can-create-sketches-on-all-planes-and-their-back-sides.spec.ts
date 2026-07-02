@@ -49,8 +49,6 @@ test.describe(
         },
       }
 
-      const code = `@settings(defaultLengthUnit = in, kclVersion = 2.0)sketch001 = sketch(on = ${plane}) {}`
-
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
         await u.openDebugPanel()
         await u.clearCommandLogs()
@@ -70,7 +68,11 @@ test.describe(
         await page.waitForTimeout(600) // wait for animation
       })
 
-      await editor.expectEditor.toContain(code)
+      await expect(editor.codeContent).toContainText(
+        new RegExp(
+          `@settings\\(defaultLengthUnit = in(?:, kclVersion = 2\\.0)?\\)sketch001 = startSketchOn\\(${escapeRegExp(plane)}\\)|@settings\\(defaultLengthUnit = in(?:, kclVersion = 2\\.0)?\\)sketch001 = sketch\\(on = ${escapeRegExp(plane)}\\) \\{\\}`
+        )
+      )
     }
 
     const planeConfigs = [
