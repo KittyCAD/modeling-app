@@ -224,7 +224,7 @@ mod tests {
         let result = parse_execute(
             r##"
 plane = offsetPlane(XZ, offset = 4)
-styled = plane |> appearance(color = "#ff0000", opacity = 200, metalness = 200, roughness = 200)
+styled = plane |> appearance(color = "#ff0000", opacity = 30, metalness = 200, roughness = 200)
 "##,
         )
         .await
