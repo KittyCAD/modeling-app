@@ -32,6 +32,10 @@ import {
 } from '@src/lib/selections'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
+import type {
+  EngineSceneExtensionContext,
+  EngineSceneStreamLayer,
+} from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 
@@ -40,6 +44,9 @@ const TIME_TO_CONNECT = 30_000
 export const ConnectionStream = (props: {
   authToken: string | undefined
   sketchSolveStreamDimming?: number
+  streamClassName?: string
+  streamLayers?: readonly EngineSceneStreamLayer[]
+  streamLayerProps?: EngineSceneExtensionContext
 }) => {
   const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
@@ -485,7 +492,7 @@ export const ConnectionStream = (props: {
     <div
       role="presentation"
       ref={videoWrapperRef}
-      className="absolute inset-[-4px] z-0"
+      className={props.streamClassName ?? 'absolute inset-[-4px] z-0'}
       style={style}
       id="stream"
       data-testid="stream"
@@ -519,6 +526,23 @@ export const ConnectionStream = (props: {
         }
         sketchSolveStreamDimming={props.sketchSolveStreamDimming}
       />
+      {props.streamLayers?.map((layer) => {
+        if (!props.streamLayerProps) {
+          return null
+        }
+
+        const Component = layer.Component
+
+        return (
+          <div
+            key={layer.id}
+            className={`absolute inset-0 ${layer.wrapperClassName ?? ''}`}
+            data-engine-scene-stream-layer-id={layer.id}
+          >
+            <Component {...props.streamLayerProps} />
+          </div>
+        )
+      })}
       <ViewControlContextMenu
         event="mouseup"
         guard={viewControlContextMenuGuard}
@@ -554,7 +578,6 @@ export const ConnectionStream = (props: {
           Connecting and setting up scene...
         </Loading>
       )}
-      )
     </div>
   )
 }
