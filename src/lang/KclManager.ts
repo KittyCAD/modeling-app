@@ -12,6 +12,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { hydrateEdgeRefactorMetadata } from '@src/lang/lintRefactorActions'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
@@ -1234,9 +1235,13 @@ export class KclManager extends File {
     if (!hasMeta || !this.artifactGraph?.size) return false
 
     const instance = await this.wasmInstancePromise
+    const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
+      edgeRefactorMetadata: execState.edgeRefactorMetadata,
+      engineCommandManager: this.engineCommandManager,
+    })
     const newSource = refactorZ0006Unified(
       this.ast,
-      execState.edgeRefactorMetadata ?? [],
+      hydratedEdgeRefactorMetadata,
       execState.directTagFilletMetadata ?? [],
       this.artifactGraph,
       instance
@@ -2415,6 +2420,7 @@ export class KclManager extends File {
           edgeRefactorMetadata: execState.edgeRefactorMetadata,
           directTagFilletMetadata: execState.directTagFilletMetadata,
           artifactGraph: execState.artifactGraph,
+          engineCommandManager: this.engineCommandManager,
         })
       )
       if (this.sceneEntitiesManager) {

@@ -21,7 +21,6 @@ use crate::execution::ExtrudeSurface;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
-use crate::execution::PendingEdgeRefactorMeta;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
@@ -67,7 +66,7 @@ pub(crate) async fn get_face_ids_for_edge(
     }
 
     let resp = exec_state
-        .send_untracked_modeling_cmd(
+        .send_modeling_cmd_for_metadata(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::Solid3dGetAllEdgeFaces::builder()
@@ -96,19 +95,6 @@ pub(crate) async fn get_face_ids_for_edge(
         )));
     }
     Ok(info.faces.clone())
-}
-
-fn record_pending_edge_refactor_meta(
-    exec_state: &mut ExecState,
-    edge_id: Uuid,
-    stdlib_fn: EdgeRefactorStdlibFn,
-    args: &Args,
-) {
-    exec_state.record_pending_edge_refactor_meta(PendingEdgeRefactorMeta {
-        edge_id,
-        source_range: args.source_range,
-        stdlib_fn,
-    });
 }
 
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
@@ -177,7 +163,13 @@ async fn inner_get_opposite_edge(
 
     let edge_id = opposite_edge.edge;
 
-    record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetOppositeEdge, &args);
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        edge_id,
+        object_id: Some(sketch_id),
+        face_ids: None,
+        source_range: args.source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::GetOppositeEdge,
+    });
     Ok(edge_id)
 }
 
@@ -237,7 +229,13 @@ async fn inner_get_next_adjacent_edge(
         ))
     })?;
 
-    record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetNextAdjacentEdge, &args);
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        edge_id,
+        object_id: Some(sketch_id),
+        face_ids: None,
+        source_range: args.source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::GetNextAdjacentEdge,
+    });
     Ok(edge_id)
 }
 
@@ -296,12 +294,13 @@ async fn inner_get_previous_adjacent_edge(
         ))
     })?;
 
-    record_pending_edge_refactor_meta(
-        exec_state,
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
         edge_id,
-        EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
-        &args,
-    );
+        object_id: Some(sketch_id),
+        face_ids: None,
+        source_range: args.source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+    });
     Ok(edge_id)
 }
 
@@ -413,7 +412,8 @@ async fn inner_get_common_edge(
 
     exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
         edge_id,
-        face_ids: [first_face_id, second_face_id],
+        object_id: Some(first_tagged_path.geometry.id()),
+        face_ids: Some([first_face_id, second_face_id]),
         source_range: args.source_range,
         stdlib_fn: EdgeRefactorStdlibFn::GetCommonEdge,
     });

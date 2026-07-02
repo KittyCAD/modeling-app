@@ -1183,16 +1183,22 @@ function sourceRangesOverlap(
   return a[2] === b[2] && a[0] < b[1] && b[0] < a[1]
 }
 
-function filterCallsBySourceRange<T extends { range: Z0006SourceRange }>(
-  calls: T[],
-  sourceRange?: Z0006SourceRange
-): T[] {
+function filterCallsBySourceRange<
+  T extends { range: Z0006SourceRange; triggerRanges?: Z0006SourceRange[] },
+>(calls: T[], sourceRange?: Z0006SourceRange): T[] {
   if (!sourceRange) return calls
-  return calls.filter((call) => sourceRangesOverlap(call.range, sourceRange))
+  return calls.filter(
+    (call) =>
+      sourceRangesOverlap(call.range, sourceRange) ||
+      call.triggerRanges?.some((range) =>
+        sourceRangesOverlap(range, sourceRange)
+      )
+  )
 }
 
 interface UnifiedCallToFix {
   range: Z0006SourceRange
+  triggerRanges?: Z0006SourceRange[]
   orderedPayloads: FilletEdgeRefPayload[]
   orderedEdgeRefExprs: Expr[]
   hasExistingEdgeRefs: boolean
@@ -1235,6 +1241,7 @@ function findFilletChamferCallsToFixUnified(
       const existingEdgeRefExprs = getExistingEdgeRefsFromCall(call)
       const orderedPayloads: FilletEdgeRefPayload[] = []
       const orderedEdgeRefExprs: Expr[] = []
+      const triggerRanges: Z0006SourceRange[] = []
       let tagsBaseExpr: Expr | null = null
       let hasUnconvertedTagsElement = false
 
@@ -1258,6 +1265,7 @@ function findFilletChamferCallsToFixUnified(
                 sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
               if (hasFaceIds(meta)) {
+                triggerRanges.push([inner.start, inner.end, inner.moduleId])
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1300,6 +1308,11 @@ function findFilletChamferCallsToFixUnified(
                 )
               )
               if (hasFaceIds(meta)) {
+                triggerRanges.push([
+                  deprecatedCall.call.start,
+                  deprecatedCall.call.end,
+                  deprecatedCall.call.moduleId,
+                ])
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1325,6 +1338,7 @@ function findFilletChamferCallsToFixUnified(
         const moduleId = call.moduleId
         results.push({
           range: [call.start, call.end, moduleId],
+          triggerRanges,
           orderedPayloads,
           orderedEdgeRefExprs,
           hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
@@ -1361,6 +1375,12 @@ interface GdtDistanceEndpointCallToFix {
     label: 'from' | 'to'
     payload: FilletEdgeRefPayload
   }>
+  pathToCall?: PathToNode
+}
+
+interface BoundedEdgeCallToFix {
+  range: Z0006SourceRange
+  payload: FilletEdgeRefPayload
   pathToCall?: PathToNode
 }
 
@@ -1578,6 +1598,47 @@ export function findGdtDistanceEndpointCallsToFix(
   return results
 }
 
+export function findBoundedEdgeCallsToFix(
+  program: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+): BoundedEdgeCallToFix[] {
+  const results: BoundedEdgeCallToFix[] = []
+
+  traverse(program, {
+    enter(node, pathToNode) {
+      if (node.type !== 'CallExpressionKw') return
+
+      const call = node
+      const calleeName = getCalleeName(call)
+      if (calleeName !== 'getBoundedEdge') return
+
+      const edgeArg = call.arguments?.find((a) => getLabelName(a) === 'edge')
+      if (!edgeArg?.arg) return
+
+      const inner = getCallFromExpr(edgeArg.arg)
+      if (!inner) return
+
+      const innerCallee = getCalleeName(inner)
+      if (!isDeprecatedEdgeStdlib(innerCallee)) return
+
+      const meta = edgeRefactorMetadata.find((m) =>
+        sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
+      )
+      if (!meta?.faceIds) return
+
+      results.push({
+        range: [call.start, call.end, call.moduleId],
+        payload: {
+          side_faces: meta.faceIds,
+        },
+        pathToCall: pathToNode,
+      })
+    },
+  })
+
+  return results
+}
+
 function refactorRevolveHelixAxisToEdgeRefInPlace(
   modifiedAst: Node<Program>,
   toFix: RevolveHelixCallToFix[],
@@ -1767,6 +1828,47 @@ function refactorGdtDistanceEndpointsToEdgeSpecifiersInPlace(
   return modifiedAst
 }
 
+function refactorBoundedEdgeEdgeArgToEdgeSpecifierInPlace(
+  modifiedAst: Node<Program>,
+  toFix: BoundedEdgeCallToFix[],
+  pathList: PathToNode[],
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): Node<Program> {
+  if (toFix.length === 0) return modifiedAst
+
+  for (let index = 0; index < toFix.length; index++) {
+    const { payload, pathToCall } = toFix[index]
+    const path = pathToCall?.length ? pathToCall : pathList[index]
+    const result = createEdgeRefObjectExpression(
+      payload,
+      wasmInstance,
+      modifiedAst,
+      artifactGraph
+    )
+    if (err(result)) continue
+
+    const nextAst = result.modifiedAst
+    const nodeResult = getNodeFromPath<Node<CallExpressionKw>>(
+      nextAst,
+      path,
+      wasmInstance,
+      ['CallExpressionKw']
+    )
+    if (err(nodeResult)) continue
+
+    const callNode = nodeResult.node
+    const newArgs = (callNode.arguments ?? []).filter(
+      (a) => getLabelName(a) !== 'edge'
+    )
+    newArgs.push(createLabeledArg('edge', result.expr))
+    callNode.arguments = newArgs
+    modifiedAst = nextAst
+  }
+
+  return modifiedAst
+}
+
 export function refactorZ0006Unified(
   ast: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1800,12 +1902,17 @@ export function refactorZ0006Unified(
     findGdtDistanceEndpointCallsToFix(ast, edgeRefactorMetadata, artifactGraph),
     sourceRange
   )
+  const toFixBoundedEdge = filterCallsBySourceRange(
+    findBoundedEdgeCallsToFix(ast, edgeRefactorMetadata),
+    sourceRange
+  )
   if (
     toFixFilletChamfer.length === 0 &&
     toFixRevolveHelix.length === 0 &&
     toFixExtrudeTo.length === 0 &&
     toFixGdtEdges.length === 0 &&
-    toFixGdtDistanceEndpoints.length === 0
+    toFixGdtDistanceEndpoints.length === 0 &&
+    toFixBoundedEdge.length === 0
   ) {
     return new Error('No Z0006 fixes to apply')
   }
@@ -1904,6 +2011,18 @@ export function refactorZ0006Unified(
     modifiedAst,
     toFixGdtDistanceEndpoints,
     toFixGdtDistanceEndpoints.map((item) =>
+      item.pathToCall?.length
+        ? item.pathToCall
+        : getNodePathFromSourceRange(ast, item.range)
+    ),
+    artifactGraph,
+    wasmInstance
+  )
+
+  modifiedAst = refactorBoundedEdgeEdgeArgToEdgeSpecifierInPlace(
+    modifiedAst,
+    toFixBoundedEdge,
+    toFixBoundedEdge.map((item) =>
       item.pathToCall?.length
         ? item.pathToCall
         : getNodePathFromSourceRange(ast, item.range)

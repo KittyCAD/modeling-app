@@ -170,10 +170,11 @@ impl ExecState {
             .await
     }
 
-    /// Send a query-only modeling command without recording it in artifact
-    /// command snapshots. These commands can support lint/refactor metadata,
-    /// but they are not part of the modeled result.
-    pub(crate) async fn send_untracked_modeling_cmd(
+    /// Send a modeling cmd and wait for the response without recording it as an artifact command.
+    ///
+    /// This is for metadata lookups that support lint/refactor behavior but should not become
+    /// part of the user's observable modeling command history.
+    pub(crate) async fn send_modeling_cmd_for_metadata(
         &mut self,
         meta: ModelingCmdMeta<'_>,
         cmd: ModelingCmd,
