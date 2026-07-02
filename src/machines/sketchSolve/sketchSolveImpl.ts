@@ -1538,7 +1538,10 @@ export function isSketchBlockSelected(
   const first = selectionRanges.graphSelections[0]
   if (!first) return false
   const resolved = resolveToCodeRef(first, artifactGraph)
-  const sketchBlock = getSketchBlockForArtifact(resolved?.artifact, artifactGraph)
+  const sketchBlock = getSketchBlockForArtifact(
+    resolved?.artifact,
+    artifactGraph
+  )
   return (
     sketchBlock?.type === 'sketchBlock' &&
     typeof sketchBlock.sketchId === 'number'

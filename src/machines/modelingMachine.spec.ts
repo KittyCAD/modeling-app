@@ -1654,35 +1654,34 @@ sketch001 = sketch(on = YZ) {
         artifactGraph = new Map(),
       }: {
         artifactGraph?: Map<unknown, unknown>
-      } = {}) =>
-        ({
-          ...modelingMachineInitialInternalContext,
-          kclManager: {
-            artifactGraph,
-            hasErrors: vi.fn(() => false),
-            hidePlanes: vi.fn(),
-            setCopilotEnabled: vi.fn(),
-            setSelectionFilter: vi.fn(),
-            setSelectionFilterToDefault: vi.fn(),
-            showPlanes: vi.fn(),
-            sceneInfra: {
-              animate: vi.fn(),
-              stop: vi.fn(),
-              resetMouseListeners: vi.fn(),
-              setCallbacks: vi.fn(),
-              camControls: {
-                enablePan: true,
-                enableRotate: true,
-                syncDirection: 'engineToClient',
-              },
+      } = {}) => ({
+        ...modelingMachineInitialInternalContext,
+        kclManager: {
+          artifactGraph,
+          hasErrors: vi.fn(() => false),
+          hidePlanes: vi.fn(),
+          setCopilotEnabled: vi.fn(),
+          setSelectionFilter: vi.fn(),
+          setSelectionFilterToDefault: vi.fn(),
+          showPlanes: vi.fn(),
+          sceneInfra: {
+            animate: vi.fn(),
+            stop: vi.fn(),
+            resetMouseListeners: vi.fn(),
+            setCallbacks: vi.fn(),
+            camControls: {
+              enablePan: true,
+              enableRotate: true,
+              syncDirection: 'engineToClient',
             },
           },
-          rustContext: {},
-          engineCommandManager: {},
-          wasmInstance: {},
-          commandBarActor: {},
-          machineManager: {},
-        })
+        },
+        rustContext: {},
+        engineCommandManager: {},
+        wasmInstance: {},
+        commandBarActor: {},
+        machineManager: {},
+      })
 
       it('shows default planes again when canceling sketch plane selection on a blank scene', async () => {
         const context = createSketchPlaneSelectionContext()
