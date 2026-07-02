@@ -43,6 +43,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
@@ -233,21 +234,25 @@ export function addExtrude({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
-    ...lengthExpr,
-    ...toExpr,
-    ...symmetricExpr,
-    ...bidirectionalLengthExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...draftAngleExpr,
-    ...twistAngleExpr,
-    ...twistAngleStepExpr,
-    ...twistCenterExpr,
-    ...methodExpr,
-    ...hideSeamsExpr,
-    ...bodyTypeExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Extrude'),
+    sketchesExpr,
+    [
+      ...lengthExpr,
+      ...toExpr,
+      ...symmetricExpr,
+      ...bidirectionalLengthExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...draftAngleExpr,
+      ...twistAngleExpr,
+      ...twistAngleStepExpr,
+      ...twistCenterExpr,
+      ...methodExpr,
+      ...hideSeamsExpr,
+      ...bodyTypeExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if (length && 'variableName' in length && length.variableName) {
@@ -491,17 +496,21 @@ export function addSweep({
       : [createLabeledArg('version', createLiteral(2, wasmInstance))]
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
-    createLabeledArg('path', pathExpr),
-    ...sectionalExpr,
-    ...relativeToExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...bodyTypeExpr,
-    ...versionExpr,
-    ...translateProfileToPathExpr,
-    ...orientProfilePerpendicularExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Sweep'),
+    sketchesExpr,
+    [
+      createLabeledArg('path', pathExpr),
+      ...sectionalExpr,
+      ...relativeToExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...bodyTypeExpr,
+      ...versionExpr,
+      ...translateProfileToPathExpr,
+      ...orientProfilePerpendicularExpr,
+    ]
+  )
 
   if (version && 'variableName' in version && version.variableName) {
     insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
@@ -622,14 +631,18 @@ export function addLoft({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
-    ...vDegreeExpr,
-    ...bezApproximateRationalExpr,
-    ...baseCurveIndexExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...bodyTypeExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Loft'),
+    sketchesExpr,
+    [
+      ...vDegreeExpr,
+      ...bezApproximateRationalExpr,
+      ...baseCurveIndexExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...bodyTypeExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if (vDegree && 'variableName' in vDegree && vDegree.variableName) {
@@ -771,15 +784,19 @@ export function addRevolve({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
-    createLabeledArg('angle', valueOrVariable(angle)),
-    createLabeledArg('axis', getAxisResult.generatedAxis),
-    ...symmetricExpr,
-    ...bidirectionalAngleExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...bodyTypeExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Revolve'),
+    sketchesExpr,
+    [
+      createLabeledArg('angle', valueOrVariable(angle)),
+      createLabeledArg('axis', getAxisResult.generatedAxis),
+      ...symmetricExpr,
+      ...bidirectionalAngleExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...bodyTypeExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {

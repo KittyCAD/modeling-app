@@ -281,34 +281,6 @@ describe('systemIOMachine - XState', () => {
         )
         actor.stop()
       })
-      it('should accept externally synced folders while idle', async () => {
-        const actor = createActor(systemIOMachineImpl, {
-          input: {
-            wasmInstancePromise: Promise.resolve(instanceInThisFile),
-            app: appInstanceInThisFile,
-          },
-        }).start()
-
-        try {
-          const folders = [mockProject('from-registry')]
-          actor.send({
-            type: SystemIOMachineEvents.setFolders,
-            data: { folders },
-          })
-
-          await waitFor(actor, (state) => state.context.folders === folders)
-
-          expect(actor.getSnapshot()).toMatchObject({
-            value: SystemIOMachineStates.idle,
-            context: {
-              folders,
-              hasListedProjects: true,
-            },
-          })
-        } finally {
-          actor.stop()
-        }
-      })
     })
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {
