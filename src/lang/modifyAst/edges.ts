@@ -63,6 +63,7 @@ import {
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
@@ -1170,7 +1171,7 @@ function sourceRangeMatch(
 function hasFaceIds(
   meta: EdgeRefactorMeta | undefined
 ): meta is EdgeRefactorMeta & { faceIds: [string, string] } {
-  return Array.isArray(meta?.faceIds) && meta.faceIds.length === 2
+  return isArray(meta?.faceIds) && meta.faceIds.length === 2
 }
 
 type Z0006SourceRange = [number, number, number]
