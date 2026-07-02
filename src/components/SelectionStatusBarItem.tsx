@@ -1,18 +1,25 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
+import type { ComponentType } from 'react'
 import { useState } from 'react'
+
+type PopoverSection = {
+  id: string
+  component: ComponentType
+}
 
 export function SelectionStatusBarItem({
   label,
   popoverSections,
 }: {
   label: string
-  popoverSections: { id: string; component: React.FC }[]
+  popoverSections: PopoverSection[]
 }) {
   const [isOpen, setIsOpen] = useState(false)
+  const hasPopover = popoverSections.length > 0
 
-  if (popoverSections.length === 0) {
+  if (!hasPopover) {
     return (
       <div
         role="tooltip"
@@ -29,12 +36,12 @@ export function SelectionStatusBarItem({
     <div className="relative">
       <button
         type="button"
-        className={`${defaultStatusBarItemClassNames} gap-1`}
+        className={`${defaultStatusBarItemClassNames} max-w-[40vw] gap-1`}
         data-testid="selection-status"
         aria-expanded={isOpen}
         onClick={() => setIsOpen(true)}
       >
-        <span>{label}</span>
+        <span className="truncate">{label}</span>
         {!isOpen && (
           <Tooltip wrapperClassName="ui-open:hidden" position="top-right">
             Currently selected geometry
@@ -43,7 +50,7 @@ export function SelectionStatusBarItem({
       </button>
       {isOpen && (
         <div
-          className="absolute right-0 bottom-full mb-1 z-20 w-[min(240px,calc(100vw-1rem))] max-h-[60vh] overflow-auto rounded-md border border-chalkboard-30 dark:border-chalkboard-80 bg-chalkboard-10 dark:bg-chalkboard-100 shadow-lg"
+          className="absolute right-0 bottom-full mb-1 z-20 w-[min(240px,calc(100vw-1rem))] max-h-[60vh] overflow-auto rounded-md border border-chalkboard-30 bg-chalkboard-10 shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-100"
           data-testid="selection-references-popover"
         >
           <div className="sticky top-0 z-10 flex justify-end border-b border-chalkboard-30 dark:border-chalkboard-80 bg-chalkboard-10 dark:bg-chalkboard-100 p-1">
