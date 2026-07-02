@@ -86,7 +86,7 @@ async fn cache_test(
         // Save the snapshot.
         let path = crate::assert_out(&format!("cache_{test_name}_{index}"), &img);
 
-        img_results.push((path, img, outcome));
+        img_results.push((path, img, *outcome));
     }
 
     ctx.close().await;

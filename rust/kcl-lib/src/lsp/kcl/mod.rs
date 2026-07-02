@@ -586,7 +586,7 @@ impl crate::lsp::backend::Backend for Backend {
         // Execute the code if we have an executor context.
         // This function automatically executes if we should & updates the diagnostics if we got
         // errors.
-        if self.execute(&params, &ast).await.is_err() {
+        if Box::pin(self.execute(&params, &ast)).await.is_err() {
             return;
         }
 
@@ -902,7 +902,9 @@ impl Backend {
                 .run_mock(ast, &crate::execution::MockConfig::default())
                 .await
         } else {
-            executor_ctx.run_with_caching(ast.clone()).await
+            Box::pin(executor_ctx.run_with_caching(ast.clone()))
+                .await
+                .map(|outcome| *outcome)
         };
 
         match result {

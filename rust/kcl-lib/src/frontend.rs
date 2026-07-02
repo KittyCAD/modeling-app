@@ -659,7 +659,7 @@ impl SketchApi for FrontendState {
         let outcome = ctx.run_with_caching(new_program.clone()).await?;
         let freedom_analysis_ran = true;
 
-        let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
+        let outcome = self.update_state_after_exec(*outcome, freedom_analysis_ran);
 
         let Some(sketch_id) = self
             .scene_graph
@@ -761,7 +761,7 @@ impl SketchApi for FrontendState {
         let outcome = ctx.run_with_caching(self.program.clone()).await?;
 
         // exit_sketch doesn't run freedom analysis, just clears sketch_mode
-        self.update_state_after_exec(outcome, false);
+        self.update_state_after_exec(*outcome, false);
 
         Ok(self.scene_graph_for_ui())
     }
@@ -1851,7 +1851,7 @@ impl FrontendState {
         self.point_freedom_cache.clear();
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
-                let outcome = self.update_state_after_exec(outcome, true);
+                let outcome = self.update_state_after_exec(*outcome, true);
                 let checkpoint_id = self
                     .create_sketch_checkpoint(outcome.clone())
                     .await
@@ -1888,7 +1888,7 @@ impl FrontendState {
         self.point_freedom_cache.clear();
         match ctx.run_with_caching(program).await {
             Ok(outcome) => {
-                let outcome = self.update_state_after_exec(outcome, true);
+                let outcome = self.update_state_after_exec(*outcome, true);
                 Ok(SceneGraphDelta {
                     new_graph: self.scene_graph_for_ui(),
                     exec_outcome: outcome,
@@ -3383,7 +3383,7 @@ impl FrontendState {
         let outcome = ctx.run_with_caching(new_program).await?;
         let freedom_analysis_ran = true;
 
-        let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);
+        let outcome = self.update_state_after_exec(*outcome, freedom_analysis_ran);
 
         let src_delta = SourceDelta { text: new_source };
         let scene_graph_delta = SceneGraphDelta {
