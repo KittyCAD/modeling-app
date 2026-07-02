@@ -175,6 +175,16 @@ function normalizeProjectPathForCloudMetadata(projectPath: string) {
   return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
+function getProjectParentPathForComparison(projectPath: string) {
+  const normalizedPath = projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+  const lastSeparatorIndex = normalizedPath.lastIndexOf('/')
+  if (lastSeparatorIndex <= 0) {
+    return ''
+  }
+
+  return normalizedPath.slice(0, lastSeparatorIndex)
+}
+
 const prepareBulkProjectWrite = async ({
   context,
   requestedProjectName,
@@ -470,6 +480,55 @@ export function getCloudProjectFolderRenameName({
   return candidate
 }
 
+export function getProjectForRename({
+  folders,
+  projectName,
+  projectPath,
+}: {
+  folders: Project[]
+  projectName: string
+  projectPath?: string
+}) {
+  return projectPath
+    ? folders.find((p) => p.path === projectPath)
+    : folders.find((p) => p.name === projectName)
+}
+
+export function getLocalProjectRenameName({
+  folders,
+  oldProjectPath,
+  requestedProjectName,
+}: {
+  folders: Project[]
+  oldProjectPath: string
+  requestedProjectName: string
+}) {
+  const siblingProjects = folders.filter(
+    (p) =>
+      getProjectParentPathForComparison(p.path) ===
+      getProjectParentPathForComparison(oldProjectPath)
+  )
+
+  let newProjectName: string = requestedProjectName
+  if (doesProjectNameNeedInterpolated(requestedProjectName)) {
+    const nextIndex = getNextProjectIndex(requestedProjectName, siblingProjects)
+    newProjectName = interpolateProjectNameWithIndex(
+      requestedProjectName,
+      nextIndex
+    )
+  }
+
+  if (
+    siblingProjects.find(
+      (p) => p.path !== oldProjectPath && p.name === newProjectName
+    )
+  ) {
+    return new Error(`Project with name "${newProjectName}" already exists`)
+  }
+
+  return newProjectName
+}
+
 export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
@@ -565,7 +624,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
         const requestedProjectName = input.requestedProjectName
         const projectName = input.projectName
-        const project = folders.find((p) => p.name === projectName)
+        const project = getProjectForRename({
+          folders,
+          projectName,
+          projectPath: input.projectPath,
+        })
         const existingDisplayName = project
           ? getProjectDisplayName(project)
           : projectName
@@ -612,29 +675,20 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           }
         }
 
-        let newProjectName: string = requestedProjectName
-        if (doesProjectNameNeedInterpolated(requestedProjectName)) {
-          const nextIndex = getNextProjectIndex(requestedProjectName, folders)
-          newProjectName = interpolateProjectNameWithIndex(
-            requestedProjectName,
-            nextIndex
-          )
-        }
-
-        // Toast an error if the project name is taken
-        if (folders.find((p) => p.name === newProjectName)) {
-          return Promise.reject(
-            new Error(`Project with name "${newProjectName}" already exists`)
-          )
-        }
-
-        const projectToRename = folders.find(
-          (p) => p.path === input.projectPath || p.name === projectName
-        )
+        const projectToRename = project
         const oldProjectPath =
           input.projectPath ||
           projectToRename?.path ||
           fsZds.join(input.context.projectDirectoryPath, projectName)
+        const newProjectName = getLocalProjectRenameName({
+          folders,
+          oldProjectPath,
+          requestedProjectName,
+        })
+        if (err(newProjectName)) {
+          return Promise.reject(newProjectName)
+        }
+
         const newProjectPath = await renameProjectDirectory(
           oldProjectPath,
           newProjectName

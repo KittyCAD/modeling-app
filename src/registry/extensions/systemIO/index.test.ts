@@ -1,3 +1,4 @@
+import { tmpdir } from 'node:os'
 import { Registry } from '@kittycad/registry'
 import { writeRecentProjectsForEnvironment } from '@src/lib/desktop'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
@@ -112,9 +113,25 @@ describe('systemIO extension', () => {
 
   it('lists recent project handles for an environment', async () => {
     const environmentName = `system-io-extension-${Date.now()}`
+    const environmentFolder = fsZds.join(tmpdir(), environmentName)
+    await fsZds.mkdir(environmentFolder, { recursive: true })
+    vi.stubGlobal('window', {
+      electron: {
+        getAppTestProperty: vi.fn(async () =>
+          fsZds.join(environmentFolder, 'settings.toml')
+        ),
+        packageJson: { name: 'zoo-modeling-app' },
+      },
+    })
     const alphaProject = '/projects/alpha'
     const betaProject = '/projects/beta'
 
+    cleanup.push(() =>
+      fsZds.rm(environmentFolder, { recursive: true, force: true })
+    )
+    cleanup.push(() => {
+      vi.unstubAllGlobals()
+    })
     cleanup.push(() => writeRecentProjectsForEnvironment([], environmentName))
     await writeRecentProjectsForEnvironment(
       [

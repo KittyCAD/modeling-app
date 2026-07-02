@@ -221,7 +221,7 @@ const Home = () => {
           groupId: 'projects',
           name: 'Rename project',
           argDefaultValues: {
-            oldName: currentProject?.name,
+            oldName: currentProject?.path,
             newName: currentProject?.name,
           },
         },
@@ -234,7 +234,7 @@ const Home = () => {
           groupId: 'projects',
           name: 'Delete project',
           argDefaultValues: {
-            name: currentProject?.name,
+            name: currentProject?.path,
           },
         },
       })

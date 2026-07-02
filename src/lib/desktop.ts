@@ -1109,6 +1109,9 @@ const RECENT_PROJECTS_LIMIT = 50
 
 export const recentProjectsRevisionSignal = signal(0)
 
+const hasDesktopRecentProjectsStorage = () =>
+  typeof window !== 'undefined' && Boolean(window.electron)
+
 const getRecentProjectsEnvironmentName = async (environmentName?: string) => {
   const selectedEnvironment =
     environmentName ||
@@ -1124,7 +1127,10 @@ const normalizeRecentProjects = (
     return []
   }
 
-  return recentProjects
+  const seenPaths = new Set<string>()
+  const normalizedProjects: RecentProject[] = []
+
+  for (const project of recentProjects
     .filter((project): project is RecentProject => {
       return (
         typeof project?.path === 'string' &&
@@ -1135,8 +1141,39 @@ const normalizeRecentProjects = (
         typeof project?.last_opened_at === 'number'
       )
     })
-    .sort((a, b) => b.last_opened_at - a.last_opened_at)
-    .slice(0, RECENT_PROJECTS_LIMIT)
+    .sort((a, b) => b.last_opened_at - a.last_opened_at)) {
+    if (seenPaths.has(project.path)) {
+      continue
+    }
+
+    seenPaths.add(project.path)
+    normalizedProjects.push(project)
+    if (normalizedProjects.length === RECENT_PROJECTS_LIMIT) {
+      break
+    }
+  }
+
+  return normalizedProjects
+}
+
+const recentProjectsAreEqual = (
+  left: RecentProject[],
+  right: RecentProject[]
+) => {
+  return (
+    left.length === right.length &&
+    left.every((leftProject, index) => {
+      const rightProject = right[index]
+      return (
+        leftProject.path === rightProject.path &&
+        leftProject.name === rightProject.name &&
+        leftProject.default_file === rightProject.default_file &&
+        leftProject.kcl_file_count === rightProject.kcl_file_count &&
+        leftProject.directory_count === rightProject.directory_count &&
+        leftProject.last_opened_at === rightProject.last_opened_at
+      )
+    })
+  )
 }
 
 const writeEnvironmentConfigurationObject = async (
@@ -1152,6 +1189,10 @@ const writeEnvironmentConfigurationObject = async (
 export const readRecentProjectsForEnvironment = async (
   environmentName?: string
 ): Promise<RecentProject[]> => {
+  if (!hasDesktopRecentProjectsStorage()) {
+    return []
+  }
+
   const selectedEnvironment =
     await getRecentProjectsEnvironmentName(environmentName)
   const environmentConfiguration =
@@ -1163,12 +1204,23 @@ export const writeRecentProjectsForEnvironment = async (
   recentProjects: RecentProject[],
   environmentName?: string
 ) => {
+  if (!hasDesktopRecentProjectsStorage()) {
+    return
+  }
+
   const selectedEnvironment =
     await getRecentProjectsEnvironmentName(environmentName)
   const environmentConfiguration =
     await getEnvironmentConfigurationObject(selectedEnvironment)
-  environmentConfiguration.recentProjects =
-    normalizeRecentProjects(recentProjects)
+  const nextRecentProjects = normalizeRecentProjects(recentProjects)
+  const previousRecentProjects = normalizeRecentProjects(
+    environmentConfiguration.recentProjects
+  )
+  if (recentProjectsAreEqual(previousRecentProjects, nextRecentProjects)) {
+    return
+  }
+
+  environmentConfiguration.recentProjects = nextRecentProjects
   const result = await writeEnvironmentConfigurationObject(
     selectedEnvironment,
     environmentConfiguration

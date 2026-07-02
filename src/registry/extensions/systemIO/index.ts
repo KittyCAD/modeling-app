@@ -40,7 +40,6 @@ export async function listProjectHandlesFromRecentProjects(
 
 const refreshProjectHandlesForSignalInputs = (
   _recentProjectsRevision: unknown,
-  _cloudLastSyncedAt: unknown,
   refreshProjectHandles: SystemIOService['refreshProjectHandles']
 ) => {
   void refreshProjectHandles()
@@ -70,7 +69,6 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
     disposeRecentProjectsEffect = effect(() => {
       refreshProjectHandlesForSignalInputs(
         recentProjectsRevisionSignal.value,
-        opfsCloudSyncStatus.value.lastSyncedAt,
         refreshProjectHandles
       )
     })
