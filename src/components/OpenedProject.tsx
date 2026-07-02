@@ -34,7 +34,6 @@ import { isDesktop } from '@src/lib/isDesktop'
 import {
   DefaultLayoutPaneID,
   LayoutRootNode,
-  defaultLayout,
   getOpenPanes,
 } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
@@ -372,7 +371,7 @@ export function OpenedProject() {
         <ModalContainer />
         <section className="pointer-events-auto flex-1">
           <LayoutRootNode
-            layout={layout.signal.value || defaultLayout}
+            layout={layout.signal.value}
             getLayout={layout.get}
             setLayout={layout.set}
             areaLibrary={defaultAreaLibrary}
