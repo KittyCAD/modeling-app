@@ -886,16 +886,6 @@ export const systemIOMachine = setup({
     lastOperation: SystemIOMachineStates.idle,
     mlEphantConversations: undefined,
   }),
-  on: {
-    [SystemIOMachineEvents.setFolders]: {
-      actions: [
-        SystemIOMachineActions.setFolders,
-        assign({
-          hasListedProjects: true,
-        }),
-      ],
-    },
-  },
   states: {
     [SystemIOMachineStates.idle]: {
       on: {
