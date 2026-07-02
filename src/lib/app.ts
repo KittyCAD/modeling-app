@@ -34,7 +34,7 @@ import {
   setLayoutSaveHandler,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import type { Project } from '@src/lib/project'
+import { getParentAbsolutePath } from '@src/lib/paths'
 import RustContext from '@src/lib/rustContext'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
 import {
@@ -266,6 +266,7 @@ export class App implements AppSubsystems {
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
   private pluginSettingsSubscription: Subscription
+  private systemIOProjectDirectoryEffectUnsubscribe: ReturnType<typeof effect>
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -288,6 +289,9 @@ export class App implements AppSubsystems {
     this.projectSession = this.registry.get(projectSessionService)
     this.projectSignal = this.projectSession.openedProject
     this.projectSession.bindApp(this)
+    this.systemIOProjectDirectoryEffectUnsubscribe = effect(
+      this.syncSystemIOProjectDirectoryFromOpenedProjectHandle
+    )
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -549,13 +553,6 @@ export class App implements AppSubsystems {
     return new App(combined)
   }
 
-  async openProject(projectIORef: Project) {
-    return this.projectSession.openProject(projectIORef)
-  }
-  closeProject() {
-    this.projectSession.closeProject()
-  }
-
   syncUserFeaturesFromAuth = (
     snapshot: SnapshotFrom<typeof this.auth.actor>
   ) => {
@@ -666,6 +663,36 @@ export class App implements AppSubsystems {
 
       toggle.disable()
     }
+  }
+
+  syncSystemIOProjectDirectoryFromOpenedProjectHandle = () => {
+    const openedProjectHandle = this.projectSession.openedProjectHandle.value
+    const appProjectDir = this.settings.get().app.projectDirectory.current
+    const requestedProjectDirectoryPath =
+      openedProjectHandle?.projectPath.includes(appProjectDir)
+        ? appProjectDir
+        : openedProjectHandle
+          ? getParentAbsolutePath(openedProjectHandle.projectPath)
+          : appProjectDir
+
+    if (
+      this.systemIOActor.getSnapshot().context.projectDirectoryPath ===
+      requestedProjectDirectoryPath
+    ) {
+      if (!openedProjectHandle) {
+        this.systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+      }
+      return
+    }
+
+    this.systemIOActor.send({
+      type: SystemIOMachineEvents.setProjectDirectoryPath,
+      data: {
+        requestedProjectDirectoryPath,
+      },
+    })
   }
 
   /**

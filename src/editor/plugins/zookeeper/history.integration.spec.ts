@@ -13,7 +13,6 @@ import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
-import type { Project } from '@src/lib/project'
 import { loadWasm } from '@src/unitTestUtils'
 
 const apps: App[] = []
@@ -1364,26 +1363,21 @@ async function createProjectHarness(files: Record<string, string>) {
     await writeText(fsZds.join(projectPath, relativePath), contents)
   }
 
-  const project: Project = {
-    name: fsZds.basename(projectPath),
-    path: projectPath,
-    default_file: fsZds.join(projectPath, 'main.kcl'),
-    directory_count: 0,
-    kcl_file_count: Object.keys(files).length,
-    metadata: null,
-    readWriteAccess: true,
-    children: Object.keys(files).map((relativePath) => ({
-      name: relativePath,
-      path: fsZds.join(projectPath, relativePath),
-      children: null,
-    })),
-  }
   const app = App.fromProvided({ wasmPromise: loadWasm() })
   apps.push(app)
-  const openedProject = await app.openProject(project)
-  const kclManager = await openedProject.openEditor(
-    fsZds.join(projectPath, 'main.kcl')
-  )
+  const openedProject = await app.projectSession.setOpenedProjectHandle({
+    projectPath,
+  })
+  if (!openedProject) {
+    throw new Error('Expected project session to open a project.')
+  }
+  const kclManager = await app.projectSession.setExecutingEditorHandle({
+    projectPath,
+    filePath: fsZds.join(projectPath, 'main.kcl'),
+  })
+  if (!kclManager) {
+    throw new Error('Expected project session to open an executing editor.')
+  }
   historyDisposers.push(
     buildZookeeperHistoryExtension({
       kclManager,
@@ -1600,7 +1594,7 @@ async function waitForHistoryIdle(kclManager: KclManager) {
 
 async function disposeApp(app: App) {
   const projectPath = app.project?.path
-  app.closeProject()
+  await app.projectSession.setOpenedProjectHandle(undefined)
   app.systemIOActor.stop()
   app.settings.actor.stop()
   app.commands.actor.stop()

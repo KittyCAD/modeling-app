@@ -1,3 +1,4 @@
+import path from 'node:path'
 import type { UserFeature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
@@ -18,9 +19,19 @@ import { projectSessionService } from '@src/registry/contracts/projectSession'
 import { loadWasm } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
+const mockProjectDirectoryPath = path.join(
+  process.cwd(),
+  '.tmp',
+  'zds-app-spec-project-system'
+)
+const mockProjectPath = path.join(mockProjectDirectoryPath, 'test')
+const mockProjectMainFilePath = `${mockProjectPath}/main.kcl`
+const mockOtherProjectPath = path.join(mockProjectDirectoryPath, 'other-test')
+const mockOtherProjectMainFilePath = `${mockOtherProjectPath}/main.kcl`
+
 const mockProject: Project = {
   name: 'test',
-  default_file: 'main.kcl',
+  default_file: mockProjectMainFilePath,
   directory_count: 0,
   kcl_file_count: 1,
   metadata: {
@@ -31,12 +42,12 @@ const mockProject: Project = {
     size: 100,
     type: null,
   },
-  path: '/some-dir/test',
+  path: mockProjectPath,
   readWriteAccess: true,
   children: [
     {
       name: 'main.kcl',
-      path: '/some-dir/test/main.kcl',
+      path: mockProjectMainFilePath,
       children: [],
     },
   ],
@@ -48,9 +59,19 @@ beforeAll(async () => {
     type: StorageName.NodeFS,
     options: {},
   })
+  await fsZds.rm(mockProjectDirectoryPath, { recursive: true, force: true })
+  await fsZds.mkdir(mockProjectPath, { recursive: true })
+  await fsZds.writeFile(mockProjectMainFilePath, new TextEncoder().encode(''))
+  await fsZds.rm(mockOtherProjectPath, { recursive: true, force: true })
+  await fsZds.mkdir(mockOtherProjectPath, { recursive: true })
+  await fsZds.writeFile(
+    mockOtherProjectMainFilePath,
+    new TextEncoder().encode('')
+  )
 })
 
-afterAll(() => {
+afterAll(async () => {
+  await fsZds.rm(mockProjectDirectoryPath, { recursive: true, force: true })
   vi.restoreAllMocks()
 })
 
@@ -88,8 +109,8 @@ async function waitForAuthSettled(app: App) {
   })
 }
 
-function disposeApp(app: App) {
-  app.closeProject()
+async function disposeApp(app: App) {
+  await app.projectSession.setOpenedProjectHandle(undefined)
   app.systemIOActor.stop()
   app.settings.actor.stop()
   app.commands.actor.stop()
@@ -219,7 +240,7 @@ describe('project system', () => {
         ]
       ).toBeUndefined()
     } finally {
-      disposeApp(app)
+      await disposeApp(app)
     }
   })
 
@@ -276,7 +297,7 @@ describe('project system', () => {
       expect(snapshot.context.currentArgument?.name).toBe('name')
     } finally {
       await waitForAuthSettled(app)
-      disposeApp(app)
+      await disposeApp(app)
     }
   })
 
@@ -314,7 +335,7 @@ describe('project system', () => {
       expect(textEditorSettings.automaticallyRender.current).toBe(true)
       expect(textEditorSettings.automaticallyRender.hideOnLevel).toBe('project')
     } finally {
-      disposeApp(app)
+      await disposeApp(app)
     }
   })
 
@@ -342,7 +363,7 @@ describe('project system', () => {
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
       expect(app.registry.get(plugin.service).active.value).toBe(true)
     } finally {
-      disposeApp(app)
+      await disposeApp(app)
     }
   })
 
@@ -391,7 +412,7 @@ describe('project system', () => {
         app.registry.get(executionIndicatorPlugin.service).active.value
       ).toBe(true)
     } finally {
-      disposeApp(app)
+      await disposeApp(app)
     }
   })
 
@@ -405,24 +426,14 @@ describe('project system', () => {
 
     try {
       await writeText(mainPath, 'main = true\n')
-      const project: Project = {
-        name: fsZds.basename(projectPath),
-        default_file: mainPath,
-        directory_count: 0,
-        kcl_file_count: 1,
-        metadata: null,
-        path: projectPath,
-        readWriteAccess: true,
-        children: [
-          {
-            name: 'main.kcl',
-            path: mainPath,
-            children: null,
-          },
-        ],
+      await app.projectSession.setOpenedProjectHandle({ projectPath })
+      const kclManager = await app.projectSession.setExecutingEditorHandle({
+        projectPath,
+        filePath: mainPath,
+      })
+      if (!kclManager) {
+        throw new Error('Expected project session to open an executing editor.')
       }
-      const openedProject = await app.openProject(project)
-      const kclManager = await openedProject.openEditor(mainPath)
       await Promise.resolve()
 
       await writeText(createdPath, 'created = true\n')
@@ -461,7 +472,7 @@ describe('project system', () => {
         'created = true\n'
       )
     } finally {
-      disposeApp(app)
+      await disposeApp(app)
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
@@ -483,7 +494,13 @@ describe('project system', () => {
 
     try {
       const projectSession = app.registry.get(projectSessionService)
-      const project = await projectSession.openProject(mockProject)
+      const project = await projectSession.setOpenedProjectHandle({
+        projectPath: mockProject.path,
+      })
+      expect(project).toBeDefined()
+      if (!project) {
+        throw new Error('Expected project session to open the mock project.')
+      }
 
       expect(app.project).toBeDefined()
       expect(app.project).toBe(project)
@@ -491,6 +508,9 @@ describe('project system', () => {
       expect(projectSession.openedProjectHandle.value).toEqual({
         projectPath: mockProject.path,
       })
+      expect(
+        app.systemIOActor.getSnapshot().context.projectDirectoryPath
+      ).toEqual(mockProjectDirectoryPath)
       expect(app.project?.executingPath).toBeNull()
       expect(app.project?.executingFileEntry.value.name).toEqual('')
 
@@ -500,60 +520,50 @@ describe('project system', () => {
         throw new Error('Expected mock project to include a main file.')
       }
 
-      await projectSession.openEditor(mainFile.path, {
-        providedEditor: app.singletons.kclManager,
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: mainFile.path,
       })
-      expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
+      expect(app.project?.executingPath).toEqual(mockProjectMainFilePath)
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
-      expect(app.singletons.kclManager.code).toBe('main = 1')
       expect(projectSession.executingEditorHandle.value).toEqual({
         projectPath: mockProject.path,
         filePath: mainFile.path,
       })
 
-      await projectSession.openEditor('/some-dir/test/other.kcl', {
-        providedEditor: app.singletons.kclManager,
+      const otherFilePath = `${mockProjectPath}/other.kcl`
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: otherFilePath,
       })
-      expect(app.project?.executingPath).toEqual('/some-dir/test/other.kcl')
-      expect(app.singletons.kclManager.code).toBe('other = 2')
+      expect(app.project?.executingPath).toEqual(otherFilePath)
 
-      await projectSession.openEditor(mainFile.path, {
-        providedEditor: app.singletons.kclManager,
+      await projectSession.setExecutingEditorHandle({
+        projectPath: mockProject.path,
+        filePath: mainFile.path,
       })
-      expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
+      expect(app.project?.executingPath).toEqual(mockProjectMainFilePath)
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
-      expect(app.singletons.kclManager.code).toBe('main = 1')
       expect(projectSession.executingEditorHandle.value).toEqual({
         projectPath: mockProject.path,
         filePath: mainFile.path,
       })
 
-      const otherProject: Project = {
-        ...mockProject,
-        name: 'other-test',
-        path: '/some-dir/other-test',
-        children: [
-          {
-            name: 'main.kcl',
-            path: '/some-dir/other-test/main.kcl',
-            children: [],
-          },
-        ],
-      }
-
-      await projectSession.openProject(otherProject)
+      await projectSession.setOpenedProjectHandle({
+        projectPath: mockOtherProjectPath,
+      })
       expect(projectSession.openedProjectHandle.value).toEqual({
-        projectPath: otherProject.path,
+        projectPath: mockOtherProjectPath,
       })
       expect(projectSession.executingEditorHandle.value).toBeUndefined()
 
-      projectSession.closeProject()
+      await projectSession.setOpenedProjectHandle(undefined)
 
       expect(app.project).toBeUndefined()
       expect(projectSession.openedProjectHandle.value).toBeUndefined()
       expect(projectSession.executingEditorHandle.value).toBeUndefined()
     } finally {
-      disposeApp(app)
+      await disposeApp(app)
     }
   })
 })
