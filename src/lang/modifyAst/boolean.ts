@@ -11,6 +11,7 @@ import {
 } from '@src/lang/modifyAst'
 import { getVariableExprsFromSelection } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -50,7 +51,11 @@ export function addUnion({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('union', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Boolean Union'),
+    objectsExpr,
+    []
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -106,7 +111,11 @@ export function addIntersect({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('intersect', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Boolean Intersect'),
+    objectsExpr,
+    []
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -184,9 +193,11 @@ export function addSubtract({
     return new Error('No tools provided for subtraction operation')
   }
 
-  const call = createCallExpressionStdLibKw('subtract', objectsExpr, [
-    createLabeledArg('tools', toolsExpr),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Boolean Subtract'),
+    objectsExpr,
+    [createLabeledArg('tools', toolsExpr)]
+  )
   if (vars.pathIfPipe && toolVars.pathIfPipe) {
     return new Error(
       'Cannot use both solids and tools in a subtraction operation with a pipe'
@@ -304,7 +315,11 @@ export function addSplit({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('split', objectsExpr, labeledArgs)
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Boolean Split'),
+    objectsExpr,
+    labeledArgs
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end

@@ -21,6 +21,7 @@ use crate::execution::Extrudable;
 use crate::execution::ExtrudeSurface;
 use crate::execution::Face;
 use crate::execution::Geometry;
+use crate::execution::HasAppearance;
 use crate::execution::Helix;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
@@ -213,7 +214,7 @@ impl Args {
                 None => msg_base,
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
-            if message.contains("one or more Solids or ImportedGeometry but it's actually of type Sketch") {
+            if message.contains("one or more Solids or ImportedGeometry") && message.contains("actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
             KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
@@ -342,7 +343,7 @@ impl Args {
                 Some(sugg) => format!("{msg_base}. {sugg}"),
             };
 
-            if message.contains("one or more Solids or ImportedGeometry but it's actually of type Sketch") {
+            if message.contains("one or more Solids or ImportedGeometry") && message.contains("actually of type Sketch") {
                 message = format!("{message}. {ERROR_STRING_SKETCH_TO_SOLID_HELPER}");
             }
             KclError::new_semantic(KclErrorDetails::new(message, arg.source_ranges()))
@@ -1516,6 +1517,27 @@ impl<'a> FromKclValue<'a> for Box<TagIdentifier> {
 impl<'a> FromKclValue<'a> for FunctionSource {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         arg.as_function().cloned()
+    }
+}
+
+impl<'a> FromKclValue<'a> for HasAppearance {
+    fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
+        match arg {
+            KclValue::Solid { value } => Some(Self::SolidSet(vec![(**value).clone()])),
+            KclValue::Plane { value } => Some(Self::Plane(value.to_owned())),
+            KclValue::HomArray { value, .. } => {
+                let mut solids = vec![];
+                for item in value {
+                    match item {
+                        KclValue::Solid { value } => solids.push((**value).clone()),
+                        _ => return None,
+                    }
+                }
+                Some(Self::SolidSet(solids))
+            }
+            KclValue::ImportedGeometry(value) => Some(Self::ImportedGeometry(Box::new(value.clone()))),
+            _ => None,
+        }
     }
 }
 
