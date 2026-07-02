@@ -1,17 +1,20 @@
 import path from 'node:path'
-import { App } from '@src/lib/app'
+import type { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   getCloudProjectFolderRenameName,
+  getLocalProjectRenameName,
+  getProjectForRename,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
 } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
   NO_PROJECT_DIRECTORY,
+  type SystemIOContext,
   SystemIOMachineActors,
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -33,6 +36,14 @@ function mockProject(name: string): Project {
     name,
     children: [],
     readWriteAccess: true,
+  }
+}
+
+function mockProjectAtPath(projectPath: string): Project {
+  return {
+    ...mockProject(path.basename(projectPath)),
+    default_file: path.join(projectPath, 'main.kcl'),
+    path: projectPath,
   }
 }
 
@@ -102,9 +113,9 @@ beforeEach(async () => {
   }
 
   const { instance } = await buildTheWorldAndNoEngineConnection()
-  appInstanceInThisFile = App.fromProvided({
+  appInstanceInThisFile = {
     wasmPromise: Promise.resolve(instance),
-  })
+  } as App
   instanceInThisFile = instance
 })
 
@@ -197,6 +208,7 @@ describe('systemIOMachine - XState', () => {
                   message: 'done',
                   projectName: input.requestedProjectName,
                   fileName: input.requestedFileNameWithExtension,
+                  projectDirectoryPath: '',
                   subRoute: '',
                   shouldNavigate: true,
                   onProjectLoaderComplete: input.onSuccess,
@@ -247,6 +259,7 @@ describe('systemIOMachine - XState', () => {
                   message: 'done',
                   projectName: input.requestedProjectName,
                   fileName: input.requestedFileNameWithExtension,
+                  projectDirectoryPath: '',
                   subRoute: '',
                   shouldNavigate: false,
                 })),
@@ -849,6 +862,7 @@ describe('systemIOMachine - XState', () => {
                 fromPromise(async () => ({
                   message: 'Imported',
                   projectName: 'demo-project',
+                  projectDirectoryPath: '/projects',
                   fileName: 'shared-project/main.kcl',
                   subRoute: '',
                 })),
@@ -1191,6 +1205,111 @@ describe('systemIOMachine - XState', () => {
         } finally {
           actor.stop()
         }
+      })
+    })
+    describe('when creating projects', () => {
+      it('should pass the requested parent directory to the create project actor', async () => {
+        let capturedInput:
+          | {
+              context: SystemIOContext
+              requestedProjectName: string
+              requestedProjectDirectoryPath?: string
+            }
+          | undefined
+
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.createProject]: fromPromise(
+                async ({ input }) => {
+                  capturedInput = input
+                  return {
+                    message: 'Created',
+                    name: 'demo-project',
+                    path: '/projects/demo-project',
+                    projectDirectoryPath: '/projects',
+                  }
+                }
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: 'demo-project',
+              requestedProjectDirectoryPath: '/projects',
+            },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(capturedInput?.requestedProjectName).toBe('demo-project')
+          expect(capturedInput?.requestedProjectDirectoryPath).toBe('/projects')
+          expect(
+            actor.getSnapshot().context.requestedProjectName
+          ).toStrictEqual({
+            name: 'demo-project',
+            path: '/projects/demo-project',
+          })
+        } finally {
+          actor.stop()
+        }
+      })
+    })
+    describe('when renaming projects', () => {
+      it('should select the project matching the explicit path when names collide', () => {
+        const project = mockProjectAtPath('/projects/alpha/shared')
+        const otherProject = mockProjectAtPath('/projects/beta/shared')
+
+        expect(
+          getProjectForRename({
+            folders: [otherProject, project],
+            projectName: 'shared',
+            projectPath: project.path,
+          })
+        ).toBe(project)
+      })
+
+      it('should allow a local rename to a name used in a different parent directory', () => {
+        const project = mockProjectAtPath('/projects/alpha/original')
+        const otherProject = mockProjectAtPath('/projects/beta/renamed')
+
+        expect(
+          getLocalProjectRenameName({
+            folders: [project, otherProject],
+            oldProjectPath: project.path,
+            requestedProjectName: 'renamed',
+          })
+        ).toBe('renamed')
+      })
+
+      it('should reject a local rename to a name used in the same parent directory', () => {
+        const project = mockProjectAtPath('/projects/alpha/original')
+        const otherProject = mockProjectAtPath('/projects/alpha/renamed')
+
+        const result = getLocalProjectRenameName({
+          folders: [project, otherProject],
+          oldProjectPath: project.path,
+          requestedProjectName: 'renamed',
+        })
+
+        expect(result).toBeInstanceOf(Error)
+        expect(
+          result instanceof Error ? result.message : undefined
+        ).toStrictEqual('Project with name "renamed" already exists')
       })
     })
     describe('when setting default project folder name', () => {

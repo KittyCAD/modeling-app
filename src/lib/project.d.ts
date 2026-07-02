@@ -53,6 +53,10 @@ export type Project = {
   kcl_file_count: number
   directory_count: number
   /**
+   * Timestamp for when this project was last opened by this app/environment.
+   */
+  last_opened_at?: number
+  /**
    * Human-facing project title from project.toml.
    * This may differ from the local project directory name.
    */

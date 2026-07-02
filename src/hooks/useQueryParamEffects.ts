@@ -18,6 +18,7 @@ import {
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
+import { getInitialProjectDirectoryPath } from '@src/lib/desktop'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
@@ -189,6 +190,8 @@ export function useQueryParamEffects(kclManager: KclManager) {
         data: {
           files,
           requestedProjectName: reservedProjectDestination.requestedProjectName,
+          requestedProjectDirectoryPath:
+            reservedProjectDestination.requestedProjectDirectoryPath,
           requestedFileNameWithExtension,
         },
       })
@@ -214,6 +217,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
   async function getReservedProjectDestination(projectId: string): Promise<
     | {
         requestedProjectName: string
+        requestedProjectDirectoryPath?: string
         requestedSubDirectoryName: string
       }
     | Error
@@ -226,7 +230,9 @@ export function useQueryParamEffects(kclManager: KclManager) {
     await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
     const systemIOContext = app.systemIOActor.getSnapshot().context
-    const projectDirectoryPath = app.settings.get().app.projectDirectory.current
+    const projectDirectoryPath = await getInitialProjectDirectoryPath(
+      await kclManager.wasmInstancePromise
+    )
     if (!projectDirectoryPath) {
       return new Error('Unable to determine the project directory.')
     }
@@ -249,6 +255,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
       )
       return {
         requestedProjectName,
+        requestedProjectDirectoryPath: projectDirectoryPath,
         requestedSubDirectoryName: projectName,
       }
     }

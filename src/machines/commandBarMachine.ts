@@ -478,27 +478,38 @@ export const commandBarMachine = setup({
     ),
     'Validate all arguments': fromPromise(
       async ({ input }: { input: CommandBarContext }) => {
+        const resolvedInput: CommandBarContext = {
+          ...input,
+          argumentsToSubmit: { ...input.argumentsToSubmit },
+        }
         for (const [argName, argConfig] of Object.entries(
           input.selectedCommand!.args!
         )) {
-          let arg = input.argumentsToSubmit[argName]
-          let argValue = typeof arg === 'function' ? arg(input) : arg
+          const arg = resolvedInput.argumentsToSubmit[argName]
+          const argValue = await (typeof arg === 'function'
+            ? arg(
+                resolvedInput,
+                argConfig.machineActor?.getSnapshot().context,
+                await input.wasmInstancePromise
+              )
+            : arg)
+          resolvedInput.argumentsToSubmit[argName] = argValue
 
           try {
             const isRequired =
               typeof argConfig.required === 'function'
-                ? argConfig.required(input)
+                ? argConfig.required(resolvedInput)
                 : argConfig.required
 
             const resolvedDefaultValue =
               'defaultValue' in argConfig
-                ? typeof argConfig.defaultValue === 'function'
-                  ? argConfig.defaultValue(
-                      input,
-                      argConfig.machineActor?.getSnapshot().context,
-                      await input.wasmInstancePromise
-                    )
-                  : argConfig.defaultValue
+                ? await (typeof argConfig.defaultValue === 'function'
+                    ? argConfig.defaultValue(
+                        resolvedInput,
+                        argConfig.machineActor?.getSnapshot().context,
+                        await input.wasmInstancePromise
+                      )
+                    : argConfig.defaultValue)
                 : undefined
 
             const hasMismatchedDefaultValueType =
@@ -521,7 +532,7 @@ export const commandBarMachine = setup({
               !(
                 typeof argConfig.options === 'function'
                   ? argConfig.options(
-                      input,
+                      resolvedInput,
                       argConfig.machineActor?.getSnapshot().context
                     )
                   : argConfig.options
@@ -579,7 +590,7 @@ export const commandBarMachine = setup({
           input.selectedCommand.reviewValidation
         ) {
           const result = await input.selectedCommand.reviewValidation(
-            input,
+            resolvedInput,
             input.selectedCommand?.machineActor
           )
           if (err(result)) {
@@ -588,7 +599,7 @@ export const commandBarMachine = setup({
         }
 
         return {
-          argumentsToSubmit: input.argumentsToSubmit,
+          argumentsToSubmit: resolvedInput.argumentsToSubmit,
           reviewValidationError,
         }
       }

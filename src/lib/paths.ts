@@ -78,7 +78,8 @@ export async function getProjectMetaByRouteId(
   ) => Promise<DeepPartial<Configuration>>,
   wasmInstance: ModuleType,
   id?: string,
-  configuration?: DeepPartial<Configuration> | Error
+  configuration?: DeepPartial<Configuration> | Error,
+  knownProjectPaths: string[] = []
 ): Promise<ProjectRoute | undefined> {
   if (!id) return undefined
 
@@ -95,7 +96,7 @@ export async function getProjectMetaByRouteId(
     return Promise.reject(new Error('No configuration found'))
   }
 
-  const route = parseProjectRoute(configuration, id)
+  const route = parseProjectRoute(configuration, id, knownProjectPaths)
 
   if (err(route)) return Promise.reject(route)
 
@@ -104,7 +105,8 @@ export async function getProjectMetaByRouteId(
 
 export function parseProjectRoute(
   configuration: DeepPartial<Configuration>,
-  id: string
+  id: string,
+  knownProjectPaths: string[] = []
 ): ProjectRoute {
   let projectName = null
   let projectPath = ''
@@ -116,6 +118,22 @@ export function parseProjectRoute(
     projectName = relativeToRoot.split(fsZds.sep)[0]
     projectPath = fsZds.join(projectDirectory, projectName)
     projectName = projectName === '' ? null : projectName
+  } else if (knownProjectPaths.length > 0) {
+    const knownProjectPath = knownProjectPaths
+      .filter((projectPath) => {
+        return id === projectPath || id.startsWith(projectPath + fsZds.sep)
+      })
+      .sort((a, b) => b.length - a.length)[0]
+    if (knownProjectPath) {
+      projectPath = knownProjectPath
+      projectName = fsZds.basename(projectPath)
+    } else {
+      projectPath = id
+      if (fsZds.extname(id) === '.kcl') {
+        projectPath = fsZds.dirname(id)
+      }
+      projectName = fsZds.basename(projectPath)
+    }
   } else {
     projectPath = id
     if (fsZds.extname(id) === '.kcl') {

@@ -1195,14 +1195,26 @@ export async function isOutOfViewInScrollContainer(
 export async function createProject({
   name,
   page,
+  parentDirectory,
   returnHome = false,
 }: {
   name: string
   page: Page
+  parentDirectory?: string
   returnHome?: boolean
 }) {
   await test.step(`Create project and navigate to it`, async () => {
     await page.getByRole('button', { name: 'Create project' }).click()
+    if (
+      parentDirectory &&
+      (await page.evaluate(() => Boolean(window.electron)))
+    ) {
+      await page.getByTestId('arg-name-parentdirectory').click()
+      await page
+        .getByRole('textbox', { name: 'Parent folder' })
+        .fill(parentDirectory)
+      await page.getByRole('button', { name: 'Continue' }).click()
+    }
     await page.getByRole('textbox', { name: 'Name' }).fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 

@@ -8,7 +8,9 @@ import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
+import { getProjectInfo } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
+import { isDesktop } from '@src/lib/isDesktop'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
@@ -44,12 +46,46 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
     send: modelingSend,
     actor: modelingActor,
   } = useModelingContext()
+  const [createFilePressed, setCreateFilePressed] = useState<number>(0)
+  const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
+  const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
+  const [collapsePressed, setCollapsedPressed] = useState<number>(0)
 
   useEffect(() => {
+    projectRef.current = project?.projectIORefSignal
+  }, [project])
+
+  useEffect(() => {
+    const setProjectWithPlaceholders = (sourceProject: Project) => {
+      const duplicated = getProjectExplorerProjectWithPlaceholders({
+        loadedProject: sourceProject,
+        projects: undefined,
+      })
+      if (duplicated) {
+        setTheProject(duplicated)
+      }
+    }
+
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
     if (!project || !file) {
       return
+    }
+
+    if (!isDesktop()) {
+      let cancelled = false
+      getProjectInfo(project.path, wasmInstance)
+        .then((projectInfo) => {
+          if (cancelled) {
+            return
+          }
+          setProjectWithPlaceholders(projectInfo)
+        })
+        .catch(reportRejection)
+
+      return () => {
+        cancelled = true
+      }
     }
 
     const loadedProject = project.projectIORefSignal.value
@@ -68,12 +104,14 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       return
     }
     setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
-
-  const [createFilePressed, setCreateFilePressed] = useState<number>(0)
-  const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
-  const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
-  const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+  }, [
+    file,
+    projects,
+    project,
+    systemIOActor,
+    wasmInstance,
+    refreshExplorerPressed,
+  ])
 
   const openCodeEditorPaneIfClosed = useCallback(() => {
     const rootLayout = layout.get()

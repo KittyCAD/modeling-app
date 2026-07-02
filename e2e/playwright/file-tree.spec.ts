@@ -1049,8 +1049,10 @@ test(
     })
 
     await test.step('Check the app is back on the home view', async () => {
-      const projectsDirLink = page.getByText('Loaded from')
-      await expect(projectsDirLink).toBeVisible()
+      await expect(page.getByTestId('home-section')).toBeVisible()
+      await expect(
+        page.getByRole('heading', { name: 'Projects' })
+      ).toBeVisible()
     })
   }
 )

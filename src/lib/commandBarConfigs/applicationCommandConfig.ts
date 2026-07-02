@@ -3,6 +3,9 @@ import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { App } from '@src/lib/app'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
+  getInitialProjectDirectoryPath,
+  mkdirOrNOOP,
+  statIsDirectory,
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationMlephantWebSocketUrl,
   writeEnvironmentFile,
@@ -31,16 +34,37 @@ import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
 
+async function getProjectNamesInDirectory(projectDirectoryPath: string) {
+  await mkdirOrNOOP(projectDirectoryPath)
+  const entries = await fsZds.readdir(projectDirectoryPath)
+  const projectNames = []
+
+  for (const entry of entries) {
+    if (entry.startsWith('.')) {
+      continue
+    }
+
+    const projectPath = fsZds.join(projectDirectoryPath, entry)
+    if (await statIsDirectory(projectPath)) {
+      projectNames.push({ name: entry, path: projectPath, children: [] })
+    }
+  }
+
+  return projectNames
+}
+
 function onSubmitKCLSampleCreation({
   sample,
   kclSample,
   uniqueNameIfNeeded,
+  requestedProjectDirectoryPath,
   systemIOActor,
   isProjectNew,
 }: {
   sample: any
   kclSample: ReturnType<typeof findKclSample>
   uniqueNameIfNeeded: any
+  requestedProjectDirectoryPath?: string
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   isProjectNew: boolean
 }) {
@@ -113,6 +137,9 @@ function onSubmitKCLSampleCreation({
             requestedProjectName: requestedFiles[0].requestedProjectName,
             requestedFileNameWithExtension: requestedFiles[0].requestedFileName,
             requestedCode: requestedFiles[0].requestedCode,
+            requestedProjectDirectoryPath: isProjectNew
+              ? requestedProjectDirectoryPath
+              : undefined,
           },
         })
       } else {
@@ -124,6 +151,9 @@ function onSubmitKCLSampleCreation({
           data: {
             files: requestedFiles,
             requestedProjectName: uniqueNameIfNeeded,
+            requestedProjectDirectoryPath: isProjectNew
+              ? requestedProjectDirectoryPath
+              : undefined,
           },
         })
       }
@@ -138,6 +168,14 @@ export function createApplicationCommands({
   app: App
   wasmInstance: ModuleType
 }) {
+  const defaultProjectDirectoryPath = async () => {
+    if (!isDesktop()) {
+      return ''
+    }
+
+    return getInitialProjectDirectoryPath(wasmInstance)
+  }
+
   const addKCLFileToProject: Command = {
     name: 'add-kcl-file-to-project',
     displayName: 'Add file to project',
@@ -158,6 +196,10 @@ export function createApplicationCommands({
         const folders = app.systemIOActor.getSnapshot().context.folders
         const isProjectNew = !!data.newProjectName
         const requestedProjectName = data.newProjectName || data.projectName
+        const requestedProjectDirectoryPath =
+          isProjectNew && data.parentDirectory
+            ? String(data.parentDirectory)
+            : undefined
         const uniqueNameIfNeeded = isProjectNew
           ? getUniqueProjectName(requestedProjectName, folders ?? [])
           : requestedProjectName
@@ -171,6 +213,7 @@ export function createApplicationCommands({
               sample: data.sample,
               kclSample,
               uniqueNameIfNeeded,
+              requestedProjectDirectoryPath,
               systemIOActor: app.systemIOActor,
               isProjectNew,
             })
@@ -203,6 +246,7 @@ export function createApplicationCommands({
                   requestedProjectName: uniqueNameIfNeeded,
                   requestedFileNameWithExtension: fileNameWithExtension,
                   requestedCode: fr.result,
+                  requestedProjectDirectoryPath,
                 },
               })
             } else {
@@ -211,16 +255,41 @@ export function createApplicationCommands({
                 return
               }
 
-              const projectDirectoryPath =
-                app.systemIOActor.getSnapshot().context.projectDirectoryPath
               const fileData = new Uint8Array(fr.result)
 
-              getNextFileName({
-                entryName: fileNameWithExtension,
-                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
-                wasmInstance,
-                preserveUnknownExtension: true,
-              })
+              const folders =
+                app.systemIOActor.getSnapshot().context.folders ?? []
+              const existingProject = folders.find(
+                (folder) => folder.name === uniqueNameIfNeeded
+              )
+              const projectDestinationPromise = (async () => {
+                const projectDirectoryPath = existingProject
+                  ? fsZds.dirname(existingProject.path)
+                  : requestedProjectDirectoryPath ||
+                    app.systemIOActor.getSnapshot().context
+                      .projectDirectoryPath ||
+                    (await getInitialProjectDirectoryPath(wasmInstance))
+                const projectName =
+                  isProjectNew && requestedProjectDirectoryPath
+                    ? getUniqueProjectName(
+                        requestedProjectName,
+                        await getProjectNamesInDirectory(
+                          requestedProjectDirectoryPath
+                        )
+                      )
+                    : uniqueNameIfNeeded
+                return { projectDirectoryPath, projectName }
+              })()
+
+              projectDestinationPromise
+                .then(({ projectDirectoryPath, projectName }) =>
+                  getNextFileName({
+                    entryName: fileNameWithExtension,
+                    baseDir: joinOSPaths(projectDirectoryPath, projectName),
+                    wasmInstance,
+                    preserveUnknownExtension: true,
+                  })
+                )
                 .then(({ path }) => {
                   return fsZds.writeFile(path, fileData)
                 })
@@ -316,6 +385,21 @@ export function createApplicationCommands({
           return value === 'newProject' ? 'New project' : 'Existing project'
         },
       },
+      parentDirectory: {
+        inputType: 'path',
+        required: (commandContext) =>
+          isDesktop() &&
+          commandContext.argumentsToSubmit.method === 'newProject',
+        hidden: (commandContext) =>
+          !isDesktop() ||
+          commandContext.argumentsToSubmit.method !== 'newProject',
+        skip: true,
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Choose where to create the project',
+        defaultValue: defaultProjectDirectoryPath,
+        displayName: 'Parent folder',
+      },
       projectName: {
         inputType: 'options',
         required: (commandsContext) =>
@@ -408,12 +492,25 @@ export function createApplicationCommands({
           sample: data.sample,
           kclSample,
           uniqueNameIfNeeded,
+          requestedProjectDirectoryPath: data.parentDirectory
+            ? String(data.parentDirectory)
+            : undefined,
           systemIOActor: app.systemIOActor,
           isProjectNew: true,
         })
       }
     },
     args: {
+      parentDirectory: {
+        inputType: 'path',
+        required: true,
+        skip: true,
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Choose where to create the project',
+        defaultValue: defaultProjectDirectoryPath,
+        displayName: 'Parent folder',
+      },
       source: {
         inputType: 'string',
         required: true,

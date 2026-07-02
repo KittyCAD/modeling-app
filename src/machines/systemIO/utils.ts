@@ -136,7 +136,7 @@ export type SystemIOContext = SystemIOInput & {
    * We watch objects because we want to be able to navigate to itself
    * if we used a string the useEffect would not change
    */
-  requestedProjectName: { name: string; subRoute?: string }
+  requestedProjectName: { name: string; path?: string; subRoute?: string }
   requestedFileName: {
     project: string
     file: string
@@ -156,6 +156,7 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  pendingRenamedProjectPath?: string
   /** Event captured while checking project-directory access. */
   deferredSystemIOEvent?: EventObject
   lastRecursiveMoveTarget?: string
@@ -446,12 +447,16 @@ export const prepareMlEphantNewFileRequest = ({
   // getFilePathRelativeToProject intentionally keeps the leading separator
   // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
   // project-relative, matching what the field name promises.
-  const rawRelativePath = getFilePathRelativeToProject(
-    fileFocusedOnInEditor?.path || fallbackFilePath || '',
-    projectNameCurrentlyOpened
+  const filePathForNavigation = normalizeKCLFileDeletePath(
+    fileFocusedOnInEditor?.path || fallbackFilePath || ''
   )
-  const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
-    ? rawRelativePath.slice(fsZds.sep.length)
+  const rawRelativePath = getFilePathRelativeToProject(
+    filePathForNavigation,
+    projectNameCurrentlyOpened,
+    '/'
+  )
+  const requestedFileNameWithExtension = rawRelativePath.startsWith('/')
+    ? rawRelativePath.slice(1)
     : rawRelativePath
   const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
   const zookeeperEditPatch = rawZookeeperEditPatch

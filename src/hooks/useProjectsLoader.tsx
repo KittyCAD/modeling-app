@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import { useSingletons } from '@src/lib/boot'
-import { ensureProjectDirectoryExists, listProjects } from '@src/lib/desktop'
+import { getInitialProjectDirectoryPath, listProjects } from '@src/lib/desktop'
 import type { Project } from '@src/lib/project'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
 import { trap } from '@src/lib/trap'
@@ -23,19 +23,13 @@ export const useProjectsLoader = (deps?: [number]) => {
       setLastTs(deps[0])
     }
     ;(async () => {
-      const { configuration } = await loadAndValidateSettings(
-        kclManager.wasmInstancePromise
-      )
-      const _projectsDir = await ensureProjectDirectoryExists(configuration)
+      const wasmInstance = await kclManager.wasmInstancePromise
+      const { configuration } = await loadAndValidateSettings(wasmInstance)
+      const _projectsDir = await getInitialProjectDirectoryPath(wasmInstance)
       setProjectsDir(_projectsDir)
 
-      if (projectsDir) {
-        const _projectPaths = await listProjects(
-          kclManager.wasmInstancePromise,
-          configuration
-        )
-        setProjectPaths(_projectPaths)
-      }
+      const _projectPaths = await listProjects(wasmInstance, configuration)
+      setProjectPaths(_projectPaths)
     })().catch(trap)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, deps ?? [])

@@ -297,11 +297,11 @@ test.describe(
         const errorHeading = page.getByRole('heading', {
           name: 'An unexpected error occurred',
         })
-        const projectDirLink = page.getByText('Loaded from')
+        const homeSection = page.getByTestId('home-section')
 
         // If the app loads without exploding we're in the clear
         await expect(errorHeading).not.toBeVisible()
-        await expect(projectDirLink).toBeVisible()
+        await expect(homeSection).toBeVisible()
       }
     )
 
@@ -323,26 +323,24 @@ test.describe(
         const errorHeading = page.getByRole('heading', {
           name: 'An unexpected error occurred',
         })
-        const projectDirLink = page.getByText('Loaded from')
+        const homeSection = page.getByTestId('home-section')
 
         // If the app loads without exploding we're in the clear
         await expect(errorHeading).not.toBeVisible()
-        await expect(projectDirLink).toBeVisible()
+        await expect(homeSection).toBeVisible()
       }
     )
 
     test(
       'project settings reload on external change',
       { tag: ['@macos', '@windows'] },
-      async ({ page, toolbar, folderSetupFn }) => {
+      async ({ page, toolbar, folderSetupFn, homePage }) => {
         const { dir: projectDirName } = await folderSetupFn(async () => {})
 
         await page.setBodyDimensions({ width: 1200, height: 500 })
 
-        const projectDirLink = page.getByText('Loaded from')
-
         await test.step('Wait for project view', async () => {
-          await expect(projectDirLink).toBeVisible()
+          await homePage.projectsLoaded()
         })
 
         await createProject({ name: 'project-000', page })

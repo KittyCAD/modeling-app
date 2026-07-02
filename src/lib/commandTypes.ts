@@ -1,4 +1,5 @@
 import type { EntityType } from '@kittycad/lib'
+import type { OpenDialogOptions } from 'electron'
 import type { ReactNode } from 'react'
 import type {
   Actor,
@@ -53,6 +54,7 @@ type CommandStatus =
   | 'inactive'
   | 'experimental'
   | 'deprecated'
+type MaybePromise<T> = T | Promise<T>
 type CommandArgumentStatus = Extract<
   CommandStatus,
   'experimental' | 'deprecated'
@@ -467,13 +469,15 @@ export type CommandArgument<
   | {
       inputType: 'path'
       defaultValue?:
-        | OutputType
+        | MaybePromise<OutputType>
         | ((
             commandBarContext: ContextFrom<typeof commandBarMachine>,
             machineContext?: ContextFrom<T>,
             wasmInstance?: ModuleType
-          ) => OutputType)
+          ) => MaybePromise<OutputType>)
       filters: FiltersConfig
+      openDialogProperties?: OpenDialogOptions['properties']
+      openDialogTitle?: string
     }
   | {
       inputType: 'text'

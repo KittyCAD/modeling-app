@@ -132,7 +132,7 @@ function ProjectCard({
     void getNumberOfFiles()
     void setupImageUrl()
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [project.kcl_file_count, project.directory_count])
+  }, [project.path, project.kcl_file_count, project.directory_count])
 
   useEffect(() => {
     if (inputRef.current && isEditing) {
@@ -162,6 +162,8 @@ function ProjectCard({
     FILE_EXT,
     ''
   )
+  const lastOpenedAt =
+    displayedProject.last_opened_at ?? displayedProject.metadata?.modified
 
   return (
     <li
@@ -250,11 +252,9 @@ function ProjectCard({
             </span>
           )}
           <span className="px-2 text-chalkboard-60 text-xs">
-            Edited{' '}
+            Opened{' '}
             <span data-testid="project-edit-date">
-              {displayedProject.metadata?.modified
-                ? getDisplayedTime(displayedProject.metadata.modified)
-                : 'never'}
+              {lastOpenedAt ? getDisplayedTime(lastOpenedAt) : 'never'}
             </span>
           </span>
         </div>

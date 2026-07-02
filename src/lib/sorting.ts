@@ -36,8 +36,10 @@ export function getSortFunction(sortBy: string) {
   }
 
   const sortByModified = (a: Project, b: Project) => {
-    const aModified = a.metadata?.modified ?? Number.NEGATIVE_INFINITY
-    const bModified = b.metadata?.modified ?? Number.NEGATIVE_INFINITY
+    const aModified =
+      a.last_opened_at ?? a.metadata?.modified ?? Number.NEGATIVE_INFINITY
+    const bModified =
+      b.last_opened_at ?? b.metadata?.modified ?? Number.NEGATIVE_INFINITY
     const modifiedComparison =
       !sortBy || sortBy.includes('desc')
         ? bModified - aModified

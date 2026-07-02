@@ -111,7 +111,7 @@ export function OpenedProject() {
 
   // Handle our project folder disappearing (Go back to Projects listing)
   useEffect(() => {
-    if (systemIOState !== SystemIOMachineStates.idle) {
+    if (!isDesktop() || systemIOState !== SystemIOMachineStates.idle) {
       return
     }
 

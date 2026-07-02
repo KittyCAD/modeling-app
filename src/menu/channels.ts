@@ -10,7 +10,6 @@ export type MenuLabels =
   | 'Edit.Redo'
   | 'Edit.Rename project'
   | 'Edit.Delete project'
-  | 'Edit.Change project directory'
   | 'Edit.Edit parameter'
   | 'Edit.Format code'
   | 'File.Create project'

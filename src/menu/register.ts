@@ -1,7 +1,6 @@
 import type { KclManager } from '@src/lang/KclManager'
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
@@ -12,7 +11,6 @@ import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
 
 export function modelingMenuCallbackMostActions({
-  settings,
   navigate,
   filePath,
   authActor,
@@ -20,7 +18,6 @@ export function modelingMenuCallbackMostActions({
   kclManager,
   settingsActor,
 }: {
-  settings: SettingsType
   navigate: NavigateFunction
   filePath: string | undefined
   authActor: ActorRefFrom<typeof authMachine>
@@ -36,9 +33,6 @@ export function modelingMenuCallbackMostActions({
         data: {
           groupId: 'projects',
           name: 'Create project',
-          argDefaultValues: {
-            name: settings.projects.defaultProjectName.current,
-          },
         },
       })
     } else if (data.menuLabel === 'File.Open project') {
@@ -86,12 +80,6 @@ export function modelingMenuCallbackMostActions({
         return
       }
       void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
-    } else if (data.menuLabel === 'Edit.Change project directory') {
-      if (!filePath) {
-        console.warn('filePath is undefined')
-        return
-      }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
       if (!filePath) {
         console.warn('filePath is undefined')

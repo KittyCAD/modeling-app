@@ -690,8 +690,7 @@ export class App implements AppSubsystems {
     configureOpfsCloudSync({
       enabled,
       token,
-      projectDirectoryPath:
-        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+      projectDirectoryPath: undefined,
     })
   }
 

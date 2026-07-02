@@ -1,5 +1,6 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { getInitialProjectDirectoryPath } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
@@ -8,16 +9,33 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
+  'Create project': {
+    name: string
+    parentDirectory?: string
+  }
   'Import file from URL': {
     name: string
     code?: string
     method: 'newProject' | 'existingProject'
+    parentDirectory?: string
     projectName?: string
   }
 }
 
 function defaultEnableProjectDirectoryCommands() {
   return typeof window !== 'undefined' && Boolean(window.electron)
+}
+
+function isPathLike(pathOrName: unknown): pathOrName is string {
+  return typeof pathOrName === 'string' && /[/\\]/.test(pathOrName)
+}
+
+function basenameFromPath(pathOrName: string) {
+  const normalizedPath = pathOrName.replaceAll('\\', '/').replace(/\/+$/g, '')
+  const lastSeparatorIndex = normalizedPath.lastIndexOf('/')
+  return lastSeparatorIndex === -1
+    ? normalizedPath || pathOrName
+    : normalizedPath.slice(lastSeparatorIndex + 1) || pathOrName
 }
 
 export function createProjectCommands({
@@ -37,10 +55,47 @@ export function createProjectCommands({
     const { folders } = systemIOActor.getSnapshot().context
     return folders
   }
+  const findFolderByPathOrName = (pathOrName: unknown) => {
+    if (typeof pathOrName !== 'string') {
+      return undefined
+    }
+
+    return folderSnapshot()?.find(
+      (folder) => folder.path === pathOrName || folder.name === pathOrName
+    )
+  }
+  const projectOptionName = (
+    folder: NonNullable<ReturnType<typeof folderSnapshot>>[number],
+    folders: NonNullable<ReturnType<typeof folderSnapshot>>
+  ) => {
+    const displayName = getProjectDisplayName(folder)
+    const baseName =
+      displayName === folder.name
+        ? displayName
+        : `${displayName} (${folder.name})`
+    const hasDuplicateName = folders.some(
+      (otherFolder) =>
+        otherFolder.path !== folder.path &&
+        getProjectDisplayName(otherFolder) === displayName
+    )
+
+    return hasDuplicateName ? `${baseName} - ${folder.path}` : baseName
+  }
 
   const defaultProjectFolderNameSnapshot = () => {
     const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
     return defaultProjectFolderName
+  }
+  const defaultProjectDirectoryPath = async (
+    _commandBarContext: ContextFrom<typeof commandBarMachine>,
+    _machineContext?: ContextFrom<typeof systemIOMachine>,
+    wasmInstance?: Parameters<typeof getInitialProjectDirectoryPath>[0]
+  ) => {
+    if (!isDesktop()) {
+      return ''
+    }
+
+    return getInitialProjectDirectoryPath(wasmInstance)
   }
 
   const openProjectCommand: Command = {
@@ -51,35 +106,24 @@ export function createProjectCommands({
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
-      if (record) {
+      if (record?.path) {
+        const projectPath = String(record.path)
         systemIOActor.send({
           type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
+          data: {
+            requestedProjectName: basenameFromPath(projectPath),
+            requestedProjectPath: projectPath,
+          },
         })
       }
     },
     args: {
-      name: {
+      path: {
         required: true,
-        inputType: 'options',
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            const displayName = getProjectDisplayName(folder)
-            options.push({
-              name:
-                displayName === folder.name
-                  ? displayName
-                  : `${displayName} (${folder.name})`,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        inputType: 'path',
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Open a project folder',
       },
     },
   }
@@ -92,14 +136,30 @@ export function createProjectCommands({
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
-      if (record) {
+      if (record?.name) {
         systemIOActor.send({
           type: SystemIOMachineEvents.createProject,
-          data: { requestedProjectName: record.name },
+          data: {
+            requestedProjectName: String(record.name),
+            requestedProjectDirectoryPath: record.parentDirectory
+              ? String(record.parentDirectory)
+              : undefined,
+          },
         })
       }
     },
     args: {
+      parentDirectory: {
+        required: () => isDesktop(),
+        hidden: () => !isDesktop(),
+        skip: true,
+        inputType: 'path',
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Choose where to create the project',
+        defaultValue: defaultProjectDirectoryPath,
+        displayName: 'Parent folder',
+      },
       name: {
         required: true,
         inputType: 'string',
@@ -117,17 +177,31 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
+        const project = findFolderByPathOrName(record.name)
+        const projectPath =
+          project?.path || (isPathLike(record.name) ? record.name : undefined)
         systemIOActor.send({
           type: SystemIOMachineEvents.deleteProject,
-          data: { requestedProjectName: record.name },
+          data: {
+            requestedProjectName:
+              project?.name ||
+              (projectPath
+                ? basenameFromPath(projectPath)
+                : String(record.name || '')),
+            projectPath,
+          },
         })
       }
     },
-    reviewMessage: ({ argumentsToSubmit }) =>
-      CommandBarOverwriteWarning({
+    reviewMessage: ({ argumentsToSubmit }) => {
+      const project = findFolderByPathOrName(argumentsToSubmit.name)
+      return CommandBarOverwriteWarning({
         heading: 'Are you sure you want to delete?',
-        message: `This will permanently delete the project "${argumentsToSubmit.name}" and all its contents.`,
-      }),
+        message: `This will permanently delete the project "${
+          project ? getProjectDisplayName(project) : argumentsToSubmit.name
+        }" and all its contents.`,
+      })
+    },
     args: {
       name: {
         inputType: 'options',
@@ -139,8 +213,8 @@ export function createProjectCommands({
 
           folders.forEach((folder) => {
             options.push({
-              name: folder.name,
-              value: folder.name,
+              name: projectOptionName(folder, folders),
+              value: folder.path,
               isCurrent: false,
             })
           })
@@ -159,6 +233,10 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
+        const project = findFolderByPathOrName(record.oldName)
+        const projectPath =
+          project?.path ||
+          (isPathLike(record.oldName) ? String(record.oldName) : undefined)
         // Only redirect back to the project when not on the home page
         const hash = window.location.hash
         const pathname = hash
@@ -169,7 +247,12 @@ export function createProjectCommands({
           type: SystemIOMachineEvents.renameProject,
           data: {
             requestedProjectName: record.newName,
-            projectName: record.oldName,
+            projectName:
+              project?.name ||
+              (projectPath
+                ? basenameFromPath(projectPath)
+                : String(record.oldName || '')),
+            projectPath,
             redirect: !isOnHomePage, // only redirect when renaming from within a project
           },
         })
@@ -186,8 +269,8 @@ export function createProjectCommands({
 
           folders.forEach((folder) => {
             options.push({
-              name: folder.name,
-              value: folder.name,
+              name: projectOptionName(folder, folders),
+              value: folder.path,
               isCurrent: false,
             })
           })
@@ -199,13 +282,15 @@ export function createProjectCommands({
         required: true,
         defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
           // Prefill with the old project name if it's already selected
-          const oldName = context.argumentsToSubmit.oldName as
-            | string
-            | undefined
-          const folder = folderSnapshot()?.find((item) => item.name === oldName)
+          const folder = findFolderByPathOrName(
+            context.argumentsToSubmit.oldName
+          )
           return folder
             ? getProjectDisplayName(folder)
-            : oldName || defaultProjectFolderNameSnapshot()
+            : String(
+                context.argumentsToSubmit.oldName ||
+                  defaultProjectFolderNameSnapshot()
+              )
         },
       },
     },
@@ -225,6 +310,10 @@ export function createProjectCommands({
             requestedProjectName: record.projectName,
             requestedCode: record.code,
             requestedFileNameWithExtension: record.name,
+            requestedProjectDirectoryPath:
+              record.method === 'newProject' && record.parentDirectory
+                ? String(record.parentDirectory)
+                : undefined,
           },
         })
       }
@@ -247,6 +336,21 @@ export function createProjectCommands({
               : 'Existing project'
             : 'Overwrite'
         },
+      },
+      parentDirectory: {
+        inputType: 'path',
+        required: (commandsContext) =>
+          isDesktop() &&
+          commandsContext.argumentsToSubmit.method === 'newProject',
+        hidden: (commandsContext) =>
+          !isDesktop() ||
+          commandsContext.argumentsToSubmit.method !== 'newProject',
+        skip: true,
+        filters: [],
+        openDialogProperties: ['openDirectory'],
+        openDialogTitle: 'Choose where to create the project',
+        defaultValue: defaultProjectDirectoryPath,
+        displayName: 'Parent folder',
       },
       // TODO: We can't get the currently-opened project to auto-populate here because
       // it's not available on projectMachine, but lower in fileMachine. Unify these.

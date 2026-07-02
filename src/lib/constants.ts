@@ -343,6 +343,16 @@ export type EnvironmentConfiguration = {
   token: string // authentication token from signing in. Can be empty string
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
   mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  recentProjects?: RecentProject[] // recently opened projects for this environment
+}
+
+export type RecentProject = {
+  path: string
+  name: string
+  default_file: string
+  kcl_file_count: number
+  directory_count: number
+  last_opened_at: number
 }
 
 /**

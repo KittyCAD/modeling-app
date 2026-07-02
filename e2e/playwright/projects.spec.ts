@@ -1,4 +1,3 @@
-import nodeFsSync from 'fs'
 import path from 'path'
 import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import nodeFs from 'fs/promises'
@@ -26,7 +25,7 @@ test(
     let targetDir = ''
     let externalCreatedProjectName = 'external-created-project-name'
 
-    await folderSetupFn(async (dir) => {
+    const { refreshRecentProjects } = await folderSetupFn(async (dir) => {
       targetDir = dir
       const myDir = path.join(dir, externalCreatedProjectName)
       await fs.mkdir(myDir, { recursive: true })
@@ -48,6 +47,7 @@ test(
     )
 
     externalCreatedProjectName += '1'
+    await refreshRecentProjects()
     await expect(projectLinks).toContainText(externalCreatedProjectName)
 
     await fs.rm(path.join(targetDir, externalCreatedProjectName), {
@@ -55,6 +55,7 @@ test(
       force: true,
     })
 
+    await refreshRecentProjects()
     await expect(projectLinks).toHaveCount(0)
   }
 )
@@ -424,6 +425,13 @@ test(
     await page.setBodyDimensions({ width: 1200, height: 600 })
 
     page.on('console', console.log)
+    const projectActionButton = (
+      projectName: string,
+      action: 'sketch' | 'trash'
+    ) =>
+      page
+        .locator(`[data-edit-buttons-for="${projectName}"]`)
+        .getByLabel(action)
 
     await test.step('rename a project clicking buttons checking left and right arrow does not impact the text', async () => {
       const routerTemplate = page.getByText('router-template-slate')
@@ -431,8 +439,10 @@ test(
       await routerTemplate.hover()
       await routerTemplate.focus()
 
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await expect(
+        projectActionButton('router-template-slate', 'sketch')
+      ).toBeVisible()
+      await projectActionButton('router-template-slate', 'sketch').click()
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -467,8 +477,10 @@ test(
       await project.hover()
       await project.focus()
 
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await expect(
+        projectActionButton('updated project name', 'sketch')
+      ).toBeVisible()
+      await projectActionButton('updated project name', 'sketch').click()
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -495,8 +507,10 @@ test(
       await project.hover()
       await project.focus()
 
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await expect(
+        projectActionButton('updated name again', 'sketch')
+      ).toBeVisible()
+      await projectActionButton('updated name again', 'sketch').click()
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -519,8 +533,10 @@ test(
       await project.hover()
       await project.focus()
 
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await expect(
+        projectActionButton('updated name again', 'sketch')
+      ).toBeVisible()
+      await projectActionButton('updated name again', 'sketch').click()
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -543,8 +559,10 @@ test(
       await project.hover()
       await project.focus()
 
-      await expect(page.getByLabel('trash').last()).toBeVisible()
-      await page.getByLabel('trash').last().click()
+      await expect(
+        projectActionButton('updated name again', 'trash')
+      ).toBeVisible()
+      await projectActionButton('updated name again', 'trash').click()
 
       await expect(page.getByText('This will permanently delete')).toBeVisible()
 
@@ -562,8 +580,8 @@ test(
       await routerTemplate.hover()
       await routerTemplate.focus()
 
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await expect(projectActionButton('bracket', 'sketch')).toBeVisible()
+      await projectActionButton('bracket', 'sketch').click()
 
       const selectedText = await page.evaluate(() => {
         const selection = window.getSelection()
@@ -591,8 +609,8 @@ test(
       await routerTemplate.hover()
       await routerTemplate.focus()
 
-      await expect(page.getByLabel('sketch').last()).toBeVisible()
-      await page.getByLabel('sketch').last().click()
+      await expect(projectActionButton('bracket', 'sketch')).toBeVisible()
+      await projectActionButton('bracket', 'sketch').click()
 
       const inputField = page.getByTestId('project-rename-input')
       await expect(inputField).toBeVisible()
@@ -1269,7 +1287,7 @@ test(
 
     await test.step('should be shorted by modified initially', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Last Modified',
+        name: 'Last Opened',
       })
       await expect(lastModifiedButton).toBeVisible()
       await expect(lastModifiedButton.getByLabel('arrow down')).toBeVisible()
@@ -1290,7 +1308,7 @@ test(
 
     await test.step('Reverse modified order', async () => {
       const lastModifiedButton = page.getByRole('button', {
-        name: 'Last Modified',
+        name: 'Last Opened',
       })
       await lastModifiedButton.click()
       await expect(lastModifiedButton).toBeVisible()
@@ -1342,114 +1360,6 @@ test(
           [...projectNamesOrderedByName].reverse()[index]
         )
       }
-    })
-  }
-)
-
-// desktop-only reason: changing roots in OPFS is not a thing.
-test(
-  'You can change the root projects directory and nothing is lost',
-  {
-    tag: '@desktop',
-  },
-  async ({ page, tronApp, homePage, folderSetupFn }, testInfo) => {
-    if (!tronApp) throw new Error('tronApp is missing.')
-
-    await folderSetupFn(async (dir) => {
-      await Promise.all([
-        nodeFs.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-        nodeFs.mkdir(`${dir}/bracket`, { recursive: true }),
-      ])
-      await Promise.all([
-        nodeFs.copyFile(
-          executorInputPath('router-template-slate.kcl'),
-          `${dir}/router-template-slate/main.kcl`
-        ),
-        nodeFs.copyFile(
-          executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-          `${dir}/bracket/main.kcl`
-        ),
-      ])
-    })
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    // we'll grab this from the settings on screen before we switch
-    let originalProjectDirName: string
-    const newProjectDirName = testInfo.outputPath(
-      'electron-test-projects-dir-2'
-    )
-    if (nodeFsSync.existsSync(newProjectDirName)) {
-      await nodeFs.rm(newProjectDirName, { recursive: true })
-    }
-
-    await homePage.projectsLoaded()
-
-    await test.step('We can change the root project directory', async () => {
-      // expect to see the project directory settings link
-      await expect(
-        page.getByTestId('project-directory-settings-link')
-      ).toBeVisible()
-
-      await page.getByTestId('project-directory-settings-link').click()
-
-      await expect(page.getByTestId('project-directory-button')).toBeVisible()
-      originalProjectDirName = await page
-        .locator('section#projectDirectory input')
-        .inputValue()
-
-      const handleFile = tronApp.electron.evaluate(
-        async ({ dialog }, filePaths) => {
-          dialog.showOpenDialog = () =>
-            Promise.resolve({ canceled: false, filePaths })
-        },
-        [newProjectDirName]
-      )
-      await page.getByTestId('project-directory-button').click()
-      await handleFile
-
-      await expect
-        .poll(() => page.locator('section#projectDirectory input').inputValue())
-        .toContain(newProjectDirName)
-
-      await page.getByTestId('settings-close-button').click()
-
-      await homePage.projectsLoaded()
-
-      await expect(page.getByText('No projects found')).toBeVisible()
-      await createProject({ name: 'project-000', page, returnHome: true })
-      await expect(
-        page.getByTestId('project-link').filter({ hasText: 'project-000' })
-      ).toBeVisible()
-    })
-
-    await test.step('We can change back to the original root project directory', async () => {
-      await expect(
-        page.getByTestId('project-directory-settings-link')
-      ).toBeVisible()
-
-      await page.getByTestId('project-directory-settings-link').click()
-
-      const handleFile = tronApp.electron.evaluate(
-        async ({ dialog }, filePaths) => {
-          dialog.showOpenDialog = () =>
-            Promise.resolve({ canceled: false, filePaths })
-        },
-        [originalProjectDirName]
-      )
-      await expect(page.getByTestId('project-directory-button')).toBeVisible()
-
-      await page.getByTestId('project-directory-button').click()
-      await handleFile
-
-      await homePage.projectsLoaded()
-      await expect(page.locator('section#projectDirectory input')).toHaveValue(
-        originalProjectDirName
-      )
-
-      await page.getByTestId('settings-close-button').click()
-
-      await expect(page.getByText('bracket')).toBeVisible()
-      await expect(page.getByText('router-template-slate')).toBeVisible()
     })
   }
 )

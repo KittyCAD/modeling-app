@@ -194,7 +194,7 @@ export const ProjectExplorer = ({
   overrideApplicationProjectDirectory?: string
 }) => {
   useSignals()
-  const { commands, registry, settings, systemIOActor } = useApp()
+  const { commands, registry, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
   const rowContextMenuItems = registry.signal(
     projectExplorerRowContextMenuItemsValueSpec
@@ -213,9 +213,8 @@ export const ProjectExplorer = ({
     (state) => state.context.lastRecursiveMoveTarget
   )
   const errors = kclManager.errorsSignal.value
-  const settingsValues = settings.useSettings()
   const applicationProjectDirectory =
-    settingsValues.app.projectDirectory.current
+    overrideApplicationProjectDirectory || getParentAbsolutePath(project.path)
 
   /**
    * Read the file you are loading into and open all of the parent paths to that file
@@ -223,7 +222,7 @@ export const ProjectExplorer = ({
    */
   const defaultFileKey = parentPathRelativeToApplicationDirectory(
     file?.path || project.default_file,
-    overrideApplicationProjectDirectory || applicationProjectDirectory
+    applicationProjectDirectory
   )
   const defaultOpenedRows: { [key: string]: boolean } = {}
   const pathIterator = desktopSafePathSplit(defaultFileKey)

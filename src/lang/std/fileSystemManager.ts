@@ -3,6 +3,7 @@ import type { ObjectEncodingOptions, OpenMode } from 'fs'
 import fsZds from '@src/lib/fs-zds'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import electronfs from '@src/lib/fs-zds/electronfs'
 import opfs from '@src/lib/fs-zds/opfs'
 
@@ -96,16 +97,32 @@ export class FileSystemManager {
   /**
    * Called from WASM.
    */
-  async getAllFiles(targetPath: string): Promise<string[]> {
+  async getAllFiles(targetPath: string): Promise<string> {
     const filepath = this.join(this.dir, targetPath)
-    return await this._fs
-      .readdir(filepath)
-      .catch((error: Error) => {
+    const files: string[] = []
+    const stack = [filepath]
+
+    while (stack.length > 0) {
+      const currentPath = stack.pop()
+      if (!currentPath) continue
+
+      const entries = await this._fs.readdir(currentPath).catch((error) => {
         return Promise.reject(new Error(`Error reading dir: ${error}`))
       })
-      .then((files: string[]) => {
-        return files.map((filePath) => filePath)
-      })
+
+      for (const entry of entries) {
+        const entryPath = this._fs.join(currentPath, entry)
+        const stats = await this._fs.stat(entryPath)
+
+        if (stats.mode & fsZdsConstants.S_IFDIR) {
+          stack.push(entryPath)
+        } else {
+          files.push(entryPath)
+        }
+      }
+    }
+
+    return JSON.stringify(files)
   }
 }
 

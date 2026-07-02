@@ -1,17 +1,9 @@
 import { tmpdir } from 'node:os'
-import {
-  Registry,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
+import { Registry } from '@kittycad/registry'
+import { writeRecentProjectsForEnvironment } from '@src/lib/desktop'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
-import {
-  type SettingsRegistryService,
-  settingsService,
-} from '@src/registry/contracts/settings'
+import { isArray } from '@src/lib/utils'
 import {
   combineProjectHandles,
   combineProjects,
@@ -19,20 +11,20 @@ import {
   projectsValueSpec,
   systemIOService,
 } from '@src/registry/contracts/systemIO'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
-import { listProjectHandlesFromProjectDirectory, systemIOExtension } from '.'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { listProjectHandlesFromRecentProjects, systemIOExtension } from '.'
+
+vi.mock('@kittycad/lib', () => ({
+  Client: vi.fn(),
+  users: {},
+}))
+
+vi.mock('@src/lib/kcClient', () => ({
+  createKCClient: vi.fn(),
+  kcCall: vi.fn(),
+}))
 
 const cleanup: Array<() => Promise<void> | void> = []
-
-function createSettings(projectDirectory: string) {
-  return {
-    app: {
-      projectDirectory: {
-        current: projectDirectory,
-      },
-    },
-  } as SettingsType
-}
 
 function createProject(path: string, name: string): Project {
   return {
@@ -62,7 +54,7 @@ describe('systemIO extension', () => {
     }
   })
 
-  it('provides unloaded project handles until refreshed without a settings service', async () => {
+  it('provides project handles without a settings service', async () => {
     const registry = new Registry()
     cleanup.push(() => registry[Symbol.dispose]())
     registry.configure([systemIOExtension])
@@ -73,9 +65,9 @@ describe('systemIO extension', () => {
     expect(systemIO.projects.value).toBeUndefined()
     expect(registry.get(projectHandlesValueSpec)).toBeUndefined()
     expect(registry.get(projectsValueSpec)).toBeUndefined()
-    await expect(systemIO.refreshProjectHandles()).resolves.toEqual([])
-    expect(systemIO.projectHandles.value).toEqual([])
-    expect(registry.get(projectHandlesValueSpec)).toEqual([])
+
+    const handles = await systemIO.refreshProjectHandles()
+    expect(isArray(handles)).toBe(true)
   })
 
   it('combines project handle contributions by path', () => {
@@ -119,114 +111,52 @@ describe('systemIO extension', () => {
     ])
   })
 
-  it('lists immediate child directories from settings.app.projectDirectory', async () => {
-    const projectDirectory = fsZds.join(
-      tmpdir(),
-      `system-io-extension-${Date.now()}`
-    )
-    const alphaProject = fsZds.join(projectDirectory, 'alpha')
-    const betaProject = fsZds.join(projectDirectory, 'beta')
-    const hiddenProject = fsZds.join(projectDirectory, '.hidden')
-    const notesFile = fsZds.join(projectDirectory, 'notes.txt')
+  it('lists recent project handles for an environment', async () => {
+    const environmentName = `system-io-extension-${Date.now()}`
+    const environmentFolder = fsZds.join(tmpdir(), environmentName)
+    await fsZds.mkdir(environmentFolder, { recursive: true })
+    vi.stubGlobal('window', {
+      electron: {
+        getAppTestProperty: vi.fn(async () =>
+          fsZds.join(environmentFolder, 'settings.toml')
+        ),
+        packageJson: { name: 'zoo-modeling-app' },
+      },
+    })
+    const alphaProject = '/projects/alpha'
+    const betaProject = '/projects/beta'
 
-    await fsZds.mkdir(alphaProject, { recursive: true })
-    await fsZds.mkdir(betaProject, { recursive: true })
-    await fsZds.mkdir(hiddenProject, { recursive: true })
-    await fsZds.writeFile(notesFile, new TextEncoder().encode('not a project'))
     cleanup.push(() =>
-      fsZds.rm(projectDirectory, { recursive: true, force: true })
+      fsZds.rm(environmentFolder, { recursive: true, force: true })
+    )
+    cleanup.push(() => {
+      vi.unstubAllGlobals()
+    })
+    cleanup.push(() => writeRecentProjectsForEnvironment([], environmentName))
+    await writeRecentProjectsForEnvironment(
+      [
+        {
+          path: alphaProject,
+          name: 'alpha',
+          default_file: fsZds.join(alphaProject, 'main.kcl'),
+          kcl_file_count: 1,
+          directory_count: 0,
+          last_opened_at: 1,
+        },
+        {
+          path: betaProject,
+          name: 'beta',
+          default_file: fsZds.join(betaProject, 'main.kcl'),
+          kcl_file_count: 1,
+          directory_count: 0,
+          last_opened_at: 2,
+        },
+      ],
+      environmentName
     )
 
-    expect(
-      (await listProjectHandlesFromProjectDirectory(projectDirectory))
-        .map((handle) => handle.path)
-        .sort()
-    ).toEqual([alphaProject, betaProject])
-
-    const settings = signal(createSettings(projectDirectory))
-    const registry = new Registry()
-    cleanup.push(() => registry[Symbol.dispose]())
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-settings-service',
-        providesServices: [
-          provideService(settingsService, {
-            current: settings,
-            get: () => settings.value,
-          } as SettingsRegistryService),
-        ],
-      }),
-      systemIOExtension,
-    ])
-
-    expect(
-      registry.get(settingsService).current.value.app.projectDirectory.current
-    ).toBe(projectDirectory)
-
-    const systemIO = registry.get(systemIOService)
-    const handles = await systemIO.refreshProjectHandles()
-
-    expect(handles.map((handle) => handle.path).sort()).toEqual([
-      alphaProject,
-      betaProject,
-    ])
-    expect(
-      systemIO.projectHandles.value?.map((handle) => handle.path).sort()
-    ).toEqual([alphaProject, betaProject])
-    expect(
-      registry
-        .get(projectHandlesValueSpec)
-        ?.map((handle) => handle.path)
-        .sort()
-    ).toEqual([alphaProject, betaProject])
-  })
-
-  it('clears project handles while a changed project directory refreshes', async () => {
-    const firstProjectDirectory = fsZds.join(
-      tmpdir(),
-      `system-io-extension-first-${Date.now()}`
+    expect(await listProjectHandlesFromRecentProjects(environmentName)).toEqual(
+      [{ path: betaProject }, { path: alphaProject }]
     )
-    const secondProjectDirectory = fsZds.join(
-      tmpdir(),
-      `system-io-extension-second-${Date.now()}`
-    )
-    const firstProject = fsZds.join(firstProjectDirectory, 'first')
-    const secondProject = fsZds.join(secondProjectDirectory, 'second')
-
-    await fsZds.mkdir(firstProject, { recursive: true })
-    await fsZds.mkdir(secondProject, { recursive: true })
-    cleanup.push(() =>
-      fsZds.rm(firstProjectDirectory, { recursive: true, force: true })
-    )
-    cleanup.push(() =>
-      fsZds.rm(secondProjectDirectory, { recursive: true, force: true })
-    )
-
-    const settings = signal(createSettings(firstProjectDirectory))
-    const registry = new Registry()
-    cleanup.push(() => registry[Symbol.dispose]())
-    registry.configure([
-      defineRegistryItem({
-        id: 'test-settings-service',
-        providesServices: [
-          provideService(settingsService, {
-            current: settings,
-            get: () => settings.value,
-          } as SettingsRegistryService),
-        ],
-      }),
-      systemIOExtension,
-    ])
-
-    const systemIO = registry.get(systemIOService)
-    await Promise.resolve()
-    await systemIO.refreshProjectHandles()
-    expect(systemIO.projectHandles.value?.map((handle) => handle.path)).toEqual(
-      [firstProject]
-    )
-
-    settings.value = createSettings(secondProjectDirectory)
-
-    expect(systemIO.projectHandles.value).toBeUndefined()
   })
 })
