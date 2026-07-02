@@ -2371,7 +2371,7 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   const datums = 'error' in datumsArg ? undefined : datumsArg
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
-    edges: selections,
+    objects: selections,
     datums,
     tolerance,
     precision,

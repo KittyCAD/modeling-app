@@ -72,6 +72,7 @@ describe('transforms.test.ts', () => {
       const sourcePathToNode = getNodePathFromSourceRange(ast, sourceRange)
       const sweep: Artifact = {
         type: 'sweep',
+        edgeIds: [],
         id: 'sweep-id',
         subType: 'extrusion',
         pathId: 'path-id',
@@ -1355,6 +1356,7 @@ extrude001 = extrude(profile001, length = 10)`
       }
       const capArtifact: Artifact = {
         type: 'cap',
+        edgeCutEdgeIds: [],
         id: 'cap-end-test',
         subType: 'end',
         sweepId: bodyArtifact.id,

@@ -172,6 +172,7 @@ function createTaggedCapGraph(
     }
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: config.sweepId,
       codeRef,
       pathId: config.pathId,
@@ -183,6 +184,7 @@ function createTaggedCapGraph(
     }
     const capStart: Artifact = {
       type: 'cap',
+      edgeCutEdgeIds: [],
       id: config.capStartId,
       subType: 'start',
       sweepId: config.sweepId,
@@ -192,6 +194,7 @@ function createTaggedCapGraph(
     }
     const capEnd: Artifact = {
       type: 'cap',
+      edgeCutEdgeIds: [],
       id: config.capEndId,
       subType: 'end',
       sweepId: config.sweepId,
@@ -255,12 +258,15 @@ function createTaggedWallAndCapGraph(
   }
   const segment: Artifact = {
     type: 'segment',
+    edgeIds: [],
+    commonSurfaceIds: [],
     id: segmentId,
     pathId,
     codeRef: segmentCodeRef,
   }
   const sweep: Artifact = {
     type: 'sweep',
+    edgeIds: [],
     id: sweepId,
     codeRef: sweepCodeRef,
     pathId,
@@ -272,6 +278,7 @@ function createTaggedWallAndCapGraph(
   }
   const wall: Artifact = {
     type: 'wall',
+    edgeCutEdgeIds: [],
     id: wallId,
     segId: segmentId,
     sweepId,
@@ -281,6 +288,7 @@ function createTaggedWallAndCapGraph(
   }
   const cap: Artifact = {
     type: 'cap',
+    edgeCutEdgeIds: [],
     id: capId,
     subType: 'end',
     sweepId,

@@ -1211,6 +1211,8 @@ revolve001 = revolve(
             codeRef: edgeTreatmentCodeRef,
             artifact: {
               type: 'edgeCut',
+              consumedEdgeId: '',
+              edgeIds: [],
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
               codeRef: {
@@ -1275,6 +1277,8 @@ revolve001 = revolve(`
             codeRef: edgeTreatmentCodeRef,
             artifact: {
               type: 'edgeCut',
+              consumedEdgeId: '',
+              edgeIds: [],
               id: 'mock-edge-cut-id',
               subType: edgeTreatmentType,
               codeRef: {

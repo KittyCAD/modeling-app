@@ -26,6 +26,7 @@ import type {
   Program,
   VariableMap,
 } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
@@ -82,12 +83,11 @@ export function addTranslate({
       : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('translate', objectsExpr, [
-    ...xExpr,
-    ...yExpr,
-    ...zExpr,
-    ...globalExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Translate'),
+    objectsExpr,
+    [...xExpr, ...yExpr, ...zExpr, ...globalExpr]
+  )
 
   // Insert variables for labeled arguments if provided
   if (x && 'variableName' in x && x.variableName) {
@@ -172,12 +172,11 @@ export function addRotate({
       : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('rotate', objectsExpr, [
-    ...rollExpr,
-    ...pitchExpr,
-    ...yawExpr,
-    ...globalExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Rotate'),
+    objectsExpr,
+    [...rollExpr, ...pitchExpr, ...yawExpr, ...globalExpr]
+  )
 
   // Insert variables for labeled arguments if provided
   if (roll && 'variableName' in roll && roll.variableName) {
@@ -265,13 +264,11 @@ export function addScale({
       : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('scale', objectsExpr, [
-    ...xExpr,
-    ...yExpr,
-    ...zExpr,
-    ...factorExpr,
-    ...globalExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Scale'),
+    objectsExpr,
+    [...xExpr, ...yExpr, ...zExpr, ...factorExpr, ...globalExpr]
+  )
 
   // Insert variables for labeled arguments if provided
   if (x && 'variableName' in x && x.variableName) {
@@ -343,7 +340,11 @@ export function addClone({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('clone', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Clone'),
+    objectsExpr,
+    []
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -415,12 +416,11 @@ export function addAppearance({
     ? [createLabeledArg('opacity', valueOrVariable(opacity))]
     : []
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('appearance', objectsExpr, [
-    ...colorExpr,
-    ...metalnessExpr,
-    ...roughnessExpr,
-    ...opacityExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Appearance'),
+    objectsExpr,
+    [...colorExpr, ...metalnessExpr, ...roughnessExpr, ...opacityExpr]
+  )
 
   if (metalness && 'variableName' in metalness && metalness.variableName) {
     insertVariableAndOffsetPathToNode(metalness, modifiedAst, mNodeToEdit)
@@ -554,7 +554,7 @@ export function addDelete({
     artifactGraph,
     objects,
     wasmInstance,
-    name: 'delete',
+    name: modelingStdLibCommandName('Delete'),
   })
 }
 
@@ -632,9 +632,11 @@ export function addMirror3D({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('mirror3d', objectsExpr, [
-    createLabeledArg('across', acrossArg),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Mirror 3D'),
+    objectsExpr,
+    [createLabeledArg('across', acrossArg)]
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end

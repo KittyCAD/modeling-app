@@ -22,7 +22,6 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import { resolveToCodeRef, traverse, valueOrVariable } from '@src/lang/queryAst'
 import {
   type ResolvedGraphSelection,
-  getArtifactOfTypes,
   getCapForPathId,
   getCommonFacesForEdge,
 } from '@src/lang/std/artifactGraph'

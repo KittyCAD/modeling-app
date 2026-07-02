@@ -73,6 +73,7 @@ import {
   isEnginePrimitiveSelection,
 } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
@@ -462,13 +463,6 @@ export function addBlend({
   }
 }
 
-function getSegmentIdFromEdgeArtifact(edgeArtifact: Artifact): string | null {
-  if (edgeArtifact.type === 'segment') {
-    return edgeArtifact.id
-  }
-  return null
-}
-
 function buildEdgeExpr(
   edgeSelection: EdgeSelectionForExpr,
   ast: Node<Program>,
@@ -700,41 +694,6 @@ type FilletEdgeRefPayload = {
   side_faces: string[]
   end_faces?: string[]
   index?: number
-}
-
-function getEndFaceIdsForEdgeIdMeta(
-  meta: EdgeRefactorMeta,
-  artifactGraph: ArtifactGraph
-): string[] {
-  if (meta.stdlibFn !== 'edgeId') {
-    return []
-  }
-
-  const edgeArtifact = artifactGraph.get(meta.edgeId)
-  if (!edgeArtifact) {
-    return []
-  }
-
-  const backingSegmentId = getSegmentIdFromEdgeArtifact(edgeArtifact)
-  if (!backingSegmentId) {
-    return []
-  }
-
-  const backingSegment = getArtifactOfTypes(
-    { key: backingSegmentId, types: ['segment'] },
-    artifactGraph
-  )
-  if (err(backingSegment)) {
-    return []
-  }
-
-  const commonFaces = getCommonFacesForEdge(backingSegment, artifactGraph)
-  if (err(commonFaces)) return []
-
-  const sideFaceIds = new Set(meta.faceIds)
-  return commonFaces
-    .map((face) => face.id)
-    .filter((faceId) => !sideFaceIds.has(faceId))
 }
 
 /**
@@ -1122,6 +1081,12 @@ function sourceRangeMatch(
   return metaModuleId === moduleId && metaStart === start && metaEnd === end
 }
 
+function hasFaceIds(
+  meta: EdgeRefactorMeta | undefined
+): meta is EdgeRefactorMeta & { faceIds: [string, string] } {
+  return isArray(meta?.faceIds) && meta.faceIds.length === 2
+}
+
 interface ExprWalkOptions {
   resolveWrappedCalls?: boolean
   includeCallUnlabeled?: boolean
@@ -1336,7 +1301,7 @@ function findFilletChamferCallsToFixUnified(
             const meta = edgeRefactorMetadata.find((m) =>
               sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
             )
-            if (meta?.faceIds) {
+            if (hasFaceIds(meta)) {
               triggerRanges.push([inner.start, inner.end, inner.moduleId])
               orderedPayloads.push({
                 side_faces: meta.faceIds,
@@ -1379,7 +1344,7 @@ function findFilletChamferCallsToFixUnified(
                 deprecatedCall.call.moduleId
               )
             )
-            if (meta?.faceIds) {
+            if (hasFaceIds(meta)) {
               triggerRanges.push([
                 deprecatedCall.call.start,
                 deprecatedCall.call.end,
@@ -1516,7 +1481,7 @@ export function findRevolveHelixCallsToFix(
     const moduleId = call.moduleId
     const callStart = call.start
     const callEnd = call.end
-    if (meta?.faceIds) {
+    if (hasFaceIds(meta)) {
       results.push({
         range: [callStart, callEnd, moduleId],
         faceIds: [meta.faceIds[0], meta.faceIds[1]],
@@ -1583,7 +1548,7 @@ export function findExtrudeToCallsToFix(
     const moduleId = call.moduleId
     const callStart = call.start
     const callEnd = call.end
-    if (meta?.faceIds) {
+    if (hasFaceIds(meta)) {
       results.push({
         range: [callStart, callEnd, moduleId],
         faceIds: [meta.faceIds[0], meta.faceIds[1]],
@@ -1640,7 +1605,7 @@ export function findGdtEdgesCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta?.faceIds) {
+        if (!hasFaceIds(meta)) {
           hasUnconvertedEdgesElement = true
           continue
         }
@@ -1695,7 +1660,7 @@ export function findGdtDistanceEndpointCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta?.faceIds) continue
+        if (!hasFaceIds(meta)) continue
 
         endpoints.push({
           label,
@@ -1744,7 +1709,7 @@ export function findBoundedEdgeCallsToFix(
       const meta = edgeRefactorMetadata.find((m) =>
         sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
       )
-      if (!meta?.faceIds) return
+      if (!hasFaceIds(meta)) return
 
       results.push({
         range: [call.start, call.end, call.moduleId],

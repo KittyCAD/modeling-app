@@ -883,6 +883,8 @@ sketch003 = startSketchOn(XZ)
         codeAfter: `myVar = 5\n`,
         lineOfInterest: 'line(end = [-2.94, 2.7])',
         type: 'segment',
+        edgeIds: [],
+        commonSurfaceIds: [],
       },
     ],
     // TODO FIXME, similar to fix me in e2e/playwright/testing-selections.spec.ts
@@ -1411,6 +1413,7 @@ extrude001 = extrude(profile001, length = 5)
 
       const legacyWall: Extract<Artifact, { type: 'wall' }> = {
         type: 'wall',
+        edgeCutEdgeIds: [],
         id: 'legacy-wall-1',
         cmdId: 'cmd-1',
         segId: segmentArtifact!.id,

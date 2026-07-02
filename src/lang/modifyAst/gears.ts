@@ -11,6 +11,7 @@ import {
 } from '@src/lang/modifyAst'
 import { valueOrVariable } from '@src/lang/queryAst'
 import type { PathToNode, Program } from '@src/lang/wasm'
+import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
@@ -52,9 +53,10 @@ export function addHelicalGear({
   | Error {
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const stdLibCall = modelingStdLibCall('Helical Gear')
 
   const call = createCallExpressionStdLibKw(
-    'helical',
+    stdLibCall.name,
     null,
     [
       createLabeledArg('nTeeth', valueOrVariable(nTeeth)),
@@ -64,7 +66,7 @@ export function addHelicalGear({
       createLabeledArg('gearHeight', valueOrVariable(gearHeight)),
     ],
     undefined,
-    [createIdentifier('gear')]
+    stdLibCall.path.map(createIdentifier)
   )
 
   insertKclVariableIfNeeded(nTeeth, modifiedAst, mNodeToEdit)
@@ -116,9 +118,10 @@ export function addHerringboneGear({
   | Error {
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const stdLibCall = modelingStdLibCall('Herringbone Gear')
 
   const call = createCallExpressionStdLibKw(
-    'herringbone',
+    stdLibCall.name,
     null,
     [
       createLabeledArg('nTeeth', valueOrVariable(nTeeth)),
@@ -128,7 +131,7 @@ export function addHerringboneGear({
       createLabeledArg('helixAngle', valueOrVariable(helixAngle)),
     ],
     undefined,
-    [createIdentifier('gear')]
+    stdLibCall.path.map(createIdentifier)
   )
 
   insertKclVariableIfNeeded(nTeeth, modifiedAst, mNodeToEdit)
@@ -178,9 +181,10 @@ export function addSpurGear({
   | Error {
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const stdLibCall = modelingStdLibCall('Spur Gear')
 
   const call = createCallExpressionStdLibKw(
-    'spur',
+    stdLibCall.name,
     null,
     [
       createLabeledArg('nTeeth', valueOrVariable(nTeeth)),
@@ -189,7 +193,7 @@ export function addSpurGear({
       createLabeledArg('gearHeight', valueOrVariable(gearHeight)),
     ],
     undefined,
-    [createIdentifier('gear')]
+    stdLibCall.path.map(createIdentifier)
   )
 
   insertKclVariableIfNeeded(nTeeth, modifiedAst, mNodeToEdit)
@@ -240,9 +244,10 @@ export function addRingGear({
   | Error {
   const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const stdLibCall = modelingStdLibCall('Ring Gear')
 
   const call = createCallExpressionStdLibKw(
-    'ring',
+    stdLibCall.name,
     null,
     [
       createLabeledArg('nTeeth', valueOrVariable(nTeeth)),
@@ -252,7 +257,7 @@ export function addRingGear({
       createLabeledArg('gearHeight', valueOrVariable(gearHeight)),
     ],
     undefined,
-    [createIdentifier('gear')]
+    stdLibCall.path.map(createIdentifier)
   )
 
   insertKclVariableIfNeeded(nTeeth, modifiedAst, mNodeToEdit)

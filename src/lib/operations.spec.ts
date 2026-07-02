@@ -80,6 +80,8 @@ function compositeSolidArtifact(
 function segmentArtifact(id: string): Artifact {
   return {
     type: 'segment',
+    edgeIds: [],
+    commonSurfaceIds: [],
     id,
     pathId: 'path-id',
     codeRef: {
@@ -110,6 +112,7 @@ function pathArtifact(id: string): Artifact {
 function sweepArtifact(id: string, pathId: string): Artifact {
   return {
     type: 'sweep',
+    edgeIds: [],
     id,
     subType: 'extrusion',
     pathId,
@@ -129,6 +132,7 @@ function sweepArtifact(id: string, pathId: string): Artifact {
 function capArtifact(id: string, sweepId: string): Artifact {
   return {
     type: 'cap',
+    edgeCutEdgeIds: [],
     id,
     subType: 'end',
     sweepId,

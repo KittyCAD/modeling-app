@@ -30,6 +30,7 @@ describe('getSweepArtifactFromSelection', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [0, 0, 0],
@@ -46,6 +47,8 @@ describe('getSweepArtifactFromSelection', () => {
 
     const segment: Artifact = {
       type: 'segment',
+      edgeIds: [],
+      commonSurfaceIds: [],
       id: 'segment-1',
       pathId: 'path-1',
       edgeCutId: 'edge-cut-1',
@@ -58,6 +61,8 @@ describe('getSweepArtifactFromSelection', () => {
 
     const edgeCut: Artifact = {
       type: 'edgeCut',
+      consumedEdgeId: '',
+      edgeIds: [],
       id: 'edge-cut-1',
       subType: 'chamfer',
       surfaceId: null,
@@ -125,6 +130,8 @@ describe('getSketchBlockForArtifact', () => {
 
     const segment: Artifact = {
       type: 'segment',
+      edgeIds: [],
+      commonSurfaceIds: [],
       id: 'segment-1',
       pathId: 'path-1',
       codeRef,
@@ -223,6 +230,7 @@ describe('getBodiesFromArtifactGraph', () => {
     const artifactGraph: ArtifactGraph = new Map()
     const sourceSweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [0, 100, 0],
@@ -263,6 +271,7 @@ describe('getBodiesFromArtifactGraph', () => {
     const artifactGraph: ArtifactGraph = new Map()
     const sourceSweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [0, 100, 0],
@@ -331,6 +340,7 @@ describe('isFaceFromLegacySketch', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [100, 200, 0],
@@ -347,6 +357,7 @@ describe('isFaceFromLegacySketch', () => {
 
     const wall: Artifact = {
       type: 'wall',
+      edgeCutEdgeIds: [],
       id: 'wall-1',
       cmdId: 'cmd-1',
       segId: 'segment-1',
@@ -383,6 +394,7 @@ describe('isFaceFromLegacySketch', () => {
 
     const sweep: Artifact = {
       type: 'sweep',
+      edgeIds: [],
       id: 'sweep-1',
       codeRef: {
         range: [100, 200, 0],
@@ -399,6 +411,7 @@ describe('isFaceFromLegacySketch', () => {
 
     const wall: Artifact = {
       type: 'wall',
+      edgeCutEdgeIds: [],
       id: 'wall-1',
       cmdId: 'cmd-1',
       segId: 'segment-1',

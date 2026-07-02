@@ -520,6 +520,27 @@ export class SceneFixture {
     await expect(this.startEditSketchBtn).toBeVisible()
   }
 
+  waitForExecutionDoneAfter = async (
+    action: () => Promise<unknown>,
+    { timeout = 30_000 }: { timeout?: number } = {}
+  ) => {
+    await this.page.evaluate(() => {
+      window.engineCommandManager?.clearCommandLogs()
+    })
+    await action()
+    await expect
+      .poll(
+        () =>
+          this.page.evaluate(() =>
+            window.engineCommandManager?.commandLogs.some(
+              (log) => log.type === 'execution-done'
+            )
+          ),
+        { timeout }
+      )
+      .toBe(true)
+  }
+
   expectPixelColor = async (
     colour: [number, number, number] | [number, number, number][],
     coords: { x: number; y: number },
