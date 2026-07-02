@@ -135,6 +135,8 @@ export function SystemIOMachineLogicListener() {
         SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile,
         SystemIOMachineStates.renamingFileAndNavigateToFile,
         SystemIOMachineStates.renamingFolderAndNavigateToFile,
+        SystemIOMachineStates.deletingFileOrFolderAndNavigate,
+        SystemIOMachineStates.movingRecursiveAndNavigate,
       ]
       if (
         requestedFileName.project &&
