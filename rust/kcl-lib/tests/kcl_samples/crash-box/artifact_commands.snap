@@ -227,65 +227,33 @@ description: Artifact commands crash-box.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "closest_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "closest_to": {
-          "x": -200.0,
-          "y": -200.0,
-          "z": -600.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "closest_edge",
-        "object_id": "[uuid]",
-        "closest_to": {
-          "x": 200.0,
-          "y": -200.0,
-          "z": -600.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "closest_edge",
-        "object_id": "[uuid]",
-        "closest_to": {
-          "x": 200.0,
-          "y": 200.0,
-          "z": -600.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "closest_edge",
-        "object_id": "[uuid]",
-        "closest_to": {
-          "x": -200.0,
-          "y": 200.0,
-          "z": -600.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]",
-          "[uuid]",
-          "[uuid]",
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "fillet": {
@@ -548,37 +516,21 @@ description: Artifact commands crash-box.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "closest_edge",
+        "type": "solid3d_cut_edge_references",
         "object_id": "[uuid]",
-        "closest_to": {
-          "x": -125.0,
-          "y": 0.0,
-          "z": -300.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "closest_edge",
-        "object_id": "[uuid]",
-        "closest_to": {
-          "x": 125.0,
-          "y": 0.0,
-          "z": -300.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_cut_edges",
-        "object_id": "[uuid]",
-        "edge_ids": [
-          "[uuid]",
-          "[uuid]"
+        "edges_references": [
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          },
+          {
+            "side_faces": [
+              "[uuid]",
+              "[uuid]"
+            ]
+          }
         ],
         "cut_type": {
           "fillet": {

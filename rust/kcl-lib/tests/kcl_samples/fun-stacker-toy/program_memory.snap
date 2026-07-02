@@ -547,64 +547,6 @@ description: Variables in memory after executing fun-stacker-toy.kcl
       },
       "startCapId": "[uuid]",
       "endCapId": "[uuid]",
-      "edgeCuts": [
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 3.0,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 3.0,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 3.0,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        },
-        {
-          "type": "fillet",
-          "id": "[uuid]",
-          "radius": {
-            "n": 3.0,
-            "ty": {
-              "in": null,
-              "type": "Known",
-              "type": "Length"
-            }
-          },
-          "edgeId": "[uuid]",
-          "tag": null
-        }
-      ],
       "units": "in",
       "sectional": false
     }
