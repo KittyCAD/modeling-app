@@ -1301,7 +1301,7 @@ impl ExecutorContext {
 
         let original_program = program.clone();
 
-        let (_program, exec_state, result) = match Box::pin(cache::read_old_ast()).await {
+        let (exec_state, result) = match Box::pin(cache::read_old_ast()).await {
             Some(mut cached_state) => {
                 let old = CacheInformation {
                     ast: &cached_state.main.ast,
@@ -1499,7 +1499,7 @@ impl ExecutorContext {
                     }
                 };
 
-                (program, exec_state, result)
+                (exec_state, result)
             }
             None => {
                 let mut exec_state = ExecState::new(self);
@@ -1509,7 +1509,7 @@ impl ExecutorContext {
 
                 let result = Box::pin(self.run_concurrent(&program, &mut exec_state, None, PreserveMem::Normal)).await;
 
-                (program, exec_state, result)
+                (exec_state, result)
             }
         };
 
