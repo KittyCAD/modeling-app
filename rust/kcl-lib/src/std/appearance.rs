@@ -13,9 +13,9 @@ use super::args::TyF64;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
+use crate::execution::HasAppearance;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
-use crate::execution::SolidOrImportedGeometry;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
@@ -56,11 +56,15 @@ async fn inner_hex_string(rgb: [TyF64; 3], _: &mut ExecState, args: Args) -> Res
     })
 }
 
-/// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
+/// Set the appearance of something (e.g. a solid, imported geometry, or plane).
 pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let solids = args.get_unlabeled_kw_arg(
         "solids",
-        &RuntimeType::Union(vec![RuntimeType::solids(), RuntimeType::imported()]),
+        &RuntimeType::Union(vec![
+            RuntimeType::solids(),
+            RuntimeType::imported(),
+            RuntimeType::plane(),
+        ]),
         exec_state,
     )?;
 
@@ -91,15 +95,15 @@ pub async fn appearance(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 }
 
 async fn inner_appearance(
-    solids: SolidOrImportedGeometry,
+    geometry: HasAppearance,
     color: String,
     metalness: Option<f64>,
     roughness: Option<f64>,
     opacity: Option<f64>,
     exec_state: &mut ExecState,
     args: Args,
-) -> Result<SolidOrImportedGeometry, KclError> {
-    let mut solids = solids.clone();
+) -> Result<HasAppearance, KclError> {
+    let mut geometry = geometry;
 
     // Set the material properties.
     let rgb = rgba_simple::RGB::<f32>::from_hex(&color).map_err(|err| {
@@ -108,8 +112,41 @@ async fn inner_appearance(
             vec![args.source_range],
         ))
     })?;
+
     let percent_range = (0.0)..=100.0;
     let zero_one_range = (0.0)..=1.0;
+    if let HasAppearance::Plane(plane) = &geometry {
+        if let Some(user_opacity) = opacity {
+            if zero_one_range.contains(&user_opacity) && user_opacity != 0.0 {
+                exec_state.warn(
+                        CompilationIssue::err(args.source_range, "This looks like you're setting a property to a number between 0 and 1, but the property should be between 0 and 100.".to_string()),
+                        annotations::WARN_SHOULD_BE_PERCENTAGE,
+                    );
+            }
+            if !percent_range.contains(&user_opacity) {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!("Opacity must be between 0 and 100, but it was {user_opacity}"),
+                    vec![args.source_range],
+                )));
+            }
+        }
+        let opacity = (opacity.unwrap_or(50.0) / 100.0) as f32;
+        exec_state
+            .batch_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, &args),
+                ModelingCmd::from(
+                    mcmd::PlaneSetColor::builder()
+                        .color(Color::from_rgba(rgb.red, rgb.green, rgb.blue, opacity))
+                        .plane_id(plane.id)
+                        .build(),
+                ),
+            )
+            .await?;
+
+        return Ok(geometry);
+    }
+
+    // Set the material properties.
     for (prop, val) in [("Metalness", metalness), ("Roughness", roughness), ("Opacity", opacity)] {
         if let Some(x) = val {
             if !(percent_range.contains(&x)) {
@@ -153,7 +190,7 @@ async fn inner_appearance(
             .await?;
     }
 
-    for solid_id in solids.ids(&args.ctx).await? {
+    for solid_id in geometry.ids(&args.ctx).await? {
         exec_state
             .batch_modeling_cmd(
                 ModelingCmdMeta::from_args(exec_state, &args),
@@ -173,5 +210,48 @@ async fn inner_appearance(
         // I can't think of a use case for it.
     }
 
-    Ok(solids)
+    Ok(geometry)
+}
+
+#[cfg(test)]
+mod tests {
+    use kittycad_modeling_cmds::ModelingCmd;
+
+    use crate::execution::parse_execute;
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn appearance_on_plane_uses_plane_set_color_only() {
+        let result = parse_execute(
+            r##"
+plane = offsetPlane(XZ, offset = 4)
+styled = plane |> appearance(color = "#ff0000", opacity = 200, metalness = 200, roughness = 200)
+"##,
+        )
+        .await
+        .unwrap();
+
+        let commands = result
+            .root_module_artifact_commands()
+            .iter()
+            .map(|artifact_command| &artifact_command.command)
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            commands
+                .iter()
+                .filter(|command| matches!(command, ModelingCmd::PlaneSetColor(_)))
+                .count(),
+            2
+        );
+        assert!(
+            !commands
+                .iter()
+                .any(|command| matches!(command, ModelingCmd::ObjectSetMaterialParamsPbr(_)))
+        );
+        assert!(
+            !commands
+                .iter()
+                .any(|command| matches!(command, ModelingCmd::SetOrderIndependentTransparency(_)))
+        );
+    }
 }
