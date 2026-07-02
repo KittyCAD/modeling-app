@@ -786,6 +786,9 @@ export const modelingMachine = setup({
     'should use sketch solve mode': ({ context }) => {
       return context.store.useSketchSolveMode?.current === true
     },
+    'Artifact graph is empty': ({ context }) => {
+      return context.kclManager.artifactGraph.size === 0
+    },
     'Selection is sketchBlock': ({
       context: { selectionRanges, kclManager },
       event,
@@ -1153,6 +1156,9 @@ export const modelingMachine = setup({
           up: { x: 0, y: 0, z: 1 },
         },
       })
+    },
+    'stop scene infra': ({ context }) => {
+      context.kclManager.sceneInfra.stop()
     },
     'set new sketch metadata': assign(({ event }) => {
       if (
@@ -8314,6 +8320,26 @@ export const modelingMachine = setup({
 
       exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
+        Cancel: [
+          {
+            guard: 'Artifact graph is empty',
+            target: '#Modeling.idle.showPlanes',
+            actions: [
+              'reset sketch metadata',
+              'enable copilot',
+              'stop scene infra',
+            ],
+          },
+          {
+            target: '#Modeling.idle.hidePlanes',
+            actions: [
+              'reset sketch metadata',
+              'enable copilot',
+              'stop scene infra',
+            ],
+          },
+        ],
+
         'Select sketch plane': {
           target: 'animating to plane',
           actions: ['reset sketch metadata'],
