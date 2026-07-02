@@ -58,6 +58,21 @@ function CommandBarHeaderFooter({
     typeof currentArgument?.required === 'function'
       ? currentArgument.required(commandBarState.context)
       : currentArgument?.required
+  const selectedCommandStatusBadge =
+    selectedCommand?.status === 'experimental'
+      ? {
+          icon: 'beaker' as const,
+          label: 'Experimental',
+          className: 'border-primary dark:text-primary',
+        }
+      : selectedCommand?.status === 'deprecated'
+        ? {
+            icon: 'triangleExclamation' as const,
+            label: 'Deprecated',
+            className:
+              'border-warn-80 text-warn-80 dark:border-warn-40 dark:text-warn-40',
+          }
+        : undefined
 
   useHotkeys(
     'alt',
@@ -123,16 +138,19 @@ function CommandBarHeaderFooter({
               >
                 {selectedCommand.displayName || selectedCommand.name}
               </span>
-              {selectedCommand.status === 'experimental' ? (
+              {selectedCommandStatusBadge ? (
                 <span
-                  className={`text-xs rounded-full  ml-2 px-1 py-1 border ${selectedCommand.mlBranding ? 'border-ml-green dark:text-ml-green' : 'border-primary dark:text-primary'}`}
+                  className={`text-xs rounded-full  ml-2 px-1 py-1 border ${selectedCommandStatusBadge.className}`}
                 >
-                  <CustomIcon name="beaker" className="w-4 h-4" />
+                  <CustomIcon
+                    name={selectedCommandStatusBadge.icon}
+                    className="w-4 h-4"
+                  />
                   <Tooltip
                     position="bottom-right"
                     contentClassName="max-w-none flex items-center"
                   >
-                    <span>Experimental</span>
+                    <span>{selectedCommandStatusBadge.label}</span>
                   </Tooltip>
                 </span>
               ) : (
@@ -180,9 +198,7 @@ function CommandBarHeaderFooter({
                     key={argName}
                     className={`relative w-fit px-2 py-1 rounded-sm flex gap-2 items-center border ${
                       argName === currentArgument?.name
-                        ? selectedCommand.mlBranding
-                          ? 'disabled:bg-ml-green/10 dark:disabled:bg-ml-green/20 disabled:border-ml-green dark:disabled:border-ml-green disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
-                          : 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
+                        ? 'disabled:bg-primary/10 dark:disabled:bg-primary/20 disabled:border-primary dark:disabled:border-primary disabled:text-chalkboard-100 dark:disabled:text-chalkboard-10'
                         : 'bg-chalkboard-20/50 dark:bg-chalkboard-80/50 border-chalkboard-20 dark:border-chalkboard-80'
                     }`}
                   >
@@ -194,6 +210,20 @@ function CommandBarHeaderFooter({
                           contentClassName="max-w-none flex items-center"
                         >
                           <span>Experimental</span>
+                        </Tooltip>
+                      </span>
+                    )}
+                    {arg.status === 'deprecated' && (
+                      <span className="inline-flex items-center text-warn-80 dark:text-warn-40">
+                        <CustomIcon
+                          name="triangleExclamation"
+                          className="w-3.5 h-3.5"
+                        />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>{arg.statusMessage ?? 'Deprecated'}</span>
                         </Tooltip>
                       </span>
                     )}
@@ -290,26 +320,14 @@ function CommandBarHeaderFooter({
           <div className="flex-grow"></div>
           {isReviewing ? (
             <ReviewingButton
-              bgClassName={
-                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
-              }
-              iconClassName={
-                selectedCommand.mlBranding
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
-              }
+              bgClassName="!bg-primary"
+              iconClassName="!text-chalkboard-10"
               disabled={submitDisabled}
             />
           ) : (
             <GatheringArgsButton
-              bgClassName={
-                selectedCommand.mlBranding ? '!bg-ml-green' : '!bg-primary'
-              }
-              iconClassName={
-                selectedCommand.mlBranding
-                  ? '!text-ml-black'
-                  : '!text-chalkboard-10'
-              }
+              bgClassName="!bg-primary"
+              iconClassName="!text-chalkboard-10"
             />
           )}
         </div>

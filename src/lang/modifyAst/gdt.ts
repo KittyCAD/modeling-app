@@ -2621,6 +2621,82 @@ export function addAnnotationGdt({
 }
 
 /**
+ * Adds a free-floating GD&T note to the AST.
+ * Unlike gdt::annotation, a note is not attached to any face or edge; it lives on a
+ * plane (default XY). Creates a single gdt::note call at the end of the AST body.
+ *
+ * @param ast - The AST to modify
+ * @param note - The note text to display
+ * @param wasmInstance - The KCL wasm instance
+ * @param framePosition - 2D position of the note within the plane (optional)
+ * @param framePlane - Plane the note lies in: 'XY' | 'XZ' | 'YZ' or a variable (optional, default XY)
+ * @param fontSize - Model-space font size for the note text (optional)
+ * @param nodeToEdit - Path to node to edit (for edit mode)
+ * @returns Modified AST and path to the created node, or an Error
+ */
+export function addNoteGdt({
+  ast,
+  note,
+  wasmInstance,
+  framePosition,
+  framePlane,
+  fontSize,
+  nodeToEdit,
+}: {
+  ast: Node<Program>
+  note: string
+  wasmInstance: ModuleType
+  framePosition?: KclCommandValue
+  framePlane?: KclCommandValue | string
+  fontSize?: KclCommandValue
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
+  const modifiedAst = structuredClone(ast)
+  const mNodeToEdit = structuredClone(nodeToEdit)
+
+  // A note has no leader and selects no geometry, so it only carries style params.
+  const styleResult = processGdtStyleParameters({
+    modifiedAst,
+    nodeToEdit: mNodeToEdit,
+    wasmInstance,
+    framePosition,
+    framePlane,
+    fontSize,
+  })
+  if (err(styleResult)) {
+    return styleResult
+  }
+
+  const call = createCallExpressionStdLibKw(
+    'note',
+    null,
+    [
+      createLabeledArg('note', createLiteral(note, wasmInstance)),
+      ...styleResult.labeledArgs,
+    ],
+    undefined,
+    [createIdentifier('gdt')]
+  )
+
+  const pathToNode = setCallInAst({
+    ast: modifiedAst,
+    call,
+    pathToEdit: mNodeToEdit,
+    pathIfNewPipe: undefined,
+    variableIfNewDecl: undefined,
+    wasmInstance,
+  })
+  if (err(pathToNode)) {
+    return pathToNode
+  }
+
+  return {
+    modifiedAst,
+    pathToNode,
+  }
+}
+
+/**
  * Adds datum GD&T annotation to the AST.
  * Creates a single gdt::datum call for a selected face.
  * Always adds annotation at the end of the AST body.

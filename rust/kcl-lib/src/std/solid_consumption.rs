@@ -206,7 +206,7 @@ fn build_stale_body_error_message(
 
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitLength;
     use uuid::Uuid;
 
     use super::*;
@@ -222,6 +222,7 @@ mod tests {
             value_id,
             artifact_id: ArtifactId::new(id),
             value: vec![],
+            faces: Default::default(),
             creator: SolidCreator::Procedural,
             start_cap_id: None,
             end_cap_id: None,

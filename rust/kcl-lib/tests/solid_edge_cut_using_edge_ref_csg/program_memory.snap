@@ -159,6 +159,16 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "chamfer"
         }
       ],
+      "faces": {
+        "beveledFace": {
+          "type": "TagIdentifier",
+          "value": "beveledFace"
+        },
+        "topCap": {
+          "type": "TagIdentifier",
+          "value": "topCap"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -428,6 +438,12 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "topCap": {
+          "type": "TagIdentifier",
+          "value": "topCap"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3014,6 +3030,16 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "chamfer"
         }
       ],
+      "faces": {
+        "beveledFace": {
+          "type": "TagIdentifier",
+          "value": "beveledFace"
+        },
+        "topCap": {
+          "type": "TagIdentifier",
+          "value": "topCap"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3297,6 +3323,16 @@ description: Variables in memory after executing solid_edge_cut_using_edge_ref_c
           "type": "fillet"
         }
       ],
+      "faces": {
+        "roundedFace": {
+          "type": "TagIdentifier",
+          "value": "roundedFace"
+        },
+        "topCap": {
+          "type": "TagIdentifier",
+          "value": "topCap"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

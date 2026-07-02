@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing surface_extrude_edge_merge_error.kcl
+---
+KCL Semantic error
+
+  × semantic: Cannot use method MERGE with surface extrude of an edge
+    ╭─[19:14]
+ 18 │ 
+ 19 │ extrude002 = extrude(b, length = 6.7, bodyType = SURFACE, method = MERGE)
+    ·              ──────────────────────────────┬─────────────────────────────┬
+    ·                                            ╰── tests/surface_extrude_edge_merge_error/input.kcl
+    ·                                            ╰── tests/surface_extrude_edge_merge_error/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: Cannot use method MERGE with surface extrude of an edge
+          ╭─[19:14]
+       18 │
+       19 │ extrude002 = extrude(b, length = 6.7, bodyType = SURFACE, method =
+      MERGE)
+          ·
+      ──────────────────────────────┬─────────────────────────────
+          ·                                            ╰── tests/
+      surface_extrude_edge_merge_error/input.kcl
+          ╰────

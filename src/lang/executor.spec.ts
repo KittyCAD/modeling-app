@@ -2,7 +2,7 @@ import fs from 'node:fs'
 
 import { KCLError } from '@src/lang/errors'
 import { topLevelRange } from '@src/lang/util'
-import type { Sketch } from '@src/lang/wasm'
+import type { KclValueView, Sketch } from '@src/lang/wasm'
 import { assertParse, sketchFromKclValue } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 
@@ -43,13 +43,13 @@ describe('test executor', () => {
     const code = `myVar = 5
 newVar = myVar + 1`
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(5)
-    expect(mem['newVar']?.value).toBe(6)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(5)
+    expect(expectKclValue(mem['newVar'], 'Number').value).toBe(6)
   })
   it('test assigning a var with a string', async () => {
     const code = `myVar = "a str"`
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe('a str')
+    expect(expectKclValue(mem['myVar'], 'String').value).toBe('a str')
   })
   it('test assigning a var by cont concatenating two strings string execute', async () => {
     const code = fs.readFileSync(
@@ -57,7 +57,9 @@ newVar = myVar + 1`
       'utf-8'
     )
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe('a str another str')
+    expect(expectKclValue(mem['myVar'], 'String').value).toBe(
+      'a str another str'
+    )
   })
   it('fn funcN() {} execute', async () => {
     const mem = await exe(
@@ -69,8 +71,8 @@ newVar = myVar + 1`
         'magicNum = funcN(a = 9, b = theVar)',
       ].join('\n')
     )
-    expect(mem['theVar']?.value).toBe(60)
-    expect(mem['magicNum']?.value).toBe(69)
+    expect(expectKclValue(mem['theVar'], 'Number').value).toBe(60)
+    expect(expectKclValue(mem['magicNum'], 'Number').value).toBe(69)
   })
   it('sketch declaration', async () => {
     let code = `mySketch = startSketchOn(XY)
@@ -146,7 +148,7 @@ newVar = myVar + 1`
       'myVar = 5 + 1 |> myFn(%)',
     ].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(7)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(7)
   })
 
   // Enable rotations #152
@@ -334,80 +336,82 @@ describe('testing math operators', () => {
   it('can sum', async () => {
     const code = ['myVar = 1 + 2'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(3)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(3)
   })
   it('can subtract', async () => {
     const code = ['myVar = 1 - 2'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(-1)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(-1)
   })
   it('can multiply', async () => {
     const code = ['myVar = 1 * 2'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(2)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(2)
   })
   it('can divide', async () => {
     const code = ['myVar = 1 / 2'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(0.5)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(0.5)
   })
   it('can modulus', async () => {
     const code = ['myVar = 5 % 2'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(1)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(1)
   })
   it('can do multiple operations', async () => {
     const code = ['myVar = 1 + 2 * 3'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(7)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(7)
   })
   it('big example with parans', async () => {
     const code = ['myVar = 1 + 2 * (3 - 4) / -5 + 6'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(7.4)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(7.4)
   })
   it('with identifier', async () => {
     const code = ['yo = 6', 'myVar = yo / 2'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(3)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(3)
   })
   it('with lots of testing', async () => {
     const code = ['myVar = 2 * ((2 + 3 ) / 4 + 5)'].join('\n')
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(12.5)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(12.5)
   })
   it('with callExpression at start', async () => {
     const code = 'myVar = min([4, 100]) + 2'
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(6)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(6)
   })
   it('with callExpression at end', async () => {
     const code = 'myVar = 2 + min([4, 100])'
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(6)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(6)
   })
   it('with nested callExpression', async () => {
     const code = 'myVar = 2 + min([100, legLen(hypotenuse = 5, leg = 3)])'
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(6)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(6)
   })
   it('with unaryExpression', async () => {
     const code = 'myVar = -min([100, 3])'
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(-3)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(-3)
   })
   it('with unaryExpression in callExpression', async () => {
     const code = 'myVar = min([-legLen(hypotenuse = 5, leg = 4), 5])'
     const code2 = 'myVar = min([5 , -legLen(hypotenuse = 5, leg = 4)])'
     const mem = await exe(code)
     const mem2 = await exe(code2)
-    expect(mem['myVar']?.value).toBe(-3)
-    expect(mem['myVar']?.value).toBe(mem2['myVar']?.value)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(-3)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(
+      expectKclValue(mem2['myVar'], 'Number').value
+    )
   })
   it('with unaryExpression in ArrayExpression', async () => {
     const code = 'myVar = [1,-legLen(hypotenuse = 5, leg = 4)]'
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toEqual([
+    expect(expectKclValue(mem['myVar'], 'HomArray').value).toEqual([
       {
         type: 'Number',
         value: 1,
@@ -465,12 +469,12 @@ describe('testing math operators', () => {
   it('with nested callExpression and binaryExpression', async () => {
     const code = 'myVar = 2 + min([100, -1 + legLen(hypotenuse = 5, leg = 3)])'
     const mem = await exe(code)
-    expect(mem['myVar']?.value).toBe(5)
+    expect(expectKclValue(mem['myVar'], 'Number').value).toBe(5)
   })
   it('can do power of math', async () => {
     const code = 'myNeg2 = 4 ^ 2 - 3 ^ 2 * 2'
     const mem = await exe(code)
-    expect(mem['myNeg2']?.value).toBe(-2)
+    expect(expectKclValue(mem['myNeg2'], 'Number').value).toBe(-2)
   })
 })
 
@@ -508,4 +512,22 @@ async function exe(code: string) {
 
   const execState = await enginelessExecutor(ast, rustContextInThisFile, true)
   return execState.variables
+}
+
+function expectKclValue<T extends KclValueView['type']>(
+  value: KclValueView | undefined,
+  type: T
+): Extract<KclValueView, { type: T }> {
+  expect(value?.type).toBe(type)
+  if (!isKclValue(value, type)) {
+    throw new Error(`Expected KCL value ${type}`)
+  }
+  return value
+}
+
+function isKclValue<T extends KclValueView['type']>(
+  value: KclValueView | undefined,
+  type: T
+): value is Extract<KclValueView, { type: T }> {
+  return value?.type === type
 }

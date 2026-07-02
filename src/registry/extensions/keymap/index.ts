@@ -10,7 +10,6 @@ import { useSignals } from '@preact/signals-react/runtime'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
-import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
@@ -21,6 +20,7 @@ import {
   BASE_KEYMAP_SCOPE,
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
   CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  HOME_KEYMAP_SCOPE,
   type KeymapArguments,
   type KeymapItem,
   type KeymapScope,
@@ -72,6 +72,12 @@ const defaultKeymapScopes: readonly KeymapScope[] = [
     id: 'settings-open',
     displayName: 'Settings open',
     priority: 1900,
+    userEditable: false,
+  },
+  {
+    id: HOME_KEYMAP_SCOPE,
+    displayName: 'Home',
+    priority: 50,
     userEditable: false,
   },
   {
@@ -361,21 +367,6 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
     }),
   }
 
-  const resetView = () => {
-    const kclManager = ctx.services
-      .optional(commandSystemService)
-      ?.actor.getSnapshot().context.kclManager
-    if (!kclManager) {
-      return
-    }
-
-    resetCameraPosition({
-      sceneInfra: kclManager.sceneInfra,
-      engineCommandManager: kclManager.engineCommandManager,
-      settingsActor: kclManager.systemDeps.settings,
-    }).catch(reportRejection)
-  }
-
   function runKeymapItem(item: KeymapItem) {
     const result = runBuiltInKeymapCommand(item)
     if (result instanceof Promise) {
@@ -397,8 +388,6 @@ const keymapExtension = defineRegistryItemFactory((ctx) => {
         return openSettings()
       case 'zds.settings.tab':
         return updateSettingsTab(getSettingsTabArgument(item.arguments))
-      case 'zds.view.reset':
-        return resetView()
       default:
         return runCommandById(item)
     }
@@ -584,18 +573,28 @@ function shouldIgnoreKeyboardEvent(
   }
 
   return (
-    scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
-    isEventFromEditableTarget(event.target)
+    isEventFromFormControl(event.target) ||
+    (scopes.includes(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE) &&
+      isEventFromContentEditableTarget(event.target))
   )
 }
 
 function isEventFromEditableTarget(target: EventTarget | null) {
+  return (
+    isEventFromContentEditableTarget(target) || isEventFromFormControl(target)
+  )
+}
+
+function isEventFromContentEditableTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) {
     return false
   }
 
+  return target.isContentEditable
+}
+
+function isEventFromFormControl(target: EventTarget | null) {
   return (
-    target.isContentEditable ||
     target instanceof HTMLInputElement ||
     target instanceof HTMLTextAreaElement ||
     target instanceof HTMLSelectElement

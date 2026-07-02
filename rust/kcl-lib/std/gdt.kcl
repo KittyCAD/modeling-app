@@ -250,9 +250,9 @@ export fn straightness(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
@@ -325,9 +325,9 @@ export fn circularity(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
@@ -401,9 +401,9 @@ export fn cylindricity(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
@@ -490,9 +490,9 @@ export fn concentricity(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
@@ -613,9 +613,9 @@ export fn symmetry(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
@@ -707,9 +707,9 @@ export fn runout(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
@@ -845,9 +845,9 @@ export fn angularity(
   /// The faces to be annotated. At least one of `faces` or `edges` must be supplied.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated. At least one of `faces` or `edges` must be supplied.
+  /// The edges to be annotated. At least one of `faces` or `edges` must be supplied. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
   @(includeInSnippet = true)
   datums?: [string; 1+],
@@ -915,9 +915,9 @@ export fn perpendicularity(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
   @(includeInSnippet = true)
   datums?: [string; 1+],
@@ -985,9 +985,9 @@ export fn parallelism(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
   @(includeInSnippet = true)
   datums?: [string; 1+],
@@ -1055,9 +1055,9 @@ export fn position(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
   @(includeInSnippet = true)
   datums?: [string; 1+],
@@ -1124,9 +1124,9 @@ export fn annotation(
   /// The faces to be annotated.
   @(includeInSnippet = true)
   faces?: [TaggedFace; 1+],
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The position of the annotation relative to the leader arrow. The default is `[100mm, 100mm]`.
   @(snippetArray = ["100", "100"])
   framePosition?: Point2d,
@@ -1139,6 +1139,74 @@ export fn annotation(
   /// This changes the scene size, not the internal raster texture quality.
   fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}
+
+/// GD&T note for adding free-floating manufacturing text that is not attached to a face or edge.
+///
+/// This is part of model-based definition (MBD). Unlike `gdt::annotation`, a note has no leader
+/// and is placed directly on a plane. By default it lives on the world `XY` plane, but any plane
+/// (a standard plane like `XZ`/`YZ`, or a user-defined plane) can be supplied via `framePlane`.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// // A note on the default world (XY) plane.
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+///
+/// gdt::note(note = "Note on XY", framePosition = [12mm, 8mm])
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// // A note on a user-defined plane.
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+///
+/// notePlane = offsetPlane(XZ, offset = 12mm)
+/// gdt::note(note = "Note on custom Plane", framePlane = notePlane, framePosition = [12mm, 8mm])
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn note(
+  /// The note text to display.
+  @(includeInSnippet = true)
+  note: string,
+  /// The plane the note lies in. The default is `XY`. Other standard planes like `XZ` and `YZ`, or a user-defined plane, can also be used.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// The 2D position of the note within the plane, in the plane's local coordinates. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The model-space height to use for the note text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): GdtAnnotation {}
 
 /// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
 ///
@@ -1185,13 +1253,13 @@ export fn distance(
   /// The acceptable distance tolerance.
   @(includeInSnippet = true)
   tolerance: number(Length),
-  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center.
-  from?: Face | TaggedFace | Edge,
-  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center.
-  to?: Face | TaggedFace | Edge,
-  /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`.
+  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  from?: Face | TaggedFace | Edge | any,
+  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  to?: Face | TaggedFace | Edge | any,
+  /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
   @(includeInSnippet = true)
   precision?: number(Count),
@@ -1256,9 +1324,9 @@ export fn profile(
   /// The amount of deviation from an ideal profile that is acceptable.
   @(includeInSnippet = true)
   tolerance: number(Length),
-  /// The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both.
+  /// The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   /// The faces to be annotated with profile of a surface. Provide either `edges` or `faces`, but not both.
   faces?: [TaggedFace; 1+],
   /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
@@ -1331,9 +1399,9 @@ export fn profile(
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn profileLine(
-  /// The edges to be annotated.
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
   @(includeInSnippet = true)
-  edges: [Edge; 1+],
+  edges: [Edge | any; 1+],
   /// The amount of deviation from an ideal profile that is acceptable.
   @(includeInSnippet = true)
   tolerance: number(Length),

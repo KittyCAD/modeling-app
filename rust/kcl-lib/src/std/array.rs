@@ -339,7 +339,7 @@ fn infer_flattened_type(original_ty: RuntimeType, values: &[KclValue]) -> Runtim
 mod tests {
     use crate::errors::Severity;
     use crate::errors::Tag;
-    use crate::execution::KclValue;
+    use crate::execution::KclValueView;
     use crate::execution::MockConfig;
 
     #[tokio::test(flavor = "multi_thread")]
@@ -385,7 +385,7 @@ flattened = flatten([[target]])
         match result {
             Ok(outcome) => {
                 let flattened = outcome.variables.get("flattened").unwrap();
-                let KclValue::HomArray { value, .. } = flattened else {
+                let KclValueView::HomArray { value, .. } = flattened else {
                     panic!("expected `flattened` to be an array, got: {flattened:?}");
                 };
                 assert_eq!(value.len(), 1);

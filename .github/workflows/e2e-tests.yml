@@ -99,6 +99,8 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
       - name: Copy prepared ts-rs bindings
         run: |
           ls -R prepared-ts-rs-bindings
@@ -114,7 +116,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -240,6 +242,8 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
       - name: Copy prepared ts-rs bindings
         run: |
           ls -R prepared-ts-rs-bindings
@@ -255,7 +259,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -343,6 +347,8 @@ jobs:
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
 
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
       - name: Copy prepared ts-rs bindings
         run: |
           ls -R prepared-ts-rs-bindings
@@ -359,7 +365,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -451,7 +457,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v5.0.5
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -492,7 +498,7 @@ jobs:
       - name: npm run test:e2e:web
         run: npm run test:e2e:web -- --grep=demo
         env:
-          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url || format('https://pr-{0}.vercel.dev.zoo.dev', github.event.pull_request.number) }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}

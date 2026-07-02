@@ -1,11 +1,12 @@
 use std::num::NonZeroU32;
 
 use anyhow::Result;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 use kcmc::shared::BodyType;
-use kcmc::units::UnitAngle;
-use kcmc::units::UnitLength;
 use kittycad_modeling_cmds as kcmc;
 use serde::Serialize;
+use uuid::Uuid;
 
 use super::fillet::EdgeReference;
 use crate::CompilationIssue;
@@ -36,6 +37,7 @@ pub use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::types::NumericSuffixTypeConvertError;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::execution::types::UnitType;
@@ -1278,10 +1280,14 @@ impl<'a> FromKclValue<'a> for Extrudable {
         let case1 = Box::<Sketch>::from_kcl_val;
         let case2 = FaceTag::from_kcl_val;
         let case3 = Box::<Face>::from_kcl_val;
+        let case4 = Uuid::from_kcl_val;
+        let case5 = Box::<TagIdentifier>::from_kcl_val;
         case1(arg)
             .map(Self::Sketch)
             .or_else(|| case2(arg).map(Self::FaceTag))
             .or_else(|| case3(arg).map(Self::Face))
+            .or_else(|| case4(arg).map(Self::Edge))
+            .or_else(|| case5(arg).map(Self::EdgeTag))
     }
 }
 

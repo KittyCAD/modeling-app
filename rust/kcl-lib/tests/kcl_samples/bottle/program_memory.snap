@@ -1661,6 +1661,12 @@ description: Variables in memory after executing bottle.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "neckTop": {
+          "type": "TagIdentifier",
+          "value": "neckTop"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1795,6 +1801,12 @@ description: Variables in memory after executing bottle.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "neckTop": {
+          "type": "TagIdentifier",
+          "value": "neckTop"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1938,6 +1950,12 @@ description: Variables in memory after executing bottle.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "neckTop": {
+          "type": "TagIdentifier",
+          "value": "neckTop"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

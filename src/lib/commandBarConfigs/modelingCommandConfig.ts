@@ -761,10 +761,25 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             { name: 'Trajectory Curve', value: 'TRAJECTORY' },
           ],
         },
+        translateProfileToPath: {
+          inputType: 'boolean',
+          required: false,
+        },
+        orientProfilePerpendicular: {
+          inputType: 'boolean',
+          required: false,
+        },
         bodyType: {
           inputType: 'options',
           required: profileSelectionRequiresBodyType,
           options: kclBodyTypeOptions,
+        },
+        version: {
+          inputType: 'kcl',
+          description:
+            'Sweep algorithm version. 0 lets the engine choose; 1 is original; 2 is newer.',
+          defaultValue: '2',
+          required: false,
         },
       },
     }),
@@ -2185,6 +2200,28 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             defaultValue: 'BREAK ALL SHARP EDGES',
           },
           ...gdtFrameDisplayArgOverrides,
+        },
+      }
+    ),
+  },
+  'GDT Note': {
+    description: 'Add a free-floating model-based definition note on a plane.',
+    icon: 'note',
+    needsReview: true,
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods['GDT Note']
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['GDT Note']>(
+      'GDT Note',
+      {
+        overrides: {
+          note: {
+            inputType: 'text',
+            defaultValue: 'Note:',
+          },
+          framePosition: gdtFrameDisplayArgOverrides.framePosition,
+          framePlane: gdtFrameDisplayArgOverrides.framePlane,
+          fontSize: gdtFrameDisplayArgOverrides.fontSize,
         },
       }
     ),

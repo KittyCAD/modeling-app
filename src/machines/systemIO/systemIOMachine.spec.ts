@@ -17,7 +17,7 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
 let appInstanceInThisFile: App = null!
@@ -186,6 +186,128 @@ describe('systemIOMachine - XState', () => {
         }).start()
         const state = actor.getSnapshot().value
         expect(state).toBe(SystemIOMachineStates.idle)
+      })
+      it('defers bulk edit success until file navigation completes', async () => {
+        const onSuccess = vi.fn()
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => ({
+                  message: 'done',
+                  projectName: input.requestedProjectName,
+                  fileName: input.requestedFileNameWithExtension,
+                  subRoute: '',
+                  shouldNavigate: true,
+                  onProjectLoaderComplete: input.onSuccess,
+                })),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        actor.send({
+          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+          data: {
+            files: [],
+            requestedProjectName: 'demo-project',
+            requestedFileNameWithExtension: 'main.kcl',
+            onSuccess,
+          },
+        })
+
+        await waitFor(actor, (state) =>
+          state.matches(
+            SystemIOMachineStates.bulkCreateAndDeletingKCLFilesAndNavigateToFile
+          )
+        )
+        await waitFor(actor, (state) =>
+          state.matches(SystemIOMachineStates.idle)
+        )
+
+        expect(onSuccess).not.toHaveBeenCalled()
+        expect(
+          actor.getSnapshot().context.requestedFileName.onProjectLoaderComplete
+        ).toBe(onSuccess)
+        actor.stop()
+      })
+      it('does not request navigation for an in-place bulk edit', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.bulkCreateAndDeleteKCLFilesAndNavigateToFile]:
+                fromPromise(async ({ input }) => ({
+                  message: 'done',
+                  projectName: input.requestedProjectName,
+                  fileName: input.requestedFileNameWithExtension,
+                  subRoute: '',
+                  shouldNavigate: false,
+                })),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+        const requestedFileNameBefore =
+          actor.getSnapshot().context.requestedFileName
+
+        actor.send({
+          type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+          data: {
+            files: [],
+            requestedProjectName: 'demo-project',
+            requestedFileNameWithExtension: 'main.kcl',
+          },
+        })
+        await waitFor(actor, (state) =>
+          state.matches(SystemIOMachineStates.idle)
+        )
+
+        expect(actor.getSnapshot().context.requestedFileName).toBe(
+          requestedFileNameBefore
+        )
+        actor.stop()
+      })
+      it('should accept externally synced folders while idle', async () => {
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          const folders = [mockProject('from-registry')]
+          actor.send({
+            type: SystemIOMachineEvents.setFolders,
+            data: { folders },
+          })
+
+          await waitFor(actor, (state) => state.context.folders === folders)
+
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.idle,
+            context: {
+              folders,
+              hasListedProjects: true,
+            },
+          })
+        } finally {
+          actor.stop()
+        }
       })
     })
     describe('when reading projects', () => {

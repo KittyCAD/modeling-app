@@ -5,6 +5,7 @@ import type {
   WebSocketResponse,
 } from '@kittycad/lib/dist/types/src'
 import { EngineDebugger } from '@src/lib/debugger'
+import { mark } from '@src/lib/performance'
 import { reportRejection } from '@src/lib/trap'
 import {
   ConnectingType,
@@ -179,6 +180,14 @@ export const createOnWebSocketMessage = ({
         break
       case 'modeling_session_data':
         const apiCallId = resp.data.session.api_call_id
+        mark('code/apiCallId', {
+          name: 'code/apiCallId',
+          startTime: performance.now(),
+          entryType: 'mark',
+          detail: {
+            apiCallId: apiCallId,
+          },
+        })
         console.log(`API Call ID: ${apiCallId}`)
         EngineDebugger.addLog({
           label: 'onWebSocketMessage',

@@ -19,7 +19,10 @@ beforeAll(async () => {
   wasmInstance = await instance
 })
 
-function makeProject(projectPath: string): Project {
+function makeProject(
+  projectPath: string,
+  overrides: Partial<Project> = {}
+): Project {
   return {
     metadata: null,
     kcl_file_count: 2,
@@ -29,6 +32,7 @@ function makeProject(projectPath: string): Project {
     name: 'web-project',
     children: null,
     readWriteAccess: true,
+    ...overrides,
   }
 }
 
@@ -74,9 +78,8 @@ describe('createProjectZipArchive', () => {
       wasmInstance,
     })
 
-    expect(archive).not.toBeInstanceOf(Error)
     if (archive instanceof Error) {
-      return
+      throw archive
     }
 
     expect(archive.fileName).toBe('web-project.zip')
@@ -94,5 +97,35 @@ describe('createProjectZipArchive', () => {
     await expect(
       zip.file('web-project/project.toml')?.async('string')
     ).resolves.toBe('default_file = "main.kcl"')
+  })
+
+  it('uses the project title for the ZIP name and root when it differs from the folder name', async () => {
+    const projectPath = `/tmp/export-project-zip-${crypto.randomUUID()}`
+    createdProjectPaths.push(projectPath)
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(
+      fsZds.join(projectPath, 'main.kcl'),
+      new TextEncoder().encode('disk = true')
+    )
+
+    const archive = await createProjectZipArchive({
+      project: makeProject(projectPath, {
+        name: '550e8400-e29b-41d4-a716-446655440000',
+        title: 'Human Project',
+      }),
+      wasmInstance,
+    })
+
+    if (archive instanceof Error) {
+      throw archive
+    }
+
+    expect(archive.fileName).toBe('Human Project.zip')
+    const zip = await JSZip.loadAsync(await archive.blob.arrayBuffer())
+
+    await expect(
+      zip.file('Human Project/main.kcl')?.async('string')
+    ).resolves.toBe('disk = true')
   })
 })

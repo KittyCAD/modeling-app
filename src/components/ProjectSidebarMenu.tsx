@@ -1,4 +1,5 @@
 import { Popover, Transition } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useSelector } from '@xstate/react'
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
@@ -6,6 +7,10 @@ import type { SnapshotFrom } from 'xstate'
 
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
+import {
+  CloudConflictDialog,
+  useOpfsCloudProjectConflict,
+} from '@src/components/CloudConflictDialog'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
@@ -17,7 +22,15 @@ import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { projectExplorerProjectMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
@@ -35,6 +48,7 @@ type ProjectCloseHandler = (
   projectPath: string | null,
   redirect: boolean
 ) => void
+type ProjectMenuItem = ActionButtonProps | 'break' | null
 
 const noopProjectClose: ProjectCloseHandler = () => undefined
 const noopHomeNavigate = () => undefined
@@ -68,6 +82,7 @@ const ProjectSidebarMenu = ({
     isDesktopApp: isDesktop(),
     hasOpfsCloudFeature,
   })
+  const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
     <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
@@ -100,7 +115,7 @@ const ProjectSidebarMenu = ({
           className="hidden self-center px-2 select-none cursor-default text-sm text-chalkboard-110 dark:text-chalkboard-20 whitespace-nowrap lg:block"
           data-testid="project-name"
         >
-          {project?.name ? project.name : APP_NAME}
+          {projectDisplayName}
         </span>
       )}
       {children}
@@ -170,13 +185,32 @@ function ProjectMenuPopover({
   onProjectClose: ProjectCloseHandler
   onHomeNavigate: () => void
 }) {
+  useSignals()
   const { machineManager, commands, settings } = app
   const machineApiEnabled = settings.useSettings().app.machineApi.current
   const platform = usePlatform()
   const navigate = useNavigate()
+  const keymap = app.registry.optional(keymapService)
+  const projectSettingsKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          'zds.settings.open',
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [`mod+${isDesktop() ? '' : 'shift'}+,`],
+    platform
+  )
+  const cloudConflictMetadata = useOpfsCloudProjectConflict(project?.path)
+  const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
+  const projectPath = project?.path
+  const contributedProjectMenuItems = app.registry.signal(
+    projectExplorerProjectMenuItemsValueSpec
+  ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const exportProjectZipCommandInfo = {
@@ -192,8 +226,28 @@ function ProjectMenuPopover({
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
   const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
-    () =>
-      [
+    () => {
+      const items: ProjectMenuItem[] = [
+        cloudConflictMetadata
+          ? {
+              id: 'inspect-cloud-conflicts',
+              Element: 'button',
+              iconStart: {
+                icon: 'triangleExclamation',
+                bgClassName: '!bg-transparent dark:!bg-transparent',
+                iconClassName: '!text-warn-80 dark:!text-warn-10',
+              },
+              className:
+                'bg-warn-10/50 text-warn-90 hover:!bg-warn-20 focus:!bg-warn-20 dark:bg-warn-80/20 dark:text-warn-10 dark:hover:!bg-warn-80/30 dark:focus:!bg-warn-80/30',
+              children: (
+                <span className="flex-1" data-testid="inspect-cloud-conflicts">
+                  Inspect Conflicts
+                </span>
+              ),
+              onClick: () => setIsInspectingConflict(true),
+            }
+          : null,
+        cloudConflictMetadata ? 'break' : null,
         {
           id: 'settings',
           Element: 'button',
@@ -202,9 +256,9 @@ function ProjectMenuPopover({
               <span className="flex-1" data-testid="project-settings">
                 Project settings
               </span>
-              <kbd className="hotkey">
-                {hotkeyDisplay(`mod+${isDesktop() ? '' : 'shift'}+,`, platform)}
-              </kbd>
+              {projectSettingsKeybinding && (
+                <kbd className="hotkey">{projectSettingsKeybinding}</kbd>
+              )}
             </>
           ),
           onClick: () => {
@@ -216,6 +270,35 @@ function ProjectMenuPopover({
           },
         },
         'break',
+        ...contributedProjectMenuItems.flatMap((item) => {
+          if (!projectPath) {
+            return []
+          }
+
+          const context = { projectPath }
+          if (item.isVisible && !item.isVisible(context)) {
+            return []
+          }
+
+          const disabled =
+            typeof item.disabled === 'function'
+              ? item.disabled(context)
+              : item.disabled
+
+          return [
+            {
+              id: item.id,
+              Element: 'button' as const,
+              children: (
+                <span className="flex-1" data-testid={item.dataTestId}>
+                  {item.label}
+                </span>
+              ),
+              disabled,
+              onClick: () => item.onSelect(context),
+            },
+          ]
+        }),
         {
           id: 'importFile',
           Element: 'button',
@@ -319,11 +402,17 @@ function ProjectMenuPopover({
             onHomeNavigate()
           },
         },
-      ].filter(
-        (props) =>
-          props === 'break' ||
-          (typeof props !== 'string' && !props.className?.includes('hidden'))
-      ) as (ActionButtonProps | 'break')[],
+      ]
+      return items.filter((props): props is ActionButtonProps | 'break' => {
+        if (!props) {
+          return false
+        }
+        if (props === 'break') {
+          return true
+        }
+        return !props.className?.includes('hidden')
+      })
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     [
       platform,
@@ -335,73 +424,93 @@ function ProjectMenuPopover({
       onProjectClose,
       isDesktop,
       homeNavigationEnabled,
+      cloudConflictMetadata,
+      projectPath,
+      contributedProjectMenuItems,
     ]
   )
 
   return (
-    <Popover className="relative min-w-0">
-      <ProjectBreadcrumbButton project={project} file={file} />
+    <>
+      <Popover className="relative min-w-0">
+        <ProjectBreadcrumbButton
+          project={project}
+          file={file}
+          hasCloudConflict={Boolean(cloudConflictMetadata)}
+        />
 
-      <Transition
-        enter="duration-100 ease-out"
-        enterFrom="opacity-0 -translate-y-2"
-        enterTo="opacity-100 translate-y-0"
-        as={Fragment}
-      >
-        <Popover.Panel
-          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+        <Transition
+          enter="duration-100 ease-out"
+          enterFrom="opacity-0 -translate-y-2"
+          enterTo="opacity-100 translate-y-0"
+          as={Fragment}
+        >
+          <Popover.Panel
+            className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
-        >
-          {({ close }) => (
-            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-              {projectMenuItems.map((props, index) => {
-                if (props === 'break') {
-                  return index !== projectMenuItems.length - 1 ? (
-                    <li key={`break-${index}`} className="contents">
-                      <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-                    </li>
-                  ) : null
-                }
+          >
+            {({ close }) => (
+              <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+                {projectMenuItems.map((props, index) => {
+                  if (props === 'break') {
+                    return index !== projectMenuItems.length - 1 ? (
+                      <li key={`break-${index}`} className="contents">
+                        <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
+                      </li>
+                    ) : null
+                  }
 
-                const { id, className, children, ...rest } = props
-                return (
-                  <li key={id} className="contents">
-                    <ActionButton
-                      {...rest}
-                      className={
-                        'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
-                        className
-                      }
-                      onMouseUp={() => {
-                        close()
-                      }}
-                    >
-                      {children}
-                    </ActionButton>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-        </Popover.Panel>
-      </Transition>
-    </Popover>
+                  const { id, className, children, ...rest } = props
+                  return (
+                    <li key={id} className="contents">
+                      <ActionButton
+                        {...rest}
+                        className={
+                          'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
+                          className
+                        }
+                        onMouseUp={() => {
+                          close()
+                        }}
+                      >
+                        {children}
+                      </ActionButton>
+                    </li>
+                  )
+                })}
+              </ul>
+            )}
+          </Popover.Panel>
+        </Transition>
+      </Popover>
+      {isInspectingConflict && project && (
+        <CloudConflictDialog
+          projectPath={project.path}
+          projectName={getProjectDisplayName(project)}
+          onDismiss={() => setIsInspectingConflict(false)}
+          onResolved={() => setIsInspectingConflict(false)}
+        />
+      )}
+    </>
   )
 }
 
 export function ProjectBreadcrumbButton({
   project,
   file,
+  hasCloudConflict = false,
 }: {
   project?: IndexLoaderData['project']
   file?: IndexLoaderData['file']
+  hasCloudConflict?: boolean
 }) {
   // Breadcrumb for project and project-relative file path
   const relativeFilePath = getProjectRelativeFilePath(project, file)
   const formattedRelativeFilePath = relativeFilePath.replaceAll('/', ' / ')
+  const projectDisplayName = project ? getProjectDisplayName(project) : ''
   const breadCrumb = {
-    projectName: project?.name || '',
+    projectName: projectDisplayName,
     sep: ' / ',
     filePath: formattedRelativeFilePath,
   }
@@ -450,7 +559,7 @@ export function ProjectBreadcrumbButton({
       data-testid="project-sidebar-toggle"
     >
       <div className="flex min-w-0 items-baseline py-0.5 text-sm">
-        {project?.name && (
+        {project && (
           <>
             <span
               ref={projectNameRef}
@@ -472,6 +581,14 @@ export function ProjectBreadcrumbButton({
           {breadCrumb.filePath}
         </span>
       </div>
+      {hasCloudConflict && (
+        <span
+          className="hidden shrink-0 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium leading-none text-warn-90 dark:bg-warn-80 dark:text-warn-10 sm:inline-flex"
+          data-testid="project-sidebar-cloud-conflict-badge"
+        >
+          Cloud conflict
+        </span>
+      )}
       <CustomIcon
         name="caretDown"
         className="w-4 h-4 shrink-0 text-chalkboard-70 dark:text-chalkboard-40 ui-open:rotate-180"

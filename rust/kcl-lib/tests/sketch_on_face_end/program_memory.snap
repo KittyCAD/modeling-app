@@ -4,8 +4,7 @@ description: Variables in memory after executing sketch_on_face_end.kcl
 ---
 {
   "cube": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "part001": {
     "type": "Solid",

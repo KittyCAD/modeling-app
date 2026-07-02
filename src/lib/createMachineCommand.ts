@@ -200,6 +200,7 @@ export function buildCommandArgument<
     displayName: arg.displayName,
     description: arg.description,
     status: arg.status,
+    statusMessage: arg.statusMessage,
     required,
     prepopulate: arg.prepopulate,
     hidden,

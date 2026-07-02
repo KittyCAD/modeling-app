@@ -1,7 +1,7 @@
 import type {
   STD_LIB_COMMANDS,
   StdLibCommandName,
-} from '@rust/kcl-lib/bindings/StdLibCommands'
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 
 import type { HoleBody, HoleBottom, HoleType } from '@src/lang/modifyAst/faces'
 import type { ProfileGdtFunction } from '@src/lang/modifyAst/gdt'
@@ -68,7 +68,7 @@ export type ExtrudeCommandArgs = Override<
 >
 
 export type SweepCommandArgs = Override<
-  Omit<StdLibCommandArgs<'sweep'>, 'tolerance' | 'version'>,
+  Omit<StdLibCommandArgs<'sweep'>, 'tolerance'>,
   {
     relativeTo?: SweepRelativeTo
     bodyType?: KclPreludeBodyType
@@ -115,7 +115,7 @@ export type HoleCommandArgs = Override<
 >
 
 export type FilletCommandArgs = Override<
-  Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'tolerance'>,
+  Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'edges' | 'tolerance'>,
   {
     selection: Selections
     radius: KclCommandValue
@@ -124,7 +124,7 @@ export type FilletCommandArgs = Override<
 >
 
 export type ChamferCommandArgs = Override<
-  Omit<StdLibCommandArgs<'chamfer'>, 'solid' | 'tags'>,
+  Omit<StdLibCommandArgs<'chamfer'>, 'solid' | 'tags' | 'edges'>,
   {
     selection: Selections
     length: KclCommandValue
@@ -224,6 +224,10 @@ export type GdtRunoutCommandArgs = GdtObjectsCommandArgs<'gdt::runout'>
 export type GdtParallelismCommandArgs =
   GdtObjectsCommandArgs<'gdt::parallelism'>
 export type GdtAnnotationCommandArgs = GdtObjectsCommandArgs<'gdt::annotation'>
+export type GdtNoteCommandArgs = Override<
+  StdLibCommandArgs<'gdt::note'>,
+  GdtFrameArgs
+>
 export type GdtDatumCommandArgs = Override<
   Omit<StdLibCommandArgs<'gdt::datum'>, 'face'>,
   { faces: Selections } & GdtFrameArgs
@@ -294,6 +298,7 @@ export type StdLibModelingCommandSchema = {
   'GDT Runout': GdtRunoutCommandArgs
   'GDT Parallelism': GdtParallelismCommandArgs
   'GDT Annotation': GdtAnnotationCommandArgs
+  'GDT Note': GdtNoteCommandArgs
   'GDT Datum': GdtDatumCommandArgs
   'Boolean Subtract': BooleanSubtractCommandArgs
   'Boolean Union': BooleanUnionCommandArgs

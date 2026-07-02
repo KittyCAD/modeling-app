@@ -20,6 +20,11 @@ import { isArray } from '@src/lib/utils'
 import JSZip from 'jszip'
 
 const localFs = opfs.impl
+export const OPFS_CLOUD_UNTITLED_PROJECT_TITLE = 'Untitled'
+
+export function getRemoteProjectTitleForProjectToml(title?: string) {
+  return title?.trim() || OPFS_CLOUD_UNTITLED_PROJECT_TITLE
+}
 
 export function prepareProjectFilesForCloudUpload(
   projectPath: string,
@@ -35,6 +40,7 @@ export function prepareProjectFilesForCloudUpload(
   const projectTitle =
     getProjectTomlTitle(normalizedFiles) ||
     localFs.basename(projectPath.replaceAll('\\', '/').replace(/\/+$/g, ''))
+  ensureProjectTomlUploadTitle(normalizedFiles, projectTitle || 'project')
   const body: ProjectUploadBody = {
     title: projectTitle || 'project',
     description: '',
@@ -77,6 +83,27 @@ function ensureProjectTomlUploadFile(
     ),
   })
   return PROJECT_SETTINGS_FILE_NAME
+}
+
+function ensureProjectTomlUploadTitle(
+  files: ProjectArchiveFile[],
+  title: string
+) {
+  const projectTomlFile = files.find(
+    (file) => file.relativePath === PROJECT_SETTINGS_FILE_NAME
+  )
+  if (!projectTomlFile) {
+    return
+  }
+
+  const existingProjectToml = new TextDecoder().decode(projectTomlFile.data)
+  if (getProjectTitleFromProjectTomlContents(existingProjectToml)) {
+    return
+  }
+
+  projectTomlFile.data = new TextEncoder().encode(
+    setProjectTitleInProjectTomlContents(existingProjectToml, title)
+  )
 }
 
 function getProjectTomlTitle(files: ProjectArchiveFile[]) {
@@ -208,7 +235,10 @@ export function withRemoteProjectMetadataInArchiveFiles(
   environmentName?: string
 ) {
   return withProjectCloudProjectIdInArchiveFiles(
-    withProjectTitleInArchiveFiles(files, title),
+    withProjectTitleInArchiveFiles(
+      files,
+      getRemoteProjectTitleForProjectToml(title)
+    ),
     projectId,
     environmentName
   )

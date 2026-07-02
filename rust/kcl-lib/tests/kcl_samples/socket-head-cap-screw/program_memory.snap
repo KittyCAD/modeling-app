@@ -259,6 +259,12 @@ description: Variables in memory after executing socket-head-cap-screw.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

@@ -140,7 +140,7 @@ import {
 import type {
   Artifact,
   ArtifactId,
-  KclValue,
+  KclValueView,
   PathToNode,
   PipeExpression,
   Program,
@@ -231,14 +231,20 @@ function findSceneObjectForPlaneSelection(
 
   if (plane.faceInfo.type === 'cap') {
     const capKind = plane.faceInfo.subType
-    return sceneGraphObjects.find(
-      (object) =>
-        object.kind.type === 'Cap' &&
-        object.kind.kind === capKind &&
-        object.source.type === 'BackTrace' &&
-        object.source.ranges.length === 1 &&
-        sourceRangesEqual(object.source.ranges[0][0], sweepRange)
-    )
+    return sceneGraphObjects.find((object) => {
+      if (
+        object.kind.type !== 'Cap' ||
+        object.kind.kind !== capKind ||
+        object.source.type !== 'BackTrace'
+      ) {
+        return false
+      }
+      const sweepSource = object.source.ranges.at(-1)
+      return (
+        sweepSource !== undefined &&
+        sourceRangesEqual(sweepSource[0], sweepRange)
+      )
+    })
   }
 
   const segmentRange = sourceRangeForPath(
@@ -248,14 +254,19 @@ function findSceneObjectForPlaneSelection(
   )
   if (err(segmentRange)) return undefined
 
-  return sceneGraphObjects.find(
-    (object) =>
-      object.kind.type === 'Wall' &&
-      object.source.type === 'BackTrace' &&
-      object.source.ranges.length === 2 &&
-      sourceRangesEqual(object.source.ranges[0][0], sweepRange) &&
-      sourceRangesEqual(object.source.ranges[1][0], segmentRange)
-  )
+  return sceneGraphObjects.find((object) => {
+    if (object.kind.type !== 'Wall' || object.source.type !== 'BackTrace') {
+      return false
+    }
+    const sweepSource = object.source.ranges.at(-2)
+    const segmentSource = object.source.ranges.at(-1)
+    return (
+      sweepSource !== undefined &&
+      segmentSource !== undefined &&
+      sourceRangesEqual(sweepSource[0], sweepRange) &&
+      sourceRangesEqual(segmentSource[0], segmentRange)
+    )
+  })
 }
 
 function getSelectedSketchBlockArtifact({
@@ -585,6 +596,7 @@ export type ModelingMachineEvent =
       data: ModelingCommandSchema['GDT Parallelism']
     }
   | { type: 'GDT Annotation'; data: ModelingCommandSchema['GDT Annotation'] }
+  | { type: 'GDT Note'; data: ModelingCommandSchema['GDT Note'] }
   | { type: 'Flip Surface'; data: ModelingCommandSchema['Flip Surface'] }
   | { type: 'Join Surfaces'; data: ModelingCommandSchema['Join Surfaces'] }
   | {
@@ -715,6 +727,9 @@ export const modelingMachine = setup({
   guards: {
     'should use sketch solve mode': ({ context }) => {
       return context.store.useSketchSolveMode?.current === true
+    },
+    'Artifact graph is empty': ({ context }) => {
+      return context.kclManager.artifactGraph.size === 0
     },
     'Selection is sketchBlock': ({
       context: { selectionRanges, kclManager },
@@ -1083,6 +1098,9 @@ export const modelingMachine = setup({
           up: { x: 0, y: 0, z: 1 },
         },
       })
+    },
+    'stop scene infra': ({ context }) => {
+      context.kclManager.sceneInfra.stop()
     },
     'set new sketch metadata': assign(({ event }) => {
       if (
@@ -2015,6 +2033,7 @@ export const modelingMachine = setup({
                 wasmInstance,
               },
             })
+
           engineEvents.forEach((event) => {
             engineCommandManager.sendSceneCommand(event).catch(reportRejection)
           })
@@ -3723,7 +3742,7 @@ export const modelingMachine = setup({
           artifact?.type === 'segment' || artifact?.type === 'solid2d'
             ? artifact?.pathId
             : plane?.pathIds[0]
-        let sketch: KclValue | null = null
+        let sketch: KclValueView | null = null
         let planeVar: Plane | null = null
 
         for (const variable of Object.values(kclManager.execState.variables)) {
@@ -4427,6 +4446,9 @@ export const modelingMachine = setup({
     gdtAnnotationAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['GDT Annotation'])
     ),
+    gdtNoteAstMod: fromPromise(
+      createModelingCodemodActor(modelingCommandCodemods['GDT Note'])
+    ),
     flipSurfaceAstMod: fromPromise(
       createModelingCodemodActor(modelingCommandCodemods['Flip Surface'])
     ),
@@ -4938,6 +4960,10 @@ export const modelingMachine = setup({
 
         'GDT Annotation': {
           target: 'Applying GDT Annotation',
+        },
+
+        'GDT Note': {
+          target: 'Applying GDT Note',
         },
 
         'Boolean Subtract': {
@@ -6329,6 +6355,26 @@ export const modelingMachine = setup({
 
       exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
+        Cancel: [
+          {
+            guard: 'Artifact graph is empty',
+            target: '#Modeling.idle.showPlanes',
+            actions: [
+              'reset sketch metadata',
+              'enable copilot',
+              'stop scene infra',
+            ],
+          },
+          {
+            target: '#Modeling.idle.hidePlanes',
+            actions: [
+              'reset sketch metadata',
+              'enable copilot',
+              'stop scene infra',
+            ],
+          },
+        ],
+
         'Select sketch plane': {
           target: 'animating to plane',
           actions: ['reset sketch metadata'],
@@ -7291,6 +7337,26 @@ export const modelingMachine = setup({
         id: 'gdtAnnotationAstMod',
         input: ({ event, context }) => {
           if (event.type !== 'GDT Annotation') return undefined
+          return {
+            data: event.data,
+            kclManager: context.kclManager,
+            rustContext: context.rustContext,
+          }
+        },
+        onDone: ['idle'],
+        onError: {
+          target: 'idle',
+          actions: 'toastError',
+        },
+      },
+    },
+
+    'Applying GDT Note': {
+      invoke: {
+        src: 'gdtNoteAstMod',
+        id: 'gdtNoteAstMod',
+        input: ({ event, context }) => {
+          if (event.type !== 'GDT Note') return undefined
           return {
             data: event.data,
             kclManager: context.kclManager,

@@ -10,7 +10,6 @@ import { useCalculateKclExpression } from '@src/lib/useCalculateKclExpression'
 import { roundOffWithUnits } from '@src/lib/utils'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 function CoordinateInput({
   label,
@@ -170,9 +169,6 @@ function CommandBarVector3DInput({
   const xInputRef = useRef<HTMLInputElement>(null)
   const yInputRef = useRef<HTMLInputElement>(null)
   const zInputRef = useRef<HTMLInputElement>(null)
-
-  // Close the command bar
-  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
 
   // Focus and select the first input on mount
   useEffect(() => {

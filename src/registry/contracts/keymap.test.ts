@@ -11,6 +11,7 @@ import {
   createKeymapTree,
   createKeymapTreeFromContributions,
   findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
   matchKeymapKeystrokes,
   normalizeEventKey,
   normalizeKeymapChord,
@@ -32,6 +33,12 @@ describe('keymap contract', () => {
       type: 'full',
       item,
     })
+  })
+
+  it('formats keymap keystrokes for display', () => {
+    expect(keymapKeystrokesDisplay(['mod+k', 'p'], 'windows')).toBe('Ctrl+K P')
+    expect(keymapKeystrokesDisplay(['mod+k'], 'macos')).toBe('⌘K')
+    expect(keymapKeystrokesDisplay([], 'linux')).toBeUndefined()
   })
 
   it('normalizes modified alt-including keyboard events from their unmodified key code', () => {
@@ -443,6 +450,71 @@ describe('keymap contract', () => {
         ...item,
         keystrokes: ['shift+q'],
         scopes: [MODE_SKETCH_SOLVE_KEYMAP_SCOPE],
+        source: 'User',
+      },
+    })
+  })
+
+  it('keeps same-command linked hidden overrides in their original scopes', () => {
+    const hiddenEditorItem = createKeymapItem({
+      id: 'editor.undo.code-editor-focused',
+      command: 'zds.editor.undo',
+      keystrokes: ['mod+z'],
+      scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      hidden: true,
+      userBindingCommand: 'zds.editor.undo',
+    })
+    const visibleItem = createKeymapItem({
+      id: 'editor.undo',
+      command: 'zds.editor.undo',
+      keystrokes: ['mod+z'],
+      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+    })
+    const tree = createKeymapTree(
+      resolveKeymapItems([hiddenEditorItem, visibleItem], {
+        version: 1,
+        bindings: [
+          {
+            command: 'zds.editor.undo',
+            keystrokes: ['mod+alt+z'],
+            scopes: [MODE_MODELING_KEYMAP_SCOPE],
+          },
+        ],
+      })
+    )
+    const scopeMetadata = [
+      createContextScope(MODE_MODELING_KEYMAP_SCOPE, 100),
+      createContextScope(CODE_EDITOR_FOCUSED_KEYMAP_SCOPE, 1000),
+    ]
+
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+        ['mod+alt+z'],
+        scopeMetadata
+      )
+    ).toEqual({
+      type: 'full',
+      item: {
+        ...hiddenEditorItem,
+        keystrokes: ['mod+alt+z'],
+        source: 'User',
+      },
+    })
+    expect(
+      matchKeymapKeystrokes(
+        tree,
+        [MODE_MODELING_KEYMAP_SCOPE],
+        ['mod+alt+z'],
+        scopeMetadata
+      )
+    ).toEqual({
+      type: 'full',
+      item: {
+        ...visibleItem,
+        keystrokes: ['mod+alt+z'],
+        scopes: [MODE_MODELING_KEYMAP_SCOPE],
         source: 'User',
       },
     })

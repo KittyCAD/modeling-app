@@ -1,6 +1,10 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
 import { isDesktop } from '@src/lib/isDesktop'
+import { getDeleteKeys } from '@src/lib/utils'
 import {
+  CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE,
+  HOME_KEYMAP_SCOPE,
   type KeymapDocument,
   MODE_MODELING_KEYMAP_SCOPE,
   MODE_SKETCHING_KEYMAP_SCOPE,
@@ -9,9 +13,16 @@ import {
   PROJECT_EXPLORER_FOCUSED_KEYMAP_SCOPE,
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { TOOLBAR_COMMAND_IDS } from '@src/registry/extensions/commands/toolbarCommands'
 
 const BASE_KEYMAP_SOURCE = 'Base'
+const FILE_KEYMAP_SCOPES = [
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+]
 
 export const PROJECT_EXPLORER_COMMAND_IDS = {
   arrowLeft: 'project-explorer.arrow-left',
@@ -68,6 +79,15 @@ export const defaultKeymap: KeymapDocument = {
       command: 'zds.commandPalette.close',
     },
     {
+      id: 'command-palette.close-slash',
+      title: 'Close command palette',
+      scopes: ['cmd-palette-open'],
+      keystrokes: ['mod+/'],
+      command: 'zds.commandPalette.close',
+      hidden: true,
+      userBindingCommand: 'zds.commandPalette.close',
+    },
+    {
       id: 'settings.open',
       title: 'Open settings',
       keystrokes: [isDesktop() ? 'mod+,' : 'mod+shift+,'],
@@ -92,6 +112,111 @@ export const defaultKeymap: KeymapDocument = {
       arguments: {
         tab: 'user',
       },
+    },
+    {
+      id: 'settings.focus-search',
+      title: 'Focus settings search',
+      scopes: ['settings-open'],
+      keystrokes: ['ctrl+.'],
+      command: APP_COMMAND_IDS.search.focusSettings,
+    },
+    {
+      id: 'home.focus-project-search',
+      title: 'Focus project search',
+      scopes: [HOME_KEYMAP_SCOPE],
+      keystrokes: ['ctrl+.'],
+      command: APP_COMMAND_IDS.search.focusProjects,
+    },
+    {
+      id: 'home.find-projects',
+      title: 'Find projects',
+      scopes: [HOME_KEYMAP_SCOPE],
+      keystrokes: ['mod+f'],
+      command: APP_COMMAND_IDS.search.focusProjects,
+      hidden: true,
+      userBindingCommand: APP_COMMAND_IDS.search.focusProjects,
+    },
+    {
+      id: 'editor.undo',
+      title: 'Undo',
+      scopes: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+z'],
+      command: APP_COMMAND_IDS.editor.undo,
+    },
+    {
+      id: 'editor.undo.code-editor-focused',
+      title: 'Undo',
+      scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+z'],
+      command: APP_COMMAND_IDS.editor.undo,
+      hidden: true,
+      userBindingCommand: APP_COMMAND_IDS.editor.undo,
+    },
+    {
+      id: 'editor.redo',
+      title: 'Redo',
+      scopes: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+shift+z'],
+      command: APP_COMMAND_IDS.editor.redo,
+    },
+    {
+      id: 'editor.redo.code-editor-focused',
+      title: 'Redo',
+      scopes: [CODE_EDITOR_FOCUSED_KEYMAP_SCOPE],
+      keystrokes: ['mod+shift+z'],
+      command: APP_COMMAND_IDS.editor.redo,
+      hidden: true,
+      userBindingCommand: APP_COMMAND_IDS.editor.redo,
+    },
+    ...(!isDesktop()
+      ? [
+          {
+            id: 'editor.format',
+            title: 'Format code',
+            scopes: [CODE_EDITOR_NOT_FOCUSED_KEYMAP_SCOPE],
+            keystrokes: ['alt+shift+f'],
+            command: APP_COMMAND_IDS.editor.format,
+          },
+        ]
+      : []),
+    {
+      id: 'editor.convert-to-variable',
+      title: 'Convert to variable',
+      scopes: FILE_KEYMAP_SCOPES,
+      keystrokes: ['ctrl+shift+c'],
+      command: APP_COMMAND_IDS.editor.convertToVariable,
+    },
+    ...getDeleteKeys().map((deleteKey) => ({
+      id: `modeling.delete-selection.${deleteKey}`,
+      title: 'Delete selection',
+      scopes: FILE_KEYMAP_SCOPES,
+      keystrokes: [deleteKey],
+      command: APP_COMMAND_IDS.modeling.deleteSelection,
+    })),
+    {
+      id: 'modeling.center-camera-on-selection',
+      title: 'Center camera on selection',
+      scopes: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+alt+c'],
+      command: APP_COMMAND_IDS.modeling.centerCameraOnSelection,
+    },
+    {
+      id: 'modeling.select-all-in-current-sketch',
+      title: 'Select all in current sketch',
+      scopes: [
+        MODE_SKETCHING_KEYMAP_SCOPE,
+        MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+        MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+      ],
+      keystrokes: ['mod+a'],
+      command: APP_COMMAND_IDS.modeling.selectAllInCurrentSketch,
+    },
+    {
+      id: 'modeling.toggle-snap-to-grid',
+      title: 'Toggle snap to grid',
+      scopes: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+g'],
+      command: APP_COMMAND_IDS.modeling.toggleSnapToGrid,
     },
     {
       id: 'project-explorer.arrow-left',
@@ -210,7 +335,14 @@ export const defaultKeymap: KeymapDocument = {
       title: 'Reset view',
       scopes: [MODE_MODELING_KEYMAP_SCOPE],
       keystrokes: ['v', 'r'],
-      command: 'zds.view.reset',
+      command: APP_COMMAND_IDS.view.reset,
+    },
+    {
+      id: 'view.reset-with-modifier',
+      title: 'Reset view',
+      scopes: FILE_KEYMAP_SCOPES,
+      keystrokes: ['mod+alt+x'],
+      command: APP_COMMAND_IDS.view.reset,
     },
     {
       id: 'toolbar.modeling.sketch',

@@ -50,8 +50,11 @@ import { EngineConnectionStateType } from '@src/network/utils'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import type { SnapshotFrom } from 'xstate'
 
@@ -103,10 +106,7 @@ const Toolbar_ = memo(
     const { kclManager } = useSingletons()
     const platform = usePlatform()
     const executionService = app.registry.signal(executingEditorService).value
-    const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
-      UNRENDERED_EXECUTE_HOTKEY,
-      platform
-    )
+    const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -163,6 +163,15 @@ const Toolbar_ = memo(
     const currentToolbarKeymapScopes = [
       toolbarModeNameToKeymapScope[toolbarConfigurationName],
     ]
+    const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
+      findKeymapItemForCommand(
+        keymapTree,
+        APP_COMMAND_IDS.editor.render,
+        currentToolbarKeymapScopes,
+        keymapScopes
+      )?.keystrokes ?? [UNRENDERED_EXECUTE_HOTKEY],
+      platform
+    )
     const disableSketchToolbar =
       isSketchToolbarTransitioning(props.state) &&
       (toolbarConfigurationName === 'sketching' ||
@@ -376,7 +385,8 @@ const Toolbar_ = memo(
         const item = findKeymapItemForCommand(
           keymapTree,
           command,
-          currentToolbarKeymapScopes
+          currentToolbarKeymapScopes,
+          keymapScopes
         )
         return item?.keystrokes.length ? [...item.keystrokes] : undefined
       }

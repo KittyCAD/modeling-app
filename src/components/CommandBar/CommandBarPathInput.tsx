@@ -1,5 +1,4 @@
 import { use, useEffect, useMemo, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
@@ -30,7 +29,6 @@ function CommandBarPathInput({
   const { wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const commandBarState = commands.useState()
-  useHotkeys('mod + /', () => commands.send({ type: 'Close' }))
   const inputRef = useRef<HTMLInputElement>(null)
   const argMachineContext = useSelector(
     arg.machineActor,

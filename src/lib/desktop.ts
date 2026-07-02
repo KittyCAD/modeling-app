@@ -84,6 +84,20 @@ const convertIStatToFileMetadata = (
   }
 }
 
+export function isPathNotFoundError(error: unknown) {
+  return (
+    error === 'ENOENT' ||
+    (typeof error === 'string' && error.startsWith('ENOENT')) ||
+    (typeof error === 'object' &&
+      error !== null &&
+      (('code' in error && error.code === 'ENOENT') ||
+        ('cause' in error && error.cause === 'ENOENT') ||
+        ('message' in error &&
+          typeof error.message === 'string' &&
+          error.message.startsWith('ENOENT'))))
+  )
+}
+
 async function readProjectTomlMetadata(projectPath: string) {
   const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
   try {
@@ -104,6 +118,46 @@ async function readProjectTomlMetadata(projectPath: string) {
       cloudProjectId: undefined,
     }
   }
+}
+
+async function ensureProjectTomlTitle({
+  projectPath,
+  title,
+  defaultFile,
+}: {
+  projectPath: string
+  title: string
+  defaultFile: string
+}) {
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  let projectToml = ''
+  try {
+    projectToml = await fsZds.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
+
+  if (getProjectTitleFromProjectTomlContents(projectToml)) {
+    return
+  }
+
+  const projectTomlWithDefaultFile = /^\s*default_file\s*=/m.test(projectToml)
+    ? projectToml
+    : `default_file = ${JSON.stringify(defaultFile.replaceAll('\\', '/'))}\n${
+        projectToml.trim() ? `\n${projectToml}` : ''
+      }`
+  const nextProjectToml = setProjectTitleInProjectTomlContents(
+    projectTomlWithDefaultFile,
+    title
+  )
+  await fsZds.writeFile(
+    projectTomlPath,
+    new TextEncoder().encode(nextProjectToml)
+  )
 }
 
 export async function renameProjectDirectory(
@@ -154,7 +208,7 @@ export async function ensureProjectDirectoryExists(
   try {
     await fsZds.stat(projectDir)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
     }
   }
@@ -203,7 +257,7 @@ export async function createNewProjectDirectory(
   try {
     await fsZds.stat(projectDir)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
     }
   }
@@ -225,6 +279,11 @@ export async function createNewProjectDirectory(
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
   await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
+  await ensureProjectTomlTitle({
+    projectPath: projectDir,
+    title: projectName,
+    defaultFile: kclFileName,
+  })
   let metadata: FileMetadata | null = null
   try {
     metadata = convertIStatToFileMetadata(await fsZds.stat(projectFile))
@@ -242,6 +301,7 @@ export async function createNewProjectDirectory(
   return {
     path: projectDir,
     name: projectName,
+    title: projectName,
     // We don't need to recursively get all files in the project directory.
     // Because we just created it and it's empty.
     children: null,
@@ -606,7 +666,7 @@ export async function writeProjectTitleToProjectToml(
       encoding: 'utf-8',
     })
   } catch (error) {
-    if (error !== 'ENOENT') {
+    if (!isPathNotFoundError(error)) {
       return Promise.reject(error)
     }
   }
@@ -784,7 +844,7 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
     await fsZds.stat(projectPath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectPath, { recursive: true })
     }
   }
@@ -817,7 +877,7 @@ export const readProjectSettingsFile = async (
   try {
     await fsZds.stat(settingsPath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       return {}
     }
   }

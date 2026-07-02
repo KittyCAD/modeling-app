@@ -139,6 +139,8 @@ jobs:
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
 
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
       - name: Copy prepared ts-rs bindings
         run: |
           ls -R prepared-ts-rs-bindings

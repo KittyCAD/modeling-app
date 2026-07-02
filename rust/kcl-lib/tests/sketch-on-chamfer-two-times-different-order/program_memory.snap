@@ -88,6 +88,16 @@ description: Variables in memory after executing sketch-on-chamfer-two-times-dif
           "type": "chamfer"
         }
       ],
+      "faces": {
+        "seg03": {
+          "type": "TagIdentifier",
+          "value": "seg03"
+        },
+        "seg04": {
+          "type": "TagIdentifier",
+          "value": "seg04"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

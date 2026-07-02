@@ -298,6 +298,16 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd": {
+          "type": "TagIdentifier",
+          "value": "capEnd"
+        },
+        "capStart": {
+          "type": "TagIdentifier",
+          "value": "capStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -660,6 +670,16 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd": {
+          "type": "TagIdentifier",
+          "value": "capEnd"
+        },
+        "capStart": {
+          "type": "TagIdentifier",
+          "value": "capStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1108,6 +1128,16 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd": {
+          "type": "TagIdentifier",
+          "value": "capEnd"
+        },
+        "capStart": {
+          "type": "TagIdentifier",
+          "value": "capStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2846,6 +2876,16 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd": {
+          "type": "TagIdentifier",
+          "value": "capEnd"
+        },
+        "capStart": {
+          "type": "TagIdentifier",
+          "value": "capStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -4058,6 +4098,16 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd": {
+          "type": "TagIdentifier",
+          "value": "capEnd"
+        },
+        "capStart": {
+          "type": "TagIdentifier",
+          "value": "capStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -5675,6 +5725,16 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd": {
+          "type": "TagIdentifier",
+          "value": "capEnd"
+        },
+        "capStart": {
+          "type": "TagIdentifier",
+          "value": "capStart"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

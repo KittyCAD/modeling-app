@@ -65,7 +65,6 @@ import {
   sendDeleteCommand,
   sendSelectionEvent,
 } from '@src/lib/featureTree'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
 import {
   type AreaTypeComponentProps,
   DefaultLayoutPaneID,
@@ -78,6 +77,13 @@ import type RustContext from '@src/lib/rustContext'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useNavigate } from 'react-router-dom'
 
 type Singletons = ReturnType<typeof useSingletons>
@@ -138,8 +144,16 @@ export const FeatureTreePaneContents = memo(() => {
   const { layout, commands, settings } = app
   const settingsValues = settings.useSettings()
   const platform = usePlatform()
-  const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
-    UNRENDERED_EXECUTE_HOTKEY,
+  const keymap = app.registry.optional(keymapService)
+  const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          APP_COMMAND_IDS.editor.render,
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [UNRENDERED_EXECUTE_HOTKEY],
     platform
   )
   const { kclManager } = useSingletons()

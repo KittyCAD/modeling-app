@@ -412,7 +412,11 @@ impl VariableKind {
     }
 }
 
-impl ItemVisibility {
+trait DigestableId1 {
+    fn digestable_id(&self) -> [u8; 1];
+}
+
+impl DigestableId1 for ItemVisibility {
     fn digestable_id(&self) -> [u8; 1] {
         match self {
             ItemVisibility::Default => [0],

@@ -2,7 +2,7 @@ import {
   STD_LIB_COMMANDS,
   type StdLibCommandArg,
   type StdLibCommandName,
-} from '@rust/kcl-lib/bindings/StdLibCommands'
+} from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
 
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { CommandArgumentConfig } from '@src/lib/commandTypes'
@@ -21,6 +21,11 @@ export type StdLibCommandDriftConfig = {
    * KCL stdlib arguments intentionally not exposed by the command bar.
    */
   omittedStdLibArgs?: readonly string[]
+  /**
+   * Deprecated KCL stdlib arguments intentionally still exposed by the command
+   * bar for backwards-compatible point-and-click flows.
+   */
+  deprecatedStdLibArgs?: readonly string[]
   /**
    * KCL stdlib argument names that are exposed under a different command-bar
    * argument name.
@@ -46,6 +51,7 @@ type StdLibCommandArgOverride = Partial<
 
 type StdLibCommandArgsOptions = {
   omitted?: readonly string[]
+  includeDeprecated?: readonly string[]
   argAliases?: Readonly<Record<string, string>>
   overrides?: Readonly<Record<string, StdLibCommandArgOverride>>
   includeEditFlowArgs?: boolean
@@ -78,10 +84,47 @@ const stdLibArgInputType = (ty: StdLibCommandArg['ty']) => {
   return 'kcl'
 }
 
-const stdLibArgBaseConfig = (arg: StdLibCommandArg) => ({
+const isDeprecatedStdLibArg = (arg: StdLibCommandArg) =>
+  arg.deprecated || arg.deprecatedSince !== null
+
+const stdLibArgDeprecatedMessage = (arg: StdLibCommandArg) => {
+  if (!isDeprecatedStdLibArg(arg)) {
+    return undefined
+  }
+
+  return [
+    arg.deprecatedSince === null
+      ? 'Deprecated.'
+      : `Deprecated as of KCL ${arg.deprecatedSince}.`,
+    arg.docs?.trim(),
+  ]
+    .filter(Boolean)
+    .join(' ')
+}
+
+const hasExistingEditFlowArgument = (
+  context: { argumentsToSubmit: Record<string, unknown> },
+  argName: string
+) =>
+  Boolean(context.argumentsToSubmit.nodeToEdit) &&
+  context.argumentsToSubmit[argName] !== undefined
+
+const stdLibArgBaseConfig = (
+  arg: StdLibCommandArg,
+  commandArgName: string
+) => ({
   inputType: stdLibArgInputType(arg.ty),
   required: arg.required,
-  ...(arg.experimental ? ({ status: 'experimental' } as const) : {}),
+  ...(arg.experimental
+    ? ({ status: 'experimental' } as const)
+    : isDeprecatedStdLibArg(arg)
+      ? ({
+          status: 'deprecated',
+          statusMessage: stdLibArgDeprecatedMessage(arg),
+          hidden: (context: { argumentsToSubmit: Record<string, unknown> }) =>
+            !hasExistingEditFlowArgument(context, commandArgName),
+        } as const)
+      : {}),
 })
 
 const commandBarEditFlowArgs: Record<string, StdLibCommandArgOverride> = {
@@ -121,16 +164,19 @@ export function stdLibCommandArgs<CommandArgs extends object>(
   options: StdLibCommandArgsOptions = {}
 ): CommandArgConfigs<CommandArgs> {
   const omitted = new Set(options.omitted ?? [])
+  const includeDeprecated = new Set(options.includeDeprecated ?? [])
   const args: Record<string, Record<string, unknown>> = Object.fromEntries(
     STD_LIB_COMMANDS[stdLibName].args
-      .filter((arg) => arg.deprecatedSince === null)
+      .filter(
+        (arg) => !isDeprecatedStdLibArg(arg) || includeDeprecated.has(arg.name)
+      )
       .filter((arg) => !omitted.has(arg.name))
       .map((arg) => {
         const commandArgName = options.argAliases?.[arg.name] ?? arg.name
         return [
           commandArgName,
           {
-            ...stdLibArgBaseConfig(arg),
+            ...stdLibArgBaseConfig(arg, commandArgName),
             ...(options.overrides?.[commandArgName] ?? {}),
           },
         ]
@@ -164,7 +210,8 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'sweep',
     editFlow: true,
     flowArgOrder: ['sketches', 'path', 'bodyType'],
-    omittedStdLibArgs: ['tolerance', 'version'],
+    deprecatedStdLibArgs: ['relativeTo'],
+    omittedStdLibArgs: ['tolerance'],
   },
   Loft: {
     stdLibName: 'loft',
@@ -225,7 +272,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'fillet',
     editFlow: true,
     flowArgOrder: ['selection', 'radius'],
-    omittedStdLibArgs: ['solid', 'tolerance'],
+    omittedStdLibArgs: ['solid', 'edges', 'tolerance'],
     argAliases: {
       tags: 'selection',
     },
@@ -234,7 +281,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'chamfer',
     editFlow: true,
     flowArgOrder: ['selection', 'length'],
-    omittedStdLibArgs: ['solid'],
+    omittedStdLibArgs: ['solid', 'edges'],
     argAliases: {
       tags: 'selection',
     },
@@ -479,6 +526,11 @@ export const modelingCommandStdLibDriftConfig = {
       edges: 'objects',
     },
   },
+  'GDT Note': {
+    stdLibName: 'gdt::note',
+    editFlow: true,
+    flowArgOrder: ['note'],
+  },
   'Boolean Subtract': {
     stdLibName: 'subtract',
     flowArgOrder: ['solids', 'tools'],
@@ -521,6 +573,9 @@ export const modelingCommandStdLibDriftConfig = {
   Record<ModelingCommandName, StdLibCommandDriftConfig>
 >
 
+export type ModelingStdLibCommandName =
+  keyof typeof modelingCommandStdLibDriftConfig
+
 export function modelingStdLibCommandName<
   CommandName extends keyof typeof modelingCommandStdLibDriftConfig,
 >(
@@ -549,11 +604,24 @@ export function modelingStdLibCommandArgs<CommandArgs extends object>(
 
   return stdLibCommandArgs<CommandArgs>(driftConfig.stdLibName, {
     omitted: driftConfig.omittedStdLibArgs,
+    includeDeprecated: driftConfig.deprecatedStdLibArgs,
     argAliases: driftConfig.argAliases,
     overrides: options.overrides,
     includeEditFlowArgs: driftConfig.editFlow,
     flowArgOrder: driftConfig.flowArgOrder,
   })
+}
+
+export function stdLibCommandStatus(stdLibName: StdLibCommandName) {
+  const stdLibCommand = STD_LIB_COMMANDS[stdLibName]
+
+  if (stdLibCommand.experimental) {
+    return 'experimental' as const
+  }
+  if (stdLibCommand.deprecated || stdLibCommand.deprecatedSince !== null) {
+    return 'deprecated' as const
+  }
+  return undefined
 }
 
 export function modelingStdLibCommandStatus(
@@ -563,7 +631,29 @@ export function modelingStdLibCommandStatus(
     commandName
   ] as StdLibCommandDriftConfig
 
-  return STD_LIB_COMMANDS[driftConfig.stdLibName].experimental
-    ? ('experimental' as const)
-    : undefined
+  return stdLibCommandStatus(driftConfig.stdLibName)
+}
+
+export function modelingStdLibCommandUsesExperimentalFeatures(
+  commandName: ModelingStdLibCommandName,
+  commandArgs: Record<string, unknown>
+) {
+  const driftConfig = modelingCommandStdLibDriftConfig[
+    commandName
+  ] as StdLibCommandDriftConfig
+  const stdLibCommand = STD_LIB_COMMANDS[driftConfig.stdLibName]
+
+  if (stdLibCommand.experimental) {
+    return true
+  }
+
+  const omittedStdLibArgs = new Set(driftConfig.omittedStdLibArgs ?? [])
+  return stdLibCommand.args.some((arg) => {
+    if (!arg.experimental || omittedStdLibArgs.has(arg.name)) {
+      return false
+    }
+
+    const commandArgName = driftConfig.argAliases?.[arg.name] ?? arg.name
+    return commandArgs[commandArgName] !== undefined
+  })
 }

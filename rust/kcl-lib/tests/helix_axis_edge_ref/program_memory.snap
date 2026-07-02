@@ -72,6 +72,12 @@ description: Variables in memory after executing helix_axis_edge_ref.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capStart001": {
+          "type": "TagIdentifier",
+          "value": "capStart001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

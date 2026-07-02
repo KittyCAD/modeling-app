@@ -451,7 +451,8 @@ describe('operations.test.ts', () => {
   describe('Sweep edit flow', () => {
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
-      const code = 'sweep001 = sweep(capEnd001, path = profile002)'
+      const code =
+        'sweep001 = sweep(capEnd001, path = profile002, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
       const operation = stdlib('sweep')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -471,6 +472,28 @@ describe('operations.test.ts', () => {
             value: { artifactId: 'trajectory-path-id' },
           },
           sourceRange: rangeOfText(code, 'profile002'),
+        },
+        version: {
+          value: {
+            type: 'Number',
+            value: 2,
+            ty: { type: 'Any' },
+          },
+          sourceRange: rangeOfText(code, '2'),
+        },
+        translateProfileToPath: {
+          value: {
+            type: 'Bool',
+            value: false,
+          },
+          sourceRange: rangeOfText(code, 'false'),
+        },
+        orientProfilePerpendicular: {
+          value: {
+            type: 'Bool',
+            value: true,
+          },
+          sourceRange: rangeOfText(code, 'true'),
         },
       }
 
@@ -495,6 +518,9 @@ describe('operations.test.ts', () => {
       const argDefaultValues = result.data.argDefaultValues as {
         sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
         path?: { graphSelections: Array<{ artifact?: Artifact }> }
+        version?: { valueText: string }
+        translateProfileToPath?: boolean
+        orientProfilePerpendicular?: boolean
       }
       expect(result.data.name).toBe('Sweep')
       expect(argDefaultValues.sketches?.graphSelections[0].artifact?.type).toBe(
@@ -503,6 +529,9 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.path?.graphSelections[0].artifact?.type).toBe(
         'path'
       )
+      expect(argDefaultValues.version?.valueText).toBe('2')
+      expect(argDefaultValues.translateProfileToPath).toBe(false)
+      expect(argDefaultValues.orientProfilePerpendicular).toBe(true)
     })
   })
 
@@ -714,6 +743,49 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
         expect(argDefaultValues.datums?.valueText).toBe('datumRefs')
       }
     )
+
+    // A note has no geometry selection, so it does not fit the parameterized
+    // cases above (which all resolve faces/edges). Cover its edit flow on its own.
+    it('enters edit flow for gdt::note', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'gdt::note(note = "Note on XY", framePlane = XZ)'
+      const operation = stdlib('gdt::note')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.labeledArgs = {
+        note: {
+          value: { type: 'String', value: 'Note on XY' },
+          sourceRange: rangeOfText(code, '"Note on XY"'),
+        },
+        framePlane: {
+          value: { type: 'String', value: 'XZ' },
+          sourceRange: rangeOfText(code, 'XZ'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      expect(result.data.name).toBe('GDT Note')
+      expect(getOperationLabel(operation)).toBe('Note')
+      const argDefaultValues = result.data.argDefaultValues as {
+        note?: string
+        framePlane?: string
+      }
+      expect(argDefaultValues.note).toBe('Note on XY')
+      expect(argDefaultValues.framePlane).toBe('XZ')
+    })
   })
 
   describe('variable name of operations', () => {
