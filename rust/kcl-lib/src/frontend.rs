@@ -3380,7 +3380,7 @@ impl FrontendState {
         // a real engine.
 
         // Execute.
-        let outcome = ctx.run_with_caching(new_program).await?;
+        let outcome = Box::pin(ctx.run_with_caching(new_program)).await?;
         let freedom_analysis_ran = true;
 
         let outcome = self.update_state_after_exec(outcome, freedom_analysis_ran);

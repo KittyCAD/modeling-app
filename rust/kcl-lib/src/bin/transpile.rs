@@ -1,3 +1,4 @@
+#![allow(clippy::large_futures)]
 //! A binary to transpile KCL files with old sketch syntax (startProfile in pipe
 //! expressions) to the new sketch block syntax. This is only a temporary dev
 //! tool before we integrate it into the app.

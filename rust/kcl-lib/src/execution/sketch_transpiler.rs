@@ -1,4 +1,4 @@
-//!
+#![allow(clippy::large_futures)]
 //! Transpiler for converting old sketch syntax to new sketch block syntax.
 
 use std::collections::HashMap;
