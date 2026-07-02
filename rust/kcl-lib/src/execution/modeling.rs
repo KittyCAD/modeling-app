@@ -170,6 +170,24 @@ impl ExecState {
             .await
     }
 
+    /// Send a query-only modeling command without recording it in artifact
+    /// command snapshots. These commands can support lint/refactor metadata,
+    /// but they are not part of the modeled result.
+    pub(crate) async fn send_untracked_modeling_cmd(
+        &mut self,
+        meta: ModelingCmdMeta<'_>,
+        cmd: ModelingCmd,
+    ) -> Result<OkWebSocketResponseData, KclError> {
+        if self.is_in_sketch_block() {
+            return Err(no_modeling_in_sketch_block_error(meta.source_range));
+        }
+        let id = meta.id.unwrap_or_else(Uuid::new_v4);
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, id, meta.source_range, &cmd)
+            .await
+    }
+
     /// Send the modeling cmd async and don't wait for the response.
     /// Add it to our list of async commands.
     pub(crate) async fn async_modeling_cmd(
