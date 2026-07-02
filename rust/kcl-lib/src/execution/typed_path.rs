@@ -57,6 +57,17 @@ impl TypedPath {
         }
     }
 
+    pub fn starts_with(&self, base: &TypedPath) -> bool {
+        #[cfg(target_arch = "wasm32")]
+        {
+            self.0.starts_with(base.0.as_ref())
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            self.0.starts_with(&base.0)
+        }
+    }
+
     pub fn extension(&self) -> Option<&str> {
         #[cfg(target_arch = "wasm32")]
         {

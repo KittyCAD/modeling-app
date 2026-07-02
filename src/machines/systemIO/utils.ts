@@ -292,8 +292,13 @@ export const collectProjectFiles = async (args: {
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
     const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
-      const fileNameWithExtension =
+      // Normalize to forward slashes: this becomes the FileMeta.relPath that is
+      // sent to the ML/Zookeeper service as the `current_files` keys and the
+      // `source_ranges` file paths. On Windows fsZds.relative yields backslash
+      // separators, which the Linux server rejects as invalid file names.
+      const fileNameWithExtension = normalizeRelativePath(
         fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+      )
 
       filePromises.push(
         Promise.resolve()

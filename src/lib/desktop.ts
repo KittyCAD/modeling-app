@@ -1,5 +1,6 @@
 import type { UserResponse } from '@kittycad/lib'
 import { users } from '@kittycad/lib'
+import { signal } from '@preact/signals-core'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { type IStat } from '@src/lib/fs-zds/interface'
@@ -104,13 +105,14 @@ const convertIStatToFileMetadata = (
   }
 }
 
-function isPathNotFoundError(error: unknown) {
+export function isPathNotFoundError(error: unknown) {
   return (
     error === 'ENOENT' ||
     (typeof error === 'string' && error.startsWith('ENOENT')) ||
     (typeof error === 'object' &&
       error !== null &&
       (('code' in error && error.code === 'ENOENT') ||
+        ('cause' in error && error.cause === 'ENOENT') ||
         ('message' in error &&
           typeof error.message === 'string' &&
           error.message.startsWith('ENOENT'))))
@@ -1105,6 +1107,8 @@ export const writeEnvironmentFile = async (environment: string) => {
 
 const RECENT_PROJECTS_LIMIT = 50
 
+export const recentProjectsRevisionSignal = signal(0)
+
 const getRecentProjectsEnvironmentName = async (environmentName?: string) => {
   const selectedEnvironment =
     environmentName ||
@@ -1140,6 +1144,7 @@ const writeEnvironmentConfigurationObject = async (
   environmentConfiguration: EnvironmentConfiguration
 ) => {
   const path = await getEnvironmentConfigurationPath(environmentName)
+  await fsZds.mkdir(fsZds.dirname(path), { recursive: true })
   const requestedConfiguration = JSON.stringify(environmentConfiguration)
   return fsZds.writeFile(path, new TextEncoder().encode(requestedConfiguration))
 }
@@ -1164,10 +1169,12 @@ export const writeRecentProjectsForEnvironment = async (
     await getEnvironmentConfigurationObject(selectedEnvironment)
   environmentConfiguration.recentProjects =
     normalizeRecentProjects(recentProjects)
-  return writeEnvironmentConfigurationObject(
+  const result = await writeEnvironmentConfigurationObject(
     selectedEnvironment,
     environmentConfiguration
   )
+  recentProjectsRevisionSignal.value += 1
+  return result
 }
 
 const projectToRecentProject = (

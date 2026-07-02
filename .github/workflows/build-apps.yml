@@ -122,6 +122,11 @@ jobs:
           name: prepared-files
           path: prepared-files
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
       - name: Copy prepared files
         run: |
           ls -R prepared-files
@@ -133,6 +138,14 @@ jobs:
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v6.4.0

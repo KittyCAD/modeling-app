@@ -28,6 +28,7 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
@@ -121,15 +122,19 @@ export function addHelix({
     : []
 
   const unlabeledArgs = null
-  const call = createCallExpressionStdLibKw('helix', unlabeledArgs, [
-    ...axisExpr,
-    ...cylinderExpr,
-    createLabeledArg('revolutions', valueOrVariable(revolutions)),
-    createLabeledArg('angleStart', valueOrVariable(angleStart)),
-    ...radiusExpr,
-    ...lengthExpr,
-    ...ccwExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Helix'),
+    unlabeledArgs,
+    [
+      ...axisExpr,
+      ...cylinderExpr,
+      createLabeledArg('revolutions', valueOrVariable(revolutions)),
+      createLabeledArg('angleStart', valueOrVariable(angleStart)),
+      ...radiusExpr,
+      ...lengthExpr,
+      ...ccwExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angleStart && angleStart.variableName) {

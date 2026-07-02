@@ -24,9 +24,9 @@ use crate::execution::ModelingCmdMeta;
 use crate::execution::annotations;
 use crate::execution::typed_path::TypedPath;
 use crate::execution::types::length_from_str;
-use crate::fs::FileSystem;
 use crate::parsing::ast::types::Annotation;
 use crate::parsing::ast::types::Node;
+use crate::unit_conversion::ToKcmc;
 
 // Zoo co-ordinate system.
 //
@@ -241,9 +241,9 @@ fn set_length_unit(fmt: &mut InputFormat3d, units_str: &str, source_range: Sourc
     let units = length_from_str(units_str, source_range)?;
 
     match fmt {
-        InputFormat3d::Obj(opts) => opts.units = units,
-        InputFormat3d::Ply(opts) => opts.units = units,
-        InputFormat3d::Stl(opts) => opts.units = units,
+        InputFormat3d::Obj(opts) => opts.units = units.to_kcmc(),
+        InputFormat3d::Ply(opts) => opts.units = units.to_kcmc(),
+        InputFormat3d::Stl(opts) => opts.units = units.to_kcmc(),
         _ => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 format!(

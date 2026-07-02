@@ -66,7 +66,6 @@ export const ModelingPageProvider = ({
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
-  const token = auth.useToken()
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor
   const projectIORef = project?.projectIORefSignal
@@ -235,7 +234,6 @@ export const ModelingPageProvider = ({
       }
     }
     return kclCommands({
-      authToken: token ?? '',
       projectData: {
         project: projectIORef?.value,
         file,

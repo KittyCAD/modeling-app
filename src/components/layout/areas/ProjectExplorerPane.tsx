@@ -1,9 +1,9 @@
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 import { ToastInsert } from '@src/components/ToastInsert'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -57,13 +57,13 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
   useEffect(() => {
     const setProjectWithPlaceholders = (sourceProject: Project) => {
-      // Duplicate the state to not edit the raw data
-      const duplicated = structuredClone(sourceProject)
-      addPlaceHoldersForNewFileAndFolder(
-        duplicated.children,
-        sourceProject.path
-      )
-      setTheProject(duplicated)
+      const duplicated = getProjectExplorerProjectWithPlaceholders({
+        loadedProject: sourceProject,
+        projects: undefined,
+      })
+      if (duplicated) {
+        setTheProject(duplicated)
+      }
     }
 
     // Have no idea why the project loader data doesn't have the children from the ls on disk
@@ -88,23 +88,22 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       }
     }
 
+    const loadedProject = project.projectIORefSignal.value
     if (projects === undefined) {
       systemIOActor.send({
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
-      return
     }
 
-    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const foundProject = projects.find((p) => {
-      return p.name === project?.name
+    const duplicated = getProjectExplorerProjectWithPlaceholders({
+      loadedProject,
+      projects,
     })
 
-    if (!foundProject) {
+    if (!duplicated) {
       return
     }
-
-    setProjectWithPlaceholders(foundProject)
+    setTheProject(duplicated)
   }, [
     file,
     projects,

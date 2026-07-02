@@ -898,62 +898,68 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
         }) => {
-          const wasmInstance = await input.context.wasmInstancePromise
-          const message = await sharedBulkCreateWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-              requestedProjectDirectoryPath:
-                input.requestedProjectDirectoryPath,
-              override: input.override,
-            },
-          })
-          // We won't delete until everything's created / updated first.
-          const totalDeleted = await sharedBulkDeleteWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-            },
-          })
+          try {
+            const wasmInstance = await input.context.wasmInstancePromise
+            const message = await sharedBulkCreateWorkflow({
+              input: {
+                ...input,
+                wasmInstance,
+                requestedProjectDirectoryPath:
+                  input.requestedProjectDirectoryPath,
+                override: input.override,
+              },
+            })
+            // We won't delete until everything's created / updated first.
+            const totalDeleted = await sharedBulkDeleteWorkflow({
+              input: {
+                ...input,
+                wasmInstance,
+              },
+            })
 
-          message.message += `, ${totalDeleted} deleted`
-          input.onFileSystemSuccess?.()
+            message.message += `, ${totalDeleted} deleted`
+            input.onFileSystemSuccess?.()
 
-          const project = input.context.app.project
-          const requestedRelativePath = normalizeKCLFileDeletePath(
-            input.requestedFileNameWithExtension
-          )
-          const deletesRequestedFile = (input.filesToDelete ?? []).some(
-            (file) =>
-              normalizeKCLFileDeletePath(file.requestedFileName) ===
-              requestedRelativePath
-          )
-          const requestedAbsolutePath = project
-            ? fsZds.join(project.path, input.requestedFileNameWithExtension)
-            : ''
-          const shouldNavigate =
-            !project ||
-            project.name !== input.requestedProjectName ||
-            project.executingPath !== requestedAbsolutePath ||
-            deletesRequestedFile
+            const project = input.context.app.project
+            const requestedRelativePath = normalizeKCLFileDeletePath(
+              input.requestedFileNameWithExtension
+            )
+            const deletesRequestedFile = (input.filesToDelete ?? []).some(
+              (file) =>
+                normalizeKCLFileDeletePath(file.requestedFileName) ===
+                requestedRelativePath
+            )
+            const requestedAbsolutePath = project
+              ? fsZds.join(project.path, input.requestedFileNameWithExtension)
+              : ''
+            const shouldNavigate =
+              !project ||
+              project.name !== input.requestedProjectName ||
+              project.executingPath !== requestedAbsolutePath ||
+              deletesRequestedFile
 
-          if (!shouldNavigate) {
-            input.onSuccess?.()
-          }
+            if (!shouldNavigate) {
+              input.onSuccess?.()
+            }
 
-          return {
-            ...message,
-            projectName: message.projectName,
-            fileName: input.requestedFileNameWithExtension || '',
-            subRoute: input.requestedSubRoute || '',
-            shouldNavigate,
-            ...(shouldNavigate && input.onSuccess
-              ? { onProjectLoaderComplete: input.onSuccess }
-              : {}),
+            return {
+              ...message,
+              projectName: message.projectName,
+              fileName: input.requestedFileNameWithExtension || '',
+              subRoute: input.requestedSubRoute || '',
+              shouldNavigate,
+              ...(shouldNavigate && input.onSuccess
+                ? { onProjectLoaderComplete: input.onSuccess }
+                : {}),
+            }
+          } catch (error: unknown) {
+            input.onFileSystemError?.()
+            return Promise.reject(error)
           }
         }
       ),
