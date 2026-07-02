@@ -4,6 +4,7 @@ import {
   defineContract,
   defineRegistryItem,
   defineRegistryItemFactory,
+  defineRuntimeRegistryItem,
   provide,
   provideService,
 } from './helpers'
@@ -69,6 +70,41 @@ describe('Registry', () => {
 
     expect(container.get(registrySignal)).toEqual(['stable', 'b'])
     expect(calls).toHaveBeenCalledTimes(1)
+  })
+
+  it('activates runtime items after graph construction', async () => {
+    const service = defineService<{ readonly id: string }>('workspace')
+    const activate = vi.fn()
+    const cleanup = vi.fn()
+    const runtime = defineRegistryItemFactory(
+      ({ services }) => ({
+        item: defineRuntimeRegistryItem({
+          activate: () => {
+            activate(services.get(service).id)
+            return cleanup
+          },
+        }),
+      }),
+      'runtime-with-activate'
+    )
+    const container = new Registry()
+
+    container.configure([
+      defineRegistryItem({
+        providesServices: [provideService(service, { id: 'project' })],
+      }),
+      runtime,
+    ])
+
+    container.inspect()
+    expect(activate).not.toHaveBeenCalled()
+
+    await Promise.resolve()
+
+    expect(activate).toHaveBeenCalledWith('project')
+
+    container[Symbol.dispose]()
+    expect(cleanup).toHaveBeenCalled()
   })
 
   it('merges object value specs', () => {

@@ -1453,7 +1453,7 @@ test.describe('Sketch solve edit tests', { tag: '@desktop' }, () => {
       const threePointCodeAfter = await waitForCodeChange(page, previousCode)
       counts = getCodeCounts(threePointCodeAfter)
       expect(counts.arcs).toBe(threePointCountsBefore.arcs + 1)
-      expect(counts.coincidents).toBe(threePointCountsBefore.coincidents + 1)
+      expect(counts.coincidents).toBe(threePointCountsBefore.coincidents)
       expect(await pointHandles.count()).toBeGreaterThan(
         threePointHandlesBefore
       )

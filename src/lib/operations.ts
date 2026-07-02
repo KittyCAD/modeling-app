@@ -2740,6 +2740,49 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
   }
 }
 
+const prepareToEditGdtNote: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Note',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const noteRaw = extractStringArgument(code, operation, 'note')
+  if (!noteRaw) {
+    return { reason: 'Missing or invalid note argument' }
+  }
+  const note = stripQuotes(noteRaw)
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+  const [framePosition, fontSize] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Note'] = {
+    note,
+    framePosition,
+    framePlane,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
 const prepareToEditSplit: PrepareToEditCallback = async ({
   operation,
   artifactGraph,
@@ -2890,6 +2933,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Annotation',
     icon: 'text',
     prepareToEdit: prepareToEditGdtAnnotation,
+  },
+  'gdt::note': {
+    label: 'Note',
+    icon: 'note',
+    prepareToEdit: prepareToEditGdtNote,
   },
   'gdt::distance': {
     label: 'Distance',
