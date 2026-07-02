@@ -304,7 +304,11 @@ describe('stdlib command arg derivation', () => {
       inputType: 'vector2d',
       required: false,
     })
-    expect('direction' in args).toBe(false)
+    expect(args.direction).toMatchObject({
+      inputType: 'kcl',
+      required: false,
+      status: 'experimental',
+    })
   })
 
   it('derives command status from KCL stdlib metadata', () => {
@@ -321,7 +325,7 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
-      ['Extrude', { direction: selectionsForArtifact() }, false],
+      ['Extrude', { direction: selectionsForArtifact() }, true],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
       ['Helical Gear', {}, true],

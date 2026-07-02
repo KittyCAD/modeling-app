@@ -268,11 +268,36 @@ async function extractOptionalKclArrayArgument(
   argName: string,
   rustContext: RustContext
 ): Promise<KclCommandValue | undefined | { error: string }> {
+  return extractOptionalKclArgument(
+    code,
+    operation,
+    argName,
+    rustContext,
+    true,
+    true
+  )
+}
+
+async function extractOptionalKclArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string,
+  rustContext: RustContext,
+  isArray?: boolean,
+  allowStringArrays?: boolean
+): Promise<KclCommandValue | undefined | { error: string }> {
   if (!operation.labeledArgs?.[argName]?.sourceRange) {
     return undefined
   }
 
-  return extractKclArgument(code, operation, argName, rustContext, true, true)
+  return extractKclArgument(
+    code,
+    operation,
+    argName,
+    rustContext,
+    isArray,
+    allowStringArrays
+  )
 }
 
 /**
@@ -384,6 +409,18 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
         ...operation.labeledArgs.symmetric.sourceRange.map(boundToUtf16)
       ) === 'true'
   }
+
+  const directionResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'direction',
+    rustContext,
+    true
+  )
+  if (directionResult && 'error' in directionResult) {
+    return { reason: directionResult.error }
+  }
+  const direction = directionResult
 
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | undefined
@@ -527,6 +564,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     length,
     to,
     symmetric,
+    direction,
     bidirectionalLength,
     tagStart,
     tagEnd,
@@ -629,6 +667,17 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     baseCurveIndex = result
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   // tagStart and tagEnd arguments
   let tagStart: string | undefined
   let tagEnd: string | undefined
@@ -658,6 +707,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     vDegree,
     bezApproximateRational,
     baseCurveIndex,
+    tolerance,
     tagStart,
     tagEnd,
     bodyType,
@@ -708,6 +758,16 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   if ('error' in radius) return { reason: radius.error }
 
   const tag = extractStringArgument(code, operation, 'tag')
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
   const versionResult = await extractKclArgument(
     code,
     operation,
@@ -722,6 +782,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
     selection,
     radius,
+    tolerance,
     tag,
     version,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
@@ -1324,6 +1385,17 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   let translateProfileToPath: boolean | undefined
   if (
     'translateProfileToPath' in operation.labeledArgs &&
@@ -1409,6 +1481,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     sketches,
     path,
     sectional,
+    tolerance,
     relativeTo,
     translateProfileToPath,
     orientProfilePerpendicular,
@@ -1623,6 +1696,17 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: 'Error in angle argument retrieval' }
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   // symmetric argument from a string to boolean
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
@@ -1683,6 +1767,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
+    tolerance,
     symmetric,
     bidirectionalAngle,
     tagStart,
@@ -4042,6 +4127,18 @@ async function prepareToEditTranslate({
     z = result
   }
 
+  const xyzResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'xyz',
+    rustContext,
+    true
+  )
+  if (xyzResult && 'error' in xyzResult) {
+    return { reason: xyzResult.error }
+  }
+  const xyz = xyzResult
+
   if (operation.labeledArgs.global) {
     global =
       code.slice(
@@ -4058,6 +4155,7 @@ async function prepareToEditTranslate({
     y,
     z,
     global,
+    xyz,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -4225,6 +4323,29 @@ async function prepareToEditRotate({
     yaw = result
   }
 
+  const axisResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'axis',
+    rustContext,
+    true
+  )
+  if (axisResult && 'error' in axisResult) {
+    return { reason: axisResult.error }
+  }
+  const axis = axisResult
+
+  const angleResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'angle',
+    rustContext
+  )
+  if (angleResult && 'error' in angleResult) {
+    return { reason: angleResult.error }
+  }
+  const angle = angleResult
+
   if (operation.labeledArgs.global) {
     global =
       code.slice(
@@ -4240,6 +4361,8 @@ async function prepareToEditRotate({
     roll,
     pitch,
     yaw,
+    axis,
+    angle,
     global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
