@@ -38,6 +38,14 @@ export async function listProjectHandlesFromRecentProjects(
   return recentProjects.map((project) => ({ path: project.path }))
 }
 
+const refreshProjectHandlesForSignalInputs = (
+  _recentProjectsRevision: unknown,
+  _cloudLastSyncedAt: unknown,
+  refreshProjectHandles: SystemIOService['refreshProjectHandles']
+) => {
+  void refreshProjectHandles()
+}
+
 export const systemIOExtension = defineRegistryItemFactory((ctx) => {
   const recentProjectHandles = signal<ProjectHandles>(undefined)
   const projectHandles = ctx.valueSpecs.signal(projectHandlesValueSpec)
@@ -60,9 +68,11 @@ export const systemIOExtension = defineRegistryItemFactory((ctx) => {
 
   const activate = () => {
     disposeRecentProjectsEffect = effect(() => {
-      recentProjectsRevisionSignal.value
-      opfsCloudSyncStatus.value.lastSyncedAt
-      void refreshProjectHandles()
+      refreshProjectHandlesForSignalInputs(
+        recentProjectsRevisionSignal.value,
+        opfsCloudSyncStatus.value.lastSyncedAt,
+        refreshProjectHandles
+      )
     })
     return undefined
   }

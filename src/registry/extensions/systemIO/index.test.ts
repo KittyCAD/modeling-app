@@ -2,6 +2,7 @@ import { Registry } from '@kittycad/registry'
 import { writeRecentProjectsForEnvironment } from '@src/lib/desktop'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
+import { isArray } from '@src/lib/utils'
 import {
   combineProjectHandles,
   combineProjects,
@@ -65,7 +66,7 @@ describe('systemIO extension', () => {
     expect(registry.get(projectsValueSpec)).toBeUndefined()
 
     const handles = await systemIO.refreshProjectHandles()
-    expect(Array.isArray(handles)).toBe(true)
+    expect(isArray(handles)).toBe(true)
   })
 
   it('combines project handle contributions by path', () => {
