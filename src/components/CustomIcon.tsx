@@ -2031,6 +2031,26 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  note: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="note"
+    >
+      <path
+        d="M5 3H12L15 6V17H5V3Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+      />
+      <path d="M12 3V6H15" stroke="currentColor" strokeLinejoin="round" />
+      <path
+        d="M7.5 9.5H12.5M7.5 12H12.5M7.5 14.5H10.5"
+        stroke="currentColor"
+        strokeLinecap="round"
+      />
+    </svg>
+  ),
   'three-dots': (
     <svg
       viewBox="0 0 20 20"

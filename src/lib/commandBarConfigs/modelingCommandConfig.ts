@@ -75,6 +75,7 @@ import {
   addDatumGdt,
   addDistanceGdt,
   addFlatnessGdt,
+  addNoteGdt,
   addParallelismGdt,
   addPerpendicularityGdt,
   addPositionGdt,
@@ -653,6 +654,13 @@ export type ModelingCommandSchema = {
     framePosition?: KclCommandValue
     framePlane?: string
     leaderScale?: KclCommandValue
+    fontSize?: KclCommandValue
+  }
+  'GDT Note': {
+    nodeToEdit?: PathToNode
+    note: string
+    framePosition?: KclCommandValue
+    framePlane?: string
     fontSize?: KclCommandValue
   }
   'GDT Datum': {
@@ -4044,6 +4052,59 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       leaderScale: {
         inputType: 'kcl',
         defaultValue: KCL_DEFAULT_LEADER_SCALE,
+        required: false,
+      },
+      fontSize: {
+        inputType: 'kcl',
+        defaultValue: KCL_DEFAULT_FONT_SIZE,
+        required: false,
+      },
+    },
+  },
+  'GDT Note': {
+    description: 'Add a free-floating model-based definition note on a plane.',
+    icon: 'note',
+    needsReview: true,
+    reviewValidation: async (context, modelingActor) => {
+      if (!modelingActor) {
+        return new Error('modelingMachine not found')
+      }
+      const { engineCommandManager, kclManager, rustContext } =
+        modelingActor.getSnapshot().context
+      const hasConnectionRes = hasEngineConnection(engineCommandManager)
+      if (err(hasConnectionRes)) {
+        return hasConnectionRes
+      }
+      const modRes = addNoteGdt({
+        ...(context.argumentsToSubmit as ModelingCommandSchema['GDT Note']),
+        ast: kclManager.ast,
+        wasmInstance: await context.wasmInstancePromise,
+      })
+      if (err(modRes)) return modRes
+      const execRes = await mockExecAstAndReportErrors(
+        modRes.modifiedAst,
+        rustContext
+      )
+      if (err(execRes)) return execRes
+    },
+    args: {
+      nodeToEdit: {
+        ...nodeToEditProps,
+      },
+      note: {
+        inputType: 'text',
+        defaultValue: 'Note:',
+        required: true,
+      },
+      framePosition: {
+        inputType: 'vector2d',
+        defaultValue: KCL_DEFAULT_ORIGIN_2D,
+        required: false,
+      },
+      framePlane: {
+        inputType: 'options',
+        defaultValue: KCL_PLANE_XY,
+        options: FRAME_PLANE_OPTIONS,
         required: false,
       },
       fontSize: {
