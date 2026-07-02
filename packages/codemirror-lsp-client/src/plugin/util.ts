@@ -63,6 +63,12 @@ export function isLSPTextEdit(
   return (textEdit as LSP.TextEdit)?.range !== undefined
 }
 
+export function getTextEditInsert(
+  edit: LSP.TextEdit | LSP.AnnotatedTextEdit | LSP.SnippetTextEdit
+): string {
+  return 'newText' in edit ? edit.newText : edit.snippet.value
+}
+
 export function isLSPMarkupContent(
   contents: LSP.MarkupContent | LSP.MarkedString | LSP.MarkedString[]
 ): contents is LSP.MarkupContent {

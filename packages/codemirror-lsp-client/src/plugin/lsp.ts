@@ -43,6 +43,7 @@ import lspSemanticTokensExt, { addToken } from './semantic-tokens'
 import lspSignatureHelpExt from './signature-help'
 import {
   formatContents,
+  getTextEditInsert,
   offsetToPos,
   posToOffset,
   posToOffsetOrZero,
@@ -711,7 +712,7 @@ export class LanguageServerPlugin implements PluginValue {
       // Create and add signature display element
       const signatureElement = this.createSignatureElement(
         activeSignature,
-        activeParameterIndex
+        activeParameterIndex ?? undefined
       )
       dom.appendChild(signatureElement)
 
@@ -1045,7 +1046,7 @@ export class LanguageServerPlugin implements PluginValue {
           const changes = sortedEdits.map((edit) => ({
             from: posToOffset(view.state.doc, edit.range.start) ?? 0,
             to: posToOffset(view.state.doc, edit.range.end) ?? 0,
-            insert: edit.newText,
+            insert: getTextEditInsert(edit),
             annotations: [lspRenameEvent],
           }))
 
@@ -1279,7 +1280,8 @@ export class LanguageServerPlugin implements PluginValue {
           severity: severityMap[severity ?? DiagnosticSeverity.Error],
           source: this.getLanguageId(),
           actions: codemirrorActions,
-          message,
+          message:
+            typeof message === 'string' ? message : formatContents(message),
         }
 
         return diagnostic
