@@ -15,7 +15,7 @@ import {
 } from '@kittycad/codemirror-lsp-client'
 import type { KclManager } from '@src/lang/KclManager'
 
-import { copilotPlugin } from './index'
+import { copilotPlugin } from '@src/editor/plugins/lsp/copilot'
 
 function createClient({
   text,
