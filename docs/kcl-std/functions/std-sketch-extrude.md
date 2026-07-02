@@ -89,6 +89,7 @@ example = startSketchOn(XZ)
   touch-action="pan-y"
 >
 </model-viewer>
+
 ```kcl
 exampleSketch = startSketchOn(XZ)
   |> startProfile(at = [-10, 0])
