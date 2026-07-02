@@ -32,7 +32,7 @@ use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
-use crate::std::axis_or_reference::Point3dOrEdgeReference;
+use crate::std::axis_or_reference::Axis3dOrPoint3d;
 use crate::std::extrude::BeingExtruded;
 use crate::std::extrude::build_segment_surface_sketch;
 use crate::std::extrude::coerce_extrude_targets;
@@ -93,13 +93,11 @@ pub async fn sweep(exec_state: &mut ExecState, args: Args) -> Result<KclValue, K
         args.get_kw_arg_opt("translateProfileToPath", &RuntimeType::bool(), exec_state)?;
     let orient_profile_perpendicular: Option<bool> =
         args.get_kw_arg_opt("orientProfilePerpendicular", &RuntimeType::bool(), exec_state)?;
-    let projected_axis = args.get_kw_arg_opt(
+    let projected_axis: Option<Axis3dOrPoint3d> = args.get_kw_arg_opt(
         "projectedAxis",
         &RuntimeType::Union(vec![
+            RuntimeType::Primitive(PrimitiveType::Axis3d),
             RuntimeType::point3d(),
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::tagged_edge(),
-            RuntimeType::segment(),
         ]),
         exec_state,
     )?;
@@ -191,7 +189,7 @@ async fn inner_sweep(
     tag_start: Option<TagNode>,
     tag_end: Option<TagNode>,
     body_type: Option<BodyType>,
-    projected_axis: Option<Point3dOrEdgeReference>,
+    projected_axis: Option<Axis3dOrPoint3d>,
     version: Option<u32>,
     exec_state: &mut ExecState,
     args: Args,
@@ -268,27 +266,20 @@ async fn inner_sweep(
 
     let projected_axis = if let Some(axis) = projected_axis {
         match axis {
-            Point3dOrEdgeReference::Point(p) => Some(DirectionType::Axis {
+            Axis3dOrPoint3d::Axis { direction, .. } => Some(DirectionType::Axis {
                 direction: KPoint3d {
-                    x: p[0].n,
-                    y: p[1].n,
-                    z: p[2].n,
+                    x: direction[0].n,
+                    y: direction[1].n,
+                    z: direction[2].n,
                 },
             }),
-            Point3dOrEdgeReference::Edge(edge) => match edge {
-                crate::std::fillet::EdgeReference::Uuid(uuid) => Some(DirectionType::Edge { id: uuid }),
-                crate::std::fillet::EdgeReference::Tag(tag) => Some(DirectionType::Edge {
-                    id: match tag.get_cur_info() {
-                        Some(info) => info.id,
-                        None => {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "Failed to get current info for tag".to_string(),
-                                vec![args.source_range],
-                            )));
-                        }
-                    },
-                }),
-            },
+            Axis3dOrPoint3d::Point(point) => Some(DirectionType::Axis {
+                direction: KPoint3d {
+                    x: point[0].n,
+                    y: point[1].n,
+                    z: point[2].n,
+                },
+            }),
         }
     } else {
         None
