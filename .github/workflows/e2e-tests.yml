@@ -87,12 +87,25 @@ jobs:
           name: prepared-wasm
           path: prepared-wasm
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
       - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -217,12 +230,25 @@ jobs:
           name: prepared-wasm
           path: prepared-wasm
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
       - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -309,12 +335,25 @@ jobs:
           name: prepared-wasm
           path: prepared-wasm
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
       - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - uses: actions/setup-node@v6.4.0
         with:
