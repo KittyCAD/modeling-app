@@ -42,20 +42,6 @@ export const useDefaultActionLibrary = () => {
           commands.actor
         ),
     },
-    share: {
-      useHidden: () => !isMobile(),
-      useDisabled: () => undefined,
-      shortcut: 'Mod + Alt + S',
-      execute: () =>
-        commands.actor.send({
-          type: 'Find and select command',
-          data: {
-            name: 'share-file-link',
-            groupId: 'code',
-            isRestrictedToOrg: false,
-          },
-        }),
-    },
     openCommandBar: {
       useHidden: () => !isMobile(),
       useDisabled: () => undefined,
