@@ -54,6 +54,12 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 
+const FRAME_PLANE_OPTIONS = [
+  { name: 'XY Plane', value: KCL_PLANE_XY, isCurrent: true },
+  { name: 'XZ Plane', value: KCL_PLANE_XZ },
+  { name: 'YZ Plane', value: KCL_PLANE_YZ },
+]
+
 import { mockExecAstAndReportErrors } from '@src/lang/modelingWorkflows'
 import {
   addIntersect,

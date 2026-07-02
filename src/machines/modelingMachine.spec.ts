@@ -15,7 +15,13 @@ import {
 } from '@src/lang/std/sketchcombos'
 /** Engine-using integration tests of modelingMachine.
  * For engineless unit tests, see modelingMachine.test.ts */
-import { type CallExpressionKw, assertParse, recast } from '@src/lang/wasm'
+import {
+  type Artifact,
+  type ArtifactGraph,
+  type CallExpressionKw,
+  assertParse,
+  recast,
+} from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
@@ -1518,7 +1524,9 @@ sketch001 = sketch(on = YZ) {
         context.store.defaultUnit = { current: 'mm' } as any
         context.projectRef = { current: {} as any }
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({ type: 'Enter sketch' })
         actor.send({
@@ -1686,7 +1694,9 @@ sketch001 = sketch(on = YZ) {
       it('shows default planes again when canceling sketch plane selection on a blank scene', async () => {
         const context = createSketchPlaneSelectionContext()
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({
           type: 'Enter sketch',
@@ -1719,7 +1729,9 @@ sketch001 = sketch(on = YZ) {
           }),
         }
 
-        const actor = createActor(modelingMachine, { input: context }).start()
+        const actor = createActor(modelingMachine, {
+          input: context as any,
+        }).start()
 
         actor.send({
           type: 'Enter sketch',
