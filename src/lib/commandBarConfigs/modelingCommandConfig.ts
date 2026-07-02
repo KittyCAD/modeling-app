@@ -613,6 +613,9 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           tagStart: {
             // TODO: add validation like for Clone command
           },
+          direction: {
+            allowArrays: true,
+          },
           twistCenter: {
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },
@@ -1497,6 +1500,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           z: {
             defaultValue: KCL_DEFAULT_TRANSFORM,
           },
+          xyz: {
+            inputType: 'vector3d',
+            defaultValue: KCL_DEFAULT_ORIGIN,
+          },
         },
       }
     ),
@@ -1524,6 +1531,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         yaw: {
           defaultValue: KCL_DEFAULT_TRANSFORM,
+        },
+        axis: {
+          defaultValue: KCL_AXIS_Z,
+        },
+        angle: {
+          defaultValue: KCL_DEFAULT_DEGREE,
         },
       },
     }),

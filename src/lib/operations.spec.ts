@@ -401,10 +401,10 @@ describe('operations.test.ts', () => {
   }
 
   describe('Extrude edit flow', () => {
-    it('preserves draftAngle in the command defaults', async () => {
+    it('preserves experimental KCL args in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
-        'extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)'
+        'extrude001 = extrude(profile001, length = 10, direction = [0, 0, 1], draftAngle = 45deg)'
       const operation = stdlib('extrude')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -425,6 +425,17 @@ describe('operations.test.ts', () => {
           value: { type: 'Number', value: 45, ty: { type: 'Any' } },
           sourceRange: rangeOfText(code, '45deg'),
         },
+        direction: {
+          value: {
+            type: 'Array',
+            value: [
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 0, ty: { type: 'Any' } },
+              { type: 'Number', value: 1, ty: { type: 'Any' } },
+            ],
+          },
+          sourceRange: rangeOfText(code, '[0, 0, 1]'),
+        },
       }
 
       const result = await enterEditFlow({
@@ -442,9 +453,11 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         draftAngle?: { valueText: string }
+        direction?: { valueText: string }
       }
       expect(result.data.name).toBe('Extrude')
       expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
+      expect(argDefaultValues.direction?.valueText).toBe('[0, 0, 1]')
     })
   })
 
@@ -452,7 +465,7 @@ describe('operations.test.ts', () => {
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
-        'sweep001 = sweep(capEnd001, path = profile002, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
+        'sweep001 = sweep(capEnd001, path = profile002, tolerance = 0.01mm, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
       const operation = stdlib('sweep')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -480,6 +493,14 @@ describe('operations.test.ts', () => {
             ty: { type: 'Any' },
           },
           sourceRange: rangeOfText(code, '2'),
+        },
+        tolerance: {
+          value: {
+            type: 'Number',
+            value: 0.01,
+            ty: { type: 'Any' },
+          },
+          sourceRange: rangeOfText(code, '0.01mm'),
         },
         translateProfileToPath: {
           value: {
@@ -518,6 +539,7 @@ describe('operations.test.ts', () => {
       const argDefaultValues = result.data.argDefaultValues as {
         sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
         path?: { graphSelections: Array<{ artifact?: Artifact }> }
+        tolerance?: { valueText: string }
         version?: { valueText: string }
         translateProfileToPath?: boolean
         orientProfilePerpendicular?: boolean
@@ -529,6 +551,7 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.path?.graphSelections[0].artifact?.type).toBe(
         'path'
       )
+      expect(argDefaultValues.tolerance?.valueText).toBe('0.01mm')
       expect(argDefaultValues.version?.valueText).toBe('2')
       expect(argDefaultValues.translateProfileToPath).toBe(false)
       expect(argDefaultValues.orientProfilePerpendicular).toBe(true)
