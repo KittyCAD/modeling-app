@@ -81,7 +81,7 @@ interface GhostText {
   uuid: string
 }
 
-const typeThroughCharacter = /^[A-Za-z0-9_]$/
+const wordLikeTypeThroughCharacter = /^[A-Za-z0-9_]$/
 
 function canTypeThroughGhostText(key: string, displayText: string): boolean {
   if (key.length !== 1) {
@@ -90,9 +90,9 @@ function canTypeThroughGhostText(key: string, displayText: string): boolean {
 
   const nextGhostChar = displayText[0]
   return (
-    typeThroughCharacter.test(key) &&
+    wordLikeTypeThroughCharacter.test(key) &&
     nextGhostChar !== undefined &&
-    typeThroughCharacter.test(nextGhostChar)
+    wordLikeTypeThroughCharacter.test(nextGhostChar)
   )
 }
 
