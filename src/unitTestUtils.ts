@@ -181,6 +181,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
     engineCommandManager,
     settingsActor
   )
+
   const kclManager = new KclManager('some-file', '', {
     wasmInstancePromise: instancePromise,
     settings: settingsActor,

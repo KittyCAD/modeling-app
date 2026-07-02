@@ -258,6 +258,7 @@ export class SceneEntities {
 
     this.sketchSolveGroup.setRotationFromQuaternion(quaternion)
     this.sketchSolveGroup.position.copy(new Vector3(...origin))
+    this.sceneInfra.imageRenderer.setQuaternion(quaternion)
   }
 
   onCamChange = async () => {
@@ -1065,7 +1066,9 @@ export class SceneEntities {
     this.intersectionPlane.setRotationFromQuaternion(
       this.currentSketchQuaternion
     )
+    this.sceneInfra.imageRenderer.setQuaternion(this.currentSketchQuaternion)
     if (position) this.intersectionPlane.position.set(...position)
+
     this.sceneInfra.scene.add(group)
 
     // sceneInfra/onMouseMove may call raycastRing() before the next render call,
@@ -2949,6 +2952,7 @@ export class SceneEntities {
       },
       onMove: () => {},
       onClick: (args) => {
+        console.log('onClick')
         // If there is a valid camera interaction that matches, do that instead
         const interaction = this.sceneInfra.camControls.getInteractionType(
           args.mouseEvent

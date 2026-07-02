@@ -1,6 +1,7 @@
 import type { EntityType } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import { ImageManager } from '@src/clientSideScene/image/ImageManager'
 import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   artifactAnnotationsEvent,
@@ -859,6 +860,7 @@ export class KclManager extends File {
   // Derived state
   sceneEntitiesManager: SceneEntities
   sceneInfra: SceneInfra
+  imageManager: ImageManager
   rustContext: RustContext
   engineCommandManager: ConnectionManager
 
@@ -2011,9 +2013,12 @@ export class KclManager extends File {
       getSettingsFromActorContext(this.systemDeps.settings)
     this.engineCommandManager = this.systemDeps.engineCommandManager
     this.rustContext = this.systemDeps.rustContext
+    this.imageManager = new ImageManager()
+    this.imageManager.init(this.systemDeps.settings)
     this.sceneInfra = new SceneInfra(
       this.engineCommandManager,
       systemDeps.wasmInstancePromise,
+      this.imageManager,
       getSettings
     )
     this.sceneEntitiesManager = new SceneEntities(
