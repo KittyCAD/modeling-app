@@ -60,8 +60,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
-    await editor.replaceCode('', testCode)
-    await scene.settled(cmdBar)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', testCode)
+    )
     await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera so that we can select what we need to.
@@ -147,7 +148,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         reviewValidationError: undefined,
       })
 
-      await cmdBar.submit()
+      await scene.waitForExecutionDoneAfter(() => cmdBar.submit())
 
       // Assert code contains revolve
       await editor.expectEditor.toContain(`revolve`)
@@ -284,21 +285,9 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
 
     await homePage.goToModelingScene()
     await scene.settled(cmdBar)
-    await page.evaluate(() => {
-      window.engineCommandManager?.clearCommandLogs()
-    })
-    await editor.replaceCode('', testCode)
-    await expect
-      .poll(
-        () =>
-          page.evaluate(() =>
-            window.engineCommandManager?.commandLogs.some(
-              (log) => log.type === 'execution-done'
-            )
-          ),
-        { timeout: 30_000 }
-      )
-      .toBe(true)
+    await scene.waitForExecutionDoneAfter(() =>
+      editor.replaceCode('', testCode)
+    )
     await editor.expectEditor.toContain('solid001 = subtract')
 
     // Set camera position for optimal edge viewing
