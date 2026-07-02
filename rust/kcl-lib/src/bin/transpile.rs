@@ -1003,7 +1003,7 @@ async fn execute(program: Program, settings: ExecutorSettings) -> Result<ExecOut
     // Always close the context.
     ctx.close().await;
 
-    result
+    result.map(|outcome| *outcome)
 }
 
 #[derive(Debug, Default)]

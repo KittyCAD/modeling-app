@@ -297,10 +297,10 @@ impl PreserveMem {
 type ExecutionResult = std::result::Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs>;
 
 enum RunWithCachingResult {
-    Complete(ExecOutcome),
+    Complete(Box<ExecOutcome>),
     Executed {
-        exec_state: ExecState,
-        result: ExecutionResult,
+        exec_state: Box<ExecState>,
+        result: Box<ExecutionResult>,
     },
 }
 
@@ -1196,7 +1196,7 @@ impl ExecutorContext {
         // after the cache is busted.
         let outcome = self.run_with_caching(crate::Program::empty()).await?;
 
-        Ok(outcome)
+        Ok(*outcome)
     }
 
     async fn prepare_mem(&self, exec_state: &mut ExecState) -> Result<(), KclErrorWithOutputs> {
@@ -1303,7 +1303,7 @@ impl ExecutorContext {
         Ok(outcome)
     }
 
-    pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    pub async fn run_with_caching(&self, program: crate::Program) -> Result<Box<ExecOutcome>, KclErrorWithOutputs> {
         assert!(!self.is_mock());
         let grid_scale = if self.settings.fixed_size_grid {
             GridScaleBehavior::Fixed(program.meta_settings().ok().flatten().map(|s| s.default_length_units))
@@ -1427,7 +1427,7 @@ impl ExecutorContext {
                         let outcome = Box::pin(cached_state.into_exec_outcome(self))
                             .await
                             .map_err(KclErrorWithOutputs::no_outputs)?;
-                        return Ok(RunWithCachingResult::Complete(outcome));
+                        return Ok(RunWithCachingResult::Complete(Box::new(outcome)));
                     }
 
                     (
@@ -1467,7 +1467,7 @@ impl ExecutorContext {
                     let outcome = Box::pin(cached_state.into_exec_outcome(self))
                         .await
                         .map_err(KclErrorWithOutputs::no_outputs)?;
-                    return Ok(RunWithCachingResult::Complete(outcome));
+                    return Ok(RunWithCachingResult::Complete(Box::new(outcome)));
                 }
                 (true, program, None)
             }
@@ -1481,7 +1481,7 @@ impl ExecutorContext {
                 let outcome = Box::pin(cached_state.into_exec_outcome(self))
                     .await
                     .map_err(KclErrorWithOutputs::no_outputs)?;
-                return Ok(RunWithCachingResult::Complete(outcome));
+                return Ok(RunWithCachingResult::Complete(Box::new(outcome)));
             }
         };
 
@@ -1528,7 +1528,10 @@ impl ExecutorContext {
             }
         };
 
-        Ok(RunWithCachingResult::Executed { exec_state, result })
+        Ok(RunWithCachingResult::Executed {
+            exec_state: Box::new(exec_state),
+            result: Box::new(result),
+        })
     }
 
     async fn run_with_caching_miss(
@@ -1542,21 +1545,25 @@ impl ExecutorContext {
 
         let result = Box::pin(self.run_concurrent(program, &mut exec_state, None, PreserveMem::Normal)).await;
 
-        Ok(RunWithCachingResult::Executed { exec_state, result })
+        Ok(RunWithCachingResult::Executed {
+            exec_state: Box::new(exec_state),
+            result: Box::new(result),
+        })
     }
 
     async fn run_with_caching_finalize(
         &self,
-        exec_state: ExecState,
-        result: ExecutionResult,
+        exec_state: Box<ExecState>,
+        result: Box<ExecutionResult>,
         original_ast: Node<AstProgram>,
-    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+    ) -> Result<Box<ExecOutcome>, KclErrorWithOutputs> {
         if result.is_err() {
             cache::bust_cache().await;
         }
 
         // Throw the error.
-        let result = result?;
+        let result = (*result)?;
+        let exec_state = *exec_state;
 
         // Save this as the last successful execution to the cache.
         // Gotcha: `CacheResult::ReExecute.program` may be diff-based, do not save that AST
@@ -1572,7 +1579,7 @@ impl ExecutorContext {
         let outcome = Box::pin(exec_state.into_exec_outcome(result.0, self))
             .await
             .map_err(KclErrorWithOutputs::no_outputs)?;
-        Ok(outcome)
+        Ok(Box::new(outcome))
     }
 
     /// Perform the execution of a program.

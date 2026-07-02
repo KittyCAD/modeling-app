@@ -902,7 +902,9 @@ impl Backend {
                 .run_mock(ast, &crate::execution::MockConfig::default())
                 .await
         } else {
-            Box::pin(executor_ctx.run_with_caching(ast.clone())).await
+            Box::pin(executor_ctx.run_with_caching(ast.clone()))
+                .await
+                .map(|outcome| *outcome)
         };
 
         match result {

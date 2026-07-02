@@ -70,7 +70,6 @@ zip = { version = "8.6.0", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"
-large_futures = "warn"
 dbg_macro = "warn"
 iter_over_hash_type = "warn"
 lossy_float_literal = "warn"
