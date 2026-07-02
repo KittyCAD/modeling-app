@@ -595,8 +595,16 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await canReadWriteDirectory(projectPath)
 
-  const appSettings = await readAppSettingsFile(wasmInstance)
-  const showAllFiles = appSettings.settings?.app?.show_all_files === true
+  const [appSettings, projectSettings] = await Promise.all([
+    readAppSettingsFile(wasmInstance),
+    readProjectSettingsFile(projectPath, wasmInstance),
+  ])
+  const projectShowAllFiles = projectSettings.settings?.app?.show_all_files
+  const userShowAllFiles = appSettings.settings?.app?.show_all_files
+  const showAllFiles =
+    typeof projectShowAllFiles === 'boolean'
+      ? projectShowAllFiles
+      : userShowAllFiles === true
 
   const gitignoreStack = await createInitialGitignoreStack(projectPath)
 
