@@ -1,25 +1,9 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[517, 2152, 0]<br>Consumed: false"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    3["Segment<br>[685, 754, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    4["Segment<br>[765, 836, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    5["Segment<br>[887, 958, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[1050, 1122, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    7["Segment<br>[1173, 1246, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    8["Segment<br>[1297, 1367, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    9["Segment<br>[1933, 2002, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  end
-  subgraph path10 [Path]
-    10["Path Region<br>[2169, 2229, 0]<br>Consumed: true"]
+  subgraph path3 [Path]
+    3["Path Region<br>[2169, 2229, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    10["Segment<br>[2169, 2229, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     11["Segment<br>[2169, 2229, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -31,174 +15,190 @@ flowchart LR
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     15["Segment<br>[2169, 2229, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    16["Segment<br>[2169, 2229, 0]"]
-      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  1["Plane<br>[517, 2152, 0]"]
+  subgraph path4 [Path]
+    4["Path<br>[517, 2152, 0]<br>Consumed: false"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    6["Segment<br>[1050, 1122, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    7["Segment<br>[1173, 1246, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    8["Segment<br>[1297, 1367, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    9["Segment<br>[1933, 2002, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    16["Segment<br>[685, 754, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    17["Segment<br>[765, 836, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    18["Segment<br>[887, 958, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  end
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  5["Plane<br>[517, 2152, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  17["Sweep Extrusion<br>[2260, 2301, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  18[Wall]
-    %% face_code_ref=Missing NodePath
-  19[Wall]
-    %% face_code_ref=Missing NodePath
-  20[Wall]
-    %% face_code_ref=Missing NodePath
-  21[Wall]
-    %% face_code_ref=Missing NodePath
-  22[Wall]
-    %% face_code_ref=Missing NodePath
-  23[Wall]
-    %% face_code_ref=Missing NodePath
-  24["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  25["Cap End"]
-    %% face_code_ref=Missing NodePath
-  26["SweepEdge Opposite"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Adjacent"]
-  30["SweepEdge Opposite"]
-  31["SweepEdge Adjacent"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Adjacent"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Adjacent"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Adjacent"]
-  38["SketchBlock<br>[517, 2152, 0]"]
+  19["SketchBlock<br>[517, 2152, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  39["SketchBlockConstraint Coincident<br>[637, 673, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
-  40["SketchBlockConstraint Coincident<br>[839, 875, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 4 }, ExpressionStatementExpr]
-  41["SketchBlockConstraint Coincident<br>[961, 997, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 6 }, ExpressionStatementExpr]
-  42["SketchBlockConstraint Coincident<br>[1000, 1038, 0]"]
+  20["SketchBlockConstraint Coincident<br>[1000, 1038, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 7 }, ExpressionStatementExpr]
-  43["SketchBlockConstraint Coincident<br>[1125, 1161, 0]"]
+  21["SketchBlockConstraint Coincident<br>[1125, 1161, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 9 }, ExpressionStatementExpr]
-  44["SketchBlockConstraint Coincident<br>[1249, 1285, 0]"]
+  22["SketchBlockConstraint Coincident<br>[1249, 1285, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 11 }, ExpressionStatementExpr]
-  45["SketchBlockConstraint Coincident<br>[1370, 1406, 0]"]
+  23["SketchBlockConstraint Coincident<br>[1370, 1406, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 13 }, ExpressionStatementExpr]
-  46["SketchBlockConstraint Coincident<br>[1409, 1445, 0]"]
+  24["SketchBlockConstraint Coincident<br>[1409, 1445, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 14 }, ExpressionStatementExpr]
-  47["SketchBlockConstraint Coincident<br>[1449, 1481, 0]"]
+  25["SketchBlockConstraint Coincident<br>[1449, 1481, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 15 }, ExpressionStatementExpr]
-  48["SketchBlockConstraint Coincident<br>[1484, 1518, 0]"]
+  26["SketchBlockConstraint Coincident<br>[1484, 1518, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 16 }, ExpressionStatementExpr]
-  49["SketchBlockConstraint Coincident<br>[1521, 1555, 0]"]
+  27["SketchBlockConstraint Coincident<br>[1521, 1555, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 17 }, ExpressionStatementExpr]
-  50["SketchBlockConstraint Coincident<br>[1558, 1592, 0]"]
+  28["SketchBlockConstraint Coincident<br>[1558, 1592, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 18 }, ExpressionStatementExpr]
-  51["SketchBlockConstraint Coincident<br>[1595, 1629, 0]"]
+  29["SketchBlockConstraint Coincident<br>[1595, 1629, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 19 }, ExpressionStatementExpr]
-  52["SketchBlockConstraint LinesEqualLength<br>[1633, 1716, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 20 }, ExpressionStatementExpr]
-  53["SketchBlockConstraint Coincident<br>[1819, 1860, 0]"]
+  30["SketchBlockConstraint Coincident<br>[1819, 1860, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 22 }, ExpressionStatementExpr]
-  54["SketchBlockConstraint Coincident<br>[1863, 1899, 0]"]
+  31["SketchBlockConstraint Coincident<br>[1863, 1899, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 23 }, ExpressionStatementExpr]
-  55["SketchBlockConstraint Horizontal<br>[1902, 1919, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 24 }, ExpressionStatementExpr]
-  56["SketchBlockConstraint Coincident<br>[2005, 2049, 0]"]
+  32["SketchBlockConstraint Coincident<br>[2005, 2049, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 26 }, ExpressionStatementExpr]
-  57["SketchBlockConstraint Radius<br>[2052, 2087, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 27 }, ExpressionStatementExpr]
-  58["SketchBlockConstraint HorizontalDistance<br>[2090, 2150, 0]"]
+  33["SketchBlockConstraint Coincident<br>[637, 673, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
+  34["SketchBlockConstraint Coincident<br>[839, 875, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 4 }, ExpressionStatementExpr]
+  35["SketchBlockConstraint Coincident<br>[961, 997, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 6 }, ExpressionStatementExpr]
+  36["SketchBlockConstraint Horizontal<br>[1902, 1919, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 24 }, ExpressionStatementExpr]
+  37["SketchBlockConstraint HorizontalDistance<br>[2090, 2150, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 28 }, ExpressionStatementExpr]
-  1 --- 2
-  1 <--x 10
-  1 <--x 38
-  2 --- 3
-  2 --- 4
-  2 --- 5
-  2 --- 6
-  2 --- 7
-  2 --- 8
-  2 --- 9
-  2 <--x 10
-  38 --- 2
+  38["SketchBlockConstraint LinesEqualLength<br>[1633, 1716, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 20 }, ExpressionStatementExpr]
+  39["SketchBlockConstraint Radius<br>[2052, 2087, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 27 }, ExpressionStatementExpr]
+  40["Sweep Extrusion<br>[2260, 2301, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  41["SweepEdge Adjacent"]
+  42["SweepEdge Adjacent"]
+  43["SweepEdge Adjacent"]
+  44["SweepEdge Adjacent"]
+  45["SweepEdge Adjacent"]
+  46["SweepEdge Adjacent"]
+  47["SweepEdge Opposite"]
+  48["SweepEdge Opposite"]
+  49["SweepEdge Opposite"]
+  50["SweepEdge Opposite"]
+  51["SweepEdge Opposite"]
+  52["SweepEdge Opposite"]
+  53[Wall]
+    %% face_code_ref=Missing NodePath
+  54[Wall]
+    %% face_code_ref=Missing NodePath
+  55[Wall]
+    %% face_code_ref=Missing NodePath
+  56[Wall]
+    %% face_code_ref=Missing NodePath
+  57[Wall]
+    %% face_code_ref=Missing NodePath
+  58[Wall]
+    %% face_code_ref=Missing NodePath
+  40 --- 1
+  47 <--x 1
+  48 <--x 1
+  49 <--x 1
+  50 <--x 1
+  51 <--x 1
+  52 <--x 1
+  10 <--x 2
+  11 <--x 2
+  12 <--x 2
+  13 <--x 2
+  14 <--x 2
+  15 <--x 2
+  40 --- 2
+  4 x--> 3
+  5 x--> 3
+  3 <--x 10
   3 <--x 11
-  4 <--x 12
-  5 <--x 13
-  6 <--x 14
-  7 <--x 15
-  8 <--x 16
-  10 <--x 11
-  10 <--x 12
-  10 <--x 13
-  10 <--x 14
-  10 <--x 15
-  10 <--x 16
-  10 ---- 17
-  11 --- 23
-  11 x--> 24
-  11 --- 36
-  11 --- 37
-  12 --- 18
-  12 x--> 24
-  12 --- 26
-  12 --- 27
-  13 --- 22
-  13 x--> 24
-  13 --- 34
-  13 --- 35
-  14 --- 21
-  14 x--> 24
-  14 --- 32
-  14 --- 33
-  15 --- 20
-  15 x--> 24
-  15 --- 30
-  15 --- 31
-  16 --- 19
-  16 x--> 24
-  16 --- 28
-  16 --- 29
-  17 --- 18
-  17 --- 19
-  17 --- 20
-  17 --- 21
-  17 --- 22
-  17 --- 23
-  17 --- 24
-  17 --- 25
-  17 --- 26
-  17 --- 27
-  17 --- 28
-  17 --- 29
-  17 --- 30
-  17 --- 31
-  17 --- 32
-  17 --- 33
-  17 --- 34
-  17 --- 35
-  17 --- 36
-  17 --- 37
-  18 --- 26
-  18 --- 27
-  29 <--x 18
-  19 --- 28
-  19 --- 29
-  31 <--x 19
-  20 --- 30
-  20 --- 31
-  33 <--x 20
-  21 --- 32
-  21 --- 33
-  35 <--x 21
-  22 --- 34
-  22 --- 35
-  37 <--x 22
-  27 <--x 23
-  23 --- 36
-  23 --- 37
-  26 <--x 25
-  28 <--x 25
-  30 <--x 25
-  32 <--x 25
-  34 <--x 25
-  36 <--x 25
+  3 <--x 12
+  3 <--x 13
+  3 <--x 14
+  3 <--x 15
+  3 ---- 40
+  5 --- 4
+  4 --- 6
+  4 --- 7
+  4 --- 8
+  4 --- 9
+  4 --- 16
+  4 --- 17
+  4 --- 18
+  19 --- 4
+  5 <--x 19
+  6 <--x 10
+  7 <--x 11
+  8 <--x 12
+  10 --- 41
+  10 --- 47
+  10 --- 53
+  11 --- 42
+  11 --- 48
+  11 --- 54
+  12 --- 43
+  12 --- 49
+  12 --- 55
+  16 x--> 13
+  13 --- 44
+  13 --- 50
+  13 --- 56
+  17 x--> 14
+  14 --- 45
+  14 --- 51
+  14 --- 57
+  18 x--> 15
+  15 --- 46
+  15 --- 52
+  15 --- 58
+  40 --- 41
+  40 --- 42
+  40 --- 43
+  40 --- 44
+  40 --- 45
+  40 --- 46
+  40 --- 47
+  40 --- 48
+  40 --- 49
+  40 --- 50
+  40 --- 51
+  40 --- 52
+  40 --- 53
+  40 --- 54
+  40 --- 55
+  40 --- 56
+  40 --- 57
+  40 --- 58
+  53 --- 41
+  41 x--> 53
+  42 x--> 54
+  54 --- 42
+  43 x--> 55
+  55 --- 43
+  44 x--> 56
+  56 --- 44
+  45 x--> 57
+  57 --- 45
+  46 x--> 58
+  58 --- 46
+  53 --- 47
+  54 --- 48
+  55 --- 49
+  56 --- 50
+  57 --- 51
+  58 --- 52
 ```
