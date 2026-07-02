@@ -62,6 +62,19 @@ fn token_ranges_are_byte_ranges() {
 }
 
 #[test]
+fn lexes_multiline_strings() {
+    // A closed string may span raw newlines; the whole thing is one String token,
+    // matching the legacy lexer (KCL supports multiline strings).
+    assert_tokens(
+        "\"line one\nline two\"",
+        &[(SyntaxKind::String, "\"line one\nline two\"", 0..19)],
+    );
+    assert_tokens("'a\nb'", &[(SyntaxKind::String, "'a\nb'", 0..5)]);
+    // An escaped newline inside a closed string is part of the string.
+    assert_tokens("\"a\\\nb\"", &[(SyntaxKind::String, "\"a\\\nb\"", 0..6)]);
+}
+
+#[test]
 fn recovery_tokens_are_part_of_the_public_token_stream() {
     assert_tokens(
         "\"abc\n/*x",
@@ -525,12 +538,14 @@ fn lexes_unknown_string_escapes_as_string_text() {
 
 #[test]
 fn recovers_string_escape_newline_at_line_boundary() {
+    // An *unterminated* string with a trailing backslash still recovers at the
+    // line boundary. (An escaped newline only continues a *closed* string --
+    // matching the legacy tokeniser -- see `lexes_multiline_strings`.)
     assert_tokens(
-        concat!("\"a\\", "\n", "\""),
+        concat!("\"a\\", "\n"),
         &[
             (SyntaxKind::UnterminatedString, "\"a\\", 0..3),
             (SyntaxKind::Whitespace, "\n", 3..4),
-            (SyntaxKind::UnterminatedString, "\"", 4..5),
         ],
     );
 }
