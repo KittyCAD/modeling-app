@@ -426,24 +426,14 @@ describe('project system', () => {
 
     try {
       await writeText(mainPath, 'main = true\n')
-      const project: Project = {
-        name: fsZds.basename(projectPath),
-        default_file: mainPath,
-        directory_count: 0,
-        kcl_file_count: 1,
-        metadata: null,
-        path: projectPath,
-        readWriteAccess: true,
-        children: [
-          {
-            name: 'main.kcl',
-            path: mainPath,
-            children: null,
-          },
-        ],
+      await app.projectSession.setOpenedProjectHandle({ projectPath })
+      const kclManager = await app.projectSession.setExecutingEditorHandle({
+        projectPath,
+        filePath: mainPath,
+      })
+      if (!kclManager) {
+        throw new Error('Expected project session to open an executing editor.')
       }
-      const openedProject = await app.openProject(project)
-      const kclManager = await openedProject.openEditor(mainPath)
       await Promise.resolve()
 
       await writeText(createdPath, 'created = true\n')
@@ -482,7 +472,7 @@ describe('project system', () => {
         'created = true\n'
       )
     } finally {
-      disposeApp(app)
+      await disposeApp(app)
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
