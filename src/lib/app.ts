@@ -735,6 +735,7 @@ export class App implements AppSubsystems {
         .get(zdsPluginActivationSettingsValueSpec)
         .map((setting) => [setting.pluginId, setting])
     )
+    const activePluginIds: string[] = []
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
       const activationSetting = pluginActivationSettings.get(plugin.id)
@@ -751,6 +752,9 @@ export class App implements AppSubsystems {
       if (typeof desiredActive !== 'boolean') {
         continue
       }
+      if (desiredActive) {
+        activePluginIds.push(plugin.id)
+      }
 
       const toggle = this.registry.get(plugin.service)
       if (toggle.active.value === desiredActive) {
@@ -763,6 +767,14 @@ export class App implements AppSubsystems {
       }
 
       toggle.disable()
+    }
+
+    const syncActivePlugins =
+      typeof window !== 'undefined'
+        ? window.electron?.pluginIpc.syncActivePlugins
+        : undefined
+    if (syncActivePlugins) {
+      void syncActivePlugins(activePluginIds).catch(reportRejection)
     }
   }
 

@@ -8,6 +8,7 @@ import { Bonjour } from 'bonjour-service'
 import dotenv from 'dotenv'
 import {
   BrowserWindow,
+  type IpcMainInvokeEvent,
   Menu,
   app,
   autoUpdater,
@@ -47,10 +48,29 @@ import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
+import {
+  PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
+  type PluginIpcChannel,
+} from '@src/registry/pluginIpc'
 import { configureSystemCertificates } from '@src/systemCertificates'
 
+type PluginIpcHandler = (
+  event: IpcMainInvokeEvent,
+  ...args: unknown[]
+) => unknown
+
+type ElectronPluginContext = {
+  ipcMain: typeof ipcMain
+  isPluginEnabled: (pluginId: string) => boolean
+  handlePluginInvoke: (
+    pluginId: string,
+    channel: PluginIpcChannel,
+    handler: PluginIpcHandler
+  ) => void
+}
+
 type ElectronPluginModule = {
-  register?: (context: { ipcMain: typeof ipcMain }) => void
+  register?: (context: ElectronPluginContext) => void
 }
 
 const electronPluginModules: Record<string, ElectronPluginModule> =
@@ -58,9 +78,36 @@ const electronPluginModules: Record<string, ElectronPluginModule> =
     eager: true,
   })
 
+const activeElectronPluginIds = new Set<string>()
+
+function isPluginEnabled(pluginId: string) {
+  return activeElectronPluginIds.has(pluginId)
+}
+
+function handlePluginInvoke(
+  pluginId: string,
+  channel: PluginIpcChannel,
+  handler: PluginIpcHandler
+) {
+  ipcMain.handle(channel, (event, ...args) => {
+    if (!isPluginEnabled(pluginId)) {
+      return {
+        ok: false,
+        error: `The ${pluginId} plugin is disabled.`,
+      }
+    }
+
+    return handler(event, ...args)
+  })
+}
+
 function registerElectronPluginModules() {
   for (const pluginModule of Object.values(electronPluginModules)) {
-    pluginModule.register?.({ ipcMain })
+    pluginModule.register?.({
+      ipcMain,
+      isPluginEnabled,
+      handlePluginInvoke,
+    })
   }
 }
 
@@ -503,6 +550,23 @@ ipcMain.handle('app.resizeWindow', (event, data) => {
 ipcMain.handle('app.getPath', (event, data) => {
   return app.getPath(data)
 })
+
+ipcMain.handle(
+  PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
+  (_event, pluginIds: unknown) => {
+    if (
+      !Array.isArray(pluginIds) ||
+      pluginIds.some((pluginId) => typeof pluginId !== 'string')
+    ) {
+      return
+    }
+
+    activeElectronPluginIds.clear()
+    for (const pluginId of pluginIds) {
+      activeElectronPluginIds.add(pluginId)
+    }
+  }
+)
 
 registerElectronPluginModules()
 

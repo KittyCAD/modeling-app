@@ -6,7 +6,16 @@ import {
   type OpenStlInPrusaSlicerResult,
   PRUSA_SLICER_OPEN_STL_CHANNEL,
 } from '@src/registry/plugins/prusaSlicer/ipc'
-import type { IpcMain } from 'electron'
+
+const PRUSA_SLICER_PLUGIN_ID = 'prusa-slicer'
+
+type ElectronPluginContext = {
+  handlePluginInvoke: (
+    pluginId: string,
+    channel: typeof PRUSA_SLICER_OPEN_STL_CHANNEL,
+    handler: (event: unknown, ...args: unknown[]) => unknown
+  ) => void
+}
 
 async function firstExistingPath(paths: string[]) {
   for (const maybePath of paths) {
@@ -139,10 +148,11 @@ function openStlWithPrusaSlicer(
   })
 }
 
-export function register({ ipcMain }: { ipcMain: IpcMain }) {
-  ipcMain.handle(
+export function register({ handlePluginInvoke }: ElectronPluginContext) {
+  handlePluginInvoke(
+    PRUSA_SLICER_PLUGIN_ID,
     PRUSA_SLICER_OPEN_STL_CHANNEL,
-    async (_event, stlPath: string) => {
+    async (_event, stlPath: unknown) => {
       if (
         process.platform !== 'darwin' &&
         process.platform !== 'win32' &&
