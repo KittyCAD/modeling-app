@@ -14,7 +14,10 @@
       "@e2e/*": ["./e2e/*"],
       "@src/*": ["./src/*"],
       "@public/*": ["./public/*"],
-      "@root/*": ["./*"]
+      "@root/*": ["./*"],
+      "vscode-languageserver-protocol": [
+        "./node_modules/vscode-languageserver-protocol/lib/common/api.d.ts"
+      ]
     },
     "types": [
       "vite/client",
