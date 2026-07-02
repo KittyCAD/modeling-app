@@ -263,6 +263,94 @@ describe('systemIOMachine - XState', () => {
         )
         actor.stop()
       })
+      it('requests default file navigation after archiving the active file', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.moveRecursive]: fromPromise(
+                async ({ input }) => ({
+                  message: 'Archived successfully',
+                  requestedAbsolutePath: '',
+                  requestedProjectName: input.requestedProjectName || '',
+                  requestedFileName: 'main.kcl',
+                  target: input.target,
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        actor.send({
+          type: SystemIOMachineEvents.moveRecursiveAndNavigate,
+          data: {
+            src: '/projects/demo-project/fileToDelete.kcl',
+            target: '/projects/.archive/demo-project/fileToDelete.kcl',
+            requestedProjectName: 'demo-project',
+          },
+        })
+
+        await waitFor(
+          actor,
+          (state) => state.context.requestedFileName.file === 'main.kcl'
+        )
+
+        expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+          project: 'demo-project',
+          file: 'main.kcl',
+        })
+        actor.stop()
+      })
+      it('requests default file navigation after deleting the active file', async () => {
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.deleteFileOrFolder]: fromPromise(
+                async ({ input }) => ({
+                  message: 'File deleted successfully',
+                  requestedPath: input.requestedPath,
+                  requestedProjectName: input.requestedProjectName || '',
+                  requestedFileName: 'main.kcl',
+                })
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => [] as Project[]),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        actor.send({
+          type: SystemIOMachineEvents.deleteFileOrFolderAndNavigate,
+          data: {
+            requestedPath: '/projects/demo-project/fileToDelete.kcl',
+            requestedProjectName: 'demo-project',
+          },
+        })
+
+        await waitFor(
+          actor,
+          (state) => state.context.requestedFileName.file === 'main.kcl'
+        )
+
+        expect(actor.getSnapshot().context.requestedFileName).toStrictEqual({
+          project: 'demo-project',
+          file: 'main.kcl',
+        })
+        actor.stop()
+      })
     })
     describe('when reading projects', () => {
       it('should exit early when project directory is empty string', async () => {

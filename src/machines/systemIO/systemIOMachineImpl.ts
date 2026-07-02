@@ -224,6 +224,34 @@ const prepareBulkProjectWrite = async ({
   }
 }
 
+function getDefaultRequestedFileName({
+  context,
+  requestedProjectName,
+}: {
+  context: SystemIOContext
+  requestedProjectName?: string
+}) {
+  const project = context.folders?.find(
+    (folder) => folder.name === requestedProjectName
+  )
+  const defaultFile = project?.default_file
+  if (!project || !defaultFile) {
+    return ''
+  }
+
+  const projectPathPrefix = project.path.endsWith(fsZds.sep)
+    ? project.path
+    : `${project.path}${fsZds.sep}`
+  if (defaultFile.startsWith(projectPathPrefix)) {
+    return fsZds.relative(project.path, defaultFile).replace(/^[\\/]+/, '')
+  }
+
+  return (
+    parentPathRelativeToProject(defaultFile, context.projectDirectoryPath) ||
+    defaultFile.replace(/^[\\/]+/, '')
+  )
+}
+
 export const reloadExecutingEditorAfterBulkWrite = async ({
   context,
   writtenFilePaths,
@@ -1104,6 +1132,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
           requestedProjectName: input.requestedProjectName || '',
+          requestedFileName: getDefaultRequestedFileName({
+            context: input.context,
+            requestedProjectName: input.requestedProjectName,
+          }),
         }
         return response
       }
@@ -1237,6 +1269,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           message: input.successMessage || 'Moved successfully',
           requestedAbsolutePath: '',
           requestedProjectName: input.requestedProjectName || '',
+          requestedFileName: getDefaultRequestedFileName({
+            context: input.context,
+            requestedProjectName: input.requestedProjectName,
+          }),
           target: input.target,
         }
       }

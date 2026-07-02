@@ -293,7 +293,7 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.done_deleteFileOrFolderAndNavigate
-          output: { requestedProjectName: string }
+          output: { requestedProjectName: string; requestedFileName: string }
         }
       | {
           type: SystemIOMachineEvents.copyRecursive
@@ -751,6 +751,7 @@ export const systemIOMachine = setup({
           message: '',
           requestedPath: '',
           requestedProjectName: '',
+          requestedFileName: '',
         }
       }
     ),
@@ -816,6 +817,7 @@ export const systemIOMachine = setup({
           message: '',
           requestedAbsolutePath: '',
           requestedProjectName: '',
+          requestedFileName: '',
           target: input.target,
         }
       }
@@ -1953,6 +1955,24 @@ export const systemIOMachine = setup({
                     .output.requestedProjectName,
                 }
               },
+              requestedFileName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_deleteFileOrFolderAndNavigate
+                )
+                const output = (
+                  event as {
+                    output: {
+                      requestedProjectName: string
+                      requestedFileName: string
+                    }
+                  }
+                ).output
+                return {
+                  project: output.requestedProjectName,
+                  file: output.requestedFileName,
+                }
+              },
             }),
             SystemIOMachineActions.toastSuccess,
           ],
@@ -2044,6 +2064,24 @@ export const systemIOMachine = setup({
                 return {
                   name: (event as { output: { requestedProjectName: string } })
                     .output.requestedProjectName,
+                }
+              },
+              requestedFileName: ({ event }) => {
+                assertEvent(
+                  event,
+                  SystemIOMachineEvents.done_moveRecursiveAndNavigate
+                )
+                const output = (
+                  event as {
+                    output: {
+                      requestedProjectName: string
+                      requestedFileName: string
+                    }
+                  }
+                ).output
+                return {
+                  project: output.requestedProjectName,
+                  file: output.requestedFileName,
                 }
               },
             }),
