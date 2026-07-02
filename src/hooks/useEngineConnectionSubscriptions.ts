@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
-import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
 import { useApp } from '@src/lib/boot'
 import { SEGMENTS_BASED_REGIONS_FEATURE_FLAG } from '@src/lib/constants'
