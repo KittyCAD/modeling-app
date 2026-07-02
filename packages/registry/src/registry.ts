@@ -26,6 +26,7 @@ import type {
   RegistryItemContext,
   RegistryItemFactory,
   RegistryItemKey,
+  RegistryItemLifecycleHook,
   RuntimeRegistryItemHandle,
   Service,
   ServiceReader,
@@ -53,6 +54,10 @@ interface FlattenedServiceContribution {
 interface RuntimeInstance {
   readonly key: RegistryItemKey
   readonly handle: RuntimeRegistryItemHandle<unknown>
+  readonly activate?: RegistryItemLifecycleHook
+  activated: boolean
+  activationQueued: boolean
+  activationDispose?: () => void
   readonly dispose?: () => void
 }
 
@@ -438,11 +443,57 @@ export class Registry implements ValueSpecReader, ServiceReader {
     const instance: RuntimeInstance = {
       key,
       handle,
+      activate: handle.item.activate,
+      activated: false,
+      activationQueued: false,
       dispose: normalizeDisposer(handle.item.dispose),
     }
 
     this.runtimeInstances.set(key, instance)
+    this.queueRuntimeActivation(instance)
     return instance
+  }
+
+  /** Run runtime activation after graph construction, when services are safe to read. */
+  private queueRuntimeActivation(instance: RuntimeInstance): void {
+    const activate = instance.activate
+    if (!activate || instance.activationQueued || instance.activated) {
+      return
+    }
+
+    instance.activationQueued = true
+    queueMicrotask(() => {
+      // Force reconciliation against the latest roots before activating.
+      void this.flat.value
+
+      instance.activationQueued = false
+      if (
+        this.runtimeInstances.get(instance.key) !== instance ||
+        instance.activated
+      ) {
+        return
+      }
+
+      instance.activated = true
+      const cleanup = activate()
+      instance.activationDispose = cleanup
+        ? normalizeDisposer(cleanup)
+        : undefined
+    })
+  }
+
+  private disposeRuntimeInstance(instance: RuntimeInstance): void {
+    try {
+      instance.activationDispose?.()
+    } catch {
+      // cleanup failures are intentionally swallowed during reconciliation
+    }
+
+    try {
+      instance.dispose?.()
+    } catch {
+      // cleanup failures are intentionally swallowed during reconciliation
+    }
   }
 
   /** Dispose runtime instances that are no longer reachable from the registry graph. */
@@ -452,12 +503,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
     for (const [key, instance] of this.runtimeInstances) {
       if (activeKeys.has(key)) continue
 
-      try {
-        instance.dispose?.()
-      } catch {
-        // cleanup failures are intentionally swallowed during reconciliation
-      }
-
+      this.disposeRuntimeInstance(instance)
       this.runtimeInstances.delete(key)
     }
   }
@@ -465,11 +511,7 @@ export class Registry implements ValueSpecReader, ServiceReader {
   /** Dispose the container and all active runtime instances. */
   [Symbol.dispose](): void {
     for (const [, instance] of this.runtimeInstances) {
-      try {
-        instance.dispose?.()
-      } catch {
-        // ignore cleanup failures during shutdown
-      }
+      this.disposeRuntimeInstance(instance)
     }
 
     this.runtimeInstances.clear()

@@ -127,6 +127,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::annotation(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::annotation"),
         ),
+        ("gdt", "note") => (
+            |e, a| Box::pin(crate::std::gdt::note(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::note"),
+        ),
         ("gdt", "distance") => (
             |e, a| Box::pin(crate::std::gdt::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::distance"),

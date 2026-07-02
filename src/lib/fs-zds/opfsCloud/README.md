@@ -83,6 +83,7 @@ flowchart TD
 - Returning to a visible browser tab schedules an immediate remote-index check, bypassing the normal remote-index throttle.
 - Remote updates must send `expected_revision`; creates and deletes are the only unguarded remote writes.
 - A remote-only project discovered from the cloud index must be cloned into OPFS so later loads can hit local storage first.
+- A remotely deleted project may remove the local OPFS mirror only when that local mirror still matches the last synced base.
 - Remote hydration may replace OPFS only when local is clean relative to the last synced base.
 - If local and remote both changed differently, local remains primary and the remote archive is written as a conflict copy.
 - Sync failures must preserve outbox and dirty metadata.
@@ -114,6 +115,8 @@ Remote updates use optimistic concurrency by sending `expected_revision`. The up
 Remote creates do not have an expected revision because there is no remote base yet. After create succeeds, the returned remote id and revision become the local sync base.
 
 Remote deletes are intentionally not revision-guarded. A project-root `rm` records an explicit tombstone, then the sync worker deletes the remote project if it exists and ignores missing remote projects. Missing local directories are not treated as destructive cloud deletes unless there is a tombstone or queued delete.
+
+If a remote project disappears from the cloud index, the local mirror is removed only when its manifest still matches `ProjectMetadata.baseManifest` and it has no pending local outbox work. Dirty or unverifiable local projects are detached from the missing remote id and queued as local-first projects so user data is preserved and the stale id does not keep retrying a 404.
 
 Remote hydration is only allowed to replace OPFS when the local project is clean relative to `baseManifest`, or when an unknown remote project is being cloned into a new local path. If both local and remote changed since the base, the local project remains primary and the remote archive is written to a conflict project.
 

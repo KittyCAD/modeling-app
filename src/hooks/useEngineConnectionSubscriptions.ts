@@ -3,6 +3,8 @@ import { useEffect, useRef } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
+import { useApp } from '@src/lib/boot'
+import { SEGMENTS_BASED_REGIONS_FEATURE_FLAG } from '@src/lib/constants'
 import {
   getEventForSelectWithPoint,
   selectSketchPlane,
@@ -11,6 +13,11 @@ import { reportRejection } from '@src/lib/trap'
 
 export function useEngineConnectionSubscriptions() {
   const { send, context, state } = useModelingContext()
+  const { userFeatures } = useApp()
+  const useSegmentsBasedRegions = userFeatures.useHas(
+    SEGMENTS_BASED_REGIONS_FEATURE_FLAG,
+    false
+  )
   const { engineCommandManager, kclManager, rustContext, wasmInstance } =
     context
   const stateRef = useRef(state)
@@ -58,6 +65,7 @@ export function useEngineConnectionSubscriptions() {
             kclManager,
             rustContext,
             wasmInstance,
+            useSegmentsBasedRegions,
           })
           // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
           // This is probably rare, but we do go into sketch mode on double click.
@@ -82,6 +90,7 @@ export function useEngineConnectionSubscriptions() {
     engineCommandManager,
     rustContext,
     wasmInstance,
+    useSegmentsBasedRegions,
   ])
 
   useEffect(() => {

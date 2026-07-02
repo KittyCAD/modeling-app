@@ -1,0 +1,16 @@
+// radius() works on a circle, not just an arc. The circle here is built
+// entirely from number constants (no `var`), which exercises the constant
+// circle path: the constant coordinates become fixed solver vars, so the
+// circle can be passed to radius() the same way an arc can.
+
+s = sketch(on = XY) {
+  c = circle(start = [3mm, 0mm], center = [0mm, 0mm])
+  radius(c) == 3mm
+}
+
+solid = extrude(region(point = s.c.center, sketch = s), length = 2)
+
+assert(s.c.start.at[0], isEqualTo = 3mm, tolerance = 0.001)
+assert(s.c.start.at[1], isEqualTo = 0mm, tolerance = 0.001)
+assert(s.c.center.at[0], isEqualTo = 0mm, tolerance = 0.001)
+assert(s.c.center.at[1], isEqualTo = 0mm, tolerance = 0.001)

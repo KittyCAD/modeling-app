@@ -1,9 +1,11 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
+import { reportRejection } from '@src/lib/trap'
 import { EngineConnectionStateType } from '@src/network/utils'
 import {
   layoutActionLibraryValueSpec,
@@ -15,6 +17,7 @@ import { exportCurrentPartToPrusaSlicer } from '@src/registry/plugins/prusaSlice
 const exportToPrusaSlicerActionType = 'exportToPrusaSlicer'
 
 function useExportToPrusaSlicerDisabled() {
+  useSignals()
   const { overallState, immediateState } = useNetworkContext()
   const { isStreamReady } = useAppState()
   const kclManager = window.app?.singletons.kclManager
@@ -38,7 +41,7 @@ const exportToPrusaSlicerSidebarItem = defineRegistryItem({
         useHidden: () => !isDesktop(),
         useDisabled: useExportToPrusaSlicerDisabled,
         execute: () => {
-          exportCurrentPartToPrusaSlicer().catch(console.error)
+          exportCurrentPartToPrusaSlicer().catch(reportRejection)
         },
       },
     }),

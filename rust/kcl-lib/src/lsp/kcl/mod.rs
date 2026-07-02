@@ -167,7 +167,7 @@ pub struct Backend {
     /// The client for the backend.
     pub client: Client,
     /// The file system client to use.
-    pub fs: Arc<crate::fs::FileManager>,
+    pub fs: crate::fs::FileSystemHandle,
     /// The workspace folders.
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
@@ -215,7 +215,12 @@ impl Backend {
         fs: crate::fs::wasm::FileSystemManager,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
-        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(fs), zoo_client)
+        Self::with_file_system(
+            client,
+            executor_ctx,
+            crate::fs::new_file_system_handle(crate::fs::FileManager::new(fs)),
+            zoo_client,
+        )
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -224,13 +229,18 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
-        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(), zoo_client)
+        Self::with_file_system(
+            client,
+            executor_ctx,
+            crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            zoo_client,
+        )
     }
 
-    fn with_file_manager(
+    fn with_file_system(
         client: Client,
         executor_ctx: Option<crate::execution::ExecutorContext>,
-        fs: crate::fs::FileManager,
+        fs: crate::fs::FileSystemHandle,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
         let kcl_std = crate::docs::kcl_doc::walk_stdlib();
@@ -245,7 +255,7 @@ impl Backend {
 
         Ok(Self {
             client,
-            fs: Arc::new(fs),
+            fs,
             stdlib_completions,
             sketch_block_stdlib_completions,
             stdlib_signatures,
@@ -402,7 +412,7 @@ impl crate::lsp::backend::Backend for Backend {
         &self.client
     }
 
-    fn fs(&self) -> &Arc<crate::fs::FileManager> {
+    fn fs(&self) -> &crate::fs::FileSystemHandle {
         &self.fs
     }
 

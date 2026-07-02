@@ -84,6 +84,7 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import { projectsValueSpec } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
@@ -174,6 +175,12 @@ declare global {
     engineCommandManager: ConnectionManager
     rustContext: RustContext
     engineDebugger: Debugger
+    /** Dev helper: on each click, logs two `makeMouseHelpers` lines (see buildSingletons). */
+    enableMousePositionLogs?: () => void
+    enableFillet?: () => void
+    zoomToFit?: () => void
+    /** Dev flag read by fillet debugging paths */
+    _enableFillet?: boolean
   }
 }
 
@@ -321,6 +328,19 @@ export class App implements AppSubsystems {
       this.syncPluginSettings
     )
     this.syncPluginSettings(this.settings.actor.getSnapshot())
+
+    const projectsSignal = this.registry.signal(projectsValueSpec)
+    effect(() => {
+      const projects = projectsSignal.value
+      if (projects === undefined) {
+        return
+      }
+
+      this.systemIOActor.send({
+        type: SystemIOMachineEvents.setFolders,
+        data: { folders: projects },
+      })
+    })
   }
 
   /**
@@ -775,28 +795,54 @@ export class App implements AppSubsystems {
     ])
 
     if (typeof window !== 'undefined') {
-      // Accessible for tests mostly
       window.engineCommandManager = kclManager.engineCommandManager
       window.rustContext = kclManager.rustContext
       window.engineDebugger = EngineDebugger
-      ;(window as any).enableMousePositionLogs = () =>
-        document.addEventListener('mousemove', (e) =>
-          console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-        )
-      ;(window as any).enableFillet = () => {
-        ;(window as any)._enableFillet = true
+
+      /**
+       * On each click, logs two lines for `SceneFixture.makeMouseHelpers` /
+       * `convertPagePositionToStream` (e2e/playwright/fixtures/sceneFixture.ts).
+       * Adds a document listener per call.
+       */
+      window.enableMousePositionLogs = () => {
+        const onClick = (e: MouseEvent) => {
+          const streamEl = document.querySelector('[data-testid="stream"]')
+          const vw = document.documentElement.clientWidth
+          const vh = document.documentElement.clientHeight
+          if (!streamEl || vw <= 0 || vh <= 0) return
+          const r = streamEl.getBoundingClientRect()
+          if (r.width <= 0 || r.height <= 0) return
+          const cx = e.clientX
+          const cy = e.clientY
+          const ratioX = (cx - r.left) / r.width
+          const ratioY = (cy - r.top) / r.height
+          const pixelX = ratioX * vw
+          const pixelY = ratioY * vh
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${ratioX.toFixed(4)}, ${ratioY.toFixed(4)}, { format: 'ratio' })`
+          )
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { steps: 20, format: 'pixels' })`
+          )
+        }
+        document.addEventListener('click', onClick, true)
       }
-      ;(window as any).zoomToFit = () =>
-        kclManager.engineCommandManager.sendSceneCommand({
+
+      window.enableFillet = () => {
+        window._enableFillet = true
+      }
+      window.zoomToFit = () => {
+        void kclManager.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.2, // padding around the objects
-            animated: false, // don't animate the zoom for now
+            object_ids: [],
+            padding: 0.2,
+            animated: false,
           },
         })
+      }
     }
 
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })

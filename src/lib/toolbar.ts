@@ -1683,6 +1683,25 @@ export function buildToolbarConfig(
                 },
               ],
             },
+            {
+              id: 'gdt-note',
+              onClick: () =>
+                commands.send({
+                  type: 'Find and select command',
+                  data: { name: 'GDT Note', groupId: 'modeling' },
+                }),
+              status: 'available',
+              title: 'Note',
+              icon: 'note',
+              description:
+                'Adds a free-floating note on a plane, not attached to any geometry.',
+              links: [
+                {
+                  label: 'KCL docs',
+                  url: withSiteBaseURL('/docs/kcl-std/functions/std-gdt-note'),
+                },
+              ],
+            },
           ]),
         },
       ],
