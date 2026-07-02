@@ -55,6 +55,7 @@ import type {
   VariableDeclarator,
 } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
@@ -165,12 +166,16 @@ export function addFillet({
     const versionArgs = version
       ? [createLabeledArg('version', valueOrVariable(version))]
       : []
-    const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('radius', valueOrVariable(radius)),
-      ...tagArgs,
-      ...versionArgs,
-    ])
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Fillet'),
+      data.solidsExpr,
+      [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('radius', valueOrVariable(radius)),
+        ...tagArgs,
+        ...versionArgs,
+      ]
+    )
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,
@@ -286,14 +291,18 @@ export function addChamfer({
       ? [createLabeledArg('version', valueOrVariable(version))]
       : []
 
-    const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('length', valueOrVariable(length)),
-      ...secondLengthArgs,
-      ...angleArgs,
-      ...tagArgs,
-      ...versionArgs,
-    ])
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Chamfer'),
+      data.solidsExpr,
+      [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('length', valueOrVariable(length)),
+        ...secondLengthArgs,
+        ...angleArgs,
+        ...tagArgs,
+        ...versionArgs,
+      ]
+    )
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,
@@ -345,7 +354,7 @@ export function addBlend({
   }
 
   const call = createCallExpressionStdLibKw(
-    'blend',
+    modelingStdLibCommandName('Blend'),
     createArrayExpression(edgeExprs),
     []
   )
@@ -1158,6 +1167,12 @@ function sourceRangeMatch(
   return metaModuleId === moduleId && metaStart === start && metaEnd === end
 }
 
+function hasFaceIds(
+  meta: EdgeRefactorMeta | undefined
+): meta is EdgeRefactorMeta & { faceIds: [string, string] } {
+  return Array.isArray(meta?.faceIds) && meta.faceIds.length === 2
+}
+
 type Z0006SourceRange = [number, number, number]
 
 function sourceRangesOverlap(
@@ -1241,7 +1256,7 @@ function findFilletChamferCallsToFixUnified(
               const meta = edgeRefactorMetadata.find((m) =>
                 sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
-              if (meta) {
+              if (hasFaceIds(meta)) {
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1283,7 +1298,7 @@ function findFilletChamferCallsToFixUnified(
                   deprecatedCall.call.moduleId
                 )
               )
-              if (meta) {
+              if (hasFaceIds(meta)) {
                 orderedPayloads.push({
                   side_faces: meta.faceIds,
                 })
@@ -1384,10 +1399,10 @@ export function findRevolveHelixCallsToFix(
       const moduleId = call.moduleId
       const callStart = call.start
       const callEnd = call.end
-      if (meta) {
+      if (hasFaceIds(meta)) {
         results.push({
           range: [callStart, callEnd, moduleId],
-          faceIds: [meta.faceIds[0], meta.faceIds[1]],
+          faceIds: meta.faceIds,
           pathToCall: pathToNode,
         })
       }
@@ -1432,10 +1447,10 @@ export function findExtrudeToCallsToFix(
       const moduleId = call.moduleId
       const callStart = call.start
       const callEnd = call.end
-      if (meta) {
+      if (hasFaceIds(meta)) {
         results.push({
           range: [callStart, callEnd, moduleId],
-          faceIds: [meta.faceIds[0], meta.faceIds[1]],
+          faceIds: meta.faceIds,
           pathToCall: pathToNode,
         })
       }
@@ -1484,7 +1499,7 @@ export function findGdtEdgesCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta) {
+        if (!hasFaceIds(meta)) {
           hasUnconvertedEdgesElement = true
           continue
         }
@@ -1539,7 +1554,7 @@ export function findGdtDistanceEndpointCallsToFix(
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
         )
-        if (!meta) continue
+        if (!hasFaceIds(meta)) continue
 
         endpoints.push({
           label,
