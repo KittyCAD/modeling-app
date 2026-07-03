@@ -5,6 +5,7 @@ import {
   closeCompletion,
   currentCompletions,
   hasNextSnippetField,
+  hasPrevSnippetField,
   moveCompletionSelection,
   nextSnippetField,
   prevSnippetField,
@@ -45,6 +46,8 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
   { key: 'ArrowUp', run: moveCompletionSelectionOrExit(false) },
   { key: 'PageDown', run: moveCompletionSelection(true, 'page') },
   { key: 'PageUp', run: moveCompletionSelection(false, 'page') },
+  { key: 'Backspace', run: clearSnippetBeforeEmptySelectionDelete },
+  { key: 'Delete', run: clearSnippetBeforeEmptySelectionDelete },
   { key: 'Enter', run: acceptCompletion },
   {
     key: 'Tab',
@@ -61,6 +64,27 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
 ]
 
 const lspAutocompleteKeymapExt = Prec.highest(keymap.of(lspAutocompleteKeymap))
+
+export function clearSnippetBeforeEmptySelectionDelete(
+  view: EditorView
+): boolean {
+  if (!view.state.selection.ranges.every((range) => range.empty)) {
+    return false
+  }
+
+  if (!hasNextSnippetField(view.state) && !hasPrevSnippetField(view.state)) {
+    return false
+  }
+
+  // Issue #12133: after a placeholder is emptied, Backspace/Delete can keep a
+  // zero-width snippet field alive while deleting the static argument text
+  // before it. That stale field then follows later input, so typing `foo =`
+  // reselects `=` and leaves the cursor before it.
+  clearSnippet(view)
+
+  // Let the regular delete command still handle the keypress.
+  return false
+}
 
 export function moveCompletionSelectionOrExit(forward: boolean) {
   const moveSelection = moveCompletionSelection(forward)

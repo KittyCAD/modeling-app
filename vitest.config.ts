@@ -33,6 +33,7 @@ export default defineConfig({
           include: [
             'src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
             'packages/registry/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'packages/codemirror-lsp-client/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
           ],
         },
       },
