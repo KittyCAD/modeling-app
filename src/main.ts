@@ -45,6 +45,7 @@ import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import getCurrentProjectFile from '@src/lib/getCurrentProjectFile'
 import { reportRejection } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
 import {
@@ -541,7 +542,7 @@ ipcMain.handle(
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
   (_event, pluginIds: unknown) => {
     if (
-      !Array.isArray(pluginIds) ||
+      !isArray(pluginIds) ||
       pluginIds.some((pluginId) => typeof pluginId !== 'string')
     ) {
       return
