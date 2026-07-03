@@ -2610,7 +2610,7 @@ export function getEdgeCutMeta(
                       ? firstFace.name.name
                       : null
                   })()
-              : null
+                : null
         if (!tagName) return null
         return {
           type: 'edgeCut',
