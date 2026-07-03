@@ -401,10 +401,10 @@ describe('operations.test.ts', () => {
   }
 
   describe('Extrude edit flow', () => {
-    it('preserves experimental KCL args in the command defaults', async () => {
+    it('preserves draftAngle in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
-        'extrude001 = extrude(profile001, length = 10, direction = [0, 0, 1], draftAngle = 45deg)'
+        'extrude001 = extrude(profile001, length = 10, draftAngle = 45deg)'
       const operation = stdlib('extrude')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -425,17 +425,6 @@ describe('operations.test.ts', () => {
           value: { type: 'Number', value: 45, ty: { type: 'Any' } },
           sourceRange: rangeOfText(code, '45deg'),
         },
-        direction: {
-          value: {
-            type: 'Array',
-            value: [
-              { type: 'Number', value: 0, ty: { type: 'Any' } },
-              { type: 'Number', value: 0, ty: { type: 'Any' } },
-              { type: 'Number', value: 1, ty: { type: 'Any' } },
-            ],
-          },
-          sourceRange: rangeOfText(code, '[0, 0, 1]'),
-        },
       }
 
       const result = await enterEditFlow({
@@ -453,11 +442,9 @@ describe('operations.test.ts', () => {
 
       const argDefaultValues = result.data.argDefaultValues as {
         draftAngle?: { valueText: string }
-        direction?: { valueText: string }
       }
       expect(result.data.name).toBe('Extrude')
       expect(argDefaultValues.draftAngle?.valueText).toBe('45deg')
-      expect(argDefaultValues.direction?.valueText).toBe('[0, 0, 1]')
     })
   })
 

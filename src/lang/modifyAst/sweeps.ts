@@ -67,7 +67,6 @@ export function addExtrude({
   length,
   to,
   symmetric,
-  direction,
   bidirectionalLength,
   tagStart,
   tagEnd,
@@ -87,7 +86,6 @@ export function addExtrude({
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
-  direction?: KclCommandValue
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
@@ -191,9 +189,6 @@ export function addExtrude({
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
-  const directionExpr = direction
-    ? [createLabeledArg('direction', valueOrVariable(direction))]
-    : []
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -245,7 +240,6 @@ export function addExtrude({
       ...lengthExpr,
       ...toExpr,
       ...symmetricExpr,
-      ...directionExpr,
       ...bidirectionalLengthExpr,
       ...tagStartExpr,
       ...tagEndExpr,
@@ -262,9 +256,6 @@ export function addExtrude({
   // Insert variables for labeled arguments if provided
   if (length && 'variableName' in length && length.variableName) {
     insertVariableAndOffsetPathToNode(length, modifiedAst, mNodeToEdit)
-  }
-  if (direction && 'variableName' in direction && direction.variableName) {
-    insertVariableAndOffsetPathToNode(direction, modifiedAst, mNodeToEdit)
   }
   if (
     bidirectionalLength &&

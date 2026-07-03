@@ -613,9 +613,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           tagStart: {
             // TODO: add validation like for Clone command
           },
-          direction: {
-            allowArrays: true,
-          },
           twistCenter: {
             defaultValue: KCL_DEFAULT_ORIGIN_2D,
           },

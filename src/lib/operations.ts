@@ -410,18 +410,6 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
-  const directionResult = await extractOptionalKclArgument(
-    code,
-    operation,
-    'direction',
-    rustContext,
-    true
-  )
-  if (directionResult && 'error' in directionResult) {
-    return { reason: directionResult.error }
-  }
-  const direction = directionResult
-
   // bidirectionalLength argument from a string to a KCL expression
   let bidirectionalLength: KclCommandValue | undefined
   if (
@@ -564,7 +552,6 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     length,
     to,
     symmetric,
-    direction,
     bidirectionalLength,
     tagStart,
     tagEnd,
