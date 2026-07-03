@@ -18,6 +18,8 @@ use crate::lsp::test_util::kcl_lsp_server;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 
+const LSP_SOURCE_FILE_COUNT: usize = 8;
+
 #[track_caller]
 fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
     let Some(diagnostics) = diagnostics else {
@@ -67,7 +69,7 @@ async fn test_updating_kcl_lsp_files() {
         }
     );
 
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT);
 
     // Run open file.
     server
@@ -82,7 +84,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 1);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -98,7 +100,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 1);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -117,7 +119,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -143,7 +145,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -164,7 +166,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -184,7 +186,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 14);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 3);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -205,7 +207,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -239,7 +241,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -275,7 +277,7 @@ async fn test_updating_kcl_lsp_files() {
             name: "my-project2".to_string()
         }
     );
-    assert_eq!(server.code_map.len(), 11);
+    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT);
     // Just make sure that one of the current files read from disk is accurate.
     assert_eq!(
         server.code_map.get(&format!("{string_path}/util.rs")).unwrap().clone(),
