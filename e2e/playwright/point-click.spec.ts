@@ -520,6 +520,15 @@ sketch001 = extrude(region001, length = -12)`
       await toolbar.selectDefaultPlane('Front plane')
       await cmdBar.progressCmdBar()
       await cmdBar.expectState({
+        stage: 'arguments',
+        currentArgKey: 'offset',
+        currentArgValue: '5',
+        headerArguments: { Plane: '1 plane', Offset: '' },
+        highlightedHeaderArg: 'offset',
+        commandName: 'Offset plane',
+      })
+      await cmdBar.progressCmdBar()
+      await cmdBar.expectState({
         stage: 'review',
         headerArguments: { Plane: '1 plane', Offset: '5' },
         reviewValidationError: undefined,
