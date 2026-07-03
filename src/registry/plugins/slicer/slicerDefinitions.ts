@@ -20,11 +20,11 @@ export const SLICER_EXPORT_DEFINITIONS = [
   },
   {
     id: 'cura',
-    slicerName: 'Cura',
+    slicerName: 'UltiMaker Cura',
     ipcChannel: CURA_SLICER_OPEN_STL_CHANNEL,
     exportDirectoryName: 'cura-slicer-exports',
     outputFileExtension: 'stl',
-    successMessage: 'Opened STL in Cura.',
+    successMessage: 'Opened STL in UltiMaker Cura.',
   },
 ] as const satisfies readonly SlicerExportDefinition[]
 

@@ -80,10 +80,10 @@ describe('slicer plugin', () => {
       required: true,
       options: [
         { name: 'PrusaSlicer', value: 'prusa-slicer', isCurrent: true },
-        { name: 'Cura', value: 'cura' },
+        { name: 'UltiMaker Cura', value: 'cura' },
       ],
     })
-    expect(command.args?.slicer.valueSummary?.('cura')).toBe('Cura')
+    expect(command.args?.slicer.valueSummary?.('cura')).toBe('UltiMaker Cura')
 
     const actionLibrary = registry.get(layoutActionLibraryValueSpec)
     expect(actionLibrary).toHaveProperty(EXPORT_TO_SLICER_ACTION_TYPE)

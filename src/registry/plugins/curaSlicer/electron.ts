@@ -93,7 +93,7 @@ export function register(context: ElectronPluginContext) {
   registerSlicerLauncher(context, {
     pluginId: SLICER_PLUGIN_ID,
     channel: CURA_SLICER_OPEN_STL_CHANNEL,
-    slicerName: 'Cura',
+    slicerName: 'UltiMaker Cura',
     acceptedFileExtensions: ['.stl'],
     executablePaths: getCuraSlicerCandidatePaths,
   })
