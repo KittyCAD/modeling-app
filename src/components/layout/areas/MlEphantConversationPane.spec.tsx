@@ -116,16 +116,24 @@ const createFakeActor = ({
 const createFakeSystemIOActor = ({
   mlEphantConversations = undefined,
   completeSavesAutomatically = true,
+  value = SystemIOMachineStates.idle,
 }: {
   mlEphantConversations?: Map<string, string>
   completeSavesAutomatically?: boolean
+  value?: SystemIOMachineStates
 } = {}) => {
   type SaveConversationEvent = {
     type: SystemIOMachineEvents
     data?: { projectId?: string; conversationId?: string }
   }
-  let snapshot = {
-    value: SystemIOMachineStates.idle,
+  type FakeSystemIOSnapshot = {
+    value: SystemIOMachineStates
+    context: {
+      mlEphantConversations?: Map<string, string>
+    }
+  }
+  let snapshot: FakeSystemIOSnapshot = {
+    value,
     context: {
       mlEphantConversations,
     },
@@ -179,6 +187,17 @@ const createFakeSystemIOActor = ({
       }
     },
     completeSave,
+    setSnapshot: (nextSnapshot: Partial<FakeSystemIOSnapshot>) => {
+      snapshot = {
+        ...snapshot,
+        ...nextSnapshot,
+        context: {
+          ...snapshot.context,
+          ...nextSnapshot.context,
+        },
+      }
+      notify()
+    },
     send: vi.fn((event: SaveConversationEvent) => {
       if (
         event.type !== SystemIOMachineEvents.saveMlEphantConversations &&
@@ -293,7 +312,9 @@ const createStatefulPromptActor = (awaitingResponse = false) => {
           awaitingResponse: nextAwaitingResponse,
         },
       }
-      listeners.forEach((listener) => listener(snapshot))
+      for (const listener of listeners) {
+        listener(snapshot)
+      }
     },
   }
 
@@ -669,6 +690,29 @@ describe('MlEphantConversationPane', () => {
         conversationId: 'conversation-id',
       })
     )
+  })
+
+  test('waits for SystemIO idle before loading saved project conversations', () => {
+    const systemIOActor = createFakeSystemIOActor({
+      value: SystemIOMachineStates.readingFolders,
+    })
+
+    renderPane({
+      systemIOActor,
+      settingsMetaId: 'project-id',
+    })
+
+    expect(systemIOActor.send).not.toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.getMlEphantConversations,
+    })
+
+    systemIOActor.setSnapshot({
+      value: SystemIOMachineStates.idle,
+    })
+
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.getMlEphantConversations,
+    })
   })
 
   test('clearing chat forgets the saved project conversation before starting a fresh one', () => {

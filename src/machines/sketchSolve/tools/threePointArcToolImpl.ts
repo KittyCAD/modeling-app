@@ -43,6 +43,7 @@ type AddDraftPointOutput = {
   sceneGraphDelta: SceneGraphDelta
   pointId: number
   point: Coords2d
+  snapTarget?: SnapTarget
   checkpointId?: number | null
 }
 
@@ -62,6 +63,7 @@ type ToolDoneOutput = {
   sceneGraphDelta: SceneGraphDelta
   pointId?: number
   point?: Coords2d
+  snapTarget?: SnapTarget
   arcId?: number
   checkpointId?: number | null
 }
@@ -86,6 +88,7 @@ export type ToolEvents =
 export type ToolContext = {
   startPoint?: Coords2d
   startPointId?: number
+  firstClickSnapTarget?: SnapTarget
   throughPoint?: Coords2d
   throughPointId?: number
   arcId?: number
@@ -168,7 +171,7 @@ function resolveArcEndpoints({
 }): {
   start: Coords2d
   end: Coords2d
-  clickedPointIsStart: boolean
+  firstClickIsArcStart: boolean
 } {
   const startFromCenter = subVec(startPoint, centerPoint)
   const endFromCenter = subVec(endPoint, centerPoint)
@@ -186,13 +189,13 @@ function resolveArcEndpoints({
     return {
       start: startPoint,
       end: endPoint,
-      clickedPointIsStart: false,
+      firstClickIsArcStart: true,
     }
   }
   return {
     start: endPoint,
     end: startPoint,
-    clickedPointIsStart: true,
+    firstClickIsArcStart: false,
   }
 }
 
@@ -521,6 +524,7 @@ export function storeFirstPointResult({
   return {
     startPoint: output.point,
     startPointId: output.pointId,
+    firstClickSnapTarget: output.snapTarget,
   }
 }
 
@@ -638,6 +642,7 @@ export async function addDraftPointActor({
       ...result,
       pointId,
       point,
+      snapTarget,
     }
   }
 
@@ -652,6 +657,7 @@ export async function addDraftPointActor({
     },
     pointId,
     point,
+    snapTarget,
   }
 }
 
@@ -727,10 +733,11 @@ export async function finalizeArcActor({
         arcId: number
         startPoint: Coords2d
         startPointId?: number
+        firstClickSnapTarget?: SnapTarget
         throughPoint: Coords2d
         throughPointId: number
         endPoint: Coords2d
-        endSnapTarget?: SnapTarget
+        lastClickSnapTarget?: SnapTarget
         rustContext: RustContext
         kclManager: KclManager
         sketchId: number
@@ -754,10 +761,11 @@ export async function finalizeArcActor({
     arcId,
     startPoint,
     startPointId,
+    firstClickSnapTarget,
     throughPoint,
     throughPointId,
     endPoint,
-    endSnapTarget,
+    lastClickSnapTarget,
     rustContext,
     kclManager,
     sketchId,
@@ -798,49 +806,64 @@ export async function finalizeArcActor({
     return { error: 'Failed to find arc after final edit' }
   }
 
-  const clickedArcPointId = arcEndpoints.clickedPointIsStart
+  const firstClickPointId = arcEndpoints.firstClickIsArcStart
     ? editedArc.kind.segment.start
     : editedArc.kind.segment.end
+  const lastClickPointId = arcEndpoints.firstClickIsArcStart
+    ? editedArc.kind.segment.end
+    : editedArc.kind.segment.start
 
   const newObjects = [...editResult.sceneGraphDelta.new_objects]
   let latestKclSource = editResult.kclSource
   let latestSceneGraphDelta = editResult.sceneGraphDelta
 
-  const endSnapResult = await applyConstraintsForSnapTarget({
-    segmentId: clickedArcPointId,
-    target: endSnapTarget,
-    rustContext,
-    sketchId,
-    settings,
-  })
-  if (endSnapResult.result !== null) {
-    latestKclSource = endSnapResult.result.kclSource
-    latestSceneGraphDelta = endSnapResult.result.sceneGraphDelta
-    newObjects.push(...endSnapResult.newObjectIds)
+  const snapTargets = [
+    {
+      segmentId: firstClickPointId,
+      snapTarget: firstClickSnapTarget,
+    },
+    {
+      segmentId: lastClickPointId,
+      snapTarget: lastClickSnapTarget,
+    },
+  ].filter(
+    (
+      target
+    ): target is { segmentId: number; snapTarget: NonNullable<SnapTarget> } =>
+      target.snapTarget != null
+  )
+
+  for (const { segmentId, snapTarget } of snapTargets) {
+    const snapResult = await applyConstraintsForSnapTarget({
+      segmentId,
+      target: snapTarget,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    if (snapResult.result !== null) {
+      latestKclSource = snapResult.result.kclSource
+      latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+      newObjects.push(...snapResult.newObjectIds)
+    }
   }
 
-  const constraintResult = await rustContext.addConstraint(
-    0,
-    sketchId,
-    {
-      type: 'Coincident',
-      segments: [throughPointId, arcId],
-    },
-    settings,
-    startPointId === undefined
+  const draftPointIds = Array.from(
+    new Set(
+      [startPointId, throughPointId].filter(
+        (pointId): pointId is number => pointId !== undefined
+      )
+    )
   )
-  latestKclSource = constraintResult.kclSource
-  latestSceneGraphDelta = constraintResult.sceneGraphDelta
-  newObjects.push(...constraintResult.sceneGraphDelta.new_objects)
 
-  if (startPointId === undefined) {
+  if (draftPointIds.length === 0) {
     return {
       kclSource: latestKclSource,
       sceneGraphDelta: {
         ...latestSceneGraphDelta,
         new_objects: newObjects,
       },
-      checkpointId: constraintResult.checkpointId ?? null,
+      checkpointId: null,
     }
   }
 
@@ -848,7 +871,7 @@ export async function finalizeArcActor({
     0,
     sketchId,
     [],
-    [startPointId],
+    draftPointIds,
     settings,
     true
   )

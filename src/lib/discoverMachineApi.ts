@@ -1,8 +1,7 @@
 import type BonjourModule from 'bonjour-service'
+import type { Browser, Service } from 'bonjour-service'
 
 type Bonjour = InstanceType<typeof BonjourModule>
-type Browser = InstanceType<(typeof BonjourModule)['Browser']>
-type Service = InstanceType<(typeof BonjourModule)['Service']>
 
 export interface DiscoverMachineApiOptions {
   timeoutAfterMs?: number

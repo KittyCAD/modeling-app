@@ -10,6 +10,7 @@ import {
   filterOpfsCloudProjectFilesForSync,
   getOpfsCloudConflictCopyCleanupPlan,
   getOpfsCloudInitialLocalProjectSyncAction,
+  getOpfsCloudMissingRemoteProjectAction,
   getOpfsCloudProjectModifiedTime,
   getOpfsCloudProjectRoot,
   getOpfsCloudProjectSyncPreflightAction,
@@ -263,6 +264,57 @@ describe('opfsCloud sync helpers', () => {
         syncExcluded: false,
       })
     ).toBe('enqueue')
+  })
+
+  it('removes clean local mirrors when their remote project is missing', () => {
+    expect(
+      getOpfsCloudMissingRemoteProjectAction({
+        localProjectExists: true,
+        hasPendingLocalChanges: false,
+        hasBaseManifest: true,
+        localMatchesBase: true,
+      })
+    ).toBe('remove-clean-local')
+  })
+
+  it('detaches local projects when their missing remote cannot be safely removed', () => {
+    expect(
+      getOpfsCloudMissingRemoteProjectAction({
+        localProjectExists: true,
+        hasPendingLocalChanges: true,
+        hasBaseManifest: true,
+        localMatchesBase: true,
+      })
+    ).toBe('detach-dirty-local')
+
+    expect(
+      getOpfsCloudMissingRemoteProjectAction({
+        localProjectExists: true,
+        hasPendingLocalChanges: false,
+        hasBaseManifest: false,
+        localMatchesBase: false,
+      })
+    ).toBe('detach-dirty-local')
+
+    expect(
+      getOpfsCloudMissingRemoteProjectAction({
+        localProjectExists: true,
+        hasPendingLocalChanges: false,
+        hasBaseManifest: true,
+        localMatchesBase: false,
+      })
+    ).toBe('detach-dirty-local')
+  })
+
+  it('forgets metadata when a missing remote project is also missing locally', () => {
+    expect(
+      getOpfsCloudMissingRemoteProjectAction({
+        localProjectExists: false,
+        hasPendingLocalChanges: false,
+        hasBaseManifest: true,
+        localMatchesBase: false,
+      })
+    ).toBe('forget-missing-local')
   })
 
   it('detects conflict copy project folder names', () => {

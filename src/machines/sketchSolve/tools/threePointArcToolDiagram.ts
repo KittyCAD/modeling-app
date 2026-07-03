@@ -59,6 +59,7 @@ export const machine = setup({
   context: ({ input }): ToolContext => ({
     startPoint: undefined,
     startPointId: undefined,
+    firstClickSnapTarget: undefined,
     throughPoint: undefined,
     throughPointId: undefined,
     arcId: undefined,
@@ -247,10 +248,11 @@ export const machine = setup({
             arcId: context.arcId,
             startPoint: context.startPoint,
             startPointId: context.startPointId,
+            firstClickSnapTarget: context.firstClickSnapTarget,
             throughPoint: context.throughPoint,
             throughPointId: context.throughPointId,
             endPoint: event.data,
-            endSnapTarget: event.snapTarget,
+            lastClickSnapTarget: event.snapTarget,
             rustContext: context.rustContext,
             kclManager: context.kclManager,
             sketchId: context.sketchId,
@@ -275,6 +277,7 @@ export const machine = setup({
               assign({
                 startPoint: undefined,
                 startPointId: undefined,
+                firstClickSnapTarget: undefined,
                 throughPoint: undefined,
                 throughPointId: undefined,
                 arcId: undefined,

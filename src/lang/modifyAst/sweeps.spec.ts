@@ -11,18 +11,12 @@ import {
   retrieveAxisOrEdgeSelectionsFromOpArg,
   retrieveBodyTypeFromOpArg,
 } from '@src/lang/modifyAst/sweeps'
-import { defaultSourceRange } from '@src/lang/sourceRange'
-import { topLevelRange } from '@src/lang/util'
 import {
-  type Artifact,
   type ArtifactGraph,
   type Name,
   type PathToNode,
-  type SourceRange,
   assertParse,
   getAllOperations,
-  nodePathFromRange,
-  pathToNodeFromRustNodePath,
   recast,
 } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
@@ -40,7 +34,10 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  EngineRegionSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
@@ -106,19 +103,46 @@ async function getAstAndSketchSelectionsEngineless(
   return { artifactGraph, ast, sketches }
 }
 
-function rangeOfText(code: string, target: string): SourceRange {
-  const start = code.indexOf(target)
-  if (start === -1) {
-    throw new Error(`Could not find ${target}`)
-  }
-  return topLevelRange(start, start + target.length)
-}
+function createEngineRegionSelectionForSketch({
+  artifactGraph,
+  sketchId,
+  intersectionIndex = 0,
+  intersectionCount = 1,
+}: {
+  artifactGraph: ArtifactGraph
+  sketchId: string
+  intersectionIndex?: number
+  intersectionCount?: number
+}): EngineRegionSelection {
+  const segmentIds = [...artifactGraph.values()]
+    .filter((artifact) => {
+      if (artifact.type !== 'segment') return false
 
-function codeRef(range: SourceRange, pathToNode: PathToNode) {
+      const path = artifactGraph.get(artifact.pathId)
+      return path?.type === 'path' && path.sketchBlockId === sketchId
+    })
+    .map((artifact) => artifact.id)
+
+  if (segmentIds.length === 0) {
+    throw new Error('Sketch segment artifacts not found')
+  }
+  const segment = segmentIds[0]
+  if (!segment) {
+    throw new Error('Sketch segment artifact not found')
+  }
+  const intersectionSegment = segmentIds[1] ?? segment
+
   return {
-    range,
-    nodePath: { steps: [] },
-    pathToNode,
+    type: 'engineRegion',
+    id: 'region-1',
+    sketchId,
+    resolvableIntersectionInfo: {
+      segment,
+      intersection_segment: intersectionSegment,
+      intersection_index: intersectionIndex,
+      intersection_count: intersectionCount,
+      curve_clockwise: false,
+    },
   }
 }
 
@@ -167,40 +191,6 @@ profile002 = rectangle(
       expect(newCode).toContain(circleProfileCode)
       expect(newCode).toContain(`extrude001 = extrude(profile001, length = 1)`)
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
-    })
-
-    it('should add an extrude call with a segment direction', async () => {
-      const { ast, artifactGraph, sketches } =
-        await getAstAndSketchSelectionsEngineless(
-          triangleRegion,
-          instanceInThisFile,
-          rustContextInThisFile
-        )
-      const segment = [...artifactGraph.values()].find(
-        (a) => a.type === 'segment'
-      )
-      if (!segment) {
-        throw new Error('Segment artifact not found')
-      }
-      const direction = createSelectionFromArtifacts([segment], artifactGraph)
-      const length = await getKclCommandValue(
-        '1',
-        instanceInThisFile,
-        rustContextInThisFile
-      )
-      const result = addExtrude({
-        ast,
-        sketches,
-        length,
-        direction,
-        artifactGraph,
-        wasmInstance: instanceInThisFile,
-      })
-      if (err(result)) throw result
-      const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        `extrude001 = extrude(s, length = 1, direction = s.line1)`
-      )
     })
 
     it('should add a basic extrude call on a cap', async () => {
@@ -352,6 +342,130 @@ extrude001 = extrude(region001, length = 1)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add an extrude call from a segments-based sketch region selection', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `hidden001 = hide(s)
+region001 = region(segments = [s.line1, s.line2])
+extrude001 = extrude(region001, length = 1)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should emit intersectionIndex only for ambiguous sketch region intersections', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+            intersectionIndex: 0,
+            intersectionCount: 2,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(segments = [s.line1, s.line2], intersectionIndex = 0)`
+      )
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should omit intersectionIndex when the engine selects the final intersection', async () => {
+      const { ast, artifactGraph } = await getAstAndArtifactGraphEngineless(
+        triangleRegion,
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const sketch = artifactGraph
+        .values()
+        .find((a) => a.type === 'sketchBlock')
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [
+          createEngineRegionSelectionForSketch({
+            artifactGraph,
+            sketchId: sketch!.id,
+            intersectionIndex: 2,
+            intersectionCount: 3,
+          }),
+        ],
+      }
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `region001 = region(segments = [s.line1, s.line2])`
+      )
+      expect(newCode).not.toContain(`intersectionIndex`)
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should edit an extrude call from a sketch region selection', async () => {
       const code = `${triangleRegion}
 region001 = region(point = [1mm, 1mm], sketch = s)
@@ -467,6 +581,40 @@ extrude002 = extrude([capEnd001, profile001], length = 1)`)
         `extrude001 = extrude(profile001, length = 1, symmetric = true)`
       )
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add an extrude call with a segment direction', async () => {
+      const { ast, sketches, artifactGraph } = await getAstAndSketchSelections(
+        triangleRegion,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const segment = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'segment'
+      )
+      if (!segment) {
+        throw new Error('segment artifact not found')
+      }
+      const direction = createSelectionFromArtifacts([segment], artifactGraph)
+      const length = await getKclCommandValue(
+        '1',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        direction,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        `${triangleRegion}
+extrude001 = extrude(s, length = 1, direction = s.line1)`
+      )
     })
 
     it('should add an extrude call with bidirectional length and twist angle', async () => {
@@ -695,87 +843,23 @@ extrude001 = extrude([s.line1, s.line2], length = 1, bodyType = SURFACE)`
       await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
     })
 
-    it('should add a surface extrude call from a selected sweep edge profile', async () => {
-      const code = `@settings(experimentalFeatures = allow)
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> xLine(length = 1)
-  |> yLine(length = 1)
-  |> xLine(length = -1)
-  |> close()
-extrude001 = extrude(profile001, length = 5)`
-      const ast = assertParse(code, instanceInThisFile)
-      const segmentRange = rangeOfText(code, 'xLine(length = 1)')
-      const segmentNodePath = await nodePathFromRange(
-        ast,
-        segmentRange,
-        instanceInThisFile
+    it('should add a surface extrude call from a body edge', async () => {
+      const code = `${triangleRegion}
+extrude001 = extrude(s.line1, length = 1, bodyType = SURFACE)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
       )
-      if (!segmentNodePath) {
-        throw new Error('Segment node path not found')
+      const sweepEdge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'sweepEdge'
+      )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
       }
-      const segmentPathToNode = pathToNodeFromRustNodePath(segmentNodePath)
-      const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
-        [
-          'path-id',
-          {
-            type: 'path',
-            id: 'path-id',
-            subType: 'sketch',
-            planeId: 'plane-id',
-            segIds: ['segment-id'],
-            consumed: false,
-            trajectorySweepId: null,
-            sweepId: 'sweep-id',
-            codeRef: codeRef(defaultSourceRange(), [['body', '']]),
-          },
-        ],
-        [
-          'segment-id',
-          {
-            type: 'segment',
-            id: 'segment-id',
-            pathId: 'path-id',
-            edgeIds: ['edge-id'],
-            codeRef: codeRef(segmentRange, segmentPathToNode),
-            commonSurfaceIds: [],
-          },
-        ],
-        [
-          'sweep-id',
-          {
-            type: 'sweep',
-            id: 'sweep-id',
-            subType: 'extrusion',
-            pathId: 'path-id',
-            surfaceIds: [],
-            edgeIds: ['edge-id'],
-            codeRef: codeRef(defaultSourceRange(), [['body', '']]),
-            trajectoryId: null,
-            method: 'new',
-            consumed: false,
-            patternIds: [],
-          },
-        ],
-        [
-          'edge-id',
-          {
-            type: 'sweepEdge',
-            id: 'edge-id',
-            subType: 'opposite',
-            segId: 'segment-id',
-            cmdId: '',
-            sweepId: 'sweep-id',
-            commonSurfaceIds: [],
-          },
-        ],
-      ])
-
-      const sweepEdge = artifactGraph.get('edge-id')
-      if (!sweepEdge) throw new Error('Sweep edge artifact not found')
       const sketches = createSelectionFromArtifacts([sweepEdge], artifactGraph)
       const length = await getKclCommandValue(
-        '1',
+        '2',
         instanceInThisFile,
         rustContextInThisFile
       )
@@ -783,18 +867,19 @@ extrude001 = extrude(profile001, length = 5)`
         ast,
         sketches,
         length,
+        bodyType: 'SURFACE',
         artifactGraph,
         wasmInstance: instanceInThisFile,
       })
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('edge001 = getOppositeEdge(seg01)')
-      expect(newCode).toContain('surface001 = extrude(')
-      expect(newCode).toContain('  edge001,')
-      expect(newCode).toContain('  length = 1,')
-      expect(newCode).toContain('  direction = edge001,')
-      expect(newCode).toContain('  bodyType = SURFACE,')
+      expect(newCode).toContain('extrude002 = extrude(')
+      expect(newCode).toContain('length = 2')
+      expect(newCode).toContain('bodyType = SURFACE')
+      expect(newCode).toContain('method = NEW')
+      expect(newCode).toContain('getOppositeEdge(')
+      expect(newCode).not.toContain('direction =')
     })
 
     it('should add an extrude call with bodyType "solid"', async () => {

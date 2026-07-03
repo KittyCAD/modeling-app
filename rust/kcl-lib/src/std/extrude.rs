@@ -754,8 +754,8 @@ async fn inner_extrude(
                 face_id: face.id,
                 solid_id: face.parent_solid.solid_id,
             },
-            Extrudable::EdgeTag(_) => BeingExtruded::Sketch,
-            Extrudable::Edge(_) => BeingExtruded::Sketch,
+            Extrudable::EdgeTag(_) => BeingExtruded::Edge,
+            Extrudable::Edge(_) => BeingExtruded::Edge,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
@@ -788,6 +788,25 @@ async fn inner_extrude(
                 .await?,
             );
         } else if is_edge {
+            // Ensure that edges do not use the MERGE method.
+            match extrude_method {
+                ExtrudeMethod::New => {
+                    // This is expected.
+                }
+                ExtrudeMethod::Merge => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Cannot use method MERGE with surface extrude of an edge".to_owned(),
+                        vec![args.source_range],
+                    )));
+                }
+                _ => {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!("Unknown extrude method: {extrude_method:?}"),
+                        vec![args.source_range],
+                    )));
+                }
+            }
+
             // Surface-extrude an edge.
             exec_state
                 .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), cmd)
@@ -800,9 +819,7 @@ async fn inner_extrude(
                 Extrudable::EdgeTag(tag) => Some(TagDeclarator::new(&tag.value)),
                 Extrudable::Edge(_) => None,
             };
-            solids.push(
-                after_surface_creation(extrude_cmd_id.into(), extrude_method, edge_tag, exec_state, &args).await?,
-            );
+            solids.push(after_surface_creation(extrude_cmd_id.into(), edge_tag, exec_state, &args).await?);
         } else {
             return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected a sketch for extrusion".to_owned(),
@@ -824,6 +841,7 @@ pub(crate) struct NamedCapTags<'a> {
 pub enum BeingExtruded {
     Sketch,
     Face { face_id: Uuid, solid_id: Uuid },
+    Edge,
 }
 
 /// Which edge should we use for querying Solid3dGetExtrusionInfo and GetAdjacencyInfo?
@@ -865,29 +883,10 @@ fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: 
 /// isn't available.
 pub(crate) async fn after_surface_creation(
     extrude_cmd_id: ArtifactId,
-    extrude_method: ExtrudeMethod,
     edge_tag: Option<crate::parsing::ast::types::Node<TagDeclarator>>,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<Solid, KclError> {
-    match extrude_method {
-        ExtrudeMethod::New => {
-            // This is expected.
-        }
-        ExtrudeMethod::Merge => {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Cannot use method MERGE with surface extrude of an edge".to_owned(),
-                vec![args.source_range],
-            )));
-        }
-        _ => {
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                format!("Unknown extrude method: {extrude_method:?}"),
-                vec![args.source_range],
-            )));
-        }
-    }
-
     let body_id = extrude_cmd_id.into();
 
     // Bring the object to the front of the scene.
@@ -1234,6 +1233,14 @@ pub(crate) async fn do_post_extrude<'a>(
             solid_id,
             sketch,
         }),
+        BeingExtruded::Edge => {
+            let message = "Expected an edge to have been extruded via another code path";
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message.to_owned(),
+                vec![args.source_range],
+            )));
+        }
     };
 
     Ok(Solid {

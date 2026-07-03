@@ -26,7 +26,7 @@ jobs:
     name: cargo clippy
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
       - uses: taiki-e/install-action@just
       - name: Use correct Rust toolchain
         shell: bash
