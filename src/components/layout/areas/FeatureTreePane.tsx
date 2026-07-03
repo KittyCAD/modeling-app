@@ -44,6 +44,7 @@ import toast from 'react-hot-toast'
 export { buildOperationTree } from '@src/lib/featureTreeOperationTree'
 import { Disclosure } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ImagesList } from '@src/clientSideScene/image/ImagesList'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { RowItemWithIconMenuAndToggle } from '@src/components/RowItemWithIconMenuAndToggle'
@@ -347,6 +348,7 @@ export const FeatureTreePaneContents = memo(() => {
               liveActiveModuleId={liveActiveModuleId}
             />
           ))}
+          <ImagesList />
         </>
       </section>
     </div>

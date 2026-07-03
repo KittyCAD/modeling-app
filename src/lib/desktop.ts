@@ -9,6 +9,7 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 
+import { IMAGES_FOLDER_NAME } from '@src/clientSideScene/image/ImageManager'
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
 import {
@@ -431,9 +432,13 @@ const collectAllFilesRecursiveFrom = async (
     return 0
   })
 
-  for (let e of entries) {
+  for (const e of entries) {
     // ignore hidden files and directories (starting with a dot)
-    if (!showAllFiles && e.indexOf('.') === 0) {
+    // if (!showAllFiles && e.indexOf('.') === 0) {
+    //   continue
+    // }
+    // ignore the zoo_images folder (managed separately for reference images)
+    if (e === IMAGES_FOLDER_NAME) {
       continue
     }
 

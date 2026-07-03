@@ -17,6 +17,8 @@ const shouldAlwaysShowOverlays = () =>
 
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
 import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
+import { ClientSideFileDropper } from '@src/clientSideScene/image/ClientSideFileDropper'
+import { getImageTransformCursor } from '@src/clientSideScene/image/ImageTransformUI'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
@@ -168,7 +170,13 @@ export const ClientSideScene = ({
   }, [])
 
   let cursor = 'default'
-  if (state.matches('Sketch')) {
+  const imageTransformCursor =
+    context.mouseState.type === 'isHovering'
+      ? getImageTransformCursor(context.mouseState.on)
+      : null
+  if (imageTransformCursor) {
+    cursor = imageTransformCursor
+  } else if (state.matches('Sketch')) {
     if (
       context.mouseState.type === 'isHovering' &&
       getParentGroup(context.mouseState.on, [
@@ -217,7 +225,7 @@ export const ClientSideScene = ({
   }
 
   return (
-    <>
+    <ClientSideFileDropper>
       <div
         ref={containerRef}
         style={sceneStyle}
@@ -233,7 +241,7 @@ export const ClientSideScene = ({
       <Overlays />
       <SketchSolveToolIconOverlay />
       <EditingConstraintInput />
-    </>
+    </ClientSideFileDropper>
   )
 }
 
