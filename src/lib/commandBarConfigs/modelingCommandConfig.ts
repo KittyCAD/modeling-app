@@ -1453,6 +1453,24 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
       }
     ),
   },
+  Delete: {
+    description: 'Delete selected bodies from the scene.',
+    icon: 'trash',
+    needsReview: true,
+    status: modelingStdLibCommandStatus('Delete'),
+    reviewValidation: createModelingCodemodReviewValidation(
+      modelingCommandCodemods.Delete
+    ),
+    args: modelingStdLibCommandArgs<ModelingCommandSchema['Delete']>('Delete', {
+      overrides: {
+        objects: {
+          ...objectsTypesAndFilters,
+          inputType: 'selectionMixed',
+          multiple: true,
+        },
+      },
+    }),
+  },
   Translate: {
     description: 'Set translation on solid or sketch.',
     icon: 'move',
