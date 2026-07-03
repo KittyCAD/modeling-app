@@ -17,6 +17,8 @@ import type { KclManager } from '@src/lang/KclManager'
 
 import { copilotPlugin } from '@src/editor/plugins/lsp/copilot'
 
+const copilotRequestDelayMs = 600
+
 function createClient({
   text,
   displayText = text,
@@ -28,6 +30,8 @@ function createClient({
   character: number
   uuid: string
 }): LanguageServerClient {
+  // Copilot returns text for acceptance, but the plugin immediately inserts
+  // displayText into the document and decorates it as ghost text.
   return {
     ready: true,
     requestCustom: vi.fn(async () => ({
@@ -83,6 +87,8 @@ function createCopilotView({
 }
 
 function dispatchInput(view: EditorView, from: number, insert: string) {
+  // These tests dispatch keydown and input separately because JSDOM does not
+  // synthesize browser text input after a non-prevented keydown.
   view.dispatch({
     changes: { from, insert },
     selection: { anchor: from + insert.length },
@@ -100,6 +106,10 @@ function dispatchKeydown(view: EditorView, key: string): KeyboardEvent {
   return event
 }
 
+async function waitForCopilotSuggestion() {
+  await vi.advanceTimersByTimeAsync(copilotRequestDelayMs)
+}
+
 describe('copilotPlugin', () => {
   let view: EditorView | null = null
 
@@ -110,12 +120,15 @@ describe('copilotPlugin', () => {
     vi.useRealTimers()
   })
 
+  // Regression coverage for https://github.com/KittyCAD/modeling-app/issues/12133,
+  // where Copilot ghost text swallowed ` = ` while editing function arguments.
   it('rejects ghost text before ordinary keys when CodeMirror autocomplete is active', async () => {
     vi.useFakeTimers()
 
+    const typedText = 'length'
     const client = createClient({
       text: '=)',
-      character: 6,
+      character: typedText.length,
       uuid: 'ghost-equals',
     })
     const explicitCompletionSource = (context: CompletionContext) => {
@@ -139,11 +152,11 @@ describe('copilotPlugin', () => {
     })
     view.focus()
 
-    dispatchInput(view, 0, 'length')
-    await vi.advanceTimersByTimeAsync(600)
+    dispatchInput(view, 0, typedText)
+    await waitForCopilotSuggestion()
 
     expect(view.state.doc.toString()).toBe('length=)')
-    expect(view.state.selection.main.head).toBe(6)
+    expect(view.state.selection.main.head).toBe(typedText.length)
 
     expect(startCompletion(view)).toBe(true)
     expect(completionStatus(view.state)).not.toBeNull()
@@ -152,20 +165,21 @@ describe('copilotPlugin', () => {
 
     expect(event.defaultPrevented).toBe(false)
     expect(view.state.doc.toString()).toBe('length')
-    expect(view.state.selection.main.head).toBe(6)
+    expect(view.state.selection.main.head).toBe(typedText.length)
 
-    dispatchInput(view, 6, '=')
+    dispatchInput(view, typedText.length, '=')
 
     expect(view.state.doc.toString()).toBe('length=')
-    expect(view.state.selection.main.head).toBe(7)
+    expect(view.state.selection.main.head).toBe(typedText.length + 1)
   })
 
   it('rejects punctuation-leading ghost text instead of typing through it', async () => {
     vi.useFakeTimers()
 
+    const typedText = 'foo'
     const client = createClient({
       text: ' =)',
-      character: 3,
+      character: typedText.length,
       uuid: 'ghost-assignment',
     })
 
@@ -176,31 +190,32 @@ describe('copilotPlugin', () => {
     })
     view.focus()
 
-    dispatchInput(view, 0, 'foo')
-    await vi.advanceTimersByTimeAsync(600)
+    dispatchInput(view, 0, typedText)
+    await waitForCopilotSuggestion()
 
     expect(view.state.doc.toString()).toBe('foo =)')
-    expect(view.state.selection.main.head).toBe(3)
+    expect(view.state.selection.main.head).toBe(typedText.length)
 
     const spaceEvent = dispatchKeydown(view, ' ')
 
     expect(spaceEvent.defaultPrevented).toBe(false)
     expect(view.state.doc.toString()).toBe('foo')
-    expect(view.state.selection.main.head).toBe(3)
+    expect(view.state.selection.main.head).toBe(typedText.length)
 
-    dispatchInput(view, 3, ' ')
-    dispatchInput(view, 4, '=')
+    dispatchInput(view, typedText.length, ' ')
+    dispatchInput(view, typedText.length + 1, '=')
 
     expect(view.state.doc.toString()).toBe('foo =')
-    expect(view.state.selection.main.head).toBe(5)
+    expect(view.state.selection.main.head).toBe(typedText.length + 2)
   })
 
   it('keeps type-through behavior for word-leading ghost text', async () => {
     vi.useFakeTimers()
 
+    const typedText = 'foo'
     const client = createClient({
       text: 'bar',
-      character: 3,
+      character: typedText.length,
       uuid: 'ghost-word',
     })
 
@@ -211,16 +226,16 @@ describe('copilotPlugin', () => {
     })
     view.focus()
 
-    dispatchInput(view, 0, 'foo')
-    await vi.advanceTimersByTimeAsync(600)
+    dispatchInput(view, 0, typedText)
+    await waitForCopilotSuggestion()
 
     expect(view.state.doc.toString()).toBe('foobar')
-    expect(view.state.selection.main.head).toBe(3)
+    expect(view.state.selection.main.head).toBe(typedText.length)
 
     const event = dispatchKeydown(view, 'b')
 
     expect(event.defaultPrevented).toBe(true)
     expect(view.state.doc.toString()).toBe('foobar')
-    expect(view.state.selection.main.head).toBe(4)
+    expect(view.state.selection.main.head).toBe(typedText.length + 1)
   })
 })

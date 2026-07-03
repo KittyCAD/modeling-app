@@ -81,6 +81,10 @@ interface GhostText {
   uuid: string
 }
 
+// Ghost text is inserted into the real document. Type-through consumes the
+// keydown and advances through that inserted text, so keep it to identifier-like
+// continuations. Space/punctuation suggestions should be rejected and let the
+// editor insert the user's actual keypress, e.g. typing ` = ` in an argument.
 const wordLikeTypeThroughCharacter = /^[A-Za-z0-9_]$/
 
 function canTypeThroughGhostText(key: string, displayText: string): boolean {
@@ -526,11 +530,16 @@ export class CompletionRequester implements PluginValue {
 
     const tabKey = 'Tab'
 
+    // CodeMirror completions and Copilot ghost text can overlap briefly while a
+    // snippet placeholder is being edited. Prefer the explicit completion flow
+    // so Copilot cannot consume the next typed key.
     if (this.autocompleting()) {
       return this.rejectSuggestionCommand()
     }
 
-    // When we type a key that is the same as the first letter of the suggestion, we delete the first letter of the suggestion and carry through with the original keypress
+    // For accepted type-through keys, leave the ghost text in the document and
+    // move the selection past the typed prefix so the browser does not insert a
+    // duplicate character.
     const ghostTextStart = ghostText.displayPos
     const indent = this.view.state.facet(indentUnit)
 
@@ -550,7 +559,7 @@ export class CompletionRequester implements PluginValue {
     } else if (ghostText.displayText.length === 1) {
       return this.acceptSuggestionCommand()
     } else {
-      // Use this to delete the first letter of the suggestion
+      // Advance through the first ghost character that matches the typed key.
       this.view.dispatch({
         selection: { anchor: ghostTextStart + 1 },
         effects: typeFirst.of(1),
