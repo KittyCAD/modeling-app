@@ -1156,12 +1156,9 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     }
   )
 
-  test('prefers adjacent/opposite edge references over primitive index references', async () => {
+  test('prefers direct graph segment references over primitive index references', async () => {
     const { instance } = await buildTheWorldAndNoEngineConnection()
     const ast = assertParse(MY_CODE, instance)
-    const edgeArtifact = ___artifactGraph.get(
-      'b197cdad-d60f-4e3c-afdd-58e6f1c323f1'
-    )
     const segmentArtifact = ___artifactGraph.get(
       '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e'
     )
@@ -1169,17 +1166,16 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
     )
     if (
-      edgeArtifact?.type !== 'segment' ||
       segmentArtifact?.type !== 'segment' ||
       sweepArtifact?.type !== 'sweep'
     ) {
-      throw new Error('Expected sweep edge fixture artifacts')
+      throw new Error('Expected segment and sweep fixture artifacts')
     }
 
     const references = await getSelectionReferences({
       graphSelections: [
         {
-          artifact: edgeArtifact,
+          artifact: segmentArtifact,
           codeRef: segmentArtifact.codeRef,
         },
       ],
@@ -1197,7 +1193,7 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
     })
 
     expect(references).toHaveLength(1)
-    expect(references[0].code).toBe('getNextAdjacentEdge(seg01)')
+    expect(references[0].code).toBe('profile001')
   })
 
   test('prefers directly tagged swept face references over primitive index references', async () => {

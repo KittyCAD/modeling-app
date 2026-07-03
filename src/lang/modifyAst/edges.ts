@@ -611,6 +611,23 @@ function buildEdgeExpr(
     artifactGraph,
     wasmInstance
   )
+  if (err(regularTagResult) && edgeArtifact.type === 'segment') {
+    const directTagResult = mutateAstWithTagForSketchSegment(
+      structuredClone(ast),
+      resolved.codeRef.pathToNode,
+      wasmInstance
+    )
+    if (!err(directTagResult)) {
+      return {
+        modifiedAst: directTagResult.modifiedAst,
+        edgeExpr: createCallExpressionStdLibKw(
+          'getBoundedEdge',
+          structuredClone(sourceSurfaceExpr),
+          [createLabeledArg('edge', createLocalName(directTagResult.tag))]
+        ),
+      }
+    }
+  }
   if (err(regularTagResult)) return regularTagResult
   if (regularTagResult.exprs.length === 0) {
     return new Error('Expected at least one tag for each blend edge.')

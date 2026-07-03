@@ -64,7 +64,7 @@ import {
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
   getPatternArtifactForCopyId,
-  getSegmentForEdgeCut,
+  getSegmentArtifactForEdgeCut,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSolid2dCodeRef,
@@ -603,8 +603,7 @@ function getTaggableEdgeArtifact(
     return null
   }
 
-  const segment = getSegmentForEdgeCut(selection.artifact.id, artifactGraph)
-  return segment ? ({ ...segment, type: 'segment' } as const) : null
+  return getSegmentArtifactForEdgeCut(selection.artifact, artifactGraph)
 }
 
 function getSourceSurfaceExpr(

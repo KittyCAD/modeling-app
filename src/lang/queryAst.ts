@@ -18,9 +18,9 @@ import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
-  getEdgeCutConsumedEdgeId,
   getFaceCodeRef,
   getPatternArtifactForCopyId,
+  getSegmentArtifactForEdgeCut,
   getSegmentForEdgeCut,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
@@ -2550,11 +2550,10 @@ export function getEdgeCutMeta(
     ((artifact as { subType?: string }).subType === 'chamfer' ||
       (artifact as { subType?: string }).subType === 'fillet')
   ) {
-    const consumedEdgeId = getEdgeCutConsumedEdgeId(artifact, artifactGraph)
-    if (consumedEdgeId == null || consumedEdgeId === '') return null
-    const rawConsumedArtifact = artifactGraph.get(consumedEdgeId)
-    let consumedArtifact: SegmentArtifact | null =
-      rawConsumedArtifact?.type === 'segment' ? rawConsumedArtifact : null
+    let consumedArtifact: SegmentArtifact | null = getSegmentArtifactForEdgeCut(
+      artifact,
+      artifactGraph
+    )
 
     if (!consumedArtifact) {
       const segmentViaWallOrCap = getSegmentForEdgeCut(
