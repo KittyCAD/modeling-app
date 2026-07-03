@@ -1,5 +1,4 @@
-export const PRUSA_SLICER_OPEN_STL_CHANNEL = 'plugin:prusa-slicer.open-stl'
+import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 
-export type OpenStlInPrusaSlicerResult =
-  | { ok: true; executablePath: string }
-  | { ok: false; error: string }
+export const PRUSA_SLICER_OPEN_STL_CHANNEL =
+  'plugin:prusa-slicer.open-stl' satisfies PluginIpcChannel

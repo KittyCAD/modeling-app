@@ -8,7 +8,6 @@ import { Bonjour } from 'bonjour-service'
 import dotenv from 'dotenv'
 import {
   BrowserWindow,
-  type IpcMainInvokeEvent,
   Menu,
   app,
   autoUpdater,
@@ -49,25 +48,12 @@ import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { WindowMenuManager, isAppMenuPage } from '@src/menu/windowMenus'
 import {
+  type ElectronPluginContext,
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
   type PluginIpcChannel,
+  type PluginIpcHandler,
 } from '@src/registry/pluginIpc'
 import { configureSystemCertificates } from '@src/systemCertificates'
-
-type PluginIpcHandler = (
-  event: IpcMainInvokeEvent,
-  ...args: unknown[]
-) => unknown
-
-type ElectronPluginContext = {
-  ipcMain: typeof ipcMain
-  isPluginEnabled: (pluginId: string) => boolean
-  handlePluginInvoke: (
-    pluginId: string,
-    channel: PluginIpcChannel,
-    handler: PluginIpcHandler
-  ) => void
-}
 
 type ElectronPluginModule = {
   register?: (context: ElectronPluginContext) => void
