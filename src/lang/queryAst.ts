@@ -1393,6 +1393,21 @@ export function getVariableExprsFromSelection(
         if (sweepArtifact?.type === 'sweep') {
           artifactForLastChildLookup = sweepArtifact
         }
+      } else if (artifact.type === 'edgeCut') {
+        const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
+          ast,
+          artifact.codeRef.pathToNode,
+          wasmInstance,
+          'VariableDeclaration'
+        )
+        if (!err(edgeCutVariable)) {
+          const name = edgeCutVariable.node.declaration.id.name
+          if (!pushedNames[name]) {
+            exprs.push(createLocalName(name))
+            pushedNames[name] = true
+          }
+          continue
+        }
       }
     }
 
@@ -2584,6 +2599,17 @@ export function getEdgeCutMeta(
             : first?.type === 'CallExpressionKw' &&
                 first.unlabeled?.type === 'Name'
               ? first.unlabeled.name.name
+              : first?.type === 'CallExpressionKw'
+                ? (() => {
+                    const facesArg = findKwArg('faces', first)
+                    const firstFace =
+                      facesArg?.type === 'ArrayExpression'
+                        ? facesArg.elements?.[0]
+                        : undefined
+                    return firstFace?.type === 'Name'
+                      ? firstFace.name.name
+                      : null
+                  })()
               : null
         if (!tagName) return null
         return {

@@ -1279,7 +1279,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           inputType: 'selection',
           selectionTypes: [
             'segment',
-            'sweepEdge',
             'primitiveEdge',
             'enginePrimitiveEdge',
           ],
@@ -2210,7 +2209,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           inputType: 'selection',
           selectionTypes: [
             'segment',
-            'sweepEdge',
             'primitiveEdge',
             'enginePrimitiveEdge',
           ],

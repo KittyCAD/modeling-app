@@ -327,6 +327,7 @@ export function getSegmentArtifactForEdgeCut(
   edge: EdgeCut,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'segment' }> | null {
+  if (!edge.consumedEdgeId) return getSegmentForEdgeCut(edge.id, artifactGraph)
   const consumedArtifact = artifactGraph.get(edge.consumedEdgeId)
   if (consumedArtifact?.type === 'segment') return consumedArtifact
   if (consumedArtifact?.type === 'sweepEdge') {
@@ -403,6 +404,18 @@ export function getSweepFromSuspectedSweepSurface(
   }
   const segment = getSegmentArtifactForEdgeCut(faceArtifact, artifactGraph)
   if (segment == null) {
+    if (faceArtifact.surfaceId) {
+      const surface = getArtifactOfTypes(
+        { key: faceArtifact.surfaceId, types: ['wall', 'cap'] },
+        artifactGraph
+      )
+      if (!err(surface)) {
+        return getArtifactOfTypes(
+          { key: surface.sweepId, types: ['sweep'] },
+          artifactGraph
+        )
+      }
+    }
     return new Error('edgeCut has no consumed segment')
   }
   const pathId = segment.pathId
@@ -426,7 +439,7 @@ export function getCommonFacesForEdge(
   artifact: SegmentArtifact,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
-  const commonFaces = artifact.commonSurfaceIds
+  const commonFaces = (artifact.commonSurfaceIds ?? [])
     .map((id) =>
       getArtifactOfTypes({ key: id, types: ['wall', 'cap'] }, artifactGraph)
     )
