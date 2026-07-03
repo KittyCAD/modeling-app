@@ -545,6 +545,64 @@ describe('operations.test.ts', () => {
     })
   })
 
+  describe('Rotate edit flow', () => {
+    it('enters edit flow for roll/pitch/yaw rotate without an axis', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'rotate001 = rotate(extrude001, roll = 10deg, pitch = 20deg, yaw = 30deg)'
+      const operation = stdlib('rotate')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'sweep-id' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+      operation.labeledArgs = {
+        roll: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10deg'),
+        },
+        pitch: {
+          value: { type: 'Number', value: 20, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '20deg'),
+        },
+        yaw: {
+          value: { type: 'Number', value: 30, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '30deg'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        axis?: string
+        roll?: { valueText: string }
+        pitch?: { valueText: string }
+        yaw?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Rotate')
+      expect(argDefaultValues.axis).toBe('Z')
+      expect(argDefaultValues.roll?.valueText).toBe('10deg')
+      expect(argDefaultValues.pitch?.valueText).toBe('20deg')
+      expect(argDefaultValues.yaw?.valueText).toBe('30deg')
+    })
+  })
+
   describe('GDT edit flow', () => {
     it.each([
       {

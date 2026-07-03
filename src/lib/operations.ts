@@ -53,6 +53,7 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   EXECUTION_TYPE_REAL,
+  KCL_AXIS_Z,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
@@ -4318,11 +4319,7 @@ async function prepareToEditRotate({
     yaw = result
   }
 
-  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
-  if (typeof axisResult !== 'string') {
-    return { reason: axisResult.error }
-  }
-  const axis = axisResult
+  const axis = extractStringArgument(code, operation, 'axis') ?? KCL_AXIS_Z
 
   const angleResult = await extractOptionalKclArgument(
     code,
