@@ -14,6 +14,7 @@ import {
   dialog,
   ipcMain,
   nativeTheme,
+  protocol,
   screen,
   shell,
 } from 'electron'
@@ -393,6 +394,18 @@ app.on('window-all-closed', () => {
 
   app.quit()
 })
+
+// Required for registerFileProtocolCsp file:// intercepting
+// This fixes media file streaming
+// see https://github.com/electron/electron/issues/40447
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'file',
+    privileges: {
+      stream: true,
+    },
+  },
+])
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

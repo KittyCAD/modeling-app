@@ -2111,7 +2111,7 @@ async fn kcl_test_better_type_names() {
     };
     assert_eq!(
         err,
-        "The `appearance` function expected the input argument to be one or more Solids or ImportedGeometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`"
+        "The `appearance` function expected the input argument to be one or more Solids or ImportedGeometry or Plane but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`"
     );
 }
 

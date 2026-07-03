@@ -13,10 +13,10 @@ use std::sync::atomic::Ordering;
 
 pub use async_tasks::AsyncTasks;
 use indexmap::IndexMap;
+use kcl_api::UnitLength;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::websocket::WebSocketRequest;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::{self as kcmc};
 use parse_display::Display;
 use parse_display::FromStr;
@@ -28,6 +28,7 @@ use uuid::Uuid;
 use crate::SourceRange;
 use crate::execution::PlaneInfo;
 use crate::execution::Point3d;
+use crate::unit_conversion::ToKcmc;
 
 lazy_static::lazy_static! {
     pub static ref GRID_OBJECT_ID: uuid::Uuid = uuid::Uuid::parse_str("cfa78409-653d-4c26-96f1-7c45fb784840").unwrap();
@@ -269,7 +270,7 @@ pub fn new_zoo_client(token: Option<String>, engine_addr: Option<String>) -> any
 #[derive(Copy, Clone, Debug)]
 pub enum GridScaleBehavior {
     ScaleWithZoom,
-    Fixed(Option<kcmc::units::UnitLength>),
+    Fixed(Option<UnitLength>),
 }
 
 impl GridScaleBehavior {
@@ -280,7 +281,7 @@ impl GridScaleBehavior {
             GridScaleBehavior::Fixed(unit_length) => ModelingCmd::from(
                 mcmd::SetGridScale::builder()
                     .value(NUMBER_OF_GRID_COLUMNS)
-                    .units(unit_length.unwrap_or(kcmc::units::UnitLength::Millimeters))
+                    .units(unit_length.unwrap_or(UnitLength::Millimeters).to_kcmc())
                     .build(),
             ),
         }

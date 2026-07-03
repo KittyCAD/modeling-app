@@ -175,8 +175,6 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
     "connect-src 'self' https://plausible.corp.zoo.dev https://api.zoo.dev wss://api.zoo.dev https://api.dev.zoo.dev wss://api.dev.zoo.dev https://api.zoogov.dev wss://api.zoogov.dev",
     // Disallow legacy stuff
     "object-src 'none'",
-    // Disallow iframes. Iframes might access the parent electron state.
-    "iframe-src 'none'",
   ]
 
   // Allow scripts from the same origin and from Plausible Analytics. Allow WASM execution.
@@ -194,6 +192,10 @@ export function indexHtmlCsp(enabled: boolean): Plugin {
   const vercelCsp =
     csp
       .concat(vercelCspBase)
+      .concat([
+        // Disallow iframes. Iframes might access the parent electron state.
+        "frame-src 'none'",
+      ])
       .concat([cspScriptBase])
       .concat(cspReporting)
       .join('; ') + ';'

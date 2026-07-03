@@ -8,11 +8,11 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::{self as kcmc};
 use parse_display::Display;
@@ -35,6 +35,7 @@ use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::normalize_to_solver_distance_unit;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
@@ -408,15 +409,48 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
     }
 }
 
-impl SolidOrImportedGeometry {
+/// Something that you can change the color of.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
+pub enum HasAppearance {
+    ImportedGeometry(Box<ImportedGeometry>),
+    SolidSet(Vec<Solid>),
+    Plane(Box<Plane>),
+}
+
+impl From<HasAppearance> for KclValue {
+    fn from(value: HasAppearance) -> Self {
+        match value {
+            HasAppearance::Plane(p) => KclValue::Plane { value: p },
+            HasAppearance::ImportedGeometry(s) => KclValue::ImportedGeometry(*s),
+            HasAppearance::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    KclValue::Solid { value: Box::new(s) }
+                } else {
+                    KclValue::HomArray {
+                        value: s.into_iter().map(|s| KclValue::Solid { value: Box::new(s) }).collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl HasAppearance {
     pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
         match self {
-            SolidOrImportedGeometry::ImportedGeometry(s) => {
+            HasAppearance::Plane(p) => Ok(vec![p.id]),
+            HasAppearance::ImportedGeometry(s) => {
                 let id = s.id(ctx).await?;
 
                 Ok(vec![id])
             }
-            SolidOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HasAppearance::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
         }
     }
 }
@@ -1031,6 +1065,10 @@ pub enum Extrudable {
     FaceTag(FaceTag),
     /// Face.
     Face(Box<Face>),
+    /// Tagged Edge.
+    EdgeTag(Box<TagIdentifier>),
+    /// Edge.
+    Edge(Uuid),
 }
 
 impl Extrudable {
@@ -1045,6 +1083,14 @@ impl Extrudable {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
             Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
             Extrudable::Face(face) => Ok(face.id),
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
+                Some(info) => Ok(info.id),
+                None => Err(KclError::new_type(KclErrorDetails::new(
+                    "Could not find a valid id to extrude".to_owned(),
+                    vec![args.source_range],
+                ))),
+            },
+            Extrudable::Edge(edge) => Ok(*edge),
         }
     }
 
@@ -1057,6 +1103,12 @@ impl Extrudable {
                 None => None,
             },
             Extrudable::Face(_) => None,
+            Extrudable::EdgeTag(tag_identifier) => match tag_identifier.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
+                None => None,
+            },
+            Extrudable::Edge(_) => None,
         }
     }
 
@@ -1075,6 +1127,15 @@ impl Extrudable {
                 Some(is_closed) => is_closed,
                 None => ProfileClosed::Maybe,
             },
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid
+                    .sketch()
+                    .map(|sketch| sketch.is_closed)
+                    .unwrap_or(ProfileClosed::Maybe),
+                _ => ProfileClosed::Maybe,
+            },
+            Extrudable::Edge(_) => ProfileClosed::Maybe,
         }
     }
 }
@@ -1242,6 +1303,15 @@ pub struct CreatorFace {
     pub sketch: Sketch,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorEdge {
+    /// The edge id that served as the base.
+    pub edge_id: uuid::Uuid,
+    /// The solid id that owned the edge.
+    pub body_id: uuid::Uuid,
+}
+
 /// How a solid was created.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -1251,6 +1321,8 @@ pub enum SolidCreator {
     Sketch(Sketch),
     /// Created by extruding or modifying a face.
     Face(CreatorFace),
+    /// Created by extruding or modifying an edge.
+    Edge(CreatorEdge),
     /// Created procedurally without a sketch.
     Procedural,
 }
@@ -1260,6 +1332,7 @@ impl Solid {
         match &self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
@@ -1268,6 +1341,7 @@ impl Solid {
         match &mut self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
@@ -1383,11 +1457,11 @@ impl Point2d {
     }
 
     pub fn into_x(self) -> TyF64 {
-        TyF64::new(self.x, self.units.into())
+        TyF64::new(self.x, NumericType::length(self.units))
     }
 
     pub fn into_y(self) -> TyF64 {
-        TyF64::new(self.y, self.units.into())
+        TyF64::new(self.y, NumericType::length(self.units))
     }
 
     pub fn ignore_units(self) -> [f64; 2] {
@@ -1603,12 +1677,12 @@ pub struct BasePath {
 
 impl BasePath {
     pub fn get_to(&self) -> [TyF64; 2] {
-        let ty: NumericType = self.units.into();
+        let ty = NumericType::length(self.units);
         [TyF64::new(self.to[0], ty), TyF64::new(self.to[1], ty)]
     }
 
     pub fn get_from(&self) -> [TyF64; 2] {
-        let ty: NumericType = self.units.into();
+        let ty = NumericType::length(self.units);
         [TyF64::new(self.from[0], ty), TyF64::new(self.from[1], ty)]
     }
 }
@@ -1829,28 +1903,28 @@ impl Path {
     /// Where does this path segment start?
     pub fn get_from(&self) -> [TyF64; 2] {
         let p = &self.get_base().from;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// Where does this path segment end?
     pub fn get_to(&self) -> [TyF64; 2] {
         let p = &self.get_base().to;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// The path segment start point and its type.
     pub fn start_point_components(&self) -> ([f64; 2], NumericType) {
         let p = &self.get_base().from;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         (*p, ty)
     }
 
     /// The path segment end point and its type.
     pub fn end_point_components(&self) -> ([f64; 2], NumericType) {
         let p = &self.get_base().to;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         (*p, ty)
     }
 
@@ -1912,7 +1986,7 @@ impl Path {
                 None
             }
         };
-        n.map(|n| TyF64::new(n, self.get_base().units.into()))
+        n.map(|n| TyF64::new(n, NumericType::length(self.get_base().units)))
     }
 
     pub fn get_base_mut(&mut self) -> &mut BasePath {
