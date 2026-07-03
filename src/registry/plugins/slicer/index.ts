@@ -7,6 +7,7 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import type { KclManager } from '@src/lang/KclManager'
 import type { Command } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { DefaultLayoutToolbarID } from '@src/lib/layout/configs/default'
@@ -38,22 +39,28 @@ type ExportToSlicerCommandArgs = {
   slicer: SlicerId
 }
 
-function useExportToSlicerDisabled() {
-  useSignals()
-  const { overallState, immediateState } = useNetworkContext()
-  const { isStreamReady } = useAppState()
-  const kclManager = window.app?.singletons.kclManager
-  const engineIsBusyOrUnavailable =
-    !kclManager ||
-    (overallState !== NetworkHealthState.Ok &&
-      overallState !== NetworkHealthState.Weak) ||
-    kclManager.isExecutingSignal.value ||
-    immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
-    !isStreamReady
+function createUseExportToSlicerDisabled({
+  getKclManager,
+}: {
+  getKclManager: () => KclManager | undefined
+}) {
+  return function useExportToSlicerDisabled() {
+    useSignals()
+    const { overallState, immediateState } = useNetworkContext()
+    const { isStreamReady } = useAppState()
+    const kclManager = getKclManager()
+    const engineIsBusyOrUnavailable =
+      !kclManager ||
+      (overallState !== NetworkHealthState.Ok &&
+        overallState !== NetworkHealthState.Weak) ||
+      kclManager.isExecutingSignal.value ||
+      immediateState.type !== EngineConnectionStateType.ConnectionEstablished ||
+      !isStreamReady
 
-  return engineIsBusyOrUnavailable
-    ? 'Need engine connection to export'
-    : undefined
+    return engineIsBusyOrUnavailable
+      ? 'Need engine connection to export'
+      : undefined
+  }
 }
 
 function getSubmittedSlicerId(data: unknown): SlicerId | undefined {
@@ -65,36 +72,57 @@ function getSubmittedSlicerId(data: unknown): SlicerId | undefined {
   return getSlicerExportDefinition(slicer) ? slicer : undefined
 }
 
-export const exportToSlicerCommand: Command = {
-  id: EXPORT_TO_SLICER_COMMAND_ID,
-  name: EXPORT_TO_SLICER_COMMAND_NAME,
-  displayName: EXPORT_TO_SLICER_COMMAND_NAME,
-  description: 'Export the current part as STL and open it in a slicer.',
-  icon: 'printer3d',
-  groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
-  hide: 'web',
-  needsReview: false,
-  args: {
-    slicer: {
-      displayName: 'Slicer',
-      inputType: 'options',
-      required: true,
-      options: SLICER_COMMAND_OPTIONS,
-      valueSummary: (value) =>
-        getSlicerExportDefinition(value)?.slicerName ?? String(value),
+function createExportToSlicerCommand({
+  getKclManager,
+}: {
+  getKclManager: () => KclManager | undefined
+}): Command {
+  return {
+    id: EXPORT_TO_SLICER_COMMAND_ID,
+    name: EXPORT_TO_SLICER_COMMAND_NAME,
+    displayName: EXPORT_TO_SLICER_COMMAND_NAME,
+    description: 'Export the current part as STL and open it in a slicer.',
+    icon: 'printer3d',
+    groupId: EXPORT_TO_SLICER_COMMAND_GROUP_ID,
+    hide: 'web',
+    needsReview: false,
+    args: {
+      slicer: {
+        displayName: 'Slicer',
+        inputType: 'options',
+        required: true,
+        options: SLICER_COMMAND_OPTIONS,
+        valueSummary: (value) =>
+          getSlicerExportDefinition(value)?.slicerName ?? String(value),
+      },
     },
-  },
-  onSubmit: (data) => {
-    const definition = getSlicerExportDefinition(getSubmittedSlicerId(data))
-    if (!definition) {
-      return new Error('Select a slicer to export to.')
-    }
+    onSubmit: (data) => {
+      const definition = getSlicerExportDefinition(getSubmittedSlicerId(data))
+      if (!definition) {
+        return new Error('Select a slicer to export to.')
+      }
 
-    return exportCurrentPartToSlicer(definition)
-  },
+      const kclManager = getKclManager()
+      if (!kclManager) {
+        return new Error('No active modeling context')
+      }
+
+      return exportCurrentPartToSlicer(definition, { kclManager })
+    },
+  }
 }
 
 const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
+  const getCommandSystem = () => ctx.services.get(commandSystemService)
+  const getKclManager = () =>
+    getCommandSystem().actor.getSnapshot().context.kclManager
+  const exportToSlicerCommand = createExportToSlicerCommand({
+    getKclManager,
+  })
+  const useExportToSlicerDisabled = createUseExportToSlicerDisabled({
+    getKclManager,
+  })
+
   return {
     item: defineRuntimeRegistryItem({
       id: 'slicer.left-toolbar.item',
@@ -105,8 +133,7 @@ const exportToSlicerSidebarItem = defineRegistryItemFactory((ctx) => {
             useHidden: () => !isDesktop(),
             useDisabled: useExportToSlicerDisabled,
             execute: () => {
-              const commandSystem = ctx.services.get(commandSystemService)
-              commandSystem.send({
+              getCommandSystem().send({
                 type: 'Find and select command',
                 data: {
                   name: EXPORT_TO_SLICER_COMMAND_NAME,

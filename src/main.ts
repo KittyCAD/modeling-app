@@ -541,9 +541,13 @@ ipcMain.handle('app.getPath', (event, data) => {
 ipcMain.handle(
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
   (_event, pluginIds: unknown) => {
+    if (!isArray(pluginIds)) {
+      return
+    }
     if (
-      !isArray(pluginIds) ||
-      pluginIds.some((pluginId) => typeof pluginId !== 'string')
+      !pluginIds.every(
+        (pluginId): pluginId is string => typeof pluginId === 'string'
+      )
     ) {
       return
     }

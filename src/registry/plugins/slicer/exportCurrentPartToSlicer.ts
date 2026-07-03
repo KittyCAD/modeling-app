@@ -1,4 +1,6 @@
+import type { IElectronAPI } from '@root/interface'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
+import type { KclManager } from '@src/lang/KclManager'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import type { PluginIpcChannel } from '@src/registry/pluginIpc'
@@ -12,6 +14,11 @@ export type ExportCurrentPartToSlicerOptions = {
   outputFileExtension: 'stl'
   outputFormat?: OutputFormat3d
   successMessage?: string
+}
+
+type ExportCurrentPartToSlicerRuntime = {
+  electron?: IElectronAPI
+  kclManager?: KclManager
 }
 
 const DEFAULT_STL_FORMAT: OutputFormat3d = {
@@ -43,16 +50,19 @@ function getExportFileName(
   return fileName.includes('.') ? fileName : `${fileName}${extension}`
 }
 
-export async function exportCurrentPartToSlicer({
-  slicerName,
-  ipcChannel,
-  exportDirectoryName,
-  outputFileExtension,
-  outputFormat = DEFAULT_STL_FORMAT,
-  successMessage = `Opened exported file in ${slicerName}.`,
-}: ExportCurrentPartToSlicerOptions) {
-  const electron = window.electron
-  const kclManager = window.app?.singletons.kclManager
+export async function exportCurrentPartToSlicer(
+  {
+    slicerName,
+    ipcChannel,
+    exportDirectoryName,
+    outputFileExtension,
+    outputFormat = DEFAULT_STL_FORMAT,
+    successMessage = `Opened exported file in ${slicerName}.`,
+  }: ExportCurrentPartToSlicerOptions,
+  runtime: ExportCurrentPartToSlicerRuntime = {}
+) {
+  const electron = runtime.electron ?? window.electron
+  const kclManager = runtime.kclManager
 
   if (!electron) {
     toast.error(`Export to ${slicerName} is only available in the desktop app.`)
