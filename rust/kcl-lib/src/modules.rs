@@ -127,17 +127,19 @@ impl ModuleInfo {
     }
 }
 
-#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq, Serialize)]
 pub enum ModuleRepr {
     Root,
     // AST, memory, exported names
     Kcl(
-        Node<Program>,
+        Box<Node<Program>>,
         /// Cached execution outcome.
-        Option<ModuleExecutionOutcome>,
+        Box<Option<ModuleExecutionOutcome>>,
     ),
-    Foreign(PreImportedGeometry, Option<(Option<KclValue>, ModuleArtifactState)>),
+    Foreign(
+        Box<PreImportedGeometry>,
+        Box<Option<(Option<KclValue>, ModuleArtifactState)>>,
+    ),
     Dummy,
 }
 
@@ -149,7 +151,6 @@ pub struct ModuleExecutionOutcome {
     pub artifacts: ModuleArtifactState,
 }
 
-#[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, Eq, PartialEq, Deserialize, Serialize, Hash, ts_rs::TS)]
 #[serde(tag = "type")]
 pub enum ModulePath {

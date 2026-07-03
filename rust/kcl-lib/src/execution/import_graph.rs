@@ -180,7 +180,7 @@ fn import_dependencies(
         Ok(())
     }
 
-    walk(ret.clone(), prog.into(), path, ctx)?;
+    walk(ret.clone(), prog.as_ref().into(), path, ctx)?;
 
     let ret = ret.lock().map_err(|err| {
         KclError::new_internal(KclErrorDetails::new(
@@ -266,7 +266,7 @@ mod tests {
                 value: "".into(),
                 original_import_path: None,
             },
-            ModuleRepr::Kcl(program, None),
+            ModuleRepr::Kcl(Box::new(program), Box::new(None)),
         )
     }
 

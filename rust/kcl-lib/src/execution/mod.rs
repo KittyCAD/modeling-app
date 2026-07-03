@@ -1705,18 +1705,20 @@ impl ExecutorContext {
                                 )
                                 .await;
 
-                            result.map(|val| ModuleRepr::Kcl(program.clone(), Some(val)))
+                            result.map(|val| ModuleRepr::Kcl(program.clone(), Box::new(Some(val))))
                         }
                         ModuleRepr::Foreign(geom, _) => {
-                            let result = crate::execution::import::send_to_engine(geom.clone(), exec_state, exec_ctxt)
-                                .await
-                                .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                            let result =
+                                crate::execution::import::send_to_engine(geom.as_ref().clone(), exec_state, exec_ctxt)
+                                    .await
+                                    .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
                             // Foreign modules don't produce their own operations;
                             // use a fresh artifact state instead of capturing the
                             // cloned root module's artifacts (which may contain
                             // early-pushed ModuleInstance operations).
-                            result.map(|val| ModuleRepr::Foreign(geom.clone(), Some((val, Default::default()))))
+                            result
+                                .map(|val| ModuleRepr::Foreign(geom.clone(), Box::new(Some((val, Default::default())))))
                         }
                         ModuleRepr::Dummy | ModuleRepr::Root => Err(KclError::new_internal(KclErrorDetails::new(
                             format!("Module {module_path} not found in universe"),
@@ -1835,7 +1837,7 @@ impl ExecutorContext {
         let root_imports = import_graph::import_universe(
             self,
             &ModulePath::Main,
-            &ModuleRepr::Kcl(program.ast.clone(), None),
+            &ModuleRepr::Kcl(Box::new(program.ast.clone()), Box::new(None)),
             &mut universe,
             exec_state,
         )
@@ -1992,7 +1994,9 @@ impl ExecutorContext {
             op.fill_node_paths(programs, cached_body_items);
         }
         for module in exec_state.global.module_infos.values_mut() {
-            if let ModuleRepr::Kcl(_, Some(outcome)) = &mut module.repr {
+            if let ModuleRepr::Kcl(_, cache) = &mut module.repr
+                && let Some(outcome) = cache.as_mut()
+            {
                 for op in &mut outcome.artifacts.operations {
                     op.fill_node_paths(programs, cached_body_items);
                 }
@@ -2224,7 +2228,7 @@ impl ProgramLookup {
         let mut programs = IndexMap::with_capacity(module_infos.len());
         for (id, info) in module_infos {
             if let ModuleRepr::Kcl(program, _) = info.repr {
-                programs.insert(id, program);
+                programs.insert(id, *program);
             }
         }
         programs.insert(ModuleId::default(), current);

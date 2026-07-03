@@ -1210,7 +1210,11 @@ impl ExecutorContext {
                 exec_state.add_id_to_source(id, source.clone());
                 // TODO handle parsing errors properly
                 let parsed = crate::parsing::parse_str(&source.source, id).parse_errs_as_err()?;
-                exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
+                exec_state.add_module(
+                    id,
+                    resolved_path.clone(),
+                    ModuleRepr::Kcl(Box::new(parsed), Box::new(None)),
+                );
 
                 Ok(id)
             }
@@ -1225,7 +1229,11 @@ impl ExecutorContext {
                 exec_state.add_path_to_source_id(resolved_path.clone(), id);
                 let format = super::import::format_from_annotations(attrs, path, source_range)?;
                 let geom = super::import::import_foreign(path, format, exec_state, self, source_range).await?;
-                exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Foreign(geom, None));
+                exec_state.add_module(
+                    id,
+                    resolved_path.clone(),
+                    ModuleRepr::Foreign(Box::new(geom), Box::new(None)),
+                );
                 Ok(id)
             }
             ImportPath::Std { .. } => {
@@ -1248,7 +1256,11 @@ impl ExecutorContext {
                 let parsed = crate::parsing::parse_str(&source.source, id)
                     .parse_errs_as_err()
                     .unwrap();
-                exec_state.add_module(id, resolved_path.clone(), ModuleRepr::Kcl(parsed, None));
+                exec_state.add_module(
+                    id,
+                    resolved_path.clone(),
+                    ModuleRepr::Kcl(Box::new(parsed), Box::new(None)),
+                );
                 Ok(id)
             }
         }
@@ -1266,14 +1278,18 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some(outcome)) => Ok((outcome.environment, outcome.exports.clone())),
-            ModuleRepr::Kcl(program, cache) => self
-                .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
-                .await
-                .map(|outcome| {
-                    *cache = Some(outcome.clone());
-                    (outcome.environment, outcome.exports)
-                }),
+            ModuleRepr::Kcl(program, cache) => {
+                if let Some(outcome) = cache.as_ref() {
+                    Ok((outcome.environment, outcome.exports.clone()))
+                } else {
+                    self.exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
+                        .await
+                        .map(|outcome| {
+                            **cache = Some(outcome.clone());
+                            (outcome.environment, outcome.exports)
+                        })
+                }
+            }
             ModuleRepr::Foreign(geom, _) => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot import items from foreign modules".to_owned(),
                 vec![geom.source_range],
@@ -1297,32 +1313,38 @@ impl ExecutorContext {
 
         let result = match &mut repr {
             ModuleRepr::Root => Err(exec_state.circular_import_error(&path, source_range)),
-            ModuleRepr::Kcl(_, Some(outcome)) => Ok(outcome.last_expr.clone()),
             ModuleRepr::Kcl(program, cached_items) => {
-                let result = self
-                    .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
-                    .await;
-                match result {
-                    Ok(outcome) => {
-                        let value = outcome.last_expr.clone();
-                        *cached_items = Some(outcome);
-                        Ok(value)
+                if let Some(outcome) = cached_items.as_ref() {
+                    Ok(outcome.last_expr.clone())
+                } else {
+                    let result = self
+                        .exec_module_from_ast(program, module_id, &path, exec_state, source_range, PreserveMem::Normal)
+                        .await;
+                    match result {
+                        Ok(outcome) => {
+                            let value = outcome.last_expr.clone();
+                            **cached_items = Some(outcome);
+                            Ok(value)
+                        }
+                        Err(e) => Err(e),
                     }
-                    Err(e) => Err(e),
                 }
             }
-            ModuleRepr::Foreign(_, Some((imported, _))) => Ok(imported.clone()),
             ModuleRepr::Foreign(geom, cached) => {
-                let result = super::import::send_to_engine(geom.clone(), exec_state, self)
-                    .await
-                    .map(|geom| Some(KclValue::ImportedGeometry(geom)));
+                if let Some((imported, _)) = cached.as_ref() {
+                    Ok(imported.clone())
+                } else {
+                    let result = super::import::send_to_engine(geom.as_ref().clone(), exec_state, self)
+                        .await
+                        .map(|geom| Some(KclValue::ImportedGeometry(geom)));
 
-                match result {
-                    Ok(val) => {
-                        *cached = Some((val.clone(), exec_state.mod_local.artifacts.clone()));
-                        Ok(val)
+                    match result {
+                        Ok(val) => {
+                            **cached = Some((val.clone(), exec_state.mod_local.artifacts.clone()));
+                            Ok(val)
+                        }
+                        Err(e) => Err(e),
                     }
-                    Err(e) => Err(e),
                 }
             }
             ModuleRepr::Dummy => unreachable!(),
