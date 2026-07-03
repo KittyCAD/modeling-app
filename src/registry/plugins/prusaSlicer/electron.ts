@@ -2,12 +2,11 @@ import os from 'node:os'
 import path from 'path'
 import type { ElectronPluginContext } from '@src/registry/pluginIpc'
 import { PRUSA_SLICER_OPEN_STL_CHANNEL } from '@src/registry/plugins/prusaSlicer/ipc'
+import { SLICER_PLUGIN_ID } from '@src/registry/plugins/slicer/constants'
 import {
   getPathCandidatesFromEnvironment,
   registerSlicerLauncher,
 } from '@src/registry/plugins/slicer/electronLauncher'
-
-const PRUSA_SLICER_PLUGIN_ID = 'prusa-slicer'
 
 function getPrusaSlicerCandidatePaths() {
   if (process.platform === 'darwin') {
@@ -96,7 +95,7 @@ function getPrusaSlicerCandidatePaths() {
 
 export function register(context: ElectronPluginContext) {
   registerSlicerLauncher(context, {
-    pluginId: PRUSA_SLICER_PLUGIN_ID,
+    pluginId: SLICER_PLUGIN_ID,
     channel: PRUSA_SLICER_OPEN_STL_CHANNEL,
     slicerName: 'PrusaSlicer',
     acceptedFileExtensions: ['.stl'],

@@ -5,7 +5,7 @@ import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { SlicerLaunchResult } from '@src/registry/plugins/slicer/types'
 import toast from 'react-hot-toast'
 
-type ExportCurrentPartToSlicerOptions = {
+export type ExportCurrentPartToSlicerOptions = {
   slicerName: string
   ipcChannel: PluginIpcChannel
   exportDirectoryName: string

@@ -7,13 +7,50 @@ import type {
 } from '@src/registry/pluginIpc'
 import type { SlicerLaunchResult } from '@src/registry/plugins/slicer/types'
 
-type SlicerLauncherDefinition = {
+export type SlicerLauncherDefinition = {
   pluginId: string
   channel: PluginIpcChannel
   slicerName: string
   acceptedFileExtensions: readonly `.${string}`[]
   executablePaths: () => readonly string[]
   launchArgs?: (filePath: string) => readonly string[]
+}
+
+export function getChildDirectoryExecutableCandidates({
+  parentDirectories,
+  matches,
+  executableRelativePath,
+}: {
+  parentDirectories: readonly (string | undefined)[]
+  matches: (directoryName: string) => boolean
+  executableRelativePath: readonly string[]
+}) {
+  const candidates: string[] = []
+
+  for (const parentDirectory of parentDirectories) {
+    if (!parentDirectory) {
+      continue
+    }
+
+    let entries: fs.Dirent[]
+    try {
+      entries = fs.readdirSync(parentDirectory, { withFileTypes: true })
+    } catch {
+      continue
+    }
+
+    for (const entry of entries) {
+      if (!entry.isDirectory() || !matches(entry.name)) {
+        continue
+      }
+
+      candidates.push(
+        path.join(parentDirectory, entry.name, ...executableRelativePath)
+      )
+    }
+  }
+
+  return candidates
 }
 
 export function getPathCandidatesFromEnvironment(
