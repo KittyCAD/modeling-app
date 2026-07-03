@@ -3,6 +3,7 @@ import {
   autocompletion,
   clearSnippet,
   closeCompletion,
+  completionStatus,
   currentCompletions,
   hasNextSnippetField,
   moveCompletionSelection,
@@ -14,9 +15,9 @@ import {
 import type { CompletionContext } from '@codemirror/autocomplete'
 import { syntaxTree } from '@codemirror/language'
 import type { Extension } from '@codemirror/state'
-import { Prec } from '@codemirror/state'
-import type { EditorView, KeyBinding, ViewPlugin } from '@codemirror/view'
-import { keymap } from '@codemirror/view'
+import { Prec, Transaction } from '@codemirror/state'
+import type { KeyBinding, ViewPlugin } from '@codemirror/view'
+import { EditorView, keymap } from '@codemirror/view'
 import {
   CompletionItemKind,
   CompletionTriggerKind,
@@ -62,6 +63,37 @@ const lspAutocompleteKeymap: readonly KeyBinding[] = [
 
 const lspAutocompleteKeymapExt = Prec.highest(keymap.of(lspAutocompleteKeymap))
 
+const identifierContinuationCharacter = /^[A-Za-z0-9_]$/
+
+// While the autocomplete tooltip is active or querying, Chrome can leave the
+// native DOM selection at an imprecise line-boundary node around punctuation.
+// If we let contenteditable handle boundary characters in that state, the DOM
+// mutation can be read back one character before the CodeMirror selection.
+// Route those inputs through editor state instead, but leave identifier
+// characters alone so normal completion filtering/type-ahead behavior continues.
+const lspAutocompleteBoundaryInputExt = Prec.highest(
+  EditorView.domEventHandlers({
+    beforeinput(event, view) {
+      if (
+        event.inputType !== 'insertText' ||
+        typeof event.data !== 'string' ||
+        event.data.length !== 1 ||
+        identifierContinuationCharacter.test(event.data) ||
+        completionStatus(view.state) === null
+      ) {
+        return false
+      }
+
+      const transactionSpec = view.state.replaceSelection(event.data)
+      view.dispatch({
+        ...transactionSpec,
+        annotations: Transaction.userEvent.of('input.type'),
+      })
+      return true
+    },
+  })
+)
+
 export function moveCompletionSelectionOrExit(forward: boolean) {
   const moveSelection = moveCompletionSelection(forward)
 
@@ -87,6 +119,7 @@ export default function lspAutocompleteExt(
 ): Extension {
   return [
     lspAutocompleteKeymapExt,
+    lspAutocompleteBoundaryInputExt,
     autocompletion({
       defaultKeymap: false,
       override: [
