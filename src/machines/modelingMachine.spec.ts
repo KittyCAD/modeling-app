@@ -1646,7 +1646,6 @@ sketch001 = sketch(on = YZ) {
             artifactGraph,
             hasErrors: vi.fn(() => false),
             hidePlanes: vi.fn(),
-            setCopilotEnabled: vi.fn(),
             setSelectionFilter: vi.fn(),
             setSelectionFilterToDefault: vi.fn(),
             showPlanes: vi.fn(),

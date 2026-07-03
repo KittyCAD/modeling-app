@@ -1,5 +1,5 @@
 import type { LanguageSupport } from '@codemirror/language'
-import { type Extension, Prec } from '@codemirror/state'
+import { Prec } from '@codemirror/state'
 import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   FromServer,
@@ -17,13 +17,9 @@ import React, {
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
 
-import { kclAutocompleteCompartment, kclLspCompartment } from '@src/editor'
-import { copilotPlugin } from '@src/editor/plugins/lsp/copilot'
+import { kclLspCompartment } from '@src/editor'
 import { kcl } from '@src/editor/plugins/lsp/kcl/language'
-import type {
-  CopilotWorkerOptions,
-  KclWorkerOptions,
-} from '@src/editor/plugins/lsp/types'
+import type { KclWorkerOptions } from '@src/editor/plugins/lsp/types'
 import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
 import { wasmUrl } from '@src/lang/wasmUtils'
@@ -48,7 +44,6 @@ export function projectBasename(filePath: string, projectPath: string): string {
 
 type LspContext = {
   lspClients: LanguageServerClient[]
-  copilotLSP: Extension | null
   kclLSP: LanguageSupport | null
   onProjectClose: (
     file: FileEntry | null,
@@ -75,7 +70,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useApp()
   const { kclManager } = useSingletons()
   const [isKclLspReady, setIsKclLspReady] = useState(false)
-  const [isCopilotLspReady, setIsCopilotLspReady] = useState(false)
 
   const token = auth.useToken()
   const navigate = useNavigate()
@@ -190,76 +184,9 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       })
   }, [kclLSP, kclManager.editorView])
 
-  const { lspClient: copilotLspClient } = useMemo(() => {
-    if (!token || token === '') {
-      return { lspClient: null }
-    }
-
-    const lspWorker = new Worker({ name: 'copilot' })
-    const initEvent: CopilotWorkerOptions = {
-      wasmUrl: wasmUrl(),
-      token: token,
-      apiBaseUrl: withAPIBaseURL(''),
-    }
-    lspWorker.postMessage({
-      worker: LspWorker.Copilot,
-      eventType: LspWorkerEventType.Init,
-      eventData: initEvent,
-    })
-    lspWorker.onmessage = function (e) {
-      if (err(fromServer)) return
-      fromServer.add(e.data)
-    }
-
-    const intoServer: IntoServer = new IntoServer(LspWorker.Copilot, lspWorker)
-    const fromServer: FromServer | Error = FromServer.create()
-    if (err(fromServer)) return { lspClient: null }
-
-    const lspClient = new LanguageServerClient({
-      name: LspWorker.Copilot,
-      fromServer,
-      intoServer,
-      initializedCallback: () => {
-        setIsCopilotLspReady(true)
-      },
-    })
-    return { lspClient }
-  }, [token])
-
-  // Here we initialize the plugin which will start the client.
-  // When we have multi-file support the name of the file will be a dep of
-  // this use memo, as well as the directory structure, which I think is
-  // a good setup because it will restart the client but not the server :)
-  // We do not want to restart the server, its just wasteful.
-  const copilotLSP = useMemo(() => {
-    let plugin = null
-    if (isCopilotLspReady && copilotLspClient) {
-      // Set up the lsp plugin.
-      const lsp = copilotPlugin(
-        {
-          documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-          workspaceFolders: getWorkspaceFolders(),
-          client: copilotLspClient,
-          allowHTMLContent: true,
-        },
-        kclManager
-      )
-
-      // New code to just update the CodeMirror extensions directly.
-      kclManager.editorView.dispatch({
-        effects: kclAutocompleteCompartment.reconfigure(Prec.highest(lsp)),
-      })
-      plugin = lsp
-    }
-    return plugin
-  }, [copilotLspClient, isCopilotLspReady, kclManager])
-
   let lspClients: LanguageServerClient[] = []
   if (kclLspClient) {
     lspClients.push(kclLspClient)
-  }
-  if (copilotLspClient) {
-    lspClients.push(copilotLspClient)
   }
 
   const onProjectClose = (
@@ -396,7 +323,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     <LspStateContext.Provider
       value={{
         lspClients,
-        copilotLSP,
         kclLSP,
         onProjectClose,
         onProjectOpen,

@@ -132,7 +132,6 @@ pub use fs::new_file_system_handle;
 pub use kcl_error;
 pub use kcl_error::SourceRange;
 pub use lsp::ToLspRange;
-pub use lsp::copilot::Backend as CopilotLspBackend;
 pub use lsp::kcl::Backend as KclLspBackend;
 pub use lsp::kcl::Server as KclLspServerSubCommand;
 pub use modules::ModuleId;
@@ -281,8 +280,6 @@ pub struct Program {
     pub original_file_contents: String,
 }
 
-#[cfg(any(test, feature = "lsp-test-util"))]
-pub use lsp::test_util::copilot_lsp_server;
 #[cfg(any(test, feature = "lsp-test-util"))]
 pub use lsp::test_util::kcl_lsp_server;
 
