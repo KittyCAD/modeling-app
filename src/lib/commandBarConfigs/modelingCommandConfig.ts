@@ -1530,7 +1530,13 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           defaultValue: KCL_DEFAULT_TRANSFORM,
         },
         axis: {
+          inputType: 'options',
           defaultValue: KCL_AXIS_Z,
+          options: [
+            { name: 'X-axis', value: KCL_AXIS_X },
+            { name: 'Y-axis', value: KCL_AXIS_Y },
+            { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
+          ],
         },
         angle: {
           defaultValue: KCL_DEFAULT_DEGREE,

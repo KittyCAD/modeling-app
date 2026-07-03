@@ -165,7 +165,7 @@ export type TranslateCommandArgs = StdLibCommandArgs<'translate'>
 export type RotateCommandArgs = Override<
   StdLibCommandArgs<'rotate'>,
   {
-    axis?: KclCommandValue
+    axis: string
   }
 >
 

@@ -262,6 +262,24 @@ function extractStringArgument(
     : undefined
 }
 
+function extractRequiredStringArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string
+): string | { error: string } {
+  const arg = operation.labeledArgs?.[argName]
+  if (!arg?.sourceRange) {
+    return { error: `Missing or invalid ${argName} argument` }
+  }
+
+  const value = code.slice(...arg.sourceRange.map((r) => toUtf16(r, code)))
+  if (!value) {
+    return { error: `Couldn't retrieve ${argName} argument` }
+  }
+
+  return value
+}
+
 async function extractOptionalKclArrayArgument(
   code: string,
   operation: StdLibCallOp,
@@ -1818,15 +1836,11 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
 
   // 3. Convert the axis argument from a string to a string value
   // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisArg = operation.labeledArgs?.['axis']
-  if (!axisArg || !axisArg.sourceRange) {
-    return { reason: 'Missing or invalid axis argument' }
+  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
+  if (typeof axisResult !== 'string') {
+    return { reason: axisResult.error }
   }
-
-  const axisString = code.slice(...axisArg.sourceRange.map(boundToUtf16))
-  if (!axisString) {
-    return { reason: "Couldn't retrieve axis argument" }
-  }
+  const axisString = axisResult
 
   // 4. Convert the center argument from a string to a KCL expression
   const centerArg = operation.labeledArgs?.['center']
@@ -1966,17 +1980,11 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
 
   // 4. Convert the axis argument from a string to a string value
   // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisArg = operation.labeledArgs?.['axis']
-  if (!axisArg || !axisArg.sourceRange) {
-    return { reason: 'Missing or invalid axis argument' }
+  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
+  if (typeof axisResult !== 'string') {
+    return { reason: axisResult.error }
   }
-
-  const axisString = code.slice(
-    ...axisArg.sourceRange.map((r) => toUtf16(r, code))
-  )
-  if (!axisString) {
-    return { reason: "Couldn't retrieve axis argument" }
-  }
+  const axisString = axisResult
 
   // 5. Convert the useOriginal argument from a string to a boolean
   const useOriginalArg = operation.labeledArgs?.['useOriginal']
@@ -4310,14 +4318,8 @@ async function prepareToEditRotate({
     yaw = result
   }
 
-  const axisResult = await extractOptionalKclArgument(
-    code,
-    operation,
-    'axis',
-    rustContext,
-    true
-  )
-  if (axisResult && 'error' in axisResult) {
+  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
+  if (typeof axisResult !== 'string') {
     return { reason: axisResult.error }
   }
   const axis = axisResult

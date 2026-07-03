@@ -4,6 +4,7 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
   createVariableDeclaration,
 } from '@src/lang/create'
 import {
@@ -145,7 +146,7 @@ export function addRotate({
   roll?: KclCommandValue
   pitch?: KclCommandValue
   yaw?: KclCommandValue
-  axis?: KclCommandValue
+  axis?: string
   angle?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
@@ -175,7 +176,7 @@ export function addRotate({
     ? [createLabeledArg('pitch', valueOrVariable(pitch))]
     : []
   const yawExpr = yaw ? [createLabeledArg('yaw', valueOrVariable(yaw))] : []
-  const axisExpr = axis ? [createLabeledArg('axis', valueOrVariable(axis))] : []
+  const axisExpr = axis ? [createLabeledArg('axis', createLocalName(axis))] : []
   const angleExpr = angle
     ? [createLabeledArg('angle', valueOrVariable(angle))]
     : []
@@ -207,9 +208,6 @@ export function addRotate({
   }
   if (yaw && 'variableName' in yaw && yaw.variableName) {
     insertVariableAndOffsetPathToNode(yaw, modifiedAst, mNodeToEdit)
-  }
-  if (axis && 'variableName' in axis && axis.variableName) {
-    insertVariableAndOffsetPathToNode(axis, modifiedAst, mNodeToEdit)
   }
   if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
