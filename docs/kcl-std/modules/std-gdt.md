@@ -5,7 +5,7 @@ excerpt: "Functions for working with geometric dimensioning and tolerancing (GD&
 layout: manual
 ---
 
-Functions for working with geometric dimensioning and tolerancing (GD&T). This can be used for model-based definition (MBD).
+Functions for working with geometric dimensioning and tolerancing (GD&T). This can be used for model-based definition (MBD). 
 
 
 
