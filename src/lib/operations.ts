@@ -4319,7 +4319,7 @@ async function prepareToEditRotate({
     yaw = result
   }
 
-  const axis = extractStringArgument(code, operation, 'axis') ?? KCL_AXIS_Z
+  const axis = extractStringArgument(code, operation, 'axis')
 
   const angleResult = await extractOptionalKclArgument(
     code,
