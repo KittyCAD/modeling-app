@@ -68,7 +68,7 @@ export type ExtrudeCommandArgs = Override<
 >
 
 export type SweepCommandArgs = Override<
-  Omit<StdLibCommandArgs<'sweep'>, 'tolerance'>,
+  StdLibCommandArgs<'sweep'>,
   {
     relativeTo?: SweepRelativeTo
     bodyType?: KclPreludeBodyType
@@ -76,14 +76,14 @@ export type SweepCommandArgs = Override<
 >
 
 export type LoftCommandArgs = Override<
-  Omit<StdLibCommandArgs<'loft'>, 'tolerance'>,
+  StdLibCommandArgs<'loft'>,
   {
     bodyType?: KclPreludeBodyType
   }
 >
 
 export type RevolveCommandArgs = Override<
-  Omit<StdLibCommandArgs<'revolve'>, 'axis' | 'tolerance'>,
+  Omit<StdLibCommandArgs<'revolve'>, 'axis'>,
   {
     axisOrEdge: 'Axis' | 'Edge'
     axis: string | undefined
@@ -115,7 +115,7 @@ export type HoleCommandArgs = Override<
 >
 
 export type FilletCommandArgs = Override<
-  Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'edges' | 'tolerance'>,
+  Omit<StdLibCommandArgs<'fillet'>, 'solid' | 'tags' | 'edges'>,
   {
     selection: Selections
     radius: KclCommandValue
@@ -160,11 +160,13 @@ export type AppearanceCommandArgs = Override<
 
 export type DeleteCommandArgs = StdLibCommandArgs<'delete'>
 
-export type TranslateCommandArgs = Omit<StdLibCommandArgs<'translate'>, 'xyz'>
+export type TranslateCommandArgs = StdLibCommandArgs<'translate'>
 
-export type RotateCommandArgs = Omit<
+export type RotateCommandArgs = Override<
   StdLibCommandArgs<'rotate'>,
-  'axis' | 'angle'
+  {
+    axis?: string
+  }
 >
 
 export type ScaleCommandArgs = StdLibCommandArgs<'scale'>
@@ -235,15 +237,15 @@ export type GdtDatumCommandArgs = Override<
 
 export type BooleanSubtractCommandArgs = Omit<
   StdLibCommandArgs<'subtract'>,
-  'tolerance' | 'legacyMethod'
+  'legacyMethod'
 >
 export type BooleanUnionCommandArgs = Omit<
   StdLibCommandArgs<'union'>,
-  'tolerance' | 'legacyMethod'
+  'legacyMethod'
 >
 export type BooleanIntersectCommandArgs = Omit<
   StdLibCommandArgs<'intersect'>,
-  'tolerance' | 'legacyMethod'
+  'legacyMethod'
 >
 export type BooleanSplitCommandArgs = Omit<
   StdLibCommandArgs<'split'>,
@@ -255,10 +257,7 @@ export type DeleteFaceCommandArgs = Override<
   { faces: Selections }
 >
 export type BlendCommandArgs = StdLibCommandArgs<'blend'>
-export type JoinSurfacesCommandArgs = Omit<
-  StdLibCommandArgs<'joinSurfaces'>,
-  'tolerance'
->
+export type JoinSurfacesCommandArgs = StdLibCommandArgs<'joinSurfaces'>
 
 export type StdLibModelingCommandSchema = {
   Extrude: ExtrudeCommandArgs
