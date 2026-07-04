@@ -63,6 +63,7 @@ export function addFillet({
   artifactGraph,
   selection,
   radius,
+  tolerance,
   tag,
   version,
   nodeToEdit,
@@ -72,6 +73,7 @@ export function addFillet({
   artifactGraph: ArtifactGraph
   selection: Selections
   radius: KclCommandValue
+  tolerance?: KclCommandValue
   tag?: string
   version?: KclCommandValue
   nodeToEdit?: PathToNode
@@ -126,12 +128,18 @@ export function addFillet({
   if (version && 'variableName' in version && version.variableName) {
     insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
   }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
   for (const data of bodies.values()) {
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
+      : []
+    const toleranceArgs = tolerance
+      ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
       : []
     const versionArgs = version
       ? [createLabeledArg('version', valueOrVariable(version))]
@@ -142,6 +150,7 @@ export function addFillet({
       [
         createLabeledArg('tags', data.tagsExpr),
         createLabeledArg('radius', valueOrVariable(radius)),
+        ...toleranceArgs,
         ...tagArgs,
         ...versionArgs,
       ]
