@@ -53,7 +53,6 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   EXECUTION_TYPE_REAL,
-  KCL_AXIS_Z,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
