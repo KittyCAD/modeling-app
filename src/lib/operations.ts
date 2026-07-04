@@ -308,11 +308,13 @@ async function extractAxis3dArgument(
   operation: StdLibCallOp,
   argName: string,
   rustContext: RustContext,
-  defaultAxis?: string
-): Promise<KclCommandValue | string | { error: string }> {
+  options: { required?: boolean } = {}
+): Promise<KclCommandValue | string | undefined | { error: string }> {
   const axisText = extractStringArgument(code, operation, argName)
   if (!axisText) {
-    return defaultAxis ?? { error: `Missing or invalid ${argName} argument` }
+    return options.required === false
+      ? undefined
+      : { error: `Missing or invalid ${argName} argument` }
   }
 
   if (
@@ -1856,6 +1858,9 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     'axis',
     rustContext
   )
+  if (!axisResult) {
+    return { reason: 'Missing or invalid axis argument' }
+  }
   if (typeof axisResult !== 'string' && 'error' in axisResult) {
     return { reason: axisResult.error }
   }
@@ -2004,6 +2009,9 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
     'axis',
     rustContext
   )
+  if (!axisResult) {
+    return { reason: 'Missing or invalid axis argument' }
+  }
   if (typeof axisResult !== 'string' && 'error' in axisResult) {
     return { reason: axisResult.error }
   }
@@ -4346,9 +4354,9 @@ async function prepareToEditRotate({
     operation,
     'axis',
     rustContext,
-    KCL_AXIS_Z
+    { required: false }
   )
-  if (typeof axisResult !== 'string' && 'error' in axisResult) {
+  if (axisResult && typeof axisResult !== 'string' && 'error' in axisResult) {
     return { reason: axisResult.error }
   }
   const axis = axisResult

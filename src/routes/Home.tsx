@@ -1,3 +1,4 @@
+import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import type { Dispatch, FormEvent, HTMLProps, SetStateAction } from 'react'
 import { useEffect, useMemo, useState } from 'react'
@@ -40,7 +41,10 @@ import {
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
+import {
+  opfsCloudSyncStatus,
+  setOpfsCloudSyncProjectScope,
+} from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
@@ -62,9 +66,16 @@ import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
-import { useCanReadWriteProjectDirectory } from '@src/machines/systemIO/hooks'
+import {
+  useCanReadWriteProjectDirectory,
+  useFolders,
+  useState as useSystemIOState,
+} from '@src/machines/systemIO/hooks'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+} from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   HOME_KEYMAP_SCOPE,
@@ -78,14 +89,13 @@ import {
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { projectsValueSpec } from '@src/registry/contracts/systemIO'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import {
   acceptOnboarding,
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import type { ActorRefFrom } from 'xstate'
+import { type ActorRefFrom, waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -123,11 +133,10 @@ const Home = () => {
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
-  const hasUnlimitedCredits =
-    billingContext.balance === Number.POSITIVE_INFINITY
+  const hasUnlimitedCredits = billingContext.balance === Infinity
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
 
-  const projects = registry.signal(projectsValueSpec).value
+  const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const [optimisticProjectRenames, setOptimisticProjectRenames] =
     useState<OptimisticProjectRenames>({})
@@ -188,7 +197,6 @@ const Home = () => {
   }, [navigate, location, commands])
 
   // Only create the native file menus on desktop
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Existing mount-only setup effect.
   useEffect(() => {
     if (window.electron) {
       window.electron
@@ -207,6 +215,37 @@ const Home = () => {
   const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
+
+  useEffect(() => {
+    let disposed = false
+    let lastHandledSyncedAt: string | undefined
+
+    const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
+      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
+      if (!syncedAt || syncedAt === lastHandledSyncedAt) {
+        return
+      }
+
+      lastHandledSyncedAt = syncedAt
+      void waitFor(systemIOActor, (state) =>
+        state.matches(SystemIOMachineStates.idle)
+      )
+        .then(() => {
+          if (disposed || lastHandledSyncedAt !== syncedAt) {
+            return
+          }
+          systemIOActor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+        })
+        .catch(reportRejection)
+    })
+
+    return () => {
+      disposed = true
+      disposeCloudSyncRefreshEffect()
+    }
+  }, [systemIOActor])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -633,12 +672,18 @@ function ProjectGrid({
   ...rest
 }: ProjectGridProps) {
   const { systemIOActor } = useApp()
-  const isReadingProjects = projects === undefined
+  const state = useSystemIOState()
+  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
+  const loadingMore = isReadingFolders ? (
+    <div className="py-4">
+      <Loading isDummy={true}>Loading more projects...</Loading>
+    </div>
+  ) : null
 
   return (
     <section data-testid="home-section" {...rest}>
-      {isReadingProjects ? (
+      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
@@ -669,6 +714,7 @@ function ProjectGrid({
                 : ` with the search term "${query}"`}
             </p>
           )}
+          {loadingMore}
         </>
       )}
     </section>
@@ -695,7 +741,7 @@ function handleRenameProject(
     SetStateAction<OptimisticProjectRenames>
   >
 ) {
-  return async (e: FormEvent<HTMLFormElement>, project: Project) => {
+  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
     const { newProjectName } = Object.fromEntries(
       new FormData(e.target as HTMLFormElement)
     )
@@ -735,7 +781,7 @@ function handleRenameProject(
 function handleDeleteProject(
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
 ) {
-  return async (project: Project) => {
+  return async function (project: Project) {
     systemIOActor.send({
       type: SystemIOMachineEvents.deleteProject,
       data: {
