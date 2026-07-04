@@ -596,7 +596,7 @@ describe('operations.test.ts', () => {
         yaw?: { valueText: string }
       }
       expect(result.data.name).toBe('Rotate')
-      expect(argDefaultValues.axis).toBe('Z')
+      expect(argDefaultValues.axis).toBeUndefined()
       expect(argDefaultValues.roll?.valueText).toBe('10deg')
       expect(argDefaultValues.pitch?.valueText).toBe('20deg')
       expect(argDefaultValues.yaw?.valueText).toBe('30deg')
