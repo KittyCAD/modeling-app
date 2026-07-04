@@ -165,7 +165,7 @@ export type TranslateCommandArgs = StdLibCommandArgs<'translate'>
 export type RotateCommandArgs = Override<
   StdLibCommandArgs<'rotate'>,
   {
-    axis: string
+    axis: KclCommandValue | string
   }
 >
 
@@ -184,14 +184,14 @@ export type Mirror3DCommandArgs = StdLibCommandArgs<'mirror3d'>
 export type PatternCircular3DCommandArgs = Override<
   StdLibCommandArgs<'patternCircular3d'>,
   {
-    axis: string
+    axis: KclCommandValue | string
     center: KclCommandValue
   }
 >
 
 export type PatternLinear3DCommandArgs = Override<
   StdLibCommandArgs<'patternLinear3d'>,
-  { axis: string }
+  { axis: KclCommandValue | string }
 >
 
 export type GdtFlatnessCommandArgs = Override<

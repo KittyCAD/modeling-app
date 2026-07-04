@@ -845,6 +845,50 @@ extrude001 = extrude(profile001, length = 1)`
       expect(newCode).toContain(code + '\n' + expectedNewLine)
     })
 
+    it('should add an axis array as an array expression', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
+      const expectedNewLine = `rotate(
+  extrude001,
+  axis = [1, 0, 0],
+  angle = 90deg,
+  global = true,
+)`
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const result = addRotate({
+        ast,
+        artifactGraph,
+        objects,
+        axis: await getKclCommandValue(
+          '[1, 0, 0]',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        angle: await getKclCommandValue(
+          '90deg',
+          instanceInThisFile,
+          rustContextInThisFile
+        ),
+        global: true,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContextInThisFile)
+      expect(recast(result.modifiedAst, instanceInThisFile)).toContain(
+        code + '\n' + expectedNewLine
+      )
+    })
+
     it('should push a call in pipe if selection was in variable-less pipe', async () => {
       const code = `startSketchOn(XY)
   |> circle(center = [0, 0], radius = 1)

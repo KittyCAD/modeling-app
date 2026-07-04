@@ -53,6 +53,8 @@ import type {
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import {
   EXECUTION_TYPE_REAL,
+  KCL_AXIS_X,
+  KCL_AXIS_Y,
   KCL_AXIS_Z,
   KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
@@ -263,24 +265,6 @@ function extractStringArgument(
     : undefined
 }
 
-function extractRequiredStringArgument(
-  code: string,
-  operation: StdLibCallOp,
-  argName: string
-): string | { error: string } {
-  const arg = operation.labeledArgs?.[argName]
-  if (!arg?.sourceRange) {
-    return { error: `Missing or invalid ${argName} argument` }
-  }
-
-  const value = code.slice(...arg.sourceRange.map((r) => toUtf16(r, code)))
-  if (!value) {
-    return { error: `Couldn't retrieve ${argName} argument` }
-  }
-
-  return value
-}
-
 async function extractOptionalKclArrayArgument(
   code: string,
   operation: StdLibCallOp,
@@ -317,6 +301,36 @@ async function extractOptionalKclArgument(
     isArray,
     allowStringArrays
   )
+}
+
+async function extractAxis3dArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string,
+  rustContext: RustContext,
+  defaultAxis?: string
+): Promise<KclCommandValue | string | { error: string }> {
+  const axisText = extractStringArgument(code, operation, argName)
+  if (!axisText) {
+    return defaultAxis ?? { error: `Missing or invalid ${argName} argument` }
+  }
+
+  if (
+    axisText === KCL_AXIS_X ||
+    axisText === KCL_AXIS_Y ||
+    axisText === KCL_AXIS_Z
+  ) {
+    return axisText
+  }
+
+  const result = await stringToKclExpression(axisText, rustContext, {
+    allowArrays: true,
+  })
+  if (err(result) || 'errors' in result) {
+    return { error: `Failed to parse ${argName} argument as KCL expression` }
+  }
+
+  return result
 }
 
 /**
@@ -1835,13 +1849,17 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
     return { reason: "Couldn't retrieve instances argument" }
   }
 
-  // 3. Convert the axis argument from a string to a string value
-  // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
-  if (typeof axisResult !== 'string') {
+  // 3. Convert the axis argument to a named axis or KCL expression.
+  const axisResult = await extractAxis3dArgument(
+    code,
+    operation,
+    'axis',
+    rustContext
+  )
+  if (typeof axisResult !== 'string' && 'error' in axisResult) {
     return { reason: axisResult.error }
   }
-  const axisString = axisResult
+  const axis = axisResult
 
   // 4. Convert the center argument from a string to a KCL expression
   const centerArg = operation.labeledArgs?.['center']
@@ -1904,7 +1922,7 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Pattern Circular 3D'] = {
     solids,
     instances,
-    axis: axisString,
+    axis,
     center,
     arcDegrees,
     rotateDuplicates,
@@ -1979,13 +1997,17 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
     return { reason: "Couldn't retrieve distance argument" }
   }
 
-  // 4. Convert the axis argument from a string to a string value
-  // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
-  if (typeof axisResult !== 'string') {
+  // 4. Convert the axis argument to a named axis or KCL expression.
+  const axisResult = await extractAxis3dArgument(
+    code,
+    operation,
+    'axis',
+    rustContext
+  )
+  if (typeof axisResult !== 'string' && 'error' in axisResult) {
     return { reason: axisResult.error }
   }
-  const axisString = axisResult
+  const axis = axisResult
 
   // 5. Convert the useOriginal argument from a string to a boolean
   const useOriginalArg = operation.labeledArgs?.['useOriginal']
@@ -2004,7 +2026,7 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
     solids,
     instances,
     distance,
-    axis: axisString,
+    axis,
     useOriginal,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -4319,7 +4341,17 @@ async function prepareToEditRotate({
     yaw = result
   }
 
-  const axis = extractStringArgument(code, operation, 'axis') ?? KCL_AXIS_Z
+  const axisResult = await extractAxis3dArgument(
+    code,
+    operation,
+    'axis',
+    rustContext,
+    KCL_AXIS_Z
+  )
+  if (typeof axisResult !== 'string' && 'error' in axisResult) {
+    return { reason: axisResult.error }
+  }
+  const axis = axisResult
 
   const angleResult = await extractOptionalKclArgument(
     code,
