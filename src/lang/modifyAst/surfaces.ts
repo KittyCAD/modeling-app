@@ -6,6 +6,7 @@ import {
 } from '@src/lang/modifyAst'
 import { getVariableExprsFromSelection } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -34,7 +35,7 @@ export function addFlipSurface({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
-  let modifiedAst = structuredClone(ast)
+  const modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
   // 2. Prepare unlabeled arguments
@@ -57,7 +58,11 @@ export function addFlipSurface({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('flipSurface', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Flip Surface'),
+    objectsExpr,
+    []
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -126,7 +131,11 @@ export function addJoinSurfaces({
   }
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('joinSurfaces', objectsExpr, [])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Join Surfaces'),
+    objectsExpr,
+    []
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
