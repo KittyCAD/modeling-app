@@ -16,6 +16,7 @@ import type { AnyStateMachine, SnapshotFrom } from 'xstate'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { MarkdownText } from '@src/components/MarkdownText'
 import { Spinner } from '@src/components/Spinner'
 import { createLocalName, createVariableDeclaration } from '@src/lang/create'
 import { getNodeFromPath } from '@src/lang/queryAst'
@@ -217,6 +218,8 @@ function CommandBarKclInput({
     }
   })
   const varMentionsExtension = varMentions(varMentionData)
+  const canUseUncalculatedValue =
+    Boolean(arg.allowUncalculated) && valueNode !== null
 
   useEffect(() => {
     miniEditor.dispatch({
@@ -290,8 +293,6 @@ function CommandBarKclInput({
   }, [arg, editorRef, initialValue])
 
   useEffect(() => {
-    const canUseUncalculatedValue =
-      Boolean(arg.allowUncalculated) && valueNode !== null
     setCanSubmit(
       (calcResult !== 'NAN' || canUseUncalculatedValue) &&
         (!createNewVariable || isNewVariableNameUnique) &&
@@ -299,6 +300,7 @@ function CommandBarKclInput({
     )
   }, [
     arg.allowUncalculated,
+    canUseUncalculatedValue,
     calcResult,
     createNewVariable,
     isNewVariableNameUnique,
@@ -366,7 +368,7 @@ function CommandBarKclInput({
         />
         <span
           className={
-            calcResult === 'NAN'
+            calcResult === 'NAN' && !canUseUncalculatedValue
               ? 'text-destroy-80 dark:text-destroy-40'
               : 'text-succeed-80 dark:text-succeed-40'
           }
@@ -386,6 +388,12 @@ function CommandBarKclInput({
           )}
         </span>
       </label>
+      {arg.description && (
+        <MarkdownText
+          text={arg.description}
+          className="mx-4 mb-4 mt-2 select-text text-sm leading-relaxed text-chalkboard-70 dark:text-chalkboard-40 parsed-markdown [&_*]:select-text [&_strong]:font-semibold [&_strong]:text-chalkboard-90 dark:[&_strong]:text-chalkboard-20"
+        />
+      )}
       {arg.createVariable !== 'disallow' && (
         <div className="flex items-baseline gap-4 mx-4">
           <input

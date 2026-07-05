@@ -23,7 +23,6 @@ import type {
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   KCL_AXIS_X,
-  KCL_AXIS_Y,
   KCL_AXIS_Z,
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_DEFAULT_DATUM_REFS,
@@ -281,6 +280,12 @@ export const getDefaultGdtTolerance = (
 
 const summarizeGdtToleranceKclValue = (value: unknown) =>
   isKclCommandValue(value) ? value.valueText : ''
+
+const summarizeAxisKclValue = (value: unknown) =>
+  isKclCommandValue(value) ? value.valueText : ''
+
+const axisKclDescription =
+  'Enter a default axis (`X`, `Y`, or `Z`), a 3D vector array like `[0, 1, 0]`, or a variable that references either form.'
 
 const gdtToleranceProps = {
   inputType: 'kcl',
@@ -1530,13 +1535,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           defaultValue: KCL_DEFAULT_TRANSFORM,
         },
         axis: {
-          inputType: 'options',
+          inputType: 'kcl',
+          description: axisKclDescription,
           defaultValue: KCL_AXIS_Z,
-          options: [
-            { name: 'X-axis', value: KCL_AXIS_X },
-            { name: 'Y-axis', value: KCL_AXIS_Y },
-            { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
-          ],
+          allowArrays: true,
+          allowUncalculated: true,
+          valueSummary: summarizeAxisKclValue,
         },
         angle: {
           defaultValue: KCL_DEFAULT_DEGREE,
@@ -1679,13 +1683,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           defaultValue: KCL_DEFAULT_INSTANCES,
         },
         axis: {
-          inputType: 'options',
+          inputType: 'kcl',
+          description: axisKclDescription,
           defaultValue: KCL_AXIS_Z,
-          options: [
-            { name: 'X-axis', value: KCL_AXIS_X },
-            { name: 'Y-axis', value: KCL_AXIS_Y },
-            { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
-          ],
+          allowArrays: true,
+          allowUncalculated: true,
+          valueSummary: summarizeAxisKclValue,
         },
         center: {
           required: true, // TODO: not true in KCL, we should fix the e2e test to match
@@ -1721,13 +1724,12 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             defaultValue: KCL_DEFAULT_LENGTH,
           },
           axis: {
-            inputType: 'options',
+            inputType: 'kcl',
+            description: axisKclDescription,
             defaultValue: KCL_AXIS_X,
-            options: [
-              { name: 'X-axis', isCurrent: true, value: KCL_AXIS_X },
-              { name: 'Y-axis', value: KCL_AXIS_Y },
-              { name: 'Z-axis', value: KCL_AXIS_Z },
-            ],
+            allowArrays: true,
+            allowUncalculated: true,
+            valueSummary: summarizeAxisKclValue,
           },
         },
       }

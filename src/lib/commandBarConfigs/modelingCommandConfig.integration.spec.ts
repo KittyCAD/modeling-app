@@ -348,6 +348,33 @@ describe('stdlib command arg derivation', () => {
       })
     ).toBe(false)
   })
+
+  it('uses KCL inputs for axis arguments that can be named axes or vectors', () => {
+    for (const commandName of [
+      'Rotate',
+      'Pattern Circular 3D',
+      'Pattern Linear 3D',
+    ] as const) {
+      const commandConfig = modelingMachineCommandConfig[commandName]
+      if (!commandConfig || isArray(commandConfig)) {
+        throw new Error(`${commandName} should have a single command config`)
+      }
+
+      expect(commandConfig.args?.axis).toMatchObject({
+        inputType: 'kcl',
+        description:
+          'Enter a default axis (`X`, `Y`, or `Z`), a 3D vector array like `[0, 1, 0]`, or a variable that references either form.',
+        allowArrays: true,
+        allowUncalculated: true,
+      })
+      expect(
+        commandConfig.args?.axis?.valueSummary?.({
+          valueCalculated: 'NAN',
+          valueText: 'Y',
+        } as KclCommandValue)
+      ).toBe('Y')
+    }
+  })
 })
 
 describe('modeling command stdlib drift', () => {
