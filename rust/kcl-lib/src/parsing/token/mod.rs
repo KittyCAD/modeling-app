@@ -26,8 +26,13 @@ use crate::parsing::ast::types::VariableKind;
 
 mod tokeniser;
 
+pub(crate) mod adapter;
+
 #[cfg(test)]
 mod compat_tests;
+
+#[cfg(test)]
+mod error_matrix_tests;
 
 pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
 pub(crate) use tokeniser::RESERVED_WORDS;
@@ -591,25 +596,22 @@ impl From<&Token> for SourceRange {
 /// Environment variable selecting which lexer implementation [`lex`] uses.
 pub(crate) const KCL_LEXER_ENV_VAR: &str = "KCL_LEXER";
 
-/// Which lexer implementation [`lex`] uses.
-///
-/// KCL is migrating from the winnow `tokeniser` (`Legacy`) to the `kcl-syntax`
-/// logos lexer (`Syntax`). The choice is made at runtime so each tool can be
-/// migrated independently via the `KCL_LEXER` environment variable, with a
-/// compile-time [`LexerMode::DEFAULT`] that flips once every tool is validated.
+/// Which lexer implementation [`lex`] uses: the old winnow `tokeniser` (`Old`) or
+/// the new `kcl-syntax` logos lexer (`New`). Selected at runtime via the
+/// `KCL_LEXER` environment variable, so a process can pick either lexer without a
+/// rebuild.
 ///
 /// Precedence: test override > `KCL_LEXER` > [`LexerMode::DEFAULT`]. This mirrors
 /// the existing `KCL_MEMORY_IMPL` selector in `execution::memory`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum LexerMode {
-    Legacy,
-    Syntax,
+    Old,
+    New,
 }
 
 impl LexerMode {
-    /// The mode used when `KCL_LEXER` is unset. Stays `Legacy` until the
-    /// migration is validated and ready to flip.
-    const DEFAULT: Self = Self::Legacy;
+    /// The mode used when `KCL_LEXER` is unset.
+    const DEFAULT: Self = Self::Old;
 
     /// Resolve the active lexer mode (see precedence on [`LexerMode`]).
     pub(crate) fn resolve() -> Self {
@@ -622,38 +624,58 @@ impl LexerMode {
             Ok(value) => Self::parse(&value),
             Err(env::VarError::NotPresent) => Self::DEFAULT,
             Err(env::VarError::NotUnicode(value)) => {
-                panic!(
-                    "{KCL_LEXER_ENV_VAR} must be valid unicode; got `{}`.",
-                    value.to_string_lossy()
-                )
+                // Invalid-unicode env var: warn and fall back rather than crash.
+                Self::warn_once(|| {
+                    format!(
+                        "{KCL_LEXER_ENV_VAR} must be valid unicode; got `{}`. Defaulting to `old`.",
+                        value.to_string_lossy()
+                    )
+                });
+                Self::Old
             }
         }
     }
 
     fn parse(value: &str) -> Self {
         let value = value.trim();
-        if value.eq_ignore_ascii_case("legacy") {
-            return Self::Legacy;
+        if value.eq_ignore_ascii_case("old") {
+            return Self::Old;
         }
-        if value.eq_ignore_ascii_case("syntax") {
-            return Self::Syntax;
+        if value.eq_ignore_ascii_case("new") {
+            return Self::New;
         }
-        panic!("Unsupported {KCL_LEXER_ENV_VAR} value `{value}`. Expected `legacy` or `syntax`.")
+
+        // A mistyped `KCL_LEXER` should not crash the process: warn and fall back
+        // to the old lexer (the conservative choice for a misconfiguration).
+        Self::warn_once(|| {
+            format!("Unsupported {KCL_LEXER_ENV_VAR} value `{value}`; expected `old` or `new`. Defaulting to `old`.")
+        });
+        Self::Old
+    }
+
+    /// Emit a one-time configuration warning through `crate::log` (gated on
+    /// `ZOO_LOG`). `resolve`/`parse` run on every `lex`, so a misconfigured
+    /// `KCL_LEXER` must not warn -- or allocate the message -- on every call. One
+    /// guard suffices: only one kind of misconfiguration can occur per process,
+    /// since the env var holds a single value.
+    fn warn_once(make_message: impl FnOnce() -> String) {
+        static WARNED: std::sync::Once = std::sync::Once::new();
+        WARNED.call_once(|| crate::log::log(make_message()));
     }
 
     #[cfg(test)]
     fn test_override_value(self) -> u8 {
         match self {
-            Self::Legacy => 1,
-            Self::Syntax => 2,
+            Self::Old => 1,
+            Self::New => 2,
         }
     }
 
     #[cfg(test)]
     fn test_override() -> Option<Self> {
         match TEST_LEXER_MODE_OVERRIDE.load(std::sync::atomic::Ordering::SeqCst) {
-            1 => Some(Self::Legacy),
-            2 => Some(Self::Syntax),
+            1 => Some(Self::Old),
+            2 => Some(Self::New),
             _ => None,
         }
     }
@@ -686,15 +708,21 @@ impl Drop for LexerModeOverrideGuard {
     }
 }
 
-// Phase 0 adds the runtime seam only. `Syntax` mode intentionally delegates to
-// the legacy tokeniser so that selecting it is a safe no-op until the
-// `kcl-syntax` adapter lands in Phase 2; at that point this dispatch gains a
-// real second arm and the `match_same_arms` allow below is removed.
-#[allow(clippy::match_same_arms)]
+// `lex` dispatches on the runtime `LexerMode`. `Old` runs the winnow
+// `tokeniser`; `New` runs the `kcl-syntax` adapter and folds any fatal lexical
+// diagnostics into a single lexical `KclError`, preserving the public `Result`
+// contract. (The LSP consumes the richer `LexResult` directly so it can keep
+// tokens for highlighting while reporting diagnostics.)
 pub fn lex(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
     match LexerMode::resolve() {
-        LexerMode::Legacy => lex_legacy(s, module_id),
-        LexerMode::Syntax => lex_legacy(s, module_id),
+        LexerMode::Old => lex_legacy(s, module_id),
+        LexerMode::New => {
+            let result = adapter::lex_with_diagnostics(s, module_id);
+            match result.to_lexical_error() {
+                Some(err) => Err(err),
+                None => Ok(result.tokens),
+            }
+        }
     }
 }
 
@@ -730,22 +758,24 @@ fn lex_legacy(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
 #[cfg(test)]
 mod lexer_mode_tests {
     use super::LexerMode;
+    use super::lex;
+    use crate::ModuleId;
 
     #[test]
-    fn default_mode_is_legacy() {
-        assert_eq!(LexerMode::DEFAULT, LexerMode::Legacy);
+    fn default_mode_is_old() {
+        assert_eq!(LexerMode::DEFAULT, LexerMode::Old);
     }
 
     #[test]
     fn parse_accepts_known_values_case_insensitively() {
-        assert_eq!(LexerMode::parse("legacy"), LexerMode::Legacy);
-        assert_eq!(LexerMode::parse("  SYNTAX  "), LexerMode::Syntax);
+        assert_eq!(LexerMode::parse("old"), LexerMode::Old);
+        assert_eq!(LexerMode::parse("  NEW  "), LexerMode::New);
     }
 
     #[test]
-    #[should_panic(expected = "Unsupported KCL_LEXER value")]
-    fn parse_rejects_unknown_values() {
-        let _ = LexerMode::parse("rowan");
+    fn parse_falls_back_to_old_on_unknown_value() {
+        // An unknown value warns and defaults to the old lexer instead of panicking.
+        assert_eq!(LexerMode::parse("rowan"), LexerMode::Old);
     }
 
     #[test]
@@ -753,10 +783,36 @@ mod lexer_mode_tests {
         // Reserved for dispatch/integration tests; relies on the process-global
         // atomic, which is race-free under nextest's process isolation.
         {
-            let _guard = LexerMode::override_for_test(LexerMode::Syntax);
-            assert_eq!(LexerMode::resolve(), LexerMode::Syntax);
+            let _guard = LexerMode::override_for_test(LexerMode::New);
+            assert_eq!(LexerMode::resolve(), LexerMode::New);
         }
-        let _guard = LexerMode::override_for_test(LexerMode::Legacy);
-        assert_eq!(LexerMode::resolve(), LexerMode::Legacy);
+        let _guard = LexerMode::override_for_test(LexerMode::Old);
+        assert_eq!(LexerMode::resolve(), LexerMode::Old);
+    }
+
+    /// Exercises the `New` arm of `lex` in default CI: no `KCL_LEXER` env var is
+    /// set; the new lexer is selected via the process-global test override (which
+    /// is race-free under nextest's process-per-test isolation).
+    ///
+    /// The unterminated-string assertion is deliberately a *distinguishing* one:
+    /// the new lexer folds the recovery token into the message "unterminated
+    /// string literal", whereas the old lexer reports `found unknown token '"'`.
+    /// Asserting the new-lexer-only message proves `lex` took the `New` arm --
+    /// not merely that some lexer ran.
+    #[test]
+    fn lex_dispatches_to_new_lexer() {
+        let _guard = LexerMode::override_for_test(LexerMode::New);
+        assert_eq!(LexerMode::resolve(), LexerMode::New);
+
+        let module_id = ModuleId::default();
+
+        // Valid input flows through the New arm and yields a token stream.
+        let tokens = lex("x = 1", module_id).expect("new lexer should tokenize valid input");
+        assert!(!tokens.is_empty(), "expected a non-empty token stream");
+
+        // Unterminated string: the new-lexer-only message (see doc comment).
+        let err = lex("\"abc", module_id).expect_err("unterminated string is a lexical error");
+        assert_eq!(err.error_type(), "lexical");
+        assert_eq!(err.message(), "unterminated string literal");
     }
 }
