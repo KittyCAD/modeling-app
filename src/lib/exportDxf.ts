@@ -1,11 +1,14 @@
 import type { WebSocketResponse } from '@kittycad/lib'
-import type { OpKclValue } from '@rust/kcl-lib/bindings/Operation'
+import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { KclManager } from '@src/lang/KclManager'
 import {
   type StdLibCallOp,
   findOperationPlaneLikeArtifact,
 } from '@src/lang/queryAst'
-import { getPlaneFromArtifact } from '@src/lang/std/artifactGraph'
+import {
+  getArtifactFromRange,
+  getPlaneFromArtifact,
+} from '@src/lang/std/artifactGraph'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import fsZds from '@src/lib/fs-zds'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -14,6 +17,14 @@ import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ToastOptions } from 'react-hot-toast'
+
+type GroupBeginOperation = Extract<Operation, { type: 'GroupBegin' }>
+
+type SketchBlockOperation = GroupBeginOperation & {
+  group: Extract<GroupBeginOperation['group'], { type: 'SketchBlock' }>
+}
+
+type DxfSketchOperation = StdLibCallOp | SketchBlockOperation
 
 function getSketchArtifactId(
   value: OpKclValue | null | undefined
@@ -44,9 +55,70 @@ function findPlaneArtifactForSubtract2d(
   return kclManager.artifactGraph.get(planeArtifact.id) ?? null
 }
 
+function getSketchBlockPathIds(
+  operation: SketchBlockOperation,
+  kclManager: KclManager
+): string[] | Error {
+  const artifact = getArtifactFromRange(
+    operation.sourceRange,
+    kclManager.artifactGraph
+  )
+
+  if (artifact?.type !== 'sketchBlock') {
+    return new Error('Could not find sketch block artifact')
+  }
+
+  if (!artifact.pathId) {
+    return new Error('Could not find sketch block path')
+  }
+
+  return [artifact.pathId]
+}
+
+function getLegacySketchPathIds(
+  operation: StdLibCallOp,
+  kclManager: KclManager
+): string[] | Error {
+  // For subtract2d operations, find the plane artifact from the same sketch.
+  let planeArtifact: Artifact | null | undefined
+  if (operation.name === 'subtract2d') {
+    planeArtifact = findPlaneArtifactForSubtract2d(operation, kclManager)
+    if (!planeArtifact) {
+      return new Error('Could not find plane artifact for subtract2d')
+    }
+  } else {
+    // Get the plane artifact associated with this sketch operation.
+    planeArtifact = findOperationPlaneLikeArtifact(
+      operation,
+      kclManager.artifactGraph
+    )
+  }
+
+  if (!planeArtifact) {
+    return new Error('Could not find plane artifact')
+  }
+
+  if (!('pathIds' in planeArtifact) || !planeArtifact.pathIds?.length) {
+    return new Error('Could not find path IDs')
+  }
+
+  return planeArtifact.pathIds
+}
+
+function getSketchPathIds(
+  operation: DxfSketchOperation,
+  kclManager: KclManager
+): string[] | Error {
+  if (operation.type === 'GroupBegin') {
+    return getSketchBlockPathIds(operation, kclManager)
+  }
+
+  return getLegacySketchPathIds(operation, kclManager)
+}
+
 // Exports a sketch operation to DXF format
 export async function exportSketchToDxf(
-  operation: StdLibCallOp,
+  operation: DxfSketchOperation,
   dependencies: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
@@ -80,38 +152,19 @@ export async function exportSketchToDxf(
   let toastId: string | undefined = undefined
 
   try {
-    // For subtract2d operations, find the plane artifact from the same sketch
-    let planeArtifact
-    if (operation.name === 'subtract2d') {
-      planeArtifact = findPlaneArtifactForSubtract2d(operation, kclManager)
-      if (!planeArtifact) {
-        toast.error(
-          'Could not find sketch to export from subtract2d operation.'
-        )
-        return new Error('Could not find plane artifact for subtract2d')
-      }
-    } else {
-      // Get the plane artifact associated with this sketch operation
-      planeArtifact = findOperationPlaneLikeArtifact(
-        operation,
-        kclManager.artifactGraph
+    const pathIds = getSketchPathIds(operation, kclManager)
+    if (pathIds instanceof Error) {
+      toast.error(
+        pathIds.message.includes('plane artifact')
+          ? 'Could not find sketch for DXF export.'
+          : 'Could not find sketch profiles for DXF export.'
       )
-    }
-
-    if (!planeArtifact) {
-      toast.error('Could not find sketch for DXF export.')
-      return new Error('Could not find plane artifact')
-    }
-
-    // Early exit if no path IDs to process
-    if (!('pathIds' in planeArtifact) || !planeArtifact.pathIds?.length) {
-      toast.error('Could not find sketch profiles for DXF export.')
-      return new Error('Could not find path IDs')
+      return pathIds
     }
 
     // Get all entity IDs from the plane's paths
     const entityIds: string[] = []
-    for (const pathId of planeArtifact.pathIds) {
+    for (const pathId of pathIds) {
       const pathArtifact = kclManager.artifactGraph.get(pathId)
       if (!pathArtifact) continue
       if ('compositeSolidId' in pathArtifact && pathArtifact.compositeSolidId) {
