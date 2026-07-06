@@ -8,6 +8,14 @@ export {
   type CopyTextButtonProps,
 } from './components/CopyTextButton'
 export {
+  MarkdownEditor,
+  defaultMarkdownEditorFeatures,
+  defaultNormalizeMarkdownLinkHref,
+  type MarkdownEditorFeature,
+  type MarkdownEditorNormalizeLinkHref,
+  type MarkdownEditorProps,
+} from './components/MarkdownEditor'
+export {
   BillingDialog,
   type BillingDialogProps,
 } from './components/BillingDialog'

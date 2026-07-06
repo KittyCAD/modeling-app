@@ -440,38 +440,38 @@ code,
     border-bottom-left-radius: var(--br);
   }
 
-  .publish-markdown-editor .ProseMirror {
+  .markdown-editor .ProseMirror {
     @apply min-h-28 max-h-56 overflow-y-auto px-2.5 py-2 outline-none;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
 
-  .publish-markdown-editor .ProseMirror p {
+  .markdown-editor .ProseMirror p {
     @apply my-1 leading-5;
   }
 
-  .publish-markdown-editor .ProseMirror ul,
-  .publish-markdown-editor .ProseMirror ol {
+  .markdown-editor .ProseMirror ul,
+  .markdown-editor .ProseMirror ol {
     @apply list-outside pl-5 my-2;
   }
 
-  .publish-markdown-editor .ProseMirror ul li {
+  .markdown-editor .ProseMirror ul li {
     @apply list-disc;
   }
 
-  .publish-markdown-editor .ProseMirror ol li {
+  .markdown-editor .ProseMirror ol li {
     @apply list-decimal;
   }
 
-  .publish-markdown-editor .ProseMirror li p {
+  .markdown-editor .ProseMirror li p {
     @apply inline;
   }
 
-  .publish-markdown-editor .ProseMirror a {
+  .markdown-editor .ProseMirror a {
     @apply text-primary underline underline-offset-2;
   }
 
-  .publish-markdown-editor .ProseMirror strong {
+  .markdown-editor .ProseMirror strong {
     @apply font-semibold;
   }
 }
