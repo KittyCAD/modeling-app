@@ -7116,9 +7116,14 @@ mod tests {
         None
     }
 
-    fn find_first_cap_object_id(scene_graph: &SceneGraph, cap_kind: crate::frontend::api::CapKind) -> Option<ObjectId> {
+    fn find_cap_object_id_with_solid_output_index(
+        scene_graph: &SceneGraph,
+        cap_kind: crate::frontend::api::CapKind,
+        solid_output_index: usize,
+    ) -> Option<ObjectId> {
         for object in &scene_graph.objects {
-            if matches!(&object.kind, ObjectKind::Cap(cap) if cap.kind == cap_kind) {
+            if matches!(&object.kind, ObjectKind::Cap(cap) if cap.kind == cap_kind && cap.solid_output_index == Some(solid_output_index))
+            {
                 return Some(object.id);
             }
         }
@@ -13966,24 +13971,37 @@ extrude001 = extrude([region001, region002], length = 5)
 ";
 
         let program = Program::parse(initial_source).unwrap().0.unwrap();
-        let mut frontend = FrontendState::new();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
         let version = Version(0);
 
-        frontend.hack_set_program(&ctx, program).await.unwrap();
-        let cap_object_id = find_first_cap_object_id(&frontend.scene_graph, crate::frontend::api::CapKind::End)
-            .expect("expected an end cap object");
+        for (solid_output_index, expected_face) in [
+            (0, "faceOf(extrude001[0], face = END)"),
+            (1, "faceOf(extrude001[1], face = END)"),
+        ] {
+            let mut frontend = FrontendState::new();
+            frontend.hack_set_program(&ctx, program.clone()).await.unwrap();
+            let cap_object_id = find_cap_object_id_with_solid_output_index(
+                &frontend.scene_graph,
+                crate::frontend::api::CapKind::End,
+                solid_output_index,
+            )
+            .unwrap_or_else(|| panic!("expected an end cap object for solid output index {solid_output_index}"));
 
-        let sketch_args = SketchCtor {
-            on: Plane::Object(cap_object_id),
-        };
-        let (src_delta, _scene_delta, _sketch_id) = frontend
-            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
-            .await
-            .unwrap();
+            let sketch_args = SketchCtor {
+                on: Plane::Object(cap_object_id),
+            };
+            let (src_delta, _scene_delta, _sketch_id) = frontend
+                .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+                .await
+                .unwrap();
 
-        assert!(src_delta.text.contains("faceOf(extrude001["));
-        assert!(!src_delta.text.contains("faceOf(extrude001, face = END)"));
+            assert!(
+                src_delta.text.contains(expected_face),
+                "expected `{expected_face}` in:\n{}",
+                src_delta.text
+            );
+            assert!(!src_delta.text.contains("faceOf(extrude001, face = END)"));
+        }
 
         ctx.close().await;
     }
@@ -14004,8 +14022,14 @@ sketch001 = sketch(on = XY) {
   rect2Line4 = line(start = [3, 1], end = [3, 0])
 }
 hidden001 = hide(sketch001)
-region001 = region(point = [0.5, 0.5], sketch = sketch001)
-region002 = region(point = [3.5, 0.5], sketch = sketch001)
+region001 = region(segments = [
+  sketch001.rect1Line4,
+  sketch001.rect1Line1
+])
+region002 = region(segments = [
+  sketch001.rect2Line4,
+  sketch001.rect2Line1
+])
 extrude001 = extrude([region001, region002], length = 5)
 ";
 
@@ -14015,7 +14039,34 @@ extrude001 = extrude([region001, region002], length = 5)
         let version = Version(0);
 
         frontend.hack_set_program(&ctx, program).await.unwrap();
-        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
+        let region_call = "\
+region(segments = [
+  sketch001.rect1Line4,
+  sketch001.rect1Line1
+])";
+        let region_call_start = initial_source.find(region_call).unwrap();
+        let region_range = [region_call_start, region_call_start + region_call.len(), 0].into();
+        let segment_call = "line(start = [0, 0], end = [1, 0])";
+        let segment_call_start = initial_source.find(segment_call).unwrap();
+        let segment_range = [segment_call_start, segment_call_start + segment_call.len(), 0].into();
+        let wall_object_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|object| {
+                if !matches!(object.kind, ObjectKind::Wall(_)) {
+                    return None;
+                }
+                match &object.source {
+                    SourceRef::BackTrace { ranges }
+                        if ranges.len() == 4 && ranges[2].0 == region_range && ranges[3].0 == segment_range =>
+                    {
+                        Some(object.id)
+                    }
+                    _ => None,
+                }
+            })
+            .expect("expected a wall object for region001.tags.rect1Line1");
 
         let sketch_args = SketchCtor {
             on: Plane::Object(wall_object_id),
@@ -14025,8 +14076,12 @@ extrude001 = extrude([region001, region002], length = 5)
             .await
             .unwrap();
 
-        assert!(src_delta.text.contains("faceOf(extrude001["));
-        assert!(src_delta.text.contains(".tags."));
+        let expected_face = "faceOf(extrude001[0], face = region001.tags.rect1Line1)";
+        assert!(
+            src_delta.text.contains(expected_face),
+            "expected `{expected_face}` in:\n{}",
+            src_delta.text
+        );
         assert!(!src_delta.text.contains("faceOf(extrude001, face ="));
 
         ctx.close().await;
