@@ -59,4 +59,37 @@ describe('submitConstraintEdit', () => {
       { id: SKETCH_SOLVE_ERROR_TOAST_ID }
     )
   })
+
+  it('toasts the clean KCL message when editing a constraint fails', async () => {
+    const editConstraint = vi.fn().mockRejectedValue(
+      Object.assign(
+        new Error('refactor: Invalid constraint value: Unexpected token: *'),
+        {
+          msg: 'Invalid constraint value: Unexpected token: *',
+        }
+      )
+    )
+    const sketchSolveActor = {
+      getSnapshot: vi.fn(() => ({
+        context: {
+          editingConstraintId: 12,
+          sketchId: 34,
+        },
+      })),
+      send: vi.fn(),
+    }
+
+    await submitConstraintEdit({
+      sketchSolveActor,
+      rustContext: { editConstraint },
+      editingConstraintId: 12,
+      value: '**',
+      settings: {},
+    })
+
+    expect(toastErrorSpy).toHaveBeenCalledWith(
+      'Invalid constraint value: Unexpected token: *',
+      { id: SKETCH_SOLVE_ERROR_TOAST_ID }
+    )
+  })
 })

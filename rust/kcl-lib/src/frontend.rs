@@ -638,18 +638,11 @@ impl SketchApi for FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding sketch: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding sketch".to_owned(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding sketch",
+            "No AST produced after adding sketch",
+        )?;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -1462,12 +1455,16 @@ impl SketchApi for FrontendState {
         let mut new_ast = self.program.ast.clone();
 
         // Parse the expression string into an AST node.
-        let (parsed, errors) = Program::parse(&value_expression)
-            .map_err(|e| KclErrorWithOutputs::no_outputs(KclError::refactor(e.to_string())))?;
+        let (parsed, errors) = Program::parse(&value_expression).map_err(|e| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format_kcl_error_message(
+                "Invalid constraint value",
+                &e,
+            )))
+        })?;
         if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing value expression: {errors:?}"
-            ))));
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                format_compilation_issues("Invalid constraint value", &errors),
+            )));
         }
         let mut parsed = parsed.ok_or_else(|| {
             KclErrorWithOutputs::no_outputs(KclError::refactor("No AST produced from value expression".to_string()))
@@ -2000,18 +1997,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding point: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding point".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding point",
+            "No AST produced after adding point",
+        )?;
 
         let point_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2136,18 +2126,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding line: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding line".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding line",
+            "No AST produced after adding line",
+        )?;
 
         let line_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2277,18 +2260,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding arc: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding arc".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding arc",
+            "No AST produced after adding arc",
+        )?;
 
         let arc_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2416,18 +2392,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding circle: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding circle".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding circle",
+            "No AST produced after adding circle",
+        )?;
 
         let circle_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2541,18 +2510,11 @@ impl FrontendState {
             )
             .map_err(KclErrorWithOutputs::no_outputs)?;
         let new_source = source_from_ast(&new_ast);
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding controlPointSpline: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding controlPointSpline".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding controlPointSpline",
+            "No AST produced after adding controlPointSpline",
+        )?;
 
         let spline_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -3294,18 +3256,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after editing: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after editing".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after editing",
+            "No AST produced after editing",
+        )?;
 
         // TODO: sketch-api: make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -3359,18 +3314,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after editing: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after editing".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after editing",
+            "No AST produced after editing",
+        )?;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -4641,18 +4589,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding constraint: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding constraint".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding constraint",
+            "No AST produced after adding constraint",
+        )?;
         let constraint_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                 "Source range of new constraint not found in sketch block: {sketch_block_ref:?}; {err:?}"
@@ -6404,6 +6345,53 @@ fn find_sketch_block_added_item(
     }
 }
 
+fn format_kcl_error_message(prefix: &str, error: &KclError) -> String {
+    let message = error.message().trim();
+    let message = if message.is_empty() {
+        "unknown parse error"
+    } else {
+        message
+    };
+
+    format!("{prefix}: {message}")
+}
+
+fn parse_frontend_mutation_source(source: &str, parse_error_prefix: &str, no_ast_message: &str) -> ExecResult<Program> {
+    let (program, errors) = Program::parse(source).map_err(|err| {
+        KclErrorWithOutputs::no_outputs(KclError::refactor(format_kcl_error_message(parse_error_prefix, &err)))
+    })?;
+    if !errors.is_empty() {
+        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+            format_compilation_issues(parse_error_prefix, &errors),
+        )));
+    }
+
+    program.ok_or_else(|| KclErrorWithOutputs::no_outputs(KclError::refactor(no_ast_message.to_owned())))
+}
+
+fn format_compilation_issues(prefix: &str, issues: &[CompilationIssue]) -> String {
+    let Some(first_issue) = issues
+        .iter()
+        .find(|issue| issue.severity.is_err())
+        .or_else(|| issues.first())
+    else {
+        return prefix.to_owned();
+    };
+
+    let message = first_issue.message.trim();
+    let message = if message.is_empty() {
+        "unknown parse error"
+    } else {
+        message
+    };
+
+    if issues.len() > 1 {
+        format!("{prefix}: {message} (+{} more)", issues.len() - 1)
+    } else {
+        format!("{prefix}: {message}")
+    }
+}
+
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
     // TODO: Don't duplicate this from lib.rs Program.
     ast.recast_top(&Default::default(), 0)
@@ -7165,6 +7153,66 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         frontend.program = program.clone();
         let outcome = mock_ctx.run_mock(program, &MockConfig::default()).await.unwrap();
         frontend.update_state_after_exec(outcome, true);
+    }
+
+    #[test]
+    fn test_parse_frontend_mutation_source_error_messages_are_user_facing() {
+        for (source, expected_message) in [
+            ("**", "Error parsing KCL source after editing: Unexpected token: *"),
+            ("3'", "Error parsing KCL source after editing: found unknown token '''"),
+        ] {
+            let err = parse_frontend_mutation_source(
+                source,
+                "Error parsing KCL source after editing",
+                "No AST produced after editing",
+            )
+            .expect_err("expected invalid KCL source to fail");
+            let message = err.error.message();
+
+            assert_eq!(message, expected_message);
+            assert!(!message.contains("CompilationIssue"));
+            assert!(!message.contains("KclErrorDetails"));
+            assert!(!message.contains("source_range"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_constraint_parse_error_messages_are_user_facing() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([line1.start, line1.end]) == 10
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
+
+        for (value, expected_message) in [
+            ("**", "Invalid constraint value: Unexpected token: *"),
+            ("3'", "Invalid constraint value: found unknown token '''"),
+        ] {
+            let err = frontend
+                .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
+                .await
+                .expect_err("expected invalid constraint expression to fail");
+            let message = err.error.message();
+
+            assert_eq!(message, expected_message);
+            assert!(!message.contains("CompilationIssue"));
+            assert!(!message.contains("KclErrorDetails"));
+            assert!(!message.contains("source_range"));
+        }
+
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
