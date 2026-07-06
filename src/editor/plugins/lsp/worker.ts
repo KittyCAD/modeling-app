@@ -11,7 +11,11 @@ import init, {
   lsp_run_kcl,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
-import type { LspWorkerEvent } from '@src/editor/plugins/lsp/types'
+import type {
+  KclWorkerOptions,
+  LspWorkerEvent,
+} from '@src/editor/plugins/lsp/types'
+import { LspWorker } from '@src/editor/plugins/lsp/types'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import { err, reportRejection } from '@src/lib/trap'
 
@@ -33,23 +37,20 @@ export async function kclLspRun(
   try {
     console.log('start kcl lsp')
     await lsp_run_kcl(config, token, baseUrl)
-  } catch (e: unknown) {
+  } catch (e: any) {
     console.log('kcl lsp failed', e)
     // We can't restart here because a moved value, we should do this another way.
   }
 }
 
 // WebWorker message handler.
-onmessage = (event: MessageEvent) => {
-  if (err(fromServer)) {
-    return
-  }
-  const lspEvent: LspWorkerEvent = event.data
-  const { worker } = lspEvent
+onmessage = function (event: MessageEvent) {
+  if (err(fromServer)) return
+  const { worker, eventType, eventData }: LspWorkerEvent = event.data
 
-  switch (lspEvent.eventType) {
-    case LspWorkerEventType.Init: {
-      const { wasmUrl, token, apiBaseUrl } = lspEvent.eventData
+  switch (eventType) {
+    case LspWorkerEventType.Init:
+      let { wasmUrl } = eventData as KclWorkerOptions
       initialise(wasmUrl)
         .then(async (instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
@@ -59,51 +60,44 @@ onmessage = (event: MessageEvent) => {
             projectFsManager
           )
           console.log('Starting worker', worker)
-          await kclLspRun(config, token, apiBaseUrl)
+          switch (worker) {
+            case LspWorker.Kcl:
+              const kclData = eventData as KclWorkerOptions
+              await kclLspRun(config, kclData.token, kclData.apiBaseUrl)
+              break
+          }
         })
         .catch((error) => {
           console.error('Worker: Error loading wasm module', worker, error)
         })
       break
-    }
-    case LspWorkerEventType.Call: {
-      const data = lspEvent.eventData
+    case LspWorkerEventType.Call:
+      const data = eventData as Uint8Array
       intoServer.enqueue(data)
       const json: jsrpc.JSONRPCRequest = Codec.decode(data)
       if (null != json.id) {
-        const response = fromServer.responses.get(json.id)
-        if (response) {
-          response
-            .then((response) => {
-              const encoded = Codec.encode(response as jsrpc.JSONRPCResponse)
-              postMessage(encoded)
-            })
-            .catch(reportRejection)
-        }
+        fromServer.responses
+          .get(json.id)!
+          .then((response) => {
+            const encoded = Codec.encode(response as jsrpc.JSONRPCResponse)
+            postMessage(encoded)
+          })
+          .catch(reportRejection)
       }
       break
-    }
     default:
-      console.error(
-        'Worker: Unknown message type',
-        worker,
-        (event.data as { eventType?: unknown }).eventType
-      )
+      console.error('Worker: Unknown message type', worker, eventType)
   }
 }
 ;(async () => {
-  if (err(fromServer)) {
-    return
-  }
+  if (err(fromServer)) return
   for await (const requests of fromServer.requests) {
     const encoded = Codec.encode(requests as jsrpc.JSONRPCRequest)
     postMessage(encoded)
   }
 })().catch(reportRejection)
 ;(async () => {
-  if (err(fromServer)) {
-    return
-  }
+  if (err(fromServer)) return
   for await (const notification of fromServer.notifications) {
     const encoded = Codec.encode(notification as jsrpc.JSONRPCRequest)
     postMessage(encoded)

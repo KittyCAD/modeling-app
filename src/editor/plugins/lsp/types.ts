@@ -9,14 +9,8 @@ export interface KclWorkerOptions {
   apiBaseUrl: string
 }
 
-export type LspWorkerEvent =
-  | {
-      eventType: LspWorkerEventType.Init
-      eventData: KclWorkerOptions
-      worker: LspWorker
-    }
-  | {
-      eventType: LspWorkerEventType.Call
-      eventData: Uint8Array
-      worker: LspWorker
-    }
+export interface LspWorkerEvent {
+  eventType: LspWorkerEventType
+  eventData: Uint8Array | KclWorkerOptions
+  worker: LspWorker
+}
