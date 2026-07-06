@@ -25,16 +25,13 @@ vi.mock('@src/lib/boot', () => ({
 }))
 
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeperConversationStore'
 import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
 import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 
 const completedConversation: Conversation = {
   exchanges: [
@@ -113,109 +110,55 @@ const createFakeActor = ({
   }
 }
 
-const createFakeSystemIOActor = ({
-  mlEphantConversations = undefined,
-  completeSavesAutomatically = true,
-  value = SystemIOMachineStates.idle,
-}: {
-  mlEphantConversations?: Map<string, string>
-  completeSavesAutomatically?: boolean
-  value?: SystemIOMachineStates
-} = {}) => {
-  type SaveConversationEvent = {
-    type: SystemIOMachineEvents
-    data?: { projectId?: string; conversationId?: string }
-  }
-  type FakeSystemIOSnapshot = {
-    value: SystemIOMachineStates
-    context: {
-      mlEphantConversations?: Map<string, string>
-    }
-  }
-  let snapshot: FakeSystemIOSnapshot = {
-    value,
-    context: {
-      mlEphantConversations,
-    },
-  }
-  let pendingSaveEvent: SaveConversationEvent | undefined
-  const listeners = new Set<(next: typeof snapshot) => void>()
-  const notify = () => {
-    for (const listener of listeners) {
-      listener(snapshot)
-    }
-  }
-  const completeSave = () => {
-    if (pendingSaveEvent === undefined) {
-      return
-    }
+type FakeConversationStore = ZookeeperConversationStore & {
+  completeDelete: () => void
+}
 
-    const nextConversations = new Map(snapshot.context.mlEphantConversations)
-    const projectId = pendingSaveEvent.data?.projectId
-    if (projectId !== undefined) {
-      if (
-        pendingSaveEvent.type ===
-        SystemIOMachineEvents.deleteMlEphantConversation
-      ) {
-        nextConversations.delete(projectId)
-      } else if (pendingSaveEvent.data?.conversationId !== undefined) {
-        nextConversations.set(projectId, pendingSaveEvent.data.conversationId)
-      }
-    }
-    pendingSaveEvent = undefined
-    snapshot = {
-      value: SystemIOMachineStates.idle,
-      context: {
-        mlEphantConversations: nextConversations,
-      },
-    }
-    notify()
-  }
+const createFakeConversationStore = ({
+  projectConversations = new Map<string, string>(),
+  completeDeletesAutomatically = true,
+}: {
+  projectConversations?: Map<string, string>
+  completeDeletesAutomatically?: boolean
+} = {}): FakeConversationStore => {
+  const conversations = new Map(projectConversations)
+  let pendingDelete: (() => void) | undefined
 
   return {
-    getSnapshot: () => snapshot,
-    subscribe: (listener?: (next: typeof snapshot) => void) => {
-      if (listener !== undefined) {
-        listeners.add(listener)
+    getProjectConversationId: vi.fn(async (projectId: string) =>
+      conversations.get(projectId)
+    ),
+    saveProjectConversationId: vi.fn(
+      async ({
+        projectId,
+        conversationId,
+      }: {
+        projectId: string
+        conversationId: string
+      }) => {
+        conversations.set(projectId, conversationId)
       }
-      return {
-        unsubscribe: () => {
-          if (listener !== undefined) {
-            listeners.delete(listener)
+    ),
+    deleteProjectConversationId: vi.fn(
+      (projectId: string) =>
+        new Promise<void>((resolve) => {
+          const completeDelete = () => {
+            conversations.delete(projectId)
+            resolve()
           }
-        },
-      }
-    },
-    completeSave,
-    setSnapshot: (nextSnapshot: Partial<FakeSystemIOSnapshot>) => {
-      snapshot = {
-        ...snapshot,
-        ...nextSnapshot,
-        context: {
-          ...snapshot.context,
-          ...nextSnapshot.context,
-        },
-      }
-      notify()
-    },
-    send: vi.fn((event: SaveConversationEvent) => {
-      if (
-        event.type !== SystemIOMachineEvents.saveMlEphantConversations &&
-        event.type !== SystemIOMachineEvents.deleteMlEphantConversation
-      ) {
-        return
-      }
 
-      snapshot = {
-        ...snapshot,
-        value: SystemIOMachineStates.savingMlEphantConversations,
-      }
-      notify()
-      pendingSaveEvent = event
-      if (completeSavesAutomatically) {
-        completeSave()
-      }
-    }),
+          if (completeDeletesAutomatically) {
+            completeDelete()
+            return
+          }
+
+          pendingDelete = completeDelete
+        })
+    ),
+    completeDelete: () => {
+      pendingDelete?.()
+      pendingDelete = undefined
+    },
   }
 }
 
@@ -323,7 +266,7 @@ const createStatefulPromptActor = (awaitingResponse = false) => {
 
 const renderPane = ({
   mlEphantManagerActor = createFakeActor(),
-  systemIOActor = createFakeSystemIOActor(),
+  conversationStore = createFakeConversationStore(),
   theProject = undefined,
   settingsMetaId = uuidNIL,
   settingsProjectDirectory = '',
@@ -341,7 +284,7 @@ const renderPane = ({
   sendBillingUsageEnded = vi.fn(),
 }: {
   mlEphantManagerActor?: FakeMlEphantActor
-  systemIOActor?: ReturnType<typeof createFakeSystemIOActor>
+  conversationStore?: FakeConversationStore
   theProject?: any
   settingsMetaId?: string
   settingsProjectDirectory?: string
@@ -360,7 +303,7 @@ const renderPane = ({
     <MemoryRouter>
       <MlEphantConversationPane
         mlEphantManagerActor={mlEphantManagerActor as any}
-        systemIOActor={systemIOActor as any}
+        conversationStore={conversationStore}
         kclManager={kclManager}
         theProject={theProject}
         contextModeling={
@@ -601,18 +544,18 @@ describe('MlEphantConversationPane', () => {
     }
   })
 
-  test('retries cache setup when the project becomes available after settings load', () => {
+  test('retries cache setup when the project becomes available after settings load', async () => {
     const mlEphantManagerActor = createFakeActor({
       conversation: undefined,
       value: 'await',
     })
-    const systemIOActor = createFakeSystemIOActor({
-      mlEphantConversations: new Map([['project-id', 'conversation-id']]),
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'conversation-id']]),
     })
 
     const { rerender } = renderPane({
       mlEphantManagerActor,
-      systemIOActor,
+      conversationStore,
       settingsMetaId: 'project-id',
       theProject: undefined,
     })
@@ -627,7 +570,7 @@ describe('MlEphantConversationPane', () => {
       <MemoryRouter>
         <MlEphantConversationPane
           mlEphantManagerActor={mlEphantManagerActor as any}
-          systemIOActor={systemIOActor as any}
+          conversationStore={conversationStore}
           kclManager={
             {
               code: '',
@@ -684,46 +627,60 @@ describe('MlEphantConversationPane', () => {
       </MemoryRouter>
     )
 
-    expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        conversationId: 'conversation-id',
-      })
-    )
-  })
-
-  test('waits for SystemIO idle before loading saved project conversations', () => {
-    const systemIOActor = createFakeSystemIOActor({
-      value: SystemIOMachineStates.readingFolders,
-    })
-
-    renderPane({
-      systemIOActor,
-      settingsMetaId: 'project-id',
-    })
-
-    expect(systemIOActor.send).not.toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.getMlEphantConversations,
-    })
-
-    systemIOActor.setSnapshot({
-      value: SystemIOMachineStates.idle,
-    })
-
-    expect(systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.getMlEphantConversations,
+    await waitFor(() => {
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'conversation-id',
+        })
+      )
     })
   })
 
-  test('clearing chat forgets the saved project conversation before starting a fresh one', () => {
-    const mlEphantManagerActor = createStatefulClearChatActor()
-    const systemIOActor = createFakeSystemIOActor({
-      mlEphantConversations: new Map([['project-id', 'old-conversation-id']]),
+  test('loads saved project conversations from the Zookeeper conversation store', async () => {
+    const mlEphantManagerActor = createFakeActor({
+      conversation: undefined,
+      value: 'await',
+    })
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'conversation-id']]),
     })
 
     renderPane({
       mlEphantManagerActor,
-      systemIOActor,
+      conversationStore,
+      settingsMetaId: 'project-id',
+      theProject: {
+        name: 'sample-project',
+        path: '/tmp/sample-project',
+      },
+    })
+
+    await waitFor(() => {
+      expect(conversationStore.getProjectConversationId).toHaveBeenCalledWith(
+        'project-id'
+      )
+    })
+
+    await waitFor(() => {
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          conversationId: 'conversation-id',
+        })
+      )
+    })
+  })
+
+  test('clearing chat forgets the saved project conversation before starting a fresh one', async () => {
+    const mlEphantManagerActor = createStatefulClearChatActor()
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'old-conversation-id']]),
+    })
+
+    renderPane({
+      mlEphantManagerActor,
+      conversationStore,
       settingsMetaId: 'project-id',
       theProject: {
         name: 'sample-project',
@@ -731,25 +688,23 @@ describe('MlEphantConversationPane', () => {
       },
     })
     mlEphantManagerActor.send.mockClear()
-    systemIOActor.send.mockClear()
 
     fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
 
-    expect(systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.deleteMlEphantConversation,
-      data: {
-        projectId: 'project-id',
-      },
-    })
+    expect(conversationStore.deleteProjectConversationId).toHaveBeenCalledWith(
+      'project-id'
+    )
     expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
       type: MlEphantManagerTransitions.ConversationClose,
     })
-    expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        conversationId: undefined,
-      })
-    )
+    await waitFor(() => {
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          conversationId: undefined,
+        })
+      )
+    })
     expect(mlEphantManagerActor.send).not.toHaveBeenCalledWith(
       expect.objectContaining({
         type: MlEphantManagerTransitions.CacheSetupAndConnect,
@@ -758,16 +713,16 @@ describe('MlEphantConversationPane', () => {
     )
   })
 
-  test('waits for the saved project conversation delete before starting a fresh one', () => {
+  test('waits for the saved project conversation delete before starting a fresh one', async () => {
     const mlEphantManagerActor = createStatefulClearChatActor()
-    const systemIOActor = createFakeSystemIOActor({
-      mlEphantConversations: new Map([['project-id', 'old-conversation-id']]),
-      completeSavesAutomatically: false,
+    const conversationStore = createFakeConversationStore({
+      projectConversations: new Map([['project-id', 'old-conversation-id']]),
+      completeDeletesAutomatically: false,
     })
 
     renderPane({
       mlEphantManagerActor,
-      systemIOActor,
+      conversationStore,
       settingsMetaId: 'project-id',
       theProject: {
         name: 'sample-project',
@@ -775,16 +730,12 @@ describe('MlEphantConversationPane', () => {
       },
     })
     mlEphantManagerActor.send.mockClear()
-    systemIOActor.send.mockClear()
 
     fireEvent.click(screen.getByRole('button', { name: /Clear chat/ }))
 
-    expect(systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.deleteMlEphantConversation,
-      data: {
-        projectId: 'project-id',
-      },
-    })
+    expect(conversationStore.deleteProjectConversationId).toHaveBeenCalledWith(
+      'project-id'
+    )
     expect(mlEphantManagerActor.send).toHaveBeenCalledWith({
       type: MlEphantManagerTransitions.ConversationClose,
     })
@@ -794,13 +745,15 @@ describe('MlEphantConversationPane', () => {
       })
     )
 
-    systemIOActor.completeSave()
+    conversationStore.completeDelete()
 
-    expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: MlEphantManagerTransitions.CacheSetupAndConnect,
-        conversationId: undefined,
-      })
-    )
+    await waitFor(() => {
+      expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: MlEphantManagerTransitions.CacheSetupAndConnect,
+          conversationId: undefined,
+        })
+      )
+    })
   })
 })
