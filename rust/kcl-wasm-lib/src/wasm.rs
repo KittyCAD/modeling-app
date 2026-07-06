@@ -1,7 +1,6 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::KclError;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
 use kcl_lib::exec::NumericType;
@@ -12,10 +11,6 @@ use kcl_lib::exec::WarningLevel;
 use kcl_lib::pretty::NumericSuffix;
 use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
 use wasm_bindgen::prelude::*;
-
-fn kcl_error_message(error: KclError) -> String {
-    error.message().to_owned()
-}
 
 // wasm_bindgen wrapper for lint
 #[wasm_bindgen]
@@ -334,9 +329,9 @@ pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String>
     console_error_panic_hook::set_once();
 
     let len: Option<KcmcUnitLength> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
-    let program = Program::parse_no_errs(code).map_err(kcl_error_message)?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
-    let new_program = program.change_default_units(len).map_err(kcl_error_message)?;
+    let new_program = program.change_default_units(len).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 
@@ -349,9 +344,9 @@ pub fn change_kcl_version(code: &str, version_str: &str) -> Result<String, Strin
     console_error_panic_hook::set_once();
 
     let version: Option<String> = serde_json::from_str(version_str).map_err(|e| e.to_string())?;
-    let program = Program::parse_no_errs(code).map_err(kcl_error_message)?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
-    let new_program = program.change_kcl_version(version).map_err(kcl_error_message)?;
+    let new_program = program.change_kcl_version(version).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 
@@ -364,9 +359,9 @@ pub fn change_experimental_features(code: &str, level_str: &str) -> Result<Strin
     console_error_panic_hook::set_once();
 
     let level: Option<WarningLevel> = serde_json::from_str(level_str).map_err(|e| e.to_string())?;
-    let program = Program::parse_no_errs(code).map_err(kcl_error_message)?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
-    let new_program = program.change_experimental_features(level).map_err(kcl_error_message)?;
+    let new_program = program.change_experimental_features(level).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 
@@ -379,7 +374,7 @@ pub fn change_experimental_features(code: &str, level_str: &str) -> Result<Strin
 pub fn is_kcl_empty_or_only_settings(code: &str) -> Result<JsValue, String> {
     console_error_panic_hook::set_once();
 
-    let program = Program::parse_no_errs(code).map_err(kcl_error_message)?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     JsValue::from_serde(&program.is_empty_or_only_settings()).map_err(|e| e.to_string())
 }

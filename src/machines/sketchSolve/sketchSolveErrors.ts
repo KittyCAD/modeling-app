@@ -10,17 +10,14 @@ function getDirectErrorMessage(value: unknown): string | undefined {
     return trimmed.length > 0 ? trimmed : undefined
   }
 
-  if (
-    typeof value === 'object' &&
-    value !== null &&
-    'msg' in value &&
-    typeof value.msg === 'string'
-  ) {
-    const trimmed = value.msg.trim()
-    return trimmed.length > 0 ? trimmed : undefined
-  }
-
   if (value instanceof Error) {
+    if ('msg' in value && typeof value.msg === 'string') {
+      const trimmed = value.msg.trim()
+      if (trimmed.length > 0) {
+        return trimmed
+      }
+    }
+
     const trimmed = value.message.trim()
     return trimmed.length > 0 ? trimmed : undefined
   }
