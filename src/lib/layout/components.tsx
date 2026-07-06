@@ -363,8 +363,13 @@ function PaneLayout({ layout }: { layout: PaneLayoutType }) {
     useLayoutState()
   const paneBarRef = useRef<HTMLUListElement>(null)
   const barBorderWidthProp = `border${orientationToReactCss(sideToOrientation(layout.side))}Width`
-  const shouldHide = (l: PaneChild) =>
-    l.type === LayoutType.Simple && areaLibrary[l.areaType]?.hide()
+  const shouldHide = (l: PaneChild) => {
+    if (l.type !== LayoutType.Simple) {
+      return false
+    }
+    const areaType = areaLibrary[l.areaType]
+    return areaType === undefined || areaType.hide()
+  }
   const activePanes = layout.activeIndices
     .map((itemIndex) => ({
       activeIndex: itemIndex,
