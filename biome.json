@@ -1,8 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
-  "organizeImports": {
-    "enabled": true,
-    "include": ["**/*.ts", "**/*.tsx"]
+  "$schema": "https://biomejs.dev/schemas/2.3.0/schema.json",
+  "assist": {
+    "includes": ["**/*.ts", "**/*.tsx"],
+    "actions": { "source": { "organizeImports": "on" } }
   },
   "linter": {
     "enabled": true,
@@ -16,7 +16,10 @@
       },
       "style": {
         "useBlockStatements": "error",
-        "useShorthandArrayType": "error"
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": { "syntax": "shorthand" }
+        }
       }
     }
   },
@@ -24,7 +27,7 @@
     "enabled": true,
     "indentWidth": 2,
     "indentStyle": "space",
-    "lineEnding": "lf",
+    "lineEnding": "auto",
     "lineWidth": 80,
     "formatWithErrors": true
   },
@@ -41,10 +44,15 @@
   },
   "css": {
     "parser": {
-      "cssModules": true
+      "cssModules": true,
+      "tailwindDirectives": true
     }
   },
   "files": {
-    "ignore": ["**/*.json", "packages/ui-components/storybook-static/**"]
+    "includes": [
+      "**",
+      "!**/*.json",
+      "!**/packages/ui-components/storybook-static/**"
+    ]
   }
 }
