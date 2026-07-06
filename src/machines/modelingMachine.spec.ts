@@ -52,6 +52,8 @@ let machineManagerInThisFile: MachineManager = null!
 
 const TESTS_WITHOUT_ENGINE_WORLD = [
   'routes a cursor inside a sketch block segment to sketch solve edit',
+  'shows default planes again when canceling sketch plane selection on a blank scene',
+  'hides default planes when canceling sketch plane selection with geometry present',
 ]
 
 /**
@@ -1629,6 +1631,101 @@ sketch001 = sketch(on = YZ) {
             artifactId: sketchBlock.id,
           })
         )
+
+        actor.stop()
+      })
+
+      const createSketchPlaneSelectionContext = ({
+        artifactGraph = new Map(),
+      }: {
+        artifactGraph?: Map<unknown, unknown>
+      } = {}) =>
+        ({
+          ...modelingMachineInitialInternalContext,
+          kclManager: {
+            artifactGraph,
+            hasErrors: vi.fn(() => false),
+            hidePlanes: vi.fn(),
+            setCopilotEnabled: vi.fn(),
+            setSelectionFilter: vi.fn(),
+            setSelectionFilterToDefault: vi.fn(),
+            showPlanes: vi.fn(),
+            sceneInfra: {
+              animate: vi.fn(),
+              stop: vi.fn(),
+              resetMouseListeners: vi.fn(),
+              camControls: {
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {},
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        }) as any
+
+      it('shows default planes again when canceling sketch plane selection on a blank scene', async () => {
+        const context = createSketchPlaneSelectionContext()
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        await waitForCondition(
+          () => actor.getSnapshot().value === 'Sketch no face'
+        )
+
+        actor.send({ type: 'Cancel' })
+
+        await waitForCondition(() => {
+          return (
+            JSON.stringify(actor.getSnapshot().value) ===
+            JSON.stringify({ idle: 'showPlanes' })
+          )
+        })
+
+        expect(context.kclManager.hidePlanes).toHaveBeenCalled()
+        expect(context.kclManager.showPlanes).toHaveBeenCalledTimes(2)
+
+        actor.stop()
+      })
+
+      it('hides default planes when canceling sketch plane selection with geometry present', async () => {
+        const context = {
+          ...createSketchPlaneSelectionContext({
+            artifactGraph: new Map([['artifact-id', {}]]),
+          }),
+        }
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        await waitForCondition(
+          () => actor.getSnapshot().value === 'Sketch no face'
+        )
+
+        actor.send({ type: 'Cancel' })
+
+        await waitForCondition(() => {
+          return (
+            JSON.stringify(actor.getSnapshot().value) ===
+            JSON.stringify({ idle: 'hidePlanes' })
+          )
+        })
+
+        expect(context.kclManager.hidePlanes).toHaveBeenCalled()
+        expect(context.kclManager.showPlanes).toHaveBeenCalledTimes(1)
 
         actor.stop()
       })
