@@ -1,4 +1,3 @@
-import type { LanguageSupport } from '@codemirror/language'
 import { Prec } from '@codemirror/state'
 import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
@@ -43,8 +42,6 @@ export function projectBasename(filePath: string, projectPath: string): string {
 }
 
 type LspContext = {
-  lspClients: LanguageServerClient[]
-  kclLSP: LanguageSupport | null
   onProjectClose: (
     file: FileEntry | null,
     projectPath: string | null,
@@ -85,7 +82,7 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     const lspWorker = new Worker({ name: 'kcl' })
     const initEvent: KclWorkerOptions = {
       wasmUrl: wasmUrl(),
-      token: token,
+      token,
       apiBaseUrl: withAPIBaseURL(''),
     }
     lspWorker.postMessage({
@@ -93,14 +90,18 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       eventType: LspWorkerEventType.Init,
       eventData: initEvent,
     })
-    lspWorker.onmessage = function (e) {
-      if (err(fromServer)) return
+    lspWorker.onmessage = (e) => {
+      if (err(fromServer)) {
+        return
+      }
       fromServer.add(e.data)
     }
 
     const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
     const fromServer: FromServer | Error = FromServer.create()
-    if (err(fromServer)) return { lspClient: null }
+    if (err(fromServer)) {
+      return { lspClient: null }
+    }
 
     const lspClient = new LanguageServerClient({
       name: LspWorker.Kcl,
@@ -136,38 +137,35 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   // a good setup because it will restart the client but not the server :)
   // We do not want to restart the server, its just wasteful.
   const kclLSP = useMemo(() => {
-    let plugin = null
-    if (isKclLspReady && kclLspClient) {
-      // Set up the lsp plugin.
-      const lsp = kcl({
-        documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-        workspaceFolders: getWorkspaceFolders(),
-        client: kclLspClient,
-        processLspNotification: (
-          plugin: LanguageServerPlugin,
-          notification: LSP.NotificationMessage
-        ) => {
-          try {
-            switch (notification.method) {
-              case 'kcl/astUpdated':
-                // Update the folding ranges, since the AST has changed.
-                // This is a hack since codemirror does not support async foldService.
-                // When they do we can delete this.
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                plugin.updateFoldingRanges()
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                plugin.requestSemanticTokens()
-                break
-            }
-          } catch (error) {
-            console.error(error)
-          }
-        },
-      })
-
-      plugin = lsp
+    if (!isKclLspReady || !kclLspClient) {
+      return null
     }
-    return plugin
+
+    return kcl({
+      documentUri: `file:///${PROJECT_ENTRYPOINT}`,
+      workspaceFolders: getWorkspaceFolders(),
+      client: kclLspClient,
+      processLspNotification: (
+        plugin: LanguageServerPlugin,
+        notification: LSP.NotificationMessage
+      ) => {
+        try {
+          switch (notification.method) {
+            case 'kcl/astUpdated':
+              // Update the folding ranges, since the AST has changed.
+              // This is a hack since codemirror does not support async foldService.
+              // When they do we can delete this.
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              plugin.updateFoldingRanges()
+              // eslint-disable-next-line @typescript-eslint/no-floating-promises
+              plugin.requestSemanticTokens()
+              break
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      },
+    })
   }, [kclLspClient, isKclLspReady])
 
   useEffect(() => {
@@ -184,10 +182,10 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
       })
   }, [kclLSP, kclManager.editorView])
 
-  let lspClients: LanguageServerClient[] = []
-  if (kclLspClient) {
-    lspClients.push(kclLspClient)
-  }
+  const lspClients = useMemo(
+    () => (kclLspClient ? [kclLspClient] : []),
+    [kclLspClient]
+  )
 
   const onProjectClose = (
     file: FileEntry | null,
@@ -322,8 +320,6 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <LspStateContext.Provider
       value={{
-        lspClients,
-        kclLSP,
         onProjectClose,
         onProjectOpen,
         onFileOpen,
