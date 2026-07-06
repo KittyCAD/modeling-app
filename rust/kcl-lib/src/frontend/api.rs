@@ -230,6 +230,9 @@ pub struct Face {
 #[serde(rename_all = "camelCase")]
 pub struct Wall {
     pub id: ObjectId,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub solid_output_index: Option<usize>,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -238,6 +241,9 @@ pub struct Wall {
 pub struct Cap {
     pub id: ObjectId,
     pub kind: CapKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub solid_output_index: Option<usize>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, ts_rs::TS)]
