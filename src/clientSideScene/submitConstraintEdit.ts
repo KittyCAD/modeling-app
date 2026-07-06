@@ -37,8 +37,6 @@ export async function submitConstraintEdit({
   value: string
   settings: ConstraintEditSettings
 }) {
-  sketchSolveActor?.send({ type: 'stop editing constraint' })
-
   try {
     const result = await rustContext.editConstraint(
       SKETCH_FILE_VERSION,
@@ -58,6 +56,8 @@ export async function submitConstraintEdit({
         },
       })
     }
+
+    sketchSolveActor?.send({ type: 'stop editing constraint' })
   } catch (e) {
     console.error('Failed to edit constraint:', e)
     toastSketchSolveError(e, 'Failed to edit constraint')

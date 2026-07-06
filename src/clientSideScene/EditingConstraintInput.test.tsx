@@ -20,7 +20,7 @@ describe('submitConstraintEdit', () => {
     vi.clearAllMocks()
   })
 
-  it('toasts when editing a constraint fails', async () => {
+  it('keeps editing and toasts when editing a constraint fails', async () => {
     const editConstraint = vi
       .fn()
       .mockRejectedValue(new Error('Undefined variable: newDistance'))
@@ -42,10 +42,7 @@ describe('submitConstraintEdit', () => {
       settings: {},
     })
 
-    expect(sketchSolveActor.send).toHaveBeenCalledTimes(1)
-    expect(sketchSolveActor.send).toHaveBeenCalledWith({
-      type: 'stop editing constraint',
-    })
+    expect(sketchSolveActor.send).not.toHaveBeenCalled()
     expect(editConstraint).toHaveBeenCalledWith(
       SKETCH_FILE_VERSION,
       34,
@@ -91,5 +88,44 @@ describe('submitConstraintEdit', () => {
       'Invalid constraint value: Unexpected token: *',
       { id: SKETCH_SOLVE_ERROR_TOAST_ID }
     )
+    expect(sketchSolveActor.send).not.toHaveBeenCalled()
+  })
+
+  it('updates the sketch outcome and stops editing after a successful edit', async () => {
+    const editResult = {
+      kclSource: { source: 'source-delta' },
+      sceneGraphDelta: { graph: 'scene-graph-delta' },
+      checkpointId: 56,
+    }
+    const editConstraint = vi.fn().mockResolvedValue(editResult)
+    const sketchSolveActor = {
+      getSnapshot: vi.fn(() => ({
+        context: {
+          editingConstraintId: 12,
+          sketchId: 34,
+        },
+      })),
+      send: vi.fn(),
+    }
+
+    await submitConstraintEdit({
+      sketchSolveActor,
+      rustContext: { editConstraint },
+      editingConstraintId: 12,
+      value: '15',
+      settings: {},
+    })
+
+    expect(sketchSolveActor.send).toHaveBeenNthCalledWith(1, {
+      type: 'update sketch outcome',
+      data: {
+        sourceDelta: editResult.kclSource,
+        sceneGraphDelta: editResult.sceneGraphDelta,
+        checkpointId: 56,
+      },
+    })
+    expect(sketchSolveActor.send).toHaveBeenNthCalledWith(2, {
+      type: 'stop editing constraint',
+    })
   })
 })
