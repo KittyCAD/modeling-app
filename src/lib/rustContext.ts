@@ -5,10 +5,10 @@ import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type {
   OutputFormat3d,
-  RenderPacket,
   RenderPacketEdge,
   RenderPacketPrimitive,
-  RenderPacketSketchSegment,
+  RenderPacketRegion,
+  RenderPacketRegionLoop,
   RenderPacketTrimLoop,
 } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
@@ -25,6 +25,8 @@ import type {
   SegmentCtor,
   SetProgramOutcome as RustSetProgramOutcome,
   SketchCtor,
+  FrontendRenderPacket,
+  FrontendRenderPacketSketchSegment,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
@@ -51,10 +53,12 @@ import {
 } from '@src/lib/settings/settingsUtils'
 
 export type {
-  RenderPacket,
+  FrontendRenderPacket as RenderPacket,
   RenderPacketEdge,
   RenderPacketPrimitive,
-  RenderPacketSketchSegment,
+  RenderPacketRegion,
+  RenderPacketRegionLoop,
+  FrontendRenderPacketSketchSegment as RenderPacketSketchSegment,
   RenderPacketTrimLoop,
 }
 
@@ -224,12 +228,12 @@ export default class RustContext {
   async exportRenderPacket(
     settings: DeepPartial<Configuration>,
     toastId?: string
-  ): Promise<RenderPacket | undefined> {
+  ): Promise<FrontendRenderPacket | undefined> {
     const instance = await this._checkContextInstance()
 
     try {
       const wasmContext = instance as unknown as {
-        exportRenderPacket: (settings: string) => Promise<RenderPacket>
+        exportRenderPacket: (settings: string) => Promise<FrontendRenderPacket>
       }
       return await wasmContext.exportRenderPacket(JSON.stringify(settings))
     } catch (e: any) {

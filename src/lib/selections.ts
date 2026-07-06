@@ -157,10 +157,15 @@ export async function getEngineRegionSelectionFromEntity(
   )
   if (!parentEntityId) return null
 
-  const path = artifactGraph.get(parentEntityId)
-  if (!path || path.type !== 'path') return null
+  const parentArtifact = artifactGraph.get(parentEntityId)
+  let sketch: Extract<Artifact, { type: 'sketchBlock' }> | undefined | null =
+    null
 
-  const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
+  if (parentArtifact?.type === 'path') {
+    sketch = getSketchBlockForPathArtifact(parentArtifact, artifactGraph)
+  } else if (parentArtifact?.type === 'sketchBlock') {
+    sketch = parentArtifact
+  }
   if (!sketch) return null
 
   return {

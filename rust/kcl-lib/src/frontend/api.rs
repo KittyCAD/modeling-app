@@ -3,6 +3,9 @@
 #![allow(async_fn_in_trait)]
 
 use kcl_error::SourceRange;
+use kittycad_modeling_cmds::format::render_packet::{
+    RenderPacketEdge, RenderPacketPrimitive, RenderPacketRegion,
+};
 use kittycad_modeling_cmds::units::UnitLength;
 use serde::Deserialize;
 use serde::Serialize;
@@ -58,6 +61,45 @@ pub struct SceneGraphDelta {
     pub new_objects: Vec<ObjectId>,
     pub invalidates_ids: bool,
     pub exec_outcome: ExecOutcome,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct FrontendRenderPacket {
+    pub primitives: Vec<RenderPacketPrimitive>,
+    pub edges: Vec<RenderPacketEdge>,
+    pub sketches: Vec<FrontendRenderPacketSketchSegment>,
+    pub regions: Vec<RenderPacketRegion>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+#[serde(rename_all = "camelCase")]
+pub struct FrontendRenderPacketSketchSegment {
+    /// Packed xyz positions in OpenGL/glTF coordinates and meters.
+    pub positions: Vec<f32>,
+
+    /// Stable engine scene object UUID for the sketch owner.
+    pub sketch_id: uuid::Uuid,
+
+    /// Stable engine scene curve UUID, when available.
+    pub segment_id: Option<uuid::Uuid>,
+
+    /// Curve index within the sketch path or hole loop.
+    pub segment_index: u32,
+
+    /// Hole index when this segment belongs to a hole loop.
+    pub hole_index: Option<u32>,
+
+    /// Whether the underlying curve is closed.
+    pub closed: bool,
+
+    /// Source range for the corresponding frontend sketch segment, when available.
+    pub source_range: Option<SourceRange>,
+
+    /// AST node path for the corresponding frontend sketch segment, when available.
+    pub node_path: Option<NodePath>,
 }
 
 impl SceneGraphDelta {

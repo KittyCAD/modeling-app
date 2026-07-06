@@ -200,10 +200,10 @@ pub mod front {
         FrontendState,
         SetProgramOutcome,
         api::{
-            Cap, CapKind, EditSketchOutcome, Error, Expr, Face, File, FileId, LifecycleApi, NewSketchOutcome, Number,
-            Object, ObjectId, ObjectKind, Plane, ProjectId, RestoreSketchCheckpointOutcome, Result, SceneGraph,
-            SceneGraphDelta, Settings, SketchCheckpointId, SketchMutationOutcome, SourceDelta, SourceRef, Version,
-            Wall,
+            Cap, CapKind, EditSketchOutcome, Error, Expr, Face, File, FileId, FrontendRenderPacket,
+            FrontendRenderPacketSketchSegment, LifecycleApi, NewSketchOutcome, Number, Object, ObjectId, ObjectKind,
+            Plane, ProjectId, RestoreSketchCheckpointOutcome, Result, SceneGraph, SceneGraphDelta, Settings,
+            SketchCheckpointId, SketchMutationOutcome, SourceDelta, SourceRef, Version, Wall,
         },
         sketch::{
             Angle, Arc, ArcCtor, Circle, CircleCtor, Coincident, Constraint, Distance, EqualRadius,
