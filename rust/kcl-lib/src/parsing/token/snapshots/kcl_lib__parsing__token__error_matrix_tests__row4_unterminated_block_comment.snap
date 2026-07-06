@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_old(\"/* abc\")"
+---
+source: "/* abc"
+lex:   Ok (4 tokens)
+parse: Ok (program: false, issues: ["Fatal \"Unexpected token: /\" @ SourceRange([0, 1, 0])"])
