@@ -40,9 +40,8 @@ function ModelingArea() {
   const engineSceneStreamClassNames = registry.signal(
     engineSceneStreamClassNamesValueSpec
   ).value
-  const engineSceneStreamLayers = registry.signal(
-    engineSceneStreamLayersValueSpec
-  ).value
+  const engineSceneStreamLayers =
+    registry.signal(engineSceneStreamLayersValueSpec).value ?? []
   const engineSceneContext = {
     modelingState: state,
     modelingSend: send,
