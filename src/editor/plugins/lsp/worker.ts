@@ -8,10 +8,12 @@ import type * as jsrpc from 'json-rpc-2.0'
 
 import init, {
   LspServerConfig,
+  lsp_run_copilot,
   lsp_run_kcl,
 } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 
 import type {
+  CopilotWorkerOptions,
   KclWorkerOptions,
   LspWorkerEvent,
 } from '@src/editor/plugins/lsp/types'
@@ -27,6 +29,20 @@ const initialise = async (wasmUrl: string) => {
   const input = await fetch(wasmUrl)
   const buffer = await input.arrayBuffer()
   return init(buffer)
+}
+
+export async function copilotLspRun(
+  config: LspServerConfig,
+  token: string,
+  baseUrl: string
+) {
+  try {
+    console.log('starting copilot lsp')
+    await lsp_run_copilot(config, token, baseUrl)
+  } catch (e: any) {
+    console.log('copilot lsp failed', e)
+    // We can't restart here because a moved value, we should do this another way.
+  }
 }
 
 export async function kclLspRun(
@@ -50,7 +66,9 @@ onmessage = function (event: MessageEvent) {
 
   switch (eventType) {
     case LspWorkerEventType.Init:
-      let { wasmUrl } = eventData as KclWorkerOptions
+      let { wasmUrl }: KclWorkerOptions | CopilotWorkerOptions = eventData as
+        | KclWorkerOptions
+        | CopilotWorkerOptions
       initialise(wasmUrl)
         .then(async (instantiatedModule) => {
           console.log('Worker: WASM module loaded', worker, instantiatedModule)
@@ -64,6 +82,14 @@ onmessage = function (event: MessageEvent) {
             case LspWorker.Kcl:
               const kclData = eventData as KclWorkerOptions
               await kclLspRun(config, kclData.token, kclData.apiBaseUrl)
+              break
+            case LspWorker.Copilot:
+              let copilotData = eventData as CopilotWorkerOptions
+              await copilotLspRun(
+                config,
+                copilotData.token,
+                copilotData.apiBaseUrl
+              )
               break
           }
         })
