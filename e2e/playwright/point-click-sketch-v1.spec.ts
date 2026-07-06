@@ -2356,7 +2356,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'arguments',
             commandName: 'Pattern Circular 3D',
             currentArgKey: 'axis',
-            currentArgValue: '',
+            currentArgValue: 'X',
             headerArguments: {
               Solids: '1 sweep',
               Instances: '8',
@@ -2365,8 +2365,8 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'axis',
           })
-          // Select Y-axis and auto-progress
-          await cmdBar.selectOption({ name: 'Y-axis' }).click()
+          await page.keyboard.type('Y')
+          await cmdBar.progressCmdBar()
         })
 
         await test.step('Configure center', async () => {
@@ -2891,7 +2891,7 @@ solid001 = extrude(sketch001, length = 5)`
             stage: 'arguments',
             commandName: 'Pattern Linear 3D',
             currentArgKey: 'axis',
-            currentArgValue: '',
+            currentArgValue: 'X',
             headerArguments: {
               Solids: '1 sweep',
               Instances: '6',
@@ -2900,8 +2900,8 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'axis',
           })
-          // Select Y-axis and auto-progress
-          await cmdBar.selectOption({ name: 'Y-axis' }).click()
+          await page.keyboard.type('Y')
+          await cmdBar.progressCmdBar()
         })
 
         await test.step('Configure use original', async () => {
@@ -2976,7 +2976,7 @@ solid001 = extrude(sketch001, length = 5)`
           stage: 'arguments',
           commandName: 'Pattern Linear 3D',
           currentArgKey: 'axis',
-          currentArgValue: '',
+          currentArgValue: 'Y',
           headerArguments: {
             Instances: '6',
             Distance: '8',
