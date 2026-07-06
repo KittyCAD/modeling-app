@@ -4,13 +4,6 @@ import { encode as msgpackEncode } from '@msgpack/msgpack'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type {
-  RenderPacketEdge,
-  RenderPacketPrimitive,
-  RenderPacketRegion,
-  RenderPacketRegionLoop,
-  RenderPacketTrimLoop,
-} from '@rust/kcl-lib/bindings/ModelingCmd'
-import type {
   ApiConstraint,
   ApiFile,
   ApiFileId,
@@ -19,17 +12,24 @@ import type {
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
+  FrontendRenderPacket,
+  FrontendRenderPacketSketchSegment,
   Number,
   SetProgramOutcome as RustSetProgramOutcome,
   SceneGraphDelta,
   SegmentCtor,
   SegmentDragAnchor,
   SketchCtor,
-  FrontendRenderPacket,
-  FrontendRenderPacketSketchSegment,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import type {
+  RenderPacketEdge,
+  RenderPacketPrimitive,
+  RenderPacketRegion,
+  RenderPacketRegionLoop,
+  RenderPacketTrimLoop,
+} from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'

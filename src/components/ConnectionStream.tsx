@@ -1,9 +1,3 @@
-import type {
-  MouseEventHandler,
-  PointerEventHandler,
-  WheelEventHandler,
-} from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
 import { LocalWebGPUScene } from '@src/clientSideScene/LocalWebGPUScene'
@@ -37,9 +31,15 @@ import {
   getEngineRegionSelectionFromEntity,
   sendSelectEventToEngine,
 } from '@src/lib/selections'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
 import { getNormalisedCoordinates, throttle, uuidv4 } from '@src/lib/utils'
+import type {
+  MouseEventHandler,
+  PointerEventHandler,
+  WheelEventHandler,
+} from 'react'
+import { use, useCallback, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
 const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'

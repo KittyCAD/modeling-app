@@ -1,15 +1,15 @@
 import type { GetSketchModePlane } from '@kittycad/lib'
+import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { KclExecutionDoneDetail } from '@src/lang/KclManager'
 import { KclManagerEvents } from '@src/lang/KclManager'
+import { pathToNodeFromRustNodePath } from '@src/lang/wasm'
+import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
 import { useSingletons } from '@src/lib/boot'
-import { registerLocalSelectionCommandProvider } from '@src/clientSideScene/localSelectionCommandProxy'
-import { EngineDebugger } from '@src/lib/debugger'
 import {
   SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
 } from '@src/lib/constants'
-import { pathToNodeFromRustNodePath } from '@src/lang/wasm'
-import type { ArtifactGraph, PathToNode, SourceRange } from '@src/lang/wasm'
+import { EngineDebugger } from '@src/lib/debugger'
 import type {
   RenderPacket,
   RenderPacketEdge,
@@ -23,8 +23,8 @@ import { reportRejection } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import { useEffect, useRef } from 'react'
 import {
-  BufferGeometry,
   BufferAttribute,
+  BufferGeometry,
   CanvasTexture,
   Color,
   DoubleSide,
@@ -32,15 +32,15 @@ import {
   Group,
   Line,
   LineBasicMaterial,
+  type Material,
   Mesh,
   MeshBasicMaterial,
+  type Object3D,
   OrthographicCamera,
   PerspectiveCamera,
   Raycaster,
   Scene,
   ShapeUtils,
-  type Material,
-  type Object3D,
   Vector2,
   Vector3,
 } from 'three'

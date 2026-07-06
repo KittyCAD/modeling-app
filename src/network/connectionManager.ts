@@ -3,6 +3,7 @@ import {
   decode as msgpackDecode,
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
+import { maybeHandleLocalSelectionCommand } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
@@ -65,7 +66,6 @@ import {
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
 } from '@src/network/utils'
-import { maybeHandleLocalSelectionCommand } from '@src/clientSideScene/localSelectionCommandProxy'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
