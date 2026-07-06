@@ -9,13 +9,19 @@ import {
 } from '@kittycad/registry'
 import { type Signal, effect, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
+import {
+  type PreparedZookeeperPatchFileReplay,
+  buildZookeeperHistoryExtension,
+} from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  BODIES_PANE_FEATURE_FLAG,
+  OPFS_CLOUD_FEATURE_FLAG,
+} from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
@@ -52,7 +58,10 @@ import {
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import {
+  type SystemIOActor,
+  SystemIOMachineEvents,
+} from '@src/machines/systemIO/utils'
 import {
   type UserFeaturesActorRef,
   type UserFeaturesContext,
@@ -94,6 +103,28 @@ import { createActor } from 'xstate'
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
+
+function zookeeperReplayChangesProjectFileSet(
+  replayFiles: readonly PreparedZookeeperPatchFileReplay[]
+) {
+  return replayFiles.some(
+    (replayFile) =>
+      replayFile.previousContent === null || replayFile.nextContent === null
+  )
+}
+
+function getZookeeperReplayFallbackFilePath(
+  project: ZDSProject,
+  deletedPaths: Set<string>
+) {
+  const defaultFile = project.projectIORefSignal.value.default_file
+  const candidates = [
+    defaultFile,
+    ...project.files.map((file) => file.path),
+  ].filter((path, index, paths) => paths.indexOf(path) === index)
+
+  return candidates.find((path) => path && !deletedPaths.has(path))
+}
 
 function isPlaywrightRuntime() {
   return typeof window !== 'undefined' && isPlaywright()
@@ -143,6 +174,12 @@ declare global {
     engineCommandManager: ConnectionManager
     rustContext: RustContext
     engineDebugger: Debugger
+    /** Dev helper: on each click, logs two `makeMouseHelpers` lines (see buildSingletons). */
+    enableMousePositionLogs?: () => void
+    enableFillet?: () => void
+    zoomToFit?: () => void
+    /** Dev flag read by fillet debugging paths */
+    _enableFillet?: boolean
   }
 }
 
@@ -517,16 +554,59 @@ export class App implements AppSubsystems {
   }
 
   async openProject(projectIORef: Project) {
+    this.disposeProjectHistoryExtensions?.()
     const projectIORefSignal = signal(projectIORef)
     this.project = await ZDSProject.open(projectIORefSignal, this)
 
-    // This extension makes it possible to mark FS operations as un/redoable
-    effect(() => {
-      if (this.project?.executingEditor.value) {
-        buildFSHistoryExtension(
-          this.systemIOActor,
-          this.project.executingEditor.value
-        )
+    // These extensions make global project operations un/redoable.
+    this.disposeProjectHistoryExtensions = effect(() => {
+      const project = this.project
+      const executingEditor = project?.executingEditor.value
+      if (!project || !executingEditor) {
+        return
+      }
+
+      const disposeFSHistory = buildFSHistoryExtension(
+        this.systemIOActor,
+        executingEditor
+      )
+      const disposeZookeeperHistory = buildZookeeperHistoryExtension({
+        kclManager: executingEditor,
+        onCurrentFileDelete: async (deletedPaths) => {
+          const fallbackPath = getZookeeperReplayFallbackFilePath(
+            project,
+            deletedPaths
+          )
+          if (!fallbackPath) {
+            return Promise.reject(
+              new Error(
+                'Cannot replay this Zookeeper edit because no fallback KCL file is available.'
+              )
+            )
+          }
+
+          await project.openEditor(fallbackPath, executingEditor)
+        },
+        onActiveFileRestore: async (restoredPath, restoredContents) => {
+          await project.openEditor(
+            restoredPath,
+            executingEditor,
+            restoredContents
+          )
+        },
+        onProjectFilesReplay: async (replayFiles) => {
+          await project.syncReplayedFilesToRust(replayFiles)
+          if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
+            this.systemIOActor.send({
+              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+            })
+          }
+        },
+      })
+
+      return () => {
+        disposeFSHistory()
+        disposeZookeeperHistory()
       }
     })
 
@@ -550,8 +630,12 @@ export class App implements AppSubsystems {
     return this.project
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
+  private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
   closeProject() {
+    this.disposeProjectHistoryExtensions?.()
+    this.disposeProjectHistoryExtensions = undefined
     this.unsubscribeFromSettings?.unsubscribe()
+    this.unsubscribeFromSettings = undefined
     this.project?.close()
     this.project = undefined
   }
@@ -697,28 +781,54 @@ export class App implements AppSubsystems {
     ])
 
     if (typeof window !== 'undefined') {
-      // Accessible for tests mostly
       window.engineCommandManager = kclManager.engineCommandManager
       window.rustContext = kclManager.rustContext
       window.engineDebugger = EngineDebugger
-      ;(window as any).enableMousePositionLogs = () =>
-        document.addEventListener('mousemove', (e) =>
-          console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-        )
-      ;(window as any).enableFillet = () => {
-        ;(window as any)._enableFillet = true
+
+      /**
+       * On each click, logs two lines for `SceneFixture.makeMouseHelpers` /
+       * `convertPagePositionToStream` (e2e/playwright/fixtures/sceneFixture.ts).
+       * Adds a document listener per call.
+       */
+      window.enableMousePositionLogs = () => {
+        const onClick = (e: MouseEvent) => {
+          const streamEl = document.querySelector('[data-testid="stream"]')
+          const vw = document.documentElement.clientWidth
+          const vh = document.documentElement.clientHeight
+          if (!streamEl || vw <= 0 || vh <= 0) return
+          const r = streamEl.getBoundingClientRect()
+          if (r.width <= 0 || r.height <= 0) return
+          const cx = e.clientX
+          const cy = e.clientY
+          const ratioX = (cx - r.left) / r.width
+          const ratioY = (cy - r.top) / r.height
+          const pixelX = ratioX * vw
+          const pixelY = ratioY * vh
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${ratioX.toFixed(4)}, ${ratioY.toFixed(4)}, { format: 'ratio' })`
+          )
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { steps: 20, format: 'pixels' })`
+          )
+        }
+        document.addEventListener('click', onClick, true)
       }
-      ;(window as any).zoomToFit = () =>
-        kclManager.engineCommandManager.sendSceneCommand({
+
+      window.enableFillet = () => {
+        window._enableFillet = true
+      }
+      window.zoomToFit = () => {
+        void kclManager.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.2, // padding around the objects
-            animated: false, // don't animate the zoom for now
+            object_ids: [],
+            padding: 0.2,
+            animated: false,
           },
         })
+      }
     }
 
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })

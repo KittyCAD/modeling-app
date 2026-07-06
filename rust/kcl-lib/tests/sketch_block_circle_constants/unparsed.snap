@@ -1,0 +1,34 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing sketch_block_circle_constants.kcl
+---
+// circle() accepts number constants (no `var`), just like arc() does. Constant
+// coordinates become fixed solver variables, so a circle built from constants
+// can still be used in constraints (here equalRadius), the same way an arc can.
+@settings(experimentalFeatures = allow)
+
+s = sketch(on = XY) {
+  // A circle whose coordinates are all number constants. Radius is 3mm.
+  c1 = circle(start = [3mm, 0mm], center = [0mm, 0mm])
+
+  // A circle mixing a constant center with a sketch-var start point. Its radius
+  // is solved to equal c1's radius via equalRadius, which demonstrates that the
+  // constant-coordinate circle c1 can drive a constraint.
+  c2 = circle(start = [var 10mm, var 0mm], center = [8mm, 0mm])
+  c2.start.at[1] == 0mm
+  equalRadius([c1, c2])
+}
+
+solid1 = extrude(region(point = s.c1.center, sketch = s), length = 2)
+solid2 = extrude(region(point = s.c2.center, sketch = s), length = 2)
+
+// c1 keeps its constant geometry: radius 3mm centered at the origin.
+assert(s.c1.start.at[0], isEqualTo = 3mm, tolerance = 0.001)
+assert(s.c1.start.at[1], isEqualTo = 0mm, tolerance = 0.001)
+assert(s.c1.center.at[0], isEqualTo = 0mm, tolerance = 0.001)
+assert(s.c1.center.at[1], isEqualTo = 0mm, tolerance = 0.001)
+// c2 inherits radius 3mm from c1; its center is fixed at x = 8mm and start.y is
+// constrained to 0, so the start point solves to x = 11mm.
+assert(s.c2.center.at[0], isEqualTo = 8mm, tolerance = 0.001)
+assert(s.c2.start.at[0], isEqualTo = 11mm, tolerance = 0.001)
+assert(s.c2.start.at[1], isEqualTo = 0mm, tolerance = 0.001)

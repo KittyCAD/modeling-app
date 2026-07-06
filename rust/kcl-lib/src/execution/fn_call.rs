@@ -1,8 +1,11 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
+use kcl_api::Group;
+use kcl_api::OpArg;
 
 use crate::CompilationIssue;
 use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -18,10 +21,8 @@ use crate::execution::StatementKind;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
-use crate::execution::cad_op::Group;
-use crate::execution::cad_op::OpArg;
-use crate::execution::cad_op::OpKclValue;
 use crate::execution::cad_op::Operation;
+use crate::execution::cad_op::op_from_kcl_value;
 use crate::execution::control_continue;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
@@ -335,20 +336,26 @@ impl FunctionSource {
                     arg.source_range,
                 );
             }
-            if let Some(since) = &param.deprecated_since
+            // `deprecated` deprecates the parameter for all versions, whereas
+            // `deprecated_since` only deprecates it at or after a given version.
+            let deprecation_suffix = if param.deprecated {
+                Some("is deprecated, see the docs for a recommended replacement".to_owned())
+            } else if let Some(since) = &param.deprecated_since
                 && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
             {
+                Some(format!(
+                    "is deprecated as of KCL {since}. See the docs for a recommended replacement."
+                ))
+            } else {
+                None
+            };
+            if let Some(suffix) = deprecation_suffix {
                 let qualified = match &fn_name {
                     Some(f) => format!("`{f}({label})`"),
                     None => format!("`{label}`"),
                 };
                 exec_state.warn(
-                    CompilationIssue::err(
-                        arg.source_range,
-                        format!(
-                            "{qualified} is deprecated as of KCL {since}. See the docs for a recommended replacement."
-                        ),
-                    ),
+                    CompilationIssue::err(arg.source_range, format!("{qualified} {suffix}")),
                     annotations::WARN_DEPRECATED,
                 );
             }
@@ -375,7 +382,7 @@ impl FunctionSource {
             let op_labeled_args = args
                 .labeled
                 .iter()
-                .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                .map(|(k, arg)| (k.clone(), OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)))
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
@@ -384,7 +391,7 @@ impl FunctionSource {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
                         .unlabeled_kw_arg_unconverted()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
                     node_path: NodePath::placeholder(),
                     source_range: callsite,
@@ -399,7 +406,7 @@ impl FunctionSource {
                         function_source_range: self.ast.as_source_range(),
                         unlabeled_arg: args
                             .unlabeled_kw_arg_unconverted()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                     },
                     node_path: NodePath::placeholder(),
@@ -823,6 +830,18 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
     result
 }
 
+/// Build the error message for a labeled argument whose label doesn't match any
+/// parameter of the callee. Shared between keyword function calls and sketch
+/// blocks so the wording stays consistent.
+pub(crate) fn unexpected_kw_arg_message(label: &str, callee_name: Option<&str>) -> String {
+    format!(
+        "`{label}` is not an argument of {}",
+        callee_name
+            .map(|n| format!("`{n}`"))
+            .unwrap_or_else(|| "this function".to_owned()),
+    )
+}
+
 fn type_check_params_kw(
     fn_name: Option<&str>,
     fn_def: &FunctionSource,
@@ -997,6 +1016,7 @@ fn type_check_params_kw(
         match fn_def.named_args.get(&label) {
             Some(NamedParam {
                 experimental: _,
+                deprecated: _,
                 deprecated_since: _,
                 default_value: def,
                 ty,
@@ -1037,12 +1057,7 @@ fn type_check_params_kw(
             None => {
                 exec_state.err(CompilationIssue::err(
                     arg.source_range,
-                    format!(
-                        "`{label}` is not an argument of {}",
-                        fn_name
-                            .map(|n| format!("`{n}`"))
-                            .unwrap_or_else(|| "this function".to_owned()),
-                    ),
+                    unexpected_kw_arg_message(&label, fn_name),
                 ));
             }
         }
@@ -1169,6 +1184,7 @@ mod test {
     use std::sync::Arc;
 
     use super::*;
+    use crate::engine::engine_manager::EngineManager;
     use crate::errors::Severity;
     use crate::execution::ContextType;
     use crate::execution::EnvironmentRef;
@@ -1176,6 +1192,7 @@ mod test {
     use crate::execution::memory::Stack;
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::parsing::ast::types::DefaultParamVal;
     use crate::parsing::ast::types::FunctionExpression;
     use crate::parsing::ast::types::Identifier;
@@ -1261,6 +1278,7 @@ mod test {
         fn opt_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated: false,
                 deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
@@ -1272,6 +1290,7 @@ mod test {
         fn req_param(s: &'static str) -> Parameter {
             Parameter {
                 experimental: false,
+                deprecated: false,
                 deprecated_since: None,
                 identifier: ident(s),
                 param_type: None,
@@ -1366,9 +1385,9 @@ mod test {
                 })
                 .collect::<IndexMap<_, _>>();
             let exec_ctxt = ExecutorContext {
-                engine: Arc::new(Box::new(crate::engine::conn_mock::EngineConnection::new().unwrap())),
+                engine: Arc::new(EngineManager::new_mock()),
                 engine_batch: crate::engine::EngineBatchContext::default(),
-                fs: Arc::new(crate::fs::FileManager::new()),
+                fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),
@@ -1797,5 +1816,60 @@ topFromRegion = profileRegion.tags.top
         assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
         assert_eq!(warnings[0].severity, Severity::Warning);
         assert!(warnings[0].message.contains("`top`"), "found {}", warnings[0].message);
+    }
+
+    fn deprecation_warnings(result: &ExecTestResults) -> Vec<&CompilationIssue> {
+        result
+            .exec_state
+            .issues()
+            .iter()
+            .filter(|issue| issue.message.contains("is deprecated"))
+            .collect()
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn passing_param_deprecated_for_all_versions_warns() {
+        // `@(deprecated = true)` deprecates the parameter regardless of the KCL
+        // version, so even on the latest version the call should warn.
+        let program = r#"@settings(kclVersion = 2.0)
+fn f(
+  @a: number,
+  @(deprecated = true)
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1, oldArg = 2)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert_eq!(warnings[0].severity, Severity::Warning);
+        assert!(
+            warnings[0].message.contains("`f(oldArg)` is deprecated"),
+            "found {}",
+            warnings[0].message
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn not_passing_deprecated_param_does_not_warn() {
+        let program = r#"fn f(
+  @a: number,
+  @(deprecated = true)
+  oldArg?: number,
+) {
+  return a
+}
+x = f(1)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert!(
+            warnings.is_empty(),
+            "unused deprecated parameter should not warn: {warnings:#?}"
+        );
     }
 }

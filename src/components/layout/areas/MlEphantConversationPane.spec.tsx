@@ -1,7 +1,8 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { NIL as uuidNIL } from 'uuid'
-import { describe, expect, test, vi } from 'vitest'
+import { beforeAll, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
@@ -81,17 +82,19 @@ const createFakeActor = ({
   defaultMode = undefined,
   modeOptions = undefined,
   value = 'ready',
+  awaitingResponse = true,
 }: {
   conversation?: Conversation
   defaultMode?: MlCopilotModeId
   modeOptions?: MlCopilotModeOption[]
   value?: string
+  awaitingResponse?: boolean
 } = {}): FakeMlEphantActor => {
   const snapshot: FakeMlEphantSnapshot = {
     value,
     context: {
       abruptlyClosed: false,
-      awaitingResponse: true,
+      awaitingResponse,
       attachmentsLoadedForCurrentPrompt: true,
       conversation,
       conversationId: 'conversation-id',
@@ -113,23 +116,35 @@ const createFakeActor = ({
 const createFakeSystemIOActor = ({
   mlEphantConversations = undefined,
   completeSavesAutomatically = true,
+  value = SystemIOMachineStates.idle,
 }: {
   mlEphantConversations?: Map<string, string>
   completeSavesAutomatically?: boolean
+  value?: SystemIOMachineStates
 } = {}) => {
   type SaveConversationEvent = {
     type: SystemIOMachineEvents
     data?: { projectId?: string; conversationId?: string }
   }
-  let snapshot = {
-    value: SystemIOMachineStates.idle,
+  type FakeSystemIOSnapshot = {
+    value: SystemIOMachineStates
+    context: {
+      mlEphantConversations?: Map<string, string>
+    }
+  }
+  let snapshot: FakeSystemIOSnapshot = {
+    value,
     context: {
       mlEphantConversations,
     },
   }
   let pendingSaveEvent: SaveConversationEvent | undefined
   const listeners = new Set<(next: typeof snapshot) => void>()
-  const notify = () => listeners.forEach((listener) => listener(snapshot))
+  const notify = () => {
+    for (const listener of listeners) {
+      listener(snapshot)
+    }
+  }
   const completeSave = () => {
     if (pendingSaveEvent === undefined) {
       return
@@ -172,6 +187,17 @@ const createFakeSystemIOActor = ({
       }
     },
     completeSave,
+    setSnapshot: (nextSnapshot: Partial<FakeSystemIOSnapshot>) => {
+      snapshot = {
+        ...snapshot,
+        ...nextSnapshot,
+        context: {
+          ...snapshot.context,
+          ...nextSnapshot.context,
+        },
+      }
+      notify()
+    },
     send: vi.fn((event: SaveConversationEvent) => {
       if (
         event.type !== SystemIOMachineEvents.saveMlEphantConversations &&
@@ -238,7 +264,9 @@ const createStatefulClearChatActor = () => {
           conversationId: undefined,
         },
       }
-      listeners.forEach((listener) => listener(snapshot))
+      for (const listener of listeners) {
+        listener(snapshot)
+      }
     }),
   }
 
@@ -284,7 +312,9 @@ const createStatefulPromptActor = (awaitingResponse = false) => {
           awaitingResponse: nextAwaitingResponse,
         },
       }
-      listeners.forEach((listener) => listener(snapshot))
+      for (const listener of listeners) {
+        listener(snapshot)
+      }
     },
   }
 
@@ -296,7 +326,16 @@ const renderPane = ({
   systemIOActor = createFakeSystemIOActor(),
   theProject = undefined,
   settingsMetaId = uuidNIL,
+  settingsProjectDirectory = '',
   zookeeperMode = {},
+  kclManager = {
+    code: '',
+    execState: {
+      filenames: [],
+    },
+    artifactGraph: {},
+  },
+  loaderFile = undefined,
   sendBillingUpdate = vi.fn(),
   sendBillingUsageStarted = vi.fn(),
   sendBillingUsageEnded = vi.fn(),
@@ -305,11 +344,14 @@ const renderPane = ({
   systemIOActor?: ReturnType<typeof createFakeSystemIOActor>
   theProject?: any
   settingsMetaId?: string
+  settingsProjectDirectory?: string
   zookeeperMode?: {
     current?: MlCopilotModeId
     project?: MlCopilotModeId
     user?: MlCopilotModeId
   }
+  kclManager?: any
+  loaderFile?: any
   sendBillingUpdate?: () => void
   sendBillingUsageStarted?: () => void
   sendBillingUsageEnded?: () => void
@@ -319,15 +361,7 @@ const renderPane = ({
       <MlEphantConversationPane
         mlEphantManagerActor={mlEphantManagerActor as any}
         systemIOActor={systemIOActor as any}
-        kclManager={
-          {
-            code: '',
-            execState: {
-              filenames: [],
-            },
-            artifactGraph: {},
-          } as any
-        }
+        kclManager={kclManager}
         theProject={theProject}
         contextModeling={
           {
@@ -341,7 +375,6 @@ const renderPane = ({
         sendBillingUpdate={sendBillingUpdate}
         sendBillingUsageStarted={sendBillingUsageStarted}
         sendBillingUsageEnded={sendBillingUsageEnded}
-        loaderFile={undefined}
         settings={
           {
             meta: {
@@ -351,7 +384,7 @@ const renderPane = ({
             },
             app: {
               projectDirectory: {
-                current: '',
+                current: settingsProjectDirectory,
               },
               zookeeperMode: {
                 current: zookeeperMode.current,
@@ -366,10 +399,18 @@ const renderPane = ({
             },
           } as any
         }
+        loaderFile={loaderFile}
       />
     </MemoryRouter>
   )
 }
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
 
 describe('MlEphantConversationPane', () => {
   test('keeps the cancel button visible while the actor is still awaiting a response', () => {
@@ -488,6 +529,78 @@ describe('MlEphantConversationPane', () => {
     )
   })
 
+  test('sends the live editor contents for the active file when starting a prompt', async () => {
+    const projectRoot = fsZds.join(
+      '/tmp',
+      `zookeeper-current-file-${Date.now()}`
+    )
+    const projectPath = fsZds.join(projectRoot, 'demo-project')
+    const mainPath = fsZds.join(projectPath, 'main.kcl')
+    const diskCode = 'boxHeight = 50mm\n'
+    const editorCode = 'boxHeight = 500mm\n'
+    const mlEphantManagerActor = createFakeActor({
+      awaitingResponse: false,
+    })
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await fsZds.writeFile(mainPath, new TextEncoder().encode(diskCode))
+
+    try {
+      renderPane({
+        mlEphantManagerActor,
+        settingsProjectDirectory: projectRoot,
+        theProject: {
+          name: 'demo-project',
+          path: projectPath,
+        },
+        loaderFile: {
+          name: 'main.kcl',
+          path: mainPath,
+          children: null,
+        },
+        kclManager: {
+          code: editorCode,
+          path: mainPath,
+          execState: {
+            filenames: {
+              0: {
+                type: 'Local',
+                value: mainPath,
+                original_import_path: null,
+              },
+            },
+          },
+          artifactGraph: {},
+        },
+      })
+
+      fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+        target: { value: 'change the height to 5000' },
+      })
+      fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+      await waitFor(() => {
+        expect(mlEphantManagerActor.send).toHaveBeenCalledWith(
+          expect.objectContaining({
+            type: MlEphantManagerTransitions.MessageSend,
+          })
+        )
+      })
+
+      const messageSend = mlEphantManagerActor.send.mock.calls
+        .map(([event]) => event)
+        .find((event) => event.type === MlEphantManagerTransitions.MessageSend)
+      const activeProjectFile = messageSend?.projectFiles.find(
+        (file: { relPath: string }) => file.relPath === 'main.kcl'
+      )
+
+      expect(messageSend?.fileSelectedDuringPrompting.content).toBe(editorCode)
+      expect(activeProjectFile?.fileContents).toBe(editorCode)
+    } finally {
+      await fsZds.rm(projectRoot, { recursive: true, force: true })
+    }
+  })
+
   test('retries cache setup when the project becomes available after settings load', () => {
     const mlEphantManagerActor = createFakeActor({
       conversation: undefined,
@@ -577,6 +690,29 @@ describe('MlEphantConversationPane', () => {
         conversationId: 'conversation-id',
       })
     )
+  })
+
+  test('waits for SystemIO idle before loading saved project conversations', () => {
+    const systemIOActor = createFakeSystemIOActor({
+      value: SystemIOMachineStates.readingFolders,
+    })
+
+    renderPane({
+      systemIOActor,
+      settingsMetaId: 'project-id',
+    })
+
+    expect(systemIOActor.send).not.toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.getMlEphantConversations,
+    })
+
+    systemIOActor.setSnapshot({
+      value: SystemIOMachineStates.idle,
+    })
+
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.getMlEphantConversations,
+    })
   })
 
   test('clearing chat forgets the saved project conversation before starting a fresh one', () => {

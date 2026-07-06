@@ -11,7 +11,7 @@ GD&T parallelism annotation specifying how much faces or edges may deviate from 
 gdt::parallelism(
   tolerance: number(Length),
   faces?: [TaggedFace; 1+],
-  edges?: [Edge; 1+],
+  edges?: [Edge | any; 1+],
   datums?: [string; 1+],
   precision?: number(_),
   framePosition?: Point2d,
@@ -29,7 +29,7 @@ This is part of model-based definition (MBD).
 |----------|------|-------------|----------|
 | `tolerance` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The tolerance zone size for parallel orientation. | Yes |
 | `faces` | [[`TaggedFace`](/docs/kcl-std/types/std-types-TaggedFace); 1+] | The faces to be annotated. | No |
-| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge); 1+] | The edges to be annotated. | No |
+| `edges` | [[`Edge`](/docs/kcl-std/types/std-types-Edge) or [`any`](/docs/kcl-std/types/std-types-any); 1+] | The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet. | No |
 | `datums` | [[`string`](/docs/kcl-std/types/std-types-string); 1+] | The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums. | No |
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |

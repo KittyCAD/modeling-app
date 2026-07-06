@@ -82,7 +82,6 @@ import {
   redoDepth,
   undoDepth,
 } from '@codemirror/commands'
-import { syntaxTree } from '@codemirror/language'
 import type { Diagnostic } from '@codemirror/lint'
 import { forEachDiagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import {
@@ -151,10 +150,12 @@ import {
   themeCompartment,
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
+import { zookeeperHistoryExtension } from '@src/editor/plugins/zookeeper'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
+import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
@@ -406,7 +407,10 @@ export class ZDSProject {
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
-    if (found) {
+    if (
+      found &&
+      (!providedEditor || found !== providedEditor || found.path === path)
+    ) {
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
     }
@@ -425,6 +429,17 @@ export class ZDSProject {
     }
 
     const foundFileIndex = this.files.findIndex((f) => f.path === path)
+    if (providedEditor && providedEditor.path !== path) {
+      const previousEditorFileIndex = this.files.findIndex(
+        (file) => file === providedEditor
+      )
+      if (previousEditorFileIndex > -1) {
+        this.files[previousEditorFileIndex] = new File(
+          providedEditor.path,
+          providedEditor.id
+        )
+      }
+    }
     const newEditor = await KclManager.fromFile(
       foundFileIndex > -1
         ? this.files[foundFileIndex]
@@ -455,16 +470,14 @@ export class ZDSProject {
       )
       .catch(reportRejection)
 
-    this.set(signal(path), newEditor)
+    if (!foundEditor) {
+      this.set(signal(path), newEditor)
+    }
 
     // Initialize a snapshot of the project for Rust
     // to have for executions and code mods
     markOnce('project/startCollectFiles')
     const apiFiles = await this.getAllKclFiles()
-    if (err(apiFiles)) {
-      reportRejection(apiFiles)
-      return newEditor
-    }
     markOnce('project/endCollectFiles')
 
     markOnce('project/startSendProjectToWasm')
@@ -566,8 +579,57 @@ export class ZDSProject {
   }
 
   /** Get all the KCL files in this project as a flat array. */
-  private getAllKclFiles(): Promise<ApiFile[]> {
-    return Promise.all(this.files.map((f) => f.asRustApiFile()))
+  private async getAllKclFiles(): Promise<ApiFile[]> {
+    return Promise.all(this.files.map((file) => file.asRustApiFile()))
+  }
+
+  /**
+   * Keep Rust's project file registry aligned while Zookeeper history replay
+   * applies create/update/delete changes directly to the browser file system.
+   * Normal editor writes only touch the active file, so replay needs this
+   * explicit multi-file synchronization path.
+   */
+  async syncReplayedFilesToRust(
+    replayFiles: readonly {
+      absolutePath: string
+      nextContent: string | null
+    }[]
+  ) {
+    const editor = this.executingEditor.value
+    if (!editor) return
+
+    for (const replayFile of replayFiles) {
+      const foundIndex = this.files.findIndex(
+        (file) => file.path === replayFile.absolutePath
+      )
+      const foundFile = this.files[foundIndex]
+
+      if (replayFile.nextContent === null) {
+        if (!foundFile) continue
+        this.files = this.files.filter((_, index) => index !== foundIndex)
+        await editor.rustContext
+          .sendRemoveFile(foundFile.id)
+          .catch(reportRejection)
+        continue
+      }
+
+      if (foundFile) {
+        await editor.rustContext
+          .sendUpdateFile(foundFile.id, replayFile.nextContent)
+          .catch(reportRejection)
+        continue
+      }
+
+      const newFile = new File(replayFile.absolutePath, this.nextFileId++)
+      this.files.push(newFile)
+      await editor.rustContext
+        .sendAddFile({
+          id: newFile.id,
+          path: newFile.path,
+          text: replayFile.nextContent,
+        })
+        .catch(reportRejection)
+    }
   }
 }
 
@@ -711,6 +773,9 @@ export class KclManager extends File {
 
   private readonly _editorView: EditorView
   private readonly _globalHistoryView: HistoryView
+  private readonly editorStatesByPath = new Map<string, EditorState>()
+  private restoredEditorHistoryOnLastFileSwitch = false
+  private disposeGlobalHistorySubscription: (() => boolean) | undefined
 
   /**
    * The core state in KclManager are the code and the selection.
@@ -744,6 +809,24 @@ export class KclManager extends File {
   get code(): string {
     return this.editorView.state.doc.toString()
   }
+
+  /** Present active editor data to Rust after Zookeeper has already deleted the file on disk. */
+  async asRustApiFile(): Promise<ApiFile> {
+    try {
+      return await super.asRustApiFile()
+    } catch (error: unknown) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
+
+      return {
+        id: this.id,
+        path: this.path,
+        text: this.code,
+      }
+    }
+  }
+
   get currentSketchCheckpointId(): number | null {
     return this.lastCommittedSketchCheckpointId
   }
@@ -846,14 +929,20 @@ export class KclManager extends File {
   )
   undoDepth = signal(0)
   redoDepth = signal(0)
-  undoListenerEffect = EditorView.updateListener.of((vu) => {
-    const localUndo = undoDepth(vu.state)
-    const localRedo = redoDepth(vu.state)
-    const globalUndo = undoDepth(this._globalHistoryView.state)
-    const globalRedo = redoDepth(this._globalHistoryView.state)
+  historyOperationInProgress = signal(false)
+  private updateHistoryDepth = (state = this._editorView.state) => {
+    const localUndo = undoDepth(state)
+    const localRedo = redoDepth(state)
+    const globalUndo = this._globalHistoryView.undoDepth
+    const globalRedo = this._globalHistoryView.redoDepth
 
-    this.undoDepth.value = localUndo + globalUndo
-    this.redoDepth.value = localRedo + globalRedo
+    this.undoDepth.value = localUndo || globalUndo
+    this.redoDepth.value = localRedo || globalRedo
+    this.historyOperationInProgress.value =
+      this._globalHistoryView.isOperationInProgress
+  }
+  undoListenerEffect = EditorView.updateListener.of((vu) => {
+    this.updateHistoryDepth(vu.state)
   })
   get operations() {
     return getOperationsForCurrentFile({
@@ -930,12 +1019,22 @@ export class KclManager extends File {
           return
         }
 
+        // Zookeeper history needs to record the active-file edit against the
+        // editor's pre-write text, so don't let the watcher preemptively reload it.
+        if (
+          this.mlEphantManagerMachineBulkManipulatingFileSystem ||
+          this.zookeeperHistoryRecordingInProgress
+        ) {
+          return
+        }
+
         if (!isCodeTheSame(code, this.code)) {
           // Nothing written out yet by ourselves, or it's not the same as the current file content
           // -> this must be an external change -> re-execute.
           this.updateCodeEditor(code, {
             shouldExecute: !isInSketchMode,
             shouldResetCamera: !isInSketchMode,
+            shouldAddToHistory: true,
             // We explicitly do not write to the file here since we are loading from
             // the file system and not the editor.
             shouldWriteToDisk: false,
@@ -994,6 +1093,12 @@ export class KclManager extends File {
   } | null = null
   public writeCausedByAppCheckedInFileTreeFileSystemWatcher = false
   public mlEphantManagerMachineBulkManipulatingFileSystem = false
+  /**
+   * Zookeeper needs to record history against the editor state captured before
+   * its file writes land, so file watchers must not reload the active editor
+   * while the pending history entry is being assembled.
+   */
+  public zookeeperHistoryRecordingInProgress = false
   /**
     Indicator Promise that is pending while a live write is happening.
     If this value isn't `null`, don't watch for file system writes it was probably us!
@@ -1524,6 +1629,32 @@ export class KclManager extends File {
     1000
   )
 
+  /**
+   * `EditorView.setState` bypasses the usual editor update effects. After
+   * restoring a captured state for Zookeeper history, manually resync the
+   * manager state, recovery snapshot, Rust file contents, and deferred
+   * execution that ordinary editor writes would have triggered.
+   */
+  private refreshRestoredEditorStateAfterFileSwitch(code: string) {
+    this._code.value = code
+    this._hasEditsSinceLastExecution.value = !isCodeTheSame(
+      code,
+      this.lastExecutedCode
+    )
+    this.persistRecoverySnapshot()
+    this.rustContext.sendUpdateFile(this.id, code).catch(reportRejection)
+
+    if (!this.engineCommandManager.connection?.connected) {
+      return
+    }
+
+    this.deferredExecution({
+      newCode: code,
+      shouldResetCamera: true,
+      requestedUserDocumentVersion: this._userDocumentVersion,
+    })
+  }
+
   private writeToFileListener = EditorView.updateListener.of((update) => {
     const hasWriteToFileEffect = update.transactions.some((tr) =>
       tr.effects.some((e) => e.is(requestWriteToFile) && e.value)
@@ -1814,7 +1945,7 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
-    const diskCode = normalizeLineEndings(providedCode || (await file.read()))
+    const diskCode = normalizeLineEndings(providedCode ?? (await file.read()))
     const recoverySnapshot = readRecoverySnapshot(file.path)
     const initialCode =
       recoverySnapshot && !isCodeTheSame(recoverySnapshot.code, diskCode)
@@ -1832,18 +1963,35 @@ export class KclManager extends File {
 
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     providedEditor.flushRecoverySnapshot()
+    providedEditor.editorStatesByPath.set(
+      providedEditor.path,
+      providedEditor.editorView.state
+    )
     providedEditor.path = file.path
     providedEditor.id = file.id
     providedEditor.codeSignal.value = initialCode
-    providedEditor.updateCodeEditor(initialCode, {
-      shouldExecute: providedEditor.engineCommandManager.connection?.connected,
-      // This way undo and redo are not super weird when opening new files.
-      shouldClearHistory: true,
-      shouldResetCamera: true,
-      // We explicitly do not write to the file here since we are loading from
-      // the file system and not the editor.
-      shouldWriteToDisk: false,
-    })
+    const savedEditorState = providedEditor.editorStatesByPath.get(file.path)
+    const canRestoreEditorState =
+      savedEditorState !== undefined &&
+      savedEditorState.doc.toString() === initialCode
+    providedEditor.restoredEditorHistoryOnLastFileSwitch = canRestoreEditorState
+
+    if (savedEditorState && canRestoreEditorState) {
+      providedEditor.editorView.setState(savedEditorState)
+      providedEditor.updateHistoryDepth(savedEditorState)
+      providedEditor.refreshRestoredEditorStateAfterFileSwitch(initialCode)
+    } else {
+      providedEditor.editorStatesByPath.delete(file.path)
+      providedEditor.updateCodeEditor(initialCode, {
+        shouldExecute:
+          providedEditor.engineCommandManager.connection?.connected,
+        shouldClearHistory: true,
+        shouldResetCamera: true,
+        // We explicitly do not write to the file here since we are loading from
+        // the file system and not the editor.
+        shouldWriteToDisk: false,
+      })
+    }
     providedEditor.markFileCodeAsSynced(diskCode)
     providedEditor.watch()
     return providedEditor
@@ -1877,7 +2025,10 @@ export class KclManager extends File {
       getSettings
     )
 
-    this._globalHistoryView = new HistoryView([fsHistoryExtension()])
+    this._globalHistoryView = new HistoryView([
+      fsHistoryExtension(),
+      zookeeperHistoryExtension(),
+    ])
     this._editorView = this.createEditorView(initialCode)
     this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
       this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
@@ -1887,6 +2038,10 @@ export class KclManager extends File {
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
     this._globalHistoryView.registerLocalHistoryTarget(this._editorView)
+    this.disposeGlobalHistorySubscription =
+      this._globalHistoryView.subscribeToHistoryChanges(() => {
+        this.updateHistoryDepth()
+      })
 
     this.systemDeps.wasmInstancePromise
       .then(async (wasmInstance) => {
@@ -1915,6 +2070,7 @@ export class KclManager extends File {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
+    this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
   }
@@ -2576,6 +2732,19 @@ export class KclManager extends File {
   get editorState(): EditorState {
     return this._editorView.state
   }
+  captureEditorHistoryState(): EditorState {
+    return this._editorView.state
+  }
+  /**
+   * Restore a previously captured CodeMirror state so a Zookeeper edit can be
+   * recorded on top of the user's original local undo stack after project
+   * refreshes or file switches have recreated the editor.
+   */
+  restoreEditorHistoryState(state: EditorState) {
+    this._editorView.setState(state)
+    this.updateHistoryDepth(state)
+    this.refreshRestoredEditorStateAfterFileSwitch(state.doc.toString())
+  }
   get state() {
     return this.editorState
   }
@@ -2588,51 +2757,7 @@ export class KclManager extends File {
   get copilotEnabled(): boolean {
     return this._copilotEnabled
   }
-  // Invoked when editorView is created and each time when it is updated (eg. user is sketching)..
-  // setEditorView(editorView: EditorView) {
-  //   this.overrideTreeHighlighterUpdateForPerformanceTracking()
-  // }
 
-  /** TODO: Investigate if this is still needed in the new world */
-  overrideTreeHighlighterUpdateForPerformanceTracking() {
-    // @ts-ignore
-    this._editorView?.plugins.forEach((e) => {
-      let sawATreeDiff = false
-      // we cannot use <>.constructor.name since it will get destroyed
-      // when packaging the application.
-      const isTreeHighlightPlugin =
-        e?.value &&
-        e.value?.hasOwnProperty('tree') &&
-        e.value?.hasOwnProperty('decoratedTo') &&
-        e.value?.hasOwnProperty('decorations')
-      if (isTreeHighlightPlugin) {
-        let originalUpdate = e.value.update
-        // @ts-ignore
-        function performanceTrackingUpdate(args) {
-          /**
-           * TreeHighlighter.update will be called multiple times on start up.
-           * We do not want to track the highlight performance of an empty update.
-           * mark the syntax highlight one time when the new tree comes in with the
-           * initial code
-           */
-          const treeIsDifferent =
-            // @ts-ignore
-            !sawATreeDiff && this.tree !== syntaxTree(args.state)
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/willSyntaxHighlight')
-          }
-          // Call the original function
-          // @ts-ignore
-          originalUpdate.apply(this, [args])
-          if (treeIsDifferent && !sawATreeDiff) {
-            markOnce('code/didSyntaxHighlight')
-            sawATreeDiff = true
-          }
-        }
-        e.value.update = performanceTrackingUpdate
-      }
-    })
-  }
   get isAllTextSelected() {
     return this._isAllTextSelected
   }
@@ -2839,11 +2964,141 @@ export class KclManager extends File {
   addGlobalHistoryEvent(spec: TransactionSpecNoChanges) {
     this._globalHistoryView.dispatch(spec)
   }
+  /**
+   * Record a project-level Zookeeper event while also adding the active-file
+   * code change to CodeMirror's local history. When the editor already shows
+   * the requested code, we first seed the previous text without history so the
+   * following update produces a normal local undo step paired with the global
+   * history marker.
+   */
+  addGlobalHistoryEventWithCodeChange(
+    spec: TransactionSpecNoChanges,
+    code: string,
+    previousCode?: string
+  ) {
+    if (code === this.code) {
+      if (previousCode !== undefined && !isCodeTheSame(previousCode, code)) {
+        this.updateCodeEditor(previousCode, {
+          shouldAddToHistory: false,
+          shouldClearHistory: false,
+          shouldExecute: false,
+          shouldResetCamera: false,
+          shouldWriteToDisk: false,
+        })
+      } else {
+        this.addGlobalHistoryEvent(spec)
+        return
+      }
+    }
+
+    const globalHistoryEffect =
+      this._globalHistoryView.recordGlobalRedoEventForLocalTransaction(spec)
+    this.updateCodeEditor(
+      code,
+      {
+        shouldAddToHistory: true,
+        shouldClearHistory: false,
+        shouldExecute: true,
+        shouldResetCamera: false,
+        shouldWriteToDisk: true,
+      },
+      {
+        annotations: [isolateHistory.of('full')],
+        effects: [globalHistoryEffect],
+      }
+    )
+  }
   undo() {
     this._globalHistoryView.undo(this._editorView)
   }
   redo() {
     this._globalHistoryView.redo(this._editorView)
+  }
+  synchronizeLocalHistoryAfterDirectGlobalRedo() {
+    if (!this.restoredEditorHistoryOnLastFileSwitch) {
+      return false
+    }
+    this.restoredEditorHistoryOnLastFileSwitch = false
+    return this._globalHistoryView.synchronizeLocalHistoryAfterDirectGlobalRedo()
+  }
+  synchronizeLocalHistoryAfterDirectGlobalUndo() {
+    if (!this.restoredEditorHistoryOnLastFileSwitch) {
+      return false
+    }
+    this.restoredEditorHistoryOnLastFileSwitch = false
+    return this._globalHistoryView.synchronizeLocalHistoryAfterDirectGlobalUndo()
+  }
+  synchronizeCachedEditorHistoryAfterDirectGlobalReplay({
+    filePath,
+    direction,
+    previousContent,
+    nextContent,
+  }: {
+    filePath: string
+    direction: 'undo' | 'redo'
+    previousContent: string | null
+    nextContent: string | null
+  }) {
+    if (
+      filePath === this.path ||
+      previousContent === null ||
+      nextContent === null
+    ) {
+      return false
+    }
+
+    const cachedState = this.editorStatesByPath.get(filePath)
+    if (
+      !cachedState ||
+      !isCodeTheSame(cachedState.doc.toString(), previousContent)
+    ) {
+      return false
+    }
+
+    const synchronizedState =
+      direction === 'undo'
+        ? this._globalHistoryView.synchronizeLocalHistoryStateAfterDirectGlobalUndo(
+            cachedState
+          )
+        : this._globalHistoryView.synchronizeLocalHistoryStateAfterDirectGlobalRedo(
+            cachedState
+          )
+    if (
+      !synchronizedState ||
+      !isCodeTheSame(synchronizedState.doc.toString(), nextContent)
+    ) {
+      return false
+    }
+
+    this.editorStatesByPath.set(filePath, synchronizedState)
+    if (this.pendingRecoverySnapshot?.path === filePath) {
+      clearTimeout(this.timeoutRecoverySnapshot)
+      this.timeoutRecoverySnapshot = undefined
+      this.pendingRecoverySnapshot = null
+    }
+    clearRecoverySnapshot(filePath)
+    return true
+  }
+  synchronizeCurrentEditorAfterDirectGlobalReplay({
+    filePath,
+    nextContent,
+  }: {
+    filePath: string
+    nextContent: string | null
+  }) {
+    if (filePath !== this.path || nextContent === null) {
+      return false
+    }
+
+    this.updateCodeEditor(nextContent, {
+      shouldAddToHistory: false,
+      shouldClearHistory: false,
+      shouldExecute: false,
+      shouldResetCamera: false,
+      shouldWriteToDisk: false,
+    })
+    this.markFileCodeAsSynced(nextContent)
+    return true
   }
   clearLocalHistory() {
     this.directSketchHistoryCheckpointsByEntryId.clear()
@@ -3035,8 +3290,8 @@ export class KclManager extends File {
       this.engineCommandManager.sendSceneCommand(event)
     })
   }
-  localStoragePersistCode(): string {
-    return safeLSGetItem(PERSIST_CODE_KEY) || ''
+  localStoragePersistCode(): string | undefined {
+    return safeLSGetItem(PERSIST_CODE_KEY) ?? undefined
   }
   /**
    * @deprecated Prefer registering shortcuts through `keymapValueSpec`.
@@ -3339,12 +3594,7 @@ export class KclManager extends File {
           }).then(resolve, reject)
         }, 1000)
       }).catch((err: unknown) => {
-        if (
-          typeof err === 'object' &&
-          err !== null &&
-          'cause' in err &&
-          err.cause === 'ENOENT'
-        ) {
+        if (isPathNotFoundError(err)) {
           return
         }
         return err
@@ -3379,7 +3629,7 @@ export class KclManager extends File {
         await File.ioImplementations.read(this.path)
       )
     } catch (err: unknown) {
-      if (isEnoentError(err)) {
+      if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
         return Promise.reject(err)
@@ -3554,13 +3804,4 @@ function writeRecoverySnapshot({
 
 function clearRecoverySnapshot(path: string) {
   safeLSRemoveItem(getRecoverySnapshotKey(path))
-}
-
-function isEnoentError(err: unknown) {
-  return (
-    typeof err === 'object' &&
-    err !== null &&
-    'cause' in err &&
-    err.cause === 'ENOENT'
-  )
 }

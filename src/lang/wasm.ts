@@ -7,7 +7,7 @@ import type { Discovered } from '@rust/kcl-lib/bindings/Discovered'
 import type { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/ExecOutcome'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
-import type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+import type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
 import type { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
@@ -112,7 +112,7 @@ export type SyntaxType =
   | 'SketchBlock'
 
 export type { ExtrudeSurface } from '@rust/kcl-lib/bindings/ExtrudeSurface'
-export type { KclValue } from '@rust/kcl-lib/bindings/KclValue'
+export type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
 export type { Path } from '@rust/kcl-lib/bindings/Path'
 export type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 export type { Solid } from '@rust/kcl-lib/bindings/Solid'
@@ -240,7 +240,7 @@ export function assertParse(code: string, instance: ModuleType): Node<Program> {
   return result.program
 }
 
-export type VariableMap = { [key in string]?: KclValue }
+export type VariableMap = { [key in string]?: KclValueView }
 
 export interface OperationsByModule {
   map: { [moduleId: number]: Operation[] }
@@ -268,7 +268,7 @@ export const isPathToNode = (input: unknown): input is PathToNode =>
   typeof input[0][1] === 'string'
 
 export interface ExecState {
-  variables: { [key in string]?: KclValue }
+  variables: { [key in string]?: KclValueView }
   operations: OperationsByModule
   artifactGraph: ArtifactGraph
   issues: CompilationIssue[]
@@ -410,7 +410,7 @@ function artifactGraphFromRust(
 }
 
 export function sketchFromKclValueOptional(
-  obj: KclValue | undefined,
+  obj: KclValueView | undefined,
   varName: string | null
 ): Sketch | Reason {
   if (obj?.type === 'Sketch') return obj.value
@@ -442,7 +442,7 @@ export function sketchFromKclValueOptional(
 }
 
 export function sketchFromKclValue(
-  obj: KclValue | undefined,
+  obj: KclValueView | undefined,
   varName: string | null
 ): Sketch | Error {
   const result = sketchFromKclValueOptional(obj, varName)

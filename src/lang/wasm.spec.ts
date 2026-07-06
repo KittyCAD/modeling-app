@@ -112,7 +112,12 @@ it('can execute parsed AST', async () => {
     rustContextInThisFile
   )
   expect(err(execState)).toEqual(false)
-  expect(execState.variables['x']?.value).toEqual(1)
+  const x = execState.variables['x']
+  expect(x?.type).toBe('Number')
+  if (x?.type !== 'Number') {
+    throw new Error('Expected KCL value Number')
+  }
+  expect(x.value).toEqual(1)
 })
 
 it('applies operation callbacks to operations-by-module incrementally', () => {

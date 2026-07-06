@@ -1573,6 +1573,19 @@ const CustomIconMap = Object.freeze({
       />
     </svg>
   ),
+  ruler: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="ruler"
+    >
+      <path
+        d="M17.7783 6.46484L6.46484 17.7783L2.22168 13.5352L13.5352 2.22168L17.7783 6.46484ZM11.2959 5.875L13.0635 7.64355L12.3564 8.35059L10.5889 6.58301L8.93945 8.23242L10 9.29297L9.29297 10L8.23242 8.93945L6.58301 10.5889L8.35059 12.3564L7.64355 13.0635L5.875 11.2959L3.63574 13.5352L6.46484 16.3643L16.3643 6.46484L13.5352 3.63574L11.2959 5.875Z"
+        fill="currentColor"
+      />
+    </svg>
+  ),
   clone: (
     <svg
       viewBox="0 0 20 20"
@@ -2028,6 +2041,26 @@ const CustomIconMap = Object.freeze({
       <path
         d="M12.3107 14.9933L11.5524 12.3321H8.37616L7.61786 14.9933H5.98682L8.90553 5.00671H11.0946L14.0133 14.9933H12.3107ZM10.0215 6.62345H9.90705L8.67661 11.0015H11.2519L10.0215 6.62345Z"
         fill="currentColor"
+      />
+    </svg>
+  ),
+  note: (
+    <svg
+      viewBox="0 0 20 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-label="note"
+    >
+      <path
+        d="M5 3H12L15 6V17H5V3Z"
+        stroke="currentColor"
+        strokeLinejoin="round"
+      />
+      <path d="M12 3V6H15" stroke="currentColor" strokeLinejoin="round" />
+      <path
+        d="M7.5 9.5H12.5M7.5 12H12.5M7.5 14.5H10.5"
+        stroke="currentColor"
+        strokeLinecap="round"
       />
     </svg>
   ),

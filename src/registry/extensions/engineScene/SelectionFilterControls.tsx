@@ -42,9 +42,7 @@ const selectionFilterOptions: Array<{
   },
 ]
 
-function getOptionFilter(option: {
-  filter?: EntityType[]
-}): EntityType[] {
+function getOptionFilter(option: { filter?: EntityType[] }): EntityType[] {
   return option.filter ?? defaultSelectionFilter
 }
 

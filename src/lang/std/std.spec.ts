@@ -49,11 +49,21 @@ intersect = segEndX(yo2)`
       assertParse(code('-1'), instanceInThisFile),
       rustContextInThisFile
     )
-    expect(execState.variables['intersect']?.value).toBe(1 + Math.sqrt(2))
+    const intersect = execState.variables['intersect']
+    expect(intersect?.type).toBe('Number')
+    if (intersect?.type !== 'Number') {
+      throw new Error('Expected KCL value Number')
+    }
+    expect(intersect.value).toBe(1 + Math.sqrt(2))
     const noOffset = await enginelessExecutor(
       assertParse(code('0'), instanceInThisFile),
       rustContextInThisFile
     )
-    expect(noOffset.variables['intersect']?.value).toBeCloseTo(1)
+    const noOffsetIntersect = noOffset.variables['intersect']
+    expect(noOffsetIntersect?.type).toBe('Number')
+    if (noOffsetIntersect?.type !== 'Number') {
+      throw new Error('Expected KCL value Number')
+    }
+    expect(noOffsetIntersect.value).toBeCloseTo(1)
   })
 })

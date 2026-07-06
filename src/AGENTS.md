@@ -17,7 +17,13 @@ This file applies to TypeScript and React development under `src/`. It complemen
 
 - Use `@src/*` imports for app code. Relative imports are mostly reserved for CSS modules and intentionally local plugin/extension code where lint rules allow it.
 - The app expects the Rust/Wasm bundle to exist for many integration paths. Use `npm run build:wasm` or `npm run fetch:wasm` before tests that execute KCL.
+- If TypeScript starts failing on missing or stale generated Rust/Wasm bindings, especially after merging main or Rust-side stdlib changes, rerun `npm run build:wasm:dev`. That rebuilds the local Wasm package and refreshes generated bindings used by the TypeScript app.
 - Some integration and e2e flows require `VITE_ZOO_API_TOKEN` in `.env.development.local`. If a test needs the token and it is not available, ask before running it.
+- For web Playwright runs, set `TARGET=web`. The `Google Chrome` Playwright project name alone does not select the web fixture path; without `TARGET=web`, the shared fixture still tries to launch Electron.
+- On NixOS, Playwright may not find branded Chrome at its default `/opt/google/chrome/chrome` path. Use `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/run/current-system/sw/bin/google-chrome-stable` when running the `Google Chrome` project locally.
+- If desktop Playwright e2e tests fail locally because Electron cannot launch with symptoms like `bad option: --remote-debugging-port=0`, `Authorization required, but no authorization protocol specified`, or `Missing X server or $DISPLAY`, run the test with your desktop X11 session variables passed through explicitly: `env -i HOME=$HOME USER=$USER DISPLAY=$DISPLAY XAUTHORITY=$XAUTHORITY XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS XDG_SESSION_TYPE=${XDG_SESSION_TYPE:-x11} PATH=$PATH /run/current-system/sw/bin/bash -lc 'cd <repository-root>/modeling-app && npx playwright test ...'`.
+- This is mainly a Linux desktop-session issue, observed on NixOS specifically: a command can work in an interactive terminal but fail from an agent/tool-run process unless X11 auth and related session variables are forwarded.
+- For Playwright scene click debugging, `scene.makeMouseHelpers(..., { debugLabel: 'name' })` draws a labeled marker at the resolved stream coordinate without pausing the test. `debugLabel` is the marker switch; there is no separate `debug` flag for mouse helpers. Use `enablePause: true` only when an interactive pause is useful, and ask the user before adding it because `page.pause()` blocks automated runs. A useful offer is: "I can add a labeled click coordinate marker in this test and enable a pause so you can see the exact resolved click point when the test runs."
 
 ## Review-friendly edits
 

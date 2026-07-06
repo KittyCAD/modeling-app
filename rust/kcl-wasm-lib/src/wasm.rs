@@ -4,11 +4,12 @@ use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
 use kcl_lib::exec::NumericType;
+use kcl_lib::exec::UnitAngle;
+use kcl_lib::exec::UnitLength;
 use kcl_lib::exec::UnitType;
 use kcl_lib::exec::WarningLevel;
 use kcl_lib::pretty::NumericSuffix;
-use kittycad_modeling_cmds::units::UnitAngle;
-use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
 use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
@@ -327,7 +328,7 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
 pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    let len: Option<UnitLength> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
+    let len: Option<KcmcUnitLength> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     let new_program = program.change_default_units(len).map_err(|e| e.to_string())?;

@@ -4,8 +4,7 @@ description: Variables in memory after executing import_glob.kcl
 ---
 {
   "foo": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "three": {
     "type": "Number",
