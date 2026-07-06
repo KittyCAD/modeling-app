@@ -452,7 +452,7 @@ describe('operations.test.ts', () => {
     it('retrieves tagged cap profiles in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
-        'sweep001 = sweep(capEnd001, path = profile002, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
+        'sweep001 = sweep(capEnd001, path = profile002, tolerance = 0.01mm, version = 2, translateProfileToPath = false, orientProfilePerpendicular = true)'
       const operation = stdlib('sweep')
       if (operation.type !== 'StdLibCall') {
         throw new Error('Expected operation to be a StdLibCall')
@@ -480,6 +480,14 @@ describe('operations.test.ts', () => {
             ty: { type: 'Any' },
           },
           sourceRange: rangeOfText(code, '2'),
+        },
+        tolerance: {
+          value: {
+            type: 'Number',
+            value: 0.01,
+            ty: { type: 'Any' },
+          },
+          sourceRange: rangeOfText(code, '0.01mm'),
         },
         translateProfileToPath: {
           value: {
@@ -518,6 +526,7 @@ describe('operations.test.ts', () => {
       const argDefaultValues = result.data.argDefaultValues as {
         sketches?: { graphSelections: Array<{ artifact?: Artifact }> }
         path?: { graphSelections: Array<{ artifact?: Artifact }> }
+        tolerance?: { valueText: string }
         version?: { valueText: string }
         translateProfileToPath?: boolean
         orientProfilePerpendicular?: boolean
@@ -529,9 +538,68 @@ describe('operations.test.ts', () => {
       expect(argDefaultValues.path?.graphSelections[0].artifact?.type).toBe(
         'path'
       )
+      expect(argDefaultValues.tolerance?.valueText).toBe('0.01mm')
       expect(argDefaultValues.version?.valueText).toBe('2')
       expect(argDefaultValues.translateProfileToPath).toBe(false)
       expect(argDefaultValues.orientProfilePerpendicular).toBe(true)
+    })
+  })
+
+  describe('Rotate edit flow', () => {
+    it('enters edit flow for roll/pitch/yaw rotate without an axis', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'rotate001 = rotate(extrude001, roll = 10deg, pitch = 20deg, yaw = 30deg)'
+      const operation = stdlib('rotate')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: {
+          type: 'Solid',
+          value: { artifactId: 'sweep-id' },
+        },
+        sourceRange: rangeOfText(code, 'extrude001'),
+      }
+      operation.labeledArgs = {
+        roll: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10deg'),
+        },
+        pitch: {
+          value: { type: 'Number', value: 20, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '20deg'),
+        },
+        yaw: {
+          value: { type: 'Number', value: 30, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '30deg'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([sweepArtifact('sweep-id', 'path-id')]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        axis?: string
+        roll?: { valueText: string }
+        pitch?: { valueText: string }
+        yaw?: { valueText: string }
+      }
+      expect(result.data.name).toBe('Rotate')
+      expect(argDefaultValues.axis).toBeUndefined()
+      expect(argDefaultValues.roll?.valueText).toBe('10deg')
+      expect(argDefaultValues.pitch?.valueText).toBe('20deg')
+      expect(argDefaultValues.yaw?.valueText).toBe('30deg')
     })
   })
 
@@ -743,6 +811,49 @@ ${operationName}(${targetLabel} = ${targetExpression}, tolerance = 0.1mm, datums
         expect(argDefaultValues.datums?.valueText).toBe('datumRefs')
       }
     )
+
+    // A note has no geometry selection, so it does not fit the parameterized
+    // cases above (which all resolve faces/edges). Cover its edit flow on its own.
+    it('enters edit flow for gdt::note', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code = 'gdt::note(note = "Note on XY", framePlane = XZ)'
+      const operation = stdlib('gdt::note')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.labeledArgs = {
+        note: {
+          value: { type: 'String', value: 'Note on XY' },
+          sourceRange: rangeOfText(code, '"Note on XY"'),
+        },
+        framePlane: {
+          value: { type: 'String', value: 'XZ' },
+          sourceRange: rangeOfText(code, 'XZ'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: toArtifactGraph([]),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      expect(result.data.name).toBe('GDT Note')
+      expect(getOperationLabel(operation)).toBe('Note')
+      const argDefaultValues = result.data.argDefaultValues as {
+        note?: string
+        framePlane?: string
+      }
+      expect(argDefaultValues.note).toBe('Note on XY')
+      expect(argDefaultValues.framePlane).toBe('XZ')
+    })
   })
 
   describe('variable name of operations', () => {
