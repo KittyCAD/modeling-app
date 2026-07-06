@@ -1497,6 +1497,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           z: {
             defaultValue: KCL_DEFAULT_TRANSFORM,
           },
+          xyz: {
+            inputType: 'vector3d',
+            defaultValue: KCL_DEFAULT_ORIGIN,
+          },
         },
       }
     ),
@@ -1524,6 +1528,18 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         },
         yaw: {
           defaultValue: KCL_DEFAULT_TRANSFORM,
+        },
+        axis: {
+          inputType: 'options',
+          defaultValue: KCL_AXIS_Z,
+          options: [
+            { name: 'X-axis', value: KCL_AXIS_X },
+            { name: 'Y-axis', value: KCL_AXIS_Y },
+            { name: 'Z-axis', isCurrent: true, value: KCL_AXIS_Z },
+          ],
+        },
+        angle: {
+          defaultValue: KCL_DEFAULT_DEGREE,
         },
       },
     }),
