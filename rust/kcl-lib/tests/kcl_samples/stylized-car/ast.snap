@@ -24105,12 +24105,12 @@ description: Result of parsing stylized-car.kcl
               "commentStart": 0,
               "end": 0,
               "moduleId": 0,
-              "raw": "2.0",
+              "raw": "1.0",
               "start": 0,
               "type": "Literal",
               "type": "Literal",
               "value": {
-                "value": 2.0,
+                "value": 1.0,
                 "suffix": "None"
               }
             }
@@ -24800,18 +24800,7 @@ description: Result of parsing stylized-car.kcl
           }
         ]
       },
-      "startNodes": [
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
-        }
-      ]
+      "startNodes": []
     },
     "start": 0
   }

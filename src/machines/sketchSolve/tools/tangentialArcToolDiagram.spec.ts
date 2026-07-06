@@ -37,14 +37,14 @@ function createTestMachine(mockActors?: {
       createArc: fromPromise(
         mockActors?.createArc ||
           (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta([], []),
           }))
       ),
       finalizeArc: fromPromise(
         mockActors?.finalizeArc ||
           (async () => ({
-            kclSource: { text: 'test' } as SourceDelta,
+            kclSource: { text: 'test' },
             sceneGraphDelta: createSceneGraphDelta([], []),
           }))
       ),
@@ -87,7 +87,7 @@ describe('tangentialArcTool - XState', () => {
 
     const { machine, sceneInfra, rustContext, kclManager } = createTestMachine({
       createArc: async () => ({
-        kclSource: { text: 'create' } as SourceDelta,
+        kclSource: { text: 'create' },
         sceneGraphDelta: createResult,
       }),
     })
@@ -126,11 +126,11 @@ describe('tangentialArcTool - XState', () => {
 
     const { machine, sceneInfra, rustContext, kclManager } = createTestMachine({
       createArc: async () => ({
-        kclSource: { text: 'create' } as SourceDelta,
+        kclSource: { text: 'create' },
         sceneGraphDelta: createResult,
       }),
       finalizeArc: async () => ({
-        kclSource: { text: 'finalize' } as SourceDelta,
+        kclSource: { text: 'finalize' },
         sceneGraphDelta: createResult,
       }),
     })

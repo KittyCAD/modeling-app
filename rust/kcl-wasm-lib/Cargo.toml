@@ -2,7 +2,7 @@
 name = "kcl-wasm-lib"
 description = "KittyCAD Language wasm bindings"
 license = "MIT"
-version = "0.1.146"
+version = "0.1.167"
 edition = "2024"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -22,7 +22,7 @@ typed-path = "0.12.3"
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = { workspace = true }
-data-encoding = "2.10.0"
+data-encoding = "2.11.0"
 futures = "0.3.32"
 # Enable the feature in a transitive dependency.
 getrandom_2 = { package = "getrandom", version = "0.2", features = ["js"] }

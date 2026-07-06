@@ -1,20 +1,22 @@
 import type { UserResponse } from '@kittycad/lib'
+import { users } from '@kittycad/lib'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { type IStat } from '@src/lib/fs-zds/interface'
-import { users } from '@kittycad/lib'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
 
+import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
 import {
   defaultAppSettings,
   parseAppSettings,
   parseProjectSettings,
 } from '@src/lang/wasm'
-import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
@@ -28,15 +30,41 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
 } from '@src/lib/constants'
+import {
+  type GitignoreStackEntry,
+  appendGitignoreForDirectory,
+  createInitialGitignoreStack,
+  isPathIgnoredByGitignore,
+} from '@src/lib/gitignore'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
+import {
+  getCloudProjectIdFromProjectTomlContents,
+  getProjectTitleFromProjectTomlContents,
+  setProjectTitleInProjectTomlContents,
+} from '@src/lib/projectTomlMetadata'
 import { err } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
-import { getInVariableCase } from '@src/lib/utils'
-import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
-import env from '@src/env'
+import { getInVariableCase, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { getEXTNoPeriod, isExtensionARelevantExtension } from '@src/lib/paths'
-import { getAppFolderName as getAppFolderNameFromMetadata } from '@src/lib/appFolderName'
+import { IS_STAGING, IS_STAGING_OR_DEBUG } from '@src/routes/utils'
+
+function getProjectSettingsSection(
+  config: DeepPartial<Configuration> | Configuration
+): { [key: string]: JsonValue } | undefined {
+  const projectSettings = config.settings?.project
+  return projectSettings &&
+    typeof projectSettings === 'object' &&
+    !isArray(projectSettings)
+    ? projectSettings
+    : undefined
+}
+
+function getProjectDirectorySetting(
+  config: DeepPartial<Configuration> | Configuration
+): string | undefined {
+  const directory = getProjectSettingsSection(config)?.directory
+  return typeof directory === 'string' ? directory : undefined
+}
 
 const convertIStatToFileMetadata = (
   stats: IStat | null
@@ -54,6 +82,82 @@ const convertIStatToFileMetadata = (
     size: stats.size,
     permission: null,
   }
+}
+
+export function isPathNotFoundError(error: unknown) {
+  return (
+    error === 'ENOENT' ||
+    (typeof error === 'string' && error.startsWith('ENOENT')) ||
+    (typeof error === 'object' &&
+      error !== null &&
+      (('code' in error && error.code === 'ENOENT') ||
+        ('cause' in error && error.cause === 'ENOENT') ||
+        ('message' in error &&
+          typeof error.message === 'string' &&
+          error.message.startsWith('ENOENT'))))
+  )
+}
+
+async function readProjectTomlMetadata(projectPath: string) {
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  try {
+    const projectToml = await fsZds.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+    const environmentName = getEnvironmentNameFromEnv(env())
+    return {
+      title: getProjectTitleFromProjectTomlContents(projectToml),
+      cloudProjectId: getCloudProjectIdFromProjectTomlContents(
+        projectToml,
+        environmentName
+      ),
+    }
+  } catch {
+    return {
+      title: undefined,
+      cloudProjectId: undefined,
+    }
+  }
+}
+
+async function ensureProjectTomlTitle({
+  projectPath,
+  title,
+  defaultFile,
+}: {
+  projectPath: string
+  title: string
+  defaultFile: string
+}) {
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  let projectToml = ''
+  try {
+    projectToml = await fsZds.readFile(projectTomlPath, {
+      encoding: 'utf-8',
+    })
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
+
+  if (getProjectTitleFromProjectTomlContents(projectToml)) {
+    return
+  }
+
+  const projectTomlWithDefaultFile = /^\s*default_file\s*=/m.test(projectToml)
+    ? projectToml
+    : `default_file = ${JSON.stringify(defaultFile.replaceAll('\\', '/'))}\n${
+        projectToml.trim() ? `\n${projectToml}` : ''
+      }`
+  const nextProjectToml = setProjectTitleInProjectTomlContents(
+    projectTomlWithDefaultFile,
+    title
+  )
+  await fsZds.writeFile(
+    projectTomlPath,
+    new TextEncoder().encode(nextProjectToml)
+  )
 }
 
 export async function renameProjectDirectory(
@@ -96,7 +200,7 @@ export async function renameProjectDirectory(
 export async function ensureProjectDirectoryExists(
   config: DeepPartial<Configuration>
 ): Promise<string | undefined> {
-  const projectDir = config.settings?.project?.directory
+  const projectDir = getProjectDirectorySetting(config)
   if (!projectDir) {
     console.error('projectDir is falsey', config)
     return Promise.reject(new Error('projectDir is falsey'))
@@ -104,7 +208,7 @@ export async function ensureProjectDirectoryExists(
   try {
     await fsZds.stat(projectDir)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
     }
   }
@@ -153,7 +257,7 @@ export async function createNewProjectDirectory(
   try {
     await fsZds.stat(projectDir)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectDir, { recursive: true })
     }
   }
@@ -175,6 +279,11 @@ export async function createNewProjectDirectory(
   )
   if (err(codeToWrite)) return Promise.reject(codeToWrite)
   await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
+  await ensureProjectTomlTitle({
+    projectPath: projectDir,
+    title: projectName,
+    defaultFile: kclFileName,
+  })
   let metadata: FileMetadata | null = null
   try {
     metadata = convertIStatToFileMetadata(await fsZds.stat(projectFile))
@@ -192,6 +301,7 @@ export async function createNewProjectDirectory(
   return {
     path: projectDir,
     name: projectName,
+    title: projectName,
     // We don't need to recursively get all files in the project directory.
     // Because we just created it and it's empty.
     children: null,
@@ -267,19 +377,15 @@ export async function listProjects(
 
 const collectAllFilesRecursiveFrom = async (
   targetPath: string,
+  projectRoot: string,
   canReadWritePath: boolean,
-  fileExtensionsForFilter: string[]
+  showAllFiles: boolean,
+  gitignoreStack: GitignoreStackEntry[]
 ) => {
-  const isRelevantFile = (filename: string): boolean => {
-    const extensionNoPeriod = getEXTNoPeriod(filename)
-    if (!extensionNoPeriod) {
-      return false
-    }
-    return isExtensionARelevantExtension(
-      extensionNoPeriod,
-      fileExtensionsForFilter
-    )
-  }
+  const configurationFileNames = new Set([
+    SETTINGS_FILE_NAME,
+    PROJECT_SETTINGS_FILE_NAME,
+  ])
 
   // Make sure the filesystem object exists.
   try {
@@ -327,22 +433,34 @@ const collectAllFilesRecursiveFrom = async (
 
   for (let e of entries) {
     // ignore hidden files and directories (starting with a dot)
-    if (e.indexOf('.') === 0) {
+    if (!showAllFiles && e.indexOf('.') === 0) {
       continue
     }
 
     const ePath = fsZds.join(targetPath, e)
     const isEDir = await statIsDirectory(ePath)
+    const relativePath = fsZds.relative(projectRoot, ePath).replace(/\\/g, '/')
+
+    if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isEDir)) {
+      continue
+    }
 
     if (isEDir) {
+      const childGitignoreStack = await appendGitignoreForDirectory(
+        gitignoreStack,
+        ePath,
+        projectRoot
+      )
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
+        projectRoot,
         canReadWritePath,
-        fileExtensionsForFilter
+        showAllFiles,
+        childGitignoreStack
       )
       children.push(subChildren)
     } else {
-      if (!isRelevantFile(ePath)) {
+      if (!showAllFiles && configurationFileNames.has(e)) {
         continue
       }
       children.push(
@@ -363,7 +481,8 @@ const collectAllFilesRecursiveFrom = async (
 
 export async function getDefaultKclFileForDir(
   projectDir: string,
-  file: FileEntry
+  file: FileEntry,
+  wasmInstance: ModuleType
 ) {
   // Make sure the dir is a directory.
   const isFileEntryDir = await statIsDirectory(projectDir)
@@ -383,11 +502,27 @@ export async function getDefaultKclFileForDir(
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDir(entry.path, entry)
+            return getDefaultKclFileForDir(entry.path, entry, wasmInstance)
           }
         }
         // If we didn't find a kcl file, create one.
-        await fsZds.writeFile(defaultFilePath, new Uint8Array())
+        const configuration = await readAppSettingsFile(wasmInstance)
+        if (err(configuration)) {
+          return Promise.reject(configuration)
+        }
+        const codeToWrite = newKclFile(
+          undefined,
+          configuration?.settings?.modeling?.base_unit ??
+            DEFAULT_DEFAULT_LENGTH_UNIT,
+          wasmInstance
+        )
+        if (err(codeToWrite)) {
+          return Promise.reject(codeToWrite)
+        }
+        await fsZds.writeFile(
+          defaultFilePath,
+          new TextEncoder().encode(codeToWrite)
+        )
         return defaultFilePath
       }
     }
@@ -460,23 +595,37 @@ export async function getProjectInfo(
   const { value: canReadWriteProjectPath } =
     await canReadWriteDirectory(projectPath)
 
-  const fileExtensionsForFilter = relevantFileExtensions(wasmInstance)
+  const appSettings = await readAppSettingsFile(wasmInstance)
+  const showAllFiles = appSettings.settings?.app?.show_all_files === true
+
+  const gitignoreStack = await createInitialGitignoreStack(projectPath)
+
   // Return walked early if canReadWriteProjectPath is false
   let walked = await collectAllFilesRecursiveFrom(
     projectPath,
+    projectPath,
     canReadWriteProjectPath,
-    fileExtensionsForFilter
+    showAllFiles,
+    gitignoreStack
   )
 
   // If the projectPath does not have read write permissions, the default_file is empty string
   let default_file = ''
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
-    default_file = await getDefaultKclFileForDir(projectPath, walked)
+    default_file = await getDefaultKclFileForDir(
+      projectPath,
+      walked,
+      wasmInstance
+    )
   }
+  const projectTomlMetadata = canReadWriteProjectPath
+    ? await readProjectTomlMetadata(projectPath)
+    : { title: undefined, cloudProjectId: undefined }
 
   let project = {
     ...walked,
+    ...projectTomlMetadata,
     metadata: convertIStatToFileMetadata(stats ?? null),
     kcl_file_count: 0,
     directory_count: 0,
@@ -503,6 +652,32 @@ export async function writeProjectSettingsFile(
   return fsZds.writeFile(
     projectSettingsFilePath,
     new TextEncoder().encode(tomlStr)
+  )
+}
+
+export async function writeProjectTitleToProjectToml(
+  projectPath: string,
+  title: string
+): Promise<void> {
+  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
+  let projectToml = ''
+  try {
+    projectToml = await fsZds.readFile(projectSettingsFilePath, {
+      encoding: 'utf-8',
+    })
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
+
+  const nextProjectToml = setProjectTitleInProjectTomlContents(
+    projectToml,
+    title
+  )
+  await fsZds.writeFile(
+    projectSettingsFilePath,
+    new TextEncoder().encode(nextProjectToml)
   )
 }
 
@@ -669,7 +844,7 @@ const getProjectSettingsFilePath = async (projectPath: string) => {
   try {
     await fsZds.stat(projectPath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       await fsZds.mkdir(projectPath, { recursive: true })
     }
   }
@@ -702,7 +877,7 @@ export const readProjectSettingsFile = async (
   try {
     await fsZds.stat(settingsPath)
   } catch (e) {
-    if (e === 'ENOENT') {
+    if (isPathNotFoundError(e)) {
       return {}
     }
   }
@@ -724,9 +899,9 @@ export const readAppSettingsFile = async (
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
   let settingsPath = await getAppSettingsFilePath()
-  const initialProjectDirConfig: DeepPartial<
-    NonNullable<Required<Configuration>['settings']['project']>
-  > = { directory: await getInitialDefaultDir() }
+  const initialProjectDirConfig: { [key: string]: JsonValue } = {
+    directory: await getInitialDefaultDir(),
+  }
 
   // The file exists, read it and parse it.
   try {
@@ -740,7 +915,7 @@ export const readAppSettingsFile = async (
     }
 
     const hasProjectDirectorySetting =
-      parsedAppConfig.settings?.project?.directory
+      getProjectDirectorySetting(parsedAppConfig)
 
     if (hasProjectDirectorySetting) {
       return parsedAppConfig
@@ -752,7 +927,7 @@ export const readAppSettingsFile = async (
           ...parsedAppConfig.settings,
           project: Object.assign(
             {},
-            parsedAppConfig.settings?.project,
+            getProjectSettingsSection(parsedAppConfig),
             initialProjectDirConfig
           ),
         },
@@ -776,7 +951,7 @@ export const readAppSettingsFile = async (
         ...defaultAppConfig.settings,
         project: Object.assign(
           {},
-          defaultAppConfig.settings?.project,
+          getProjectSettingsSection(defaultAppConfig),
           initialProjectDirConfig
         ),
       },

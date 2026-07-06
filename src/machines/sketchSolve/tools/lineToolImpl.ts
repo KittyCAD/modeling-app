@@ -11,12 +11,6 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import {
-  clearToolSnappingState,
-  getBestSnappingCandidate,
-  sendHoveredSnappingCandidate,
-  updateToolSnappingPreview,
-} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
-import {
   getCoincidentCluster,
   isLineSegment,
   isPointSegment,
@@ -24,6 +18,12 @@ import {
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
+import {
+  clearToolSnappingState,
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+  updateToolSnappingPreview,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 import {
   type ActionArgs,
   type AssignArgs,

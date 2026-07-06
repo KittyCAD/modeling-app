@@ -1,6 +1,20 @@
-import { getUniqueProjectName } from '@src/lib/desktopFS'
+import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
-import { expect, describe, it } from 'vitest'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { beforeAll, describe, expect, it } from 'vitest'
+
+beforeAll(async () => {
+  await moduleFsViaModuleImport({
+    type: StorageName.NodeFS,
+    options: {},
+  })
+})
+
+const wasmInstance = {
+  relevant_file_extensions: () => ['kcl', 'stp', 'step'],
+} as ModuleType
 
 /** Create a dummy project */
 function project(name: string, children?: FileEntry[]): FileEntry {
@@ -55,5 +69,28 @@ describe(`Getting unique project names`, () => {
     ]
     const result = getUniqueProjectName(projectName, projects)
     expect(result).toBe('existing-project-03')
+  })
+
+  it('preserves non-KCL extensions when requested', async () => {
+    const baseDir = `/tmp/opencode/desktopfs-${crypto.randomUUID()}`
+    await fsZds.mkdir(baseDir, { recursive: true })
+
+    try {
+      await fsZds.writeFile(
+        fsZds.join(baseDir, 'notes.pdf'),
+        new TextEncoder().encode('a')
+      )
+
+      const nextFile = await getNextFileName({
+        entryName: 'notes.pdf',
+        baseDir,
+        wasmInstance,
+        preserveUnknownExtension: true,
+      })
+
+      expect(nextFile.name).toBe('notes-1.pdf')
+    } finally {
+      await fsZds.rm(baseDir, { recursive: true, force: true })
+    }
   })
 })

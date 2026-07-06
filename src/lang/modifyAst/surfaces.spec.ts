@@ -1,19 +1,19 @@
-import { recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { type Artifact, recast } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
-import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import type { KclManager } from '@src/lang/KclManager'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -184,6 +184,169 @@ extrude002 = extrude(profile002, length = 1, bodyType = SURFACE)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(code + '\n' + expectedNewLine)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should join selected blend sweep surfaces directly', async () => {
+      const code = `beamLeftRotationAngle = 20deg
+beamRightTranslationX = -22
+beamRightTranslationY = 134
+
+beamLeftChannelDepth = 35
+beamLeftProfileWidth = 113
+beamLeftFlange = 23
+beamLeftChannelWidth = 55
+beamLeftLength = 100
+
+beamRightChannelDepth = 54
+beamRightProfileWidth = 110
+beamRightFlange = 25
+beamRightChannelWidth = 49
+beamRightLength = 300
+
+beamLeftWallProfileSketch = sketch(on = XZ) {
+  line1 = line(start = [var -0.49mm, var 56.62mm], end = [var -0.51mm, var 33.5mm])
+  line2 = line(start = [var 0mm, var 32.66mm], end = [var 34.51mm, var 27.62mm])
+  line3 = line(start = [var 34.51mm, var 27.62mm], end = [var 35.31mm, var -28.31mm])
+  line4 = line(start = [var 36.86mm, var -30.1mm], end = [var 0.68mm, var -33.39mm])
+  line5 = line(start = [var 0mm, var -32.24mm], end = [var -0.49mm, var -56.38mm])
+  verticalDistance([line5.end, line1.start]) == beamLeftProfileWidth
+  verticalDistance([ORIGIN, line1.start]) == beamLeftProfileWidth / 2
+  horizontalDistance([line2.start, line2.end]) == beamLeftChannelDepth
+  verticalDistance([line3.end, line3.start]) == beamLeftChannelWidth
+  verticalDistance([line5.end, line5.start]) == beamLeftFlange
+  coincident([line2.start, line1.end])
+  coincident([line3.start, line2.end])
+  coincident([line4.start, line3.end])
+  coincident([line4.end, line5.start])
+  equalLength([line5, line1])
+  equalLength([line4, line2])
+  vertical(line5)
+  vertical(line1)
+  vertical([line5.start, ORIGIN])
+  vertical([line2.start, ORIGIN])
+  vertical(line3)
+}
+
+beamRightWallProfileSketch = sketch(on = XZ) {
+  line1 = line(start = [var -0.49mm, var 56.62mm], end = [var -0.51mm, var 33.5mm])
+  line2 = line(start = [var 0mm, var 32.66mm], end = [var 34.51mm, var 27.62mm])
+  line3 = line(start = [var 34.51mm, var 27.62mm], end = [var 35.31mm, var -28.31mm])
+  line4 = line(start = [var 36.86mm, var -30.1mm], end = [var 0.68mm, var -33.39mm])
+  line5 = line(start = [var 0mm, var -32.24mm], end = [var -0.49mm, var -56.38mm])
+  verticalDistance([line5.end, line1.start]) == beamRightProfileWidth
+  verticalDistance([ORIGIN, line1.start]) == beamRightProfileWidth / 2
+  horizontalDistance([line2.start, line2.end]) == beamRightChannelDepth
+  verticalDistance([line3.end, line3.start]) == beamRightChannelWidth
+  verticalDistance([line5.end, line5.start]) == beamRightFlange
+  coincident([line2.start, line1.end])
+  coincident([line3.start, line2.end])
+  coincident([line4.start, line3.end])
+  coincident([line4.end, line5.start])
+  equalLength([line5, line1])
+  equalLength([line4, line2])
+  vertical(line5)
+  vertical(line1)
+  vertical([line5.start, ORIGIN])
+  vertical([line2.start, ORIGIN])
+  vertical(line3)
+}
+
+beamLeftWallBaseSurface = extrude(
+  [
+    beamLeftWallProfileSketch.line1,
+    beamLeftWallProfileSketch.line2,
+    beamLeftWallProfileSketch.line3,
+    beamLeftWallProfileSketch.line4,
+    beamLeftWallProfileSketch.line5
+  ],
+  length = beamLeftLength,
+  bodyType = SURFACE,
+)
+hide(beamLeftWallProfileSketch)
+beamLeftWallPlacedSurface = rotate(
+  beamLeftWallBaseSurface,
+  axis = Z,
+  angle = beamLeftRotationAngle,
+  global = true,
+)
+
+beamRightWallBaseSurface = extrude(
+  [
+    beamRightWallProfileSketch.line1,
+    beamRightWallProfileSketch.line2,
+    beamRightWallProfileSketch.line3,
+    beamRightWallProfileSketch.line4,
+    beamRightWallProfileSketch.line5
+  ],
+  length = -beamRightLength,
+  bodyType = SURFACE,
+)
+hide(beamRightWallProfileSketch)
+beamRightWallPlacedSurface = translate(
+  beamRightWallBaseSurface,
+  x = beamRightTranslationX,
+  y = beamRightTranslationY,
+  global = true,
+)
+
+blend001 = blend([
+  getBoundedEdge(beamLeftWallBaseSurface, edge = beamLeftWallBaseSurface.sketch.tags.line1),
+  getBoundedEdge(beamRightWallBaseSurface, edge = beamRightWallBaseSurface.sketch.tags.line1)
+])
+blend002 = blend([
+  getBoundedEdge(beamLeftWallBaseSurface, edge = beamLeftWallBaseSurface.sketch.tags.line2),
+  getBoundedEdge(beamRightWallBaseSurface, edge = beamRightWallBaseSurface.sketch.tags.line2)
+])
+blend003 = blend([
+  getBoundedEdge(beamLeftWallBaseSurface, edge = beamLeftWallBaseSurface.sketch.tags.line3),
+  getBoundedEdge(beamRightWallBaseSurface, edge = beamRightWallBaseSurface.sketch.tags.line3)
+])
+blend004 = blend([
+  getBoundedEdge(beamLeftWallBaseSurface, edge = beamLeftWallBaseSurface.sketch.tags.line4),
+  getBoundedEdge(beamRightWallBaseSurface, edge = beamRightWallBaseSurface.sketch.tags.line4)
+])
+blend005 = blend([
+  getBoundedEdge(beamLeftWallBaseSurface, edge = beamLeftWallBaseSurface.sketch.tags.line5),
+  getBoundedEdge(beamRightWallBaseSurface, edge = beamRightWallBaseSurface.sketch.tags.line5)
+])`
+      const expectedNewLine = `surface001 = joinSurfaces([
+  blend001,
+  blend002,
+  blend003,
+  blend004,
+  blend005
+])`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+
+      const blendArtifacts = [...artifactGraph.values()]
+        .filter(
+          (artifact): artifact is Extract<Artifact, { type: 'sweep' }> =>
+            artifact.type === 'sweep' && artifact.subType === 'blend'
+        )
+        .sort((a, b) => a.codeRef.range[0] - b.codeRef.range[0])
+      expect(blendArtifacts).toHaveLength(5)
+
+      const selection = createSelectionFromArtifacts(
+        blendArtifacts,
+        artifactGraph
+      )
+      const result = addJoinSurfaces({
+        ast,
+        artifactGraph,
+        selection,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${code}\n${expectedNewLine}`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
   })

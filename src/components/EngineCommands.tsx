@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import type { CommandLog } from '@src/lang/std/commandLog'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 
@@ -29,6 +30,7 @@ export const EngineCommands = () => {
   return (
     <div>
       <input
+        {...noAutofillInputProps}
         className="text-gray-800 bg-slate-300 px-2"
         data-testid="filter-input"
         type="text"
@@ -77,6 +79,7 @@ export const EngineCommands = () => {
       </button>
       <br />
       <input
+        {...noAutofillInputProps}
         className="text-gray-800 bg-slate-300 px-2"
         type="text"
         value={customCmd}

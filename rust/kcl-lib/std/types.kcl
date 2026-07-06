@@ -223,7 +223,7 @@ export type Plane
 
 /// A segment in a sketch created in a sketch block. It may be a line, arc, point, or other segment type.
 ///
-/// See the [sketch2 module](/docs/kcl-std/modules/std-sketch2) for functions that create segments and the [region function](/docs/kcl-std/functions/std-sketch2-region) for examples using segments to create a region that can be extruded.
+/// See the [solver module](/docs/kcl-std/modules/std-solver) for functions that create segments and the [region function](/docs/kcl-std/functions/std-sketch-region) for examples using segments to create a region that can be extruded.
 @(impl = std_rust_constrainable, experimental = true)
 export type Segment
 
@@ -386,7 +386,7 @@ export type Axis2d
 export type Axis3d
 
 /// A GD&T annotation created by one of the [`gdt` functions](/docs/kcl-std/modules/std-gdt).
-@(impl = std_rust, experimental = true)
+@(impl = std_rust)
 export type GdtAnnotation
 
 export type mm = number(mm)

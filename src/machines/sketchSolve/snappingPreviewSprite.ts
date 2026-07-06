@@ -4,27 +4,27 @@ import { Line2 } from 'three/examples/jsm/lines/Line2.js'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js'
 import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js'
 
-import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { SKETCH_LAYER } from '@src/clientSideScene/sceneUtils'
+import type { ConstraintIconName } from '@src/components/constraintIconPaths'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
 import { getResolvedTheme } from '@src/lib/theme'
 import type { Themes } from '@src/lib/theme'
-import { setupConstructionLineDashShader } from '@src/machines/sketchSolve/constructionDashShader'
-import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
-import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import {
   CONSTRAINT_BADGE_SIZE_PX,
   createConstraintBadgeSprite,
   getConstraintBadgeTexture,
 } from '@src/machines/sketchSolve/constraints/constraintBadgeSprite'
+import { setupConstructionLineDashShader } from '@src/machines/sketchSolve/constructionDashShader'
+import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
+import { RENDER_ORDER } from '@src/machines/sketchSolve/renderOrder'
+import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
-  X_AXIS_TARGET,
-  Y_AXIS_TARGET,
   type SnapTarget,
   type SnappingCandidate,
+  X_AXIS_TARGET,
+  Y_AXIS_TARGET,
 } from '@src/machines/sketchSolve/snapping'
-import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
-import type { ConstraintIconName } from '@src/components/constraintIconPaths'
 
 export const SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE =
   'sketch-solve-snapping-preview-sprite'
@@ -191,6 +191,8 @@ function getBadgeTypeForSnappingTarget(
       return 'Horizontal'
     case Y_AXIS_TARGET:
       return 'Vertical'
+    case 'midpoint':
+      return 'Midpoint'
     default:
       return 'Coincident'
   }

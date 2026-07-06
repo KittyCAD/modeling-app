@@ -1,9 +1,12 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { TooltipProps } from '@src/components/Tooltip'
+import type { Location } from 'react-router-dom'
 
 export type StatusBarItemType = {
   id: string
   'data-testid'?: string
+  order?: number
+  scopes?: readonly string[]
 } & (
   | ({
       label: string
@@ -22,7 +25,7 @@ export type StatusBarItemType = {
         }
       | {
           element: 'link' | 'externalLink'
-          href: string
+          href: string | ((location: Location) => string)
         }
       | {
           element: 'text'

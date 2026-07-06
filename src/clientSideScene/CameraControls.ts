@@ -29,7 +29,7 @@ import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { MouseGuard } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards } from '@src/lib/cameraControls'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
-import { Signal } from '@src/lib/signal'
+import { Signal as LegacySignal } from '@src/lib/signal'
 import { reportRejection } from '@src/lib/trap'
 import { err } from '@src/lib/trap'
 import {
@@ -40,9 +40,9 @@ import {
   uuidv4,
 } from '@src/lib/utils'
 import { deg2Rad } from '@src/lib/utils2d'
-import { degToRad } from 'three/src/math/MathUtils'
 import { type ConnectionManager } from '@src/network/connectionManager'
 import type { Subscription, UnreliableSubscription } from '@src/network/utils'
+import { degToRad } from 'three/src/math/MathUtils'
 
 const ORTHOGRAPHIC_CAMERA_SIZE = 20
 const EXPECTED_WORLD_COORD_SYSTEM = 'right_handed_up_z'
@@ -429,7 +429,7 @@ export class CameraControls {
     this._isCamMovingCallback = cb
   }
 
-  public readonly cameraChange = new Signal()
+  public readonly cameraChange = new LegacySignal()
 
   onWindowResize = () => {
     if (this.camera instanceof PerspectiveCamera) {

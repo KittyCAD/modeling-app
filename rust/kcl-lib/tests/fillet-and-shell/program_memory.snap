@@ -386,8 +386,7 @@ description: Variables in memory after executing fillet-and-shell.kcl
     }
   },
   "m25Screw": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "microUsb1Distance": {
     "type": "Number",

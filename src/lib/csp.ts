@@ -1,19 +1,16 @@
-import path from 'path'
 import fs from 'fs'
-import os from 'os'
 import { fileURLToPath } from 'node:url'
+import os from 'os'
+import path from 'path'
 // @ts-ignore: TS1343
 import * as packageJSON from '@root/package.json'
-import { app, protocol } from 'electron'
-import mime from 'mime-types'
+import { net, app, session } from 'electron'
 
+import {
+  STAGING_BUILD_SUFFIX,
+  getAppFolderNameFromBuild,
+} from '@src/lib/appFolderName'
 import { ENVIRONMENT_FILE_NAME } from '@src/lib/constants'
-import { getAppFolderName } from '@src/lib/appFolderName'
-const isStagingBuild = packageJSON.name.includes('-staging')
-const isStagingOrDebugBuild =
-  isStagingBuild ||
-  packageJSON.version === '0.0.0' ||
-  packageJSON.version === 'dev'
 
 const CSP_META_REGEX =
   /<meta\b[^>]*http-equiv=["']Content-Security-Policy["'][^>]*>/gi
@@ -42,19 +39,18 @@ const uniqueSources = (sources: Array<string | undefined>) => {
   return result
 }
 
-const getMimeType = (filePath: string) => {
-  const type = mime.lookup(filePath)
-  return typeof type === 'string' ? type : 'application/octet-stream'
-}
-
 const getEnvironmentFolderName = () => {
-  return getAppFolderName({
+  return getAppFolderNameFromBuild({
     packageName: packageJSON.name,
+    packageVersion: packageJSON.version,
     platform: os.platform(),
-    isStaging: isStagingBuild,
-    isStagingOrDebug: isStagingOrDebugBuild,
   })
 }
+
+const isStagingOrDebugBuild =
+  packageJSON.name.includes(STAGING_BUILD_SUFFIX) ||
+  packageJSON.version === '0.0.0' ||
+  packageJSON.version === 'dev'
 
 const getTestSettingsPathForCsp = () => {
   if (process.env.NODE_ENV !== 'test') return undefined
@@ -134,24 +130,26 @@ export const registerFileProtocolCsp = () => {
   if (isStagingOrDebugBuild) {
     return
   }
-  protocol.interceptBufferProtocol('file', (request, callback) => {
-    void (async () => {
-      const filePath = fileURLToPath(request.url)
-      try {
-        if (path.basename(filePath) === 'index.html') {
-          const data = await buildIndexHtmlWithCsp(filePath)
-          callback({ data, mimeType: 'text/html' })
-          return
-        }
-        const data = await fs.promises.readFile(filePath)
-        callback({ data, mimeType: getMimeType(filePath) })
-      } catch (error) {
-        console.error('Failed to load file protocol response', error)
-        callback({
-          data: Buffer.alloc(0),
-          mimeType: 'application/octet-stream',
-        })
-      }
-    })()
+
+  session.defaultSession.protocol.handle('file', async (request) => {
+    const filePath = fileURLToPath(request.url)
+
+    // Only intercept index.html to inject CSP; pass everything else through.
+    if (path.basename(filePath) !== 'index.html') {
+      // Pass through the original request to preserve headers like Range for media.
+      return await net.fetch(request, {
+        bypassCustomProtocolHandlers: true,
+      })
+    }
+
+    try {
+      const data = await buildIndexHtmlWithCsp(filePath)
+      return new Response(data, {
+        headers: { 'Content-Type': 'text/html' },
+      })
+    } catch (error) {
+      console.log('[CSP] failed to inject CSP into index.html:', error)
+      return net.fetch(request, { bypassCustomProtocolHandlers: true })
+    }
   })
 }

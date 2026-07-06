@@ -1,0 +1,26 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Error from executing consumed_solid_clone.kcl
+---
+KCL Semantic error
+
+  × semantic: `target` was already consumed by a `subtract` operation. The
+  │ operation result is now in `result`; use that for subsequent operations.
+    ╭─[28:10]
+ 27 │ result = subtract(target, tools = [tool])
+ 28 │ cloned = clone(target)
+    ·          ──────┬──────┬
+    ·                │      ╰── tests/consumed_solid_clone/input.kcl
+    ·                ╰── tests/consumed_solid_clone/input.kcl
+    ╰────
+  ╰─▶ KCL Semantic error
+      
+        × semantic: `target` was already consumed by a `subtract` operation.
+        │ The operation result is now in `result`; use that for subsequent
+        │ operations.
+          ╭─[28:16]
+       27 │ result = subtract(target, tools = [tool])
+       28 │ cloned = clone(target)
+          ·                ───┬──
+          ·                   ╰── tests/consumed_solid_clone/input.kcl
+          ╰────

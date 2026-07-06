@@ -1,21 +1,21 @@
 import type {
   ApiConstraint,
-  FixedPoint,
   ApiObject,
   Coincident,
+  FixedPoint,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import { isArray, roundOff } from '@src/lib/utils'
-import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
-import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { SnapshotFrom, StateFrom } from 'xstate'
-import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
-import type { Object3D, SpriteMaterial, Texture } from 'three'
-import { Sprite, Vector3 } from 'three'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
+import { isArray, roundOff } from '@src/lib/utils'
+import { getSignedAngleBetweenVec, length2d, subVec } from '@src/lib/utils2d'
+import type { modelingMachine } from '@src/machines/modelingMachine'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { getObjectSelectionIds } from '@src/machines/sketchSolve/sketchSolveSelection'
 import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
+import type { Object3D, SpriteMaterial, Texture } from 'three'
+import { Sprite, Vector3 } from 'three'
+import type { SnapshotFrom, StateFrom } from 'xstate'
 
 export const CONSTRAINT_TYPE = 'CONSTRAINT'
 
@@ -44,6 +44,14 @@ export type LineSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Line' } }
 }
 
+export function isOwnedLineSegment(
+  obj: ApiObject | undefined | null
+): obj is LineSegment & {
+  kind: { type: 'Segment'; segment: { type: 'Line'; owner: number } }
+} {
+  return isLineSegment(obj) && obj.kind.segment.owner != null
+}
+
 export function isArcSegment(
   obj: ApiObject | undefined | null
 ): obj is ArcSegment {
@@ -64,6 +72,19 @@ export type CircleSegment = ApiObject & {
   kind: { type: 'Segment'; segment: { type: 'Circle' } }
 }
 
+export function isControlPointSplineSegment(
+  obj: ApiObject | undefined | null
+): obj is ControlPointSplineSegment {
+  return (
+    obj?.kind.type === 'Segment' &&
+    obj.kind.segment.type === 'ControlPointSpline'
+  )
+}
+
+export type ControlPointSplineSegment = ApiObject & {
+  kind: { type: 'Segment'; segment: { type: 'ControlPointSpline' } }
+}
+
 export function isArcLikeSegment(
   obj: ApiObject | undefined | null
 ): obj is ArcSegment | CircleSegment {
@@ -72,7 +93,10 @@ export function isArcLikeSegment(
 
 export function isConstruction(obj: ApiObject | undefined | null): boolean {
   return (
-    (isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)) &&
+    (isLineSegment(obj) ||
+      isArcSegment(obj) ||
+      isCircleSegment(obj) ||
+      isControlPointSplineSegment(obj)) &&
     obj.kind.segment.construction === true
   )
 }
@@ -152,6 +176,127 @@ export function getArcPoints(
   }
 }
 
+export function getControlPointSplinePoints(
+  splineObj: ApiObject | undefined | null,
+  objects: ApiObject[]
+): Coords2d[] | null {
+  if (!isControlPointSplineSegment(splineObj)) {
+    return null
+  }
+
+  const points: Coords2d[] = []
+  for (const controlId of splineObj.kind.segment.controls) {
+    const pointObj = objects[controlId]
+    if (!isPointSegment(pointObj)) {
+      return null
+    }
+    points.push(pointToCoords2d(pointObj))
+  }
+
+  return points
+}
+
+function buildOpenUniformKnotVector(
+  pointCount: number,
+  degree: number
+): number[] {
+  const order = degree + 1
+  const knotCount = pointCount + order
+  const interiorCount = knotCount - 2 * order
+  const knots = new Array<number>(knotCount)
+
+  for (let index = 0; index < knotCount; index++) {
+    if (index < order) {
+      knots[index] = 0
+    } else if (index >= knotCount - order) {
+      knots[index] = 1
+    } else {
+      knots[index] = (index - degree) / (interiorCount + 1)
+    }
+  }
+
+  return knots
+}
+
+function findKnotSpan(u: number, degree: number, knots: number[]): number {
+  const pointCount = knots.length - degree - 1
+  const lastSpan = pointCount - 1
+  if (u >= knots[lastSpan + 1]) {
+    return lastSpan
+  }
+  if (u <= knots[degree]) {
+    return degree
+  }
+
+  let low = degree
+  let high = lastSpan + 1
+  let mid = Math.floor((low + high) / 2)
+  while (u < knots[mid] || u >= knots[mid + 1]) {
+    if (u < knots[mid]) {
+      high = mid
+    } else {
+      low = mid
+    }
+    mid = Math.floor((low + high) / 2)
+  }
+
+  return mid
+}
+
+function deBoorPoint(
+  points: Coords2d[],
+  degree: number,
+  knots: number[],
+  u: number
+): Coords2d {
+  const span = findKnotSpan(u, degree, knots)
+  const d = Array.from({ length: degree + 1 }, (_, offset) => {
+    const point = points[span - degree + offset]
+    return [point[0], point[1]] as Coords2d
+  })
+
+  for (let r = 1; r <= degree; r++) {
+    for (let j = degree; j >= r; j--) {
+      const knotIndex = span - degree + j
+      const denom = knots[knotIndex + degree - r + 1] - knots[knotIndex]
+      const alpha = denom === 0 ? 0 : (u - knots[knotIndex]) / denom
+      d[j] = [
+        (1 - alpha) * d[j - 1][0] + alpha * d[j][0],
+        (1 - alpha) * d[j - 1][1] + alpha * d[j][1],
+      ]
+    }
+  }
+
+  return d[degree]
+}
+
+export function sampleControlPointSplinePoints(
+  points: Coords2d[],
+  degree: number,
+  samplesPerSpan = 24
+): Coords2d[] {
+  if (points.length < 2) {
+    return points
+  }
+
+  const effectiveDegree = Math.max(1, Math.min(degree, points.length - 1))
+  if (effectiveDegree === 1) {
+    return points
+  }
+
+  const knots = buildOpenUniformKnotVector(points.length, effectiveDegree)
+  const spanCount = Math.max(1, points.length - effectiveDegree)
+  const sampleCount = Math.max(spanCount * samplesPerSpan, 2)
+  const result: Coords2d[] = []
+
+  for (let index = 0; index <= sampleCount; index++) {
+    const u = index === sampleCount ? 1 : index / sampleCount
+    result.push(deBoorPoint(points, effectiveDegree, knots, u))
+  }
+
+  return result
+}
+
 // Returns the current signed angle between 2 lines in degrees, normalized to [0, 360]
 function calculateCurrentAngleBetweenLines(
   line1: ApiObject,
@@ -220,7 +365,6 @@ export function buildTangentConstraintInput(
   const selectedObjects = selectedIds.map((id) => objects[id])
   const lineObj = selectedObjects.find(isLineSegment)
   const arcObjects = selectedObjects.filter(isArcLikeSegment)
-
   if (lineObj && arcObjects.length === 1) {
     // tangent(line, arc)
     const arcObj = arcObjects[0]
@@ -241,9 +385,209 @@ export function buildTangentConstraintInput(
   return null
 }
 
+type SymmetricConstraintInput = Extract<ApiConstraint, { type: 'Symmetric' }>
+
+function buildSymmetricConstraintInputFromPair({
+  input,
+  axis,
+}: {
+  input: [number, number]
+  axis: number
+}): SymmetricConstraintInput {
+  return {
+    type: 'Symmetric',
+    input,
+    axis,
+  }
+}
+
+export function buildSymmetricConstraintInput(
+  selectedIds: number[],
+  objects: ApiObject[]
+) {
+  if (selectedIds.length !== 3) {
+    return null
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+  if (selectedObjects.some((object) => !object)) {
+    return null
+  }
+
+  const selectedLines = selectedObjects.filter(isLineSegment)
+  const selectedPoints = selectedObjects.filter(isPointSegment)
+  const selectedArcLikes = selectedObjects.filter(isArcLikeSegment)
+
+  if (selectedPoints.length === 2 && selectedLines.length === 1) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedPoints[0].id, selectedPoints[1].id],
+      axis: selectedLines[0].id,
+    })
+  }
+
+  if (selectedArcLikes.length === 2 && selectedLines.length === 1) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedArcLikes[0].id, selectedArcLikes[1].id],
+      axis: selectedLines[0].id,
+    })
+  }
+
+  return null
+}
+
+export function buildSymmetricConstraintInputWithExplicitAxis({
+  selectedIds,
+  axisId,
+  objects,
+}: {
+  selectedIds: number[]
+  axisId: number
+  objects: ApiObject[]
+}) {
+  const axis = objects[axisId]
+  if (!isLineSegment(axis)) {
+    return null
+  }
+
+  const selectedWithoutAxis = selectedIds
+    .filter((id) => id !== axisId)
+    .map((id) => objects[id])
+
+  if (
+    selectedWithoutAxis.length !== 2 ||
+    selectedWithoutAxis.some((object) => !object)
+  ) {
+    return null
+  }
+
+  const selectedPoints = selectedWithoutAxis.filter(isPointSegment)
+  if (selectedPoints.length === 2) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedPoints[0].id, selectedPoints[1].id],
+      axis: axisId,
+    })
+  }
+
+  const selectedArcLikes = selectedWithoutAxis.filter(isArcLikeSegment)
+  if (selectedArcLikes.length === 2) {
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedArcLikes[0].id, selectedArcLikes[1].id],
+      axis: axisId,
+    })
+  }
+
+  const selectedLines = selectedWithoutAxis.filter(isLineSegment)
+  if (selectedLines.length === 2) {
+    // Current Symmetric tool policy: never infer the axis from a three-line
+    // candidate set. The line the user explicitly clicks is the axis.
+    //
+    // If the team later wants to auto-pick an axis heuristically instead,
+    // this is the single policy point to replace with logic such as:
+    // - preferring a construction line
+    // - picking the spatially middle line
+    // - using first- or last-selected line ordering
+    return buildSymmetricConstraintInputFromPair({
+      input: [selectedLines[0].id, selectedLines[1].id],
+      axis: axisId,
+    })
+  }
+
+  return null
+}
+
+export type SymmetricToolSelectionStep = 'select-pair' | 'select-axis'
+
+export function getSymmetricToolSelectionStep(
+  selectedIds: number[],
+  objects: ApiObject[]
+): SymmetricToolSelectionStep | null {
+  if (selectedIds.length <= 1) {
+    return 'select-pair'
+  }
+
+  const selectedObjects = selectedIds.map((id) => objects[id])
+  if (selectedObjects.some((object) => !object)) {
+    return null
+  }
+
+  const selectedLines = selectedObjects.filter(isLineSegment)
+  const selectedPoints = selectedObjects.filter(isPointSegment)
+  const selectedArcLikes = selectedObjects.filter(isArcLikeSegment)
+
+  if (
+    selectedIds.length === 2 &&
+    (selectedPoints.length === 2 ||
+      selectedArcLikes.length === 2 ||
+      selectedLines.length === 2)
+  ) {
+    return 'select-axis'
+  }
+
+  if (
+    selectedIds.length === 3 &&
+    ((selectedPoints.length === 2 && selectedLines.length === 1) ||
+      (selectedArcLikes.length === 2 && selectedLines.length === 1) ||
+      selectedLines.length === 3)
+  ) {
+    return 'select-axis'
+  }
+
+  return null
+}
+
 type EqualLengthConstraintInput =
   | Extract<ApiConstraint, { type: 'LinesEqualLength' }>
   | Extract<ApiConstraint, { type: 'EqualRadius' }>
+
+type ArcSizeDimensionConstraintInput =
+  | Extract<ApiConstraint, { type: 'Radius' }>
+  | Extract<ApiConstraint, { type: 'Diameter' }>
+
+type ArcSizeDimensionUnit = Extract<
+  ApiConstraint,
+  { type: 'Radius' }
+>['radius']['units']
+
+export function buildCircularSizeDimensionConstraintInput({
+  segment,
+  radius,
+  units,
+}: {
+  segment: ApiObject | undefined
+  radius: number
+  units: ArcSizeDimensionUnit
+}): ArcSizeDimensionConstraintInput | null {
+  if (isArcSegment(segment)) {
+    const source = {
+      expr: radius.toString(),
+      is_literal: true,
+    }
+
+    return {
+      type: 'Radius',
+      radius: { value: radius, units },
+      arc: segment.id,
+      source,
+    }
+  }
+
+  if (isCircleSegment(segment)) {
+    const diameter = roundOff(radius * 2)
+    const source = {
+      expr: diameter.toString(),
+      is_literal: true,
+    }
+
+    return {
+      type: 'Diameter',
+      diameter: { value: diameter, units },
+      arc: segment.id,
+      source,
+    }
+  }
+
+  return null
+}
 
 export function buildEqualLengthConstraintInput(
   selectedIds: number[],
@@ -514,6 +858,20 @@ export function getSelectedTangentConstraintInput(
     snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
   return buildTangentConstraintInput(
+    getObjectSelectionIds(selectedIds),
+    objects
+  )
+}
+
+export function getSelectedSymmetricConstraintInput(
+  modelingState: StateFrom<typeof modelingMachine>
+) {
+  const snapshot = getSketchSolveSnapshot(modelingState)
+  const selectedIds = snapshot?.context.selectedIds || []
+  const objects =
+    snapshot?.context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
+
+  return buildSymmetricConstraintInput(
     getObjectSelectionIds(selectedIds),
     objects
   )

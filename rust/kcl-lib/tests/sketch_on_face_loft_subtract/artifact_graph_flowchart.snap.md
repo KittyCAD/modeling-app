@@ -142,7 +142,7 @@ flowchart LR
   71["SweepEdge Opposite"]
   72["SweepEdge Opposite"]
   73["SweepEdge Opposite"]
-  74["Sweep Loft<br>[3022, 3050, 0]<br>Consumed: false"]
+  74["Sweep Loft<br>[3022, 3050, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   75[Wall]
     %% face_code_ref=Missing NodePath

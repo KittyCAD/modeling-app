@@ -1,5 +1,26 @@
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-
+/**
+ * The types of onboarding status.
+ */
+export type OnboardingStatus =
+  | ''
+  | 'completed'
+  | 'incomplete'
+  | 'dismissed'
+  | '/desktop'
+  | '/desktop/scene'
+  | '/desktop/toolbar'
+  | '/desktop/text-to-cad'
+  | '/desktop/text-to-cad-prompt'
+  | '/desktop/feature-tree-pane'
+  | '/desktop/code-pane'
+  | '/desktop/project-pane'
+  | '/desktop/other-panes'
+  | '/desktop/prompt-to-edit'
+  | '/desktop/prompt-to-edit-prompt'
+  | '/desktop/prompt-to-edit-result'
+  | '/desktop/imports'
+  | '/desktop/exports'
+  | '/desktop/conclusion'
 export type OnboardingPath = OnboardingStatus & `/${string}`
 export type DesktopOnboardingPath = OnboardingPath & `/desktop${string}`
 

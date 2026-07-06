@@ -1,3 +1,7 @@
+import {
+  DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
+} from '@src/lib/layout/configs/default'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type {
   Layout,
@@ -5,14 +9,12 @@ import type {
   LayoutWithMetadata,
 } from '@src/lib/layout/types'
 import {
+  applyLayoutContribution,
   applyLayoutMigrationMap,
   closeAllPanes,
+  setBodiesPaneLayoutEnabled,
   setOpenPanes,
 } from '@src/lib/layout/utils'
-import {
-  DefaultLayoutPaneID,
-  DefaultLayoutToolbarID,
-} from '@src/lib/layout/configs/default'
 import { expect } from 'vitest'
 import { it } from 'vitest'
 import { describe } from 'vitest'
@@ -184,6 +186,152 @@ describe('Layout utils', () => {
 
       expect(layout).toHaveProperty('children[0].activeIndices', [0])
       expect(layout).toHaveProperty('children[1].activeIndices', [])
+    })
+  })
+
+  describe('layout contributions', () => {
+    it('inserts missing contributed areas into a target pane layout', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Panes,
+        side: 'inline-start',
+        activeIndices: [0],
+        sizes: [100],
+        splitOrientation: 'block',
+        children: [
+          {
+            id: 'existing-pane',
+            label: 'Existing',
+            type: LayoutType.Simple,
+            areaType: AreaType.Code,
+            icon: 'code',
+          },
+        ],
+      }
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-area-default',
+          kind: 'area',
+          pane: {
+            id: 'plugin-pane',
+            label: 'Plugin',
+            type: LayoutType.Simple,
+            areaType: 'plugin.area',
+            icon: 'stopwatch',
+          },
+          placement: {
+            targetPaneId: 'root',
+            afterId: 'existing-pane',
+          },
+          initiallyOpen: true,
+        },
+      })
+
+      expect(result).toStrictEqual({ applied: true, reason: 'applied' })
+      expect(layout).toHaveProperty('children[1].id', 'plugin-pane')
+      expect(layout).toHaveProperty('activeIndices', [0, 1])
+      expect(layout).toHaveProperty('sizes', [50, 50])
+    })
+
+    it('does not duplicate contributed areas already present anywhere in the layout', () => {
+      const layout = structuredClone(basicSplitLayout)
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-area-default',
+          kind: 'area',
+          pane: {
+            id: 'ttc',
+            label: 'Plugin',
+            type: LayoutType.Simple,
+            areaType: 'plugin.area',
+            icon: 'stopwatch',
+          },
+          placement: {
+            targetPaneId: 'root',
+          },
+        },
+      })
+
+      expect(result).toStrictEqual({
+        applied: false,
+        reason: 'already-present',
+      })
+    })
+
+    it('inserts missing contributed actions into a target pane layout', () => {
+      const layout: Layout = {
+        id: 'root',
+        label: 'Root',
+        type: LayoutType.Panes,
+        side: 'inline-start',
+        activeIndices: [],
+        sizes: [],
+        splitOrientation: 'block',
+        children: [],
+        actions: [
+          {
+            id: 'existing-action',
+            label: 'Existing',
+            icon: 'command',
+            actionType: 'existing.action',
+          },
+        ],
+      }
+
+      const result = applyLayoutContribution({
+        rootLayout: layout,
+        contribution: {
+          id: 'plugin-action-default',
+          kind: 'action',
+          action: {
+            id: 'plugin-action',
+            label: 'Plugin action',
+            icon: 'stopwatch',
+            actionType: 'plugin.action',
+          },
+          placement: {
+            targetPaneId: 'root',
+            beforeId: 'existing-action',
+          },
+        },
+      })
+
+      expect(result).toStrictEqual({ applied: true, reason: 'applied' })
+      expect(layout).toHaveProperty('actions[0].id', 'plugin-action')
+      expect(layout).toHaveProperty('actions[1].id', 'existing-action')
+    })
+  })
+
+  describe('feature-gated layouts', () => {
+    it('adds and removes the bodies list split around the feature tree pane', () => {
+      const layout: Layout = {
+        id: DefaultLayoutPaneID.FeatureTree,
+        label: 'Feature Tree',
+        type: LayoutType.Simple,
+        areaType: AreaType.FeatureTree,
+      }
+
+      const enabled = setBodiesPaneLayoutEnabled(layout, true)
+      expect(enabled).toHaveProperty('type', LayoutType.Splits)
+      expect(enabled).toHaveProperty(
+        'children[0].areaType',
+        AreaType.FeatureTree
+      )
+      expect(enabled).toHaveProperty('children[1].areaType', AreaType.Bodies)
+
+      const disabled = setBodiesPaneLayoutEnabled(enabled, false)
+      expect(disabled).toStrictEqual({
+        id: DefaultLayoutPaneID.FeatureTree,
+        label: 'Feature Tree',
+        type: LayoutType.Simple,
+        icon: 'model',
+        areaType: AreaType.FeatureTree,
+      })
     })
   })
 

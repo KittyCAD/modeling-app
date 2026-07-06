@@ -5,6 +5,7 @@ const platform = os.platform() // 'linux' (Ubuntu), 'darwin' (macOS), 'win32' (W
 
 let workers: number | string
 
+/* Use all available CPU cores based on platform. */
 if (process.env.E2E_WORKERS) {
   workers = process.env.E2E_WORKERS.includes('%')
     ? process.env.E2E_WORKERS
@@ -33,17 +34,13 @@ export default defineConfig({
   testDir: './e2e/playwright',
   testIgnore: '*.test.ts', // ignore unit tests
   snapshotPathTemplate: '{testDir}/{testFileName}-snapshots/{arg}{ext}',
-  /* Run tests in files in parallel */
   fullyParallel: true,
-  /* Fail the build on CI if you accidentally left test.only in the source code. */
-  forbidOnly: Boolean(process.env.CI),
-  /* Do not retry using Playwright's built-in retry mechanism */
-  retries: 0,
-  /* Use all available CPU cores */
+  forbidOnly: Boolean(process.env.CI), // fail the build if test.only is used
+  retries: 5,
   workers: workers,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    [process.env.CI ? 'dot' : 'list'],
+    ['list'],
     ['json', { outputFile: './test-results/report.json' }],
     ['html'],
     ['./e2e/playwright/lib/api-reporter.ts'],

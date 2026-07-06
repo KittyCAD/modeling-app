@@ -1,4 +1,3 @@
-import { expect, describe, test } from 'vitest'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { topLevelRange } from '@src/lang/util'
@@ -7,6 +6,7 @@ import { assertParse, recast } from '@src/lang/wasm'
 import { updateCenterRectangleSketch } from '@src/lib/rectangleTool'
 import { trap } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { describe, expect, test } from 'vitest'
 
 describe('library rectangleTool helper functions', () => {
   describe('updateCenterRectangleSketch', () => {

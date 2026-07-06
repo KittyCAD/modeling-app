@@ -1,6 +1,7 @@
 name: kcl-wasm-lib-build-and-publish
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -14,14 +15,15 @@ jobs:
     name: kcl-wasm-lib-build-and-publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
-          # node 24 fixed OIDC npm publishing, but might as well use latest anyway
-          node-version: 'latest'
-          registry-url: 'https://registry.npmjs.org/'
-          cache: 'npm'
+          # node 24 fixed OIDC npm publishing; Node 26 seems to have an issue with electron/build and
+          # it's dependency on yargs
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org/"
+          cache: "npm"
 
       - run: npm install
 
@@ -31,12 +33,12 @@ jobs:
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
 
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
         with:
           cache: false
-          rustflags: ''
+          rustflags: ""
 
-      - uses: taiki-e/install-action@5939f3337e40968c39aa70f5ecb1417a92fb25a0
+      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
         with:
           tool: wasm-pack
 

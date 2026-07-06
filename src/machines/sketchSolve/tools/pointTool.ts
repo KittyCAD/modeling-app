@@ -22,8 +22,8 @@ import type {
   ToolInput,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
-  getConstraintForSnapTarget,
   type SnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import {
@@ -226,29 +226,28 @@ export const machine = setup({
             }
           }
 
-          const snapConstraint = getConstraintForSnapTarget(pointId, snapTarget)
-          if (snapConstraint === null) {
+          const snapResult = await applyConstraintsForSnapTarget({
+            segmentId: pointId,
+            target: snapTarget,
+            rustContext,
+            sketchId,
+            settings,
+          })
+          if (snapResult.result === null) {
             return result
           }
 
-          const snapResult = await rustContext.addConstraint(
-            0,
-            sketchId,
-            snapConstraint,
-            settings
-          )
-
           return {
-            kclSource: snapResult.kclSource,
+            kclSource: snapResult.result.kclSource,
             sceneGraphDelta: {
-              ...snapResult.sceneGraphDelta,
+              ...snapResult.result.sceneGraphDelta,
               new_objects: [
                 ...result.sceneGraphDelta.new_objects,
-                ...snapResult.sceneGraphDelta.new_objects,
+                ...snapResult.newObjectIds,
               ],
             },
             checkpointId:
-              snapResult.checkpointId ?? result.checkpointId ?? null,
+              snapResult.result.checkpointId ?? result.checkpointId ?? null,
           }
         } catch (error) {
           console.error('Failed to add point segment:', error)

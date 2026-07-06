@@ -239,17 +239,15 @@ flowchart LR
   133["SweepEdge Adjacent"]
   134["CompositeSolid Subtract<br>[2977, 3043, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 35 }, ExpressionStatementExpr]
-  135["CompositeSolid Subtract<br>[2977, 3043, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 35 }, ExpressionStatementExpr]
-  136["StartSketchOnFace<br>[757, 796, 0]"]
+  135["StartSketchOnFace<br>[757, 796, 0]"]
     %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  137["StartSketchOnFace<br>[1106, 1143, 0]"]
+  136["StartSketchOnFace<br>[1106, 1143, 0]"]
     %% [ProgramBodyItem { index: 19 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  138["StartSketchOnFace<br>[1597, 1634, 0]"]
+  137["StartSketchOnFace<br>[1597, 1634, 0]"]
     %% [ProgramBodyItem { index: 22 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  139["StartSketchOnFace<br>[2103, 2140, 0]"]
+  138["StartSketchOnFace<br>[2103, 2140, 0]"]
     %% [ProgramBodyItem { index: 25 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  140["StartSketchOnFace<br>[2396, 2433, 0]"]
+  139["StartSketchOnFace<br>[2396, 2433, 0]"]
     %% [ProgramBodyItem { index: 29 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
@@ -261,7 +259,6 @@ flowchart LR
   2 ---- 9
   2 x--> 61
   2 <--x 134
-  2 <--x 135
   3 --- 10
   3 x--> 15
   3 --- 16
@@ -310,12 +307,12 @@ flowchart LR
   22 <--x 14
   14 --- 24
   14 --- 27
-  14 <--x 136
+  14 <--x 135
   15 --- 98
   15 --- 101
   15 --- 104
   15 --- 107
-  15 <--x 140
+  15 <--x 139
   24 --- 25
   24 --- 26
   27 --- 24
@@ -329,7 +326,6 @@ flowchart LR
   27 ---- 30
   27 x--> 61
   27 <--x 134
-  27 <--x 135
   28 --- 31
   28 x--> 33
   28 --- 35
@@ -349,7 +345,7 @@ flowchart LR
   35 <--x 34
   37 <--x 34
   34 --- 39
-  34 <--x 137
+  34 <--x 136
   39 --- 40
   39 --- 41
   39 --- 42
@@ -404,7 +400,7 @@ flowchart LR
   57 <--x 52
   59 <--x 52
   52 --- 61
-  52 <--x 138
+  52 <--x 137
   61 --- 62
   61 --- 63
   61 --- 64
@@ -417,7 +413,6 @@ flowchart LR
   104 <--x 61
   107 <--x 61
   61 <--x 134
-  61 <--x 135
   62 --- 69
   62 x--> 73
   62 --- 75
@@ -466,7 +461,7 @@ flowchart LR
   81 <--x 74
   74 --- 83
   74 --- 86
-  74 <--x 139
+  74 <--x 138
   83 --- 84
   83 --- 85
   86 --- 83
@@ -500,7 +495,6 @@ flowchart LR
   98 --- 100
   98 ---- 110
   98 <--x 134
-  98 <--x 135
   99 --- 111
   99 x--> 113
   99 --- 114
@@ -509,7 +503,6 @@ flowchart LR
   101 --- 103
   101 ---- 116
   101 <--x 134
-  101 <--x 135
   102 --- 117
   102 x--> 119
   102 --- 120
@@ -518,7 +511,6 @@ flowchart LR
   104 --- 106
   104 ---- 122
   104 <--x 134
-  104 <--x 135
   105 --- 123
   105 x--> 125
   105 --- 126
@@ -527,7 +519,6 @@ flowchart LR
   107 --- 109
   107 ---- 128
   107 <--x 134
-  107 <--x 135
   108 --- 129
   108 x--> 131
   108 --- 132

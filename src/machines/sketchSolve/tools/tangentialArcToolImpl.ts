@@ -40,8 +40,8 @@ import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/int
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  getCoincidentSegmentsForSnapTarget,
   type SnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   clearToolSnappingState,
@@ -557,7 +557,10 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
               },
             },
           ],
-          settings
+          settings,
+          false,
+          [],
+          false
         )
 
         const sendData: SketchSolveMachineEvent = {
@@ -915,21 +918,15 @@ export async function finalizeArcActor({
 
     const newObjects = [...arcEditResult.sceneGraphDelta.new_objects]
 
-    const freePointCoincidentSegments = getCoincidentSegmentsForSnapTarget(
-      freeArcPointId,
-      endSnapTarget
-    )
-    if (freePointCoincidentSegments !== null) {
-      const snapResult = await rustContext.addConstraint(
-        0,
-        sketchId,
-        {
-          type: 'Coincident',
-          segments: freePointCoincidentSegments,
-        },
-        settings
-      )
-      newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+    const freePointSnapResult = await applyConstraintsForSnapTarget({
+      segmentId: freeArcPointId,
+      target: endSnapTarget,
+      rustContext,
+      sketchId,
+      settings,
+    })
+    if (freePointSnapResult.result !== null) {
+      newObjects.push(...freePointSnapResult.newObjectIds)
     }
 
     const tangentCoincidentResult = await rustContext.addConstraint(

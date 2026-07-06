@@ -1,4 +1,8 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
+import {
+  FILE_PLACEHOLDER_NAME,
+  FOLDER_PLACEHOLDER_NAME,
+} from '@src/components/Explorer/placeholders'
 import { sortFilesAndDirectories } from '@src/lib/desktopFS'
 import {
   desktopSafePathJoin,
@@ -9,7 +13,13 @@ import {
 } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import type { SubmitByPressOrBlur } from '@src/lib/types'
+import type { ProjectExplorerRowContextMenuItem } from '@src/registry/contracts/projectExplorer'
 import type { ReactNode } from 'react'
+export {
+  addPlaceHoldersForNewFileAndFolder,
+  FILE_PLACEHOLDER_NAME,
+  FOLDER_PLACEHOLDER_NAME,
+} from '@src/components/Explorer/placeholders'
 
 /**
  * Remap FileEntry data into another data structure for the Project Explorer
@@ -51,6 +61,7 @@ export interface FileExplorerRow extends FileExplorerEntry {
 
   /* handlers */
   onClick: (domIndex: number) => void
+  onDoubleClick?: (domIndex: number) => void
   onOpen: () => void
   onContextMenuOpen: (domIndex: number) => void
   onOpenInNewWindow: () => void
@@ -72,6 +83,7 @@ export interface FileExplorerRender extends FileExplorerRow {
 
 export interface FileExplorerRowContextMenuProps {
   itemRef: React.RefObject<HTMLElement | null>
+  row: FileExplorerRender
   onRename: () => void
   onDelete: () => void
   onOpenInNewWindow: () => void
@@ -79,6 +91,7 @@ export interface FileExplorerRowContextMenuProps {
   onCopy: () => void
   onPaste: () => void
   isCopying: boolean
+  rowContextMenuItems: readonly ProjectExplorerRowContextMenuItem[]
 }
 
 /**
@@ -169,42 +182,6 @@ export const flattenProject = (
     )
   }
   return flattenTreeInOrder
-}
-
-/**
- * In memory add fake placeholders for folder and files.
- * @param children
- * @param parentPath absolute path
- * @returns
- */
-export const addPlaceHoldersForNewFileAndFolder = (
-  children: FileEntry[] | null,
-  parentPath: string
-) => {
-  if (children === null) {
-    return
-  }
-
-  for (let i = 0; i < children.length; i++) {
-    addPlaceHoldersForNewFileAndFolder(
-      children[i].children,
-      joinOSPaths(parentPath, children[i].name)
-    )
-  }
-
-  const placeHolderFolderEntry: FileEntry = {
-    path: joinOSPaths(parentPath, FOLDER_PLACEHOLDER_NAME),
-    name: FOLDER_PLACEHOLDER_NAME,
-    children: [],
-  }
-  children.unshift(placeHolderFolderEntry)
-
-  const placeHolderFileEntry: FileEntry = {
-    path: joinOSPaths(parentPath, FILE_PLACEHOLDER_NAME),
-    name: FILE_PLACEHOLDER_NAME,
-    children: null,
-  }
-  children.push(placeHolderFileEntry)
 }
 
 export const isRowFake = (
@@ -408,8 +385,6 @@ export function shouldDroppedEntryBeMoved(
 export const NOTHING_IS_SELECTED: number = -2
 export const CONTAINER_IS_SELECTED: number = -1
 export const STARTING_INDEX_TO_SELECT: number = 0
-export const FOLDER_PLACEHOLDER_NAME = '.zoo-placeholder-folder'
-export const FILE_PLACEHOLDER_NAME = '.zoo-placeholder-file.kcl'
 
 /**
  * Check if a drag event contains external files (not internal drag)

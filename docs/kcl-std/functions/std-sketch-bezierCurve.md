@@ -5,6 +5,8 @@ excerpt: "Draw a smooth, continuous, curved line segment from the current origin
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Draw a smooth, continuous, curved line segment from the current origin to the desired (x, y), using a number of control points to shape the curve's shape.
 
 ```kcl
@@ -20,7 +22,7 @@ bezierCurve(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver). The sketch-solve version
 of bezier curve is still under development.
 

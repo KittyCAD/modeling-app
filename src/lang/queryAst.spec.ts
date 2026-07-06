@@ -1,8 +1,9 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
-import type { Plane } from '@rust/kcl-lib/bindings/Artifact'
+import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
 import { ARG_END_ABSOLUTE } from '@src/lang/constants'
 import {
   createArrayExpression,
@@ -14,6 +15,7 @@ import {
   doesSceneHaveExtrudedSketch,
   doesSceneHaveSweepableSketch,
   findAllPreviousVariables,
+  findOperationForArtifact,
   findOperationPlaneArtifact,
   findUsesOfTagInPipe,
   getNodeFromPath,
@@ -31,21 +33,26 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, PathToNode } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
+import type { Identifier, PathToNode, SourceRange } from '@src/lang/wasm'
+import {
+  assertParse,
+  defaultNodePath,
+  getAllOperations,
+  recast,
+} from '@src/lang/wasm'
 import {
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
+import type { KclManager } from '@src/lang/KclManager'
+import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import type { KclManager } from '@src/lang/KclManager'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -833,6 +840,44 @@ describe('Testing specific sketch getNodeFromPath workflow', () => {
 })
 
 describe('Testing findOperationArtifact', () => {
+  function range(start: number, end: number, moduleId = 0): SourceRange {
+    return [start, end, moduleId]
+  }
+
+  function gdtOperation(
+    sourceRange: SourceRange,
+    stdlibEntrySourceRange?: SourceRange
+  ): Operation {
+    const operation: Operation = {
+      type: 'StdLibCall',
+      name: 'gdt::flatness',
+      unlabeledArg: null,
+      labeledArgs: {},
+      nodePath: defaultNodePath(),
+      sourceRange,
+      isError: false,
+    }
+    if (stdlibEntrySourceRange) {
+      operation.stdlibEntrySourceRange = stdlibEntrySourceRange
+    }
+    return operation
+  }
+
+  function gdtAnnotationArtifact(
+    id: string,
+    sourceRange: SourceRange
+  ): Artifact {
+    return {
+      type: 'gdtAnnotation',
+      id,
+      codeRef: {
+        range: sourceRange,
+        nodePath: defaultNodePath(),
+        pathToNode: [],
+      },
+    }
+  }
+
   it('should find the correct artifact for a given operation', async () => {
     const code = `sketch001 = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -854,10 +899,10 @@ part001 = startSketchOn(plane001)
     const { operations, artifactGraph } = execState
 
     expect(operations).toBeTruthy()
-    expect(operations.length).toBeGreaterThan(0)
+    expect(getAllOperations(operations).length).toBeGreaterThan(0)
 
     // Find an offsetPlane operation
-    const offsetPlaneOp = operations.find(
+    const offsetPlaneOp = getAllOperations(operations).find(
       (op) => op.type === 'StdLibCall' && op.name === 'offsetPlane'
     )
     expect(offsetPlaneOp).toBeTruthy()
@@ -874,6 +919,57 @@ part001 = startSketchOn(plane001)
       const operationNodePath = JSON.stringify(offsetPlaneOp.nodePath)
       expect(artifactNodePath).toBe(operationNodePath)
     }
+  })
+
+  it('resolves a GD&T annotation artifact contained by its source operation', () => {
+    const gdtRange = range(10, 80)
+    const operation = gdtOperation(gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(20, 70))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('resolves a GD&T annotation artifact via stdlib entry range', () => {
+    const declarationRange = range(0, 90, 1)
+    const gdtRange = range(12, 89)
+    const operation = gdtOperation(declarationRange, gdtRange)
+    const artifact = gdtAnnotationArtifact('gdt-artifact', gdtRange)
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBe(operation)
+  })
+
+  it('does not resolve artifacts that do not point at an operation range', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(90, 120))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
+  })
+
+  it('does not resolve artifacts in another module id', () => {
+    const operation = gdtOperation(range(10, 80))
+    const artifact = gdtAnnotationArtifact('gdt-artifact', range(10, 80, 1))
+
+    expect(
+      findOperationForArtifact({
+        artifact,
+        operations: [operation],
+      })
+    ).toBeUndefined()
   })
 })
 
@@ -1332,7 +1428,7 @@ extrude001 = extrude(profile001, length = 1)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1363,7 +1459,7 @@ extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'extrude'
     )
@@ -1399,7 +1495,7 @@ bodyType = SURFACE,
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'revolve'
     )
@@ -1430,7 +1526,7 @@ extrude001 = extrude([sketch001.line1, sketch001.line2], length = 5, bodyType = 
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'extrude'
     )
@@ -1472,7 +1568,7 @@ sweep001 = sweep([sketch001.line2, sketch001.line1], path = [sketch002.line1, sk
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (operation) =>
         operation.type === 'StdLibCall' && operation.name === 'sweep'
     )
@@ -1502,7 +1598,7 @@ extrude002 = extrude(capEnd001, length = 5)
       instanceInThisFile,
       kclManagerInThisFile
     )
-    const op = operations.findLast(
+    const op = getAllOperations(operations).findLast(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1533,7 +1629,7 @@ revolve001 = revolve([profile001, profile002], axis = X, angle = 180)
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'revolve'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1570,7 +1666,7 @@ appearance(extrude001, color = '#FF0000')`
       ast,
       rustContextInThisFile
     )
-    const op = operations.find(
+    const op = getAllOperations(operations).find(
       (o) => o.type === 'StdLibCall' && o.name === 'appearance'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
@@ -1604,7 +1700,7 @@ extrude002 = extrude(seg01, length = 5, hideSeams = true)`
       instanceInThisFile,
       kclManagerInThisFile
     )
-    const op = operations.findLast(
+    const op = getAllOperations(operations).findLast(
       (o) => o.type === 'StdLibCall' && o.name === 'extrude'
     )
     if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {

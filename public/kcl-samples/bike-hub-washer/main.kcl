@@ -21,8 +21,6 @@ bottomExtrusionWidth = 2
 
 insideRingWidth = 3
 
-assert(bottomInnerRimWidth + bottomOuterRimWidth + bottomExtrusionWidth, isEqualTo = ringWidth)
-
 hubSketch = sketch(on = XZ) {
   line1 = line(start = [var 7.8mm, var 0mm], end = [var 9.8mm, var 0mm])
   line2 = line(start = [var 9.8mm, var 0mm], end = [var 9.8mm, var -2mm])

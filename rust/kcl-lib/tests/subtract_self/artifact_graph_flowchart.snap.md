@@ -37,8 +37,6 @@ flowchart LR
   20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
   22["SweepEdge Adjacent"]
-  23["CompositeSolid Subtract<br>[394, 430, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   2 --- 3
   2 --- 4
@@ -46,7 +44,6 @@ flowchart LR
   2 --- 6
   2 --- 7
   2 ---- 8
-  2 --- 23
   3 --- 9
   3 x--> 13
   3 --- 15

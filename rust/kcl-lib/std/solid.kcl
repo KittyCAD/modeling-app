@@ -97,8 +97,15 @@ export fn fillet(
   @solid: Solid,
   /// The radius of the fillet
   radius: number(Length),
-  /// The paths you want to fillet
-  tags: [Edge; 1+],
+  /// The paths you want to fillet (legacy API)
+  @(includeInSnippet = true)
+  tags?: [Edge; 1+],
+  /// Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with:
+  /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to fillet
+  /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
+  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  @(experimental = true)
+  edges?: [any],
   /// Defines the smallest distance below which two entities are considered coincident, intersecting, coplanar, or similar. For most use cases, it should not be changed from its default value of 10^-7 millimeters.
   tolerance?: number(Length),
   /// Create a new tag which refers to this fillet
@@ -106,7 +113,13 @@ export fn fillet(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
+  @(deprecated_since = "2.0")
   legacyMethod?: bool,
+  /// What version of the fillet algorithm to use. Defaults to 1.
+  /// 0 means "let the Zoo engine choose whichever version is best",
+  /// 1 is the original Zoo fillet algorithm,
+  /// 2 is the newer algorithm (supports rolling ball fillets).
+  @(experimental = true) version?: number(Count) = 1,
 ): Solid {}
 
 /// Cut a straight transitional edge along a tagged path.
@@ -232,8 +245,14 @@ export fn chamfer(
   /// The larger this length to chamfer away, the larger the
   /// new face will be.
   length: number(Length),
-  /// The paths you want to chamfer
-  tags: [Edge; 1+],
+  /// The paths you want to chamfer (legacy API)
+  tags?: [Edge; 1+],
+  /// Experimental face API. Do not use in generated or user-facing KCL yet; prefer `tags` until point-and-click and migration support ships. Array of edge references; each element is an object with:
+  /// - `sideFaces`: [Face | Tag; 1+] - Adjacent faces that share the edge(s) to chamfer
+  /// - `endFaces?`: [Face | Tag] - Optional faces to disambiguate when multiple edges share the same two faces
+  /// - `index?`: number(Count) - Optional index when multiple edges share the same faces (0-based)
+  @(experimental = true)
+  edges?: [any],
   /// Chamfering cuts away two faces to create a third face.
   /// If this argument isn't given, the lengths chamfered away from both
   /// the first and second face are both given by `length`.
@@ -250,7 +269,13 @@ export fn chamfer(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
+  @(deprecated_since = "2.0")
   legacyMethod?: bool,
+  /// What version of the fillet algorithm to use. Defaults to 1.
+  /// 0 means "let the Zoo engine choose whichever version is best",
+  /// 1 is the original Zoo fillet algorithm,
+  /// 2 is the newer algorithm (supports rolling ball fillets).
+  @(experimental = true) version?: number(Count) = 1,
 ): Solid {}
 
 /// Remove volume from a 3-dimensional shape such that a wall of the
@@ -450,7 +475,7 @@ export fn shell(
 ///   |> line(end = [-width, 0])
 ///   |> close()
 ///   |> extrude(length = width, symmetric = true)
-/// 
+///
 /// hollowCube = clone(solidCube)
 ///   |> hollow(thickness = 0.25)
 ///   |> translate(x = width * 1.1)
@@ -611,7 +636,7 @@ export fn hollow(
 ///   p1 = [-l + x,  l + y]
 ///   p2 = [ l + x,  l + y]
 ///   p3 = [ l + x, -l + y]
-///   
+///
 ///   return startSketchOn(XY)
 ///   |> startProfile(at = p0)
 ///   |> line(endAbsolute = p1)
@@ -953,6 +978,7 @@ export fn union(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
+  @(deprecated_since = "2.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
@@ -1015,6 +1041,7 @@ export fn intersect(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
+  @(deprecated_since = "2.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
@@ -1174,12 +1201,14 @@ export fn subtract(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
+  @(deprecated_since = "2.0")
   legacyMethod?: bool,
-): [Solid; 1+] {}
+): [Solid] {}
 
-/// Set the appearance of a solid. This only works on solids, not sketches or individual paths.
+/// Set the appearance of a solid, imported geometry, or plane. This does not work on sketches or individual paths.
 ///
 /// This will work on any solid, including extruded solids, revolved solids, and shelled solids.
+/// For planes, only `color` is used.
 ///
 /// ```kcl,legacySketch
 /// // Add color to an extruded solid.
@@ -1386,10 +1415,14 @@ export fn subtract(
 ///        roughness = 50
 ///    )
 /// ```
+/// ```kcl
+/// offsetPlane(XZ, offset = 4mm)
+/// |> appearance(color = "#ff0000", opacity = 50)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn appearance(
-  /// The The solid(s) whose appearance is being set.
-  @solids: [Solid; 1+] | ImportedGeometry,
+  /// The solid(s), imported geometry, or plane whose appearance is being set.
+  @solids: [Solid; 1+] | ImportedGeometry | Plane,
   /// Color of the new material, a hex string like '#ff0000'.
   color: string,
   /// Metalness of the new material, a percentage like 95.7.
@@ -1398,7 +1431,7 @@ export fn appearance(
   roughness?: number(Count),
   /// Opacity. Defaults to 100 (totally opaque). 0 would be totally transparent.
   opacity?: number(Count),
-): [Solid; 1+] | ImportedGeometry {}
+): [Solid; 1+] | ImportedGeometry | Plane {}
 
 /// Flips the orientation of a surface, swapping which side is the front and which is the reverse.
 ///
@@ -1567,12 +1600,12 @@ export fn flipSurface(
 /// // so you can see their interiors.
 /// right = appearance(result[2], color = "#B2FFD6")
 ///   |> translate(x = 4)
-///   
+///
 /// middle = appearance(result[1], color = "#F6AE2D")
-/// 
+///
 /// left = appearance(result[0], color = "#AA78A6")
 ///   |> translate(x = -4)
-/// 
+///
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn split(
@@ -1590,6 +1623,7 @@ export fn split(
   /// You probably shouldn't set this or care about this, it's for opting back into an older version of an engine algorithm.
   /// If true, revert to older engine SSI algorithm.
   /// Defaults to false.
+  @(deprecated_since = "2.0")
   legacyMethod?: bool,
 ): [Solid; 1+] {}
 
@@ -1804,6 +1838,8 @@ export fn deleteFace(
 /// blend([rectangleSegmentA001, rectangleSegmentA002])
 /// ```
 ///
+/// Experimental face API: edge specifier objects are supported for testing, but are not ready for generated or user-facing KCL yet; prefer tagged edges or bounded edges until point-and-click and migration support ships.
+/// Sketch block tags work too:
 /// ```kcl,sketchSolve
 /// sketch001 = sketch(on = YZ) {
 ///   line1 = line(start = [var 4.1mm, var -0.1mm], end = [var 5.5mm, var 0mm])
@@ -1837,8 +1873,8 @@ export fn deleteFace(
 @(impl = std_rust, feature_tree = true)
 export fn blend(
    /// The two edges that will be blended.
-   /// Tagged edges blend the full edge length.
-   @edges: [BoundedEdge | TaggedEdge; 2],
+   /// Tagged edges blend the full edge length. Experimental face API: edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are not ready for generated or user-facing KCL yet; prefer tagged edges or bounded edges until point-and-click and migration support ships.
+   @edges: [BoundedEdge | TaggedEdge | any; 2],
 ): Solid {}
 
 /// ```kcl,legacySketch

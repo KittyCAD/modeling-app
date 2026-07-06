@@ -69,7 +69,7 @@ description: Artifact commands sketch_block_coincident_constraint.kcl
         "path": "[uuid]",
         "to": {
           "x": 0.0000000000000000016972654291179558,
-          "y": 0.0000000051562505236703345,
+          "y": 0.00000000515625029524017,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands sketch_block_coincident_constraint.kcl
           "type": "line",
           "end": {
             "x": 10.0,
-            "y": -0.0000000014062501626932377,
+            "y": -0.0000000014062499558768293,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands sketch_block_coincident_constraint.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.7499999562816027,
-          "y": 0.000000011367188967881248,
+          "x": -3.749999926791303,
+          "y": 0.000000011367188523792038,
           "z": 0.0
         }
       }

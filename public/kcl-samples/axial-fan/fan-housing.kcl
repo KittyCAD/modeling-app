@@ -7,6 +7,7 @@
 // Import parameters
 import * from "parameters.kcl"
 
+// Create the housing body
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var -52.5mm, var -52.5mm], end = [var 52.5mm, var -52.5mm], construction = true)
   line2 = line(start = [var 52.5mm, var -52.5mm], end = [var 52.5mm, var 52.5mm], construction = true)
@@ -20,10 +21,10 @@ sketch001 = sketch(on = XY) {
   parallel([line3, line1])
   perpendicular([line1, line2])
   horizontal(line3)
-  line5 = line(start = [var -62.5mm, var -62.5mm], end = [var 62.5mm, var -62.5mm])
-  line6 = line(start = [var 62.5mm, var -62.5mm], end = [var 62.5mm, var 62.5mm])
-  line7 = line(start = [var 62.5mm, var 62.5mm], end = [var -62.5mm, var 62.5mm])
-  line8 = line(start = [var -62.5mm, var 62.5mm], end = [var -62.5mm, var -62.5mm])
+  line5 = line(start = [var -62.5mm, var -62.5mm], end = [var 62.5mm, var -62.5mm], construction = true)
+  line6 = line(start = [var 62.5mm, var -62.5mm], end = [var 62.5mm, var 62.5mm], construction = true)
+  line7 = line(start = [var 62.5mm, var 62.5mm], end = [var -62.5mm, var 62.5mm], construction = true)
+  line8 = line(start = [var -62.5mm, var 62.5mm], end = [var -62.5mm, var -62.5mm], construction = true)
   coincident([line5.end, line6.start])
   coincident([line6.end, line7.start])
   coincident([line7.end, line8.start])
@@ -62,39 +63,49 @@ sketch001 = sketch(on = XY) {
   coincident([circle4.center, line1.start])
   equalRadius([circle4, circle3, circle2, circle1])
   diameter(circle2) == mountingHoleSize
-  diameter(circle2) == mountingHoleSize
-  diameter(circle2) == mountingHoleSize
-  diameter(circle2) == mountingHoleSize
-  circle5 = circle(start = [var 0.83mm, var 2.88mm], center = [var 0mm, var 0mm])
+  circle5 = circle(start = [var 16.55mm, var 57.67mm], center = [var 0mm, var 0mm])
   coincident([circle5.center, line10.start])
-  radius(circle5) == 3
+  diameter(circle5) == fanSize
+  line13 = line(start = [var -62.5mm, var -56.5mm], end = [var -62.5mm, var 56.5mm])
+  coincident([line13.start, line8])
+  coincident([line13.end, line8])
+  line14 = line(start = [var -56.5mm, var 62.5mm], end = [var 56.5mm, var 62.5mm])
+  coincident([line14.start, line7])
+  coincident([line14.end, line7])
+  line15 = line(start = [var 62.5mm, var 56.5mm], end = [var 62.5mm, var -56.5mm])
+  coincident([line15.start, line6])
+  coincident([line15.end, line6])
+  line16 = line(start = [var 56.5mm, var -62.5mm], end = [var -56.5mm, var -62.5mm])
+  coincident([line16.start, line5])
+  coincident([line16.end, line5])
+  arc1 = arc(start = [var -62.5mm, var -56.5mm], end = [var -56.5mm, var -62.5mm], center = [var -56.5mm, var -56.5mm])
+  coincident([arc1.start, line13.start])
+  coincident([line16.end, arc1.end])
+  tangent([line16, arc1])
+  arc2 = arc(start = [var -56.5mm, var 62.5mm], end = [var -62.5mm, var 56.5mm], center = [var -56.5mm, var 56.5mm])
+  coincident([arc2.start, line14.start])
+  coincident([line13.end, arc2.end])
+  tangent([line13, arc2])
+  arc3 = arc(start = [var 62.5mm, var 56.5mm], end = [var 56.5mm, var 62.5mm], center = [var 56.5mm, var 56.5mm])
+  coincident([arc3.start, line15.start])
+  coincident([line14.end, arc3.end])
+  tangent([line14, arc3])
+  arc4 = arc(start = [var 56.5mm, var -62.5mm], end = [var 62.5mm, var -56.5mm], center = [var 56.5mm, var -56.5mm])
+  coincident([arc4.start, line16.start])
+  coincident([line15.end, arc4.end])
+  tangent([line15, arc4])
+  tangent([line13, arc1])
+  tangent([line14, arc2])
+  tangent([line15, arc3])
+  tangent([line16, arc4])
+  equalRadius([arc4, arc1, arc2, arc3])
+  radius(arc3) == 6
 }
 region001 = region(point = [0mm, -62.4975mm], sketch = sketch001)
 hidden001 = hide(sketch001)
 extrude001 = extrude(region001, length = 25)
-fillet001 = fillet(
-  extrude001,
-  tags = [
-    getCommonEdge(faces = [
-      region001.tags.line6,
-      region001.tags.line5
-    ]),
-    getCommonEdge(faces = [
-      region001.tags.line7,
-      region001.tags.line5
-    ]),
-    getCommonEdge(faces = [
-      region001.tags.line7,
-      region001.tags.line8
-    ]),
-    getCommonEdge(faces = [
-      region001.tags.line8,
-      region001.tags.line6
-    ])
-  ],
-  radius = 5,
-)
 
+// Draw the revolved cut to trim the corners
 sketch002 = sketch(on = XZ) {
   line1 = line(start = [var 116.61mm, var 2.55mm], end = [var 65mm, var 2.55mm], construction = true)
   point2 = point(at = [var 64mm, var 7mm])
@@ -150,80 +161,73 @@ region002 = region(point = [116.8825009mm, 12.5495212mm], sketch = sketch002)
 hidden002 = hide(sketch002)
 revolve001 = revolve(region002, angle = 360deg, axis = Y)
 
-sketch003 = sketch(on = XZ) {
-  line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1mm], construction = true)
-  coincident([line1.start, ORIGIN])
-  vertical([line1.end, ORIGIN])
-  line2 = line(start = [var 0mm, var 1mm], end = [var 10mm, var 1mm])
-  coincident([line2.start, line1.end])
-  line3 = line(start = [var 10mm, var 1mm], end = [var 10mm, var 15mm])
-  coincident([line2.end, line3.start])
-  line4 = line(start = [var 10mm, var 15mm], end = [var 11mm, var 15mm])
-  coincident([line3.end, line4.start])
-  line5 = line(start = [var 11mm, var 15mm], end = [var 11mm, var 1mm])
-  coincident([line4.end, line5.start])
-  line6 = line(start = [var 11mm, var 1mm], end = [var 60mm, var 1mm])
-  coincident([line5.end, line6.start])
-  line7 = line(start = [var 60mm, var 1mm], end = [var 60mm, var 27.13mm])
-  coincident([line6.end, line7.start])
-  line8 = line(start = [var 60mm, var 27.13mm], end = [var 0mm, var 27.13mm])
-  coincident([line7.end, line8.start])
-  vertical([line8.end, ORIGIN])
-  line9 = line(start = [var 0mm, var 1mm], end = [var 0mm, var 27.13mm])
-  coincident([line9.start, line2.start])
-  coincident([line9.end, line8.end])
-  coincident([line2, line6])
-  distance([line9.start, line7.start]) == fanSize / 2
-  vertical(line7)
-  distance([line2.start, line2.end]) == 10
-  vertical(line3)
-  vertical(line5)
-  horizontalDistance([line4.start, line4.end]) == 1
-  horizontal(line4)
-  distance([line5.start, line5.end]) == 14
-  horizontal(line2)
-  horizontal(line6)
-  distance([line1.start, line1.end]) == 1
-  horizontal(line8)
+solid001 = subtract(extrude001, tools = revolve001)
+
+// Draw the airflow pattern on the back face of the fan
+sketch003 = sketch(on = XY) {
+  arc1 = arc(start = [var -0.02mm, var 6mm], end = [var -3.44mm, var 4.92mm], center = [var 0mm, var 0mm])
+  coincident([arc1.center, ORIGIN])
+  line1 = line(start = [var -0.02mm, var 6mm], end = [var 59.7mm, var 6mm])
+  coincident([line1.start, arc1.start])
+  arc2 = arc(start = [var 59.7mm, var 6mm], end = [var 58.79mm, var 12mm], center = [var 0mm, var 0mm])
+  coincident([arc2.center, arc1.center])
+  coincident([arc2.start, line1.end])
+  line2 = line(start = [var 58.79mm, var 12mm], end = [var 2.94mm, var 12mm])
+  coincident([line2.start, arc2.end])
+  arc3 = arc(start = [var -2.26mm, var 15mm], end = [var 2.94mm, var 12mm], center = [var 2.94mm, var 18mm])
+  coincident([line2.end, arc3.end])
+  tangent([line2, arc3])
+  line3 = line(start = [var -2.26mm, var 15mm], end = [var -25.07mm, var 54.51mm])
+  coincident([line3.start, arc3.start])
+  tangent([line3, arc3])
+  arc4 = arc(start = [var -25.07mm, var 54.51mm], end = [var -30.45mm, var 51.7mm], center = [var 0mm, var 0mm])
+  coincident([arc4.center, arc1.center])
+  coincident([arc4.start, line3.end])
+  line4 = line(start = [var -30.45mm, var 51.7mm], end = [var -3.44mm, var 4.92mm])
+  coincident([line4.start, arc4.end])
+  coincident([line4.end, arc1.end])
+  equalRadius([arc2, arc4])
+  diameter(arc2) == fanSize
+  radius(arc1) == 6
+  horizontal(line1)
+  parallel([line2, line1])
+  parallel([line3, line4])
+  radius(arc3) == 6
+  line5 = line(start = [var 59.7mm, var 6mm], end = [var 58.79mm, var 12mm], construction = true)
+  coincident([line5.start, arc2.start])
+  coincident([line5.end, line2.start])
+  line6 = line(start = [var -25.07mm, var 54.51mm], end = [var -30.45mm, var 51.7mm], construction = true)
+  coincident([line6.start, arc4.start])
+  coincident([line6.end, line4.start])
+  equalLength([line5, line6])
+  verticalDistance([line5.start, line5.end]) == 6
+  angle([line3, line2]) == 60
+  horizontalDistance([line1.start, arc4.center]) == 0.02mm
+  coincident([arc4.center, line4])
 }
 hidden003 = hide(sketch003)
-region003 = region(point = [2mm, 1.0025mm], sketch = sketch003)
-revolve002 = revolve(region003, angle = 360deg, axis = Y)
-
-sketch004 = sketch(on = XY) {
-  circle1 = circle(start = [var 45.12mm, var 35.07mm], center = [var 0mm, var 0mm])
-  coincident([circle1.center, ORIGIN])
-  line1 = line(start = [var -42.95mm, var 70.06mm], end = [var -10mm, var 13mm])
-  arc1 = arc(start = [var -10mm, var 13mm], end = [var -8.27mm, var 12mm], center = [var -8.27mm, var 14mm])
-  coincident([line1.end, arc1.start])
-  tangent([line1, arc1])
-  line2 = line(start = [var -8.27mm, var 12mm], end = [var 76.47mm, var 12mm])
-  coincident([line2.start, arc1.end])
-  tangent([line2, arc1])
-  horizontal(line2)
-  radius(circle1) == fanSize / 2.01
-  verticalDistance([circle1.center, line2.start]) == 12
-  horizontalDistance([arc1.start, circle1.center]) == 10
-  radius(arc1) == 2
-  line3 = line(start = [var 0mm, var 0mm], end = [var -44.28mm, var 76.69mm], construction = true)
-  coincident([line3.start, circle1.center])
-  angle([line2, line3]) == 120
-  line4 = line(start = [var -10mm, var 13mm], end = [var -11.44mm, var 12.17mm])
-  coincident([line4.start, line1.end])
-  perpendicular([line4, line1])
-  parallel([line1, line3])
-}
-region004 = region(point = [53.1869646mm, 20.8846167mm], sketch = sketch004)
-hidden004 = hide(sketch004)
-extrude002 = extrude(region004, length = fanHeight * 1.5, bidirectionalLength = fanHeight * 0.5)
+region003 = region(point = [-1.8127969mm, 5.7222175mm], sketch = sketch003)
+extrude002 = extrude(region003, length = 2)
 pattern001 = patternCircular3d(
   extrude002,
   instances = 3,
   axis = Z,
   center = [0, 0, 0],
 )
+face001 = faceOf(extrude002, face = END)
 
-solid001 = subtract(extrude001, tools = revolve001)
-  |> subtract(tools = revolve002)
-  |> subtract(tools = pattern001)
-  |> appearance(color = "#a55e2c")
+// Mount a housing for the motor
+sketch004 = sketch(on = face001) {
+  circle1 = circle(start = [var -2.28mm, var 9.74mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  circle2 = circle(start = [var 7.51mm, var 9.36mm], center = [var 0mm, var 0mm])
+  coincident([circle2.center, circle1.center])
+  diameter(circle2) == 24
+  diameter(circle1) == 20
+}
+hidden004 = hide(sketch004)
+region004 = region(point = [-7.5081825mm, -9.3577348mm], sketch = sketch004)
+extrude003 = extrude(region004, length = 12)
+
+// Apply appearance to all
+appearance([solid001, extrude003], color = "#a55e2c")

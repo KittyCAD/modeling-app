@@ -4,8 +4,9 @@ import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import {
   X_AXIS_TARGET,
   Y_AXIS_TARGET,
-  getConstraintForSnapTarget,
   getCoincidentSegmentsForSnapTarget,
+  getConstraintForSnapTarget,
+  getConstraintsForSnapTarget,
   getSnappingCandidates,
 } from '@src/machines/sketchSolve/snapping'
 import {
@@ -26,6 +27,9 @@ describe('snapping', () => {
     it('supports line, arc, and circle snap targets', () => {
       expect(
         getCoincidentSegmentsForSnapTarget(5, { type: 'line', id: 10 })
+      ).toEqual([5, 10])
+      expect(
+        getCoincidentSegmentsForSnapTarget(5, { type: 'midpoint', id: 10 })
       ).toEqual([5, 10])
       expect(
         getCoincidentSegmentsForSnapTarget(5, { type: 'arc', id: 11 })
@@ -50,12 +54,39 @@ describe('snapping', () => {
         points: [5, 'ORIGIN'],
       })
     })
+
+    it('keeps coincident as the primary snap constraint for midpoint targets', () => {
+      expect(
+        getConstraintForSnapTarget(5, { type: 'midpoint', id: 10 })
+      ).toEqual({
+        type: 'Coincident',
+        segments: [5, 10],
+      })
+    })
+  })
+
+  describe('getConstraintsForSnapTarget', () => {
+    it('adds midpoint alongside coincident when snapping to a line midpoint', () => {
+      expect(
+        getConstraintsForSnapTarget(5, { type: 'midpoint', id: 10 })
+      ).toEqual([
+        {
+          type: 'Coincident',
+          segments: [5, 10],
+        },
+        {
+          type: 'Midpoint',
+          point: 5,
+          segment: 10,
+        },
+      ])
+    })
   })
 
   describe('getSnappingCandidates', () => {
     it('projects line snap candidates onto the closest point on the segment', () => {
       const start = createPointApiObject({ id: 1, x: 0, y: 20 })
-      const end = createPointApiObject({ id: 2, x: 40, y: 20 })
+      const end = createPointApiObject({ id: 2, x: 80, y: 20 })
       const line = createLineApiObject({ id: 3, start: 1, end: 2 })
 
       const result = getSnappingCandidates(
@@ -117,6 +148,26 @@ describe('snapping', () => {
       )
 
       expect(result[0]?.target).toEqual({ type: 'point', id: 4 })
+      expect(result[1]?.target).toEqual({ type: 'midpoint', id: 3 })
+      expect(result[2]?.target).toEqual({ type: 'line', id: 3 })
+    })
+
+    it('prefers midpoint snap targets over generic line snaps near a line midpoint', () => {
+      const start = createPointApiObject({ id: 1, x: 0, y: 20 })
+      const end = createPointApiObject({ id: 2, x: 40, y: 20 })
+      const line = createLineApiObject({ id: 3, start: 1, end: 2 })
+
+      const result = getSnappingCandidates(
+        [20, 24],
+        createObjectsArray([start, end, line]),
+        createMockSceneInfra()
+      )
+
+      expect(result[0]).toEqual({
+        target: { type: 'midpoint', id: 3 },
+        distance: 4,
+        position: [20, 20],
+      })
       expect(result[1]?.target).toEqual({ type: 'line', id: 3 })
     })
   })

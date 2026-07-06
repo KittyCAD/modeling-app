@@ -1,4 +1,8 @@
-import { doExport, getUtils } from '@e2e/playwright/test-utils'
+import {
+  doExport,
+  expectKeybindingsSettingsVisible,
+  getUtils,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
@@ -29,7 +33,7 @@ test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
 test(
   'Successful export shows a success toast',
   { tag: ['@desktop', '@skipLocalEngine'] },
-  async ({ page, homePage, cmdBar, tronApp }) => {
+  async ({ page, homePage, cmdBar, tronApp }, testInfo) => {
     // FYI this test doesn't work with only engine running locally
     // And you will need to have the KittyCAD CLI installed
     const u = await getUtils(page)
@@ -89,7 +93,8 @@ part001 = startSketchOn(-XZ)
       },
       tronApp?.projectDirName,
       page,
-      cmdBar
+      cmdBar,
+      testInfo
     )
   }
 )
@@ -158,18 +163,19 @@ test(
 
     // Verify the URL and that you can see a list of shortcuts
     await expect.poll(() => page.url()).toContain('?tab=keybindings')
-    await expect(
-      page.getByRole('heading', { name: 'Enter Sketch Mode' })
-    ).toBeAttached()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
 test(
   'First escape in tool pops you out of tool, second exits sketch mode',
   { tag: '@desktop' },
-  async ({ page, homePage, toolbar }) => {
+  async ({ page, context, homePage, toolbar }) => {
     // Wait for the app to be ready for use
     const u = await getUtils(page)
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, 'sketch001 = startSketchOn(XZ)')
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
@@ -182,12 +188,14 @@ test(
     await page.mouse.move(600, 250)
     await page.mouse.click(600, 250)
 
-    // Start a sketch
-    await page.keyboard.press('s')
-    await page.mouse.move(800, 300)
-    await page.mouse.click(800, 300)
-    await page.waitForTimeout(1000)
+    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+    await op.dblclick()
+    await toolbar.waitUntilSketchingReady()
+    await toolbar.closeFeatureTreePane()
     await expect(toolbar.lineBtn).toBeVisible()
+    if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+      await page.keyboard.press('l')
+    }
     await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
     // Draw a line
@@ -245,7 +253,7 @@ test(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     // Exit sketch
-    await page.keyboard.press('Meta+Escape')
+    await page.keyboard.press('Shift+Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).not.toBeVisible()

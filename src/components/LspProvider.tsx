@@ -1,5 +1,5 @@
 import type { LanguageSupport } from '@codemirror/language'
-import { Prec, type Extension } from '@codemirror/state'
+import { type Extension, Prec } from '@codemirror/state'
 import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   FromServer,
@@ -17,6 +17,7 @@ import React, {
 import { useNavigate } from 'react-router-dom'
 import type * as LSP from 'vscode-languageserver-protocol'
 
+import { kclAutocompleteCompartment, kclLspCompartment } from '@src/editor'
 import { copilotPlugin } from '@src/editor/plugins/lsp/copilot'
 import { kcl } from '@src/editor/plugins/lsp/kcl/language'
 import type {
@@ -26,13 +27,12 @@ import type {
 import { LspWorker } from '@src/editor/plugins/lsp/types'
 import Worker from '@src/editor/plugins/lsp/worker.ts?worker'
 import { wasmUrl } from '@src/lang/wasmUtils'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { kclLspCompartment, kclAutocompleteCompartment } from '@src/editor'
 
 function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
   return []

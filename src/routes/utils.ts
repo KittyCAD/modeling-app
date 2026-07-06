@@ -4,7 +4,7 @@ import {
   IS_PLAYWRIGHT_KEY,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
+import { PATHS, getRouterSearchFromRequestUrl } from '@src/lib/paths'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 
 const hasWindow = typeof window !== 'undefined'
@@ -80,10 +80,13 @@ export function getReleaseUrl(version: string = APP_VERSION) {
 }
 
 export function generateSignInUrl() {
-  const queryParamsNext = window.location.search.replace(
-    IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM,
-    ''
-  )
+  const queryParamsNext =
+    typeof window !== 'undefined'
+      ? getRouterSearchFromRequestUrl(
+          window.location.href,
+          isDesktop()
+        ).replace(IMMEDIATE_SIGN_IN_IF_NECESSARY_QUERY_PARAM, '')
+      : ''
   const finalURL =
     typeof window !== 'undefined' &&
     (window.location.origin + encodeURIComponent(queryParamsNext)).replace(

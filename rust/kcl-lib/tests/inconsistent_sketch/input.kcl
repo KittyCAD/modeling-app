@@ -1,0 +1,10 @@
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -3.83mm, var 2.98mm], end = [var 2.88mm, var 1.9mm])
+  distance([line1.start, line1.end]) == 2
+  distance([line1.start, line1.end]) == 6.8mm
+}
+
+// This should still be evaluated and stored in program memory.
+abcdefg = 1234

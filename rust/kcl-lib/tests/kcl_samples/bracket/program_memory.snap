@@ -74,10 +74,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 2543,
+            "end": 2548,
             "moduleId": 0,
-            "start": 3277,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -88,10 +88,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3360,
-            "end": 3365,
+            "commentStart": 2626,
+            "end": 2631,
             "moduleId": 0,
-            "start": 3360,
+            "start": 2626,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -102,10 +102,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3474,
-            "end": 3479,
+            "commentStart": 2740,
+            "end": 2745,
             "moduleId": 0,
-            "start": 3474,
+            "start": 2740,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -116,10 +116,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3593,
-            "end": 3598,
+            "commentStart": 2859,
+            "end": 2864,
             "moduleId": 0,
-            "start": 3593,
+            "start": 2859,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -130,10 +130,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3714,
-            "end": 3719,
+            "commentStart": 2980,
+            "end": 2985,
             "moduleId": 0,
-            "start": 3714,
+            "start": 2980,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -144,10 +144,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3837,
-            "end": 3842,
+            "commentStart": 3103,
+            "end": 3108,
             "moduleId": 0,
-            "start": 3837,
+            "start": 3103,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -158,10 +158,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4802,
-            "end": 4819,
+            "commentStart": 4068,
+            "end": 4085,
             "moduleId": 0,
-            "start": 4802,
+            "start": 4068,
             "type": "TagDeclarator",
             "value": "bracketStartFace"
           },
@@ -172,16 +172,26 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4772,
-            "end": 4787,
+            "commentStart": 4038,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4772,
+            "start": 4038,
             "type": "TagDeclarator",
             "value": "bracketEndFace"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -197,10 +207,10 @@ description: Variables in memory after executing bracket.kcl
               -2.249999999999999
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 2543,
+              "end": 2548,
               "moduleId": 0,
-              "start": 3277,
+              "start": 2543,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -221,10 +231,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000007946296922554165
             ],
             "tag": {
-              "commentStart": 3360,
-              "end": 3365,
+              "commentStart": 2626,
+              "end": 2631,
               "moduleId": 0,
-              "start": 3360,
+              "start": 2626,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -245,10 +255,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000009117284899675263
             ],
             "tag": {
-              "commentStart": 3474,
-              "end": 3479,
+              "commentStart": 2740,
+              "end": 2745,
               "moduleId": 0,
-              "start": 3474,
+              "start": 2740,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -269,10 +279,10 @@ description: Variables in memory after executing bracket.kcl
               -0.3848561883538897
             ],
             "tag": {
-              "commentStart": 3593,
-              "end": 3598,
+              "commentStart": 2859,
+              "end": 2864,
               "moduleId": 0,
-              "start": 3593,
+              "start": 2859,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -293,10 +303,10 @@ description: Variables in memory after executing bracket.kcl
               -0.38485618835388935
             ],
             "tag": {
-              "commentStart": 3714,
-              "end": 3719,
+              "commentStart": 2980,
+              "end": 2985,
               "moduleId": 0,
-              "start": 3714,
+              "start": 2980,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -317,10 +327,10 @@ description: Variables in memory after executing bracket.kcl
               -2.2499999999999987
             ],
             "tag": {
-              "commentStart": 3837,
-              "end": 3842,
+              "commentStart": 3103,
+              "end": 3108,
               "moduleId": 0,
-              "start": 3837,
+              "start": 3103,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -445,10 +455,10 @@ description: Variables in memory after executing bracket.kcl
             -2.249999999999999
           ],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 2543,
+            "end": 2548,
             "moduleId": 0,
-            "start": 3277,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -469,10 +479,10 @@ description: Variables in memory after executing bracket.kcl
             0.0000000000000007946296922554165
           ],
           "tag": {
-            "commentStart": 3360,
-            "end": 3365,
+            "commentStart": 2626,
+            "end": 2631,
             "moduleId": 0,
-            "start": 3360,
+            "start": 2626,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -493,10 +503,10 @@ description: Variables in memory after executing bracket.kcl
             0.0000000000000009117284899675263
           ],
           "tag": {
-            "commentStart": 3474,
-            "end": 3479,
+            "commentStart": 2740,
+            "end": 2745,
             "moduleId": 0,
-            "start": 3474,
+            "start": 2740,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -517,10 +527,10 @@ description: Variables in memory after executing bracket.kcl
             -0.3848561883538897
           ],
           "tag": {
-            "commentStart": 3593,
-            "end": 3598,
+            "commentStart": 2859,
+            "end": 2864,
             "moduleId": 0,
-            "start": 3593,
+            "start": 2859,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -541,10 +551,10 @@ description: Variables in memory after executing bracket.kcl
             -0.38485618835388935
           ],
           "tag": {
-            "commentStart": 3714,
-            "end": 3719,
+            "commentStart": 2980,
+            "end": 2985,
             "moduleId": 0,
-            "start": 3714,
+            "start": 2980,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -565,10 +575,10 @@ description: Variables in memory after executing bracket.kcl
             -2.2499999999999987
           ],
           "tag": {
-            "commentStart": 3837,
-            "end": 3842,
+            "commentStart": 3103,
+            "end": 3108,
             "moduleId": 0,
-            "start": 3837,
+            "start": 3103,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1409,10 +1419,10 @@ description: Variables in memory after executing bracket.kcl
                     -2.249999999999999
                   ],
                   "tag": {
-                    "commentStart": 3277,
-                    "end": 3282,
+                    "commentStart": 2543,
+                    "end": 2548,
                     "moduleId": 0,
-                    "start": 3277,
+                    "start": 2543,
                     "type": "TagDeclarator",
                     "value": "line1"
                   },
@@ -1433,10 +1443,10 @@ description: Variables in memory after executing bracket.kcl
                     0.0000000000000007946296922554165
                   ],
                   "tag": {
-                    "commentStart": 3360,
-                    "end": 3365,
+                    "commentStart": 2626,
+                    "end": 2631,
                     "moduleId": 0,
-                    "start": 3360,
+                    "start": 2626,
                     "type": "TagDeclarator",
                     "value": "line2"
                   },
@@ -1457,10 +1467,10 @@ description: Variables in memory after executing bracket.kcl
                     0.0000000000000009117284899675263
                   ],
                   "tag": {
-                    "commentStart": 3474,
-                    "end": 3479,
+                    "commentStart": 2740,
+                    "end": 2745,
                     "moduleId": 0,
-                    "start": 3474,
+                    "start": 2740,
                     "type": "TagDeclarator",
                     "value": "line3"
                   },
@@ -1481,10 +1491,10 @@ description: Variables in memory after executing bracket.kcl
                     -0.3848561883538897
                   ],
                   "tag": {
-                    "commentStart": 3593,
-                    "end": 3598,
+                    "commentStart": 2859,
+                    "end": 2864,
                     "moduleId": 0,
-                    "start": 3593,
+                    "start": 2859,
                     "type": "TagDeclarator",
                     "value": "line4"
                   },
@@ -1505,10 +1515,10 @@ description: Variables in memory after executing bracket.kcl
                     -0.38485618835388935
                   ],
                   "tag": {
-                    "commentStart": 3714,
-                    "end": 3719,
+                    "commentStart": 2980,
+                    "end": 2985,
                     "moduleId": 0,
-                    "start": 3714,
+                    "start": 2980,
                     "type": "TagDeclarator",
                     "value": "line5"
                   },
@@ -1529,10 +1539,10 @@ description: Variables in memory after executing bracket.kcl
                     -2.2499999999999987
                   ],
                   "tag": {
-                    "commentStart": 3837,
-                    "end": 3842,
+                    "commentStart": 3103,
+                    "end": 3108,
                     "moduleId": 0,
-                    "start": 3837,
+                    "start": 3103,
                     "type": "TagDeclarator",
                     "value": "line6"
                   },
@@ -1664,10 +1674,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 2543,
+            "end": 2548,
             "moduleId": 0,
-            "start": 3277,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -1678,10 +1688,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3360,
-            "end": 3365,
+            "commentStart": 2626,
+            "end": 2631,
             "moduleId": 0,
-            "start": 3360,
+            "start": 2626,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -1692,10 +1702,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3474,
-            "end": 3479,
+            "commentStart": 2740,
+            "end": 2745,
             "moduleId": 0,
-            "start": 3474,
+            "start": 2740,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -1706,10 +1716,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3593,
-            "end": 3598,
+            "commentStart": 2859,
+            "end": 2864,
             "moduleId": 0,
-            "start": 3593,
+            "start": 2859,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -1720,10 +1730,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3714,
-            "end": 3719,
+            "commentStart": 2980,
+            "end": 2985,
             "moduleId": 0,
-            "start": 3714,
+            "start": 2980,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -1734,10 +1744,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3837,
-            "end": 3842,
+            "commentStart": 3103,
+            "end": 3108,
             "moduleId": 0,
-            "start": 3837,
+            "start": 3103,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -1748,10 +1758,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4802,
-            "end": 4819,
+            "commentStart": 4068,
+            "end": 4085,
             "moduleId": 0,
-            "start": 4802,
+            "start": 4068,
             "type": "TagDeclarator",
             "value": "bracketStartFace"
           },
@@ -1762,16 +1772,26 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4772,
-            "end": 4787,
+            "commentStart": 4038,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4772,
+            "start": 4038,
             "type": "TagDeclarator",
             "value": "bracketEndFace"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -1787,10 +1807,10 @@ description: Variables in memory after executing bracket.kcl
               -2.249999999999999
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 2543,
+              "end": 2548,
               "moduleId": 0,
-              "start": 3277,
+              "start": 2543,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -1811,10 +1831,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000007946296922554165
             ],
             "tag": {
-              "commentStart": 3360,
-              "end": 3365,
+              "commentStart": 2626,
+              "end": 2631,
               "moduleId": 0,
-              "start": 3360,
+              "start": 2626,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -1835,10 +1855,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000009117284899675263
             ],
             "tag": {
-              "commentStart": 3474,
-              "end": 3479,
+              "commentStart": 2740,
+              "end": 2745,
               "moduleId": 0,
-              "start": 3474,
+              "start": 2740,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -1859,10 +1879,10 @@ description: Variables in memory after executing bracket.kcl
               -0.3848561883538897
             ],
             "tag": {
-              "commentStart": 3593,
-              "end": 3598,
+              "commentStart": 2859,
+              "end": 2864,
               "moduleId": 0,
-              "start": 3593,
+              "start": 2859,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -1883,10 +1903,10 @@ description: Variables in memory after executing bracket.kcl
               -0.38485618835388935
             ],
             "tag": {
-              "commentStart": 3714,
-              "end": 3719,
+              "commentStart": 2980,
+              "end": 2985,
               "moduleId": 0,
-              "start": 3714,
+              "start": 2980,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -1907,10 +1927,10 @@ description: Variables in memory after executing bracket.kcl
               -2.2499999999999987
             ],
             "tag": {
-              "commentStart": 3837,
-              "end": 3842,
+              "commentStart": 3103,
+              "end": 3108,
               "moduleId": 0,
-              "start": 3837,
+              "start": 3103,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2056,10 +2076,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 2543,
+            "end": 2548,
             "moduleId": 0,
-            "start": 3277,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2070,10 +2090,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3360,
-            "end": 3365,
+            "commentStart": 2626,
+            "end": 2631,
             "moduleId": 0,
-            "start": 3360,
+            "start": 2626,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2084,10 +2104,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3474,
-            "end": 3479,
+            "commentStart": 2740,
+            "end": 2745,
             "moduleId": 0,
-            "start": 3474,
+            "start": 2740,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2098,10 +2118,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3593,
-            "end": 3598,
+            "commentStart": 2859,
+            "end": 2864,
             "moduleId": 0,
-            "start": 3593,
+            "start": 2859,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2112,10 +2132,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3714,
-            "end": 3719,
+            "commentStart": 2980,
+            "end": 2985,
             "moduleId": 0,
-            "start": 3714,
+            "start": 2980,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2126,10 +2146,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3837,
-            "end": 3842,
+            "commentStart": 3103,
+            "end": 3108,
             "moduleId": 0,
-            "start": 3837,
+            "start": 3103,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2140,10 +2160,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4802,
-            "end": 4819,
+            "commentStart": 4068,
+            "end": 4085,
             "moduleId": 0,
-            "start": 4802,
+            "start": 4068,
             "type": "TagDeclarator",
             "value": "bracketStartFace"
           },
@@ -2154,16 +2174,26 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4772,
-            "end": 4787,
+            "commentStart": 4038,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4772,
+            "start": 4038,
             "type": "TagDeclarator",
             "value": "bracketEndFace"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2179,10 +2209,10 @@ description: Variables in memory after executing bracket.kcl
               -2.249999999999999
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 2543,
+              "end": 2548,
               "moduleId": 0,
-              "start": 3277,
+              "start": 2543,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2203,10 +2233,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000007946296922554165
             ],
             "tag": {
-              "commentStart": 3360,
-              "end": 3365,
+              "commentStart": 2626,
+              "end": 2631,
               "moduleId": 0,
-              "start": 3360,
+              "start": 2626,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2227,10 +2257,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000009117284899675263
             ],
             "tag": {
-              "commentStart": 3474,
-              "end": 3479,
+              "commentStart": 2740,
+              "end": 2745,
               "moduleId": 0,
-              "start": 3474,
+              "start": 2740,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2251,10 +2281,10 @@ description: Variables in memory after executing bracket.kcl
               -0.3848561883538897
             ],
             "tag": {
-              "commentStart": 3593,
-              "end": 3598,
+              "commentStart": 2859,
+              "end": 2864,
               "moduleId": 0,
-              "start": 3593,
+              "start": 2859,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2275,10 +2305,10 @@ description: Variables in memory after executing bracket.kcl
               -0.38485618835388935
             ],
             "tag": {
-              "commentStart": 3714,
-              "end": 3719,
+              "commentStart": 2980,
+              "end": 2985,
               "moduleId": 0,
-              "start": 3714,
+              "start": 2980,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -2299,10 +2329,10 @@ description: Variables in memory after executing bracket.kcl
               -2.2499999999999987
             ],
             "tag": {
-              "commentStart": 3837,
-              "end": 3842,
+              "commentStart": 3103,
+              "end": 3108,
               "moduleId": 0,
-              "start": 3837,
+              "start": 3103,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2504,10 +2534,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 2543,
+            "end": 2548,
             "moduleId": 0,
-            "start": 3277,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2518,10 +2548,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3360,
-            "end": 3365,
+            "commentStart": 2626,
+            "end": 2631,
             "moduleId": 0,
-            "start": 3360,
+            "start": 2626,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2532,10 +2562,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3474,
-            "end": 3479,
+            "commentStart": 2740,
+            "end": 2745,
             "moduleId": 0,
-            "start": 3474,
+            "start": 2740,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2546,10 +2576,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3593,
-            "end": 3598,
+            "commentStart": 2859,
+            "end": 2864,
             "moduleId": 0,
-            "start": 3593,
+            "start": 2859,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2560,10 +2590,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3714,
-            "end": 3719,
+            "commentStart": 2980,
+            "end": 2985,
             "moduleId": 0,
-            "start": 3714,
+            "start": 2980,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2574,10 +2604,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3837,
-            "end": 3842,
+            "commentStart": 3103,
+            "end": 3108,
             "moduleId": 0,
-            "start": 3837,
+            "start": 3103,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2588,10 +2618,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4802,
-            "end": 4819,
+            "commentStart": 4068,
+            "end": 4085,
             "moduleId": 0,
-            "start": 4802,
+            "start": 4068,
             "type": "TagDeclarator",
             "value": "bracketStartFace"
           },
@@ -2602,16 +2632,26 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4772,
-            "end": 4787,
+            "commentStart": 4038,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4772,
+            "start": 4038,
             "type": "TagDeclarator",
             "value": "bracketEndFace"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -2627,10 +2667,10 @@ description: Variables in memory after executing bracket.kcl
               -2.249999999999999
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 2543,
+              "end": 2548,
               "moduleId": 0,
-              "start": 3277,
+              "start": 2543,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -2651,10 +2691,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000007946296922554165
             ],
             "tag": {
-              "commentStart": 3360,
-              "end": 3365,
+              "commentStart": 2626,
+              "end": 2631,
               "moduleId": 0,
-              "start": 3360,
+              "start": 2626,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -2675,10 +2715,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000009117284899675263
             ],
             "tag": {
-              "commentStart": 3474,
-              "end": 3479,
+              "commentStart": 2740,
+              "end": 2745,
               "moduleId": 0,
-              "start": 3474,
+              "start": 2740,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -2699,10 +2739,10 @@ description: Variables in memory after executing bracket.kcl
               -0.3848561883538897
             ],
             "tag": {
-              "commentStart": 3593,
-              "end": 3598,
+              "commentStart": 2859,
+              "end": 2864,
               "moduleId": 0,
-              "start": 3593,
+              "start": 2859,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -2723,10 +2763,10 @@ description: Variables in memory after executing bracket.kcl
               -0.38485618835388935
             ],
             "tag": {
-              "commentStart": 3714,
-              "end": 3719,
+              "commentStart": 2980,
+              "end": 2985,
               "moduleId": 0,
-              "start": 3714,
+              "start": 2980,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -2747,10 +2787,10 @@ description: Variables in memory after executing bracket.kcl
               -2.2499999999999987
             ],
             "tag": {
-              "commentStart": 3837,
-              "end": 3842,
+              "commentStart": 3103,
+              "end": 3108,
               "moduleId": 0,
-              "start": 3837,
+              "start": 3103,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -2882,10 +2922,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 2543,
+            "end": 2548,
             "moduleId": 0,
-            "start": 3277,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -2896,10 +2936,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3360,
-            "end": 3365,
+            "commentStart": 2626,
+            "end": 2631,
             "moduleId": 0,
-            "start": 3360,
+            "start": 2626,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -2910,10 +2950,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3474,
-            "end": 3479,
+            "commentStart": 2740,
+            "end": 2745,
             "moduleId": 0,
-            "start": 3474,
+            "start": 2740,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -2924,10 +2964,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3593,
-            "end": 3598,
+            "commentStart": 2859,
+            "end": 2864,
             "moduleId": 0,
-            "start": 3593,
+            "start": 2859,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -2938,10 +2978,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3714,
-            "end": 3719,
+            "commentStart": 2980,
+            "end": 2985,
             "moduleId": 0,
-            "start": 3714,
+            "start": 2980,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -2952,10 +2992,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3837,
-            "end": 3842,
+            "commentStart": 3103,
+            "end": 3108,
             "moduleId": 0,
-            "start": 3837,
+            "start": 3103,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -2966,10 +3006,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4802,
-            "end": 4819,
+            "commentStart": 4068,
+            "end": 4085,
             "moduleId": 0,
-            "start": 4802,
+            "start": 4068,
             "type": "TagDeclarator",
             "value": "bracketStartFace"
           },
@@ -2980,16 +3020,26 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4772,
-            "end": 4787,
+            "commentStart": 4038,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4772,
+            "start": 4038,
             "type": "TagDeclarator",
             "value": "bracketEndFace"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3005,10 +3055,10 @@ description: Variables in memory after executing bracket.kcl
               -2.249999999999999
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 2543,
+              "end": 2548,
               "moduleId": 0,
-              "start": 3277,
+              "start": 2543,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3029,10 +3079,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000007946296922554165
             ],
             "tag": {
-              "commentStart": 3360,
-              "end": 3365,
+              "commentStart": 2626,
+              "end": 2631,
               "moduleId": 0,
-              "start": 3360,
+              "start": 2626,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3053,10 +3103,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000009117284899675263
             ],
             "tag": {
-              "commentStart": 3474,
-              "end": 3479,
+              "commentStart": 2740,
+              "end": 2745,
               "moduleId": 0,
-              "start": 3474,
+              "start": 2740,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3077,10 +3127,10 @@ description: Variables in memory after executing bracket.kcl
               -0.3848561883538897
             ],
             "tag": {
-              "commentStart": 3593,
-              "end": 3598,
+              "commentStart": 2859,
+              "end": 2864,
               "moduleId": 0,
-              "start": 3593,
+              "start": 2859,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3101,10 +3151,10 @@ description: Variables in memory after executing bracket.kcl
               -0.38485618835388935
             ],
             "tag": {
-              "commentStart": 3714,
-              "end": 3719,
+              "commentStart": 2980,
+              "end": 2985,
               "moduleId": 0,
-              "start": 3714,
+              "start": 2980,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3125,10 +3175,10 @@ description: Variables in memory after executing bracket.kcl
               -2.2499999999999987
             ],
             "tag": {
-              "commentStart": 3837,
-              "end": 3842,
+              "commentStart": 3103,
+              "end": 3108,
               "moduleId": 0,
-              "start": 3837,
+              "start": 3103,
               "type": "TagDeclarator",
               "value": "line6"
             },
@@ -3348,10 +3398,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3277,
-            "end": 3282,
+            "commentStart": 2543,
+            "end": 2548,
             "moduleId": 0,
-            "start": 3277,
+            "start": 2543,
             "type": "TagDeclarator",
             "value": "line1"
           },
@@ -3362,10 +3412,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3360,
-            "end": 3365,
+            "commentStart": 2626,
+            "end": 2631,
             "moduleId": 0,
-            "start": 3360,
+            "start": 2626,
             "type": "TagDeclarator",
             "value": "line2"
           },
@@ -3376,10 +3426,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3474,
-            "end": 3479,
+            "commentStart": 2740,
+            "end": 2745,
             "moduleId": 0,
-            "start": 3474,
+            "start": 2740,
             "type": "TagDeclarator",
             "value": "line3"
           },
@@ -3390,10 +3440,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3593,
-            "end": 3598,
+            "commentStart": 2859,
+            "end": 2864,
             "moduleId": 0,
-            "start": 3593,
+            "start": 2859,
             "type": "TagDeclarator",
             "value": "line4"
           },
@@ -3404,10 +3454,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3714,
-            "end": 3719,
+            "commentStart": 2980,
+            "end": 2985,
             "moduleId": 0,
-            "start": 3714,
+            "start": 2980,
             "type": "TagDeclarator",
             "value": "line5"
           },
@@ -3418,10 +3468,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 3837,
-            "end": 3842,
+            "commentStart": 3103,
+            "end": 3108,
             "moduleId": 0,
-            "start": 3837,
+            "start": 3103,
             "type": "TagDeclarator",
             "value": "line6"
           },
@@ -3432,10 +3482,10 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4802,
-            "end": 4819,
+            "commentStart": 4068,
+            "end": 4085,
             "moduleId": 0,
-            "start": 4802,
+            "start": 4068,
             "type": "TagDeclarator",
             "value": "bracketStartFace"
           },
@@ -3446,16 +3496,26 @@ description: Variables in memory after executing bracket.kcl
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 4772,
-            "end": 4787,
+            "commentStart": 4038,
+            "end": 4053,
             "moduleId": 0,
-            "start": 4772,
+            "start": 4038,
             "type": "TagDeclarator",
             "value": "bracketEndFace"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "bracketEndFace": {
+          "type": "TagIdentifier",
+          "value": "bracketEndFace"
+        },
+        "bracketStartFace": {
+          "type": "TagIdentifier",
+          "value": "bracketStartFace"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -3471,10 +3531,10 @@ description: Variables in memory after executing bracket.kcl
               -2.249999999999999
             ],
             "tag": {
-              "commentStart": 3277,
-              "end": 3282,
+              "commentStart": 2543,
+              "end": 2548,
               "moduleId": 0,
-              "start": 3277,
+              "start": 2543,
               "type": "TagDeclarator",
               "value": "line1"
             },
@@ -3495,10 +3555,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000007946296922554165
             ],
             "tag": {
-              "commentStart": 3360,
-              "end": 3365,
+              "commentStart": 2626,
+              "end": 2631,
               "moduleId": 0,
-              "start": 3360,
+              "start": 2626,
               "type": "TagDeclarator",
               "value": "line2"
             },
@@ -3519,10 +3579,10 @@ description: Variables in memory after executing bracket.kcl
               0.0000000000000009117284899675263
             ],
             "tag": {
-              "commentStart": 3474,
-              "end": 3479,
+              "commentStart": 2740,
+              "end": 2745,
               "moduleId": 0,
-              "start": 3474,
+              "start": 2740,
               "type": "TagDeclarator",
               "value": "line3"
             },
@@ -3543,10 +3603,10 @@ description: Variables in memory after executing bracket.kcl
               -0.3848561883538897
             ],
             "tag": {
-              "commentStart": 3593,
-              "end": 3598,
+              "commentStart": 2859,
+              "end": 2864,
               "moduleId": 0,
-              "start": 3593,
+              "start": 2859,
               "type": "TagDeclarator",
               "value": "line4"
             },
@@ -3567,10 +3627,10 @@ description: Variables in memory after executing bracket.kcl
               -0.38485618835388935
             ],
             "tag": {
-              "commentStart": 3714,
-              "end": 3719,
+              "commentStart": 2980,
+              "end": 2985,
               "moduleId": 0,
-              "start": 3714,
+              "start": 2980,
               "type": "TagDeclarator",
               "value": "line5"
             },
@@ -3591,10 +3651,10 @@ description: Variables in memory after executing bracket.kcl
               -2.2499999999999987
             ],
             "tag": {
-              "commentStart": 3837,
-              "end": 3842,
+              "commentStart": 3103,
+              "end": 3108,
               "moduleId": 0,
-              "start": 3837,
+              "start": 3103,
               "type": "TagDeclarator",
               "value": "line6"
             },

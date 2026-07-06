@@ -1,5 +1,7 @@
 //! Types for referencing an axis or edge.
 
+use kittycad_modeling_cmds::shared::EdgeSpecifier as ModelingEdgeSpecifier;
+
 use super::args::TyF64;
 use crate::KclError;
 use crate::errors::KclErrorDetails;
@@ -17,8 +19,24 @@ use crate::std::sketch::FaceTag;
 pub enum Axis2dOrEdgeReference {
     /// 2D axis and origin.
     Axis { direction: [TyF64; 2], origin: [TyF64; 2] },
-    /// Tagged edge.
+    /// Tagged edge
     Edge(EdgeReference),
+    /// Edge specifier with side faces, end faces, and index.
+    EdgeSpecifier(ModelingEdgeSpecifier),
+}
+
+/// A 3D mirror target.
+#[derive(Debug, Clone, PartialEq)]
+pub enum MirrorAcross3d {
+    /// 3D axis and origin.
+    Axis {
+        direction: Box<[TyF64; 3]>,
+        origin: Box<[TyF64; 3]>,
+    },
+    /// Tagged edge.
+    Edge(Box<EdgeReference>),
+    /// A plane.
+    Plane(Box<Plane>),
 }
 
 impl Axis2dOrEdgeReference {
@@ -41,6 +59,40 @@ impl Axis2dOrEdgeReference {
                 backtrace: Default::default(),
                 message: "Cannot use a circle as an axis".to_owned(),
             })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
+            })),
+        }
+    }
+}
+
+impl MirrorAcross3d {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(Box::new(EdgeReference::Uuid(segment.id)))),
+            SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a point as an axis".to_owned(),
+            })),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as an axis".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as an axis".to_owned(),
+            })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
+            })),
         }
     }
 }
@@ -51,8 +103,10 @@ impl Axis2dOrEdgeReference {
 pub enum Axis3dOrEdgeReference {
     /// 3D axis and origin.
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
-    /// Tagged edge.
+    /// Tagged edge
     Edge(EdgeReference),
+    /// Edge specifier with side faces, end faces, and index.
+    EdgeSpecifier(ModelingEdgeSpecifier),
 }
 
 impl Axis3dOrEdgeReference {
@@ -74,6 +128,50 @@ impl Axis3dOrEdgeReference {
                 source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
                 backtrace: Default::default(),
                 message: "Cannot use a circle as an axis".to_owned(),
+            })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
+            })),
+        }
+    }
+}
+
+/// A 3D point or tagged edge.
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, PartialEq)]
+pub enum Point3dOrEdgeReference {
+    /// 3D point and origin.
+    Point([TyF64; 3]),
+    /// Tagged edge.
+    Edge(EdgeReference),
+}
+
+impl Point3dOrEdgeReference {
+    /// Use a sketch-solve segment by finding its engine ID.
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { position, .. } => Ok(Self::Point([
+                position[0].clone(),
+                position[1].clone(),
+                TyF64::count(0.0),
+            ])),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as a 3D point or edge reference".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as a 3D point or edge reference".to_owned(),
+            })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as a 3D point or edge reference".to_owned(),
             })),
         }
     }
@@ -144,4 +242,6 @@ pub enum Point3dAxis3dOrGeometryReference {
     Solid(Box<Solid>),
     /// Tagged edge or face.
     TaggedEdgeOrFace(TagIdentifier),
+    /// Extrude-to edge: `{ sideFaces = [...], endFaces = [...], index? }` (face tags or UUIDs).
+    EdgeToReference(super::edge::UnresolvedEdgeSpecifier),
 }

@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { waitFor } from 'xstate'
 
+import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
+import { useApp } from '@src/lib/boot'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -9,17 +13,28 @@ import {
   CMD_NAME_QUERY_PARAM,
   CODE_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
-  DEFAULT_FILE_NAME,
   FILE_NAME_QUERY_PARAM,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
+  PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileLinkParams } from '@src/lib/links'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
+import {
+  downloadProjectById,
+  getPublicProjectNameById,
+} from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
+import { ensureOpfsCloudProjectLocallySynced } from '@src/lib/fs-zds/opfsCloud'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
-import { useApp } from '@src/lib/boot'
-import type { KclManager } from '@src/lang/KclManager'
+import { err } from '@src/lib/trap'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
+import {
+  SystemIOMachineEvents,
+  SystemIOMachineStates,
+  waitForIdleState,
+} from '@src/machines/systemIO/utils'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -41,6 +56,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
   const { auth, commands } = app
   const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
   // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
   // only deal with other params after user decided to open in desktop or web.
@@ -48,6 +64,8 @@ export function useQueryParamEffects(kclManager: KclManager) {
   // to different timings.
   const shouldInvokeCreateFile =
     !hasAskToOpen && searchParams.has(CREATE_FILE_URL_PARAM)
+  const shouldOpenProjectId =
+    !hasAskToOpen && searchParams.has(PROJECT_ID_QUERY_PARAM)
   const shouldInvokeGenericCmd =
     !hasAskToOpen &&
     searchParams.has(CMD_NAME_QUERY_PARAM) &&
@@ -84,6 +102,181 @@ export function useQueryParamEffects(kclManager: KclManager) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [shouldInvokeCreateFile, setSearchParams, authState])
 
+  useEffect(() => {
+    if (!shouldOpenProjectId || !authState.matches('loggedIn')) return
+
+    const projectId = searchParams.get(PROJECT_ID_QUERY_PARAM)
+    if (!projectId) {
+      return
+    }
+
+    let cancelled = false
+    const clearProjectIdSearchParam = () => {
+      const nextSearchParams = new URLSearchParams(searchParams)
+      nextSearchParams.delete(PROJECT_ID_QUERY_PARAM)
+      setSearchParams(nextSearchParams)
+    }
+
+    void (async () => {
+      // File navigation removes the project-id param while preserving the new
+      // file route. Calling setSearchParams here can re-navigate from the
+      // original query-param route and reopen the project default file.
+      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      if (cancelled) {
+        return
+      }
+
+      const localCloudProject = await ensureOpfsCloudProjectLocallySynced(
+        projectId
+      ).catch(() => undefined)
+      if (cancelled) {
+        return
+      }
+      if (localCloudProject) {
+        app.systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+        void navigate(
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(
+            localCloudProject.projectPath
+          )}`
+        )
+        return
+      }
+
+      const reservedProjectDestination =
+        await getReservedProjectDestination(projectId)
+      if (err(reservedProjectDestination)) {
+        clearProjectIdSearchParam()
+        toast.error(reservedProjectDestination.message)
+        return
+      }
+      if (cancelled) {
+        return
+      }
+
+      const downloadedProject = await downloadProjectById(projectId)
+      if (err(downloadedProject)) {
+        clearProjectIdSearchParam()
+        toast.error(downloadedProject.message)
+        return
+      }
+      if (cancelled) {
+        return
+      }
+
+      const files = !isDesktop()
+        ? downloadedProject.files.map((file) => ({
+            ...file,
+            requestedProjectName:
+              reservedProjectDestination.requestedProjectName,
+            requestedFileName: fsZds.join(
+              reservedProjectDestination.requestedSubDirectoryName,
+              file.requestedFileName
+            ),
+          }))
+        : downloadedProject.files
+      const requestedFileNameWithExtension =
+        !isDesktop() && downloadedProject.entrypointFilePath
+          ? fsZds.join(
+              reservedProjectDestination.requestedSubDirectoryName,
+              downloadedProject.entrypointFilePath
+            )
+          : downloadedProject.entrypointFilePath
+
+      app.systemIOActor.send({
+        type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
+        data: {
+          files,
+          requestedProjectName: reservedProjectDestination.requestedProjectName,
+          requestedFileNameWithExtension,
+        },
+      })
+
+      await waitForIdleState({ systemIOActor: app.systemIOActor })
+    })().catch((error) => {
+      if (cancelled) {
+        return
+      }
+
+      clearProjectIdSearchParam()
+      toast.error(
+        err(error) ? error.message : 'Failed to open the shared project.'
+      )
+    })
+
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
+  }, [shouldOpenProjectId, setSearchParams, authState])
+
+  async function getReservedProjectDestination(projectId: string): Promise<
+    | {
+        requestedProjectName: string
+        requestedSubDirectoryName: string
+      }
+    | Error
+  > {
+    const projectName = await getPublicProjectNameById(projectId)
+    if (projectName instanceof Error) {
+      return projectName
+    }
+
+    await waitFor(app.settings.actor, (state) => state.matches('idle'))
+
+    const systemIOContext = app.systemIOActor.getSnapshot().context
+    const projectDirectoryPath = app.settings.get().app.projectDirectory.current
+    if (!projectDirectoryPath) {
+      return new Error('Unable to determine the project directory.')
+    }
+
+    if (isDesktop()) {
+      const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
+      const requestedProjectName = getUniqueProjectName(
+        projectName,
+        projectDirectoryEntries.map((name) => ({
+          name,
+          path: fsZds.join(projectDirectoryPath, name),
+          children: [],
+        }))
+      )
+      await fsZds.mkdir(
+        fsZds.join(projectDirectoryPath, requestedProjectName),
+        {
+          recursive: true,
+        }
+      )
+      return {
+        requestedProjectName,
+        requestedSubDirectoryName: projectName,
+      }
+    }
+
+    const requestedProjectName =
+      app.settings.actor.getSnapshot().context.currentProject?.name ??
+      DEFAULT_WEB_PROJECT_NAME
+    const requestedSubDirectoryName = getUniqueProjectName(
+      projectName,
+      getAllSubDirectoriesAtProjectRoot(systemIOContext, {
+        projectFolderName: requestedProjectName,
+      })
+    )
+    await fsZds.mkdir(
+      fsZds.join(
+        projectDirectoryPath,
+        requestedProjectName,
+        requestedSubDirectoryName
+      ),
+      { recursive: true }
+    )
+
+    return {
+      requestedProjectName,
+      requestedSubDirectoryName,
+    }
+  }
+
   /**
    * Generic commands are triggered by query parameters
    * with the pattern: `?cmd=<command-name>&groupId=<group-id>`
@@ -94,12 +287,17 @@ export function useQueryParamEffects(kclManager: KclManager) {
     const rawCommandData = buildGenericCommandArgs(searchParams)
     if (!rawCommandData) return
     const commandData = rawCommandData
+    let shouldCreateDefaultWebProject = false
 
     // Web-only: prefill command data to automatically add to the demo project
     if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {
-      if (commandData.argDefaultValues?.projectName === 'browser') {
-        const currentProjectName =
-          app.settings.actor.getSnapshot().context.currentProject?.name
+      const currentProjectName =
+        app.settings.actor.getSnapshot().context.currentProject?.name
+      const requestedBrowserProject =
+        commandData.argDefaultValues?.projectName === 'browser' ||
+        commandData.argDefaultValues?.projectName === DEFAULT_WEB_PROJECT_NAME
+      if (requestedBrowserProject) {
+        shouldCreateDefaultWebProject = !currentProjectName
         commandData.argDefaultValues.projectName =
           currentProjectName ?? DEFAULT_WEB_PROJECT_NAME
       }
@@ -132,16 +330,41 @@ export function useQueryParamEffects(kclManager: KclManager) {
       const systemIO = app.systemIOActor
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
         (folders ?? []).some((f) => f.name === projectFolderName)
+      let hasRequestedProjectCreate = false
+      const sendOrCreateProject = (
+        snapshot: ReturnType<typeof systemIO.getSnapshot>
+      ) => {
+        if (foldersIncludeProject(snapshot.context.folders)) {
+          sendCommand()
+          return true
+        }
 
-      if (foldersIncludeProject(systemIO.getSnapshot().context.folders)) {
-        sendCommand()
+        if (
+          shouldCreateDefaultWebProject &&
+          !hasRequestedProjectCreate &&
+          projectFolderName === DEFAULT_WEB_PROJECT_NAME &&
+          snapshot.matches(SystemIOMachineStates.idle) &&
+          snapshot.context.folders !== undefined
+        ) {
+          hasRequestedProjectCreate = true
+          systemIO.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
+            },
+          })
+        }
+
+        return false
+      }
+
+      if (sendOrCreateProject(systemIO.getSnapshot())) {
         return
       }
 
       const subscription = systemIO.subscribe((snapshot) => {
-        if (foldersIncludeProject(snapshot.context.folders)) {
+        if (sendOrCreateProject(snapshot)) {
           subscription.unsubscribe()
-          sendCommand()
         }
       })
       return () => subscription.unsubscribe()
@@ -180,14 +403,9 @@ function buildCreateFileCommandArgs(
   searchParams: URLSearchParams,
   webProjectName?: string
 ) {
-  const params: Omit<FileLinkParams, 'isRestrictedToOrg'> = {
-    code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
-    name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
-  }
-
   const argDefaultValues: CreateFileSchemaMethodOptional = {
     name: PROJECT_ENTRYPOINT,
-    code: params.code || '',
+    code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
     method: isDesktop() ? undefined : 'existingProject',
   }
   if (!isDesktop()) {

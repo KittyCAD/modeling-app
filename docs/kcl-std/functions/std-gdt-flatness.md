@@ -5,8 +5,6 @@ excerpt: "GD&T annotation specifying how flat faces should be."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 GD&T annotation specifying how flat faces should be.
 
 ```kcl
@@ -17,12 +15,11 @@ gdt::flatness(
   framePosition?: Point2d,
   framePlane?: Plane,
   leaderScale?: number(_),
-  fontPointSize?: number(_),
-  fontScale?: number(_),
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+]
 ```
 
-
+This is part of model-based definition (MBD).
 
 ### Arguments
 
@@ -33,9 +30,8 @@ gdt::flatness(
 | `precision` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`. | No |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
-| `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Scale of the leader. The default is `1.0`. Must be greater than `0`. | No |
-| `fontPointSize` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The font point size to use for the annotation text rendering. The default is `36`. | No |
-| `fontScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`. | No |
+| `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
+| `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
 
 ### Returns
 
@@ -45,8 +41,6 @@ gdt::flatness(
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
@@ -63,8 +57,6 @@ gdt::flatness(faces = [face1], tolerance = 0.1mm)
 ![Rendered example of gdt::flatness 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness0.png)
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
@@ -86,8 +78,6 @@ gdt::flatness(
 ![Rendered example of gdt::flatness 1](/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness1.png)
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(end = [10, 0])
@@ -109,8 +99,6 @@ gdt::flatness(
 ![Rendered example of gdt::flatness 2](/kcl-test-outputs/serial_test_example_fn_std-gdt-flatness2.png)
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])

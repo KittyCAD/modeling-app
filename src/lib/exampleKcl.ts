@@ -4,8 +4,22 @@ import fanAssembly from '@public/kcl-samples/axial-fan/main.kcl?raw'
 import fanMotor from '@public/kcl-samples/axial-fan/motor.kcl?raw'
 import fanParameters from '@public/kcl-samples/axial-fan/parameters.kcl?raw'
 import bracket from '@public/kcl-samples/bracket/main.kcl?raw'
+import coldPlate from '@public/kcl-samples/cold-plate/main.kcl?raw'
 
 export { bracket }
+export const coldPlateParts = [
+  { requestedFileName: 'main.kcl', requestedCode: coldPlate },
+] as const
+export const modifiedColdPlate = coldPlate
+  .replace('plateLength = 10', 'plateLength = 12')
+  .replace(
+    'brazedCap = appearance(brazedCapPattern, color = "#6b261e")',
+    'brazedCap = appearance(brazedCapPattern, color = "#00558f")'
+  )
+  .replace(
+    'tubeWall = appearance(tubeWallBody, color = "#b81b0a")',
+    'tubeWall = appearance(tubeWallBody, color = "#0067b1")'
+  )
 export const fanParts = [
   { requestedFileName: 'main.kcl', requestedCode: fanAssembly },
   { requestedFileName: 'fan.kcl', requestedCode: fanFan },

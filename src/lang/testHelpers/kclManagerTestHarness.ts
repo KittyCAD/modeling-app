@@ -1,4 +1,4 @@
-import { setDiagnosticsEffect, type Diagnostic } from '@codemirror/lint'
+import { type Diagnostic, setDiagnosticsEffect } from '@codemirror/lint'
 import type { KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { isArray } from '@src/lib/utils'

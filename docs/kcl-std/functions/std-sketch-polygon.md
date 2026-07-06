@@ -5,6 +5,8 @@ excerpt: "Create a regular polygon with the specified number of sides that is ei
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Create a regular polygon with the specified number of sides that is either inscribed or circumscribed around a circle of the specified radius.
 
 ```kcl
@@ -17,7 +19,7 @@ polygon(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 ### Arguments

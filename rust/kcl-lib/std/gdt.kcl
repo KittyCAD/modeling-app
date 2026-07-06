@@ -1,13 +1,14 @@
 /// Functions for working with geometric dimensioning and tolerancing (GD&T).
+/// This can be used for model-based definition (MBD).
 
 @no_std
-@settings(defaultLengthUnit = mm, kclVersion = 1.0, experimentalFeatures = allow)
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 /// GD&T datum feature.
 ///
-/// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
+/// This is part of model-based definition (MBD).
 ///
+/// ```kcl,no3d,legacySketch
 /// width = 5
 ///
 /// startSketchOn(XY)
@@ -28,7 +29,6 @@
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
@@ -54,7 +54,7 @@
 ///   framePlane = XZ,
 /// )
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn datum(
   /// The face to be annotated.
   @(includeInSnippet = true)
@@ -68,18 +68,18 @@ export fn datum(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): GdtAnnotation {}
 
 /// GD&T annotation specifying how flat faces should be.
 ///
+/// This is part of model-based definition (MBD).
+///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -93,7 +93,6 @@ export fn datum(
 /// ```
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -107,7 +106,6 @@ export fn datum(
 /// ```
 ///
 /// ```kcl,no3d,legacySketch
-/// @settings(experimentalFeatures = allow)
 ///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
@@ -121,7 +119,6 @@ export fn datum(
 /// ```
 ///
 /// ```kcl,no3d,sketchSolve
-/// @settings(experimentalFeatures = allow)
 ///
 /// blockProfile = sketch(on = XY) {
 ///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -141,7 +138,7 @@ export fn datum(
 /// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
 /// gdt::flatness(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
 /// ```
-@(impl = std_rust, experimental = true, feature_tree = true)
+@(impl = std_rust, feature_tree = true)
 export fn flatness(
   /// The faces to be annotated.
   @(includeInSnippet = true)
@@ -158,10 +155,1313 @@ export fn flatness(
   /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
   @(includeInSnippet = true)
   framePlane?: Plane,
-  /// Scale of the leader. The default is `1.0`. Must be greater than `0`.
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
   leaderScale?: number(Count),
-  /// The font point size to use for the annotation text rendering. The default is `36`.
-  fontPointSize?: number(Count),
-  /// Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`.
-  fontScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T annotation specifying how straight a feature must be.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Straightness is a form tolerance. When applied to a planar face, every
+/// line element of the face must lie between two parallel lines separated by
+/// the given `tolerance`. When applied to an edge, the edge itself must lie
+/// within that zone.
+///
+/// Straightness should usually be applied to edges. But depending on the view,
+/// a face normal may appear like an edge.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// blockSketch = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 24mm])
+///   edge3 = line(start = [var 10mm, var 24mm], end = [var 0mm, var 24mm])
+///   edge4 = line(start = [var 0mm, var 24mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// blockRegion = region(point = [5mm, 3mm], sketch = blockSketch)
+/// hide(blockSketch)
+/// block = extrude(blockRegion, length = 10mm)
+/// gdt::straightness(edges = [blockRegion.tags.edge2], tolerance = 0.05mm)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// gdt::straightness(faces = [top], tolerance = 0.02mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// gdt::straightness(edges = [sideEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn straightness(
+  /// The amount of deviation from perfectly straight that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T annotation specifying how circular (round) a feature must be.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Circularity is a form tolerance. It controls how much a feature of
+/// revolution may deviate from a perfect circle. When applied to a circular
+/// edge, every point of the edge must lie between two concentric circles whose
+/// radii differ by the given `tolerance`. When applied to a round face, such as
+/// the wall of a cylinder or cone, every cross-section perpendicular to the
+/// axis must meet that same requirement.
+///
+/// Circularity is a form tolerance, so it does not reference datums.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+/// hide(cylinderSketch)
+/// cylinder = extrude(cylinderRegion, length = 10mm)
+/// gdt::circularity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+/// gdt::circularity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+/// gdt::circularity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn circularity(
+  /// The amount of deviation from a perfect circle that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T annotation specifying how closely a feature must conform to a perfect cylinder.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Cylindricity is a form tolerance. It controls how much a cylindrical
+/// surface may deviate from a perfect cylinder, combining roundness,
+/// straightness, and taper into a single requirement. Every point on the
+/// surface must lie between two coaxial cylinders whose radii differ by the
+/// given `tolerance`. When applied to a round face, such as the wall of a
+/// cylinder, the whole surface must meet that requirement. When applied to a
+/// circular edge, that edge must lie within the same zone.
+///
+/// Cylindricity is a form tolerance, so it does not reference datums.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm)
+/// gdt::cylindricity(faces = [cylinder.sketch.tags.perimeter], tolerance = 0.02mm, framePosition = [-12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinderRegion = region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch)
+/// hide(cylinderSketch)
+/// cylinder = extrude(cylinderRegion, length = 10mm)
+/// gdt::cylindricity(edges = [cylinderRegion.tags.perimeter], tolerance = 0.05mm, framePosition = [-12mm, 8mm])
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// topEdge = getCommonEdge(faces = [cylinder.sketch.tags.perimeter, top])
+/// gdt::cylindricity(edges = [topEdge], tolerance = 0.05mm, framePosition = [-12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn cylindricity(
+  /// The amount of deviation from a perfect cylinder that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T concentricity annotation specifying how closely a feature's median axis must align with datum references.
+///
+/// This is part of MBD.
+///
+/// Concentricity is a location tolerance for features of size. It controls the
+/// derived median points of the annotated feature relative to a datum axis. The
+/// tolerance zone is cylindrical, with a diameter equal to `tolerance`. Datum
+/// references are required.
+///
+/// In American Society of Mechanical Engineers (ASME) Y14.5, concentricity is
+/// applied regardless of feature size (RFS) and does not use maximum material
+/// condition (MMC) or least material condition (LMC) modifiers. ASME Y14.5-2018
+/// removed concentricity in favor of other controls such as position or runout
+/// where appropriate. ISO standards use the name coaxiality for this concept.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// datumSketch = sketch(on = XY) {
+///   diameter = line(start = [var -6mm, var 0mm], end = [var 6mm, var 0mm])
+///   perimeter = arc(start = [var 6mm, var 0mm], end = [var -6mm, var 0mm], center = [var 0mm, var 0mm])
+///   coincident([diameter.end, perimeter.start])
+///   coincident([diameter.start, perimeter.end])
+/// }
+///
+/// datumCylinder = extrude(region(point = [0mm, 1mm], sketch = datumSketch), length = 10mm)
+///
+/// controlledSketch = sketch(on = XY) {
+///   diameter = line(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm])
+///   perimeter = arc(start = [var -3mm, var 0mm], end = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
+///   coincident([diameter.start, perimeter.start])
+///   coincident([diameter.end, perimeter.end])
+/// }
+///
+/// controlledCylinder = extrude(region(point = [0mm, -1mm], sketch = controlledSketch), length = 10mm)
+///
+/// gdt::datum(face = datumCylinder.sketch.tags.perimeter, name = "A", framePosition = [-14mm, 8mm], framePlane = XZ)
+/// gdt::concentricity(faces = [controlledCylinder.sketch.tags.perimeter], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// datumSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 6mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// datumCylinder = extrude(region(point = datumSketch.perimeter.center, sketch = datumSketch), length = 10mm)
+///
+/// controlledSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 3mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// controlledCylinder = extrude(region(point = controlledSketch.perimeter.center, sketch = controlledSketch), length = 10mm, tagEnd = $top)
+/// topEdge = getCommonEdge(faces = [controlledCylinder.sketch.tags.perimeter, top])
+///
+/// gdt::datum(face = datumCylinder.sketch.tags.perimeter, name = "A", framePosition = [-14mm, 8mm], framePlane = XZ)
+/// gdt::concentricity(edges = [topEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn concentricity(
+  /// The diameter of the cylindrical tolerance zone.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums: [string; 1+],
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T symmetry annotation specifying how closely a feature's median plane must align with datum references.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Symmetry is a location tolerance for features of size. It controls the
+/// derived median points of opposing feature surfaces relative to a datum
+/// center plane. The tolerance zone is bounded by two parallel planes equally
+/// disposed about the datum plane, with a total width equal to `tolerance`.
+/// Datum references are required.
+///
+/// Symmetry is the non-circular counterpart to concentricity. It is typically
+/// used where mass balance or form distribution about a datum plane matters,
+/// but it is difficult to inspect and is often replaced by position or profile
+/// controls where appropriate.
+///
+/// In American Society of Mechanical Engineers (ASME) Y14.5, symmetry is
+/// applied regardless of feature size (RFS) and does not use maximum material
+/// condition (MMC) or least material condition (LMC) modifiers.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// latchProfile = sketch(on = XZ) {
+///   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
+///   datumWidthFace = line(start = [var 20mm, var -10mm], end = [var 20mm, var 10mm])
+///   topRight = line(start = [var 20mm, var 10mm], end = [var 5mm, var 10mm])
+///   rightGrooveWall = line(start = [var 5mm, var 10mm], end = [var 5mm, var 3mm])
+///   grooveFloor = line(start = [var 5mm, var 3mm], end = [var -5mm, var 3mm])
+///   leftGrooveWall = line(start = [var -5mm, var 3mm], end = [var -5mm, var 10mm])
+///   topLeft = line(start = [var -5mm, var 10mm], end = [var -20mm, var 10mm])
+///   leftSide = line(start = [var -20mm, var 10mm], end = [var -20mm, var -10mm])
+///   coincident([bottom.end, datumWidthFace.start])
+///   coincident([datumWidthFace.end, topRight.start])
+///   coincident([topRight.end, rightGrooveWall.start])
+///   coincident([rightGrooveWall.end, grooveFloor.start])
+///   coincident([grooveFloor.end, leftGrooveWall.start])
+///   coincident([leftGrooveWall.end, topLeft.start])
+///   coincident([topLeft.end, leftSide.start])
+///   coincident([leftSide.end, bottom.start])
+///   horizontal(bottom)
+///   vertical(datumWidthFace)
+///   horizontal(topRight)
+///   vertical(rightGrooveWall)
+///   horizontal(grooveFloor)
+///   vertical(leftGrooveWall)
+///   horizontal(topLeft)
+///   vertical(leftSide)
+/// }
+///
+/// latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
+/// latchBlock = extrude(latchBlockRegion, length = 12mm)
+///
+/// gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
+/// gdt::symmetry(faces = [latchBlock.sketch.tags.grooveFloor], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// latchProfile = sketch(on = XZ) {
+///   bottom = line(start = [var -20mm, var -10mm], end = [var 20mm, var -10mm])
+///   datumWidthFace = line(start = [var 20mm, var -10mm], end = [var 20mm, var 10mm])
+///   topRight = line(start = [var 20mm, var 10mm], end = [var 5mm, var 10mm])
+///   rightGrooveWall = line(start = [var 5mm, var 10mm], end = [var 5mm, var 3mm])
+///   grooveFloor = line(start = [var 5mm, var 3mm], end = [var -5mm, var 3mm])
+///   leftGrooveWall = line(start = [var -5mm, var 3mm], end = [var -5mm, var 10mm])
+///   topLeft = line(start = [var -5mm, var 10mm], end = [var -20mm, var 10mm])
+///   leftSide = line(start = [var -20mm, var 10mm], end = [var -20mm, var -10mm])
+///   coincident([bottom.end, datumWidthFace.start])
+///   coincident([datumWidthFace.end, topRight.start])
+///   coincident([topRight.end, rightGrooveWall.start])
+///   coincident([rightGrooveWall.end, grooveFloor.start])
+///   coincident([grooveFloor.end, leftGrooveWall.start])
+///   coincident([leftGrooveWall.end, topLeft.start])
+///   coincident([topLeft.end, leftSide.start])
+///   coincident([leftSide.end, bottom.start])
+///   horizontal(bottom)
+///   vertical(datumWidthFace)
+///   horizontal(topRight)
+///   vertical(rightGrooveWall)
+///   horizontal(grooveFloor)
+///   vertical(leftGrooveWall)
+///   horizontal(topLeft)
+///   vertical(leftSide)
+/// }
+///
+/// latchBlockRegion = region(point = [0mm, 0mm], sketch = latchProfile)
+/// latchBlock = extrude(latchBlockRegion, length = 12mm, tagEnd = $frontFace)
+/// grooveFloorFrontEdge = getCommonEdge(faces = [latchBlock.sketch.tags.grooveFloor, frontFace])
+///
+/// gdt::datum(face = latchBlock.sketch.tags.bottom, name = "A", framePosition = [0mm, -16mm], framePlane = XZ)
+/// gdt::symmetry(edges = [grooveFloorFrontEdge], tolerance = 0.2mm, datums = ["A"], framePosition = [-24mm, 14mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn symmetry(
+  /// The total width of the tolerance zone between two parallel planes.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums: [string; 1+],
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T annotation specifying circular runout relative to a datum axis.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Runout controls how much a round feature may vary as it rotates around a
+/// referenced datum axis. It may be applied to circular edges or round faces,
+/// such as the wall of a cylinder. Datum references are required.
+///
+/// Runout is applied regardless of feature size and does not use MMC or LMC.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// annotationPlane = offsetPlane(XZ, offset = 24mm)
+///
+/// controlledSketch = sketch(on = YZ) {
+///   upperPerimeter = arc(start = [var 10mm, var 0mm], end = [var -10mm, var 0mm], center = [var 0mm, var 0mm])
+///   lowerPerimeter = arc(start = [var -10mm, var 0mm], end = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+///   coincident([upperPerimeter.end, lowerPerimeter.start])
+///   coincident([lowerPerimeter.end, upperPerimeter.start])
+/// }
+///
+/// controlledShaft = extrude(
+///   region(point = [0mm, 1mm], sketch = controlledSketch),
+///   length = -58mm,
+///   tagStart = $controlledShoulder,
+///   tagEnd = $controlledFreeEnd
+/// )
+///
+/// controlledUpperShoulderEdge = getCommonEdge(faces = [
+///   controlledShaft.sketch.tags.upperPerimeter,
+///   controlledShoulder
+/// ])
+///
+/// datumSketch = sketch(on = YZ) {
+///   perimeter = circle(start = [var 18mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// datumShaft = extrude(
+///   region(point = datumSketch.perimeter.center, sketch = datumSketch),
+///   length = 36mm,
+///   tagEnd = $datumEnd
+/// )
+///
+/// gdt::datum(
+///   face = datumShaft.sketch.tags.perimeter,
+///   name = "A",
+///   framePosition = [18mm, -28mm],
+///   framePlane = annotationPlane,
+///   leaderScale = 1.15,
+///   fontSize = 6mm
+/// )
+///
+/// gdt::runout(
+///   edges = [controlledUpperShoulderEdge],
+///   tolerance = 0.2mm,
+///   datums = ["A"],
+///   precision = 1,
+///   framePosition = [12mm, 48mm],
+///   framePlane = annotationPlane,
+///   leaderScale = 1.15,
+///   fontSize = 6mm
+/// )
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn runout(
+  /// The circular runout relative to the datum axis that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums: [string; 1+],
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T angularity annotation specifying how much faces or edges may deviate from an orientation at a basic angle relative to datum references.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Angularity is an orientation tolerance. The specified angle is a basic
+/// dimension in the drawing or model geometry. The `tolerance` is a length
+/// controlling the size of the zone, not an angular plus-or-minus value.
+/// Provide at least one of `faces` or `edges`. Supplying both is allowed, but
+/// omitting both is an error.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// basicAngle = 30deg
+/// thickness = 3.5mm
+/// flangeLength = 24mm
+/// bendStartX = 5mm
+/// legLength = 30mm
+/// legRun = legLength * cos(basicAngle)
+/// legRise = legLength * sin(basicAngle)
+/// normalRun = thickness * sin(basicAngle)
+/// normalRise = thickness * cos(basicAngle)
+/// annotationFont = 2mm
+///
+/// stampedProfile = sketch(on = XY) {
+///   datumFace = line(start = [var 0mm, var 0mm], end = [var 24mm, var 0mm])
+///   flangeEnd = line(start = [var 24mm, var 0mm], end = [var 24mm, var 3.5mm])
+///   innerFlange = line(start = [var 24mm, var 3.5mm], end = [var 5mm, var 3.5mm])
+///   controlledSurface = line(start = [var 5mm, var 3.5mm], end = [var 30.98mm, var 18.5mm])
+///   tabEnd = line(start = [var 30.98mm, var 18.5mm], end = [var 29.23mm, var 21.53mm])
+///   outerSurface = line(start = [var 29.23mm, var 21.53mm], end = [var 3.25mm, var 6.53mm])
+///   outsideBend = line(start = [var 3.25mm, var 6.53mm], end = [var 0mm, var 0mm])
+///   coincident([datumFace.end, flangeEnd.start])
+///   coincident([flangeEnd.end, innerFlange.start])
+///   coincident([innerFlange.end, controlledSurface.start])
+///   coincident([controlledSurface.end, tabEnd.start])
+///   coincident([tabEnd.end, outerSurface.start])
+///   coincident([outerSurface.end, outsideBend.start])
+///   coincident([outsideBend.end, datumFace.start])
+///   coincident([datumFace.start, ORIGIN])
+///   horizontal(datumFace)
+///   horizontal(innerFlange)
+///   vertical(flangeEnd)
+///   distance([datumFace.start, datumFace.end]) == flangeLength
+///   distance([flangeEnd.start, flangeEnd.end]) == thickness
+///   distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
+///   distance([controlledSurface.start, controlledSurface.end]) == legLength
+///   distance([tabEnd.start, tabEnd.end]) == thickness
+///   distance([outerSurface.start, outerSurface.end]) == legLength
+///   parallel([controlledSurface, outerSurface])
+///   perpendicular([controlledSurface, tabEnd])
+///   angle([datumFace, controlledSurface]) == basicAngle
+/// }
+///
+/// stampedPart = extrude(region(point = [12mm, 2mm], sketch = stampedProfile), length = 0.8mm)
+///
+/// gdt::datum(face = stampedPart.sketch.tags.datumFace, name = "A", framePosition = [6mm, -4mm], framePlane = XY, fontSize = annotationFont)
+/// gdt::angularity(faces = [stampedPart.sketch.tags.controlledSurface], tolerance = 0.1mm, datums = ["A"], framePosition = [-12mm, 11mm], framePlane = XZ, fontSize = annotationFont)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// basicAngle = 30deg
+/// thickness = 3.5mm
+/// flangeLength = 24mm
+/// bendStartX = 5mm
+/// legLength = 30mm
+/// legRun = legLength * cos(basicAngle)
+/// legRise = legLength * sin(basicAngle)
+/// normalRun = thickness * sin(basicAngle)
+/// normalRise = thickness * cos(basicAngle)
+/// annotationFont = 2mm
+///
+/// stampedProfile = sketch(on = XY) {
+///   datumFace = line(start = [var 0mm, var 0mm], end = [var 24mm, var 0mm])
+///   flangeEnd = line(start = [var 24mm, var 0mm], end = [var 24mm, var 3.5mm])
+///   innerFlange = line(start = [var 24mm, var 3.5mm], end = [var 5mm, var 3.5mm])
+///   controlledSurface = line(start = [var 5mm, var 3.5mm], end = [var 30.98mm, var 18.5mm])
+///   tabEnd = line(start = [var 30.98mm, var 18.5mm], end = [var 29.23mm, var 21.53mm])
+///   outerSurface = line(start = [var 29.23mm, var 21.53mm], end = [var 3.25mm, var 6.53mm])
+///   outsideBend = line(start = [var 3.25mm, var 6.53mm], end = [var 0mm, var 0mm])
+///   coincident([datumFace.end, flangeEnd.start])
+///   coincident([flangeEnd.end, innerFlange.start])
+///   coincident([innerFlange.end, controlledSurface.start])
+///   coincident([controlledSurface.end, tabEnd.start])
+///   coincident([tabEnd.end, outerSurface.start])
+///   coincident([outerSurface.end, outsideBend.start])
+///   coincident([outsideBend.end, datumFace.start])
+///   coincident([datumFace.start, ORIGIN])
+///   horizontal(datumFace)
+///   horizontal(innerFlange)
+///   vertical(flangeEnd)
+///   distance([datumFace.start, datumFace.end]) == flangeLength
+///   distance([flangeEnd.start, flangeEnd.end]) == thickness
+///   distance([innerFlange.start, innerFlange.end]) == flangeLength - bendStartX
+///   distance([controlledSurface.start, controlledSurface.end]) == legLength
+///   distance([tabEnd.start, tabEnd.end]) == thickness
+///   distance([outerSurface.start, outerSurface.end]) == legLength
+///   parallel([controlledSurface, outerSurface])
+///   perpendicular([controlledSurface, tabEnd])
+///   angle([datumFace, controlledSurface]) == basicAngle
+/// }
+///
+/// stampedRegion = region(point = [12mm, 2mm], sketch = stampedProfile)
+/// hide(stampedProfile)
+/// stampedPart = extrude(stampedRegion, length = 0.8mm)
+///
+/// gdt::datum(face = stampedPart.sketch.tags.datumFace, name = "A", framePosition = [6mm, -4mm], framePlane = XY, fontSize = annotationFont)
+/// gdt::angularity(edges = [stampedRegion.tags.controlledSurface], tolerance = 0.1mm, datums = ["A"], framePosition = [-12mm, 11mm], framePlane = XZ, fontSize = annotationFont)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn angularity(
+  /// The tolerance zone size for orientation at a basic angle.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The faces to be annotated. At least one of `faces` or `edges` must be supplied.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. At least one of `faces` or `edges` must be supplied. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T perpendicularity annotation specifying how much faces or edges may deviate from perpendicular orientation relative to datum references.
+///
+/// This is part of model-based definition (MBD).
+///
+/// ```kcl,no3d,legacySketch
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $side)
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $top)
+///
+/// gdt::datum(face = top, name = "A", framePosition = [8mm, 0mm], framePlane = XZ)
+/// gdt::perpendicularity(faces = [side], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
+/// gdt::perpendicularity(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn perpendicularity(
+  /// The tolerance zone size for perpendicular orientation.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T parallelism annotation specifying how much faces or edges may deviate from parallel orientation relative to datum references.
+///
+/// This is part of model-based definition (MBD).
+///
+/// ```kcl,no3d,legacySketch
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $side)
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $top)
+///
+/// gdt::datum(face = top, name = "A", framePosition = [8mm, 0mm], framePlane = XZ)
+/// gdt::parallelism(faces = [side], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// gdt::parallelism(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn parallelism(
+  /// The tolerance zone size for parallel orientation.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T position annotation specifying how much faces or edges may deviate from their ideal location.
+///
+/// This is part of model-based definition (MBD).
+///
+/// ```kcl,no3d,legacySketch
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $side)
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $top)
+///
+/// gdt::datum(face = top, name = "A", framePosition = [8mm, 0mm], framePlane = XZ)
+/// gdt::position(faces = [side], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge2, top])
+/// gdt::position(edges = [sideEdge], tolerance = 0.05mm, datums = ["A"], framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn position(
+  /// The positional tolerance that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T annotation for attaching manufacturing text to faces or edges.
+///
+/// This is part of model-based definition (MBD).
+///
+/// ```kcl,no3d,legacySketch
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $side)
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $top)
+///
+/// gdt::annotation(faces = [top], annotation = "Break all sharp edges", framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// sideEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// gdt::annotation(edges = [sideEdge], annotation = "Deburr edge", framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn annotation(
+  /// The annotation text to display.
+  @(includeInSnippet = true)
+  annotation: string,
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces?: [TaggedFace; 1+],
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The position of the annotation relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the annotation. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The annotation may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T note for adding free-floating manufacturing text that is not attached to a face or edge.
+///
+/// This is part of model-based definition (MBD). Unlike `gdt::annotation`, a note has no leader
+/// and is placed directly on a plane. By default it lives on the world `XY` plane, but any plane
+/// (a standard plane like `XZ`/`YZ`, or a user-defined plane) can be supplied via `framePlane`.
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// // A note on the default world (XY) plane.
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+///
+/// gdt::note(note = "Note on XY", framePosition = [12mm, 8mm])
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// // A note on a user-defined plane.
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm)
+///
+/// notePlane = offsetPlane(XZ, offset = 12mm)
+/// gdt::note(note = "Note on custom Plane", framePlane = notePlane, framePosition = [12mm, 8mm])
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn note(
+  /// The note text to display.
+  @(includeInSnippet = true)
+  note: string,
+  /// The plane the note lies in. The default is `XY`. Other standard planes like `XZ` and `YZ`, or a user-defined plane, can also be used.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// The 2D position of the note within the plane, in the plane's local coordinates. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The model-space height to use for the note text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): GdtAnnotation {}
+
+/// GD&T distance annotation for displaying measured edge lengths or distances between two entities.
+///
+/// This is part of model-based definition (MBD).
+///
+/// ```kcl,no3d,legacySketch
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $side1)
+///   |> line(end = [0, 10])
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $top)
+///
+/// lengthEdge = getCommonEdge(faces = [side1, top])
+/// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// lengthEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// gdt::distance(edges = [lengthEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn distance(
+  /// The acceptable distance tolerance.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The face or edge to measure from. Must be used with `to`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  from?: Face | TaggedFace | Edge | any,
+  /// The face or edge to measure to. Must be used with `from`. The default position is the entity center. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  to?: Face | TaggedFace | Edge | any,
+  /// The edges whose lengths are annotated. Cannot be combined with `from` or `to`. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the distance label relative to the measured geometry. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the distance. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The distance may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Scale of the distance arrows. The default is `1.0`. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T profile annotation specifying how much edges or faces may deviate from their ideal shape.
+///
+/// This is part of model-based definition (MBD).
+///
+/// `gdt::profile` is kept for backwards compatibility with existing KCL programs.
+/// For new code, prefer `gdt::profileLine` when annotating edges and
+/// `gdt::profileSurface` when annotating faces.
+///
+/// Provide exactly one of `edges` or `faces`. Passing `edges` delegates to
+/// `profileLine`; passing `faces` delegates to `profileSurface`. Passing both,
+/// or neither, is a KCL error.
+///
+/// ```kcl,no3d,legacySketch
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $side1)
+///   |> line(end = [0, 10], tag = $side2)
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $top)
+///
+/// profileEdge = getCommonEdge(faces = [side1, top])
+///
+/// gdt::profile(
+///   edges = [profileEdge],
+///   tolerance = 0.1mm,
+///   datums = ["A"],
+///   framePosition = [10mm, 20mm],
+///   framePlane = XZ,
+/// )
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// gdt::profile(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn profile(
+  /// The amount of deviation from an ideal profile that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The edges to be annotated with profile of a line. Provide either `edges` or `faces`, but not both. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges?: [Edge | any; 1+],
+  /// The faces to be annotated with profile of a surface. Provide either `edges` or `faces`, but not both.
+  faces?: [TaggedFace; 1+],
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T profile-of-a-line annotation specifying how much edges may deviate from their ideal shape.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Profile of a line is a two-dimensional tolerance zone for a cross-section or edge-like profile.
+///
+/// ```kcl,no3d,legacySketch
+///
+/// startSketchOn(XY)
+///   |> startProfile(at = [0, 0])
+///   |> line(end = [10, 0], tag = $side1)
+///   |> line(end = [0, 10], tag = $side2)
+///   |> line(end = [-10, 0])
+///   |> line(end = [0, -10])
+///   |> close()
+///   |> extrude(length = 5, tagEnd = $top)
+///
+/// profileEdge = getCommonEdge(faces = [side1, top])
+///
+/// gdt::profileLine(
+///   edges = [profileEdge],
+///   tolerance = 0.1mm,
+///   datums = ["A"],
+///   framePosition = [10mm, 20mm],
+///   framePlane = XZ,
+/// )
+/// ```
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// blockProfile = sketch(on = XY) {
+///   edge1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+///   edge2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 6mm])
+///   edge3 = line(start = [var 10mm, var 6mm], end = [var 0mm, var 6mm])
+///   edge4 = line(start = [var 0mm, var 6mm], end = [var 0mm, var 0mm])
+///   coincident([edge1.end, edge2.start])
+///   coincident([edge2.end, edge3.start])
+///   coincident([edge3.end, edge4.start])
+///   coincident([edge4.end, edge1.start])
+///   horizontal(edge1)
+///   vertical(edge2)
+///   horizontal(edge3)
+///   vertical(edge4)
+/// }
+///
+/// block = extrude(region(point = [5mm, 3mm], sketch = blockProfile), length = 4mm, tagEnd = $top)
+/// profileEdge = getCommonEdge(faces = [block.sketch.tags.edge1, top])
+/// gdt::profileLine(edges = [profileEdge], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn profileLine(
+  /// The edges to be annotated. Edge specifier objects (`{ sideFaces = [...], endFaces? = [...], index? = 0 }`) are experimental; do not use them in generated or user-facing KCL yet.
+  @(includeInSnippet = true)
+  edges: [Edge | any; 1+],
+  /// The amount of deviation from an ideal profile that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
+): [GdtAnnotation; 1+] {}
+
+/// GD&T profile-of-a-surface annotation specifying how much faces may deviate from their ideal shape.
+///
+/// This is part of model-based definition (MBD).
+///
+/// Profile of a surface is a three-dimensional tolerance zone that applies across the whole annotated surface.
+///
+/// ```kcl,no3d,sketchSolve
+///
+/// cylinderSketch = sketch(on = XY) {
+///   perimeter = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+/// }
+///
+/// cylinder = extrude(region(point = cylinderSketch.perimeter.center, sketch = cylinderSketch), length = 10mm, tagEnd = $top)
+/// gdt::profileSurface(faces = [top], tolerance = 0.05mm, framePosition = [12mm, 8mm], framePlane = XZ)
+/// ```
+@(impl = std_rust, feature_tree = true)
+export fn profileSurface(
+  /// The faces to be annotated.
+  @(includeInSnippet = true)
+  faces: [TaggedFace; 1+],
+  /// The amount of deviation from an ideal profile that is acceptable.
+  @(includeInSnippet = true)
+  tolerance: number(Length),
+  /// The datum references to display in the feature control frame. Supports up to primary, secondary, and tertiary datums.
+  @(includeInSnippet = true)
+  datums?: [string; 1+],
+  /// The number of decimal places to display. The default is `3`. Must be greater than or equal to `0` and less than or equal to `9`.
+  @(includeInSnippet = true)
+  precision?: number(Count),
+  /// The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`.
+  @(snippetArray = ["100", "100"])
+  framePosition?: Point2d,
+  /// The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane.
+  @(includeInSnippet = true)
+  framePlane?: Plane,
+  /// Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`.
+  leaderScale?: number(Count),
+  /// The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit.
+  /// This changes the scene size, not the internal raster texture quality.
+  fontSize?: number(Length),
 ): [GdtAnnotation; 1+] {}

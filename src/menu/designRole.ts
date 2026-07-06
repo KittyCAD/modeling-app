@@ -1,4 +1,4 @@
-import { typeSafeWebContentsSend } from '@src/menu/channels'
+import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import type { BrowserWindow } from 'electron'
 
@@ -11,39 +11,23 @@ export const modelingDesignRole = (
       {
         label: 'Start Sketch',
         id: 'Design.Start sketch',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Design.Start sketch',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Design.Start sketch'),
       },
       { type: 'separator' },
       {
         label: 'Create an Offset Plane',
         id: 'Design.Create an offset plane',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Design.Create an offset plane',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Design.Create an offset plane'),
       },
       {
         label: 'Create a Helix',
         id: 'Design.Create a helix',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Design.Create a helix',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Design.Create a helix'),
       },
       {
         label: 'Create a Parameter',
         id: 'Design.Create a parameter',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Design.Create a parameter',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Design.Create a parameter'),
       },
       { type: 'separator' },
       {
@@ -53,38 +37,34 @@ export const modelingDesignRole = (
           {
             label: 'Extrude',
             id: 'Design.Create an additive feature.Extrude',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'Design.Create an additive feature.Extrude',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'Design.Create an additive feature.Extrude'
+            ),
           },
           {
             label: 'Revolve',
             id: 'Design.Create an additive feature.Revolve',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'Design.Create an additive feature.Revolve',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'Design.Create an additive feature.Revolve'
+            ),
           },
           {
             label: 'Sweep',
             id: 'Design.Create an additive feature.Sweep',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'Design.Create an additive feature.Sweep',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'Design.Create an additive feature.Sweep'
+            ),
           },
           {
             label: 'Loft',
             id: 'Design.Create an additive feature.Loft',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'Design.Create an additive feature.Loft',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'Design.Create an additive feature.Loft'
+            ),
           },
         ],
       },
@@ -95,29 +75,26 @@ export const modelingDesignRole = (
           {
             label: 'Fillet',
             id: 'Design.Apply modification feature.Fillet',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'Design.Apply modification feature.Fillet',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'Design.Apply modification feature.Fillet'
+            ),
           },
           {
             label: 'Chamfer',
             id: 'Design.Apply modification feature.Chamfer',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'Design.Apply modification feature.Chamfer',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'Design.Apply modification feature.Chamfer'
+            ),
           },
           {
             label: 'Shell',
             id: 'Design.Apply modification feature.Shell',
-            click: () => {
-              typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-                menuLabel: 'Design.Apply modification feature.Shell',
-              })
-            },
+            click: sendMenuAction(
+              mainWindow,
+              'Design.Apply modification feature.Shell'
+            ),
           },
         ],
       },
@@ -125,11 +102,7 @@ export const modelingDesignRole = (
       {
         label: 'Insert from Project File',
         id: 'Design.Insert from project file',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Design.Insert from project file',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Design.Insert from project file'),
       },
     ],
   }

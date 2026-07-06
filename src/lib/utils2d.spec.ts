@@ -1,9 +1,14 @@
+import { join } from 'path'
 import type { Coords2d } from '@src/lang/util'
 import { isPointsCCW } from '@src/lang/wasm'
-import { closestPointOnRay, lerp2d } from '@src/lib/utils2d'
-import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { expect, describe, test } from 'vitest'
+import {
+  closestPointOnRay,
+  deg2Rad,
+  isParallel,
+  lerp2d,
+} from '@src/lib/utils2d'
+import { describe, expect, test } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('test isPointsCW', () => {
@@ -94,5 +99,27 @@ describe('test closestPointOnRay', () => {
 describe('test lerp2d', () => {
   test('interpolates between two points', () => {
     expect(lerp2d([0, 0], [10, 20], 0.7)).toEqual([7, 14])
+  })
+})
+
+describe('test isParallel', () => {
+  test('accepts parallel and anti-parallel vectors', () => {
+    expect(isParallel([1, 0], [10, 0])).toBe(true)
+    expect(isParallel([1, 0], [-10, 0])).toBe(true)
+  })
+
+  test('handles angle wraparound near -180 and 180 degrees', () => {
+    const a: Coords2d = [Math.cos(deg2Rad(179.999)), Math.sin(deg2Rad(179.999))]
+    const b: Coords2d = [
+      Math.cos(deg2Rad(-179.999)),
+      Math.sin(deg2Rad(-179.999)),
+    ]
+
+    expect(isParallel(a, b, deg2Rad(0.005))).toBe(true)
+  })
+
+  test('rejects non-parallel and zero vectors', () => {
+    expect(isParallel([1, 0], [0, 1])).toBe(false)
+    expect(isParallel([0, 0], [1, 0])).toBe(false)
   })
 })

@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart join_surfaces_single_input_does_not_consume.kcl
+extension: md
+snapshot_kind: binary
+---

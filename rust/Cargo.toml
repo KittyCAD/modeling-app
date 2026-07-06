@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+  "kcl-api",
   "kcl-bumper",
   "kcl-derive-docs",
   "kcl-directory-test-macro",
@@ -9,8 +10,8 @@ members = [
   "kcl-language-server-release",
   "kcl-lib",
   "kcl-python-bindings",
+  "kcl-syntax",
   "kcl-test-server",
-  "kcl-to-core",
   "kcl-wasm-lib",
 ]
 
@@ -18,13 +19,13 @@ members = [
 ahash = "0.8.11"
 anyhow = { version = "1" }
 async-trait = "0.1.89"
-clap = { version = "4.6.0", features = ["derive"] }
+clap = { version = "4.6.1", features = ["derive"] }
 console_error_panic_hook = "0.1.7"
-dashmap = { version = "6.1.0" }
+dashmap = { version = "6.2.1" }
 http = "1"
 indexmap = "2.13.1"
-ezpz = "0.2.23"
-kittycad = { version = "0.4.9", default-features = false, features = [
+ezpz = "0.2.26"
+kittycad = { version = "0.4.13", default-features = false, features = [
   "js",
   "requests",
 ] }
@@ -33,14 +34,22 @@ kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds", features =
   "websocket",
 ] }
 lazy_static = "1.5.0"
+logos = "0.16.1"
 miette = "7.6.0"
-pyo3 = { version = "0.25.1" }
+proptest = "1"
+
+pyo3 = { version = "0.28.3" }
 # Build with Python >= 3.10 (set PYO3_PYTHON accordingly)
-pyo3-stub-gen = "0.13.1"
-rayon = "1.11.0"
+pyo3-stub-gen = { version = "0.22.3", default-features = false, features = [
+  "either",
+  "numpy",
+  "ordered-float",
+] }
+rayon = "1.12.0"
 rmp-serde = "1.3.1"
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
+schemars = "0.8.22"
 slog = "2.8.2"
 slog-async = "2.8.0"
 slog-json = "2.6.1"
@@ -57,7 +66,7 @@ tracing-subscriber = { version = "0.3.23", features = [
   "json",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
-zip = { version = "8.5.0", default-features = false }
+zip = { version = "8.6.0", default-features = false }
 
 [workspace.lints.clippy]
 assertions_on_result_states = "warn"
@@ -81,3 +90,8 @@ insta = { opt-level = 3 }
 
 [profile.test]
 debug = "line-tables-only"
+#Example: how to point modeling-app at a different repo (e.g. a branch or a local clone)
+# [patch.crates-io]
+# ezpz = { git = "https://github.com/KittyCAD/ezpz.git", branch = "david/circle-circle-tangent" }
+# kittycad-modeling-cmds = { git = "https://github.com/KittyCAD/modeling-api.git", branch = "main" }
+# kittycad-modeling-cmds = { path = "../../modeling-api/modeling-cmds" }

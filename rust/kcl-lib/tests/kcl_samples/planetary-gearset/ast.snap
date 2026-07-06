@@ -1222,16 +1222,6 @@ description: Result of parsing planetary-gearset.kcl
           "value": {
             "type": "newLine"
           }
-        },
-        {
-          "commentStart": 0,
-          "end": 0,
-          "moduleId": 0,
-          "start": 0,
-          "type": "NonCodeNode",
-          "value": {
-            "type": "newLine"
-          }
         }
       ]
     },

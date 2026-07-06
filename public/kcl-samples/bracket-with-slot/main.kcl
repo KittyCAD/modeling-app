@@ -147,7 +147,6 @@ tabHoleSketch = sketch(on = tabHolePlane) {
   ])
 }
 
-fastenerHoleRegion = region(segments = [tabHoleSketch.fastenerCircle])
 countersinkOuterRadius = countersinkOuterDiameter / 2
 countersinkExitRadius = countersinkOuterRadius - sheetMetalThickness
 

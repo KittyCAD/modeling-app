@@ -1,19 +1,19 @@
 import { Popover } from '@headlessui/react'
 import toast from 'react-hot-toast'
 
+import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
+import { CustomIcon } from '@src/components/CustomIcon'
+import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
+import Tooltip from '@src/components/Tooltip'
+import { updateModelingState } from '@src/lang/modelingWorkflows'
+import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
+import { useSingletons } from '@src/lib/boot'
 import {
   DEFAULT_EXPERIMENTAL_FEATURES,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import { useSingletons } from '@src/lib/boot'
-import { err, reportRejection } from '@src/lib/trap'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { warningLevels } from '@src/lib/settings/settingsTypes'
-import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { updateModelingState } from '@src/lang/modelingWorkflows'
-import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
-import Tooltip from '@src/components/Tooltip'
+import { err, reportRejection } from '@src/lib/trap'
 
 export function ExperimentalFeaturesMenu() {
   const { kclManager } = useSingletons()

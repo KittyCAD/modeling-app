@@ -1,34 +1,34 @@
-import { assertParse, type PathToNode, recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import { topLevelRange } from '@src/lang/util'
-import { isOverlap } from '@src/lib/utils'
-import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { KclManager } from '@src/lang/KclManager'
+import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
+import {
+  EdgeTreatmentType,
+  addBlend,
+  addChamfer,
+  addFillet,
+  deleteEdgeTreatment,
+} from '@src/lang/modifyAst/edges'
+import { codeRefFromRange } from '@src/lang/std/artifactGraph'
+import { topLevelRange } from '@src/lang/util'
+import { type PathToNode, assertParse, recast } from '@src/lang/wasm'
+import type { KclCommandValue } from '@src/lib/commandTypes'
+import { stringToKclExpression } from '@src/lib/kclHelpers'
+import type RustContext from '@src/lib/rustContext'
+import {
+  createSelectionFromArtifacts,
+  enginelessExecutor,
+  getAstAndArtifactGraph,
+} from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
+import { isOverlap } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type {
   NonCodeSelection,
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import {
-  addBlend,
-  addChamfer,
-  addFillet,
-  deleteEdgeTreatment,
-  EdgeTreatmentType,
-} from '@src/lang/modifyAst/edges'
-import { stringToKclExpression } from '@src/lib/kclHelpers'
-import type RustContext from '@src/lib/rustContext'
-import type { KclCommandValue } from '@src/lib/commandTypes'
-import {
-  enginelessExecutor,
-  createSelectionFromArtifacts,
-  getAstAndArtifactGraph,
-} from '@src/lib/testHelpers'
-import { createPathToNodeForLastVariable } from '@src/lang/modifyAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -185,6 +185,153 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a fillet to the post-subtract body when selecting the original box edge', async () => {
+      const code = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+boxLength = 100
+boxWidth = 100
+boxHeight = 50
+cutoutRadius = 30
+cutoutDepth = 10
+chamferSize = 2
+
+cutoutStartZ = boxHeight - cutoutDepth
+cutoutLowerWallZ = cutoutStartZ + chamferSize
+cutoutUpperWallZ = boxHeight - chamferSize
+cutoutLowerChamferRadius = cutoutRadius - chamferSize
+cutoutWallRadius = cutoutRadius
+cutoutUpperChamferRadius = cutoutRadius + chamferSize
+
+boxProfile = sketch(on = XY) {
+  bottomEdge = line(start = [var 0mm, var 0mm], end = [var 100mm, var 0mm])
+  rightEdge = line(start = [var 100mm, var 0mm], end = [var 100mm, var 100mm])
+  topEdge = line(start = [var 100mm, var 100mm], end = [var 0mm, var 100mm])
+  leftEdge = line(start = [var 0mm, var 100mm], end = [var 0mm, var 0mm])
+
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+
+  horizontalDistance([ORIGIN, bottomEdge.start]) == 0mm
+  verticalDistance([ORIGIN, bottomEdge.start]) == 0mm
+  horizontalDistance([bottomEdge.start, bottomEdge.end]) == boxLength
+  verticalDistance([bottomEdge.start, leftEdge.start]) == boxWidth
+}
+
+boxRegion = region(point = [boxLength / 2, boxWidth / 2], sketch = boxProfile)
+boxSolid = extrude(boxRegion, length = boxHeight)
+
+bottomPlane = offsetPlane(XY, offset = cutoutStartZ)
+lowerWallPlane = offsetPlane(XY, offset = cutoutLowerWallZ)
+upperWallPlane = offsetPlane(XY, offset = cutoutUpperWallZ)
+topPlane = offsetPlane(XY, offset = boxHeight)
+
+bottomProfile = sketch(on = bottomPlane) {
+  bottomCircle = circle(start = [var 28mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, bottomCircle.center]) == 0mm
+  verticalDistance([ORIGIN, bottomCircle.center]) == 0mm
+  horizontalDistance([bottomCircle.center, bottomCircle.start]) == cutoutLowerChamferRadius
+  verticalDistance([bottomCircle.center, bottomCircle.start]) == 0mm
+}
+
+lowerWallProfile = sketch(on = lowerWallPlane) {
+  lowerWallCircle = circle(start = [var 30mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, lowerWallCircle.center]) == 0mm
+  verticalDistance([ORIGIN, lowerWallCircle.center]) == 0mm
+  horizontalDistance([lowerWallCircle.center, lowerWallCircle.start]) == cutoutWallRadius
+  verticalDistance([lowerWallCircle.center, lowerWallCircle.start]) == 0mm
+}
+
+upperWallProfile = sketch(on = upperWallPlane) {
+  upperWallCircle = circle(start = [var 30mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, upperWallCircle.center]) == 0mm
+  verticalDistance([ORIGIN, upperWallCircle.center]) == 0mm
+  horizontalDistance([upperWallCircle.center, upperWallCircle.start]) == cutoutWallRadius
+  verticalDistance([upperWallCircle.center, upperWallCircle.start]) == 0mm
+}
+
+topProfile = sketch(on = topPlane) {
+  topCircle = circle(start = [var 32mm, var 0mm], center = [var 0mm, var 0mm])
+
+  horizontalDistance([ORIGIN, topCircle.center]) == 0mm
+  verticalDistance([ORIGIN, topCircle.center]) == 0mm
+  horizontalDistance([topCircle.center, topCircle.start]) == cutoutUpperChamferRadius
+  verticalDistance([topCircle.center, topCircle.start]) == 0mm
+}
+
+bottomRegion = region(point = [0mm, 0mm], sketch = bottomProfile)
+lowerWallRegion = region(point = [0mm, 0mm], sketch = lowerWallProfile)
+upperWallRegion = region(point = [0mm, 0mm], sketch = upperWallProfile)
+topRegion = region(point = [0mm, 0mm], sketch = topProfile)
+
+cutoutCutter = loft([
+  bottomRegion,
+  lowerWallRegion,
+  upperWallRegion,
+  topRegion,
+])
+
+part = subtract(boxSolid, tools = [cutoutCutter])
+  |> appearance(color = "#8f96a3", roughness = 55, metalness = 8)
+
+hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile])`
+
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const boxSolidStart = code.indexOf('boxSolid = extrude')
+      const boxSolidEnd = code.indexOf('bottomPlane =')
+      const boxSweep = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweep' &&
+          artifact.codeRef.range[0] >= boxSolidStart &&
+          artifact.codeRef.range[0] < boxSolidEnd
+      )
+      if (!boxSweep) {
+        throw new Error('boxSolid sweep artifact not found')
+      }
+
+      const sweepEdge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' && artifact.sweepId === boxSweep.id
+      )
+      if (!sweepEdge) {
+        throw new Error('boxSolid sweepEdge artifact not found')
+      }
+
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection: createSelectionFromArtifacts([sweepEdge], artifactGraph),
+        radius,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(
+        'fillet001 = fillet(part, tags = getCommonEdge(faces = [boxRegion.tags.topEdge, capEnd001]), radius = 1)'
+      )
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a fillet call using engine primitive edge indices', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangle,
@@ -330,6 +477,52 @@ fillet001 = fillet(
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a fillet call with an algorithm version', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+      const radius = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const version = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addFillet({
+        ast,
+        artifactGraph,
+        selection,
+        radius,
+        version,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  radius = 1,
+  version = 2,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should edit a basic fillet call on sweepEdge', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         extrudedTriangleWithFillet,
@@ -379,10 +572,13 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
         instanceInThisFile,
         kclManagerInThisFile
       )
-      const selection = createSelectionFromArtifacts(
-        [[...artifactGraph.values()].find((a) => a.type === 'sweepEdge')!],
-        artifactGraph
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
       )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
       const nodeToEdit: PathToNode = [
         ['body', ''],
         [2, 'index'],
@@ -731,6 +927,52 @@ chamfer001 = chamfer(
   length = 1,
   angle = 46deg,
   tag = $myChamferTag,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a chamfer call with an algorithm version', async () => {
+      const code = `@settings(experimentalFeatures = allow)
+
+${extrudedTriangle}`
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweepEdge = [...artifactGraph.values()].find(
+        (a) => a.type === 'sweepEdge'
+      )
+      if (!sweepEdge) {
+        throw new Error('sweepEdge artifact not found')
+      }
+      const selection = createSelectionFromArtifacts([sweepEdge], artifactGraph)
+      const length = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const version = (await stringToKclExpression(
+        '2',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const result = addChamfer({
+        ast,
+        artifactGraph,
+        selection,
+        length,
+        version,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`chamfer001 = chamfer(
+  extrude001,
+  tags = getCommonEdge(faces = [seg01, capEnd001]),
+  length = 1,
+  version = 2,
 )`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

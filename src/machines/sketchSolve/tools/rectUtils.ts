@@ -1,15 +1,14 @@
-import type RustContext from '@src/lib/rustContext'
 import type {
   SceneGraphDelta,
-  SourceDelta,
   SegmentCtor,
+  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclManager } from '@src/lang/KclManager'
+import type { Coords2d } from '@src/lang/util'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
-import type { Coords2d } from '@src/lang/util'
-import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
 import { addVec, dot2d, scaleVec, subVec } from '@src/lib/utils2d'
 import {
   isLineSegment,
@@ -17,9 +16,10 @@ import {
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   type SnapTarget,
-  getConstraintForSnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
+import type { RectOriginMode } from '@src/machines/sketchSolve/tools/rectTool'
 
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
@@ -378,22 +378,29 @@ export async function createDraftRectangle({
     lastOperation = equalDiagonals
   }
 
-  const snapConstraint = getConstraintForSnapTarget(originPointId, snapTarget)
-  if (snapConstraint !== null) {
-    const snapResult = await rustContext.addConstraint(
-      0,
-      sketchId,
-      snapConstraint,
-      settings
-    )
-    const snapConstraintId = getConstraintFromDelta(snapResult.sceneGraphDelta)
-    if (snapConstraintId instanceof Error) {
-      return Promise.reject(snapConstraintId)
+  const snapResult = await applyConstraintsForSnapTarget({
+    segmentId: originPointId,
+    target: snapTarget,
+    rustContext,
+    sketchId,
+    settings,
+  })
+  if (snapResult.result !== null) {
+    const snapConstraintIds = snapResult.newObjectIds.filter((objId) => {
+      const obj = snapResult.result?.sceneGraphDelta.new_graph.objects[objId]
+      return obj?.kind.type === 'Constraint'
+    })
+    if (snapConstraintIds.length === 0) {
+      return Promise.reject(
+        new Error(
+          'Expected snap constraints to be created, but none were found'
+        )
+      )
     }
-    constraintIds.push(snapConstraintId)
+    constraintIds.push(...snapConstraintIds)
     lastOperation = {
-      ...snapResult,
-      constraintId: snapConstraintId,
+      ...snapResult.result,
+      constraintId: snapConstraintIds[snapConstraintIds.length - 1],
     }
   }
 
@@ -451,16 +458,17 @@ export async function updateDraftRectangleAligned({
   kclManager,
   sketchId,
   draft,
-  rect,
+  mode,
+  startPoint,
+  currentPoint,
 }: {
   rustContext: RustContext
   kclManager: KclManager
   sketchId: number
   draft: RectDraftIds
-  rect: {
-    min: Coords2d
-    max: Coords2d
-  }
+  mode: Extract<RectOriginMode, 'corner' | 'center'>
+  startPoint: Coords2d
+  currentPoint: Coords2d
 }): Promise<{
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
@@ -476,8 +484,45 @@ export async function updateDraftRectangleAligned({
     settings,
     draft,
     units,
-    corners: getAxisAlignedRectangleCorners(rect),
+    corners: getAlignedRectangleCorners({
+      mode,
+      origin: startPoint,
+      point: currentPoint,
+    }),
   })
+}
+
+function getAlignedRectangleCorners({
+  mode,
+  origin,
+  point,
+}: {
+  mode: Extract<RectOriginMode, 'corner' | 'center'>
+  origin: Coords2d
+  point: Coords2d
+}): {
+  start1: Coords2d
+  start2: Coords2d
+  start3: Coords2d
+  start4: Coords2d
+} {
+  if (mode === 'center') {
+    const halfWidth = Math.abs(point[0] - origin[0])
+    const halfHeight = Math.abs(point[1] - origin[1])
+    return getAxisAlignedRectangleCorners({
+      min: [origin[0] - halfWidth, origin[1] - halfHeight],
+      max: [origin[0] + halfWidth, origin[1] + halfHeight],
+    })
+  }
+
+  // Keep the first clicked corner pinned to start1 so snap constraints stay on
+  // the user-selected corner even when the drag crosses into another quadrant.
+  return {
+    start1: origin,
+    start2: [point[0], origin[1]],
+    start3: point,
+    start4: [origin[0], point[1]],
+  }
 }
 
 function getAxisAlignedRectangleCorners(rect: {

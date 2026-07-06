@@ -2,6 +2,9 @@ import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 import type { StateFrom } from 'xstate'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
 import {
   canSubmitSelectionArg,
@@ -9,13 +12,11 @@ import {
   getSelectionTypeDisplayText,
   getSemanticSelectionType,
 } from '@src/lib/selections'
-import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import { Marked } from '@ts-stack/markdown'
-import type { KclManager } from '@src/lang/KclManager'
 
 const selectionSelector = (snapshot?: StateFrom<typeof modelingMachine>) =>
   snapshot?.context.selectionRanges
@@ -155,7 +156,7 @@ function CommandBarSelectionInput({
   }, [arg.selectionFilter, wasmInstance])
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
         className={
           'relative flex flex-col mx-4 my-4 ' +
@@ -172,6 +173,7 @@ function CommandBarSelectionInput({
           {arg.name}
         </span>
         <input
+          {...noAutofillInputProps}
           id="selection"
           name="selection"
           ref={inputRef}

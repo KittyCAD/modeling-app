@@ -54,7 +54,7 @@ test.describe(
           localStorage.setItem('persistCode', file)
         }, file)
         await homePage.goToModelingScene()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await toolbar.closePane(DefaultLayoutPaneID.Code)
 
         // Test coordinates for selection - these might need adjustment based on actual scene layout
@@ -134,7 +134,7 @@ test.describe(
           }
 
           await cmdBar.submit()
-          await scene.settled(cmdBar)
+          await scene.settled()
           await editor.openPane()
           await editor.expectEditor.toContain(operation.code)
         })
@@ -147,7 +147,7 @@ test.describe(
           )
           await op.click({ button: 'right' })
           await page.getByTestId('context-menu-delete').click()
-          await scene.settled(cmdBar)
+          await scene.settled()
           await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
 
           // Expect changes in ft and code

@@ -1,0 +1,22 @@
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 100mm, var 0mm])
+  line2 = line(start = [var 100mm, var 0mm], end = [var 100mm, var 100mm])
+  coincident([line1.end, line2.start])
+  line3 = line(start = [var 100mm, var 100mm], end = [var 0mm, var 100mm])
+  coincident([line2.end, line3.start])
+  line4 = line(start = [var 0mm, var 100mm], end = [var 0mm, var 0mm])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+region001 = region(point = [50mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 100mm)
+fillet001 = fillet(
+  extrude001,
+  tags = getCommonEdge(faces = [
+    region001.tags.line2,
+    region001.tags.line3
+  ]),
+  radius = 20mm,
+)

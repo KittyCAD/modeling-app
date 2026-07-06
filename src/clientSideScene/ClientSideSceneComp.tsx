@@ -1,11 +1,11 @@
 import { Popover } from '@headlessui/react'
 import {
+  type CSSProperties,
   use,
   useEffect,
   useMemo,
   useRef,
   useState,
-  type CSSProperties,
 } from 'react'
 import toast from 'react-hot-toast'
 
@@ -16,11 +16,13 @@ const shouldAlwaysShowOverlays = () =>
   localStorage.getItem('showAllOverlays') === 'true'
 
 import type { ReactCameraProperties } from '@src/clientSideScene/CameraControls'
+import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 import {
   EXTRA_SEGMENT_HANDLE,
   PROFILE_START,
   getParentGroup,
 } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   ARROWHEAD,
   DEBUG_SHOW_BOTH_SCENES,
@@ -32,24 +34,22 @@ import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { findUsesOfTagInPipe, getNodeFromPath } from '@src/lang/queryAst'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import type { ConstrainInfo } from '@src/lang/std/stdTypes'
-import { topLevelRange } from '@src/lang/util'
-import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
-import { parse, recast, resultIsOk } from '@src/lang/wasm'
-import { cameraMouseDragGuards } from '@src/lib/cameraControls'
-import type { CameraSystem } from '@src/lib/cameraControls'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { err, reportRejection, trap } from '@src/lib/trap'
-import { throttle, toSync } from '@src/lib/utils'
-import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import type { ConstrainInfo } from '@src/lang/std/stdTypes'
+import { topLevelRange } from '@src/lang/util'
+import type { CallExpressionKw, Expr, PathToNode } from '@src/lang/wasm'
+import { parse, recast, resultIsOk } from '@src/lang/wasm'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { cameraMouseDragGuards } from '@src/lib/cameraControls'
+import type { CameraSystem } from '@src/lib/cameraControls'
 import { getSketchSolveToolIconMap, useToolbarConfig } from '@src/lib/toolbar'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { err, reportRejection, trap } from '@src/lib/trap'
+import { throttle, toSync } from '@src/lib/utils'
+import type { SegmentOverlay } from '@src/machines/modelingSharedTypes'
 import { cleanupSketchSolveGroup } from '@src/machines/sketchSolve/sketchSolveImpl'
-import { EditingConstraintInput } from '@src/clientSideScene/EditingConstraintInput'
 
 function useShouldHideScene(): { hideClient: boolean; hideServer: boolean } {
   const [isCamMoving, setIsCamMoving] = useState(false)

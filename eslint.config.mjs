@@ -1,22 +1,19 @@
-import { defineConfig, globalIgnores } from 'eslint/config'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
-import reactPerf from 'eslint-plugin-react-perf'
+import { FlatCompat } from '@eslint/eslintrc'
+import js from '@eslint/js'
+import typescriptEslint from '@typescript-eslint/eslint-plugin'
+import tsParser from '@typescript-eslint/parser'
 import cssModules from 'eslint-plugin-css-modules'
 import jsxA11Y from 'eslint-plugin-jsx-a11y'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
+import reactPerf from 'eslint-plugin-react-perf'
 import suggestNoThrow from 'eslint-plugin-suggest-no-throw'
-import typescriptEslint from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-import js from '@eslint/js'
-import { FlatCompat } from '@eslint/eslintrc'
+import { defineConfig, globalIgnores } from 'eslint/config'
+import noCodemirrorPrintableKeymapKeystrokes from './src/eslint/rules/no-codemirror-printable-keymap-keystrokes.mjs'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
-  baseDirectory: __dirname,
+  baseDirectory: import.meta.dirname,
   recommendedConfig: js.configs.recommended,
   allConfig: js.configs.all,
 })
@@ -27,7 +24,6 @@ export default defineConfig([
     '!rust/kcl-language-server/client/src/**/*.ts',
     '**/*.typegen.ts',
     'packages/codemirror-lsp-client/dist/*',
-    'e2e/playwright/snapshots/prompt-to-edit/*',
     '**/.vscode-test',
   ]),
   {
@@ -51,6 +47,12 @@ export default defineConfig([
       'react-hooks': fixupPluginRules(reactHooks),
       'suggest-no-throw': suggestNoThrow,
       '@typescript-eslint': typescriptEslint,
+      zds: {
+        rules: {
+          'no-codemirror-printable-keymap-keystrokes':
+            noCodemirrorPrintableKeymapKeystrokes,
+        },
+      },
     },
 
     languageOptions: {
@@ -188,6 +190,7 @@ export default defineConfig([
       semi: ['error', 'never'],
       'react-hooks/exhaustive-deps': 'error',
       'suggest-no-throw/suggest-no-throw': 'error',
+      'zds/no-codemirror-printable-keymap-keystrokes': 'error',
     },
   },
   {
@@ -208,11 +211,27 @@ export default defineConfig([
     },
   },
   {
-    files: ['packages/**/*.ts', 'rust/**/*.ts'],
+    files: [
+      'src/registry/extensions/**/*.{ts,tsx}',
+      'src/registry/plugins/**/*.{ts,tsx}',
+    ],
+
+    rules: {
+      'no-restricted-imports': 'off',
+    },
+  },
+  {
+    files: ['packages/**/*.{ts,tsx}', 'rust/**/*.ts'],
     extends: compat.extends(),
 
     rules: {
       'no-restricted-imports': 'off',
+    },
+  },
+  {
+    files: ['packages/registry/src/**/*.{ts,tsx}'],
+    rules: {
+      'suggest-no-throw/suggest-no-throw': 'off',
     },
   },
 ])

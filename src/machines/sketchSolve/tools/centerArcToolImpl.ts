@@ -1,4 +1,5 @@
 import type {
+  ApiObject,
   SceneGraphDelta,
   SegmentCtor,
   SourceDelta,
@@ -6,11 +7,10 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { KclManager } from '@src/lang/KclManager'
 import type { Coords2d } from '@src/lang/util'
-import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
-import { roundOff } from '@src/lib/utils'
 import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { roundOff } from '@src/lib/utils'
 import {
   isArcSegment,
   isPointSegment,
@@ -19,20 +19,21 @@ import { segmentUtilsMap } from '@src/machines/sketchSolve/segments'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import type { SketchSolveMachineEvent } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  type SnapTarget,
+  applyConstraintsForSnapTarget,
+} from '@src/machines/sketchSolve/snapping'
+import {
   calculateArcSwapState,
   shouldSwapStartEnd,
 } from '@src/machines/sketchSolve/tools/centerArcSwapUtils'
 import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import {
-  getCoincidentSegmentsForSnapTarget,
-  type SnapTarget,
-} from '@src/machines/sketchSolve/snapping'
 import {
   clearToolSnappingState,
   getBestSnappingCandidate,
   sendHoveredSnappingCandidate,
   updateToolSnappingPreview,
 } from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { type ActionArgs, type AssignArgs, type ProvidedActor } from 'xstate'
 
 export const TOOL_ID = 'Center arc tool'
 export const SHOWING_RADIUS_PREVIEW = 'Showing radius preview'
@@ -86,6 +87,26 @@ type ToolAssignArgs<TActor extends ProvidedActor = any> = AssignArgs<
   ToolEvents,
   TActor
 >
+
+export function getArcPointIdsForSegment(
+  objects: ApiObject[],
+  arcId: number | undefined
+): number[] {
+  if (arcId === undefined) {
+    return []
+  }
+
+  const arcObj = objects[arcId]
+  if (!isArcSegment(arcObj)) {
+    return []
+  }
+
+  return [
+    arcObj.kind.segment.center,
+    arcObj.kind.segment.start,
+    arcObj.kind.segment.end,
+  ]
+}
 
 ////////////// --Actions-- //////////////////
 
@@ -237,8 +258,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           sketchId: context.sketchId,
           mousePosition: [twoD.x, twoD.y],
           mouseEvent: args.mouseEvent,
-          excludedPointIds:
-            context.arcEndPointId === undefined ? [] : [context.arcEndPointId],
+          getExcludedPointIds: (currentSketchObjects) =>
+            getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
         sendHoveredSnappingCandidate(self, snappingCandidate)
         updateToolSnappingPreview({
@@ -324,7 +345,10 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
                 },
               },
             ],
-            settings
+            settings,
+            false,
+            [],
+            false
           )
           const sendData: SketchSolveMachineEvent = {
             type: 'update sketch outcome',
@@ -362,8 +386,8 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
           sketchId: context.sketchId,
           mousePosition,
           mouseEvent: args.mouseEvent,
-          excludedPointIds:
-            context.arcEndPointId === undefined ? [] : [context.arcEndPointId],
+          getExcludedPointIds: (currentSketchObjects) =>
+            getArcPointIdsForSegment(currentSketchObjects, context.arcId),
         })
         const [x, y] = snappingCandidate?.position ?? mousePosition
         self.send({
@@ -722,26 +746,20 @@ export async function createArcActor({
     const snapConstraintNewObjects: number[] = []
 
     for (const { segmentId, snapTarget } of snapTargets) {
-      const coincidentSegments = getCoincidentSegmentsForSnapTarget(
+      const snapResult = await applyConstraintsForSnapTarget({
         segmentId,
-        snapTarget
-      )
-      if (coincidentSegments === null) {
+        target: snapTarget,
+        rustContext,
+        sketchId,
+        settings,
+      })
+      if (snapResult.result === null) {
         continue
       }
 
-      const snapResult = await rustContext.addConstraint(
-        0,
-        sketchId,
-        {
-          type: 'Coincident',
-          segments: coincidentSegments,
-        },
-        settings
-      )
-      latestKclSource = snapResult.kclSource
-      latestSceneGraphDelta = snapResult.sceneGraphDelta
-      snapConstraintNewObjects.push(...snapResult.sceneGraphDelta.new_objects)
+      latestKclSource = snapResult.result.kclSource
+      latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+      snapConstraintNewObjects.push(...snapResult.newObjectIds)
     }
 
     if (snapConstraintNewObjects.length === 0) {
@@ -932,6 +950,16 @@ export async function finalizeArcActor({
         y: { type: 'Var', value: roundOff(finalEnd[1]), units },
       },
     }
+    const finalDragAnchorSegmentIds = isArcSegment(arcObj)
+      ? Array.from(
+          new Set([
+            arcObj.kind.segment.center,
+            clickedPointIsStart
+              ? arcObj.kind.segment.end
+              : arcObj.kind.segment.start,
+          ])
+        )
+      : undefined
 
     const settings = jsAppSettings(rustContext.settingsActor)
     const result = await rustContext.editSegments(
@@ -944,7 +972,8 @@ export async function finalizeArcActor({
         },
       ],
       settings,
-      startSnapTarget == null && endSnapTarget == null
+      startSnapTarget == null && endSnapTarget == null,
+      finalDragAnchorSegmentIds
     )
 
     const editedArc = result.sceneGraphDelta.new_graph.objects[arcId]
@@ -978,22 +1007,10 @@ export async function finalizeArcActor({
       return result
     }
 
-    const snapConstraints = snapTargets
-      .map(({ segmentId, snapTarget }) => ({
-        coincidentSegments: getCoincidentSegmentsForSnapTarget(
-          segmentId,
-          snapTarget
-        ),
-      }))
-      .filter(
-        (
-          target
-        ): target is {
-          coincidentSegments: NonNullable<
-            ReturnType<typeof getCoincidentSegmentsForSnapTarget>
-          >
-        } => target.coincidentSegments !== null
-      )
+    const snapConstraints = snapTargets.map(({ segmentId, snapTarget }) => ({
+      segmentId,
+      snapTarget,
+    }))
 
     if (snapConstraints.length === 0) {
       return result
@@ -1004,21 +1021,26 @@ export async function finalizeArcActor({
     let latestSceneGraphDelta = result.sceneGraphDelta
     let latestCheckpointId = result.checkpointId ?? null
 
-    for (const [index, { coincidentSegments }] of snapConstraints.entries()) {
-      const snapResult = await rustContext.addConstraint(
-        0,
+    for (const [
+      index,
+      { segmentId, snapTarget },
+    ] of snapConstraints.entries()) {
+      const snapResult = await applyConstraintsForSnapTarget({
+        segmentId,
+        target: snapTarget,
+        rustContext,
         sketchId,
-        {
-          type: 'Coincident',
-          segments: coincidentSegments,
-        },
         settings,
-        index === snapConstraints.length - 1
-      )
-      latestKclSource = snapResult.kclSource
-      latestSceneGraphDelta = snapResult.sceneGraphDelta
-      latestCheckpointId = snapResult.checkpointId ?? null
-      newObjects.push(...snapResult.sceneGraphDelta.new_objects)
+        createCheckpoint: index === snapConstraints.length - 1,
+      })
+      if (snapResult.result === null) {
+        continue
+      }
+
+      latestKclSource = snapResult.result.kclSource
+      latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+      latestCheckpointId = snapResult.result.checkpointId ?? null
+      newObjects.push(...snapResult.newObjectIds)
     }
 
     return {

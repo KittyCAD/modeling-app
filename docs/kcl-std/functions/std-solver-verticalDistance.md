@@ -8,7 +8,10 @@ layout: manual
 Constrain the vertical distance between two points.
 
 ```kcl
-solver::verticalDistance(@points: [Segment | Point2d; 2])
+solver::verticalDistance(
+  @points: [Segment | Point2d; 2],
+  labelPosition?: Point2d,
+)
 ```
 
 
@@ -18,6 +21,7 @@ solver::verticalDistance(@points: [Segment | Point2d; 2])
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `points` | [[`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d); 2] | Two sketch points, or one sketch point and `ORIGIN`, whose Y-axis separation should match the value set with `==`. | Yes |
+| `labelPosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | Optional position for the displayed constraint label in the sketch's local 2D coordinate system. | No |
 
 
 ### Examples

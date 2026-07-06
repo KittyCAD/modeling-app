@@ -1,12 +1,13 @@
-import { vi } from 'vitest'
 import type {
-  SceneGraphDelta,
   ApiObject,
+  SceneGraphDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import type { KclManager } from '@src/lang/KclManager'
+import { emptyOperationsByModule } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { Themes } from '@src/lib/theme'
+import { vi } from 'vitest'
 
 /**
  * Helper to create a minimal valid SceneGraphDelta for testing
@@ -43,7 +44,7 @@ export function createSceneGraphDelta(
     exec_outcome: {
       issues: [],
       variables: {},
-      operations: [],
+      operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},
       defaultPlanes: null,
@@ -95,10 +96,12 @@ export function createLineApiObject({
   id,
   start,
   end,
+  owner,
 }: {
   id: number
   start: number
   end: number
+  owner?: number
 }): ApiObject {
   return {
     id,
@@ -108,6 +111,7 @@ export function createLineApiObject({
         type: 'Line',
         start,
         end,
+        owner,
         ctor: {
           type: 'Line',
           start: {
@@ -222,6 +226,42 @@ export function createCircleApiObject({
   }
 }
 
+export function createControlPointSplineApiObject({
+  id,
+  controls,
+  degree = Math.min(3, Math.max(1, controls.length - 1)),
+}: {
+  id: number
+  controls: number[]
+  degree?: number
+}): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'ControlPointSpline',
+        controls,
+        degree,
+        ctor: {
+          type: 'ControlPointSpline',
+          points: controls.map(() => ({
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          })),
+          construction: false,
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
+
 /**
  * Mock dependencies
  * Note: SceneInfra only needs setCallbacks, but we mock it for simplicity
@@ -244,6 +284,7 @@ export function createMockRustContext(): RustContext {
     addConstraint: vi.fn(),
     chainSegment: vi.fn(),
     editSegments: vi.fn(),
+    editDistanceConstraintLabelPosition: vi.fn(),
     deleteObjects: vi.fn(),
     settingsActor: {
       send: vi.fn(),

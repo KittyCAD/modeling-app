@@ -13,7 +13,7 @@ jobs:
   build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
@@ -26,7 +26,7 @@ jobs:
             rust:
               - 'rust/**'
 
-      - uses: actions/setup-node@v6.3.0
+      - uses: actions/setup-node@v6.4.0
         with:
           node-version-file: .nvmrc
           cache: npm
@@ -37,12 +37,14 @@ jobs:
       - name: Download Wasm cache
         id: download-wasm
         if: ${{ (steps.filter.outputs.rust || 'false') == 'false' }}
-        uses: dawidd6/action-download-artifact@v20
+        uses: dawidd6/action-download-artifact@v21
         continue-on-error: true
         with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          name: wasm-bundle
-          workflow: build-wasm.yml
+          name: prepared-wasm
+          # `build-wasm.yml` is `workflow_call` only, so its artifacts are
+          # attributed to the caller's parent run. Using `e2e-tests.yml` works
+          # as the canonical caller since this runs every hour on main.
+          workflow: e2e-tests.yml
           branch: main
           path: rust/kcl-wasm-lib/pkg
 
@@ -70,12 +72,12 @@ jobs:
 
       - name: Install Rust
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
         with:
           cache: false # configured below
           rustflags: '' # use .cargo/config.toml
 
-      - uses: taiki-e/install-action@5939f3337e40968c39aa70f5ecb1417a92fb25a0
+      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
         with:
           tool: wasm-pack
@@ -107,6 +109,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: prepared-wasm
+          retention-days: 7
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 

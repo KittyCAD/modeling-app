@@ -123,6 +123,16 @@ pub trait SketchApi {
         value_expression: String,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 
+    async fn edit_distance_constraint_label_position(
+        &mut self,
+        ctx: &ExecutorContext,
+        version: Version,
+        sketch: ObjectId,
+        constraint_id: ObjectId,
+        label_position: Point2d<Number>,
+        anchor_segment_ids: Vec<ObjectId>,
+    ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
+
     /// Batch operations for split segment: edit segments, add constraints, delete objects.
     /// All operations are applied to a single AST and execute_after_edit is called once at the end.
     /// new_segment_info contains the IDs from the segment(s) added in a previous step.
@@ -140,6 +150,7 @@ pub trait SketchApi {
 
     /// Batch operations for tail-cut trim: edit a segment, add coincident constraints,
     /// delete constraints, and execute once.
+    #[allow(clippy::too_many_arguments)]
     async fn batch_tail_cut_operations(
         &mut self,
         ctx: &ExecutorContext,
@@ -148,6 +159,7 @@ pub trait SketchApi {
         edit_segments: Vec<ExistingSegmentCtor>,
         add_constraints: Vec<Constraint>,
         delete_constraint_ids: Vec<ObjectId>,
+        additional_edited_segment_ids: Vec<ObjectId>,
     ) -> ExecResult<(SourceDelta, SceneGraphDelta)>;
 }
 
@@ -218,6 +230,7 @@ pub enum Segment {
     Line(Line),
     Arc(Arc),
     Circle(Circle),
+    ControlPointSpline(ControlPointSpline),
 }
 
 impl Segment {
@@ -229,6 +242,7 @@ impl Segment {
             Self::Line(_) => "a Line",
             Self::Arc(_) => "an Arc",
             Self::Circle(_) => "a Circle",
+            Self::ControlPointSpline(_) => "a Control Point Spline",
         }
     }
 
@@ -242,6 +256,7 @@ impl Segment {
             Self::Line(l) => l.freedom(&lookup),
             Self::Arc(a) => a.freedom(&lookup),
             Self::Circle(c) => c.freedom(&lookup),
+            Self::ControlPointSpline(s) => s.freedom(&lookup),
         }
     }
 }
@@ -261,6 +276,7 @@ pub enum SegmentCtor {
     Line(LineCtor),
     Arc(ArcCtor),
     Circle(CircleCtor),
+    ControlPointSpline(ControlPointSplineCtor),
 }
 
 impl SegmentCtor {
@@ -272,6 +288,7 @@ impl SegmentCtor {
             Self::Line(_) => "a Line constructor",
             Self::Arc(_) => "an Arc constructor",
             Self::Circle(_) => "a Circle constructor",
+            Self::ControlPointSpline(_) => "a Control Point Spline constructor",
         }
     }
 }
@@ -294,6 +311,9 @@ pub struct Point2d<U: std::fmt::Debug + Clone + ts_rs::TS> {
 pub struct Line {
     pub start: ObjectId,
     pub end: ObjectId,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub owner: Option<ObjectId>,
     // Invariant: Line or MidPointLine
     pub ctor: SegmentCtor,
     // The constructor is applicable if changing the values of the constructor will change the rendering
@@ -399,8 +419,43 @@ pub struct CircleCtor {
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", rename = "ApiControlPointSpline")]
+pub struct ControlPointSpline {
+    pub controls: Vec<ObjectId>,
+    pub degree: u32,
+    pub ctor: SegmentCtor,
+    pub ctor_applicable: bool,
+    pub construction: bool,
+}
+
+impl ControlPointSpline {
+    /// Compute the overall freedom of this spline by merging the freedom of its
+    /// control points. Returns `None` if any required point lookup failed.
+    pub fn freedom(&self, lookup: impl Fn(ObjectId) -> Option<Freedom>) -> Option<Freedom> {
+        let mut controls = self.controls.iter();
+        let first = lookup(*controls.next()?)?;
+        let merged = controls.try_fold(first, |acc, id| lookup(*id).map(|freedom| acc.merge(freedom)))?;
+        Some(merged)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
+pub struct ControlPointSplineCtor {
+    pub points: Vec<Point2d<Expr>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    #[ts(optional)]
+    pub construction: Option<bool>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts", rename = "ApiConstraint")]
 #[serde(tag = "type")]
+// When adding a new constraint type, check trim compatibility. New constraints
+// can break trim in unexpected ways, especially when endpoints are edited,
+// segments are split, or constraints are migrated. Try the trim tool on sketches
+// using the new constraint, and talk to Kurt, Max, or a mechanical engineer if
+// the intended trim behavior is unclear.
 pub enum Constraint {
     Coincident(Coincident),
     Distance(Distance),
@@ -412,9 +467,11 @@ pub enum Constraint {
     VerticalDistance(Distance),
     Horizontal(Horizontal),
     LinesEqualLength(LinesEqualLength),
+    Midpoint(Midpoint),
     Parallel(Parallel),
     Perpendicular(Perpendicular),
     Radius(Radius),
+    Symmetric(Symmetric),
     Tangent(Tangent),
     Vertical(Vertical),
 }
@@ -478,6 +535,11 @@ impl From<ObjectId> for ConstraintSegment {
 pub struct Distance {
     pub points: Vec<ConstraintSegment>,
     pub distance: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     pub source: ConstraintSource,
 }
 
@@ -514,6 +576,11 @@ pub struct ConstraintSource {
 pub struct Radius {
     pub arc: ObjectId,
     pub radius: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }
@@ -523,6 +590,11 @@ pub struct Radius {
 pub struct Diameter {
     pub arc: ObjectId,
     pub diameter: Number,
+    #[serde(rename = "labelPosition")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(rename = "labelPosition")]
+    #[ts(optional)]
+    pub label_position: Option<Point2d<Number>>,
     #[serde(default)]
     pub source: ConstraintSource,
 }
@@ -565,6 +637,14 @@ pub struct LinesEqualLength {
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
 #[ts(export, export_to = "FrontendApi.ts")]
+pub struct Midpoint {
+    pub point: ConstraintSegment,
+    #[serde(alias = "line")]
+    pub segment: ObjectId,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts")]
 #[serde(untagged)]
 pub enum Vertical {
     Line { line: ObjectId },
@@ -581,6 +661,13 @@ pub struct Parallel {
 #[ts(export, export_to = "FrontendApi.ts", optional_fields)]
 pub struct Perpendicular {
     pub lines: Vec<ObjectId>,
+}
+
+#[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
+#[ts(export, export_to = "FrontendApi.ts", optional_fields)]
+pub struct Symmetric {
+    pub input: Vec<ObjectId>,
+    pub axis: ObjectId,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]

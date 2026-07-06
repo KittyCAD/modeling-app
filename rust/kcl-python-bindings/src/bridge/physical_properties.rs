@@ -1,5 +1,11 @@
+use kcl_api::UnitArea;
+use kcl_api::UnitDensity;
+use kcl_api::UnitLength;
+use kcl_api::UnitMass;
+use kcl_api::UnitVolume;
+use kcl_lib::unit_conversion::ToApi;
+use kcl_lib::unit_conversion::ToKcmc;
 use kittycad_modeling_cmds::ok_response::output as mout;
-use kittycad_modeling_cmds::units::*;
 use kittycad_modeling_cmds::{self as kcmc};
 use pyo3::PyResult;
 use pyo3::exceptions::PyException;
@@ -10,7 +16,7 @@ use crate::bridge::bounding_box::BoundingBoxResponse;
 
 /// Set of physical properties you'd like to run on the model.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Default, Debug, Clone)]
 pub struct PhysicalPropertiesRequest {
     pub volume: Option<kcmc::Volume>,
@@ -23,7 +29,7 @@ pub struct PhysicalPropertiesRequest {
 
 /// Resulting data from a `PhysicalPropertiesRequest`.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Default, Debug, Clone)]
 pub struct PhysicalPropertiesResponse {
     pub volume: Option<mout::Volume>,
@@ -52,7 +58,7 @@ impl PhysicalPropertiesResponse {
             .clone()
             .ok_or(PyException::new_err("Center of mass was not requested"))?
             .output_unit;
-        Ok(unit)
+        Ok(unit.to_api())
     }
 
     fn get_volume(&self) -> PyResult<f64> {
@@ -68,7 +74,8 @@ impl PhysicalPropertiesResponse {
             .volume
             .as_ref()
             .ok_or(PyException::new_err("Volume was not requested"))?
-            .output_unit)
+            .output_unit
+            .to_api())
     }
 
     fn get_surface_area(&self) -> PyResult<f64> {
@@ -84,7 +91,8 @@ impl PhysicalPropertiesResponse {
             .surface_area
             .as_ref()
             .ok_or(PyException::new_err("Surface area was not requested"))?
-            .output_unit)
+            .output_unit
+            .to_api())
     }
 
     fn get_density(&self) -> PyResult<f64> {
@@ -109,7 +117,8 @@ impl PhysicalPropertiesResponse {
             .density
             .as_ref()
             .ok_or(PyException::new_err("Density was not requested"))?
-            .output_unit)
+            .output_unit
+            .to_api())
     }
 
     fn get_mass(&self) -> PyResult<f64> {
@@ -125,7 +134,8 @@ impl PhysicalPropertiesResponse {
             .mass
             .as_ref()
             .ok_or(PyException::new_err("Mass was not requested"))?
-            .output_unit)
+            .output_unit
+            .to_api())
     }
 }
 
@@ -142,7 +152,7 @@ impl PhysicalPropertiesRequest {
     fn set_volume(&mut self, output_unit: UnitVolume) {
         self.volume = Some(
             kcmc::Volume::builder()
-                .output_unit(output_unit)
+                .output_unit(output_unit.to_kcmc())
                 .entity_ids(Default::default())
                 .build(),
         );
@@ -152,7 +162,7 @@ impl PhysicalPropertiesRequest {
     fn set_center_of_mass(&mut self, output_unit: UnitLength) {
         self.center_of_mass = Some(
             kcmc::CenterOfMass::builder()
-                .output_unit(output_unit)
+                .output_unit(output_unit.to_kcmc())
                 .entity_ids(Default::default())
                 .build(),
         );
@@ -170,10 +180,10 @@ impl PhysicalPropertiesRequest {
         }
         self.mass = Some(
             kcmc::Mass::builder()
-                .output_unit(output_unit)
+                .output_unit(output_unit.to_kcmc())
                 .entity_ids(Default::default())
                 .material_density(material_density)
-                .material_density_unit(material_density_unit)
+                .material_density_unit(material_density_unit.to_kcmc())
                 .build(),
         );
         Ok(())
@@ -183,7 +193,7 @@ impl PhysicalPropertiesRequest {
     fn set_surface_area(&mut self, output_unit: UnitArea) {
         self.surface_area = Some(
             kcmc::SurfaceArea::builder()
-                .output_unit(output_unit)
+                .output_unit(output_unit.to_kcmc())
                 .entity_ids(Default::default())
                 .build(),
         );
@@ -201,10 +211,10 @@ impl PhysicalPropertiesRequest {
         }
         self.density = Some(
             kcmc::Density::builder()
-                .output_unit(output_unit)
+                .output_unit(output_unit.to_kcmc())
                 .entity_ids(Default::default())
                 .material_mass(material_mass)
-                .material_mass_unit(material_mass_unit)
+                .material_mass_unit(material_mass_unit.to_kcmc())
                 .build(),
         );
         Ok(())
@@ -214,7 +224,7 @@ impl PhysicalPropertiesRequest {
     fn set_bounding_box(&mut self, output_unit: UnitLength) -> PyResult<()> {
         self.bounding_box = Some(
             kcmc::BoundingBox::builder()
-                .output_unit(output_unit)
+                .output_unit(output_unit.to_kcmc())
                 .entity_ids(Default::default())
                 .build(),
         );

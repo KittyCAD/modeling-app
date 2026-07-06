@@ -39,7 +39,10 @@ use crate::TypedPath;
 use crate::errors::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Tag;
+use crate::execution::annotations::DEPRECATED;
+use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
+use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::{self};
 use crate::execution::types::ArrayLen;
 use crate::parsing::PIPE_OPERATOR;
@@ -97,7 +100,6 @@ use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
-#[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
 use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
@@ -121,6 +123,8 @@ const MAX_NESTING_DEPTH: u16 = 512;
 /// space.
 const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
 const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
+const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
+    "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
@@ -143,7 +147,6 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
             None
         }
     };
-    #[cfg(feature = "artifact-graph")]
     let ast = {
         let mut ast = ast;
         if let Some(ast) = &mut ast {
@@ -2120,10 +2123,12 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
     macro_rules! handle_pending_non_code {
         ($node: ident) => {
             if !pending_non_code.is_empty() {
-                let force_disoc = matches!(
-                    &pending_non_code.last().unwrap().inner.value,
-                    NonCodeValue::NewLine
-                );
+                let attach_after_inner_attrs = body.is_empty() && !inner_attrs.is_empty();
+                let force_disoc = !attach_after_inner_attrs
+                    && matches!(
+                        &pending_non_code.last().unwrap().inner.value,
+                        NonCodeValue::NewLine
+                    );
                 let mut comments = Vec::new();
                 let mut comment_start = None;
                 for nc in pending_non_code {
@@ -2132,6 +2137,7 @@ fn function_body(i: &mut TokenSlice) -> ModalResult<Node<Block>> {
                             comment_start.get_or_insert(nc.start);
                             comments.push(style.render_comment(&value));
                         }
+                        NonCodeValue::NewLine if attach_after_inner_attrs && comments.is_empty() => {}
                         NonCodeValue::NewLine if !force_disoc && !comments.is_empty() => {
                             comments.push(String::new());
                             comments.push(String::new());
@@ -2703,18 +2709,18 @@ fn unnecessarily_bracketed(i: &mut TokenSlice) -> ModalResult<Expr> {
 
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let parsed_expr = alt((
-        bool_value.map(Box::new).map(Expr::Literal),
-        tag.map(Box::new).map(Expr::TagDeclarator),
-        literal.map(Expr::Literal),
-        sketch_var.map(Box::new).map(Expr::SketchVar),
-        fn_call_or_sketch_block,
-        name.map(Box::new).map(Expr::Name),
-        array,
-        object.map(Box::new).map(Expr::ObjectExpression),
-        pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
-        function_expr,
-        if_expr.map(Expr::IfExpression),
-        unnecessarily_bracketed,
+        alt((
+            bool_value.map(Box::new).map(Expr::Literal),
+            tag.map(Box::new).map(Expr::TagDeclarator),
+            literal.map(Expr::Literal),
+            sketch_var.map(Box::new).map(Expr::SketchVar),
+            fn_call_or_sketch_block,
+            name.map(Box::new).map(Expr::Name),
+            array,
+            object.map(Box::new).map(Expr::ObjectExpression),
+            pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
+        )),
+        alt((function_expr, if_expr.map(Expr::IfExpression), unnecessarily_bracketed)),
     ))
     .context(expected("a KCL expression (but not a pipe expression)"))
     .parse_next(i)?;
@@ -2729,17 +2735,21 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     let _nesting_guard = ParseContext::enter_nesting(i.as_source_range())?;
     let mut expr = alt((
-        if_expr.map(Expr::IfExpression),
-        unary_expression.map(Box::new).map(Expr::UnaryExpression),
-        bool_value.map(Box::new).map(Expr::Literal),
-        literal.map(Expr::Literal),
-        sketch_var.map(Box::new).map(Expr::SketchVar),
-        fn_call_or_sketch_block,
-        name.map(Box::new).map(Expr::Name),
-        array,
-        object.map(Box::new).map(Expr::ObjectExpression),
-        binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
-        unnecessarily_bracketed,
+        alt((
+            if_expr.map(Expr::IfExpression),
+            unary_expression.map(Box::new).map(Expr::UnaryExpression),
+            bool_value.map(Box::new).map(Expr::Literal),
+            literal.map(Expr::Literal),
+            sketch_var.map(Box::new).map(Expr::SketchVar),
+            fn_call_or_sketch_block,
+            name.map(Box::new).map(Expr::Name),
+            array,
+            object.map(Box::new).map(Expr::ObjectExpression),
+        )),
+        alt((
+            binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
+            unnecessarily_bracketed,
+        )),
     ))
     .context(expected(
         "a KCL value which can be used as an argument/operand to an operator",
@@ -3257,6 +3267,16 @@ fn expression_stmt(i: &mut TokenSlice) -> ModalResult<Node<ExpressionStatement>>
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
+    if ParseContext::is_in_sketch_block() {
+        let checkpoint = i.checkpoint();
+        let _ = opt(whitespace).parse_next(i);
+        if let Ok(eq) = equals(i) {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(eq.as_source_range(), ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK).into(),
+            ));
+        }
+        i.reset(&checkpoint);
+    }
     let start = val.start();
     let end = val.end();
     let module_id = val.module_id();
@@ -3679,13 +3699,16 @@ struct ParamDescription {
 }
 
 fn parameter(i: &mut TokenSlice) -> ModalResult<ParamDescription> {
-    let (_, comments, _, attr, _, found_at_sign, arg_name, question_mark, _, type_, _ws, default_literal) = (
+    let (_, comments, _, attr, _, found_at_sign) = (
         opt(whitespace),
         opt(comments),
         opt(whitespace),
         opt(outer_annotation),
         opt(whitespace),
         opt(at_sign),
+    )
+        .parse_next(i)?;
+    let (arg_name, question_mark, _, type_, _ws, default_literal) = (
         any.verify(|token: &Token| !matches!(token.token_type, TokenType::Brace) || token.value != ")"),
         opt(question_mark),
         opt(whitespace),
@@ -3740,17 +3763,46 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.pre_comments = comments.inner;
                 }
                 let mut experimental = false;
+                let mut deprecated = false;
+                let mut deprecated_since = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
                     {
                         experimental = value;
                     }
+                    if let Some(property) = attr.property(DEPRECATED)
+                        && let Some(value) = property.value.literal_bool()
+                    {
+                        deprecated = value;
+                    }
+                    if let Some(property) = attr.property(DEPRECATED_SINCE) {
+                        if let Some(s) = property.value.literal_str()
+                            && let Some(version) = VersionConstraint::parse(s)
+                        {
+                            deprecated_since = Some(version);
+                        } else {
+                            ParseContext::err(CompilationIssue::fatal(
+                                SourceRange::from(&property.value),
+                                format!(
+                                    "Invalid value for `{DEPRECATED_SINCE}`; expected a dotted integer version string, e.g., \"2.0\"",
+                                ),
+                            ));
+                        }
+                    }
+                    if deprecated && deprecated_since.is_some() {
+                        ParseContext::err(CompilationIssue::fatal(
+                            SourceRange::from(&attr),
+                            format!("A parameter cannot set both `{DEPRECATED}` and `{DEPRECATED_SINCE}`; only one may be specified"),
+                        ));
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
                     experimental,
+                    deprecated,
+                    deprecated_since,
                     identifier,
                     param_type: type_,
                     default_value,
@@ -3837,6 +3889,19 @@ fn is_callee_sketch_block(callee: &Name) -> bool {
     callee.name.name == SketchBlock::CALLEE_NAME && !callee.abs_path && callee.path.is_empty()
 }
 
+fn is_sketch_block_arg_shorthand(arg: &Expr) -> bool {
+    let Expr::Name(name) = arg else {
+        return false;
+    };
+    if name.abs_path || !name.path.is_empty() {
+        return false;
+    }
+    if name.name.name != crate::execution::SKETCH_BLOCK_PARAM_ON {
+        return false;
+    }
+    true
+}
+
 fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
     let fn_call = fn_call_kw.parse_next(i)?;
     if is_callee_sketch_block(&fn_call.callee) && peek((opt(whitespace), open_brace)).parse_next(i).is_ok() {
@@ -3857,16 +3922,26 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 CallExpressionKw {
                     callee: _,
                     unlabeled,
-                    arguments,
+                    mut arguments,
                     non_code_meta,
                     digest: _,
                 },
         } = fn_call;
         if let Some(unlabeled) = unlabeled {
-            ParseContext::err(CompilationIssue::err(
-                unlabeled.into(),
-                "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
-            ));
+            if is_sketch_block_arg_shorthand(&unlabeled) {
+                arguments.insert(
+                    0,
+                    LabeledArg {
+                        label: None,
+                        arg: unlabeled,
+                    },
+                );
+            } else {
+                ParseContext::err(CompilationIssue::err(
+                    unlabeled.into(),
+                    "Sketch blocks cannot have an unlabeled argument. Use a labeled argument instead, like `on = XY`.",
+                ));
+            }
         }
         return Ok(Expr::SketchBlock(Box::new(Node {
             start,
@@ -4252,6 +4327,20 @@ e
         let tokens = tokens.as_slice();
         let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
         assert!(matches!(actual, Expr::SketchBlock { .. }));
+    }
+
+    #[test]
+    fn parse_sketch_block_arg_shorthand() {
+        let tokens = crate::parsing::token::lex("sketch(on) {}", ModuleId::default()).unwrap();
+        let tokens = tokens.as_slice();
+        let actual = in_ctx(|| fn_call_or_sketch_block.parse(tokens)).unwrap();
+        let Expr::SketchBlock(sketch_block) = actual else {
+            panic!("not a sketch block")
+        };
+        assert_eq!(sketch_block.arguments.len(), 1);
+        let arg = &sketch_block.arguments[0];
+        assert!(arg.label.is_none());
+        assert_eq!(arg.arg.ident_name(), Some("on"));
     }
 
     #[test]
@@ -5467,6 +5556,32 @@ height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_param_deprecated_annotation() {
+        crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(deprecated = true)
+  x?: number,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn test_param_deprecated_and_deprecated_since_conflict() {
+        assert_err_contains(
+            r#"fn foo(
+  @(deprecated = true, deprecated_since = "2.0")
+  x?: number,
+) {
+  return x
+}"#,
+            "cannot set both `deprecated` and `deprecated_since`",
+        );
+    }
+
+    #[test]
     fn test_anon_fn_no_fn() {
         assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
@@ -5587,6 +5702,8 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    deprecated: false,
+                    deprecated_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5601,6 +5718,8 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    deprecated: false,
+                    deprecated_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
                         digest: None,
@@ -5616,6 +5735,8 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5627,6 +5748,8 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -5643,6 +5766,8 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
                             digest: None,
@@ -5654,6 +5779,8 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
+                        deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
                             digest: None,
@@ -6465,6 +6592,27 @@ bar = 1
             .expect("Found an error, but there was no cause. Add a cause.");
         assert_eq!(cause.message, "Missing comma between arguments, try adding a comma in",);
         assert_eq!(cause.source_range.start() - 1, expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_operation_undefined_in_sketch_block() {
+        let program_source = "sketch(on = XY) {
+  line001 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1mm])
+  distance([line001.start, line001.end]) = 5mm
+}";
+        let expected_src_start = program_source.find("= 5mm").unwrap();
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        let err = program
+            .parse(tokens.as_slice())
+            .expect_err("Program succeeded, but it should have failed");
+        let cause = err
+            .inner()
+            .cause
+            .as_ref()
+            .expect("Found an error, but there was no cause. Add a cause.");
+        assert_eq!(cause.source_range.start(), expected_src_start);
+        assert_eq!(cause.message, ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK,);
     }
 
     #[test]

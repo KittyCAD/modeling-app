@@ -106,6 +106,40 @@ updates:
     - '*kcl*'
     - '*zoo*'
     - '*kittycad*'
+- package-ecosystem: cargo
+  directory: /rust/manual/blns-lexer-tests
+  schedule:
+    interval: weekly
+    day: saturday
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 5
+  groups:
+    security:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+  cooldown:
+    default-days: 7
+    exclude:
+    - '*kcl*'
+    - '*zoo*'
+    - '*kittycad*'
 - package-ecosystem: npm
   directory: /.github/actions/github-release
   schedule:
@@ -210,6 +244,74 @@ updates:
     - '*kittycad*'
 - package-ecosystem: npm
   directory: /packages/codemirror-lsp-client
+  schedule:
+    interval: weekly
+    day: saturday
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 5
+  groups:
+    security:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+  cooldown:
+    default-days: 7
+    exclude:
+    - '*kcl*'
+    - '*zoo*'
+    - '*kittycad*'
+- package-ecosystem: npm
+  directory: /packages/registry
+  schedule:
+    interval: weekly
+    day: saturday
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 5
+  groups:
+    security:
+      applies-to: security-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+    patch:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - patch
+    minor:
+      applies-to: version-updates
+      exclude-patterns:
+      - kittycad*
+      update-types:
+      - minor
+      - patch
+  cooldown:
+    default-days: 7
+    exclude:
+    - '*kcl*'
+    - '*zoo*'
+    - '*kittycad*'
+- package-ecosystem: npm
+  directory: /packages/ui-components
   schedule:
     interval: weekly
     day: saturday

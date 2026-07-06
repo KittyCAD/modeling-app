@@ -15,7 +15,7 @@
 // for game assets, placeholder art, or visual-scripting demos.
 
 // Set units and version
-@settings(defaultLengthUnit = m, kclVersion = 2.0)
+@settings(defaultLengthUnit = m, kclVersion = 1.0)
 
 // Chassis dimensions
 chassisLength = 3.5 // total vehicle length

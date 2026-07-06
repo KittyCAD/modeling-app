@@ -35,6 +35,7 @@ pub fn format_number_literal(
     // Round first to ensure we don't have floating point precision issues
     let factor = 10_f64.powi(d as i32);
     let rounded = (value * factor).round() / factor;
+    let rounded = normalize_negative_zero(rounded);
     // Format with up to `d` decimal places, removing trailing zeros
     let formatted = if rounded.fract().abs() < 1e-10 {
         // Integer value
@@ -77,6 +78,7 @@ pub enum FormatNumericTypeError {
 ///
 /// This is used by TS.
 pub fn format_number_value(value: f64, ty: NumericType) -> Result<String, FormatNumericTypeError> {
+    let value = normalize_negative_zero(value);
     match ty {
         NumericType::Default { .. } => Ok(value.to_string()),
         // There isn't a syntactic suffix for these. For unknown, we don't want
@@ -90,10 +92,14 @@ pub fn format_number_value(value: f64, ty: NumericType) -> Result<String, Format
     }
 }
 
+fn normalize_negative_zero(value: f64) -> f64 {
+    if value == 0.0 { 0.0 } else { value }
+}
+
 #[cfg(test)]
 mod tests {
-    use kittycad_modeling_cmds::units::UnitAngle;
-    use kittycad_modeling_cmds::units::UnitLength;
+    use kcl_api::UnitAngle;
+    use kcl_api::UnitLength;
     use pretty_assertions::assert_eq;
 
     use super::*;
@@ -215,6 +221,10 @@ mod tests {
             format_number_literal(1.0, NumericSuffix::Unknown, None),
             Err(FormatNumericSuffixError::Invalid(NumericSuffix::Unknown))
         );
+        assert_eq!(
+            format_number_literal(-0.0, NumericSuffix::Mm, None),
+            Ok("0mm".to_owned())
+        );
     }
 
     #[test]
@@ -284,6 +294,16 @@ mod tests {
         assert_eq!(
             format_number_value(1.0, NumericType::Any),
             Err(FormatNumericTypeError::Invalid(NumericType::Any))
+        );
+        assert_eq!(
+            format_number_value(
+                -0.0,
+                NumericType::Default {
+                    len: UnitLength::Millimeters,
+                    angle: UnitAngle::Degrees,
+                }
+            ),
+            Ok("0".to_owned())
         );
     }
 }

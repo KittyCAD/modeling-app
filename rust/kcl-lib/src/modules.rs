@@ -13,8 +13,7 @@ use crate::execution::EnvironmentRef;
 use crate::execution::ModuleArtifactState;
 use crate::execution::PreImportedGeometry;
 use crate::execution::typed_path::TypedPath;
-use crate::fs::FileManager;
-use crate::fs::FileSystem;
+use crate::fs::FileSystemHandle;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
@@ -166,6 +165,12 @@ pub enum ModulePath {
 }
 
 impl ModulePath {
+    /// Returns true if this is a path to the solver module that should only be
+    /// accessible from sketch blocks. This is how we create a kind of DSL.
+    pub(crate) fn is_solver_module(&self) -> bool {
+        matches!(self, ModulePath::Std { value } if value == "solver")
+    }
+
     pub(crate) fn expect_path(&self) -> &TypedPath {
         match self {
             ModulePath::Local { value: p, .. } => p,
@@ -173,7 +178,11 @@ impl ModulePath {
         }
     }
 
-    pub(crate) async fn source(&self, fs: &FileManager, source_range: SourceRange) -> Result<ModuleSource, KclError> {
+    pub(crate) async fn source(
+        &self,
+        fs: &FileSystemHandle,
+        source_range: SourceRange,
+    ) -> Result<ModuleSource, KclError> {
         match self {
             ModulePath::Local { value: p, .. } => Ok(ModuleSource {
                 source: fs.read_to_string(p, source_range).await?,

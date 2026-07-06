@@ -1,20 +1,27 @@
-import ms from 'ms'
-import { decode as msgpackDecode } from '@msgpack/msgpack'
-import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
 import type {
   MlCopilotClientMessage,
-  MlCopilotServerMessage,
-  MlCopilotMode,
   MlCopilotFile,
+  MlCopilotServerMessage,
 } from '@kittycad/lib'
-import { assertEvent, assign, setup, fromPromise } from 'xstate'
-import { createActorContext } from '@xstate/react'
-import type { ActorRefFrom } from 'xstate'
+import { decode as msgpackDecode } from '@msgpack/msgpack'
 import type { KittyCadLibFile } from '@src/lib/promptToEditTypes'
-import type { KclFileMetaMap } from '@src/lib/promptToEditTypes'
+import { withMlephantWebSocketURL } from '@src/lib/withBaseURL'
+import { createActorContext } from '@xstate/react'
+import ms from 'ms'
+import { assertEvent, assign, fromPromise, setup } from 'xstate'
+import type { ActorRefFrom } from 'xstate'
 
-import { S, transitions } from '@src/machines/utils'
+import {
+  type CustomIconName,
+  isCustomIconName,
+} from '@src/components/CustomIcon'
+
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
+import { isErr } from '@src/lib/trap'
+import { isArray } from '@src/lib/utils'
+
 import { getKclVersion } from '@src/lib/kclVersion'
+import { S, transitions, xstateEventError } from '@src/machines/utils'
 
 import { Socket } from '@src/lib/socket'
 
@@ -22,9 +29,9 @@ import { Socket } from '@src/lib/socket'
 // import { MockSocket } from '@src/mocks/copilot'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { FileEntry, Project } from '@src/lib/project'
 import type { FileMeta } from '@src/lib/types'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 
@@ -38,11 +45,120 @@ export enum MlEphantSetupErrors {
 
 type TypeVariant<T, U = T> = U extends T ? keyof U : never
 
-type MlCopilotClientMessageUser<T = MlCopilotClientMessage> = T extends {
-  type: 'user'
+type MlCopilotListModesRequest = { type: 'list_modes' }
+export type MlCopilotModeId = string
+
+type MlCopilotUserRequest = Omit<
+  Extract<MlCopilotClientMessage, { type: 'user' }>,
+  'mode'
+> & {
+  // The generated client still narrows this to the initially-known mode ids,
+  // but mode discovery intentionally treats the backend-provided id as opaque.
+  mode?: MlCopilotModeId
+  active_file?: string
 }
-  ? T
-  : never
+
+type MlCopilotProjectContextRequest = Extract<
+  MlCopilotClientMessage,
+  { type: 'project_context' }
+> & {
+  active_file?: string
+}
+
+type MlCopilotClientMessageWithDiscoveredMode =
+  | Exclude<MlCopilotClientMessage, { type: 'user' }>
+  | MlCopilotUserRequest
+
+type MlCopilotClientMessageUser<T = MlCopilotClientMessageWithDiscoveredMode> =
+  T extends {
+    type: 'user'
+  }
+    ? T
+    : never
+
+export interface MlCopilotModeOption {
+  id: MlCopilotModeId
+  label: string
+  description: string
+  icon: CustomIconName
+  disabled: boolean
+}
+
+type MlCopilotModesResult = {
+  defaultMode?: MlCopilotModeId
+  modeOptions: MlCopilotModeOption[]
+}
+
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0
+}
+
+function toMlCopilotModeOption(value: unknown): MlCopilotModeOption | null {
+  if (typeof value !== 'object' || value === null) return null
+
+  const candidate = value as {
+    id?: unknown
+    label?: unknown
+    description?: unknown
+    icon?: unknown
+    disabled?: unknown
+  }
+
+  if (
+    !isNonEmptyString(candidate.id) ||
+    typeof candidate.label !== 'string' ||
+    typeof candidate.description !== 'string'
+  )
+    return null
+
+  if (!isCustomIconName(candidate.icon)) {
+    console.warn(
+      `Discarding ml copilot mode option with unrecognized icon: ${String(candidate.icon)}`
+    )
+    return null
+  }
+
+  return {
+    id: candidate.id,
+    label: candidate.label,
+    description: candidate.description,
+    icon: candidate.icon,
+    disabled: candidate.disabled === true,
+  }
+}
+
+export function parseMlCopilotModesResult(
+  response: unknown
+): MlCopilotModesResult | null {
+  if (typeof response !== 'object' || response === null) return null
+
+  const envelope = response as { modes_response?: unknown }
+  const modesResponse = envelope.modes_response
+  if (typeof modesResponse !== 'object' || modesResponse === null) return null
+
+  const candidate = modesResponse as {
+    default_mode?: unknown
+    modes?: unknown
+  }
+  if (!isArray(candidate.modes)) return null
+
+  const modeOptions = candidate.modes
+    .map(toMlCopilotModeOption)
+    .filter((option): option is MlCopilotModeOption => option !== null)
+
+  if (modeOptions.length === 0) {
+    console.warn(
+      'modes_response contained no usable mode options; no mode selector will be shown'
+    )
+  }
+
+  return {
+    defaultMode: isNonEmptyString(candidate.default_mode)
+      ? candidate.default_mode
+      : undefined,
+    modeOptions,
+  }
+}
 
 export function isMlCopilotUserRequest(
   x: unknown
@@ -62,6 +178,7 @@ export enum MlEphantManagerStates {
 export enum MlEphantManagerTransitions {
   MessageSend = 'message-send',
   ResponseReceive = 'response-receive',
+  ModesReceive = 'modes-receive',
   ConversationClose = 'conversation-close',
   Cancel = 'cancel',
   Interrupt = 'interrupt',
@@ -84,14 +201,12 @@ export type MlEphantManagerEvents =
       refParentSend: (event: MlEphantManagerEvents) => void
       // If not present, a new conversation is created.
       conversationId?: string
-      sketch_solve?: boolean
     }
   | {
       type: MlEphantManagerStates.Setup
       refParentSend: (event: MlEphantManagerEvents) => void
       // If not present, a new conversation is created.
       conversationId?: string
-      sketch_solve?: boolean
     }
   | {
       type: MlEphantManagerTransitions.MessageSend
@@ -102,18 +217,23 @@ export type MlEphantManagerEvents =
       projectFiles: FileMeta[]
       selections: Selections
       artifactGraph: ArtifactGraph
-      mode: MlCopilotMode
+      mode?: MlCopilotModeId
       additionalFiles?: File[]
-      sketch_solve?: boolean // allow Zookeeper to reference experimental docs
     }
   | {
       type: MlEphantManagerStates.ContinueCheck
       projectName: string
       projectFiles: FileMeta[]
+      activeFile?: string
     }
   | {
       type: MlEphantManagerTransitions.ResponseReceive
       response: MlCopilotServerMessage
+    }
+  | {
+      type: MlEphantManagerTransitions.ModesReceive
+      defaultMode?: MlCopilotModeId
+      modeOptions: MlCopilotModeOption[]
     }
   | {
       type: MlEphantManagerTransitions.ConversationClose
@@ -135,7 +255,7 @@ export type MlEphantManagerEvents =
 export interface Exchange {
   // Technically the WebSocket could send us a response at any time, without
   // ever having requested anything - such as on WebSocket 'open'.
-  request?: MlCopilotClientMessage
+  request?: MlCopilotClientMessageWithDiscoveredMode
 
   // A response may not necessarily ever come back! (Thus list remains empty.)
   // It's possible a request triggers multiple responses, such as reasoning,
@@ -165,11 +285,13 @@ export interface MlEphantManagerContext {
   fileFocusedOnInEditor?: FileEntry
   projectNameCurrentlyOpened?: string
   awaitingResponse: boolean
+  attachmentsLoadedForCurrentPrompt: boolean
   pendingBackendShutdown: boolean
+  defaultMode?: MlCopilotModeId
+  modeOptions?: MlCopilotModeOption[]
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
-    sketch_solve?: boolean
   }
 }
 
@@ -189,8 +311,81 @@ export const mlEphantDefaultContext = (args: {
   fileFocusedOnInEditor: undefined,
   projectNameCurrentlyOpened: undefined,
   awaitingResponse: false,
+  attachmentsLoadedForCurrentPrompt: true,
   pendingBackendShutdown: false,
+  defaultMode: undefined,
+  modeOptions: undefined,
 })
+
+const ZOOKEEPER_DISCONNECT_LOG_PREFIX = '[zookeeper-disconnect]'
+
+function logZookeeperDisconnect(message: string, metadata?: unknown) {
+  console.warn(ZOOKEEPER_DISCONNECT_LOG_PREFIX, message, metadata)
+}
+
+type ZookeeperErrorContext = Pick<
+  MlEphantManagerContext,
+  | 'conversationId'
+  | 'awaitingResponse'
+  | 'pendingBackendShutdown'
+  | 'lastMessageId'
+  | 'lastMessageType'
+> & {
+  exchangeCount: Conversation['exchanges']['length'] | undefined
+  readyState: ReturnType<typeof getWebSocketReadyStateLabel>
+}
+
+function zookeeperErrorContext(
+  context: MlEphantManagerContext
+): ZookeeperErrorContext {
+  return {
+    conversationId: context.conversationId,
+    awaitingResponse: context.awaitingResponse,
+    pendingBackendShutdown: context.pendingBackendShutdown,
+    lastMessageId: context.lastMessageId,
+    lastMessageType: context.lastMessageType,
+    exchangeCount: context.conversation?.exchanges.length,
+    readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
+  }
+}
+
+function reportZookeeperClientError(args: {
+  code: ClientErrorCode
+  error: Error
+  dedupeKey?: string
+  extra?: Record<string, unknown>
+}) {
+  // Keep this scoped to exceptions raised while the client handles the pane.
+  // Backend error responses and normal websocket lifecycle events are not
+  // client bugs, even when they produce user-visible Zookeeper errors.
+  void reportClientError({
+    code: args.code,
+    message: args.error.message,
+    error: args.error,
+    dedupeKey: args.dedupeKey,
+    extra: {
+      source: 'MlEphantManagerMachine',
+      ...args.extra,
+    },
+  })
+}
+
+function getWebSocketReadyStateLabel(
+  readyState: number | undefined
+): string | undefined {
+  switch (readyState) {
+    case WebSocket.CONNECTING:
+      return 'CONNECTING'
+    case WebSocket.OPEN:
+      return 'OPEN'
+    case WebSocket.CLOSING:
+      return 'CLOSING'
+    case WebSocket.CLOSED:
+      return 'CLOSED'
+    default:
+      return undefined
+  }
+}
 
 function isString(x: unknown): x is string {
   return typeof x === 'string'
@@ -198,6 +393,14 @@ function isString(x: unknown): x is string {
 
 function isPresent<T>(x: undefined | T): x is T {
   return x !== null && x !== undefined
+}
+
+const intentionalMlEphantCloses = new WeakSet<WebSocket>()
+
+function closeMlEphantWebSocket(ws: WebSocket | undefined) {
+  if (ws?.readyState !== WebSocket.OPEN) return
+  intentionalMlEphantCloses.add(ws)
+  ws.close()
 }
 
 type BackendShutdownMessage = Extract<
@@ -215,6 +418,16 @@ function isBackendShutdownMessage(
 
 function isResponseComplete(response: MlCopilotServerMessage): boolean {
   return 'end_of_stream' in response || 'error' in response
+}
+
+function isAttachmentsLoadedMessage(
+  response: unknown
+): response is { attachments_loaded: object } {
+  return (
+    typeof response === 'object' &&
+    response !== null &&
+    'attachments_loaded' in response
+  )
 }
 
 async function toMlCopilotFile(file: File): Promise<MlCopilotFile> {
@@ -362,18 +575,43 @@ export const mlEphantManagerMachine = setup({
     events: {} as MlEphantManagerEvents,
   },
   actions: {
-    toastError: ({ event }) => {
+    toastError: ({ event, context }) => {
       console.error(event)
-      if ('output' in event && event.output instanceof Error) {
-        toast.error(event.output.message)
-      } else if ('data' in event && event.data instanceof Error) {
-        toast.error(event.data.message)
-      } else if ('error' in event && event.error instanceof Error) {
-        toast.error(event.error.message)
-      }
+      const error = xstateEventError(event)
+      if (!isErr(error)) return
+
+      reportZookeeperClientError({
+        code: ClientErrorCode.ZookeeperActorError,
+        error,
+        dedupeKey: `MlEphantManagerMachine:actor-error:${event.type}:${error.message}`,
+        extra: {
+          eventType: event.type,
+          ...zookeeperErrorContext(context),
+        },
+      })
+      toast.error(error.message)
     },
-    handleAbruptClose: assign(({ event }) => {
+    reportSetupError: ({ event, context }) => {
+      if (!('error' in event)) return
+      if (event.error === MlEphantSetupErrors.ConversationNotFound) return
+      if (!isErr(event.error)) return
+
+      reportZookeeperClientError({
+        code: ClientErrorCode.ZookeeperSetupError,
+        error: event.error,
+        dedupeKey: `MlEphantManagerMachine:setup-error:${event.error.message}`,
+        extra: {
+          eventType: event.type,
+          ...zookeeperErrorContext(context),
+        },
+      })
+    },
+    handleAbruptClose: assign(({ event, context }) => {
       assertEvent(event, MlEphantManagerTransitions.AbruptClose)
+      logZookeeperDisconnect('machine handling abrupt websocket close', {
+        closeReason: event.closeReason,
+        ...zookeeperErrorContext(context),
+      })
       if (event.closeReason) {
         toast.error(event.closeReason)
       }
@@ -383,13 +621,34 @@ export const mlEphantManagerMachine = setup({
       }
     }),
     handleBackendShutdown: assign(({ context }) => {
+      logZookeeperDisconnect('received backend shutdown message', {
+        awaitingResponse: context.awaitingResponse,
+        pendingBackendShutdown: context.pendingBackendShutdown,
+        conversationId: context.conversationId,
+        lastMessageType: context.lastMessageType,
+      })
       if (context.awaitingResponse) {
         return { pendingBackendShutdown: true }
       }
       return {}
     }),
+    assignModeOptions: assign(({ context, event }) => {
+      assertEvent(event, MlEphantManagerTransitions.ModesReceive)
+      return {
+        defaultMode: event.defaultMode ?? context.defaultMode,
+        modeOptions: event.modeOptions,
+      }
+    }),
     disconnectIfIdle: ({ context }) => {
       if (!context.awaitingResponse) {
+        logZookeeperDisconnect(
+          'closing websocket because backend shutdown arrived while idle',
+          {
+            conversationId: context.conversationId,
+            lastMessageType: context.lastMessageType,
+            readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
+          }
+        )
         context.ws?.close()
       }
     },
@@ -399,6 +658,15 @@ export const mlEphantManagerMachine = setup({
         context.pendingBackendShutdown &&
         isResponseComplete(event.response)
       ) {
+        logZookeeperDisconnect(
+          'closing websocket because backend shutdown was pending and response stream completed',
+          {
+            conversationId: context.conversationId,
+            lastMessageType: context.lastMessageType,
+            responseType: Object.keys(event.response),
+            readyState: getWebSocketReadyStateLabel(context.ws?.readyState),
+          }
+        )
         context.ws?.close()
       }
     },
@@ -417,7 +685,6 @@ export const mlEphantManagerMachine = setup({
         return {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
-          sketch_solve: event.sketch_solve,
         }
       },
     }),
@@ -436,31 +703,41 @@ export const mlEphantManagerMachine = setup({
       const maybeConversationId =
         args.input.context?.cachedSetup?.conversationId ??
         args.input.context?.conversationId
-      const sketchSolve = args.input.context?.cachedSetup?.sketch_solve === true
-      const theRefParentSend = args.input.context?.cachedSetup?.refParentSend
+      // Always read refParentSend from the input event — the parent's invoke
+      // input function sets it to `args.self.send` on every (re)entry, so it
+      // is reliable. cachedSetup.refParentSend is cleared after the first
+      // successful setup (clearCacheSetup), which would otherwise leave the
+      // message handler unable to dispatch on reconnects.
+      const theRefParentSend = args.input.event.refParentSend
 
       const queryParams = new URLSearchParams()
       if (maybeConversationId) {
         queryParams.set('conversation_id', maybeConversationId)
         queryParams.set('replay', 'true')
       }
-      if (sketchSolve) {
-        queryParams.set('sketch_solve', 'true')
-      }
       const querystring = queryParams.toString()
         ? `?${queryParams.toString()}`
         : ''
       const url = withMlephantWebSocketURL(querystring)
+      const conversationId =
+        args.input.context.conversationId ?? args.input.event.conversationId
 
       // Defensive: if there's already an open connection, close it.
-      if (args.input.context.ws?.readyState === WebSocket.OPEN) {
-        args.input.context.ws?.close()
-      }
+      closeMlEphantWebSocket(args.input.context.ws)
 
       const ws = await Socket(WebSocket, url, args.input.context.apiToken)
       ws.binaryType = 'arraybuffer'
 
+      logZookeeperDisconnect('websocket opened and authenticated', {
+        conversationId,
+        url,
+        readyState: getWebSocketReadyStateLabel(ws.readyState),
+      })
+
       let maybeReplayedExchanges: Exchange[] = []
+      let maybeModeOptions: MlCopilotModeOption[] | undefined
+      let maybeDefaultMode: MlCopilotModeId | undefined
+      let setupResolved = false
 
       return await new Promise<Partial<MlEphantManagerContext>>(
         (onFulfilled, onRejected) => {
@@ -472,6 +749,14 @@ export const mlEphantManagerMachine = setup({
             ws.send(JSON.stringify({ type: 'ping' }))
           }, 4_000)
 
+          ws.addEventListener('error', function (event: Event) {
+            logZookeeperDisconnect('websocket error event received', {
+              conversationId,
+              readyState: getWebSocketReadyStateLabel(ws.readyState),
+              eventType: event.type,
+            })
+          })
+
           ws.addEventListener('message', function (event: MessageEvent<any>) {
             let response: unknown
             if (!isString(event.data)) {
@@ -479,20 +764,70 @@ export const mlEphantManagerMachine = setup({
               try {
                 response = msgpackDecode(binaryData)
               } catch (msgpackError) {
-                return console.error(
+                console.error(
                   'failed to deserialize binary websocket message',
-                  { msgpackError }
+                  {
+                    msgpackError,
+                  }
                 )
+                if (!isErr(msgpackError)) return
+
+                reportZookeeperClientError({
+                  code: ClientErrorCode.ZookeeperWebsocketBinaryDecodeError,
+                  error: msgpackError,
+                  dedupeKey: `MlEphantManagerMachine:binary-decode:${String(conversationId)}:${msgpackError.message}`,
+                  extra: {
+                    ...zookeeperErrorContext(args.input.context),
+                    conversationId,
+                    byteLength: binaryData.byteLength,
+                    readyState: getWebSocketReadyStateLabel(ws.readyState),
+                  },
+                })
+                return
               }
             } else {
               try {
                 response = JSON.parse(event.data)
               } catch (e: unknown) {
-                return console.error(e)
+                console.error(e)
+                if (!isErr(e)) return
+
+                reportZookeeperClientError({
+                  code: ClientErrorCode.ZookeeperWebsocketJsonParseError,
+                  error: e,
+                  dedupeKey: `MlEphantManagerMachine:json-parse:${String(conversationId)}:${e.message}`,
+                  extra: {
+                    ...zookeeperErrorContext(args.input.context),
+                    conversationId,
+                    dataLength: event.data.length,
+                    readyState: getWebSocketReadyStateLabel(ws.readyState),
+                  },
+                })
+                return
               }
             }
 
+            const modesResult = parseMlCopilotModesResult(response)
+            if (modesResult !== null) {
+              maybeModeOptions = modesResult.modeOptions
+              maybeDefaultMode = modesResult.defaultMode
+              if (setupResolved && theRefParentSend) {
+                theRefParentSend({
+                  type: MlEphantManagerTransitions.ModesReceive,
+                  defaultMode: maybeDefaultMode,
+                  modeOptions: maybeModeOptions,
+                })
+              }
+              return
+            }
+
             if (isBackendShutdownMessage(response)) {
+              logZookeeperDisconnect('server sent backend_shutdown', {
+                backendShutdownReason: response.backend_shutdown.reason,
+                conversationId,
+                lastMessageType: args.input.context.lastMessageType,
+                readyState: getWebSocketReadyStateLabel(ws.readyState),
+              })
               if (theRefParentSend) {
                 theRefParentSend({
                   type: MlEphantManagerTransitions.BackendShutdown,
@@ -501,8 +836,7 @@ export const mlEphantManagerMachine = setup({
               return
             }
 
-            if (!isMlCopilotServerMessage(response))
-              return new Error('Not a MlCopilotServerMessage')
+            if (!isMlCopilotServerMessage(response)) return
 
             // Ignore the authorization bug
             if (
@@ -531,6 +865,14 @@ export const mlEphantManagerMachine = setup({
                   MlEphantSetupErrors.InvalidConversationId
                 ))
             ) {
+              logZookeeperDisconnect(
+                'closing websocket because conversation replay/setup is invalid',
+                {
+                  errorDetail: response.error.detail,
+                  conversationId,
+                  readyState: getWebSocketReadyStateLabel(ws.readyState),
+                }
+              )
               devCalledClose = true
               ws.close()
               // Pass that the conversation is not found to the onError handler which will set the conversationId
@@ -592,6 +934,7 @@ export const mlEphantManagerMachine = setup({
             // We're only considered setup when a conversation_id is assigned
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
+              setupResolved = true
               onFulfilled({
                 abruptlyClosed: false,
                 lastMessageId: undefined,
@@ -601,6 +944,8 @@ export const mlEphantManagerMachine = setup({
                   exchanges: maybeReplayedExchanges,
                 },
                 conversationId: response.conversation_id.conversation_id,
+                defaultMode: maybeDefaultMode,
+                modeOptions: maybeModeOptions,
                 ws,
               })
 
@@ -617,14 +962,39 @@ export const mlEphantManagerMachine = setup({
             }
           })
 
+          const listModesRequest: MlCopilotListModesRequest = {
+            type: 'list_modes',
+          }
+          ws.send(JSON.stringify(listModesRequest))
+
           ws.addEventListener('close', function (event: CloseEvent) {
+            clearInterval(pingIntervalId)
+            const intentionallyClosed = intentionalMlEphantCloses.has(ws)
+            if (intentionallyClosed) {
+              intentionalMlEphantCloses.delete(ws)
+            }
+
+            logZookeeperDisconnect('websocket close event received', {
+              code: event.code,
+              reason: event.reason,
+              wasClean: event.wasClean,
+              devCalledClose,
+              intentionallyClosed,
+              conversationId,
+              lastMessageType: args.input.context.lastMessageType,
+              readyState: getWebSocketReadyStateLabel(ws.readyState),
+            })
+
+            if (intentionallyClosed) {
+              return
+            }
+
             if (theRefParentSend !== undefined && devCalledClose === false) {
               let closeReason: string | undefined
               if (event.code === 1009) {
                 closeReason =
                   'Your project files are too large to send to Zookeeper. Try removing large STL/STEP files or splitting your project.'
               }
-              clearInterval(pingIntervalId)
               theRefParentSend({
                 type: MlEphantManagerTransitions.AbruptClose,
                 closeReason,
@@ -668,14 +1038,16 @@ export const mlEphantManagerMachine = setup({
           ? await Promise.all(event.additionalFiles.map(toMlCopilotFile))
           : undefined
 
-      const request: Extract<MlCopilotClientMessage, { type: 'user' }> = {
+      const request: MlCopilotUserRequest = {
         type: 'user',
         content: requestData.body.prompt ?? '',
         project_name: requestData.body.project_name,
         source_ranges: requestData.body.source_ranges,
         current_files: filesAsByteArrays,
-        mode: event.mode,
-        sketch_solve: event.sketch_solve ?? false,
+        ...(requestData.activeFile
+          ? { active_file: requestData.activeFile }
+          : {}),
+        ...(event.mode ? { mode: event.mode } : {}),
         ...(additionalFiles ? { additional_files: additionalFiles } : {}),
       }
 
@@ -695,6 +1067,8 @@ export const mlEphantManagerMachine = setup({
         conversation,
         fileFocusedOnInEditor: event.fileSelectedDuringPrompting.entry,
         projectNameCurrentlyOpened: requestData.body.project_name,
+        attachmentsLoadedForCurrentPrompt:
+          !event.additionalFiles || event.additionalFiles.length === 0,
       }
     }),
     [MlEphantManagerStates.ContinueCheck]: fromPromise(async function (
@@ -714,7 +1088,6 @@ export const mlEphantManagerMachine = setup({
       }
 
       const filesAsByteArrays: Record<string, number[]> = {}
-      const kclFilesMap: KclFileMetaMap = {}
       const files: KittyCadLibFile[] = []
 
       event.projectFiles.forEach((file) => {
@@ -723,7 +1096,6 @@ export const mlEphantManagerMachine = setup({
           data = file.data
         } else {
           // file.type === 'kcl'
-          kclFilesMap[file.execStateFileNamesIndex] = file
           data = new Blob([file.fileContents], { type: 'text/kcl' })
         }
         files.push({
@@ -738,13 +1110,11 @@ export const mlEphantManagerMachine = setup({
         )
       }
 
-      const requestProjectContext: Extract<
-        MlCopilotClientMessage,
-        { type: 'project_context' }
-      > = {
+      const requestProjectContext: MlCopilotProjectContextRequest = {
         type: 'project_context',
         project_name: event.projectName,
         current_files: filesAsByteArrays,
+        ...(event.activeFile ? { active_file: event.activeFile } : {}),
       }
 
       const requestContinue: Extract<
@@ -802,8 +1172,12 @@ export const mlEphantManagerMachine = setup({
   context: mlEphantDefaultContext,
   exit: (args) => {
     // Make sure the connection is closed.
-    if (args.context?.ws?.readyState !== WebSocket.OPEN) return
-    args.context?.ws?.close()
+    closeMlEphantWebSocket(args.context?.ws)
+  },
+  on: {
+    [MlEphantManagerTransitions.ModesReceive]: {
+      actions: ['assignModeOptions'],
+    },
   },
   states: {
     [S.Await]: {
@@ -817,7 +1191,10 @@ export const mlEphantManagerMachine = setup({
               lastMessageType: undefined,
               conversation: undefined,
               conversationId: undefined,
+              defaultMode: undefined,
+              modeOptions: undefined,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
             }),
             'cacheSetup',
@@ -840,12 +1217,6 @@ export const mlEphantManagerMachine = setup({
             event: {
               type: MlEphantManagerStates.Setup,
               conversationId: args.event.conversationId,
-              sketch_solve:
-                args.event.type === MlEphantManagerStates.Setup ||
-                args.event.type ===
-                  MlEphantManagerTransitions.CacheSetupAndConnect
-                  ? args.event.sketch_solve
-                  : undefined,
               refParentSend: args.self.send,
             },
             context: args.context,
@@ -855,9 +1226,12 @@ export const mlEphantManagerMachine = setup({
         onDone: {
           target: MlEphantManagerStates.WaitForContinueCheck,
           actions: [
-            assign(({ event }) => ({
+            assign(({ event, context }) => ({
               ...event.output,
+              defaultMode: event.output.defaultMode ?? context.defaultMode,
+              modeOptions: event.output.modeOptions ?? context.modeOptions,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
             })),
             'clearCacheSetup',
@@ -866,6 +1240,7 @@ export const mlEphantManagerMachine = setup({
         onError: {
           target: MlEphantManagerStates.Setup,
           actions: [
+            'reportSetupError',
             assign(({ event, context }) => {
               if (event.error === MlEphantSetupErrors.ConversationNotFound) {
                 // set the conversation Id to undefined to have the reenter make a new conversation id
@@ -878,7 +1253,6 @@ export const mlEphantManagerMachine = setup({
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
-                    sketch_solve: context.cachedSetup?.sketch_solve,
                   },
                 }
               }
@@ -888,7 +1262,6 @@ export const mlEphantManagerMachine = setup({
                 cachedSetup: {
                   refParentSend: context.cachedSetup?.refParentSend,
                   conversationId: context.cachedSetup?.conversationId,
-                  sketch_solve: context.cachedSetup?.sketch_solve,
                 },
               }
             }),
@@ -999,6 +1372,18 @@ export const mlEphantManagerMachine = setup({
                         conversation,
                         lastMessageId,
                         awaitingResponse: false,
+                        attachmentsLoadedForCurrentPrompt: true,
+                        pendingBackendShutdown: responseComplete
+                          ? false
+                          : context.pendingBackendShutdown,
+                      }
+                    }
+
+                    if (isAttachmentsLoadedMessage(event.response)) {
+                      return {
+                        lastMessageId,
+                        attachmentsLoadedForCurrentPrompt: true,
+                        awaitingResponse: context.awaitingResponse,
                         pendingBackendShutdown: responseComplete
                           ? false
                           : context.pendingBackendShutdown,
@@ -1101,6 +1486,9 @@ export const mlEphantManagerMachine = setup({
                     assign(({ event, context }) => ({
                       ...event.output,
                       awaitingResponse: true,
+                      attachmentsLoadedForCurrentPrompt:
+                        event.output.attachmentsLoadedForCurrentPrompt ??
+                        context.attachmentsLoadedForCurrentPrompt,
                       pendingBackendShutdown: context.pendingBackendShutdown,
                     })),
                   ],
@@ -1160,12 +1548,14 @@ export const mlEphantManagerMachine = setup({
       always: {
         target: S.Await,
         actions: [
-          (args) => {
-            // We want to keep the context around to recover.
-            if (args.context.abruptlyClosed) {
-              return assign({})
-            }
-            return assign({
+          ({ context }) => {
+            // Close before clearing context so the live socket is still reachable.
+            closeMlEphantWebSocket(context.ws)
+          },
+          assign(({ context }) => {
+            if (context.abruptlyClosed) return {}
+            // A clean close should not leak connection state into the next chat.
+            return {
               abruptlyClosed: false,
               conversation: undefined,
               conversationId: undefined,
@@ -1173,14 +1563,12 @@ export const mlEphantManagerMachine = setup({
               lastMessageId: undefined,
               lastMessageType: undefined,
               awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
               pendingBackendShutdown: false,
-            })
-          },
-          (args) => {
-            if (args.context.ws?.readyState === WebSocket.OPEN) {
-              args.context.ws?.close()
+              closeReason: undefined,
+              ws: undefined,
             }
-          },
+          }),
         ],
       },
     },

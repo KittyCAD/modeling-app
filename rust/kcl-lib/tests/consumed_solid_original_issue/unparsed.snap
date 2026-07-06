@@ -1,0 +1,71 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+assertion_line: 239
+description: Result of unparsing consumed_solid_original_issue.kcl
+---
+numFlutes = 6
+fluteAngle = 360deg / numFlutes
+handleRad = 15mm
+handleLen = 50mm
+shaftRad = 2.5mm
+shaftHoleDepth = 20mm
+outerArc = 3mm
+innerArc = 10mm
+
+midPoint = polar(angle = fluteAngle / 2, length = handleRad)
+quarterPoint = polar(angle = fluteAngle / 4, length = handleRad - outerArc)
+threeQuarterPoint = polar(angle = fluteAngle * 3 / 4, length = handleRad + innerArc)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 15mm, var 0mm])
+  horizontal([line1])
+  arc1 = arc(start = [var 15mm, var 0mm], end = midPoint, center = quarterPoint)
+  coincident([line1.end, arc1.start])
+  coincident([ORIGIN, line1.start])
+  line2 = line(end = [var 0mm, var 0mm], start = [var 10.61mm, var 10.61mm])
+  coincident([line2.end, line1.start])
+  angle([line1, line2]) == fluteAngle
+  equalLength([line1, line2])
+  distance([line1.start, line1.end]) == handleRad
+  arc2 = arc(start = [var 10.61mm, var 10.61mm], end = [var 13.86mm, var 5.74mm], center = threeQuarterPoint)
+  coincident([arc2.start, line2.start])
+  coincident([arc1.end, arc2.end])
+}
+
+shaftlessHandle = region(segments = [sketch001.line1])
+  |> patternCircular2d(instances = numFlutes, center = [0, 0])
+  |> extrude(length = handleLen, method = NEW)
+
+profile001 = sketch(on = XY) {
+  circle1 = circle(start = [var 2.5mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([circle1.center, ORIGIN])
+  radius(circle1) == shaftRad
+}
+
+shaftHole = region(segments = profile001.circle1)
+  |> extrude(length = shaftHoleDepth, method = NEW)
+
+rawHandle = subtract(shaftlessHandle, tools = [shaftHole])
+
+sketch002 = sketch(on = offsetPlane(XZ, offset = 0)) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 17.45mm, var 0mm])
+  coincident([line1.start, ORIGIN])
+  horizontal([line1.end, ORIGIN])
+  line2 = line(start = [var 17.45mm, var 0mm], end = [var 17.2mm, var 35.76mm])
+  coincident([line2.start, line1.end])
+  arc1 = arc(start = [var 16.92mm, var 34.74mm], end = [var 0mm, var 49.66mm], center = [var 1.9mm, var 33.94mm])
+  vertical([arc1.end, ORIGIN])
+  coincident([line2.end, arc1.start])
+  tangent([line2, arc1])
+  vertical(line2)
+  horizontal(line1)
+  line3 = line(start = [var 0mm, var 50.01mm], end = [var 0mm, var 0mm])
+  coincident([line3.start, arc1.end])
+  coincident([line3.end, line1.start])
+  vertical(line3)
+}
+hidden001 = hide(sketch002)
+region002 = region(segments = [sketch002.line1])
+ballEnd = revolve(region002, axis = Y)
+
+ballEndHandle = intersect([ballEnd, rawHandle])

@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
-import { assign, createActor, setup, waitFor } from 'xstate'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   equalLengthConstraintTool,
   fixedConstraintTool,
@@ -9,15 +9,15 @@ import {
 } from '@src/machines/sketchSolve/tools/constraintToolMachine'
 import {
   createArcApiObject,
+  createLineApiObject,
   createMockKclManager,
   createMockRustContext,
   createMockSceneInfra,
-  createLineApiObject,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { SketchSolveSelectionId } from '@src/machines/sketchSolve/sketchSolveSelection'
+import { describe, expect, it, vi } from 'vitest'
+import { assign, createActor, setup, waitFor } from 'xstate'
 
 type ParentContext = {
   selectedIds: SketchSolveSelectionId[]
@@ -72,7 +72,7 @@ function createHarness({
     types: {
       context: {} as ParentContext,
       events: {} as ParentEvent,
-      input: {} as Record<string, never>,
+      input: {},
     },
     actors: {
       childTool: childMachine,

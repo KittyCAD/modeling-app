@@ -2,11 +2,13 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import CommandBarDivider from '@src/components/CommandBar/CommandBarDivider'
 import CommandBarHeaderFooter from '@src/components/CommandBar/CommandBarHeaderFooter'
-import { CustomIcon } from '@src/components/CustomIcon'
-import type { CommandArgument } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
-import { useMemo } from 'react'
 import { evaluateCommandBarArg } from '@src/components/CommandBar/utils'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Tooltip from '@src/components/Tooltip'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
+import { useMemo } from 'react'
 
 function CommandBarReview({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
@@ -24,6 +26,20 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     enableOnContentEditable: true,
   })
 
+  const visibleArgEntries = useMemo<
+    [string, CommandArgument<unknown>][]
+  >(() => {
+    if (!selectedCommand?.args) return []
+    return Object.entries(selectedCommand.args).filter(([name, arg]) => {
+      const { isHidden } = evaluateCommandBarArg(
+        name,
+        arg,
+        commandBarState.context
+      )
+      return !isHidden
+    })
+  }, [selectedCommand, commandBarState.context])
+
   useHotkeys(
     [
       'alt+1',
@@ -39,12 +55,9 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
     ],
     (_, b) => {
       if (b.keys && !Number.isNaN(parseInt(b.keys[0], 10))) {
-        if (!selectedCommand?.args) return
-        const argName = Object.keys(selectedCommand.args)[
-          parseInt(b.keys[0], 10) - 1
-        ]
-        const arg = selectedCommand?.args[argName]
-        if (!arg) return
+        const argEntry = visibleArgEntries[parseInt(b.keys[0], 10) - 1]
+        if (!argEntry) return
+        const [argName, arg] = argEntry
         commands.send({
           type: 'Edit argument',
           data: { arg: { ...arg, name: argName } },
@@ -52,7 +65,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
       }
     },
     { keyup: true, enableOnFormTags: true, enableOnContentEditable: true },
-    [argumentsToSubmit, selectedCommand]
+    [argumentsToSubmit, selectedCommand, visibleArgEntries]
   )
 
   Object.keys(argumentsToSubmit).forEach((key, _i) => {
@@ -126,9 +139,22 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
           <CommandBarDivider />
         </>
       )}
+      {selectedCommand?.status === 'deprecated' && (
+        <>
+          <p className="px-4 py-2 text-sm">
+            <span className="font-bold">Warning: </span>
+            <span>
+              this command is deprecated and may be removed in a future version
+              of Zoo Design Studio. Prefer the recommended replacement when one
+              is available.
+            </span>
+          </p>
+          <CommandBarDivider />
+        </>
+      )}
       {Object.entries(availableOptionalArgs || {}).length > 0 && (
         <>
-          <div className="px-4 flex flex-wrap gap-2 items-baseline">
+          <div className="px-4 flex flex-wrap gap-2 items-center">
             <span className="text-sm mr-4">Arguments</span>
             {Object.entries(availableOptionalArgs || {}).map(
               ([argName, arg]) => {
@@ -145,6 +171,31 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
                     key={argName}
                     className="w-fit px-2 py-1 m-0 rounded-sm flex gap-2 items-center border"
                   >
+                    {arg.status === 'experimental' && (
+                      <span className="inline-flex items-center">
+                        <CustomIcon name="beaker" className="w-3.5 h-3.5" />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>Experimental</span>
+                        </Tooltip>
+                      </span>
+                    )}
+                    {arg.status === 'deprecated' && (
+                      <span className="inline-flex items-center text-warn-80 dark:text-warn-40">
+                        <CustomIcon
+                          name="triangleExclamation"
+                          className="w-3.5 h-3.5"
+                        />
+                        <Tooltip
+                          position="bottom"
+                          contentClassName="max-w-none flex items-center"
+                        >
+                          <span>{arg.statusMessage ?? 'Deprecated'}</span>
+                        </Tooltip>
+                      </span>
+                    )}
                     <span className="capitalize">
                       {arg.displayName || argName}
                     </span>
@@ -158,6 +209,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
         </>
       )}
       <form
+        {...noAutofillFormProps}
         id="review-form"
         className="absolute opacity-0 inset-0 pointer-events-none"
         onSubmit={submitCommand}
@@ -170,6 +222,7 @@ function CommandBarReview({ stepBack }: { stepBack: () => void }) {
 
           return (
             <input
+              {...noAutofillInputProps}
               id={key}
               name={key}
               key={key}

@@ -1,7 +1,7 @@
-import tsconfigPaths from 'vite-tsconfig-paths'
-import { defineConfig } from 'vitest/config'
 // @ts-ignore: No types available
 import { lezer } from '@lezer/generator/rollup'
+import tsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   plugins: [tsconfigPaths(), lezer()],
@@ -30,14 +30,20 @@ export default defineConfig({
         extends: true,
         test: {
           name: 'unit',
-          include: ['src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+          include: [
+            'src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'packages/registry/src/**/*.test.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+          ],
         },
       },
       {
         extends: true,
         test: {
           name: 'integration',
-          include: ['src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+          include: [
+            'src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+            'packages/registry/src/**/*.spec.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
+          ],
           hookTimeout: 30_000,
           retry: 2,
         },

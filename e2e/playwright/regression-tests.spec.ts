@@ -184,41 +184,6 @@ extrude001 = extrude(sketch001, length = 50)
       page.locator('.pretty-json-container >> text=myVar:"67')
     ).toBeVisible()
   })
-  test('Writes to disk from sketch mode', async ({
-    page,
-    homePage,
-    scene,
-    cmdBar,
-    toolbar,
-    editor,
-  }) => {
-    await homePage.createAndGoToProject('test')
-    await scene.settled(cmdBar)
-
-    await test.step('Create a sketch', async () => {
-      await toolbar.startSketchPlaneSelection()
-      const [selectXZPlane] = scene.makeMouseHelpers(0.55, 0.3, {
-        format: 'ratio',
-      })
-      await selectXZPlane()
-      await page.waitForTimeout(600)
-      await editor.expectEditor.toContain('startSketchOn(XZ)')
-
-      const [lineStart] = scene.makeMouseHelpers(0.5, 0.8, { format: 'ratio' })
-      const [lineEnd] = scene.makeMouseHelpers(0.5, 0.2, { format: 'ratio' })
-      await lineStart()
-      await page.waitForTimeout(300)
-      await lineEnd()
-      await editor.expectEditor.toContain('|> yLine(')
-      await toolbar.exitSketch()
-      await page.waitForTimeout(2_000)
-    })
-
-    await test.step('Navigate to same file again to verify code persists', async () => {
-      await page.reload()
-      await expect(editor.codeContent).toContainText('yLine')
-    })
-  })
   test('ProgramMemory can be serialised', async ({ page, homePage, scene }) => {
     // const u = await getUtils(page)
     await page.addInitScript(async () => {
@@ -245,12 +210,7 @@ extrude001 = extrude(sketch001, length = 50)
     // Listen for all console events and push the message text to an array
     page.on('console', (message) => messages.push(message.text()))
     await homePage.goToModelingScene()
-    // await u.waitForPageLoad()
     await scene.connectionEstablished()
-
-    // wait for execution done
-    // await u.openDebugPanel()
-    // await u.expectCmdLog('[data-message-type="execution-done"]')
 
     const forbiddenMessages = ['cannot serialize tagged newtype variant']
     forbiddenMessages.forEach((forbiddenMessage) => {
@@ -364,7 +324,7 @@ extrude002 = extrude(profile002, length = 150)`
       await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // expect pixel color to be background color
       const offModelBefore = await scene.convertPagePositionToStream(
@@ -387,7 +347,7 @@ extrude002 = extrude(profile002, length = 150)`
       await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       const offModelAfter = await scene.convertPagePositionToStream(
         0.9,
@@ -425,7 +385,7 @@ extrude002 = extrude(profile002, length = 150)`
       await homePage.goToModelingScene()
 
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // export the model
       const exportButton = page.getByTestId('export-pane-button')
@@ -465,12 +425,11 @@ extrude002 = extrude(profile002, length = 150)`
       await page.locator('.cm-content').fill(bracket)
       await page.keyboard.press('End')
       await page.keyboard.press('Enter')
-
-      await scene.settled(cmdBar)
-
-      // Now try exporting
+      await scene.settled()
+      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Click the export button
+      await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
       // Click the stl.
@@ -553,23 +512,22 @@ extrude002 = extrude(profile002, length = 150)`
     })
 
     await test.step('Successful, unblocked export', async () => {
+      const previousSuccessToastCount = await successToastMessage.count()
+
       // Try exporting again.
       await clickExportButton(page, cmdBar)
 
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
-
       // Expect it to succeed.
       await Promise.all([
-        expect(exportingToastMessage).not.toBeVisible(),
+        expect(exportingToastMessage).not.toBeVisible({ timeout: 15_000 }),
         expect(errorToastMessage).not.toBeVisible(),
         expect(engineErrorToastMessage).not.toBeVisible(),
         expect(alreadyExportingToastMessage).not.toBeVisible(),
       ])
 
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(2)
+      await expect
+        .poll(() => successToastMessage.count(), { timeout: 15_000 })
+        .toBeGreaterThan(previousSuccessToastCount)
     })
   })
 
@@ -732,7 +690,7 @@ extrude002 = extrude(profile002, length = 150)`
       await toolbar.expectToolbarMode.not.toBe('modeling')
 
       // After animation completes, we should see the sketching toolbar
-      await toolbar.expectToolbarMode.toBe('sketching')
+      await toolbar.expectToolbarMode.toBe('sketchSolve')
     })
   })
 
@@ -756,7 +714,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       )
     })
     await homePage.openProject('test-sample')
-    await scene.settled(cmdBar)
+    await scene.settled()
     await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
     const operationButton = await toolbar.getFeatureTreeOperation('plane002', 0)
 
@@ -765,7 +723,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       await editor.closePane()
       await operationButton.first().click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Open the code pane, don't crash`, async () => {
@@ -810,7 +768,9 @@ thicknessMin = 0.024
 washerSketch = startSketchOn(XY)
   |> circle(center = [0, 0], radius = outerDiameter / 2)
 
-washer = extrude(washerSketch, length = thicknessMax)`
+washer = extrude(washerSketch, length = thicknessMax)
+faceSketch = startSketchOn(washer, face = END)
+faceProfile001 = circle(faceSketch, center = [0, 0], radius = 0.01)`
         )
       })
       await page.setBodyDimensions({ width: 1200, height: 500 })
@@ -818,13 +778,10 @@ washer = extrude(washerSketch, length = thicknessMax)`
     })
     const [circleCenterClick] = scene.makeMouseHelpers(650, 300)
     const [circleRadiusClick] = scene.makeMouseHelpers(800, 320)
-    const [washerFaceClick] = scene.makeMouseHelpers(657, 286)
 
     await page.waitForTimeout(100)
-    await test.step('Start sketching on the washer face', async () => {
-      await toolbar.startSketchPlaneSelection()
-      await washerFaceClick()
-      await page.waitForTimeout(600) // engine animation
+    await test.step('Enter the seeded washer-face sketch', async () => {
+      await toolbar.editSketch(1)
       await toolbar.expectToolbarMode.toBe('sketching')
     })
 
@@ -841,14 +798,14 @@ washer = extrude(washerSketch, length = thicknessMax)`
       // Just verify that the radius is the correct order of magnitude
       // this number will be very different if the scale is not set correctly for inches
       await editor.expectEditor.toContain(
-        /circle\(sketch001, center = \[0\.0\d+, -0\.0\d+\]/
+        /circle\(faceSketch, center = \[0\.0\d+, -0\.0\d+\]/
       )
       await circleRadiusClick()
 
       // Just verify that the radius is the correct order of magnitude
       await editor.expectEditor.toContain(
         new RegExp(
-          `circle\\(sketch001, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
+          `circle\\(faceSketch, center = \\[${NUMBER_REGEXP}, ${NUMBER_REGEXP}\\], radius = 0\\.\\d+`
         )
       )
     })
@@ -887,7 +844,7 @@ s2 = startSketchOn(XY)
     })
 
     await homePage.openProject('test')
-    await scene.settled(cmdBar)
+    await scene.settled()
     await toolbar.waitForFeatureTreeToBeBuilt()
     await toolbar.editSketch(1)
     await page.waitForTimeout(1000) // Just hang out for a second

@@ -3,20 +3,25 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
+import { getAngleDiff } from '@src/lib/utils'
 import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 import {
   axisConstraintIncludesOrigin,
-  getAxisConstraintLineId,
   coincidentContainsSegment,
-  getAxisConstraintPointIds,
-  getCoincidentSegmentIds,
-  getCoincidentCluster,
   getArcPoints,
+  getAxisConstraintLineId,
+  getAxisConstraintPointIds,
+  getCoincidentCluster,
+  getCoincidentSegmentIds,
   getLinePoints,
   isArcLikeSegment,
+  isArcSegment,
   isConstraint,
+  isConstraintSegmentId,
+  isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
   pointToVec3,
@@ -30,10 +35,12 @@ export type InvisibleConstraint = Extract<
       | 'Horizontal'
       | 'Vertical'
       | 'LinesEqualLength'
+      | 'Midpoint'
       | 'EqualRadius'
       | 'Parallel'
       | 'Perpendicular'
       | 'Tangent'
+      | 'Symmetric'
   }
 >
 
@@ -48,9 +55,18 @@ export type ConstraintHoverPopup = {
 }
 
 export function isInvisibleConstraintObject(
-  obj: ApiObject | undefined | null
+  obj: ApiObject | undefined | null,
+  objects?: ApiObject[]
 ): obj is InvisibleConstraintObject {
   if (!obj || !isConstraint(obj)) {
+    return false
+  }
+
+  if (
+    obj.kind.constraint.type === 'Coincident' &&
+    objects &&
+    isInternalControlPointSplineCoincident(obj.kind.constraint, objects)
+  ) {
     return false
   }
 
@@ -59,10 +75,12 @@ export function isInvisibleConstraintObject(
     case 'Horizontal':
     case 'Vertical':
     case 'LinesEqualLength':
+    case 'Midpoint':
     case 'EqualRadius':
     case 'Parallel':
     case 'Perpendicular':
     case 'Tangent':
+    case 'Symmetric':
       return true
     default:
       return false
@@ -111,6 +129,14 @@ export function getInvisibleConstraintAnchor(
           .map((objectId) => getObjectAnchor(objectId, objects))
           .filter(isVector3)
       )
+    case 'Symmetric':
+      return averageVectors(
+        [...constraint.input, constraint.axis]
+          .map((objectId) => getObjectAnchor(objectId, objects))
+          .filter(isVector3)
+      )
+    case 'Midpoint':
+      return getMidpointTargetAnchor(constraint.segment, objects)
     case 'Parallel':
       return (
         getLineAnchor(constraint.lines[0], objects, 0.7) ??
@@ -145,7 +171,7 @@ export function findInvisibleConstraintsForSegment(
     return objects
       .filter(
         (constraint): constraint is InvisibleConstraintObject =>
-          isInvisibleConstraintObject(constraint) &&
+          isInvisibleConstraintObject(constraint, objects) &&
           isConstrainingPointCluster(constraint, coincidentPointIds)
       )
       .map((constraint) => constraint.id)
@@ -154,7 +180,7 @@ export function findInvisibleConstraintsForSegment(
   return objects
     .filter(
       (constraint): constraint is InvisibleConstraintObject =>
-        isInvisibleConstraintObject(constraint) &&
+        isInvisibleConstraintObject(constraint, objects) &&
         isConstrainingSegment(constraint, segment, objects)
     )
     .map((constraint) => constraint.id)
@@ -200,14 +226,48 @@ export function findSegmentsForInvisibleConstraint(
       case 'Parallel':
       case 'Perpendicular':
         return constraint.kind.constraint.lines
+      case 'Midpoint':
+        return [
+          constraint.kind.constraint.point,
+          constraint.kind.constraint.segment,
+        ].filter(isConstraintSegmentId)
       case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
+      case 'Symmetric':
+        return [
+          ...constraint.kind.constraint.input,
+          constraint.kind.constraint.axis,
+        ]
     }
   })()
 
   return Array.from(
     new Set(constrainedIds.filter((id) => objects[id]?.kind.type === 'Segment'))
+  )
+}
+
+export function getInvisibleConstraintSegmentHoverColor(
+  segmentId: number,
+  constraint: InvisibleConstraintObject | null
+): number | undefined {
+  if (
+    constraint?.kind.constraint.type === 'Symmetric' &&
+    constraint.kind.constraint.axis === segmentId
+  ) {
+    return SKETCH_HIGHLIGHT_SECONDARY_COLOR
+  }
+
+  return undefined
+}
+
+export function isInvisibleConstraintSegmentSecondaryHovered(
+  segmentId: number,
+  constraint: InvisibleConstraintObject | null
+): boolean {
+  return (
+    constraint?.kind.constraint.type === 'Symmetric' &&
+    constraint.kind.constraint.axis === segmentId
   )
 }
 
@@ -230,6 +290,45 @@ function getCoincidentHighlightedSegmentIds(
   })
 
   return [...coincidentSegmentIds, ...ownerSegmentIds]
+}
+
+function isInternalControlPointSplineCoincident(
+  constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
+  objects: ApiObject[]
+): boolean {
+  const ownerSplineIds = getCoincidentSegmentIds(constraint)
+    .map((segmentId) => getOwningControlPointSplineId(segmentId, objects))
+    .filter((ownerId): ownerId is number => ownerId !== null)
+
+  return (
+    ownerSplineIds.length === getCoincidentSegmentIds(constraint).length &&
+    new Set(ownerSplineIds).size === 1
+  )
+}
+
+function getOwningControlPointSplineId(
+  segmentId: number,
+  objects: ApiObject[]
+): number | null {
+  const segment = objects[segmentId]
+  if (!segment || segment.kind.type !== 'Segment') {
+    return null
+  }
+
+  if (isControlPointSplineSegment(segment)) {
+    return segment.id
+  }
+
+  if (!isPointSegment(segment) && !isLineSegment(segment)) {
+    return null
+  }
+
+  const ownerId = segment.kind.segment.owner
+  if (ownerId == null) {
+    return null
+  }
+
+  return isControlPointSplineSegment(objects[ownerId]) ? ownerId : null
 }
 
 // Returns if the given non-visual constraint is constraining the given segment.
@@ -266,10 +365,22 @@ export function isConstrainingSegment(
         isLineSegment(segment) &&
         constraint.kind.constraint.lines.includes(segment.id)
       )
+    case 'Midpoint':
+      return (
+        (isLineSegment(segment) || isArcSegment(segment)) &&
+        constraint.kind.constraint.segment === segment.id
+      )
     case 'EqualRadius':
       return (
         isArcLikeSegment(segment) &&
         constraint.kind.constraint.input.includes(segment.id)
+      )
+    case 'Symmetric':
+      return (
+        ((isLineSegment(segment) || isArcLikeSegment(segment)) &&
+          constraint.kind.constraint.input.includes(segment.id)) ||
+        (isLineSegment(segment) &&
+          constraint.kind.constraint.axis === segment.id)
       )
     case 'Tangent':
       return (
@@ -292,6 +403,15 @@ function isConstrainingPointCluster(
     case 'Vertical':
       return getAxisConstraintPointIds(constraint.kind.constraint).some((id) =>
         pointIds.includes(id)
+      )
+    case 'Symmetric':
+      return constraint.kind.constraint.input.some((id) =>
+        pointIds.includes(id)
+      )
+    case 'Midpoint':
+      return (
+        isConstraintSegmentId(constraint.kind.constraint.point) &&
+        pointIds.includes(constraint.kind.constraint.point)
       )
     default:
       return false
@@ -336,6 +456,47 @@ function getLineAnchor(
 
   const anchor = lerp2d(linePoints[0], linePoints[1], positionAlongLine)
   return new Vector3(anchor[0], anchor[1], 0)
+}
+
+function getMidpointTargetAnchor(
+  segmentId: number,
+  objects: ApiObject[]
+): Vector3 | null {
+  const segment = objects[segmentId]
+
+  if (isLineSegment(segment)) {
+    return getLineAnchor(segmentId, objects)
+  }
+
+  if (isArcSegment(segment)) {
+    const arcPoints = getArcPoints(segment, objects)
+    if (!arcPoints) {
+      return null
+    }
+
+    const startAngle = Math.atan2(
+      arcPoints.start[1] - arcPoints.center[1],
+      arcPoints.start[0] - arcPoints.center[0]
+    )
+    const endAngle = Math.atan2(
+      arcPoints.end[1] - arcPoints.center[1],
+      arcPoints.end[0] - arcPoints.center[0]
+    )
+    const midpointAngle =
+      startAngle + getAngleDiff(startAngle, endAngle, true) / 2
+    const radius = Math.hypot(
+      arcPoints.start[0] - arcPoints.center[0],
+      arcPoints.start[1] - arcPoints.center[1]
+    )
+
+    return new Vector3(
+      arcPoints.center[0] + Math.cos(midpointAngle) * radius,
+      arcPoints.center[1] + Math.sin(midpointAngle) * radius,
+      0
+    )
+  }
+
+  return null
 }
 
 function getAxisConstraintAnchor(

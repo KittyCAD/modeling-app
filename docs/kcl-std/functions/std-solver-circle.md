@@ -15,7 +15,10 @@ solver::circle(
 ): Segment
 ```
 
-
+The starting point is currently free to float around the circumference of the circle.
+So if you want to fully constrain the circle, you'll need to fix the start point
+to somewhere along the circumference. We suggest adding `vertical([myCircle.start, myCircle.center])`
+or `horizontal([myCircle.start, myCircle.center])`.
 
 ### Arguments
 

@@ -1,16 +1,26 @@
-import { useState } from 'react'
-import { testLayoutConfig } from '@src/lib/layout/configs/test'
-import { loadLayout } from '@src/lib/layout/utils'
+import { useApp } from '@src/lib/boot'
 import { LayoutRootNode } from '@src/lib/layout/components'
+import { testLayoutConfig } from '@src/lib/layout/configs/test'
 import { testAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { isErr } from '@src/lib/trap'
+import type { Layout, LayoutWithMetadata } from '@src/lib/layout/types'
+import { useEffect, useState } from 'react'
 
-// Attempt to load a persisted layout
-const testLayoutResult = loadLayout('test')
-const testLayout = isErr(testLayoutResult) ? testLayoutConfig : testLayoutResult
+function getTestLayout(settingsLayout: LayoutWithMetadata | undefined): Layout {
+  return structuredClone(settingsLayout?.layout ?? testLayoutConfig)
+}
 
 export function TestLayout() {
-  const [layout, setLayout] = useState(testLayout)
+  const { settings } = useApp()
+  const settingsLayout = settings.useSettings().layout.configs.current.test
+  const [layout, setLayout] = useState(() =>
+    getTestLayout(settings.get().layout.configs.current.test)
+  )
+
+  useEffect(() => {
+    if (settingsLayout) {
+      setLayout(getTestLayout(settingsLayout))
+    }
+  }, [settingsLayout])
 
   return (
     <LayoutRootNode

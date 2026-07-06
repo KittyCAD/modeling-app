@@ -1,8 +1,7 @@
-import { KclManagerEvents } from '@src/lang/KclManager'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { useEffect, useRef, useState } from 'react'
 import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { EngineDebugger } from '@src/lib/debugger'
+import { useEffect, useRef } from 'react'
 
 export const useOnPageIdle = ({
   startCallback,
@@ -14,71 +13,78 @@ export const useOnPageIdle = ({
   const { settings } = useApp()
   const { kclManager } = useSingletons()
   const settingsValues = settings.useSettings()
-  const intervalId = useRef<NodeJS.Timeout | null>(null)
-  const [streamIdleMode, setStreamIdleMode] = useState(
-    settingsValues.app.streamIdleMode.current
-  )
+  const streamIdleMode = settingsValues.app.streamIdleMode.current
   const { state: modelingMachineState } = useModelingContext()
-  const IDLE_TIME_MS = Number(streamIdleMode)
-  // When streamIdleMode is changed, setup or teardown the timeouts
+  const intervalId = useRef<NodeJS.Timeout | null>(null)
+  const startCallbackRef = useRef(startCallback)
+  const idleCallbackRef = useRef(idleCallback)
+  const modelingMachineStateRef = useRef(modelingMachineState)
+  const idleTimeMsRef = useRef(Number(streamIdleMode))
+  const wasBusyRef = useRef(false)
   const timeoutStart = useRef<number | null>(null)
 
   useEffect(() => {
-    // When execution takes a long time, it's most likely a user will want to
-    // come back and be able to say, export the model. The issue with this is
-    // that means the application should NOT go into idle mode for a long time!
-    // We've picked 8 hours to coincide with the typical length of a workday.
-    const onLongExecution = () => {
-      setStreamIdleMode(1000 * 60 * 60 * 8)
-    }
-
-    kclManager.addEventListener(KclManagerEvents.LongExecution, onLongExecution)
-
     return () => {
-      kclManager.removeEventListener(
-        KclManagerEvents.LongExecution,
-        onLongExecution
-      )
-
-      // Clear it on page unmounting, not within the loop of dependencies...
       if (intervalId.current) {
         clearInterval(intervalId.current)
         intervalId.current = null
       }
     }
-  }, [kclManager])
+  }, [])
 
   useEffect(() => {
-    timeoutStart.current = streamIdleMode ? Date.now() : null
+    startCallbackRef.current = startCallback
+  }, [startCallback])
+
+  useEffect(() => {
+    idleCallbackRef.current = idleCallback
+  }, [idleCallback])
+
+  useEffect(() => {
+    modelingMachineStateRef.current = modelingMachineState
+  }, [modelingMachineState])
+
+  useEffect(() => {
+    idleTimeMsRef.current = Number(streamIdleMode)
+    timeoutStart.current = idleTimeMsRef.current ? Date.now() : null
   }, [streamIdleMode])
 
   useEffect(() => {
     if (intervalId.current) {
-      // we have a loop running don't clear it!
-      // we know this gets initialized once!
       return
     }
 
     // Check every 1 second to see if you are idle.
     const interval = setInterval(() => {
       void (async () => {
-        // Do not pause if the user is in the middle of an operation
-        if (!modelingMachineState.matches('idle')) {
-          // In fact, stop the timeout, because we don't want to trigger the
-          // pause when we exit the operation.
+        const idleTimeMs = idleTimeMsRef.current
+        if (!idleTimeMs) {
           timeoutStart.current = null
-        } else if (timeoutStart.current) {
+          wasBusyRef.current = false
+          return
+        }
+
+        const isBusy =
+          kclManager.isExecuting ||
+          !modelingMachineStateRef.current.matches('idle')
+
+        // Only start the idle timer once KCL execution and other modeling
+        // interactions have fully finished.
+        if (isBusy) {
+          timeoutStart.current = null
+          wasBusyRef.current = true
+          return
+        }
+
+        if (wasBusyRef.current) {
+          timeoutStart.current = Date.now()
+          wasBusyRef.current = false
+          return
+        }
+
+        if (timeoutStart.current) {
           const elapsed = Date.now() - timeoutStart.current
-          // Don't pause if we're already disconnected.
-          if (
-            // It's unnecessary to once again setup an event listener for
-            // offline/online to capture this state, when this state already
-            // exists on the window.navigator object. In hindsight it makes
-            // me (lee) regret we set React state variables such as
-            // isInternetConnected in other files when we could check this
-            // object instead.
-            elapsed >= IDLE_TIME_MS
-          ) {
+          if (elapsed >= idleTimeMs) {
             timeoutStart.current = null
             try {
               await kclManager.sceneInfra.camControls.saveRemoteCameraState()
@@ -94,38 +100,39 @@ export const useOnPageIdle = ({
             })
             // We do a full tear down at the moment.
             kclManager.engineCommandManager.tearDown()
-            idleCallback()
+            idleCallbackRef.current()
           }
         }
       })()
     }, 1_000)
     intervalId.current = interval
-  }, [
-    IDLE_TIME_MS,
-    idleCallback,
-    modelingMachineState,
-    kclManager.engineCommandManager,
-    kclManager.sceneInfra.camControls,
-  ])
+  }, [kclManager])
 
   useEffect(() => {
-    if (!streamIdleMode) return
+    if (!idleTimeMsRef.current) return
 
     const onAnyInput = () => {
       // Just in case it happens in the middle of the user turning off
       // idle mode.
-      if (!streamIdleMode) {
+      if (!idleTimeMsRef.current) {
         timeoutStart.current = null
         return
       }
-      startCallback()
-      timeoutStart.current = Date.now()
+      startCallbackRef.current()
+      timeoutStart.current =
+        kclManager.isExecuting ||
+        !modelingMachineStateRef.current.matches('idle')
+          ? null
+          : Date.now()
     }
 
     // It's possible after a reconnect, the user doesn't move their mouse at
     // all, meaning the timer is not reset to run. We need to set it every
     // time our effect dependencies change then.
-    timeoutStart.current = Date.now()
+    timeoutStart.current =
+      kclManager.isExecuting || !modelingMachineStateRef.current.matches('idle')
+        ? null
+        : Date.now()
 
     window.document.addEventListener('keydown', onAnyInput)
     window.document.addEventListener('keyup', onAnyInput)
@@ -148,5 +155,5 @@ export const useOnPageIdle = ({
       window.document.removeEventListener('touchend', onAnyInput)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [streamIdleMode])
+  }, [kclManager, streamIdleMode])
 }

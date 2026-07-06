@@ -2,10 +2,9 @@
 
 use kcl_lib::ExecError;
 use kcl_lib::ExecOutcome;
-#[cfg(feature = "artifact-graph")]
+use kcl_lib::NodePathExt;
 use kcl_lib::NodePathStep;
 use kcl_lib::bust_cache;
-#[cfg(feature = "artifact-graph")]
 use kcl_lib::exec::Operation;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -17,6 +16,13 @@ struct Variation<'a> {
     code: &'a str,
     other_files: Vec<(std::path::PathBuf, std::string::String)>,
     settings: &'a kcl_lib::ExecutorSettings,
+}
+
+fn root_operations(outcome: &ExecOutcome) -> &Vec<Operation> {
+    outcome
+        .operations
+        .get(&kcl_lib::ModuleId::default())
+        .expect("root module operations should exist")
 }
 
 async fn cache_test(
@@ -266,7 +272,6 @@ extrude(profile001, length = 100)"#
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_line_preserves_artifact_graph() {
     let code = r#"sketch001 = startSketchOn(XY)
@@ -316,18 +321,18 @@ extrude001 = extrude(profile001, length = 4)
         second.artifact_graph
     );
     assert!(
-        first.operations.len() < second.operations.len(),
+        first.operations.count() < second.operations.count(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        first.operations.len(),
-        second.operations.len()
+        first.operations.count(),
+        second.operations.count()
     );
-    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+    let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
         panic!("Last operation should be stdlib call extrude");
     };
     assert_eq!(name, "extrude");
     // Make sure there are no duplicates.
     assert_eq!(
-        second.operations.len(),
+        root_operations(second).len(),
         3,
         "There should be exactly this many operations in the second run. {:#?}",
         &second.operations
@@ -351,7 +356,6 @@ extrude001 = extrude(profile001, length = 4)
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_second_sketch_block_preserves_node_path() {
     let code = r#"sketch001 = sketch(on = YZ) {
@@ -418,12 +422,12 @@ extrude001 = extrude(region001, length = 5)
         second.artifact_graph
     );
     assert!(
-        first.operations.len() < second.operations.len(),
+        first.operations.count() < second.operations.count(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        first.operations.len(),
-        second.operations.len()
+        first.operations.count(),
+        second.operations.count()
     );
-    let Some(Operation::StdLibCall { name, .. }) = second.operations.last() else {
+    let Some(Operation::StdLibCall { name, .. }) = root_operations(second).last() else {
         panic!("Last operation should be stdlib call extrude");
     };
     assert_eq!(name, "extrude");
@@ -447,7 +451,6 @@ extrude001 = extrude(region001, length = 5)
     }
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_offset_plane_computes_node_path() {
     let code = r#"sketch001 = startSketchOn(XY)
@@ -491,8 +494,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     let outcome = ctx.run_with_caching(program).await.unwrap();
 
     // Ensure nothing is left in the batch
-    assert!(ctx.engine.batch().read().await.is_empty());
-    assert!(ctx.engine.batch_end().read().await.is_empty());
+    assert!(ctx.engine_batch.is_empty().await);
 
     // Ensure the planes work, and we can show or hide them.
     // Hide/show the grid.
@@ -503,6 +505,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
 
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(
@@ -519,6 +522,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Raw dog clear the scene entirely.
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(mcmd::SceneClearAll::builder().build()),
@@ -536,6 +540,7 @@ async fn kcl_test_cache_empty_file_pop_cache_empty_file_planes_work() {
     // Ensure we can show a plane.
     ctx.engine
         .send_modeling_cmd(
+            &ctx.engine_batch,
             uuid::Uuid::new_v4(),
             Default::default(),
             &ModelingCmd::from(
@@ -657,7 +662,6 @@ extrude(profile001, length = 100)
     result.last().unwrap();
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_multi_file_other_file_only_change() {
     let code = r#"import "toBeImported.kcl" as importedCube
@@ -794,7 +798,6 @@ extrude(profile001, length = 100)"#
     assert_eq!(first.2, last.2, "The outcomes should be the same");
 }
 
-#[cfg(feature = "artifact-graph")]
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_cache_add_second_sketch_block_import_succeeds() {
     let rectangle1 = (
@@ -870,10 +873,10 @@ import \"rectangle2.kcl\"
         second.artifact_graph
     );
     assert!(
-        first.operations.len() < second.operations.len(),
+        first.operations.count() < second.operations.count(),
         "Second should have all the operations of the first, plus more. first={:?}, second={:?}",
-        first.operations.len(),
-        second.operations.len()
+        first.operations.count(),
+        second.operations.count()
     );
     // Make sure we have NodePaths.
     let first_graph = &first.artifact_graph;

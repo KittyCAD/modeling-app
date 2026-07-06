@@ -1,7 +1,8 @@
 import { Popover } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PublishDialog } from '@src/components/PublishDialog'
-import { useApp, useSingletons } from '@src/lib/boot'
+import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 import {
   type CurrentProjectPublicationDetails,
@@ -11,24 +12,28 @@ import {
 import { err } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
-  memo,
   type ComponentProps,
+  memo,
   useCallback,
   useEffect,
   useState,
 } from 'react'
 
 type PublishButtonProps = {
-  project: Project | undefined
+  app: App
 }
 
 export const PublishButton = memo(function PublishButton({
-  project,
+  app,
 }: PublishButtonProps) {
+  useSignals()
+  const project = app.projectSignal.value?.projectIORefSignal.value
+
   return (
     <Popover className="relative hidden sm:flex">
       {(popover) => (
         <PublishPopoverContent
+          app={app}
           project={project}
           close={() => popover.close()}
           open={popover.open}
@@ -39,16 +44,22 @@ export const PublishButton = memo(function PublishButton({
 })
 
 function PublishPopoverContent({
+  app,
   project,
   close,
   open,
 }: {
+  app: App
   project: Project | undefined
   close: () => void
   open: boolean
 }) {
-  const { auth } = useApp()
-  const { kclManager } = useSingletons()
+  useSignals()
+  const { auth } = app
+  const { kclManager } = app.singletons
+  const ast = kclManager.astSignal.value
+  const kclEmpty = kclManager.isAstBodyEmpty(ast)
+  const hasKclErrors = kclManager.hasErrors()
   const authState = auth.useAuthState()
   const token = auth.useToken()
   const user = auth.useUser()
@@ -60,6 +71,7 @@ function PublishPopoverContent({
   const isCheckingUser = authState.matches('checkIfLoggedIn') && !!token
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
+  const buttonDisabled = kclEmpty || hasKclErrors
 
   const fetchPublicationDetails = useCallback(async () => {
     if (!token || !project) {
@@ -136,7 +148,8 @@ function PublishPopoverContent({
     <>
       <Popover.Button
         type="button"
-        className="relative inline-flex min-w-max items-center gap-1 rounded-md border border-chalkboard-30 bg-chalkboard-10/80 py-0 pl-0.5 pr-1.5 text-chalkboard-100 transition-colors hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100 focus-visible:outline-appForeground active:border-primary"
+        disabled={buttonDisabled}
+        className="relative inline-flex min-w-max items-center gap-1 rounded-md border border-chalkboard-30 bg-chalkboard-10/80 py-0 pl-0.5 pr-1.5 text-chalkboard-100 transition-colors hover:border-chalkboard-40 hover:bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100/50 dark:text-chalkboard-10 dark:hover:border-chalkboard-60 dark:hover:bg-chalkboard-100 focus-visible:outline-appForeground active:border-primary disabled:cursor-wait disabled:opacity-70"
         data-testid="publish-button"
       >
         <CustomIcon name="share" className="h-5 w-5" />
@@ -146,7 +159,7 @@ function PublishPopoverContent({
         <PublishDialog
           onClose={close}
           onSubmit={handlePublish}
-          initialTitle={project?.name || ''}
+          initialTitle={''}
           publishDisabled={isCheckingUser || publishRequiresUsername}
           publishRequiresUsername={publishRequiresUsername}
           accountUrl={accountUrl}

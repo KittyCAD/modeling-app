@@ -5,6 +5,8 @@ excerpt: "Construct a line segment from the current origin back to the profile's
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Construct a line segment from the current origin back to the profile's origin, ensuring the resulting 2-dimensional sketch is not open-ended.
 
 ```kcl
@@ -14,7 +16,7 @@ close(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 If you want to perform some 3-dimensional operation on a sketch, like

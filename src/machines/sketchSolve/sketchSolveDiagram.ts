@@ -19,14 +19,18 @@ import type {
 } from '@src/machines/modelingSharedTypes'
 import {
   buildAngleConstraintInput,
+  buildCircularSizeDimensionConstraintInput,
   isArcSegment,
   isCircleSegment,
+  isControlPointSplineSegment,
   isLineSegment,
+  isOwnedLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   CHILD_TOOL_DONE_EVENT,
+  ORIGIN_TARGET,
   type SketchSolveContext,
   type SketchSolveMachineEvent,
   type SolveActionArgs,
@@ -41,7 +45,6 @@ import {
   getObjectSelectionIds,
   initializeInitialSceneGraph,
   initializeIntersectionPlane,
-  ORIGIN_TARGET,
   refreshSelectionStyling,
   refreshSketchSolveScale,
   sendToActorIfActive,
@@ -50,18 +53,18 @@ import {
   tearDownSketchSolve,
   updateHoveredId,
   updateSelectedCodeHighlight,
-  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
+  updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import {
-  constraintToolNames,
   type ConstraintToolName,
+  constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
@@ -126,6 +129,150 @@ function getSelectionPointCoords(
     x: selection.kind.segment.position.x.value,
     y: selection.kind.segment.position.y.value,
   }
+}
+
+function getPointCoordsById(objects: ApiObject[], pointId: number) {
+  const point = objects[pointId]
+  return getSelectionPointCoords(point)
+}
+
+function getLineCoords(objects: ApiObject[], line: ApiObject | undefined) {
+  if (!isLineSegment(line)) {
+    return null
+  }
+
+  const start = getPointCoordsById(objects, line.kind.segment.start)
+  const end = getPointCoordsById(objects, line.kind.segment.end)
+  if (!start || !end) {
+    return null
+  }
+
+  return { start, end }
+}
+
+function getCircularCoords(
+  objects: ApiObject[],
+  circular: ApiObject | undefined
+) {
+  if (!isArcSegment(circular) && !isCircleSegment(circular)) {
+    return null
+  }
+
+  const center = getPointCoordsById(objects, circular.kind.segment.center)
+  const start = getPointCoordsById(objects, circular.kind.segment.start)
+  if (!center || !start) {
+    return null
+  }
+
+  return {
+    center,
+    radius: Math.hypot(start.x - center.x, start.y - center.y),
+  }
+}
+
+function pointToLineDistance(
+  point: { x: number; y: number },
+  line: { start: { x: number; y: number }; end: { x: number; y: number } }
+) {
+  const dx = line.end.x - line.start.x
+  const dy = line.end.y - line.start.y
+  const length = Math.hypot(dx, dy)
+  if (length === 0) {
+    return null
+  }
+
+  return Math.abs(
+    ((point.x - line.start.x) * dy - (point.y - line.start.y) * dx) / length
+  )
+}
+
+function pointToCircularDistance(
+  point: { x: number; y: number },
+  circular: { center: { x: number; y: number }; radius: number }
+) {
+  return Math.abs(
+    Math.hypot(point.x - circular.center.x, point.y - circular.center.y) -
+      circular.radius
+  )
+}
+
+function linesAreParallel(
+  line1: { start: { x: number; y: number }; end: { x: number; y: number } },
+  line2: { start: { x: number; y: number }; end: { x: number; y: number } }
+) {
+  const dx1 = line1.end.x - line1.start.x
+  const dy1 = line1.end.y - line1.start.y
+  const dx2 = line2.end.x - line2.start.x
+  const dy2 = line2.end.y - line2.start.y
+  const scale = Math.hypot(dx1, dy1) * Math.hypot(dx2, dy2)
+
+  return scale !== 0 && Math.abs(dx1 * dy2 - dy1 * dx2) <= 1e-9 * scale
+}
+
+function getCurrentDistanceBetweenSelections(
+  first: ApiObject | typeof ORIGIN_TARGET,
+  second: ApiObject | typeof ORIGIN_TARGET,
+  objects: ApiObject[]
+) {
+  const point1 = getSelectionPointCoords(first)
+  const point2 = getSelectionPointCoords(second)
+  if (point1 && point2) {
+    return Math.hypot(point2.x - point1.x, point2.y - point1.y)
+  }
+
+  const firstObject = first === ORIGIN_TARGET ? undefined : first
+  const secondObject = second === ORIGIN_TARGET ? undefined : second
+  const firstLine = getLineCoords(objects, firstObject)
+  const secondLine = getLineCoords(objects, secondObject)
+  const firstCircular = getCircularCoords(objects, firstObject)
+  const secondCircular = getCircularCoords(objects, secondObject)
+
+  if (point1 && secondLine) {
+    return pointToLineDistance(point1, secondLine)
+  }
+
+  if (firstLine && point2) {
+    return pointToLineDistance(point2, firstLine)
+  }
+
+  if (point1 && secondCircular) {
+    return pointToCircularDistance(point1, secondCircular)
+  }
+
+  if (firstCircular && point2) {
+    return pointToCircularDistance(point2, firstCircular)
+  }
+
+  if (firstLine && secondCircular) {
+    const centerDistance = pointToLineDistance(secondCircular.center, firstLine)
+    return centerDistance === null
+      ? null
+      : Math.abs(centerDistance - secondCircular.radius)
+  }
+
+  if (firstCircular && secondLine) {
+    const centerDistance = pointToLineDistance(firstCircular.center, secondLine)
+    return centerDistance === null
+      ? null
+      : Math.abs(centerDistance - firstCircular.radius)
+  }
+
+  if (firstCircular && secondCircular) {
+    return Math.abs(
+      Math.hypot(
+        firstCircular.center.x - secondCircular.center.x,
+        firstCircular.center.y - secondCircular.center.y
+      ) -
+        firstCircular.radius -
+        secondCircular.radius
+    )
+  }
+
+  if (firstLine && secondLine && linesAreParallel(firstLine, secondLine)) {
+    return pointToLineDistance(firstLine.start, secondLine)
+  }
+
+  return null
 }
 
 async function addAxisDistanceConstraint(
@@ -209,16 +356,7 @@ function getPreparedApplyForConstraintTool(
   const objects =
     context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return getConstraintToolPreparedApply(
-    toolName,
-    context.selectedIds,
-    objects,
-    {
-      defaultLengthUnit: baseUnitToNumericSuffix(
-        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-      ),
-    }
-  )
+  return getConstraintToolPreparedApply(toolName, context.selectedIds, objects)
 }
 
 function isConstraintToolName(
@@ -281,9 +419,6 @@ export const sketchSolveMachine = setup({
           selectedIds: context.selectedIds,
           objects:
             context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
-          defaultLengthUnit: baseUnitToNumericSuffix(
-            context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-          ),
           rustContext: context.rustContext,
           sketchId: context.sketchId,
           settings: jsAppSettings(context.kclManager.systemDeps.settings),
@@ -449,7 +584,17 @@ export const sketchSolveMachine = setup({
               const second = currentSelections[1]
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               const secondObject = second === ORIGIN_TARGET ? undefined : second
-              if (isLineSegment(firstObject) && isLineSegment(secondObject)) {
+              const currentDistance = getCurrentDistanceBetweenSelections(
+                first,
+                second,
+                objects
+              )
+              if (currentDistance !== null) {
+                distance = roundOff(currentDistance)
+              } else if (
+                isLineSegment(firstObject) &&
+                isLineSegment(secondObject)
+              ) {
                 const angleConstraint = buildAngleConstraintInput(
                   firstObject,
                   secondObject,
@@ -466,10 +611,10 @@ export const sketchSolveMachine = setup({
                   sendToolbarConstraintOutcome(self, result, keepSelection)
                   return
                 }
-              }
-
-              // Calculate distance between two points if both are point segments
-              if (isPointSegment(firstObject) && isPointSegment(secondObject)) {
+              } else if (
+                isPointSegment(firstObject) &&
+                isPointSegment(secondObject)
+              ) {
                 // the units of these points will have already been normalized to the user's default units
                 // even `at = [var -0.09in, var 0.19in]` will be unit: 'Mm' if the user's default is mm
                 const point1 = {
@@ -501,7 +646,7 @@ export const sketchSolveMachine = setup({
               const first = currentSelections[0]
               const firstObject = first === ORIGIN_TARGET ? undefined : first
               if (isArcSegment(firstObject) || isCircleSegment(firstObject)) {
-                // Calculate radius for arc segment from its center and start point
+                // Calculate radius for circular segment from its center and start point.
                 const centerPoint =
                   context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects[
                     firstObject.kind.segment.center
@@ -528,19 +673,18 @@ export const sketchSolveMachine = setup({
                     distance = roundOff(distanceResult.distance)
                   }
                 }
-                // Apply radius constraint for arc
+                const constraint = buildCircularSizeDimensionConstraintInput({
+                  segment: firstObject,
+                  radius: distance,
+                  units,
+                })
+                if (!constraint) {
+                  return
+                }
                 const result = await context.rustContext.addConstraint(
                   0,
                   context.sketchId,
-                  {
-                    type: 'Radius',
-                    radius: { value: distance, units },
-                    arc: firstObject.id,
-                    source: {
-                      expr: distance.toString(),
-                      is_literal: true,
-                    },
-                  },
+                  constraint,
                   jsAppSettings(context.kclManager.systemDeps.settings),
                   true
                 )
@@ -672,8 +816,13 @@ export const sketchSolveMachine = setup({
               if (
                 obj.kind.segment.type !== 'Line' &&
                 obj.kind.segment.type !== 'Arc' &&
-                obj.kind.segment.type !== 'Circle'
+                obj.kind.segment.type !== 'Circle' &&
+                obj.kind.segment.type !== 'ControlPointSpline'
               ) {
+                continue
+              }
+
+              if (isOwnedLineSegment(obj)) {
                 continue
               }
 
@@ -683,7 +832,10 @@ export const sketchSolveMachine = setup({
               }
 
               const currentConstruction =
-                isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
+                isLineSegment(obj) ||
+                isArcSegment(obj) ||
+                isCircleSegment(obj) ||
+                isControlPointSplineSegment(obj)
                   ? obj.kind.segment.construction
                   : false
 
@@ -713,6 +865,14 @@ export const sketchSolveMachine = setup({
                     construction: newConstruction,
                   },
                 })
+              } else if (baseCtor.type === 'ControlPointSpline') {
+                segmentsToEdit.push({
+                  id,
+                  ctor: {
+                    ...baseCtor,
+                    construction: newConstruction,
+                  },
+                })
               }
             }
 
@@ -726,7 +886,8 @@ export const sketchSolveMachine = setup({
                 context.sketchId,
                 segmentsToEdit,
                 jsAppSettings(context.kclManager.systemDeps.settings),
-                true
+                true,
+                []
               )
               .catch((err) => {
                 console.error('failed to toggle construction geometry', err)
@@ -798,7 +959,8 @@ export const sketchSolveMachine = setup({
               context.sketchId,
               constraintIds,
               segmentIds,
-              jsAppSettings(context.kclManager.systemDeps.settings)
+              jsAppSettings(context.kclManager.systemDeps.settings),
+              true
             )
             .catch((err) => {
               console.error('failed to delete objects', err)
@@ -817,6 +979,7 @@ export const sketchSolveMachine = setup({
               data: {
                 sourceDelta: result.kclSource,
                 sceneGraphDelta: result.sceneGraphDelta,
+                checkpointId: result.checkpointId ?? null,
               },
             })
           }
@@ -853,6 +1016,10 @@ export const sketchSolveMachine = setup({
                 return false
               }
 
+              if (event.data.tool === 'symmetricConstraintTool') {
+                return false
+              }
+
               return (
                 getPreparedApplyForConstraintTool(context, event.data.tool) !==
                 null
@@ -877,15 +1044,6 @@ export const sketchSolveMachine = setup({
             ],
           },
         ],
-        escape: {
-          target: '#Sketch Solve Mode.exiting',
-          actions: [
-            'send tool unequipped to parent',
-            'cleanup sketch solve group',
-          ],
-          description:
-            'ESC in move and select (no tool equipped) exits sketch mode',
-        },
       },
       invoke: {
         id: 'moveTool',
@@ -950,6 +1108,10 @@ export const sketchSolveMachine = setup({
 
     'exiting with cleanup': {
       on: {
+        exit: {
+          description:
+            'Ignore repeated exit requests while teardown is already in progress.',
+        },
         'delete draft entities': {
           description: `We override the default "delete draft entities" action with a no-op here because the async invoke above is already performing that cleanup.`,
         },

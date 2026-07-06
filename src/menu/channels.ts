@@ -1,6 +1,5 @@
-import type { BrowserWindow } from 'electron'
-
 import type { Channel } from '@src/channels'
+import type { MenuItemConstructorOptions } from 'electron'
 
 // types for knowing what menu sends what webContent payload
 export type MenuLabels =
@@ -69,14 +68,53 @@ export type WebContentSendPayload = {
   menuLabel: MenuLabels
 }
 
+type WebContentsSender = {
+  send: (channel: Channel, payload: WebContentSendPayload) => void
+}
+
+type MenuTargetWindow = {
+  webContents: WebContentsSender
+}
+
+function isMenuTargetWindow(value: unknown): value is MenuTargetWindow {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  const webContents = Reflect.get(value, 'webContents')
+  if (typeof webContents !== 'object' || webContents === null) {
+    return false
+  }
+
+  return typeof Reflect.get(webContents, 'send') === 'function'
+}
+
 // Unable to use declare module 'electron' with the interface of WebContents
 // to update the send function. It did not work.
 // Need to use a custom wrapper function for this.
 // BrowserWindow.webContents instance is different from the WebContents and webContents...?
 export const typeSafeWebContentsSend = (
-  mainWindow: BrowserWindow,
+  fallbackWindow: MenuTargetWindow,
   channel: Channel,
-  payload: WebContentSendPayload
+  payload: WebContentSendPayload,
+  clickedWindow?: unknown
 ) => {
-  mainWindow.webContents.send(channel, payload)
+  const targetWindow = isMenuTargetWindow(clickedWindow)
+    ? clickedWindow
+    : fallbackWindow
+  targetWindow.webContents.send(channel, payload)
+}
+
+export function sendMenuAction(
+  fallbackWindow: MenuTargetWindow,
+  menuLabel: MenuLabels
+): NonNullable<MenuItemConstructorOptions['click']> {
+  return (_menuItem, clickedWindow) => {
+    typeSafeWebContentsSend(
+      fallbackWindow,
+      'menu-action-clicked',
+      { menuLabel },
+      clickedWindow
+    )
+  }
 }

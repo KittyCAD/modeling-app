@@ -1,7 +1,7 @@
 import path from 'path'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import * as fsp from 'fs/promises'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import * as fsp from 'fs/promises'
 
 test.describe(
   'Import UI tests',
@@ -54,7 +54,7 @@ sketch002 = startSketchOn(extrude001, face = seg01)`
       })
 
       await homePage.openProject('import-test')
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await scene.moveCameraTo(
         {

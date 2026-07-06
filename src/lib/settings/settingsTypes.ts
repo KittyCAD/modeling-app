@@ -65,8 +65,17 @@ export type SetEventTypes = SetEvent<SettingsPaths>
 export type WildcardSetEvent<T extends SettingsPaths = SettingsPaths> = {
   type: `*`
   data: {
+    path: T
     level: SettingsLevel
     value: PathValue<SettingsType, T>['default']
+  }
+}
+
+export type DynamicBooleanSetEvent = {
+  type: `set.${'modeling' | 'plugins'}.${string}`
+  data: {
+    level: SettingsLevel
+    value: boolean
   }
 }
 

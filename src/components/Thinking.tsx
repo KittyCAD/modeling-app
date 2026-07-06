@@ -1,11 +1,11 @@
 import ms from 'ms'
 
-import type { MlCopilotServerMessage, MlCopilotFile } from '@kittycad/lib'
+import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
 import type { PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
-import { PlaceholderLine } from '@src/components/PlaceholderLine'
 import { MarkdownText } from '@src/components/MarkdownText'
+import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 interface IRowCollapse {
   fn: () => void
@@ -407,19 +407,19 @@ const ImageFileItem = (props: {
   }
 
   return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs text-chalkboard-70 dark:text-chalkboard-40">
+    <div className="flex max-w-full min-w-0 flex-col gap-1">
+      <span className="max-w-full truncate text-xs text-chalkboard-70 dark:text-chalkboard-40">
         {props.file.name}
       </span>
       <button
         onClick={() => props.onDownload(props.url!, props.file.name)}
-        className="cursor-pointer hover:opacity-80 transition-opacity text-left"
+        className="m-0 w-fit max-w-full cursor-pointer overflow-hidden rounded border border-chalkboard-30 bg-transparent p-0 text-left transition-opacity hover:opacity-80 dark:border-chalkboard-80"
         title={`Click to download ${props.file.name}`}
       >
         <img
           src={props.url}
           alt={props.file.name}
-          className="max-w-full h-auto rounded border border-chalkboard-30 dark:border-chalkboard-80"
+          className="block h-auto max-w-full"
           onError={() => setImageError(true)}
         />
       </button>
@@ -472,8 +472,8 @@ export const FilesSnapshot = (props: {
       }
     >
       {/* Using a custom content wrapper without height restriction for images */}
-      <div className="pt-4 pb-4 border-l pl-5 ml-3 b-3">
-        <div className="flex flex-col gap-3">
+      <div className="min-w-0 max-w-full pt-4 pb-4 border-l pl-5 ml-3 b-3">
+        <div className="flex max-w-full min-w-0 flex-col gap-3">
           {imageFiles.map((file, index) => {
             const fileIndex = props.files.indexOf(file)
             const url = objectUrls[fileIndex]

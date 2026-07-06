@@ -33,17 +33,13 @@ result
 /public/kcl_wasm_lib_bg.wasm
 
 # playwright
-e2e/playwright/temp1.png
-e2e/playwright/temp2.png
-e2e/playwright/temp3.png
-# this will be overridden for specific directories
-e2e/playwright/**/*.png
-# exports from snapshot-tests.spec.ts "exports of each format should work"
-e2e/playwright/export-snapshots/*
-!e2e/playwright/export-snapshots/*.png
-!e2e/playwright/snapshot-tests.spec.ts-snapshots/*.png
 trace.zip
+test-results/
+playwright-report/
+playwright/.cache/
+temp*.png
 
+# samples
 /public/kcl-samples.zip
 /public/kcl-samples/.github
 /public/kcl-samples/screenshots/main.kcl
@@ -51,10 +47,6 @@ trace.zip
 /public/kcl-samples/internal
 /rust/kcl-lib/tests/kcl_samples/internal
 /src/lang/std/artifactMapCache
-test-results/
-playwright-report/
-blob-report/
-playwright/.cache/
 
 ## generated files
 src/**/*.typegen.ts
@@ -79,3 +71,5 @@ venv
 .biome/
 .million
 .cursor
+
+SPECIFICATION.txt

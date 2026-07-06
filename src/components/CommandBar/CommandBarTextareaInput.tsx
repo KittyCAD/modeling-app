@@ -1,9 +1,9 @@
 import type { RefObject } from 'react'
 import { useEffect, useRef } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
-import type { CommandArgument } from '@src/lib/commandTypes'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
 
 function CommandBarTextareaInput({
   arg,
@@ -19,7 +19,6 @@ function CommandBarTextareaInput({
 }) {
   const { commands } = useApp()
   const commandBarState = commands.useState()
-  useHotkeys('mod + k, mod + /', () => commands.send({ type: 'Close' }))
   const formRef = useRef<HTMLFormElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   useTextareaAutoGrow(inputRef)
@@ -38,6 +37,7 @@ function CommandBarTextareaInput({
 
   return (
     <form
+      {...noAutofillFormProps}
       id="arg-form"
       className="flex flex-col items-stretch gap-2 mx-4 my-4 "
       onSubmit={handleSubmit}
@@ -51,6 +51,7 @@ function CommandBarTextareaInput({
           {arg.displayName || arg.name}
         </span>
         <textarea
+          {...noAutofillInputProps}
           data-testid="cmd-bar-arg-value"
           id="arg-form"
           name={arg.inputType}

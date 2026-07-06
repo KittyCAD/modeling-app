@@ -1,20 +1,26 @@
-import { useSingletons } from '@src/lib/boot'
-import { useMemo, useState } from 'react'
-import { uuidv4 } from '@src/lib/utils'
-import { processCodeMirrorRanges } from '@src/lib/selections'
-import { use } from 'react'
 import { EditorSelection } from '@codemirror/state'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { getCodeRefsByArtifactId } from '@src/lang/std/artifactGraph'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
-  groupOperationTypeStreaks,
-  filterOperations,
-} from '@src/lib/operations'
+  ROOT_MODULE_ID,
+  countOperations,
+  emptyOperationsByModule,
+  getOperationsForModule,
+} from '@src/lang/wasm'
 import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import { useSingletons } from '@src/lib/boot'
+import {
+  filterOperations,
+  groupOperationTypeStreaks,
+} from '@src/lib/operations'
+import { processCodeMirrorRanges } from '@src/lib/selections'
+import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import { reportRejection } from '@src/lib/trap'
+import { useMemo, useState } from 'react'
+import { use } from 'react'
 
 type SingletonDeps = Pick<ReturnType<typeof useSingletons>, 'kclManager'>
 
@@ -176,7 +182,9 @@ function getEntityIdsFromCmds(
   selectAdds.forEach((event) => {
     if ('cmd' in event && 'type' in event.cmd && 'entities' in event.cmd) {
       const entities = event.cmd.entities
-      ids = ids.concat(entities)
+      ids = ids.concat(
+        entities.filter((e): e is string => typeof e === 'string')
+      )
     }
   })
   return ids
@@ -209,10 +217,10 @@ function generateOperationList(deps: SingletonDeps) {
   // If there are engine errors we show the successful operations
   // Errors return an operation list, so use the longest one if there are multiple
   const longestErrorOperationList = kclManager.errors.reduce((acc, error) => {
-    return error.operations && error.operations.length > acc.length
+    return countOperations(error.operations) > countOperations(acc)
       ? error.operations
       : acc
-  }, [] as Operation[])
+  }, emptyOperationsByModule())
 
   const unfilteredOperationList = !parseErrors.length
     ? !kclManager.errors.length
@@ -221,10 +229,12 @@ function generateOperationList(deps: SingletonDeps) {
     : kclManager.lastSuccessfulOperations
 
   // We filter out operations that are not useful to show in the feature tree
-  const operationList =
-    groupOperationTypeStreaks(filterOperations(unfilteredOperationList), [
-      'VariableDeclaration',
-    ]) || []
+  const operationList = groupOperationTypeStreaks(
+    filterOperations(
+      getOperationsForModule(unfilteredOperationList, ROOT_MODULE_ID)
+    ),
+    ['VariableDeclaration']
+  )
 
   return operationList.flat()
 }

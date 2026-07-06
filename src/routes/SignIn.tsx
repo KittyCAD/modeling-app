@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 
@@ -9,17 +9,19 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { updateEnvironment } from '@src/env'
 import env from '@src/env'
+import { noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { mark } from '@src/lib/performance'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
 import { withAPIBaseURL, withSiteBaseURL } from '@src/lib/withBaseURL'
 import { AdvancedSignInOptions } from '@src/routes/AdvancedSignInOptions'
 import { APP_VERSION, generateSignInUrl } from '@src/routes/utils'
-import { useApp } from '@src/lib/boot'
 
 const subtleBorder =
   'border border-solid border-chalkboard-30 dark:border-chalkboard-80'
@@ -29,16 +31,9 @@ let didReadFromDiskCacheForEnvironment = false
 
 const SignIn = () => {
   const { auth, settings } = useApp()
-  // Only create the native file menus on desktop
-  if (window.electron) {
-    window.electron.createFallbackMenu().catch(reportRejection)
-    // Disable these since they cannot be accessed within the sign in page.
-    window.electron
-      .disableMenu('Help.Replay onboarding tutorial')
-      .catch(reportRejection)
-    window.electron.disableMenu('Help.Show all commands').catch(reportRejection)
-  }
   const [userCode, setUserCode] = useState('')
+  const [verificationUri, setVerificationUri] = useState('')
+  const signInAttemptRef = useRef(0)
 
   // Last saved environment
   // TODO: Reduce this logic
@@ -70,6 +65,20 @@ const SignIn = () => {
       window.location.reload()
     })()
   }
+
+  useEffect(() => {
+    const electron = window.electron
+    if (!electron) {
+      return
+    }
+
+    electron.createFallbackMenu().catch(reportRejection)
+    // Disable these since they cannot be accessed within the sign in page.
+    electron
+      .disableMenu('Help.Replay onboarding tutorial')
+      .catch(reportRejection)
+    electron.disableMenu('Help.Show all commands').catch(reportRejection)
+  }, [])
 
   useEffect(() => {
     if (!didReadFromDiskCacheForEnvironment) {
@@ -109,22 +118,53 @@ const SignIn = () => {
   )
 
   const signInDesktop = async (electron: IElectronAPI) => {
+    const signInAttempt = signInAttemptRef.current + 1
+    signInAttemptRef.current = signInAttempt
     const requestedEnvironment = selectedEnvironment.trim()
     updateEnvironment(requestedEnvironment)
+    mark('config/env', {
+      name: 'config/env',
+      startTime: performance.now(),
+      entryType: 'mark',
+      detail: {
+        env: {
+          NODE_ENV: env().NODE_ENV,
+          VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
+          VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
+          VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
+          VITE_MLEPHANT_WEBSOCKET_URL: env().VITE_MLEPHANT_WEBSOCKET_URL,
+        },
+      },
+    })
+    setUserCode('')
+    setVerificationUri('')
 
     // We want to invoke our command to login via device auth.
-    const userCodeToDisplay = await electron
+    const deviceFlowAuthorization = await electron
       .startDeviceFlow(withAPIBaseURL(location.search))
-      .catch(reportError)
-    if (!userCodeToDisplay) {
-      console.error('No user code received while trying to log in')
+      .catch((error) => {
+        if (signInAttemptRef.current === signInAttempt) {
+          reportError(error)
+        }
+      })
+    if (signInAttemptRef.current !== signInAttempt) return
+    if (!deviceFlowAuthorization) {
+      console.error(
+        'No device flow authorization received while trying to log in'
+      )
       toast.error('Error while trying to log in.')
       return
     }
-    setUserCode(userCodeToDisplay)
+    setUserCode(deviceFlowAuthorization.userCode)
+    setVerificationUri(deviceFlowAuthorization.verificationUri)
 
     // Now that we have the user code, we can kick off the final login step.
-    const token = await electron.loginWithDeviceFlow().catch(reportError)
+    const token = await electron.loginWithDeviceFlow().catch((error) => {
+      if (signInAttemptRef.current === signInAttempt) {
+        reportError(error)
+      }
+    })
+    if (signInAttemptRef.current !== signInAttempt) return
     if (!token) {
       console.error('No token received while trying to log in')
       toast.error('Error while trying to log in.')
@@ -135,8 +175,22 @@ const SignIn = () => {
   }
 
   const cancelSignIn = async () => {
+    signInAttemptRef.current += 1
+    await window.electron?.cancelDeviceFlow().catch(reportRejection)
     auth.send({ type: 'Log out' })
     setUserCode('')
+    setVerificationUri('')
+  }
+
+  const copyDeviceFlowSignInUrl = async () => {
+    if (!verificationUri) return
+
+    try {
+      await navigator.clipboard.writeText(verificationUri)
+      toast.success('Sign-in URL copied to clipboard.')
+    } catch {
+      toast.error('Failed to copy sign-in URL.')
+    }
   }
 
   return (
@@ -227,6 +281,42 @@ const SignIn = () => {
                         </span>
                       ))}
                     </p>
+                    {verificationUri && (
+                      <div className="mt-4 flex max-w-2xl flex-col gap-2">
+                        <p className="text-xs">
+                          If your browser did not open, copy and paste this
+                          sign-in URL.
+                        </p>
+                        <div className="flex flex-col gap-2 sm:flex-row">
+                          <input
+                            {...noAutofillInputProps}
+                            readOnly
+                            aria-label="Sign-in URL"
+                            value={verificationUri}
+                            onFocus={(event) => event.currentTarget.select()}
+                            className={
+                              'min-w-0 flex-1 rounded-sm border border-solid ' +
+                              'border-chalkboard-30 bg-chalkboard-10 px-2 py-1 ' +
+                              'text-sm text-chalkboard-90 dark:border-chalkboard-70 ' +
+                              'dark:bg-chalkboard-90 dark:text-chalkboard-10'
+                            }
+                            data-testid="sign-in-url"
+                          />
+                          <ActionButton
+                            Element="button"
+                            type="button"
+                            onClick={toSync(
+                              copyDeviceFlowSignInUrl,
+                              reportRejection
+                            )}
+                            iconStart={{ icon: 'clipboard' }}
+                            data-testid="copy-sign-in-url-button"
+                          >
+                            Copy URL
+                          </ActionButton>
+                        </div>
+                      </div>
+                    )}
                     <button
                       onClick={toSync(cancelSignIn, reportRejection)}
                       className={

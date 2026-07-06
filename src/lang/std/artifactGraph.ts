@@ -28,8 +28,8 @@ import type {
   SweepEdge,
   WallArtifact,
 } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
@@ -135,6 +135,19 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
   if (!types.includes(artifact?.type))
     return new Error(`Expected ${types} but got ${artifact?.type}`)
   return artifact as Extract<Artifact, { type: T[number] }>
+}
+
+export function getPatternArtifactForCopyId(
+  id: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'pattern' }> | undefined {
+  return [...artifactGraph.values()].find(
+    (artifact): artifact is Extract<Artifact, { type: 'pattern' }> =>
+      artifact.type === 'pattern' &&
+      (artifact.copyIds.includes(id) ||
+        artifact.copyFaceIds.includes(id) ||
+        artifact.copyEdgeIds.includes(id))
+  )
 }
 
 export function expandPlane(
@@ -865,6 +878,19 @@ export function getSketchBlockForPathArtifact(
   return sketchBlock
 }
 
+export function getOriginalSegmentArtifact(
+  segmentId: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | undefined {
+  const segment = artifactGraph.get(segmentId)
+  if (!segment || segment.type !== 'segment') return undefined
+
+  if (!segment.originalSegId) return segment
+
+  const originalSegment = artifactGraph.get(segment.originalSegId)
+  return originalSegment?.type === 'segment' ? originalSegment : segment
+}
+
 export function getSketchBlockForArtifact(
   artifact: Artifact | undefined,
   artifactGraph: ArtifactGraph
@@ -925,6 +951,7 @@ export function coerceSelectionsToBody(
     if (
       selection.artifact.type === 'sweep' ||
       selection.artifact.type === 'compositeSolid' ||
+      selection.artifact.type === 'pattern' ||
       selection.artifact.type === 'path'
     ) {
       if (!seenBodyIds.has(selection.artifact.id)) {
@@ -987,13 +1014,42 @@ export function coerceSelectionsToBody(
  * in the engine, but we mean: Solid3Ds of any kind, as well as 3D curves like helices.
  */
 export function getBodiesFromArtifactGraph(artifactGraph: ArtifactGraph) {
-  const artifacts = filterArtifacts(
-    {
-      types: ['compositeSolid', 'sweep'],
-      predicate: (a) => !a.consumed,
-    },
-    artifactGraph
+  const artifacts: Map<
+    ArtifactId,
+    Extract<Artifact, { type: 'compositeSolid' | 'sweep' | 'pattern' }>
+  > = new Map(
+    filterArtifacts(
+      {
+        types: ['compositeSolid', 'sweep'],
+        predicate: (a) => !a.consumed,
+      },
+      artifactGraph
+    )
   )
+
+  for (const artifact of artifactGraph.values()) {
+    if (artifact.type !== 'pattern') continue
+    const directSource = artifactGraph.get(artifact.sourceId)
+    const sourceBody =
+      directSource?.type === 'sweep' || directSource?.type === 'compositeSolid'
+        ? directSource
+        : [...artifactGraph.values()].find(
+            (
+              source
+            ): source is Extract<
+              Artifact,
+              { type: 'sweep' | 'compositeSolid' }
+            > =>
+              (source.type === 'sweep' || source.type === 'compositeSolid') &&
+              (source.patternIds || []).includes(artifact.id)
+          )
+    if (sourceBody) {
+      artifacts.set(sourceBody.id, artifact)
+    }
+    artifact.copyIds.forEach((copyId) => {
+      artifacts.set(copyId, artifact)
+    })
+  }
 
   return artifacts
 }

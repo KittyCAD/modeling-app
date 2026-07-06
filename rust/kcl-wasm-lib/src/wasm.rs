@@ -1,15 +1,15 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::CoreDump;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
 use kcl_lib::exec::NumericType;
+use kcl_lib::exec::UnitAngle;
+use kcl_lib::exec::UnitLength;
 use kcl_lib::exec::UnitType;
 use kcl_lib::exec::WarningLevel;
 use kcl_lib::pretty::NumericSuffix;
-use kittycad_modeling_cmds::units::UnitAngle;
-use kittycad_modeling_cmds::units::UnitLength;
+use kittycad_modeling_cmds::units::UnitLength as KcmcUnitLength;
 use wasm_bindgen::prelude::*;
 
 // wasm_bindgen wrapper for lint
@@ -192,19 +192,6 @@ pub fn get_tangential_arc_to_info(
     }
 }
 
-/// Get a coredump.
-#[wasm_bindgen]
-pub async fn coredump(core_dump_manager: kcl_lib::wasm_engine::CoreDumpManager) -> Result<JsValue, String> {
-    console_error_panic_hook::set_once();
-
-    let core_dumper = kcl_lib::wasm_engine::CoreDumper::new(core_dump_manager);
-    let dump = core_dumper.dump().await.map_err(|e| e.to_string())?;
-
-    // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
-    // gloo-serialize crate instead.
-    JsValue::from_serde(&dump).map_err(|e| e.to_string())
-}
-
 /// Get the default app settings.
 #[wasm_bindgen]
 pub fn default_app_settings() -> Result<JsValue, String> {
@@ -341,10 +328,25 @@ pub fn kcl_settings(program_json: &str) -> Result<JsValue, String> {
 pub fn change_default_units(code: &str, len_str: &str) -> Result<String, String> {
     console_error_panic_hook::set_once();
 
-    let len: Option<UnitLength> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
+    let len: Option<KcmcUnitLength> = serde_json::from_str(len_str).map_err(|e| e.to_string())?;
     let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
 
     let new_program = program.change_default_units(len).map_err(|e| e.to_string())?;
+
+    let formatted = new_program.recast();
+
+    Ok(formatted)
+}
+
+/// Takes a kcl string and changes the KCL version in the kcl string.
+#[wasm_bindgen]
+pub fn change_kcl_version(code: &str, version_str: &str) -> Result<String, String> {
+    console_error_panic_hook::set_once();
+
+    let version: Option<String> = serde_json::from_str(version_str).map_err(|e| e.to_string())?;
+    let program = Program::parse_no_errs(code).map_err(|e| e.to_string())?;
+
+    let new_program = program.change_kcl_version(version).map_err(|e| e.to_string())?;
 
     let formatted = new_program.recast();
 

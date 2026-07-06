@@ -1,17 +1,16 @@
 import type { UserResponse } from '@kittycad/lib'
-import { users, oauth2 } from '@kittycad/lib'
+import { oauth2, users } from '@kittycad/lib'
 import env, {
   updateEnvironment,
   updateEnvironmentKittycadWebSocketUrl,
   updateEnvironmentMlephantWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
-import { assign, fromPromise, setup } from 'xstate'
 import {
-  LEGACY_COOKIE_NAME,
-  OAUTH2_DEVICE_CLIENT_ID,
   COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
+  LEGACY_COOKIE_NAME,
+  OAUTH2_DEVICE_CLIENT_ID,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
@@ -28,8 +27,9 @@ import {
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
-import { markOnce } from '@src/lib/performance'
+import { mark, markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { assign, fromPromise, setup } from 'xstate'
 
 export interface UserContext {
   user?: UserResponse
@@ -59,18 +59,7 @@ console.table([
 ])
 
 export const authMachine = setup({
-  types: {} as {
-    context: UserContext
-    events:
-      | Events
-      | {
-          type: 'xstate.done.actor.check-logged-in'
-          output: {
-            user: UserResponse
-            token: string
-          }
-        }
-  },
+  types: {},
   actors: {
     getUser: fromPromise(({ input }: { input: { token?: string } }) =>
       getUser(input)
@@ -176,6 +165,20 @@ async function getUser(input: { token?: string }) {
   const environment =
     (await readEnvironmentFile()) || env().VITE_ZOO_BASE_DOMAIN || ''
   updateEnvironment(environment)
+  mark('config/env', {
+    name: 'config/env',
+    startTime: performance.now(),
+    entryType: 'mark',
+    detail: {
+      env: {
+        NODE_ENV: env().NODE_ENV,
+        VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
+        VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
+        VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
+        VITE_MLEPHANT_WEBSOCKET_URL: env().VITE_MLEPHANT_WEBSOCKET_URL,
+      },
+    },
+  })
 
   // Update the Engine WebSocket URL override
   const cachedKittycadWebSocketUrl =

@@ -1,12 +1,21 @@
 import { modelingDesignRole } from '@src/menu/designRole'
 import { modelingEditRole, projectEditRole } from '@src/menu/editRole'
-import { modelingFileRole, projectFileRole } from '@src/menu/fileRole'
+import {
+  type FileMenuActions,
+  modelingFileRole,
+  newWindowMenuItem,
+  projectFileRole,
+} from '@src/menu/fileRole'
 import { helpRole } from '@src/menu/helpRole'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
+import { isMac } from '@src/menu/utils'
 import { modelingViewRole, projectViewRole } from '@src/menu/viewRole'
 import type { BrowserWindow } from 'electron'
 import { Menu, app } from 'electron'
-import { isMac } from '@src/menu/utils'
+
+type MenuWithMenuItemLookup = {
+  getMenuItemById: (menuId: string) => { enabled: boolean } | null | undefined
+}
 
 /**
  * Gotcha
@@ -16,26 +25,33 @@ import { isMac } from '@src/menu/utils'
  * If you do not do this, <file> will not show up as file. It will be the <ApplicationName> and it contents live under that Menu
  * The .setApplicationMenu does not tell you that the 0th index forces it to <ApplicationName> on Mac.
  */
-function zooSetApplicationMenu(menu: Electron.Menu) {
-  Menu.setApplicationMenu(menu)
+function setNativeMenuForWindow(
+  mainWindow: BrowserWindow,
+  menu: Electron.Menu
+) {
+  if (isMac) {
+    Menu.setApplicationMenu(menu)
+  } else {
+    mainWindow.setMenu(menu)
+  }
 }
 
 // Menu for unauthenticated users
 function fallbackFileRole(
-  mainWindow: BrowserWindow
+  actions: FileMenuActions
 ): ZooMenuItemConstructorOptions {
   return {
     label: 'File',
     submenu: [
       // No project or settings items
+      newWindowMenuItem(actions),
+      { type: 'separator' },
       isMac ? { role: 'close' } : { role: 'quit' },
     ],
   }
 }
 
-function fallbackEditRole(
-  mainWindow: BrowserWindow
-): ZooMenuItemConstructorOptions {
+function fallbackEditRole(): ZooMenuItemConstructorOptions {
   let extraBits: ZooMenuItemConstructorOptions[] = [
     { role: 'delete' },
     { type: 'separator' },
@@ -69,20 +85,24 @@ function fallbackEditRole(
 }
 
 // Menu for authenticated users
-export function buildAndSetMenuForFallback(mainWindow: BrowserWindow) {
+export function buildAndSetMenuForFallback(
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
+): Electron.Menu {
   // Use the same structure as the project page menu for consistency
   // but remove items that require authentication
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
-    fallbackFileRole(mainWindow),
-    fallbackEditRole(mainWindow),
+    fallbackFileRole(actions),
+    fallbackEditRole(),
     projectViewRole(mainWindow),
     // Help role is the same for all pages
     helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
-  zooSetApplicationMenu(menu)
+  setNativeMenuForWindow(mainWindow, menu)
+  return menu
 }
 
 function appMenuMacOnly() {
@@ -111,11 +131,14 @@ function appMenuMacOnly() {
 
 // This will generate a new menu from the initial state
 // All state management from the previous menu is going to be lost.
-export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
+export function buildAndSetMenuForModelingPage(
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
+): Electron.Menu {
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
-    modelingFileRole(mainWindow),
+    modelingFileRole(mainWindow, actions),
     modelingEditRole(mainWindow),
     modelingViewRole(mainWindow),
     modelingDesignRole(mainWindow),
@@ -123,41 +146,39 @@ export function buildAndSetMenuForModelingPage(mainWindow: BrowserWindow) {
     helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
-  zooSetApplicationMenu(menu)
+  setNativeMenuForWindow(mainWindow, menu)
+  return menu
 }
 
 // This will generate a new menu from the initial state
 // All state management from the previous menu is going to be lost.
-export function buildAndSetMenuForProjectPage(mainWindow: BrowserWindow) {
+export function buildAndSetMenuForProjectPage(
+  mainWindow: BrowserWindow,
+  actions: FileMenuActions
+): Electron.Menu {
   const template = [
     // Expand empty elements for environments that are not Mac
     ...appMenuMacOnly(),
-    projectFileRole(mainWindow),
+    projectFileRole(mainWindow, actions),
     projectEditRole(mainWindow),
     projectViewRole(mainWindow),
     // Help role is the same for all pages
     helpRole(mainWindow),
   ]
   const menu = Menu.buildFromTemplate(template)
-  zooSetApplicationMenu(menu)
+  setNativeMenuForWindow(mainWindow, menu)
+  return menu
 }
 
-// Try to enable the menu based on the application menu
+// Try to enable the menu item on the provided native menu.
 // It will not do anything if that menu cannot be found.
-export function enableMenu(menuId: string) {
-  const applicationMenu = Menu.getApplicationMenu()
-  const menuItem = applicationMenu?.getMenuItemById(menuId)
+export function setMenuItemEnabled(
+  menu: MenuWithMenuItemLookup | null | undefined,
+  menuId: string,
+  enabled: boolean
+) {
+  const menuItem = menu?.getMenuItemById(menuId)
   if (menuItem) {
-    menuItem.enabled = true
-  }
-}
-
-// Try to disable the menu based on the application menu
-// It will not do anything if that menu cannot be found.
-export function disableMenu(menuId: string) {
-  const applicationMenu = Menu.getApplicationMenu()
-  const menuItem = applicationMenu?.getMenuItemById(menuId)
-  if (menuItem) {
-    menuItem.enabled = false
+    menuItem.enabled = enabled
   }
 }

@@ -3,9 +3,10 @@ import Fuse from 'fuse.js'
 import { useEffect, useMemo, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type { Command } from '@src/lib/commandTypes'
 import { sortCommands } from '@src/lib/commandUtils'
-import { useApp } from '@src/lib/boot'
 import { getActorNextEvents } from '@src/lib/utils'
 
 function CommandComboBox({
@@ -58,6 +59,7 @@ function CommandComboBox({
           className="w-5 h-5 bg-primary/10 dark:bg-primary text-primary dark:text-inherit"
         />
         <Combobox.Input
+          {...noAutofillInputProps}
           data-testid="cmd-bar-search"
           onChange={(event) => setQuery(event.target.value)}
           className="w-full bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
@@ -75,10 +77,6 @@ function CommandComboBox({
             placeholder ||
             'Search commands'
           }
-          autoCapitalize="off"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck="false"
           autoFocus
         />
       </div>
@@ -117,6 +115,12 @@ function CommandComboBox({
                 <div className="text-xs flex items-center justify-center gap-1 text-primary">
                   <CustomIcon name="beaker" className="w-4 h-4" />
                   <span>Experimental</span>
+                </div>
+              )}
+              {option.status === 'deprecated' && (
+                <div className="text-xs flex items-center justify-center gap-1 text-warn-80 dark:text-warn-40">
+                  <CustomIcon name="triangleExclamation" className="w-4 h-4" />
+                  <span>Deprecated</span>
                 </div>
               )}
             </Combobox.Option>

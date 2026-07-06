@@ -1,6 +1,6 @@
 import type { BrowserWindow } from 'electron'
 
-import { typeSafeWebContentsSend } from '@src/menu/channels'
+import { sendMenuAction } from '@src/menu/channels'
 import type { ZooMenuItemConstructorOptions } from '@src/menu/roles'
 import { isMac } from '@src/menu/utils'
 
@@ -30,30 +30,18 @@ export const projectEditRole = (
       {
         label: 'Rename Project',
         id: 'Edit.Rename project',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Rename project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Rename project'),
       },
       {
         label: 'Delete Project',
         id: 'Edit.Delete project',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Delete project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Delete project'),
       },
       { type: 'separator' },
       {
         label: 'Change Project Directory',
         id: 'Edit.Change project directory',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Change project directory',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Change project directory'),
       },
       { type: 'separator' },
       { role: 'undo' },
@@ -93,69 +81,41 @@ export const modelingEditRole = (
       {
         label: 'Edit Parameter',
         id: 'Edit.Edit parameter',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Edit parameter',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Edit parameter'),
       },
       {
         label: 'Format Code',
         id: 'Edit.Format code',
         accelerator: 'Alt+Shift+F',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Format code',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Format code'),
       },
       { type: 'separator' },
       {
         label: 'Rename Project',
         id: 'Edit.Rename project',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Rename project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Rename project'),
       },
       {
         label: 'Delete Project',
         id: 'Edit.Delete project',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Delete project',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Delete project'),
       },
       { type: 'separator' },
       {
         label: 'Change Project Directory',
         id: 'Edit.Change project directory',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Change project directory',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Change project directory'),
       },
       { type: 'separator' },
       {
         label: 'Undo',
         accelerator: 'CmdOrCtrl+Z',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Undo',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Undo'),
       },
       {
         label: 'Redo',
         accelerator: 'Shift+CmdOrCtrl+Z',
-        click: () => {
-          typeSafeWebContentsSend(mainWindow, 'menu-action-clicked', {
-            menuLabel: 'Edit.Redo',
-          })
-        },
+        click: sendMenuAction(mainWindow, 'Edit.Redo'),
       },
       { type: 'separator' },
       { role: 'cut' },

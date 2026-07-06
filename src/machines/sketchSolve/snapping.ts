@@ -5,6 +5,7 @@ import type {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
+import type RustContext from '@src/lib/rustContext'
 import { distance2d } from '@src/lib/utils2d'
 import {
   getArcPoints,
@@ -30,7 +31,7 @@ export const X_AXIS_TARGET = 'x-axis'
 export const Y_AXIS_TARGET = 'y-axis'
 
 type CoincidentSnapTarget = {
-  type: 'point' | 'line' | 'arc' | 'circle'
+  type: 'point' | 'line' | 'midpoint' | 'arc' | 'circle'
   id: number
 }
 type OriginSnapTarget = {
@@ -67,6 +68,7 @@ function isCoincidentSnapTarget(
   return (
     target?.type === 'point' ||
     target?.type === 'line' ||
+    target?.type === 'midpoint' ||
     target?.type === 'arc' ||
     target?.type === 'circle'
   )
@@ -103,32 +105,92 @@ export function getConstraintForSnapTarget(
   segmentId: number,
   target: SnapTarget | undefined
 ): ApiConstraint | null {
+  return getConstraintsForSnapTarget(segmentId, target)[0] ?? null
+}
+
+export function getConstraintsForSnapTarget(
+  segmentId: number,
+  target: SnapTarget | undefined
+): ApiConstraint[] {
   switch (target?.type) {
     case 'point':
     case 'line':
+    case 'midpoint':
     case 'arc':
     case 'circle':
     case ORIGIN_TARGET: {
       const segments = getCoincidentSegmentsForSnapTarget(segmentId, target)
-      return segments === null
-        ? null
-        : {
-            type: 'Coincident',
-            segments,
-          }
+      if (segments === null) {
+        return []
+      }
+
+      const constraints: ApiConstraint[] = [
+        {
+          type: 'Coincident',
+          segments,
+        },
+      ]
+      if (target.type === 'midpoint') {
+        constraints.push({
+          type: 'Midpoint',
+          point: segmentId,
+          segment: target.id,
+        })
+      }
+
+      return constraints
     }
     case X_AXIS_TARGET:
-      return {
-        type: 'Horizontal',
-        points: [segmentId, 'ORIGIN'],
-      }
+      return [
+        {
+          type: 'Horizontal',
+          points: [segmentId, 'ORIGIN'],
+        },
+      ]
     case Y_AXIS_TARGET:
-      return {
-        type: 'Vertical',
-        points: [segmentId, 'ORIGIN'],
-      }
+      return [
+        {
+          type: 'Vertical',
+          points: [segmentId, 'ORIGIN'],
+        },
+      ]
     default:
-      return null
+      return []
+  }
+}
+
+export async function applyConstraintsForSnapTarget({
+  segmentId,
+  target,
+  rustContext,
+  sketchId,
+  settings,
+  createCheckpoint = false,
+}: {
+  segmentId: number
+  target: SnapTarget | undefined
+  rustContext: Pick<RustContext, 'addConstraint'>
+  sketchId: number
+  settings: Parameters<RustContext['addConstraint']>[3]
+  createCheckpoint?: boolean
+}) {
+  const constraints = getConstraintsForSnapTarget(segmentId, target)
+  let result: Awaited<ReturnType<RustContext['addConstraint']>> | null = null
+  const newObjectIds: number[] = []
+
+  for (const [index, constraint] of constraints.entries()) {
+    const shouldCreateCheckpoint =
+      createCheckpoint && index === constraints.length - 1
+    result = shouldCreateCheckpoint
+      ? await rustContext.addConstraint(0, sketchId, constraint, settings, true)
+      : await rustContext.addConstraint(0, sketchId, constraint, settings)
+    newObjectIds.push(...result.sceneGraphDelta.new_objects)
+  }
+
+  return {
+    constraints,
+    result,
+    newObjectIds,
   }
 }
 
@@ -141,81 +203,109 @@ function getSnapTargetPriority(target: SnapTarget) {
     case X_AXIS_TARGET:
     case Y_AXIS_TARGET:
       return 2
+    case 'midpoint':
+      return 3
     case 'line':
     case 'arc':
     case 'circle':
-      return 3
+      return 4
   }
 }
 
 function getSnappingCandidateForApiObject(
   mousePosition: Coords2d,
   candidate: { distance: number; apiObject: ApiObject },
-  objects: ApiObject[]
-): SnappingCandidate | null {
+  objects: ApiObject[],
+  hoverDistance: number
+): SnappingCandidate[] {
   if (isPointSegment(candidate.apiObject)) {
-    return {
-      target: {
-        type: 'point',
-        id: candidate.apiObject.id,
+    return [
+      {
+        target: {
+          type: 'point',
+          id: candidate.apiObject.id,
+        },
+        distance: candidate.distance,
+        position: pointToCoords2d(candidate.apiObject),
       },
-      distance: candidate.distance,
-      position: pointToCoords2d(candidate.apiObject),
-    }
+    ]
   }
 
   if (isLineSegment(candidate.apiObject)) {
     const linePoints = getLinePoints(candidate.apiObject, objects)
     if (!linePoints) {
-      return null
+      return []
     }
 
-    return {
-      target: {
-        type: 'line',
-        id: candidate.apiObject.id,
+    const midpoint: Coords2d = [
+      (linePoints[0][0] + linePoints[1][0]) / 2,
+      (linePoints[0][1] + linePoints[1][1]) / 2,
+    ]
+    const snappingCandidates: SnappingCandidate[] = [
+      {
+        target: {
+          type: 'line',
+          id: candidate.apiObject.id,
+        },
+        distance: candidate.distance,
+        position: getClosestPointOnLineSegment(mousePosition, linePoints)
+          .closestPoint,
       },
-      distance: candidate.distance,
-      position: getClosestPointOnLineSegment(mousePosition, linePoints)
-        .closestPoint,
+    ]
+    const midpointDistance = distance2d(mousePosition, midpoint)
+    if (midpointDistance <= hoverDistance) {
+      snappingCandidates.push({
+        target: {
+          type: 'midpoint',
+          id: candidate.apiObject.id,
+        },
+        distance: midpointDistance,
+        position: midpoint,
+      })
     }
+
+    return snappingCandidates
   }
 
   if (isArcSegment(candidate.apiObject)) {
     const arcPoints = getArcPoints(candidate.apiObject, objects)
     if (!arcPoints) {
-      return null
+      return []
     }
 
-    return {
-      target: {
-        type: 'arc',
-        id: candidate.apiObject.id,
+    return [
+      {
+        target: {
+          type: 'arc',
+          id: candidate.apiObject.id,
+        },
+        distance: candidate.distance,
+        position: getClosestPointOnArcSegment(mousePosition, arcPoints)
+          .closestPoint,
       },
-      distance: candidate.distance,
-      position: getClosestPointOnArcSegment(mousePosition, arcPoints)
-        .closestPoint,
-    }
+    ]
   }
 
   if (isCircleSegment(candidate.apiObject)) {
     const circlePoints = getArcPoints(candidate.apiObject, objects)
     if (!circlePoints) {
-      return null
+      return []
     }
 
-    return {
-      target: {
-        type: 'circle',
-        id: candidate.apiObject.id,
+    return [
+      {
+        target: {
+          type: 'circle',
+          id: candidate.apiObject.id,
+        },
+        distance: candidate.distance,
+        position: getClosestPointOnCircleSegment(mousePosition, circlePoints)
+          .closestPoint,
       },
-      distance: candidate.distance,
-      position: getClosestPointOnCircleSegment(mousePosition, circlePoints)
-        .closestPoint,
-    }
+    ]
   }
 
-  return null
+  return []
 }
 
 export function getSnappingCandidates(
@@ -223,26 +313,25 @@ export function getSnappingCandidates(
   objects: ApiObject[],
   sceneInfra: SceneInfra
 ): SnappingCandidate[] {
-  const geometricCandidates = findClosestApiObjects(
-    mousePosition,
-    objects,
-    sceneInfra
-  ).flatMap((candidate) => {
-    const snappingCandidate = getSnappingCandidateForApiObject(
-      mousePosition,
-      candidate,
-      objects
-    )
-
-    return snappingCandidate ? [snappingCandidate] : []
-  })
-
   const sketchSceneObject = sceneInfra.scene.getObjectByName(SKETCH_SOLVE_GROUP)
   const sketchSceneGroup =
     sketchSceneObject instanceof Group ? sketchSceneObject : null
   const hoverDistance = getSketchHoverDistance(
     sceneInfra.getClientSceneScaleFactor(sketchSceneGroup)
   )
+  const geometricCandidates = findClosestApiObjects(
+    mousePosition,
+    objects,
+    sceneInfra
+  ).flatMap((candidate) => {
+    return getSnappingCandidateForApiObject(
+      mousePosition,
+      candidate,
+      objects,
+      hoverDistance
+    )
+  })
+
   const originDistance = distance2d(mousePosition, [0, 0])
   const originCandidates: SnappingCandidate[] =
     originDistance <= hoverDistance

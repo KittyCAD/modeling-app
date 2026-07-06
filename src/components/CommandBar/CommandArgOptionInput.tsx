@@ -4,11 +4,12 @@ import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AnyStateMachine, StateFrom } from 'xstate'
 
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
@@ -47,7 +48,7 @@ function CommandArgOptionInput({
   )
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
-  const [shouldSubmitOnChange, setShouldSubmitOnChange] = useState(false)
+  const shouldSubmitOnChange = useRef(false)
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
@@ -104,7 +105,8 @@ function CommandArgOptionInput({
     setSelectedOption(option)
 
     // But we only submit the value itself
-    if (shouldSubmitOnChange) {
+    if (shouldSubmitOnChange.current) {
+      shouldSubmitOnChange.current = false
       onSubmit(option.value)
     }
   }
@@ -118,14 +120,15 @@ function CommandArgOptionInput({
 
   return (
     <form
+      {...noAutofillFormProps}
       id="arg-form"
       onSubmit={handleSubmit}
       ref={formRef}
       onKeyDownCapture={(e) => {
         if (e.key === 'Enter') {
-          setShouldSubmitOnChange(true)
+          shouldSubmitOnChange.current = true
         } else {
-          setShouldSubmitOnChange(false)
+          shouldSubmitOnChange.current = false
         }
       }}
     >
@@ -143,6 +146,7 @@ function CommandArgOptionInput({
             {argName}
           </label>
           <Combobox.Input
+            {...noAutofillInputProps}
             id="option-input"
             data-testid="cmd-bar-arg-value"
             ref={inputRef}
@@ -158,9 +162,9 @@ function CommandArgOptionInput({
               }
 
               if (event.key === 'Enter') {
-                setShouldSubmitOnChange(true)
+                shouldSubmitOnChange.current = true
               } else {
-                setShouldSubmitOnChange(false)
+                shouldSubmitOnChange.current = false
               }
             }}
             value={query}
@@ -170,10 +174,6 @@ function CommandArgOptionInput({
               argName ||
               'Select an option'
             }
-            autoCapitalize="off"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck="false"
             autoFocus
           />
         </div>
@@ -182,7 +182,7 @@ function CommandArgOptionInput({
             static
             className="overflow-y-auto max-h-96 cursor-pointer"
             onMouseDown={() => {
-              setShouldSubmitOnChange(true)
+              shouldSubmitOnChange.current = true
             }}
           >
             {filteredOptions?.map((option) => (

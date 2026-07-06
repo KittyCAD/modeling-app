@@ -1,9 +1,9 @@
 import type { CallExpressionKw, SourceRange } from '@src/lang/wasm'
+import type { BaseUnit, RgbaColor } from '@src/lib/settings/settingsTypes'
 import type { AsyncFn } from '@src/lib/types'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import { v4 } from 'uuid'
 import type { AnyMachineSnapshot } from 'xstate'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type { BaseUnit, RgbaColor } from '@src/lib/settings/settingsTypes'
 
 export const uuidv4 = v4
 
@@ -54,7 +54,7 @@ export function allLabels(callExpression: CallExpressionKw): string[] {
 /**
  * A safer type guard for arrays since the built-in Array.isArray() asserts `any[]`.
  */
-export function isArray(val: any): val is unknown[] {
+export function isArray(val: unknown): val is readonly unknown[] {
   // eslint-disable-next-line no-restricted-syntax
   return Array.isArray(val)
 }
@@ -120,7 +120,7 @@ export function clamp(value: number, min: number, max: number): number {
 
 /**
  * Calculates the angle in degrees between two vectors in 2D.
- * The angle is normalized to the range [-180, 180].
+ * The angle is normalized to the range (-180, 180].
  *
  * @param a The first vector as a tuple [x, y].
  * @param b The second vector as a tuple [x, y].
@@ -129,6 +129,9 @@ export function clamp(value: number, min: number, max: number): number {
 export function getAngle(a: [number, number], b: [number, number]): number {
   const x = b[0] - a[0]
   const y = b[1] - a[1]
+  // Note that this normalization is only meaningful in edge-cases and could
+  // potentially be removed.
+  // It turns -180 into 180, so makes the output [-180, 180] -> (-180, 180].
   return normaliseAngle((Math.atan2(y, x) * 180) / Math.PI)
 }
 

@@ -11,6 +11,8 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { roundOff } from '@src/lib/utils'
 import {
+  isArcSegment,
+  isConstraint,
   isLineSegment,
   isPointSegment,
   pointToCoords2d,
@@ -25,8 +27,8 @@ import type {
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
   type SnapTarget,
+  applyConstraintsForSnapTarget,
   getCoincidentSegmentsForSnapTarget,
-  getConstraintForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   type CONFIRMING_DIMENSIONS,
@@ -142,20 +144,17 @@ export const machine = setup({
             }
           }
 
-          const snapConstraint = getConstraintForSnapTarget(
-            startPointId,
-            snapTarget
-          )
-          if (snapConstraint === null) {
+          const snapResult = await applyConstraintsForSnapTarget({
+            segmentId: startPointId,
+            target: snapTarget,
+            rustContext,
+            sketchId,
+            settings,
+          })
+          if (snapResult.result === null) {
             return result
           }
-
-          const snapResult = await rustContext.addConstraint(
-            0,
-            sketchId,
-            snapConstraint,
-            settings
-          )
+          const appliedSnapResult = snapResult.result
 
           const segmentIds = result.sceneGraphDelta.new_objects.filter(
             (objId) => {
@@ -163,20 +162,19 @@ export const machine = setup({
               return obj?.kind.type === 'Segment'
             }
           )
-          const constraintIds = snapResult.sceneGraphDelta.new_objects.filter(
-            (objId) => {
-              const obj = snapResult.sceneGraphDelta.new_graph.objects[objId]
-              return obj?.kind.type === 'Constraint'
-            }
-          )
+          const constraintIds = snapResult.newObjectIds.filter((objId) => {
+            const obj =
+              appliedSnapResult.sceneGraphDelta.new_graph.objects[objId]
+            return obj?.kind.type === 'Constraint'
+          })
 
           return {
-            kclSource: snapResult.kclSource,
+            kclSource: appliedSnapResult.kclSource,
             sceneGraphDelta: {
-              ...snapResult.sceneGraphDelta,
+              ...appliedSnapResult.sceneGraphDelta,
               new_objects: [
                 ...result.sceneGraphDelta.new_objects,
-                ...snapResult.sceneGraphDelta.new_objects,
+                ...snapResult.newObjectIds,
               ],
             },
             newlyAddedEntities: {
@@ -264,20 +262,57 @@ export const machine = setup({
           let latestCheckpointId = result.checkpointId
           let snapConstraintNewObjects: Array<number> = []
 
-          const snapConstraint = getConstraintForSnapTarget(id, snapTarget)
-          if (snapConstraint !== null) {
-            const snapResult = await rustContext.addConstraint(
-              0,
-              sketchId,
-              snapConstraint,
-              settings,
-              true
-            )
-            latestKclSource = snapResult.kclSource
-            latestSceneGraphDelta = snapResult.sceneGraphDelta
-            latestCheckpointId = snapResult.checkpointId
-            snapConstraintNewObjects = snapResult.sceneGraphDelta.new_objects
+          const snapResult = await applyConstraintsForSnapTarget({
+            segmentId: id,
+            target: snapTarget,
+            rustContext,
+            sketchId,
+            settings,
+            createCheckpoint: true,
+          })
+          if (snapResult.result !== null) {
+            latestKclSource = snapResult.result.kclSource
+            latestSceneGraphDelta = snapResult.result.sceneGraphDelta
+            latestCheckpointId = snapResult.result.checkpointId
+            snapConstraintNewObjects = snapResult.newObjectIds
           }
+
+          // Stop chaining lines when snapping to a point that is an end point of a line/arc
+          const hasNewCoincidentSnapConstraintToNonOriginPoint =
+            snapTarget?.type === 'point' &&
+            snapConstraintNewObjects.some((objId) => {
+              const obj = latestSceneGraphDelta.new_graph.objects[objId]
+
+              // First make sure this is a new coincident constraint
+              if (
+                isConstraint(obj, 'Coincident') &&
+                obj.kind.constraint.segments.includes(snapTarget.id)
+              ) {
+                // Then check the snapped point is at the end of a line or arc
+                const point =
+                  latestSceneGraphDelta.new_graph.objects[snapTarget.id]
+                if (isPointSegment(point)) {
+                  const owner = point.kind.segment.owner
+                    ? latestSceneGraphDelta.new_graph.objects[
+                        point.kind.segment.owner
+                      ]
+                    : null
+                  if (isLineSegment(owner) || isArcSegment(owner)) {
+                    if (
+                      owner.kind.segment.start === snapTarget.id ||
+                      owner.kind.segment.end === snapTarget.id
+                    ) {
+                      return true
+                    }
+                  }
+                }
+              }
+
+              // return (
+              //   isConstraint(obj, 'Coincident') &&
+              //   obj.kind.constraint.segments.includes(snapTarget.id)
+              // )
+            })
 
           return {
             kclSource: latestKclSource,
@@ -290,7 +325,8 @@ export const machine = setup({
             },
             checkpointId: latestCheckpointId,
             lastPointId:
-              snapConstraint === null && isDoubleClick !== true
+              !hasNewCoincidentSnapConstraintToNonOriginPoint &&
+              isDoubleClick !== true
                 ? id
                 : undefined,
           }

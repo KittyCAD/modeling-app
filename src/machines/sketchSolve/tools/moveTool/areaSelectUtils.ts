@@ -4,7 +4,9 @@ import {
   SKETCH_LAYER,
   SKETCH_SOLVE_GROUP,
 } from '@src/clientSideScene/sceneUtils'
+import type { Coords2d } from '@src/lang/util'
 import { getAngleDiff } from '@src/lib/utils'
+import { TAU } from '@src/lib/utils2d'
 import {
   getArcPoints,
   getLinePoints,
@@ -14,16 +16,14 @@ import {
   pointToCoords2d,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { htmlHelper } from '@src/machines/sketchSolve/segments'
-import type { Coords2d } from '@src/lang/util'
 import {
   Group,
   type OrthographicCamera,
   type PerspectiveCamera,
-  Vector3,
   Vector2,
+  Vector3,
 } from 'three'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
-import { TAU } from '@src/lib/utils2d'
 
 export const AREA_SELECT_BORDER_WIDTH = 2
 export const LINE_EXTENSION_SIZE = 12

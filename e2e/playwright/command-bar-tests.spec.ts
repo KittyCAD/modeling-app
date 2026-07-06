@@ -11,6 +11,8 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     page,
     homePage,
     toolbar,
+    scene,
+    editor,
     cmdBar,
   }) => {
     await page.addInitScript(async () => {
@@ -34,12 +36,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await u.openDebugPanel()
     await u.expectCmdLog('[data-message-type="execution-done"]')
     await u.closeDebugPanel()
-
-    // Click the line of code for xLine.
-    await page.getByText(`startProfile(at = [-10, -10])`).click()
-
-    // Wait for the selection to register (TODO: we need a definitive way to wait for this)
-    await page.waitForTimeout(200)
+    await scene.settled()
 
     await toolbar.extrudeButton.click()
     await cmdBar.expectState({
@@ -53,7 +50,19 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       },
       highlightedHeaderArg: 'Profiles',
     })
+    await editor.selectText('startProfile(at = [-10, -10])')
     await cmdBar.progressCmdBar()
+    await cmdBar.expectState({
+      stage: 'arguments',
+      commandName: 'Extrude',
+      currentArgKey: 'length',
+      currentArgValue: '5',
+      headerArguments: {
+        Profiles: '1 profile',
+        Length: '5',
+      },
+      highlightedHeaderArg: 'length',
+    })
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
       stage: 'review',
@@ -78,7 +87,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const commandBarButton = page.getByRole('button', { name: 'Commands' })
     const cmdSearchBar = page.getByPlaceholder('Search commands')
@@ -134,7 +143,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     // Check the toast appeared
     await expect(
-      page.getByText(`Set show debug panel to "false" for this project`)
+      page.getByText(`Set show panel to "false" for this project`)
     ).toBeVisible()
     // Check that the visibility changed
     await expect(paneSelector).not.toBeVisible()
@@ -167,7 +176,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Put the cursor in the code editor
     await page.locator('.cm-content').click()
@@ -230,7 +239,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     let cmdSearchBar = page.getByPlaceholder('Search commands')
     await page.keyboard.press('ControlOrMeta+K')
@@ -353,7 +362,7 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     })
 
     await cmdBar.progressCmdBar()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await editor.expectEditor.toContain(
       'extrude001 = extrude(sketch001, length = length001)'
     )
@@ -365,12 +374,15 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     scene,
     cmdBar,
     toolbar,
+    context,
   }) => {
     await page.setBodyDimensions({ width: 1200, height: 500 })
+    await context.addInitScript((initialCode) => {
+      localStorage.setItem('persistCode', initialCode)
+    }, `sketch001 = startSketchOn(XZ)`)
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
-    const sketchButton = toolbar.startSketchBtn
     const cmdBarButton = page.getByRole('button', { name: 'Commands' })
     const rectangleToolCommand = page.getByRole('option', {
       name: 'rectangle',
@@ -390,13 +402,19 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
       name: 'arc Tangential Arc',
     })
 
-    // Start a sketch
-    await sketchButton.click()
-
-    await page.mouse.click(700, 200)
+    // Enter a sketch
+    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+    await op.dblclick()
     await toolbar.waitUntilSketchingReady()
 
+    await page.mouse.click(700, 200)
+    await expect(toolbar.exitSketchBtn).toBeVisible()
+
     // Switch between sketch tools via the command bar
+    if ((await lineToolButton.getAttribute('aria-pressed')) !== 'true') {
+      await cmdBarButton.click()
+      await lineToolCommand.click()
+    }
     await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
     await cmdBarButton.click()
     await rectangleToolCommand.click()
@@ -778,7 +796,7 @@ export exported = 2`,
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await cmdBar.openCmdBar()
     await cmdBar.chooseCommand('Extrude')
@@ -810,16 +828,6 @@ export exported = 2`,
 
     await cmdBar.progressCmdBar()
     await cmdBar.expectState({
-      stage: 'review',
-      commandName: 'Extrude',
-      headerArguments: {
-        Profiles: '1 edge',
-        Length: '5',
-      },
-    })
-
-    await cmdBar.clickOptionalArgument('bodyType')
-    await cmdBar.expectState({
       stage: 'arguments',
       commandName: 'Extrude',
       currentArgKey: 'bodyType',
@@ -831,14 +839,15 @@ export exported = 2`,
       },
       highlightedHeaderArg: 'bodyType',
     })
-    await cmdBar.selectOption({ name: 'Solid' }).click()
+
+    await cmdBar.selectOption({ name: 'Surface' }).click()
     await cmdBar.expectState({
       stage: 'review',
       commandName: 'Extrude',
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
     })
 
@@ -851,7 +860,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
         Method: '',
       },
       highlightedHeaderArg: 'method',
@@ -867,7 +876,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
       highlightedHeaderArg: 'bodyType',
     })
@@ -881,7 +890,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
       highlightedHeaderArg: 'length',
     })
@@ -895,7 +904,7 @@ export exported = 2`,
       headerArguments: {
         Profiles: '1 edge',
         Length: '5',
-        BodyType: 'SOLID',
+        BodyType: 'SURFACE',
       },
       highlightedHeaderArg: 'Profiles',
     })

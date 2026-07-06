@@ -47,3 +47,14 @@ where
         return exec_result;
     }
 }
+
+pub(crate) trait MathExt: num_traits::Num + Copy {
+    /// Return `self * self`. This is to avoid platform differences using
+    /// floating point `f64::pow()`.
+    #[inline(always)]
+    fn squared(self) -> Self {
+        self * self
+    }
+}
+
+impl<T: num_traits::Num + Copy> MathExt for T {}

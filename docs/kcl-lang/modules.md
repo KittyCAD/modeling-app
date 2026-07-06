@@ -55,8 +55,30 @@ Imported symbols can be renamed for convenience or to avoid name collisions.
 import increment as inc, decrement as dec from "util.kcl"
 ```
 
+## Subdirectories
+
 You can import files from the current directory or from subdirectories, but if importing from a
-subdirectory you can only import `main.kcl`.
+subdirectory you can only import `main.kcl`. This allows you to make functions
+that are public to the directory, but not exposed to the parent directory. This
+is useful when building abstractions.
+
+But what if you want to have something defined in a non-main file in a
+subdirectory and export it to the parent directory?
+
+You can re-export items that are imported by using `export import`.
+
+```no-run
+// part/public.kcl
+export size = 5mm
+
+// part/main.kcl
+export import size from "public.kcl"
+
+// main.kcl
+import size from "part/main.kcl"
+```
+
+Anything that can be imported can be re-exported in this way.
 
 ---
 
@@ -71,17 +93,23 @@ There are two common patterns for re‑using geometry:
 ### Parametric function example
 
 ```kcl
-fn cube(center) {
-  return startSketchOn(XY)
-    |> startProfile(at = [center[0] - 10, center[1] - 10])
-    |> line(endAbsolute = [center[0] + 10, center[1] - 10])
-    |> line(endAbsolute = [center[0] + 10, center[1] + 10])
-    |> line(endAbsolute = [center[0] - 10, center[1] + 10])
-    |> close()
-    |> extrude(length = 10)
+fn cube(height) {
+  sketch001 = sketch(on = XY) {
+    line1 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 3mm])
+    coincident([line1.start, ORIGIN])
+    line2 = line(start = [var 0mm, var 3mm], end = [var 3mm, var 3mm])
+    coincident([line1.end, line2.start])
+    line3 = line(start = [var 3mm, var 3mm], end = [var 3mm, var 0mm])
+    coincident([line2.end, line3.start])
+    line4 = line(start = [var 3mm, var 0mm], end = [var 0mm, var 0mm])
+    coincident([line3.end, line4.start])
+    coincident([line4.end, line1.start])
+  }
+  region001 = region(point = [2mm, 2mm], sketch = sketch001)
+  return extrude(region001, length = height)
 }
 
-myCube = cube(center = [0, 0])
+myCube = cube(height = 2)
 ```
 
 *Pros*
@@ -95,12 +123,14 @@ myCube = cube(center = [0, 0])
 ### `clone` example
 
 ```kcl
-sketch001 = startSketchOn(-XZ)
-  |> circle(center = [0, 0], radius = 10)
-  |> extrude(length = 5) 
+sketch003 = sketch(on = -XZ) {
+  circle1 = circle(start = [var 10mm, var 0mm], center = [var 0mm, var 0mm])
+}
+region001 = region(segments = [sketch003.circle1])
+sketch001 = extrude(region001, length = 5)
   |> appearance(color = "#ff0000", metalness = 90, roughness = 90)
 
-sketch002 = clone(sketch001)  // ✓ instant copy
+sketch002 = clone(sketch001) // ✓ instant copy
 ```
 
 *Pros*
@@ -153,7 +183,9 @@ Defining a function inside a module is instantaneous – we just record the byte
 
 ```norun
 // util.kcl
-export fn makeBolt(size) { /* … expensive CAD … */ }
+export fn makeBolt(size) {
+  /* … expensive CAD … */
+}
 ```
 
 If `main.kcl` waits until the very end to call `makeBolt`, *none* of that work was parallelised – you’ve pushed the cost back onto the serial tail of your script.

@@ -4,23 +4,23 @@ import {
   createSetAngleLengthModal,
 } from '@src/components/SetAngleLengthModal'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import type { KclManager } from '@src/lang/KclManager'
 import {
   createBinaryExpressionWithUnary,
   createLocalName,
   createName,
   createVariableDeclaration,
 } from '@src/lang/create'
-import type { PathToNodeMap } from '@src/lang/util'
 import {
   isExprBinaryPart,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
-import { isPathToNode, type Expr, type Program } from '@src/lang/wasm'
+import type { PathToNodeMap } from '@src/lang/util'
+import { type Expr, type Program, isPathToNode } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
 import { normaliseAngle } from '@src/lib/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 const getModalInfo = createSetAngleLengthModal(SetAngleLengthModal)
 

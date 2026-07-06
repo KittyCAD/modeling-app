@@ -1,8 +1,8 @@
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { useAppState } from '@src/AppState'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { EngineConnectionStateType } from '@src/network/utils'
 import { useSingletons } from '@src/lib/boot'
+import { EngineConnectionStateType } from '@src/network/utils'
 
 export function useReliesOnEngine(isExecuting: boolean) {
   const { kclManager } = useSingletons()

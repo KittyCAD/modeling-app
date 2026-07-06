@@ -1,25 +1,26 @@
-import { useApp, useSingletons } from '@src/lib/boot'
-import { ConnectionStream } from '@src/components/ConnectionStream'
-import Gizmo from '@src/components/gizmo/Gizmo'
+import { useSignals } from '@preact/signals-react/runtime'
 import { Toolbar } from '@src/Toolbar'
-import type { AreaType, AreaTypeDefinition } from '@src/lib/layout/types'
+import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
+import { ConnectionStream } from '@src/components/ConnectionStream'
+import { CustomIcon } from '@src/components/CustomIcon'
+import Gizmo from '@src/components/gizmo/Gizmo'
+import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
+import { DebugPane } from '@src/components/layout/areas/DebugPane'
+import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
+import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
+import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
+import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
+import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
+import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import type { AreaLibrary, AreaTypeDefinition } from '@src/lib/layout/types'
+import { togglePaneLayoutNode } from '@src/lib/layout/utils'
+import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
-import { togglePaneLayoutNode } from '@src/lib/layout/utils'
-import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
-import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
-import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
-import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
-import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
-import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
-import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
-import { DebugPane } from '@src/components/layout/areas/DebugPane'
-import { BodiesPane } from '@src/components/layout/areas/BodiesPane'
-import { useSignals } from '@preact/signals-react/runtime'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { DEFAULT_SKETCH_SOLVE_STREAM_DIMMING } from '@src/clientSideScene/ClientSideSceneComp'
-import { CustomIcon } from '@src/components/CustomIcon'
 
 function ModelingArea() {
   const { auth } = useApp()
@@ -86,15 +87,14 @@ function ModelingArea() {
   )
 }
 
-/**
- * For now we have strict area types but in future
- * we should make it possible to register your own in an extension.
- */
 export const useDefaultAreaLibrary = () => {
   useSignals()
-  const { settings, layout } = useApp()
+  const { settings, layout, registry } = useApp()
   const { kclManager } = useSingletons()
   const getSettings = settings.get
+  const registeredAreaLibrary = registry.signal(
+    layoutAreaLibraryValueSpec
+  ).value
   const onCodeNotificationClick: MouseEventHandler = useCallback(
     (e) => {
       e.preventDefault()
@@ -162,7 +162,7 @@ export const useDefaultAreaLibrary = () => {
             // Only compute runtime errors! Compilation errors are not tracked here.
             const errors = kclErrorsByFilename(kclManager.errorsSignal.value)
             const value = errors.size > 0 ? 'x' : ''
-            const onClick: MouseEventHandler = (e) => {
+            const onClick: MouseEventHandler = useCallback((e) => {
               e.preventDefault()
               // TODO: When we have generic file open
               // If badge is pressed
@@ -170,8 +170,8 @@ export const useDefaultAreaLibrary = () => {
               // Then scroll to error
               // Do you automatically open the project files
               // kclManager.scrollToFirstErrorDiagnosticIfExists()
-            }
-            return useMemo(() => ({ value, onClick, title }), [value, title])
+            }, [])
+            return useMemo(() => ({ value, onClick, title }), [value, onClick])
           },
         },
         variables: {
@@ -185,12 +185,13 @@ export const useDefaultAreaLibrary = () => {
           Component: LogsPane,
         },
         debug: {
-          hide: () => getSettings().app.showDebugPanel.current === false,
+          hide: () => getSettings().debug.showPanel.current === false,
           shortcut: 'Shift + D',
           Component: DebugPane,
         },
-      } satisfies Record<AreaType, AreaTypeDefinition>),
-    [getSettings, kclManager, onCodeNotificationClick]
+        ...registeredAreaLibrary,
+      } satisfies AreaLibrary),
+    [getSettings, kclManager, onCodeNotificationClick, registeredAreaLibrary]
   )
 }
 
@@ -215,4 +216,4 @@ export const testAreaLibrary = Object.freeze({
   logs: testArea('Logs'),
   variables: testArea('Variables'),
   debug: testArea('Debug'),
-} satisfies Record<AreaType, AreaTypeDefinition>)
+} satisfies AreaLibrary)

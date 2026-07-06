@@ -1,11 +1,12 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
 import {
+  createArrayExpression,
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createArrayExpression,
   createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
@@ -17,13 +18,21 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   getNodeFromPath,
-  getRegionTagExprFromSegmentId,
+  getRegionSketchTagExprFromSourceSurface,
+  getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   valueOrVariable,
 } from '@src/lang/queryAst'
+import {
+  getArtifactOfTypes,
+  getCodeRefsByArtifactId,
+  getSweepArtifactFromSelection,
+} from '@src/lang/std/artifactGraph'
 import type {
   Artifact,
   ArtifactGraph,
@@ -34,32 +43,29 @@ import type {
   Program,
   VariableDeclarator,
 } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EnginePrimitiveSelection,
-  Selections,
   Selection,
+  Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getArtifactOfTypes,
-  getCodeRefsByArtifactId,
-  getSweepArtifactFromSelection,
-} from '@src/lang/std/artifactGraph'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
-import type { OpArg, OpKclValue } from '@rust/kcl-lib/bindings/Operation'
-import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 
 export function addFillet({
   ast,
   artifactGraph,
   selection,
   radius,
+  tolerance,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -67,7 +73,9 @@ export function addFillet({
   artifactGraph: ArtifactGraph
   selection: Selections
   radius: KclCommandValue
+  tolerance?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -117,6 +125,12 @@ export function addFillet({
   if ('variableName' in radius && radius.variableName) {
     insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
@@ -124,11 +138,23 @@ export function addFillet({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
-    const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('radius', valueOrVariable(radius)),
-      ...tagArgs,
-    ])
+    const toleranceArgs = tolerance
+      ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+      : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Fillet'),
+      data.solidsExpr,
+      [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('radius', valueOrVariable(radius)),
+        ...toleranceArgs,
+        ...tagArgs,
+        ...versionArgs,
+      ]
+    )
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,
@@ -153,6 +179,7 @@ export function addChamfer({
   secondLength,
   angle,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -163,6 +190,7 @@ export function addChamfer({
   secondLength?: KclCommandValue
   angle?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -222,6 +250,9 @@ export function addChamfer({
   if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
@@ -235,14 +266,22 @@ export function addChamfer({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
 
-    const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('length', valueOrVariable(length)),
-      ...secondLengthArgs,
-      ...angleArgs,
-      ...tagArgs,
-    ])
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Chamfer'),
+      data.solidsExpr,
+      [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('length', valueOrVariable(length)),
+        ...secondLengthArgs,
+        ...angleArgs,
+        ...tagArgs,
+        ...versionArgs,
+      ]
+    )
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,
@@ -294,7 +333,7 @@ export function addBlend({
   }
 
   const call = createCallExpressionStdLibKw(
-    'blend',
+    modelingStdLibCommandName('Blend'),
     createArrayExpression(edgeExprs),
     []
   )
@@ -324,145 +363,6 @@ type BodySelectionData = {
 
 function getEdgeSelections(edges: Selections): EdgeSelectionForExpr[] {
   return [...edges.graphSelections, ...getPrimitiveEdgeSelections(edges)]
-}
-
-function getSketchSegmentNameFromSourceSurface(
-  sourceSurfaceArtifact: Artifact,
-  edgeArtifact: Artifact,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType
-): string | null {
-  if (sourceSurfaceArtifact.type !== 'sweep') {
-    return null
-  }
-
-  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
-    ast,
-    sourceSurfaceArtifact.codeRef.pathToNode,
-    wasmInstance,
-    ['CallExpressionKw']
-  )
-  if (
-    err(sourceSurfaceNode) ||
-    sourceSurfaceNode.node.type !== 'CallExpressionKw'
-  ) {
-    return null
-  }
-
-  const sweepInput = sourceSurfaceNode.node.unlabeled
-  if (!sweepInput) {
-    return null
-  }
-
-  let segmentArtifact: Extract<Artifact, { type: 'segment' }> | null = null
-  if (edgeArtifact.type === 'segment') {
-    segmentArtifact = edgeArtifact
-  } else if (edgeArtifact.type === 'sweepEdge') {
-    const segment = getArtifactOfTypes(
-      { key: edgeArtifact.segId, types: ['segment'] },
-      artifactGraph
-    )
-    if (!err(segment) && segment.type === 'segment') {
-      segmentArtifact = segment
-    }
-  }
-
-  if (
-    sweepInput.type === 'MemberExpression' &&
-    sweepInput.property.type === 'Name'
-  ) {
-    return sweepInput.property.name.name
-  }
-
-  if (sweepInput.type !== 'ArrayExpression') {
-    return null
-  }
-
-  if (segmentArtifact) {
-    const pathArtifact = getArtifactOfTypes(
-      { key: sourceSurfaceArtifact.pathId, types: ['path'] },
-      artifactGraph
-    )
-    if (!err(pathArtifact) && pathArtifact.type === 'path') {
-      const matchingSegmentIndex = pathArtifact.segIds.findIndex(
-        (segmentId) =>
-          segmentId === segmentArtifact.originalSegId ||
-          segmentId === segmentArtifact.id
-      )
-
-      if (matchingSegmentIndex !== -1) {
-        const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
-        if (
-          matchingSegmentExpr?.type === 'MemberExpression' &&
-          matchingSegmentExpr.property.type === 'Name'
-        ) {
-          return matchingSegmentExpr.property.name.name
-        }
-      }
-    }
-  }
-
-  const firstSweepSegment = sweepInput.elements.find(
-    (element) =>
-      element.type === 'MemberExpression' && element.property.type === 'Name'
-  )
-  if (
-    firstSweepSegment?.type === 'MemberExpression' &&
-    firstSweepSegment.property.type === 'Name'
-  ) {
-    return firstSweepSegment.property.name.name
-  }
-
-  return null
-}
-
-function getRegionSketchTagExprFromSourceSurface(
-  sourceSurfaceArtifact: Artifact,
-  edgeArtifact: Artifact,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType
-): Expr | null {
-  if (sourceSurfaceArtifact.type !== 'sweep') {
-    return null
-  }
-
-  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
-    ast,
-    sourceSurfaceArtifact.codeRef.pathToNode,
-    wasmInstance,
-    ['CallExpressionKw']
-  )
-  if (
-    err(sourceSurfaceNode) ||
-    sourceSurfaceNode.node.type !== 'CallExpressionKw'
-  ) {
-    return null
-  }
-
-  const sweepInput = sourceSurfaceNode.node.unlabeled
-  if (!sweepInput || sweepInput.type !== 'Name') {
-    return null
-  }
-
-  const segmentId =
-    edgeArtifact.type === 'segment'
-      ? edgeArtifact.id
-      : edgeArtifact.type === 'sweepEdge'
-        ? edgeArtifact.segId
-        : null
-  if (!segmentId) {
-    return null
-  }
-
-  return getRegionTagExprFromSegmentId(
-    ast,
-    segmentId,
-    artifactGraph,
-    wasmInstance,
-    sweepInput.name.name
-  )
 }
 
 function buildEdgeExpr(
@@ -689,6 +589,7 @@ export function groupSelectionsByBodyAndAddTags(
       )
       if (err(sweep)) return sweep
       bodySelectionForSolids = {
+        artifact: sweep as Artifact,
         codeRef: sweep.codeRef,
       }
     }
@@ -707,6 +608,7 @@ export function groupSelectionsByBodyAndAddTags(
       nodeToEdit,
       {
         lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
       }
     )
     if (err(vars)) return vars
@@ -1101,6 +1003,7 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
         nodeToEdit,
         {
           lastChildLookup: true,
+          artifactTypeFilter: ['compositeSolid', 'sweep'],
         }
       )
       if (err(vars)) return vars

@@ -1,21 +1,24 @@
 import { Group } from 'three'
 
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { Coords2d } from '@src/lang/util'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
-  allowSnapping,
-  getObjectIdForSnapTarget,
-  getSnappingCandidates,
-  type SnappingCandidate,
-} from '@src/machines/sketchSolve/snapping'
+  isLineSegment,
+  isPointSegment,
+} from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
+import {
+  type SnappingCandidate,
+  allowSnapping,
+  getObjectIdForSnapTarget,
+  getSnappingCandidates,
+} from '@src/machines/sketchSolve/snapping'
 import { updateSnappingPreviewSprite } from '@src/machines/sketchSolve/snappingPreviewSprite'
 
 type ToolSelf = {
@@ -36,6 +39,13 @@ type ToolSelf = {
       data: { hoveredId: SketchSolveSelectionId | null }
     }) => void
   }
+}
+
+type CandidateFilterArgs = {
+  candidate: SnappingCandidate
+  currentSketchObjects: ApiObject[]
+  excludedPointIdSet: Set<number>
+  excludedSegmentIdSet: Set<number>
 }
 
 function sendHoveredId(
@@ -71,6 +81,7 @@ export function getBestSnappingCandidate({
   mouseEvent,
   excludedPointIds = [],
   getExcludedPointIds,
+  isCandidateAllowed,
 }: {
   self: ToolSelf
   sceneInfra: SceneInfra
@@ -81,6 +92,7 @@ export function getBestSnappingCandidate({
   getExcludedPointIds?: (
     currentSketchObjects: ApiObject[]
   ) => Iterable<number> | undefined
+  isCandidateAllowed?: (args: CandidateFilterArgs) => boolean
 }): SnappingCandidate | null {
   if (!allowSnapping(mouseEvent)) {
     return null
@@ -108,17 +120,39 @@ export function getBestSnappingCandidate({
     }
   }
 
+  const defaultIsCandidateAllowed = (candidate: SnappingCandidate) => {
+    if (candidate.target.type === 'point') {
+      return !excludedPointIdSet.has(candidate.target.id)
+    }
+
+    const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+    if (snapTargetSegmentId === null) {
+      return true
+    }
+
+    const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+    const snapTargetOwnerId =
+      isLineSegment(snapTargetSegment) || isPointSegment(snapTargetSegment)
+        ? snapTargetSegment.kind.segment.owner
+        : null
+
+    return (
+      !excludedSegmentIdSet.has(snapTargetSegmentId) &&
+      (snapTargetOwnerId == null ||
+        !excludedSegmentIdSet.has(snapTargetOwnerId))
+    )
+  }
+
   return (
     getSnappingCandidates(mousePosition, currentSketchObjects, sceneInfra).find(
       (candidate) => {
-        if (candidate.target.type === 'point') {
-          return !excludedPointIdSet.has(candidate.target.id)
-        }
-
-        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
         return (
-          snapTargetSegmentId === null ||
-          !excludedSegmentIdSet.has(snapTargetSegmentId)
+          isCandidateAllowed?.({
+            candidate,
+            currentSketchObjects,
+            excludedPointIdSet,
+            excludedSegmentIdSet,
+          }) ?? defaultIsCandidateAllowed(candidate)
         )
       }
     ) ?? null

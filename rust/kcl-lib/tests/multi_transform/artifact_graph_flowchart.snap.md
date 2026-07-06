@@ -43,6 +43,8 @@ flowchart LR
   22["SweepEdge Adjacent"]
   23["SweepEdge Opposite"]
   24["SweepEdge Adjacent"]
+  25["Pattern Transform<br>[301, 355, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
   1 --- 2
   1 --- 3
   3 --- 4
@@ -52,6 +54,7 @@ flowchart LR
   3 --- 8
   3 --- 9
   3 ---- 10
+  3 --- 25
   4 --- 11
   4 x--> 15
   4 --- 17
@@ -82,6 +85,7 @@ flowchart LR
   10 --- 22
   10 --- 23
   10 --- 24
+  10 x--> 25
   11 --- 17
   11 --- 18
   24 <--x 11

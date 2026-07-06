@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest'
 import { createLiteral } from '@src/lang/create'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 
@@ -60,13 +60,13 @@ describe('createLiteral', () => {
 
     it('should handle strings with newlines', () => {
       const node = createLiteral('line1\nline2', instanceInThisFile)
-      expect(node.raw).toBe('"line1\nline2"')
+      expect(node.raw).toBe('"line1\\nline2"')
       expect(node.value).toBe('line1\nline2')
     })
 
     it('should handle strings with tabs', () => {
       const node = createLiteral('col1\tcol2', instanceInThisFile)
-      expect(node.raw).toBe('"col1\tcol2"')
+      expect(node.raw).toBe('"col1\\tcol2"')
       expect(node.value).toBe('col1\tcol2')
     })
 

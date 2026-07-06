@@ -1,11 +1,11 @@
 import { processMemory } from '@src/components/layout/areas/MemoryPane'
 import { assertParse } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import { enginelessExecutor } from '@src/lib/testHelpers'
-import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
+import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!

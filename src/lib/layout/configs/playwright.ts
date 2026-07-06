@@ -1,9 +1,4 @@
-import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
 import type { Layout } from '@src/lib/layout/types'
-import {
-  DefaultLayoutPaneID,
-  DefaultLayoutToolbarID,
-} from '@src/lib/layout/configs/default'
 
 /**
  * The Playwright testing layout has:
@@ -15,27 +10,27 @@ import {
  *   - Zookeeper
  * - the modeling view
  */
-export const playwrightLayoutConfig: Layout = {
+export const playwrightLayoutConfig = {
   id: 'default',
   label: 'root',
-  type: LayoutType.Splits,
+  type: 'split',
   orientation: 'inline',
   /** Chosen merely to match existing snapshots as closely as possible */
   sizes: [46, 54],
   children: [
     {
-      id: DefaultLayoutToolbarID.Left,
+      id: 'left-toolbar',
       label: 'left-toolbar',
-      type: LayoutType.Panes,
+      type: 'panes',
       side: 'inline-start',
       activeIndices: [1],
       sizes: [100],
       splitOrientation: 'block',
       children: [
         {
-          id: DefaultLayoutPaneID.FeatureTree,
+          id: 'feature-tree',
           label: 'Feature Tree',
-          type: LayoutType.Splits,
+          type: 'split',
           icon: 'model',
           sizes: [75, 25],
           orientation: 'block',
@@ -43,57 +38,57 @@ export const playwrightLayoutConfig: Layout = {
             {
               id: 'operations-list',
               label: 'Feature Tree',
-              type: LayoutType.Simple,
-              areaType: AreaType.FeatureTree,
+              type: 'simple',
+              areaType: 'featureTree',
             },
             {
               id: 'bodies-list',
               label: 'Bodies List',
-              type: LayoutType.Simple,
-              areaType: AreaType.Bodies,
+              type: 'simple',
+              areaType: 'bodies',
             },
           ],
         },
         {
-          id: DefaultLayoutPaneID.Code,
+          id: 'code',
           label: 'Code Editor',
-          type: LayoutType.Simple,
-          areaType: AreaType.Code,
+          type: 'simple',
+          areaType: 'codeEditor',
           icon: 'code',
         },
         {
-          id: DefaultLayoutPaneID.Files,
+          id: 'files',
           label: 'Project Files',
-          type: LayoutType.Simple,
-          areaType: AreaType.Files,
+          type: 'simple',
+          areaType: 'files',
           icon: 'folder',
         },
         {
-          id: DefaultLayoutPaneID.Variables,
+          id: 'variables',
           label: 'Variables',
-          type: LayoutType.Simple,
-          areaType: AreaType.Variables,
+          type: 'simple',
+          areaType: 'variables',
           icon: 'make-variable',
         },
         {
-          id: DefaultLayoutPaneID.Logs,
+          id: 'logs',
           label: 'Logs',
-          type: LayoutType.Simple,
-          areaType: AreaType.Logs,
+          type: 'simple',
+          areaType: 'logs',
           icon: 'logs',
         },
         {
-          id: DefaultLayoutPaneID.Debug,
+          id: 'debug',
           label: 'Debug',
           icon: 'bug',
-          type: LayoutType.Simple,
-          areaType: AreaType.Debug,
+          type: 'simple',
+          areaType: 'debug',
         },
         {
-          id: DefaultLayoutPaneID.TTC,
+          id: 'ttc',
           label: 'Zookeeper',
-          type: LayoutType.Simple,
-          areaType: AreaType.TTC,
+          type: 'simple',
+          areaType: 'ttc',
           icon: 'sparkles',
         },
       ],
@@ -102,27 +97,27 @@ export const playwrightLayoutConfig: Layout = {
           id: 'add-file-to-project',
           label: 'Add file to project',
           icon: 'importFile',
-          actionType: ActionType.AddFile,
+          actionType: 'addFileToProject',
         },
         {
           id: 'export',
           label: 'Export part',
           icon: 'floppyDiskArrow',
-          actionType: ActionType.Export,
+          actionType: 'export',
         },
         {
           id: 'make',
           label: 'Make part',
           icon: 'printer3d',
-          actionType: ActionType.Make,
+          actionType: 'make',
         },
       ],
     },
     {
       id: 'modeling-scene',
       label: 'Modeling scene',
-      type: LayoutType.Simple,
-      areaType: AreaType.ModelingScene,
+      type: 'simple',
+      areaType: 'modeling',
     },
   ],
-}
+} as unknown as Layout

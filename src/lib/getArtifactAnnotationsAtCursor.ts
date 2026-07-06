@@ -1,7 +1,7 @@
 import type { EditorState } from '@codemirror/state'
 import {
-  artifactDecorationsField,
   type ArtifactAnnotationData,
+  artifactDecorationsField,
 } from '@src/editor/plugins/artifacts'
 
 /**

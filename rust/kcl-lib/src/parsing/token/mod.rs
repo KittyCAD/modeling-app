@@ -7,12 +7,11 @@ use std::num::NonZeroUsize;
 use std::str::FromStr;
 
 use anyhow::Result;
+use kcl_error::KclErrorDetails;
 use parse_display::Display;
 use serde::Deserialize;
 use serde::Serialize;
-use tokeniser::Input;
 use tower_lsp::lsp_types::SemanticTokenType;
-use winnow::error::ParseError;
 use winnow::stream::ContainsToken;
 use winnow::stream::Stream;
 use winnow::{self};
@@ -25,6 +24,9 @@ use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::VariableKind;
 
 mod tokeniser;
+
+#[cfg(all(test, feature = "new-scanner"))]
+mod compat_tests;
 
 pub(crate) use tokeniser::RESERVED_SKETCH_BLOCK_WORDS;
 pub(crate) use tokeniser::RESERVED_WORDS;
@@ -306,8 +308,8 @@ impl<'a> Stream for TokenSlice<'a> {
         self.end = checkpoint.1;
     }
 
-    fn raw(&self) -> &dyn fmt::Debug {
-        self
+    fn trace(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        write!(f, "{self:?}")
     }
 }
 
@@ -586,11 +588,7 @@ impl From<&Token> for SourceRange {
 }
 
 pub fn lex(s: &str, module_id: ModuleId) -> Result<TokenStream, KclError> {
-    tokeniser::lex(s, module_id).map_err(From::from)
-}
-
-impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
-    fn from(err: ParseError<Input<'_>, winnow::error::ContextError>) -> Self {
+    tokeniser::lex(s, module_id).map_err(|err| {
         let (input, offset): (Vec<char>, usize) = (err.input().chars().collect(), err.offset());
         let module_id = err.input().state.module_id;
 
@@ -600,7 +598,7 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
             // This is an offset, not an index, and may point to
             // the end of input (input.len()) on eof errors.
 
-            return KclError::new_lexical(crate::errors::KclErrorDetails::new(
+            return KclError::new_lexical(KclErrorDetails::new(
                 "unexpected EOF while parsing".to_owned(),
                 vec![SourceRange::new(offset, offset, module_id)],
             ));
@@ -611,9 +609,9 @@ impl From<ParseError<Input<'_>, winnow::error::ContextError>> for KclError {
         let bad_token = &input[offset];
         // TODO: Add the Winnow parser context to the error.
         // See https://github.com/KittyCAD/modeling-app/issues/784
-        KclError::new_lexical(crate::errors::KclErrorDetails::new(
+        KclError::new_lexical(KclErrorDetails::new(
             format!("found unknown token '{bad_token}'"),
             vec![SourceRange::new(offset, offset + 1, module_id)],
         ))
-    }
+    })
 }

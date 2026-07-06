@@ -1,19 +1,53 @@
+import { EditorSelection } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
 import React, { use, useEffect, useMemo } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
+import {
+  type PendingFeatureTreeSourceSelection,
+  updateOutsideEditorEvent,
+} from '@src/lang/KclManager'
+import { sourceRangeToUtf16 } from '@src/lang/errors'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { createNamedViewsCommand } from '@src/lib/commandBarConfigs/namedViewsConfig'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
 import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import { kclCommands } from '@src/lib/kclCommands'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import { useApp, useSingletons } from '@src/lib/boot'
+import { isArray } from '@src/lib/utils'
 import { modelingMenuCallbackMostActions } from '@src/menu/register'
-import { createStandardViewsCommands } from '@src/lib/commandBarConfigs/standardViewsConfig'
-import fsZds from '@src/lib/fs-zds'
-import { useSignals } from '@preact/signals-react/runtime'
+
+function isNumberArray(value: unknown): value is number[] {
+  return isArray(value) && value.every((item) => typeof item === 'number')
+}
+
+function isPendingFeatureTreeSelection(
+  value: unknown
+): value is PendingFeatureTreeSourceSelection {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+
+  if (!('path' in value) || typeof value.path !== 'string') {
+    return false
+  }
+
+  if (
+    !('range' in value) ||
+    !isNumberArray(value.range) ||
+    value.range.length !== 3
+  ) {
+    return false
+  }
+
+  return true
+}
 
 /**
  * FileMachineProvider moved to ModelingPageProvider.
@@ -32,7 +66,6 @@ export const ModelingPageProvider = ({
   const wasmInstance = use(kclManager.wasmInstancePromise)
   const navigate = useNavigate()
   const location = useLocation()
-  const token = auth.useToken()
   const settingsValues = settings.useSettings()
   const settingsActor = settings.actor
   const projectIORef = project?.projectIORefSignal
@@ -89,6 +122,43 @@ export const ModelingPageProvider = ({
     markOnce('code/didLoadFile')
   }, [])
 
+  useEffect(() => {
+    const pending = kclManager.pendingFeatureTreeSourceSelection
+    if (!pending || !file?.path) {
+      return
+    }
+
+    if (!isPendingFeatureTreeSelection(pending)) {
+      kclManager.pendingFeatureTreeSourceSelection = null
+      return
+    }
+
+    if (pending.path !== file.path) {
+      return
+    }
+
+    kclManager.pendingFeatureTreeSourceSelection = null
+
+    const utf16Range = sourceRangeToUtf16(pending.range, kclManager.code)
+    kclManager.editorView.dispatch({
+      selection: EditorSelection.create([
+        EditorSelection.cursor(utf16Range[0]),
+      ]),
+      effects: [
+        EditorView.scrollIntoView(
+          EditorSelection.range(utf16Range[0], utf16Range[1]),
+          { y: 'center' }
+        ),
+      ],
+      annotations: [updateOutsideEditorEvent],
+    })
+  }, [
+    file?.path,
+    kclManager,
+    kclManager.code,
+    kclManager.pendingFeatureTreeSourceSelection,
+  ])
+
   // Due to the route provider, i've moved this to the ModelingPageProvider instead of CommandBarProvider
   // This will register the commands to route to Telemetry, Home, and Settings.
   useEffect(() => {
@@ -101,30 +171,23 @@ export const ModelingPageProvider = ({
     const { RouteTelemetryCommand, RouteHomeCommand, RouteSettingsCommand } =
       createRouteCommands(navigate, location, filePath)
     commands.send({
-      type: 'Remove commands',
+      type: 'Add commands',
       data: {
         commands: [
           RouteTelemetryCommand,
-          RouteHomeCommand,
           RouteSettingsCommand,
+          RouteHomeCommand,
         ],
       },
     })
-    if (location.pathname === PATHS.HOME) {
+    return () => {
       commands.send({
-        type: 'Add commands',
-        data: {
-          commands: [RouteTelemetryCommand, RouteSettingsCommand],
-        },
-      })
-    } else if (location.pathname.includes(PATHS.FILE)) {
-      commands.send({
-        type: 'Add commands',
+        type: 'Remove commands',
         data: {
           commands: [
             RouteTelemetryCommand,
-            RouteSettingsCommand,
             RouteHomeCommand,
+            RouteSettingsCommand,
           ],
         },
       })
@@ -172,7 +235,6 @@ export const ModelingPageProvider = ({
       }
     }
     return kclCommands({
-      authToken: token ?? '',
       projectData: {
         project: projectIORef?.value,
         file,

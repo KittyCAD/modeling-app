@@ -2,7 +2,7 @@
 // A sports car wheel with a circular lug pattern and spokes.
 
 // Set units and version
-@settings(defaultLengthUnit = in, kclVersion = 2.0)
+@settings(defaultLengthUnit = in, kclVersion = 1.0)
 
 // Import parameters
 import * from "parameters.kcl"

@@ -29,6 +29,7 @@ interface CreateMachineCommandProps<
   commandBarConfig?: StateMachineCommandSetConfig<T, S>
   onCancel?: () => void
   forceDisable?: boolean
+  showExperimentalCommands?: boolean
 }
 
 // Creates a command with subcommands, ready for use in the CommandBar component,
@@ -45,6 +46,7 @@ export function createMachineCommand<
   commandBarConfig,
   onCancel,
   forceDisable = false,
+  showExperimentalCommands = false,
 }: CreateMachineCommandProps<T, S>):
   | Command<T, typeof type, S[typeof type]>
   | Command<T, typeof type, S[typeof type]>[]
@@ -73,6 +75,7 @@ export function createMachineCommand<
           commandBarConfig: recursiveCommandBarConfig,
           onCancel,
           forceDisable,
+          showExperimentalCommands,
         })
       })
       .filter((c) => c !== null) as Command<T, typeof type, S[typeof type]>[]
@@ -89,6 +92,7 @@ export function createMachineCommand<
     const { status } = commandConfig
     if (status === 'inactive') return null
     if (status === 'development' && !IS_STAGING_OR_DEBUG) return null
+    if (status === 'experimental' && !showExperimentalCommands) return null
   }
 
   const icon = ('icon' in commandConfig && commandConfig.icon) || undefined
@@ -111,7 +115,12 @@ export function createMachineCommand<
   }
 
   if (commandConfig.args) {
-    const newArgs = buildCommandArguments(state, commandConfig.args, actor)
+    const newArgs = buildCommandArguments(
+      state,
+      commandConfig.args,
+      actor,
+      showExperimentalCommands
+    )
 
     command.args = newArgs
   }
@@ -146,13 +155,19 @@ function buildCommandArguments<
 >(
   state: StateFrom<T>,
   args: CommandConfig<T, CommandName, S>['args'],
-  machineActor: Actor<T>
+  machineActor: Actor<T>,
+  showExperimentalCommands: boolean
 ): NonNullable<Command<T, CommandName, S>['args']> {
   const newArgs = {} as NonNullable<Command<T, CommandName, S>['args']>
 
   for (const arg in args) {
     const argConfig = args[arg] as CommandArgumentConfig<S[typeof arg], T>
-    const newArg = buildCommandArgument(argConfig, state.context, machineActor)
+    const newArg = buildCommandArgument(
+      argConfig,
+      state.context,
+      machineActor,
+      showExperimentalCommands
+    )
     newArgs[arg] = newArg
   }
 
@@ -165,16 +180,27 @@ export function buildCommandArgument<
 >(
   arg: CommandArgumentConfig<O, T>,
   context: ContextFrom<T>,
-  machineActor: Actor<T>
+  machineActor: Actor<T>,
+  showExperimentalCommands = false
 ): CommandArgument<O, T> & { inputType: typeof arg.inputType } {
   // GOTCHA: modelingCommandConfig is not a 1:1 mapping to this baseCommandArgument
   // You need to manually add key/value pairs here.
+  const hidden =
+    arg.status === 'experimental' && !showExperimentalCommands
+      ? true
+      : arg.hidden
+  const required =
+    arg.status === 'experimental' && !showExperimentalCommands
+      ? false
+      : arg.required
   const baseCommandArgument = {
     displayName: arg.displayName,
     description: arg.description,
-    required: arg.required,
+    status: arg.status,
+    statusMessage: arg.statusMessage,
+    required,
     prepopulate: arg.prepopulate,
-    hidden: arg.hidden,
+    hidden,
     skip: arg.skip,
     machineActor,
     valueSummary: arg.valueSummary,
@@ -217,6 +243,10 @@ export function buildCommandArgument<
     return {
       inputType: arg.inputType,
       allowArrays: arg.allowArrays,
+      allowStringArrays: arg.allowStringArrays,
+      allowUncalculated: arg.allowUncalculated,
+      inputToKclValue: arg.inputToKclValue,
+      kclValueToInput: arg.kclValueToInput,
       createVariable: arg.createVariable,
       variableName: arg.variableName,
       defaultValue: arg.defaultValue,

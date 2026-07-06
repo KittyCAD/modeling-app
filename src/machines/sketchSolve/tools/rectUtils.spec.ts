@@ -2,16 +2,15 @@ import type {
   ApiConstraint,
   ApiObject,
   SceneGraphDelta,
-  SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { describe, expect, it, vi } from 'vitest'
 
+import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import {
   createDraftRectangle,
   getAngledRectangleCorners,
   updateDraftRectangleAligned,
 } from '@src/machines/sketchSolve/tools/rectUtils'
-import { MIN_DRAFT_GEOMETRY_DELTA_MM } from '@src/machines/sketchSolve/tools/draftGeometryPolicy'
 import {
   createLineApiObject,
   createMockKclManager,
@@ -109,31 +108,31 @@ describe('rectUtils.createDraftRectangle', () => {
 
     addSegmentMock
       .mockResolvedValueOnce({
-        kclSource: { text: 'center-point' } as SourceDelta,
+        kclSource: { text: 'center-point' },
         sceneGraphDelta: createPointSceneGraphDelta(100),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-1' } as SourceDelta,
+        kclSource: { text: 'line-1' },
         sceneGraphDelta: createLineSceneGraphDelta(1, 11, 12),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-2' } as SourceDelta,
+        kclSource: { text: 'line-2' },
         sceneGraphDelta: createLineSceneGraphDelta(2, 13, 14),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-3' } as SourceDelta,
+        kclSource: { text: 'line-3' },
         sceneGraphDelta: createLineSceneGraphDelta(3, 15, 16),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-4' } as SourceDelta,
+        kclSource: { text: 'line-4' },
         sceneGraphDelta: createLineSceneGraphDelta(4, 17, 18),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'diag-1' } as SourceDelta,
+        kclSource: { text: 'diag-1' },
         sceneGraphDelta: createLineSceneGraphDelta(5, 19, 20),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'diag-2' } as SourceDelta,
+        kclSource: { text: 'diag-2' },
         sceneGraphDelta: createLineSceneGraphDelta(6, 21, 22),
       })
 
@@ -161,7 +160,7 @@ describe('rectUtils.createDraftRectangle', () => {
         const index = constraintIndex
         constraintIndex += 1
         return {
-          kclSource: { text: `constraint-${index}` } as SourceDelta,
+          kclSource: { text: `constraint-${index}` },
           sceneGraphDelta: createConstraintSceneGraphDelta(
             200 + index,
             constraintTypes[index] ?? constraint
@@ -247,19 +246,19 @@ describe('rectUtils.createDraftRectangle', () => {
 
     addSegmentMock
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-1' } as SourceDelta,
+        kclSource: { text: 'line-1' },
         sceneGraphDelta: createLineSceneGraphDelta(1, 11, 12),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-2' } as SourceDelta,
+        kclSource: { text: 'line-2' },
         sceneGraphDelta: createLineSceneGraphDelta(2, 13, 14),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-3' } as SourceDelta,
+        kclSource: { text: 'line-3' },
         sceneGraphDelta: createLineSceneGraphDelta(3, 15, 16),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-4' } as SourceDelta,
+        kclSource: { text: 'line-4' },
         sceneGraphDelta: createLineSceneGraphDelta(4, 17, 18),
       })
 
@@ -284,7 +283,7 @@ describe('rectUtils.createDraftRectangle', () => {
         const index = constraintIndex
         constraintIndex += 1
         return {
-          kclSource: { text: `constraint-${index}` } as SourceDelta,
+          kclSource: { text: `constraint-${index}` },
           sceneGraphDelta: createConstraintSceneGraphDelta(
             300 + index,
             constraintTypes[index] ?? constraint
@@ -321,19 +320,19 @@ describe('rectUtils.createDraftRectangle', () => {
 
     addSegmentMock
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-1' } as SourceDelta,
+        kclSource: { text: 'line-1' },
         sceneGraphDelta: createLineSceneGraphDelta(1, 11, 12),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-2' } as SourceDelta,
+        kclSource: { text: 'line-2' },
         sceneGraphDelta: createLineSceneGraphDelta(2, 13, 14),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-3' } as SourceDelta,
+        kclSource: { text: 'line-3' },
         sceneGraphDelta: createLineSceneGraphDelta(3, 15, 16),
       })
       .mockResolvedValueOnce({
-        kclSource: { text: 'line-4' } as SourceDelta,
+        kclSource: { text: 'line-4' },
         sceneGraphDelta: createLineSceneGraphDelta(4, 17, 18),
       })
 
@@ -343,7 +342,7 @@ describe('rectUtils.createDraftRectangle', () => {
         const index = constraintIndex
         constraintIndex += 1
         return {
-          kclSource: { text: `constraint-${index}` } as SourceDelta,
+          kclSource: { text: `constraint-${index}` },
           sceneGraphDelta: createConstraintSceneGraphDelta(
             400 + index,
             constraint
@@ -386,7 +385,7 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
     const editSegmentsMock = vi.mocked(rustContext.editSegments)
 
     editSegmentsMock.mockResolvedValue({
-      kclSource: { text: 'updated' } as SourceDelta,
+      kclSource: { text: 'updated' },
       sceneGraphDelta: createSceneGraphDelta([]),
     })
 
@@ -405,10 +404,9 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
           centerPointId: 15,
         },
       },
-      rect: {
-        min: [0, 0],
-        max: [4, 6],
-      },
+      mode: 'center',
+      startPoint: [2, 3],
+      currentPoint: [4, 6],
     })
 
     const edits = editSegmentsMock.mock.calls[0]?.[2]
@@ -453,5 +451,91 @@ describe('rectUtils.updateDraftRectangleAligned', () => {
         },
       },
     })
+  })
+
+  it('keeps the first corner pinned when dragging into the negative quadrant', async () => {
+    const rustContext = createMockRustContext()
+    const kclManager = createMockKclManager()
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    const editSegmentsMock = vi.mocked(rustContext.editSegments)
+
+    editSegmentsMock.mockResolvedValue({
+      kclSource: { text: 'updated' },
+      sceneGraphDelta: createSceneGraphDelta([]),
+    })
+
+    await updateDraftRectangleAligned({
+      rustContext,
+      kclManager,
+      sketchId: 9,
+      draft: {
+        lineIds: [1, 2, 3, 4],
+        segmentIds: [],
+        constraintIds: [],
+        originPointId: 1,
+      },
+      mode: 'corner',
+      startPoint: [0, 0],
+      currentPoint: [-4, -6],
+    })
+
+    expect(editSegmentsMock.mock.calls[0]?.[2]).toEqual([
+      {
+        id: 1,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+      },
+      {
+        id: 2,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+        },
+      },
+      {
+        id: 3,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: -4, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+        },
+      },
+      {
+        id: 4,
+        ctor: {
+          type: 'Line',
+          start: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: -6, units: 'Mm' },
+          },
+          end: {
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          },
+        },
+      },
+    ])
   })
 })

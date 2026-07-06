@@ -1,16 +1,16 @@
+import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { findUniqueName } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
 import { findAllPreviousVariables } from '@src/lang/queryAst'
 import { getSafeInsertIndex } from '@src/lang/queryAst/getSafeInsertIndex'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Expr, Program, SourceRange, VariableMap } from '@src/lang/wasm'
 import { parse, resultIsOk } from '@src/lang/wasm'
 import { getCalculatedKclExpressionValue } from '@src/lib/kclHelpers'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
 import { getInVariableCase } from '@src/lib/utils'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { use, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type RustContext from '@src/lib/rustContext'
 
 const isValidVariableName = (name: string) =>
   /^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)
@@ -39,7 +39,7 @@ export function useCalculateKclExpression({
   code: string
   ast: Node<Program>
   variables: VariableMap
-  options?: { allowArrays?: boolean }
+  options?: { allowArrays?: boolean; allowStringArrays?: boolean }
 }): {
   inputRef: React.RefObject<HTMLInputElement | null>
   valueNode: Expr | null

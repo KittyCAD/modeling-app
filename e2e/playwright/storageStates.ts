@@ -11,7 +11,10 @@ export const TEST_SETTINGS: DeepPartial<Settings> = {
       theme: Themes.Dark,
     },
     onboarding_status: 'dismissed',
-    show_debug_panel: true,
+  },
+  debug: {
+    show_panel: true,
+    show_modeling_machine_state: true,
   },
   modeling: {
     enable_ssao: false,
@@ -48,7 +51,10 @@ export const TEST_SETTINGS_CORRUPTED = {
     theme: Themes.Dark,
     onboardingStatus: 'dismissed',
     projectDirectory: 123 as any,
-    showDebugPanel: true,
+  },
+  debug: {
+    showPanel: true,
+    showModelingMachineState: true,
   },
   modeling: {
     defaultUnit: 'invalid' as any,

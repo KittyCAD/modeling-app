@@ -1,35 +1,73 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
-import type { KclManager } from '@src/lang/KclManager'
 import usePlatform from '@src/hooks/usePlatform'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import type { KclManager } from '@src/lang/KclManager'
+import { useApp } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { refreshPage } from '@src/lib/utils'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { type HTMLProps, type MouseEventHandler } from 'react'
-import { useSignals } from '@preact/signals-react/runtime'
 
 export function UndoRedoButtons({
   kclManager,
   ...props
 }: HTMLProps<HTMLDivElement> & { kclManager: KclManager }) {
   useSignals()
+  const app = useApp()
+  const platform = usePlatform()
+  const keymap = app.registry.optional(keymapService)
+  const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
+  const currentScopes = keymap?.getCurrentScopes()
+  const keybindingDisplay = (
+    command: string,
+    fallbackKeystrokes: readonly string[]
+  ) =>
+    keymapKeystrokesDisplay(
+      keymap && currentScopes
+        ? findKeymapItemForCommand(
+            keymap.keymap.value,
+            command,
+            currentScopes,
+            keymapScopes
+          )?.keystrokes
+        : fallbackKeystrokes,
+      platform
+    )
+
   return (
     <div {...props}>
       <UndoOrRedoButton
         label="Undo"
-        keyboardShortcut="mod+z"
+        keyboardShortcut={keybindingDisplay(APP_COMMAND_IDS.editor.undo, [
+          'mod+z',
+        ])}
         iconName="arrowTurnLeft"
         onClick={() => kclManager.undo()}
         className="rounded-r-none"
-        disabled={kclManager.undoDepth.value === 0}
+        disabled={
+          kclManager.undoDepth.value === 0 ||
+          kclManager.historyOperationInProgress.value
+        }
       />
       <UndoOrRedoButton
         label="Redo"
-        keyboardShortcut="mod+shift+z"
+        keyboardShortcut={keybindingDisplay(APP_COMMAND_IDS.editor.redo, [
+          'mod+shift+z',
+        ])}
         iconName="arrowTurnRight"
         onClick={() => kclManager.redo()}
         className="rounded-none"
-        disabled={kclManager.redoDepth.value === 0}
+        disabled={
+          kclManager.redoDepth.value === 0 ||
+          kclManager.historyOperationInProgress.value
+        }
       />
       {/** TODO: Remove the refresh button when users don't need it so much. */}
       <UndoOrRedoButton
@@ -62,7 +100,6 @@ function UndoOrRedoButton({
   className,
   ...rest
 }: UndoOrRedoButtonProps) {
-  const platform = usePlatform()
   return (
     <button
       {...rest}
@@ -79,9 +116,7 @@ function UndoOrRedoButton({
       >
         <span>{label}</span>
         {keyboardShortcut && (
-          <kbd className="hotkey capitalize">
-            {hotkeyDisplay(keyboardShortcut, platform)}
-          </kbd>
+          <kbd className="hotkey capitalize">{keyboardShortcut}</kbd>
         )}
       </Tooltip>
     </button>

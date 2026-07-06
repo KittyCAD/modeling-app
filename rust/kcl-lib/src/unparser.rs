@@ -1481,6 +1481,18 @@ export import a, b as bbb from "a.kcl"
     }
 
     #[test]
+    fn test_recast_sketch_block_with_arg_shorthand() {
+        let input = r#"on = XY
+sketch(on) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+    }
+
+    #[test]
     fn test_recast_sketch_block_with_statements_in_block() {
         let input = r#"sketch() {
   // Comments inside block.
@@ -3356,6 +3368,49 @@ x = 1
         let recasted = ast.recast_top(&FormatOptions::new(), 0);
         let expected = code;
         assert_eq!(recasted, expected);
+    }
+
+    #[test]
+    fn settings_then_code_is_stable() {
+        let code = "\
+@settings(defaultLengthUnit = in)
+
+import \"cube-inches.kcl\" as cubeIn
+import \"cube-mm.kcl\" as cubeMm
+
+cubeIn
+cubeMm
+";
+        let formatted_once = crate::parsing::top_level_parse(code)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_once, code);
+
+        let formatted_twice = crate::parsing::top_level_parse(&formatted_once)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_twice, formatted_once);
+    }
+
+    #[test]
+    fn settings_then_standalone_comment_is_stable() {
+        let code = "\
+@settings(defaultLengthUnit = mm)
+@settings(defaultAngleUnit = deg)
+
+// Cap for gimbal stick
+
+x = 1
+";
+        let formatted_once = crate::parsing::top_level_parse(code)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_once, code);
+
+        let formatted_twice = crate::parsing::top_level_parse(&formatted_once)
+            .unwrap()
+            .recast_top(&FormatOptions::new(), 0);
+        assert_eq!(formatted_twice, formatted_once);
     }
 
     #[test]

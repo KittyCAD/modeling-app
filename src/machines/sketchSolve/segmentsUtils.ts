@@ -1,13 +1,17 @@
-import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
+import { SEGMENT_WIDTH_PX } from '@src/clientSideScene/sceneConstants'
 import {
   SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
 } from '@src/lib/constants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const DARK_CONSTRAINED_COLOR = 0x000000
 export const LIGHT_CONSTRAINED_COLOR = 0xffffff
+const HOVERED_POINT_SEGMENT_SCALE = 1.5
+const SECONDARY_HOVERED_POINT_SEGMENT_SCALE = 2
+const SECONDARY_HOVER_LINE_WIDTH_MULTIPLIER = 2.25
 
 const CONSTRAINED_COLOR = {
   [Themes.Dark]: DARK_CONSTRAINED_COLOR,
@@ -79,6 +83,13 @@ export function deriveSegmentFreedom(
     if (isPointSegment(centerPoint)) {
       pointFreedoms.push(centerPoint.kind.segment.freedom ?? null)
     }
+  } else if (segmentData.type === 'ControlPointSpline') {
+    for (const controlId of segmentData.controls) {
+      const point = getObjById(controlId)
+      if (isPointSegment(point)) {
+        pointFreedoms.push(point.kind.segment.freedom ?? null)
+      }
+    }
   }
 
   // Filter out nulls
@@ -130,6 +141,7 @@ export function deriveSegmentFreedom(
 export function getSegmentColor({
   isDraft = false,
   isHovered,
+  hoverColor,
   isSelected,
   hasSolveErrors = false,
   freedom,
@@ -137,6 +149,7 @@ export function getSegmentColor({
 }: {
   isDraft?: boolean
   isHovered?: boolean
+  hoverColor?: number
   isSelected?: boolean
   hasSolveErrors?: boolean
   freedom?: Freedom | null
@@ -149,7 +162,7 @@ export function getSegmentColor({
 
   // Priority 2: Hover color
   if (isHovered) {
-    return SKETCH_HIGHLIGHT_COLOR
+    return hoverColor ?? SKETCH_HIGHLIGHT_COLOR
   }
 
   // Priority 3: Select color
@@ -174,4 +187,34 @@ export function getSegmentColor({
 
   // Default: unconstrained color (blue) for null/unknown
   return UNCONSTRAINED_COLOR
+}
+
+export function getPointSegmentScale({
+  isHovered,
+  isSecondaryHovered,
+}: {
+  isHovered?: boolean
+  isSecondaryHovered?: boolean
+}): number {
+  if (!isHovered) {
+    return 1
+  }
+
+  return isSecondaryHovered
+    ? SECONDARY_HOVERED_POINT_SEGMENT_SCALE
+    : HOVERED_POINT_SEGMENT_SCALE
+}
+
+export function getSegmentLineWidth({
+  isHovered,
+  isSecondaryHovered,
+}: {
+  isHovered?: boolean
+  isSecondaryHovered?: boolean
+}): number {
+  const baseLineWidth = SEGMENT_WIDTH_PX * window.devicePixelRatio
+
+  return isHovered && isSecondaryHovered
+    ? baseLineWidth * SECONDARY_HOVER_LINE_WIDTH_MULTIPLIER
+    : baseLineWidth
 }

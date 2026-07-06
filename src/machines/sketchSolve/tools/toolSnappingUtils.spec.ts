@@ -1,16 +1,17 @@
 import { describe, expect, it, vi } from 'vitest'
 
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import {
-  getBestSnappingCandidate,
-  sendHoveredSnappingCandidate,
-} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
+import { getObjectIdForSnapTarget } from '@src/machines/sketchSolve/snapping'
 import {
   createLineApiObject,
   createMockSceneInfra,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
+import {
+  getBestSnappingCandidate,
+  sendHoveredSnappingCandidate,
+} from '@src/machines/sketchSolve/tools/toolSnappingUtils'
 
 function createSketchApiObject({ id }: { id: number }): ApiObject {
   return {
@@ -54,7 +55,7 @@ describe('toolSnappingUtils', () => {
     })
   })
 
-  it('skips the excluded point owner segment and falls through to another segment target', () => {
+  it('skips the excluded point owner segment and falls through to another segment midpoint target', () => {
     const draftStart = createPointApiObject({ id: 1, x: 20, y: 50, owner: 3 })
     const draftEnd = createPointApiObject({ id: 2, x: 30, y: 50, owner: 3 })
     const draftLine = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -90,7 +91,181 @@ describe('toolSnappingUtils', () => {
       excludedPointIds: [2],
     })
 
-    expect(candidate?.target).toEqual({ type: 'line', id: 6 })
-    expect(candidate?.position).toEqual([32, 55])
+    expect(candidate?.target).toEqual({ type: 'midpoint', id: 6 })
+    expect(candidate?.position).toEqual([32, 50])
+  })
+
+  it('skips owned control-polygon edges for excluded spline control points', () => {
+    const splinePointA = createPointApiObject({ id: 1, x: 20, y: 50, owner: 9 })
+    const splinePointB = createPointApiObject({ id: 2, x: 30, y: 50, owner: 9 })
+    const splinePointC = createPointApiObject({ id: 3, x: 40, y: 50, owner: 9 })
+    const splineEdge = createLineApiObject({
+      id: 4,
+      start: 2,
+      end: 3,
+      owner: 9,
+    })
+    const otherStart = createPointApiObject({ id: 5, x: 32, y: 30, owner: 10 })
+    const otherEnd = createPointApiObject({ id: 6, x: 32, y: 70, owner: 10 })
+    const otherLine = createLineApiObject({ id: 7, start: 5, end: 6 })
+    const spline = {
+      id: 9,
+      kind: {
+        type: 'Segment' as const,
+        segment: {
+          type: 'ControlPointSpline' as const,
+          controls: [1, 2, 3],
+          degree: 2,
+          ctor: {
+            type: 'ControlPointSpline' as const,
+            points: [],
+            construction: false,
+          },
+          ctor_applicable: false,
+          construction: false,
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple' as const, range: [0, 0, 0], node_path: null },
+    } as ApiObject
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      splinePointA,
+      splinePointB,
+      splinePointC,
+      splineEdge,
+      otherStart,
+      otherEnd,
+      otherLine,
+      spline,
+    ])
+
+    const candidate = getBestSnappingCandidate({
+      self: {
+        _parent: {
+          getSnapshot: () => ({
+            context: {
+              sketchExecOutcome: {
+                sceneGraphDelta,
+              },
+            },
+          }),
+        },
+      },
+      sceneInfra: createMockSceneInfra(),
+      sketchId: 0,
+      mousePosition: [31, 50],
+      mouseEvent: new MouseEvent('mousemove'),
+      excludedPointIds: [1, 2, 3],
+    })
+
+    expect(candidate?.target).toEqual({ type: 'midpoint', id: 7 })
+    expect(candidate?.position).toEqual([32, 50])
+  })
+
+  it('allows snapping back to the first spline control point without re-enabling its owned edges', () => {
+    const splinePointA = createPointApiObject({ id: 1, x: 20, y: 50, owner: 9 })
+    const splinePointB = createPointApiObject({ id: 2, x: 30, y: 50, owner: 9 })
+    const splinePointC = createPointApiObject({ id: 3, x: 40, y: 50, owner: 9 })
+    const splineEdge = createLineApiObject({
+      id: 4,
+      start: 1,
+      end: 2,
+      owner: 9,
+    })
+    const otherStart = createPointApiObject({ id: 5, x: 32, y: 30, owner: 10 })
+    const otherEnd = createPointApiObject({ id: 6, x: 32, y: 70, owner: 10 })
+    const otherLine = createLineApiObject({ id: 7, start: 5, end: 6 })
+    const spline = {
+      id: 9,
+      kind: {
+        type: 'Segment' as const,
+        segment: {
+          type: 'ControlPointSpline' as const,
+          controls: [1, 2, 3],
+          degree: 2,
+          ctor: {
+            type: 'ControlPointSpline' as const,
+            points: [],
+            construction: false,
+          },
+          ctor_applicable: false,
+          construction: false,
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: { type: 'Simple' as const, range: [0, 0, 0], node_path: null },
+    } as ApiObject
+    const sceneGraphDelta = createSceneGraphDelta([
+      createSketchApiObject({ id: 0 }),
+      splinePointA,
+      splinePointB,
+      splinePointC,
+      splineEdge,
+      otherStart,
+      otherEnd,
+      otherLine,
+      spline,
+    ])
+
+    const candidate = getBestSnappingCandidate({
+      self: {
+        _parent: {
+          getSnapshot: () => ({
+            context: {
+              sketchExecOutcome: {
+                sceneGraphDelta,
+              },
+            },
+          }),
+        },
+      },
+      sceneInfra: createMockSceneInfra(),
+      sketchId: 0,
+      mousePosition: [20, 50],
+      mouseEvent: new MouseEvent('mousemove'),
+      excludedPointIds: [1, 2, 3],
+      isCandidateAllowed: ({
+        candidate,
+        excludedPointIdSet,
+        currentSketchObjects,
+        excludedSegmentIdSet,
+      }) => {
+        if (candidate.target.type === 'point' && candidate.target.id === 1) {
+          return true
+        }
+
+        if (candidate.target.type === 'point') {
+          return !excludedPointIdSet.has(candidate.target.id)
+        }
+
+        const snapTargetSegmentId = getObjectIdForSnapTarget(candidate.target)
+        if (snapTargetSegmentId === null) {
+          return true
+        }
+
+        const snapTargetSegment = currentSketchObjects[snapTargetSegmentId]
+        const snapTargetOwnerId =
+          snapTargetSegment &&
+          'kind' in snapTargetSegment &&
+          snapTargetSegment.kind.type === 'Segment' &&
+          'owner' in snapTargetSegment.kind.segment
+            ? snapTargetSegment.kind.segment.owner
+            : null
+
+        return (
+          !excludedSegmentIdSet.has(snapTargetSegmentId) &&
+          (snapTargetOwnerId == null ||
+            !excludedSegmentIdSet.has(snapTargetOwnerId))
+        )
+      },
+    })
+
+    expect(candidate?.target).toEqual({ type: 'point', id: 1 })
+    expect(candidate?.position).toEqual([20, 50])
   })
 })

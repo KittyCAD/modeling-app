@@ -1,6 +1,7 @@
-import path from 'path'
 import fs from 'node:fs/promises'
 import os from 'node:os'
+import path from 'path'
+import type { DeviceFlowAuthorization } from '@root/interface'
 import packageJson from '@root/package.json'
 import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
@@ -8,6 +9,8 @@ import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
+import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import type { WebContentSendPayload } from '@src/menu/channels'
 
 const typeSafeIpcRendererOn = (
@@ -19,29 +22,37 @@ const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
-const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+export const openExternal = (url: unknown) => {
+  const allowedURL = getAllowedExternalURL(url)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
+  }
+
+  return ipcRenderer.invoke('shell.openExternal', allowedURL)
+}
 const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
-const takeElectronWindowScreenshot = ({
-  width,
-  height,
-}: {
-  width: number
-  height: number
-}) => ipcRenderer.invoke('take.screenshot', { width, height })
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
-const startDeviceFlow = (host: string): Promise<string> =>
+const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
   ipcRenderer.invoke('loginWithDeviceFlow')
+const cancelDeviceFlow = (): Promise<void> =>
+  ipcRenderer.invoke('cancelDeviceFlow')
 const onUpdateDownloaded = (
   callback: (value: { version: string; releaseNotes: string }) => void
 ) =>
   ipcRenderer.on('update-downloaded', (_event: any, value) => callback(value))
 const onUpdateDownloadStart = (
-  callback: (value: { version: string }) => void
+  callback: (value: AutoUpdateDownloadProgress) => void
 ) =>
   ipcRenderer.on('update-download-start', (_event: any, value) =>
+    callback(value)
+  )
+const onUpdateDownloadProgress = (
+  callback: (value: AutoUpdateDownloadProgress) => void
+) =>
+  ipcRenderer.on('update-download-progress', (_event: any, value) =>
     callback(value)
   )
 const onUpdateChecking = (callback: () => void) =>
@@ -246,14 +257,14 @@ const createFallbackMenu = async (): Promise<any> => {
   return ipcRenderer.invoke('create-menu', { page: 'fallback' })
 }
 
-// Given the application menu, try to enable the menu
+// Given the active native menu, try to enable the menu item.
 const enableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('enable-menu', {
     menuId,
   })
 }
 
-// Given the application menu, try to disable the menu
+// Given the active native menu, try to disable the menu item.
 const disableMenu = async (menuId: string): Promise<any> => {
   return ipcRenderer.invoke('disable-menu', {
     menuId,
@@ -283,6 +294,7 @@ const menuOn = (callback: (payload: WebContentSendPayload) => void) => {
 contextBridge.exposeInMainWorld('electron', {
   startDeviceFlow,
   loginWithDeviceFlow,
+  cancelDeviceFlow,
   // Passing fs directly is not recommended since it gives a lot of power
   // to the browser side / potential malicious code. We restrict what is
   // exported.
@@ -311,7 +323,6 @@ contextBridge.exposeInMainWorld('electron', {
   platform: process.platform,
   version: process.version,
   path: path,
-  takeElectronWindowScreenshot,
   os: {
     isMac,
     isWindows,
@@ -339,6 +350,7 @@ contextBridge.exposeInMainWorld('electron', {
   onUpdateChecking,
   onUpdateNotAvailable,
   onUpdateDownloadStart,
+  onUpdateDownloadProgress,
   onUpdateDownloaded,
   onUpdateError,
   appRestart,

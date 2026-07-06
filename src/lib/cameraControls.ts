@@ -1,5 +1,3 @@
-import type { MouseControlType } from '@rust/kcl-lib/bindings/MouseControlType'
-
 import { platform } from '@src/lib/utils'
 
 const PLATFORM = platform()
@@ -18,6 +16,16 @@ export type CameraSystem =
   | 'NX'
   | 'Creo'
   | 'AutoCAD'
+
+// Serialized version of these system names
+type MouseControlType =
+  | 'zoo'
+  | 'onshape'
+  | 'trackpad_friendly'
+  | 'solidworks'
+  | 'nx'
+  | 'creo'
+  | 'autocad'
 
 export const cameraSystems: CameraSystem[] = [
   'Zoo',

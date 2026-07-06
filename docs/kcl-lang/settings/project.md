@@ -45,30 +45,9 @@ The settings for the Design Studio.
 
 This setting has the following nested options:
 
-##### allow_orbit_in_sketch_mode
-
-When the user is idle, and this is true, the stream will be torn down.
-
-
-**Default:** None
-
 ##### named_views
 
 Settings that affect the behavior of the command bar.
-
-
-**Default:** None
-
-##### onboarding_status
-
-The onboarding status of the app.
-
-
-**Default:** None
-
-##### show_debug_panel
-
-Whether to show the debug panel, which lets you see various states of the app to aid in development.
 
 
 **Default:** None
@@ -83,23 +62,6 @@ When the user is idle, and this is true, the stream will be torn down.
 ##### zookeeper_mode
 
 Zookeeper reasoning mode. Uses the app default if not set.
-
-
-**Default:** None
-
-
-#### command_bar
-
-Settings that affect the behavior of the command bar.
-
-
-**Default:** None
-
-This setting has the following nested options:
-
-##### include_settings
-
-Whether to include settings in the command bar.
 
 
 **Default:** None
@@ -155,34 +117,6 @@ When enabled, the grid will use a fixed size based on your selected units rather
 ##### highlight_edges
 
 Highlight edges of 3D objects?
-
-
-**Default:** None
-
-##### major_grid_spacing
-
-The space between major grid lines, specified in the current unit.
-
-
-**Default:** None
-
-##### minor_grids_per_major
-
-The number of minor grid lines per major grid line.
-
-
-**Default:** None
-
-##### snap_to_grid
-
-When enabled, tools like line, rectangle, etc. will snap to the grid.
-
-
-**Default:** None
-
-##### snaps_per_minor
-
-The number of snaps between minor grid lines. 1 means snapping to each minor grid line.
 
 
 **Default:** None

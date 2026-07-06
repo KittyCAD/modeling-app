@@ -36,6 +36,15 @@ pub async fn execute_and_snapshot(code: &str, current_file: Option<PathBuf>) -> 
     res
 }
 
+/// Executes a KCL program. Only returns success or error.
+pub async fn execute(code: &str, current_file: Option<PathBuf>) -> Result<(), ExecError> {
+    let ctx = new_context(true, current_file).await?;
+    let program = Program::parse_no_errs(code).map_err(KclErrorWithOutputs::no_outputs)?;
+    let res = do_execute(&ctx, program).await.map(|_| ()).map_err(|err| err.error);
+    ctx.close().await;
+    res
+}
+
 pub struct Snapshot3d {
     /// Bytes of the snapshot.
     pub image: image::DynamicImage,
@@ -127,18 +136,18 @@ pub async fn execute_and_snapshot_no_auth(
     res
 }
 
-async fn do_execute_and_snapshot(
+async fn do_execute(
     ctx: &ExecutorContext,
     program: Program,
-) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
+) -> Result<(ExecState, EnvironmentRef), ExecErrorWithState> {
     let mut exec_state = ExecState::new(ctx);
     let result = ctx.run(&program, &mut exec_state).await;
     let responses = if result.is_err() {
-        #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+        #[cfg(feature = "snapshot-engine-responses")]
         {
             Some(exec_state.take_root_module_responses())
         }
-        #[cfg(not(all(feature = "artifact-graph", feature = "snapshot-engine-responses")))]
+        #[cfg(not(feature = "snapshot-engine-responses"))]
         None
     } else {
         None
@@ -153,6 +162,15 @@ async fn do_execute_and_snapshot(
             ));
         }
     }
+
+    Ok((exec_state, result.0))
+}
+
+async fn do_execute_and_snapshot(
+    ctx: &ExecutorContext,
+    program: Program,
+) -> Result<(ExecState, EnvironmentRef, image::DynamicImage), ExecErrorWithState> {
+    let (exec_state, env_ref) = do_execute(ctx, program).await?;
     let snapshot_png_bytes = ctx
         .prepare_snapshot()
         .await
@@ -167,7 +185,7 @@ async fn do_execute_and_snapshot(
         .and_then(|x| x.decode().map_err(|e| ExecError::BadPng(e.to_string())))
         .map_err(|err| ExecErrorWithState::new(err, exec_state.clone(), None))?;
 
-    Ok((exec_state, result.0, img))
+    Ok((exec_state, env_ref, img))
 }
 
 pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Result<ExecutorContext, ConnectionError> {
@@ -188,6 +206,9 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         project_directory: None,
         current_file: None,
         fixed_size_grid: true,
+        skip_artifact_graph: false,
+        heartbeats: None,
+        default_backface_color: Some("#00D5FF".to_owned()),
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));

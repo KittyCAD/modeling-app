@@ -1,0 +1,6 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Artifact graph flowchart consumed_solid_appearance.kcl
+extension: md
+snapshot_kind: binary
+---

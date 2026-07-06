@@ -1,13 +1,13 @@
 ---
 title: "gear::herringbone"
 subtitle: "Function in std::gear"
-excerpt: "A herringbone gear."
+excerpt: "A herringbone gear (like a helical gear that reverses direction halfway up the axis)"
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-A herringbone gear.
+A herringbone gear (like a helical gear that reverses direction halfway up the axis)
 
 ```kcl
 gear::herringbone(
@@ -19,7 +19,8 @@ gear::herringbone(
 ): Solid
 ```
 
-
+The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+Use `translate()` and `rotate()` to move it around once it's created.
 
 ### Arguments
 

@@ -51,19 +51,33 @@ Below shows how a custom function must be called if it has a labeled argument, a
 
 // All args must be labeled when calling (no @ on first param)
 fn cube1(offsetX, offsetY, radius, length) {
-  return startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
     |> polygon(radius = radius, numSides = 4, center = [offsetX, offsetY])
-    |> extrude(length = length)
+  return extrude(sketch001, length = length)
 }
 
 // First arg may be unlabeled at call sites (because of @)
 fn cube2(@offsetX, offsetY, radius, length) {
-  return startSketchOn(XY)
+  sketch001 = startSketchOn(XY)
     |> polygon(radius = radius, numSides = 4, center = [offsetX, offsetY])
-    |> extrude(length = length)
+  return extrude(sketch001, length = length)
 }
 
 // Function Calls
-testCube1 = cube1(offsetX = 0, offsetY = 6, radius = 5, length = 5)  // all labeled
-testCube2 = cube2(0,           offsetY = 10, radius = 5, length = 5)  // first unlabeled works here
+
+// all labeled
+testCube1 = cube1(
+  offsetX = 0,
+  offsetY = 6,
+  radius = 5,
+  length = 5,
+)
+
+// first unlabeled works here
+testCube2 = cube2(
+  0,
+  offsetY = 10,
+  radius = 5,
+  length = 5,
+)
 ```

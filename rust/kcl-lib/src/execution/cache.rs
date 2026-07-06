@@ -9,13 +9,18 @@ use tokio::sync::RwLock;
 
 use crate::ExecOutcome;
 use crate::ExecutorContext;
+use crate::errors::KclError;
+use crate::execution::ConstraintKey;
+use crate::execution::ConstraintState;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecutorSettings;
+use crate::execution::KclValueView;
 use crate::execution::annotations;
 use crate::execution::memory::Stack;
 use crate::execution::state::ModuleInfoMap;
 use crate::execution::state::{self as exec_state};
 use crate::front::Object;
+use crate::front::ObjectId;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
 use crate::modules::ModuleSource;
@@ -102,48 +107,49 @@ impl GlobalState {
         self
     }
 
-    pub fn reconstitute_exec_state(&self) -> exec_state::ExecState {
+    pub fn reconstitute_exec_state(&self, ctx: &ExecutorContext) -> exec_state::ExecState {
         exec_state::ExecState {
+            execution_callbacks: ctx.execution_callbacks.clone(),
             global: self.exec_state.clone(),
             mod_local: self.main.exec_state.clone(),
         }
     }
 
-    pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> ExecOutcome {
+    pub async fn into_exec_outcome(self, ctx: &ExecutorContext) -> Result<ExecOutcome, KclError> {
         // Fields are opt-in so that we don't accidentally leak private internal
         // state when we add more to ExecState.
-        ExecOutcome {
-            variables: self.main.exec_state.variables(self.main.result_env),
+        let variables = self
+            .main
+            .exec_state
+            .variables(self.main.result_env)?
+            .into_iter()
+            .map(|(key, value)| (key, KclValueView::from(value)))
+            .collect();
+        Ok(ExecOutcome {
+            variables,
             filenames: self.exec_state.filenames(),
-            #[cfg(feature = "artifact-graph")]
-            operations: self.exec_state.root_module_artifacts.operations,
-            #[cfg(feature = "artifact-graph")]
+            operations: self.exec_state.operations_by_module(),
             artifact_graph: self.exec_state.artifacts.graph,
-            #[cfg(feature = "artifact-graph")]
             scene_objects: self.exec_state.root_module_artifacts.scene_objects,
-            #[cfg(feature = "artifact-graph")]
             source_range_to_object: self.exec_state.root_module_artifacts.source_range_to_object,
-            #[cfg(feature = "artifact-graph")]
             var_solutions: self.exec_state.root_module_artifacts.var_solutions,
             issues: self.exec_state.issues,
             default_planes: ctx.engine.get_default_planes().read().await.clone(),
-        }
+        })
     }
 
-    pub fn mock_memory_state(&self) -> SketchModeState {
-        let mut stack = self.main.exec_state.stack.deep_clone();
-        stack.restore_env(self.main.result_env);
+    pub fn mock_memory_state(&self) -> Result<SketchModeState, KclError> {
+        let mut stack = self.main.exec_state.stack.deep_clone()?;
+        stack.restore_env(self.main.result_env)?;
 
-        SketchModeState {
+        Ok(SketchModeState {
             stack,
             module_infos: self.exec_state.module_infos.clone(),
             path_to_source_id: self.exec_state.path_to_source_id.clone(),
             id_to_source: self.exec_state.id_to_source.clone(),
-            #[cfg(feature = "artifact-graph")]
+            constraint_state: self.main.exec_state.constraint_state.clone(),
             scene_objects: self.exec_state.root_module_artifacts.scene_objects.clone(),
-            #[cfg(not(feature = "artifact-graph"))]
-            scene_objects: Default::default(),
-        }
+        })
     }
 }
 
@@ -169,8 +175,9 @@ pub(crate) struct SketchModeState {
     pub path_to_source_id: IndexMap<ModulePath, ModuleId>,
     /// Map from module ID to source file contents.
     pub id_to_source: IndexMap<ModuleId, ModuleSource>,
+    /// Sticky per-constraint state persisted across sketch-mode mock solves.
+    pub constraint_state: IndexMap<ObjectId, IndexMap<ConstraintKey, ConstraintState>>,
     /// The scene objects.
-    #[cfg_attr(not(feature = "artifact-graph"), expect(dead_code))]
     pub scene_objects: Vec<Object>,
 }
 
@@ -182,6 +189,7 @@ impl SketchModeState {
             module_infos: ModuleInfoMap::default(),
             path_to_source_id: Default::default(),
             id_to_source: Default::default(),
+            constraint_state: Default::default(),
             scene_objects: Vec::new(),
         }
     }

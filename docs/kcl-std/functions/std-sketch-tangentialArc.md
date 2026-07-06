@@ -5,6 +5,8 @@ excerpt: "Starting at the current sketch's origin, draw a curved line segment al
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Starting at the current sketch's origin, draw a curved line segment along some part of an imaginary circle until it reaches the desired (x, y) coordinates.
 
 ```kcl
@@ -19,7 +21,7 @@ tangentialArc(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 When using radius and angle, draw a curved line segment along part of an

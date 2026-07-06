@@ -119,13 +119,14 @@ export function updateDimensionLine(
   scale: number,
   sceneInfra: SceneInfra,
   distance: Number,
-  isDiameter = false
+  isDiameter = false,
+  labelPosition?: Vector3Type
 ) {
   const dimensionLengthPx = start.distanceTo(end) / scale
   const lineCenter = start.clone().lerp(end, 0.5)
   const collapsedAxis = getCollapsedZeroDistanceAxis(obj, distance)
   const dir = collapsedAxis ?? end.clone().sub(start).normalize()
-  const labelCenter = isDiameter
+  const autoLabelCenter = isDiameter
     ? lineCenter.clone().add(
         dir
           .clone()
@@ -141,6 +142,7 @@ export function updateDimensionLine(
             )
           )
       : lineCenter
+  const labelCenter = labelPosition ?? autoLabelCenter
 
   const label = group.children.find(isSpriteLabel)
   if (label) {
@@ -149,13 +151,18 @@ export function updateDimensionLine(
     label.position.copy(labelCenter)
   }
 
-  if (dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX && !collapsedAxis) {
+  if (
+    dimensionLengthPx < DIMENSION_HIDE_THRESHOLD_PX &&
+    !collapsedAxis &&
+    !labelPosition
+  ) {
     group.visible = false
     return
   }
 
   group.visible = true
   const showLabel =
+    labelPosition !== undefined ||
     collapsedAxis !== null ||
     dimensionLengthPx >= DIMENSION_LABEL_HIDE_THRESHOLD_PX
   let labelTextWidthPx = 0
@@ -181,10 +188,17 @@ export function updateDimensionLine(
     }
   }
 
-  // Main constraint lines with optional gap. Diameter labels are offset off-line, so keep no gap.
-  const halfGap = showLabel && !isDiameter ? labelTextWidthPx * 0.5 * scale : 0
-  const gapStart = lineCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
-  const gapEnd = lineCenter.clone().add(dir.clone().multiplyScalar(halfGap))
+  // Main constraint lines with optional gap. Automatic diameter labels are
+  // offset off-line, so only explicit diameter label positions get a gap.
+  const hasExplicitLabelPosition = labelPosition !== undefined
+  const halfGap =
+    showLabel && (!isDiameter || hasExplicitLabelPosition)
+      ? labelTextWidthPx * 0.5 * scale
+      : 0
+  const gapCenter =
+    isDiameter && !hasExplicitLabelPosition ? lineCenter : labelCenter
+  const gapStart = gapCenter.clone().sub(dir.clone().multiplyScalar(halfGap))
+  const gapEnd = gapCenter.clone().add(dir.clone().multiplyScalar(halfGap))
   const maxEndInset = Math.max(
     0,
     Math.min(start.distanceTo(gapStart), gapEnd.distanceTo(end))
@@ -209,7 +223,7 @@ export function updateDimensionLine(
 
   if (collapsedAxis) {
     updateCollapsedDimensionLine(
-      lineCenter,
+      labelPosition ?? lineCenter,
       collapsedAxis,
       line1,
       line2,
@@ -220,22 +234,52 @@ export function updateDimensionLine(
     return
   }
 
-  updateConstraintLinePositions(line1, [
-    lineStart.x,
-    lineStart.y,
-    0,
-    gapStart.x,
-    gapStart.y,
-    0,
-  ])
-  updateConstraintLinePositions(line2, [
-    gapEnd.x,
-    gapEnd.y,
-    0,
-    lineEnd.x,
-    lineEnd.y,
-    0,
-  ])
+  const lineStartT = lineStart.clone().sub(start).dot(dir)
+  const lineEndT = lineEnd.clone().sub(start).dot(dir)
+  const gapCenterT = gapCenter.clone().sub(start).dot(dir)
+  const lineMinT = Math.min(lineStartT, lineEndT)
+  const lineMaxT = Math.max(lineStartT, lineEndT)
+  const labelBeforeLine = labelPosition !== undefined && gapCenterT < lineMinT
+  const labelAfterLine = labelPosition !== undefined && gapCenterT > lineMaxT
+
+  if (labelBeforeLine) {
+    updateConstraintLinePositions(line1, [
+      gapEnd.x,
+      gapEnd.y,
+      0,
+      lineEnd.x,
+      lineEnd.y,
+      0,
+    ])
+    line2.visible = false
+  } else if (labelAfterLine) {
+    updateConstraintLinePositions(line1, [
+      lineStart.x,
+      lineStart.y,
+      0,
+      gapStart.x,
+      gapStart.y,
+      0,
+    ])
+    line2.visible = false
+  } else {
+    updateConstraintLinePositions(line1, [
+      lineStart.x,
+      lineStart.y,
+      0,
+      gapStart.x,
+      gapStart.y,
+      0,
+    ])
+    updateConstraintLinePositions(line2, [
+      gapEnd.x,
+      gapEnd.y,
+      0,
+      lineEnd.x,
+      lineEnd.y,
+      0,
+    ])
+  }
 
   // Arrows
   const angle = Math.atan2(dir.y, dir.x) // TODO

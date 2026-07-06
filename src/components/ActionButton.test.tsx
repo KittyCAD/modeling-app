@@ -40,4 +40,17 @@ describe('ActionButton tests', () => {
     expect(screen.getByRole('button')).not.toHaveClass('px-2')
     expect(screen.getByRole('button')).toHaveClass('px-0')
   })
+
+  it('external links render without a router provider', () => {
+    render(
+      <ActionButton Element="externalLink" to="https://zoo.dev/makeathon">
+        Register now
+      </ActionButton>
+    )
+
+    expect(screen.getByRole('link', { name: 'Register now' })).toHaveAttribute(
+      'href',
+      'https://zoo.dev/makeathon'
+    )
+  })
 })

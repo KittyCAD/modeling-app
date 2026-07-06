@@ -1,5 +1,6 @@
 target
 *.snap.new
+*.snap.new.md
 
 /kcl-lib/fuzz/Cargo.lock
 /kcl-language-server-release/Cargo.lock

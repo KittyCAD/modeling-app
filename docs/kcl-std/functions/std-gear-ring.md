@@ -1,13 +1,13 @@
 ---
 title: "gear::ring"
 subtitle: "Function in std::gear"
-excerpt: "A ring gear."
+excerpt: "A ring gear (i.e. a gear with internal teeth)."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-A ring gear.
+A ring gear (i.e. a gear with internal teeth).
 
 ```kcl
 gear::ring(
@@ -19,7 +19,8 @@ gear::ring(
 ): Solid
 ```
 
-
+The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+Use `translate()` and `rotate()` to move it around once it's created.
 
 ### Arguments
 

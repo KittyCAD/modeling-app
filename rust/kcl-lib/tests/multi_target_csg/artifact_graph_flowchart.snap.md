@@ -71,17 +71,17 @@ flowchart LR
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     108[Solid2d]
   end
-  subgraph path118 [Path]
-    118["Path<br>[1761, 1822, 0]<br>Consumed: true"]
+  subgraph path117 [Path]
+    117["Path<br>[1761, 1822, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    119["Segment<br>[1761, 1822, 0]"]
+    118["Segment<br>[1761, 1822, 0]"]
       %% [ProgramBodyItem { index: 12 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    120[Solid2d]
+    119[Solid2d]
   end
-  subgraph path122 [Path]
-    122["Path<br>[1908, 1965, 0]<br>Consumed: true"]
+  subgraph path121 [Path]
+    121["Path<br>[1908, 1965, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 14 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    124[Solid2d]
+    123[Solid2d]
   end
   1["Plane<br>[47, 65, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -203,29 +203,27 @@ flowchart LR
   114["SweepEdge Adjacent"]
   115["CompositeSolid Subtract<br>[1634, 1677, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  116["CompositeSolid Subtract<br>[1634, 1677, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 10 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  117["Plane<br>[1705, 1736, 0]"]
+  116["Plane<br>[1705, 1736, 0]"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-  121["Plane<br>[1850, 1883, 0]"]
+  120["Plane<br>[1850, 1883, 0]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-  123["SweepEdge Opposite"]
-  125["Sweep Loft<br>[1988, 2036, 0]<br>Consumed: false"]
+  122["SweepEdge Opposite"]
+  124["Sweep Loft<br>[1988, 2036, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 15 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  126[Wall]
+  125[Wall]
     %% face_code_ref=Missing NodePath
-  127["Cap Start"]
+  126["Cap Start"]
     %% face_code_ref=Missing NodePath
-  128["Cap End"]
+  127["Cap End"]
     %% face_code_ref=Missing NodePath
-  129["SweepEdge Adjacent"]
-  130["CompositeSolid Subtract<br>[2052, 2100, 0]<br>Consumed: false"]
+  128["SweepEdge Adjacent"]
+  129["CompositeSolid Subtract<br>[2052, 2100, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 16 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  131["StartSketchOnPlane<br>[1430, 1475, 0]"]
+  130["StartSketchOnPlane<br>[1430, 1475, 0]"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  132["StartSketchOnPlane<br>[1691, 1737, 0]"]
+  131["StartSketchOnPlane<br>[1691, 1737, 0]"]
     %% [ProgramBodyItem { index: 11 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  133["StartSketchOnPlane<br>[1836, 1884, 0]"]
+  132["StartSketchOnPlane<br>[1836, 1884, 0]"]
     %% [ProgramBodyItem { index: 13 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   1 --- 2
   1 --- 13
@@ -241,7 +239,7 @@ flowchart LR
   2 --- 12
   13 --- 2
   2 ---- 16
-  2 --- 130
+  2 --- 129
   3 --- 24
   3 x--> 26
   3 --- 42
@@ -357,7 +355,6 @@ flowchart LR
   47 x--> 55
   47 ---- 63
   47 <--x 115
-  47 <--x 116
   48 --- 64
   48 x--> 70
   48 --- 72
@@ -392,7 +389,6 @@ flowchart LR
   55 ---- 84
   106 <--x 55
   55 <--x 115
-  55 <--x 116
   56 --- 90
   56 x--> 91
   56 --- 103
@@ -506,12 +502,11 @@ flowchart LR
   101 <--x 92
   103 <--x 92
   105 --- 106
-  105 <--x 131
+  105 <--x 130
   106 --- 107
   106 --- 108
   106 ---- 109
   106 <--x 115
-  106 <--x 116
   107 --- 110
   107 x--> 112
   107 --- 113
@@ -524,27 +519,27 @@ flowchart LR
   110 --- 113
   110 --- 114
   113 <--x 111
+  116 --- 117
+  116 <--x 131
   117 --- 118
-  117 <--x 132
-  118 --- 119
-  118 --- 120
-  118 ---- 125
-  119 --- 123
-  119 --- 126
-  119 x--> 127
-  119 --- 129
-  121 --- 122
-  121 <--x 133
-  122 x--> 123
-  122 --- 124
-  122 x---> 125
-  125 --- 123
-  123 --- 126
-  123 x--> 128
-  125 --- 126
-  125 --- 127
+  117 --- 119
+  117 ---- 124
+  118 --- 122
+  118 --- 125
+  118 x--> 126
+  118 --- 128
+  120 --- 121
+  120 <--x 132
+  121 x--> 122
+  121 --- 123
+  121 x---> 124
+  124 --- 122
+  122 --- 125
+  122 x--> 127
+  124 --- 125
+  124 --- 126
+  124 --- 127
+  124 --- 128
+  124 <--x 129
   125 --- 128
-  125 --- 129
-  125 <--x 130
-  126 --- 129
 ```

@@ -1,0 +1,52 @@
+// Blend Trim Operations
+// Shows how to create a blend surface and use it for trim operations.
+
+@settings(kclVersion = 2.0)
+
+tiltValue = 30
+
+// construction surfaces
+sketch001 = sketch(on = YZ) {
+  line1 = line(start = [var -300mm, var -15mm], end = [var -150mm, var 15mm])
+  horizontalDistance([line1.end, ORIGIN]) == 150
+  horizontalDistance([line1.start, line1.end], labelPosition = [-218.68mm, 10.88mm]) == 150
+  verticalDistance([ORIGIN, line1.end]) == tiltValue
+  verticalDistance([line1.start, ORIGIN]) == tiltValue
+}
+sketch002 = sketch(on = XZ) {
+  line1 = line(start = [var 600mm, var -15mm], end = [var 300mm, var 15mm])
+  horizontalDistance([ORIGIN, line1.end]) == 300
+  horizontalDistance([line1.end, line1.start]) == 300
+  verticalDistance([ORIGIN, line1.end]) == tiltValue
+  verticalDistance([line1.start, ORIGIN]) == tiltValue
+}
+extrude001 = extrude(sketch001.line1, length = -100, bodyType = SURFACE)
+extrude002 = extrude(sketch002.line1, length = -100, bodyType = SURFACE)
+hidden001 = hide(sketch001)
+hidden002 = hide(sketch002)
+
+// create blend
+blend001 = blend([
+  getBoundedEdge(extrude001, edge = extrude001.sketch.tags.line1),
+  getBoundedEdge(extrude002, edge = extrude002.sketch.tags.line1)
+])
+
+// surface to cut
+sketch003 = sketch(on = XY) {
+  line1 = line(start = [var 230mm, var -140mm], end = [var 270mm, var -200mm])
+  verticalDistance([line1.end, line1.start]) == 60
+  horizontalDistance([line1.start, line1.end]) == 40
+  horizontalDistance([ORIGIN, line1.start]) == 230
+  verticalDistance([line1.start, ORIGIN]) == 140
+}
+extrude003 = extrude(
+  sketch003.line1,
+  length = 100,
+  symmetric = true,
+  bodyType = SURFACE,
+)
+hidden003 = hide(sketch003)
+
+// perform split operation with blend
+split001 = split(extrude003, tools = blend001, keepTools = true)
+hide(split001[1])

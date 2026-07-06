@@ -22,6 +22,7 @@ use crate::NodePath;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
 use crate::execution::ControlFlowKind;
 use crate::execution::ExecState;
 use crate::execution::Geometries;
@@ -35,6 +36,7 @@ use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::args::TyF64;
@@ -43,9 +45,18 @@ use crate::std::shapes::POINT_ZERO_ZERO;
 use crate::std::utils::point_3d_to_mm;
 use crate::std::utils::point_to_mm;
 pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
 ];
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";
@@ -161,10 +172,6 @@ async fn execute_pattern_transform<T: GeometryTrait>(
     T::flush_batch(args, exec_state, &geo_set).await?;
     let starting: Vec<T> = geo_set.into();
 
-    if args.ctx.context_type == crate::execution::ContextType::Mock {
-        return Ok(starting);
-    }
-
     let mut output = Vec::new();
     for geo in starting {
         let new = send_pattern_transform(transforms.clone(), &geo, use_original, exec_state, args).await?;
@@ -220,6 +227,7 @@ async fn send_pattern_transform<T: GeometryTrait>(
     for id in entity_ids.iter().copied() {
         let mut new_solid = solid.clone();
         new_solid.set_id(id);
+        new_solid.set_artifact_id(id);
         geometries.push(new_solid);
     }
     Ok(geometries)
@@ -438,6 +446,7 @@ pub trait GeometryTrait: Clone {
     fn id(&self) -> Uuid;
     fn original_id(&self) -> Uuid;
     fn set_id(&mut self, id: Uuid);
+    fn set_artifact_id(&mut self, id: Uuid);
     fn array_to_point3d(
         val: &KclValue,
         source_ranges: Vec<SourceRange>,
@@ -451,6 +460,9 @@ impl GeometryTrait for Sketch {
     type Set = Vec<Sketch>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+    }
+    fn set_artifact_id(&mut self, id: Uuid) {
+        self.artifact_id = ArtifactId::new(id);
     }
     fn id(&self) -> Uuid {
         self.id
@@ -477,10 +489,15 @@ impl GeometryTrait for Solid {
     type Set = Vec<Solid>;
     fn set_id(&mut self, id: Uuid) {
         self.id = id;
+        self.value_id = id;
         // We need this for in extrude.rs when you sketch on face.
         if let Some(sketch) = self.sketch_mut() {
             sketch.id = id;
         }
+    }
+
+    fn set_artifact_id(&mut self, id: Uuid) {
+        self.artifact_id = ArtifactId::new(id);
     }
 
     fn id(&self) -> Uuid {
@@ -1046,6 +1063,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_sketch = sketch.clone();
                 new_sketch.id = id;
+                new_sketch.artifact_id = ArtifactId::new(id);
                 geometries.push(new_sketch);
             }
             Geometries::Sketches(geometries)
@@ -1055,6 +1073,7 @@ async fn pattern_circular(
             for id in entity_ids.iter().copied() {
                 let mut new_solid = solid.clone();
                 new_solid.id = id;
+                new_solid.artifact_id = ArtifactId::new(id);
                 geometries.push(new_solid);
             }
             Geometries::Solids(geometries)

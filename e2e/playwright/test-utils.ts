@@ -1,15 +1,16 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { OutputFormat3d } from '@kittycad/lib'
+import type { OutputFormat3d, UserFeature } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { Configuration } from '@src/lang/wasm'
 import {
+  COOKIE_NAME_PREFIX,
   IS_PLAYWRIGHT_KEY,
+  SIDEBAR_BUTTON_SUFFIX,
   TOKEN_PERSIST_KEY,
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
-  COOKIE_NAME_PREFIX,
 } from '@src/lib/constants'
 import { reportRejection } from '@src/lib/trap'
 import type { DeepPartial } from '@src/lib/types'
@@ -35,12 +36,20 @@ import type { ElectronZoo } from '@e2e/playwright/fixtures/fixtureSetup'
 import { isErrorWhitelisted } from '@e2e/playwright/lib/console-error-whitelist'
 import { TEST_SETTINGS, TEST_SETTINGS_KEY } from '@e2e/playwright/storageStates'
 import { test } from '@e2e/playwright/zoo-test'
-import {
-  type LayoutWithMetadata,
-  setOpenPanes,
-  getLayoutPersistKey,
-} from '@src/lib/layout'
+import { createLayoutWithMetadata } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+
+export const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
+
+export const PLAYWRIGHT_LAYOUT_SETTINGS = {
+  layout: {
+    configs: {
+      [PLAYWRIGHT_LAYOUT_CONFIG_NAME]: JSON.stringify(
+        createLayoutWithMetadata(playwrightLayoutConfig)
+      ),
+    },
+  },
+} as const
 
 const toNormalizedCode = (text: string) => {
   return text.replace(/\s+/g, '')
@@ -166,12 +175,10 @@ async function openKclCodePanel(page: Page) {
 
   // Code Mirror lazy loads text! Wowza! Let's force-load the text for tests.
   await page.evaluate(() => {
-    // kclManager is available on the window object.
-    //@ts-ignore this is in an entirely different context that tsc can't see.
+    const { kclManager } = window.app.singletons
     kclManager.editorView.dispatch({
       selection: {
-        //@ts-ignore this is in an entirely different context that tsc can't see.
-        anchor: kclManager.editorView.docView.length,
+        anchor: kclManager.editorView.state.doc.length,
       },
       scrollIntoView: true,
     })
@@ -695,33 +702,11 @@ export async function getUtils(page: Page, test_?: typeof test) {
         .filter({ hasText: name })
     },
 
-    /**
-     * @deprecated Sorry I don't have time to fix this right now, but runs like
-     * the one linked below show me that setting the open panes in this manner is not reliable.
-     * You can either set `openPanes` as a part of the same initScript we run in setupElectron/setup,
-     * or you can imperatively open the panes with functions like {openKclCodePanel}
-     * (or we can make a general openPane function that takes a paneId).,
-     * but having a separate initScript does not seem to work reliably.
-     * @link https://github.com/KittyCAD/modeling-app/actions/runs/10731890169/job/29762700806?pr=3807#step:20:19553
-     */
     panesOpen: async (paneIds: string[]) => {
       return test?.step(`Setting ${paneIds} panes to be open`, async () => {
-        await page.addInitScript(
-          ({ layoutName, layoutPayload }) => {
-            localStorage.setItem(layoutName, layoutPayload)
-          },
-          {
-            layoutName: getLayoutPersistKey(),
-            layoutPayload: JSON.stringify({
-              version: 'v1',
-              layout: setOpenPanes(
-                structuredClone(playwrightLayoutConfig),
-                paneIds
-              ),
-            } satisfies LayoutWithMetadata),
-          }
-        )
-        await page.reload()
+        for (const paneId of paneIds) {
+          await openPane(page, paneId + SIDEBAR_BUTTON_SUFFIX)
+        }
       })
     },
   }
@@ -739,7 +724,7 @@ type makeTemplateReturn = {
   ) => makeTemplateReturn
 }
 
-const escapeRegExp = (string: string) => {
+export const escapeRegExp = (string: string) => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') // $& means the whole matched string
 }
 
@@ -841,8 +826,16 @@ export const doExport = async (
   rootDir: string,
   page: Page,
   cmdBar: CmdBarFixture,
+  testInfo: TestInfo,
   exportFrom: 'dropdown' | 'sidebarButton' | 'commandBar' = 'dropdown'
 ): Promise<Paths> => {
+  const relPathToSpec = path.relative(testInfo.project.testDir, testInfo.file)
+  const specSubdir = path.dirname(relPathToSpec)
+  const snapshotsDirName = `${path.basename(testInfo.file)}-snapshots`
+  const exportFolder =
+    specSubdir === '.' || specSubdir === ''
+      ? path.join(testInfo.project.testDir, snapshotsDirName)
+      : path.join(testInfo.project.testDir, specSubdir, snapshotsDirName)
   if (exportFrom === 'dropdown') {
     await page.getByTestId('project-sidebar-toggle').click()
 
@@ -897,9 +890,12 @@ export const doExport = async (
 
   // Handle download
   const downloadLocationer = (extra = '', isImage = false) =>
-    `./e2e/playwright/export-snapshots/${output.type}-${
-      'storage' in output ? output.storage : ''
-    }${extra}.${isImage ? 'png' : output.type}`
+    path.join(
+      exportFolder,
+      `${output.type}-${'storage' in output ? output.storage : ''}${extra}.${
+        isImage ? 'png' : output.type
+      }`
+    )
   const downloadLocation = downloadLocationer()
 
   if (output.type === 'step') {
@@ -945,8 +941,29 @@ export async function tearDown(page: Page, testInfo: TestInfo) {
 export async function setup(
   context: BrowserContext,
   page: Page,
-  testInfo?: TestInfo
+  testInfo?: TestInfo,
+  userFeatures: readonly UserFeature[] = []
 ) {
+  const testProjectSettings =
+    TEST_SETTINGS.project &&
+    typeof TEST_SETTINGS.project === 'object' &&
+    !isArray(TEST_SETTINGS.project)
+      ? TEST_SETTINGS.project
+      : undefined
+
+  await context.unroute('**/user/features')
+  await context.route('**/user/features', async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        features: userFeatures.map((id) => ({ id })),
+      }),
+    })
+  })
+
+  await installSlowFsForPlaywright(page)
+
   await page.addInitScript(
     async ({
       token,
@@ -954,24 +971,13 @@ export async function setup(
       settings,
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
-      layoutName,
-      layoutPayload,
     }) => {
       localStorage.clear()
       localStorage.setItem(TOKEN_PERSIST_KEY, token)
-      localStorage.setItem('persistCode', ``)
-      localStorage.setItem(
-        layoutName,
-        JSON.stringify({
-          version: 'v1',
-          layout: layoutPayload,
-        } satisfies LayoutWithMetadata)
-      )
       localStorage.setItem(settingsKey, settings)
       localStorage.setItem(IS_PLAYWRIGHT_KEY, 'true')
       window.addEventListener('beforeunload', () => {
         localStorage.removeItem(IS_PLAYWRIGHT_KEY)
-        localStorage.removeItem(layoutName)
       })
     },
     {
@@ -980,26 +986,24 @@ export async function setup(
       settings: settingsToToml({
         settings: {
           ...TEST_SETTINGS,
+          ...PLAYWRIGHT_LAYOUT_SETTINGS,
           app: {
             appearance: {
               ...TEST_SETTINGS.app?.appearance,
               theme: 'dark',
             },
-            ...TEST_SETTINGS.project,
             onboarding_status: 'dismissed',
           },
           project: {
-            ...TEST_SETTINGS.project,
-            ...(TEST_SETTINGS.project?.directory !== undefined
-              ? { directory: TEST_SETTINGS.project.directory }
+            ...testProjectSettings,
+            ...(typeof testProjectSettings?.directory === 'string'
+              ? { directory: testProjectSettings.directory }
               : {}),
           },
         },
       }),
       IS_PLAYWRIGHT_KEY,
       TOKEN_PERSIST_KEY,
-      layoutName: getLayoutPersistKey(),
-      layoutPayload: playwrightLayoutConfig,
     }
   )
 
@@ -1019,6 +1023,119 @@ export async function setup(
 
   // Trigger a navigation, since loading file:// doesn't.
   await page.reload()
+}
+
+const slowFsMethodNames = [
+  'access',
+  'cp',
+  'getPath',
+  'mkdir',
+  'readFile',
+  'readdir',
+  'rename',
+  'rm',
+  'stat',
+  'writeFile',
+] as const
+
+function readNonNegativeIntEnv(name: string) {
+  const value = process.env[name]
+  if (!value) return 0
+
+  const parsed = Number(value)
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0
+
+  return Math.floor(parsed)
+}
+
+async function installSlowFsForPlaywright(page: Page) {
+  const delayMs = readNonNegativeIntEnv('E2E_SLOW_FS_MS')
+  if (delayMs === 0) return
+
+  const jitterMs = readNonNegativeIntEnv('E2E_SLOW_FS_JITTER_MS')
+
+  await page.addInitScript(
+    ({ delayMs, jitterMs, slowFsMethodNames }) => {
+      const globalObject = window as any
+      const installedKey = '__zooPlaywrightSlowFsInstalled'
+      if (globalObject[installedKey]) return
+
+      globalObject[installedKey] = true
+
+      const wrappedKey = Symbol.for('zoo.playwrightSlowFsWrapped')
+      const methods = new Set(slowFsMethodNames)
+
+      const delay = () => {
+        const jitter =
+          jitterMs > 0 ? Math.floor(Math.random() * (jitterMs + 1)) : 0
+        return new Promise((resolve) => setTimeout(resolve, delayMs + jitter))
+      }
+
+      const looksLikeFsZds = (value: unknown) => {
+        if (!value || typeof value !== 'object') return false
+
+        return slowFsMethodNames.every(
+          (methodName) => typeof (value as any)[methodName] === 'function'
+        )
+      }
+
+      const wrapFsZds = <T>(value: T): T => {
+        if (!looksLikeFsZds(value)) return value
+        if ((value as any)[wrappedKey]) return value
+
+        Object.defineProperty(value, wrappedKey, {
+          configurable: false,
+          enumerable: false,
+          value: true,
+        })
+
+        for (const methodName of methods) {
+          const original = (value as any)[methodName]
+          if (typeof original !== 'function') continue
+          ;(value as any)[methodName] = async function (...args: unknown[]) {
+            await delay()
+            return original.apply(this, args)
+          }
+        }
+
+        return value
+      }
+
+      const originalAssign = Object.assign
+      Object.assign = function (target: any, ...sources: any[]) {
+        const result = originalAssign.call(Object, target, ...sources)
+
+        if (
+          looksLikeFsZds(result) ||
+          sources.some((source) => looksLikeFsZds(source))
+        ) {
+          wrapFsZds(result)
+        }
+
+        return result
+      }
+
+      let currentFsZds = wrapFsZds(globalObject.fsZds)
+      const currentDescriptor = Object.getOwnPropertyDescriptor(
+        globalObject,
+        'fsZds'
+      )
+
+      if (!currentDescriptor || currentDescriptor.configurable) {
+        Object.defineProperty(globalObject, 'fsZds', {
+          configurable: true,
+          enumerable: true,
+          get() {
+            return currentFsZds
+          },
+          set(value) {
+            currentFsZds = wrapFsZds(value)
+          },
+        })
+      }
+    },
+    { delayMs, jitterMs, slowFsMethodNames }
+  )
 }
 
 function failOnConsoleErrors(page: Page, testInfo?: TestInfo) {
@@ -1245,34 +1362,158 @@ export async function clickElectronNativeMenuById(
   tronApp: ElectronZoo,
   menuId: string
 ) {
-  const clickWasTriggered = await tronApp.electron.evaluate(
-    async ({ app }, menuId) => {
-      if (!app || !app.applicationMenu) {
-        return false
-      }
-      const menu = app.applicationMenu.getMenuItemById(menuId)
-      if (!menu) return false
-      menu.click()
-      return true
-    },
+  await clickElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
+}
+
+export async function clickElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const clickWasTriggered = await triggerElectronNativeMenuByIdForPage(
+    tronApp,
+    page,
     menuId
   )
   expect(clickWasTriggered).toBe(true)
+}
+
+async function triggerElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
+
+  return tronApp.electron.evaluate(
+    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
+      type NativeMenuItemForTest = {
+        accelerator?: unknown
+        click?: (...args: unknown[]) => void
+        label?: unknown
+      }
+      type NativeMenuForTest = {
+        getMenuItemById: (
+          targetMenuId: string
+        ) => NativeMenuItemForTest | null | undefined
+      }
+      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+        return typeof value === 'object' && value !== null
+      }
+      function isNativeMenu(value: unknown): value is NativeMenuForTest {
+        return isObject(value) && typeof value.getMenuItemById === 'function'
+      }
+      function getWindowMenuFromTestProperties() {
+        const testProperties = Reflect.get(app, 'testProperty')
+        if (!isObject(testProperties)) return null
+
+        const nativeWindowMenus = testProperties.nativeWindowMenus
+        if (!(nativeWindowMenus instanceof Map)) return null
+
+        return nativeWindowMenus.get(browserWindowId)
+      }
+
+      const window = BrowserWindow.fromId(browserWindowId)
+      if (!window) return false
+
+      const menu =
+        process.platform === 'darwin'
+          ? Menu.getApplicationMenu()
+          : getWindowMenuFromTestProperties()
+      if (!isNativeMenu(menu)) return false
+
+      const menuItem = menu.getMenuItemById(menuId)
+      if (typeof menuItem?.click !== 'function') return false
+
+      menuItem.click(menuItem, window, {})
+      return true
+    },
+    { browserWindowId, menuId }
+  )
+}
+
+async function getElectronBrowserWindowId(tronApp: ElectronZoo, page: Page) {
+  const browserWindow = await tronApp.electron.browserWindow(page)
+  try {
+    return await browserWindow.evaluate((window) => window.id)
+  } finally {
+    await browserWindow.dispose()
+  }
 }
 
 export async function findElectronNativeMenuById(
   tronApp: ElectronZoo,
   menuId: string
 ) {
-  const found = await tronApp.electron.evaluate(async ({ app }, menuId) => {
-    if (!app || !app.applicationMenu) {
-      return false
-    }
-    const menu = app.applicationMenu.getMenuItemById(menuId)
-    if (!menu) return false
-    return true
-  }, menuId)
+  await findElectronNativeMenuByIdForPage(tronApp, tronApp.page, menuId)
+}
+
+export async function findElectronNativeMenuByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const found = Boolean(
+    await getElectronNativeMenuItemByIdForPage(tronApp, page, menuId)
+  )
   expect(found).toBe(true)
+}
+
+export async function getElectronNativeMenuItemByIdForPage(
+  tronApp: ElectronZoo,
+  page: Page,
+  menuId: string
+) {
+  const browserWindowId = await getElectronBrowserWindowId(tronApp, page)
+  return tronApp.electron.evaluate(
+    ({ app, BrowserWindow, Menu }, { browserWindowId, menuId }) => {
+      type NativeMenuItemForTest = {
+        accelerator?: unknown
+        label?: unknown
+      }
+      type NativeMenuForTest = {
+        getMenuItemById: (
+          targetMenuId: string
+        ) => NativeMenuItemForTest | null | undefined
+      }
+      function isObject(value: unknown): value is Record<PropertyKey, unknown> {
+        return typeof value === 'object' && value !== null
+      }
+      function isNativeMenu(value: unknown): value is NativeMenuForTest {
+        return isObject(value) && typeof value.getMenuItemById === 'function'
+      }
+      function getWindowMenuFromTestProperties() {
+        const testProperties = Reflect.get(app, 'testProperty')
+        if (!isObject(testProperties)) return null
+
+        const nativeWindowMenus = testProperties.nativeWindowMenus
+        if (!(nativeWindowMenus instanceof Map)) return null
+
+        return nativeWindowMenus.get(browserWindowId)
+      }
+
+      const window = BrowserWindow.fromId(browserWindowId)
+      if (!window) return null
+
+      const menu =
+        process.platform === 'darwin'
+          ? Menu.getApplicationMenu()
+          : getWindowMenuFromTestProperties()
+      if (!isNativeMenu(menu)) return null
+
+      const menuItem = menu.getMenuItemById(menuId)
+      if (!menuItem) return null
+
+      return {
+        accelerator:
+          typeof menuItem.accelerator === 'string'
+            ? menuItem.accelerator
+            : undefined,
+        label: typeof menuItem.label === 'string' ? menuItem.label : '',
+      }
+    },
+    { browserWindowId, menuId }
+  )
 }
 
 export async function openSettingsExpectText(page: Page, text: string) {
@@ -1289,6 +1530,20 @@ export async function openSettingsExpectLocator(page: Page, selector: string) {
   // You are viewing the keybindings tab
   const settingsLocator = settings.locator(selector)
   await expect(settingsLocator).toBeVisible()
+}
+
+export async function expectKeybindingsSettingsVisible(page: Page) {
+  const settings = page.getByTestId('settings-dialog-panel')
+  await expect(settings).toBeVisible()
+  await expect(
+    settings.getByRole('button', { name: 'Add keybinding' })
+  ).toBeVisible()
+  await expect(
+    settings.getByRole('columnheader', { name: 'Title' })
+  ).toBeVisible()
+  await expect(
+    settings.getByRole('columnheader', { name: 'Keystrokes' })
+  ).toBeVisible()
 }
 
 /**

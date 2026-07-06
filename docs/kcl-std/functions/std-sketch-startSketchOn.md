@@ -5,6 +5,8 @@ excerpt: "Start a new 2-dimensional sketch on a specific plane or face."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Start a new 2-dimensional sketch on a specific plane or face.
 
 ```kcl
@@ -17,7 +19,7 @@ startSketchOn(
 ): Plane | Face
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 ### Sketch on Face Behavior

@@ -1,3 +1,7 @@
+import { join } from 'path'
+import { signal } from '@preact/signals-core'
+import env from '@src/env'
+import { KclManager } from '@src/lang/KclManager'
 import {
   ARG_ANGLE,
   ARG_END_ABSOLUTE_X,
@@ -9,20 +13,16 @@ import {
 import { createArrayExpression } from '@src/lang/create'
 import { findKwArg, findKwArgAny } from '@src/lang/util'
 import type { CallExpressionKw, Expr } from '@src/lang/wasm'
-import { join } from 'path'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
-import { KclManager } from '@src/lang/KclManager'
-import { reportRejection } from '@src/lib/trap'
-import env from '@src/env'
-import { commandBarMachine } from '@src/machines/commandBarMachine'
-import { createActor } from 'xstate'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { createSettings } from '@src/lib/settings/initialSettings'
-import { settingsMachine } from '@src/machines/settingsMachine'
 import { MachineManager } from '@src/lib/MachineManager'
-import { signal } from '@preact/signals-core'
-import { ConnectionManager } from '@src/network/connectionManager'
 import RustContext from '@src/lib/rustContext'
+import { createSettings } from '@src/lib/settings/initialSettings'
+import { reportRejection } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { commandBarMachine } from '@src/machines/commandBarMachine'
+import { settingsMachine } from '@src/machines/settingsMachine'
+import { ConnectionManager } from '@src/network/connectionManager'
+import { createActor } from 'xstate'
 
 /**
  * Throw x if it's an Error. Only use this in tests.
@@ -72,6 +72,7 @@ export async function buildTheWorldAndConnectToEngine() {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
     },
@@ -167,6 +168,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
     },

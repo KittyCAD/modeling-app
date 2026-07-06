@@ -807,22 +807,30 @@ description: Artifact commands gallows-bracket.kcl
         "object_id": "[uuid]",
         "transforms": [
           {
-            "translate": {
+            "translate": null,
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": {
               "property": {
-                "x": 0.0,
-                "y": 0.0,
+                "x": -1.0,
+                "y": 1.0,
                 "z": 1.0
               },
               "set": false,
               "origin": {
-                "type": "global"
+                "type": "local"
               }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
+            }
           }
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_flip",
+        "object_id": "[uuid]"
       }
     },
     {
@@ -1651,22 +1659,30 @@ description: Artifact commands gallows-bracket.kcl
         "object_id": "[uuid]",
         "transforms": [
           {
-            "translate": {
+            "translate": null,
+            "rotate_rpy": null,
+            "rotate_angle_axis": null,
+            "scale": {
               "property": {
-                "x": 0.0,
-                "y": 0.0,
+                "x": -1.0,
+                "y": 1.0,
                 "z": 1.0
               },
               "set": false,
               "origin": {
-                "type": "global"
+                "type": "local"
               }
-            },
-            "rotate_rpy": null,
-            "rotate_angle_axis": null,
-            "scale": null
+            }
           }
         ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_flip",
+        "object_id": "[uuid]"
       }
     },
     {

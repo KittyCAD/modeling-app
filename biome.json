@@ -1,7 +1,8 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.6.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
   "organizeImports": {
-    "enabled": true
+    "enabled": true,
+    "include": ["**/*.ts", "**/*.tsx"]
   },
   "linter": {
     "enabled": true,
@@ -43,6 +44,6 @@
     }
   },
   "files": {
-    "ignore": ["**/*.json"]
+    "ignore": ["**/*.json", "packages/ui-components/storybook-static/**"]
   }
 }

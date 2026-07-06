@@ -1,17 +1,17 @@
+import {
+  type ClientMetrics,
+  type WebSocketRequest,
+} from '@kittycad/lib/dist/types/src'
+import { EngineDebugger } from '@src/lib/debugger'
+import { markOnce } from '@src/lib/performance'
+import { reportRejection } from '@src/lib/trap'
+import type { Connection } from '@src/network/connection'
 import type { IEventListenerTracked, ManagerTearDown } from '@src/network/utils'
 import {
   ConnectingType,
   EngineConnectionEvents,
   EngineConnectionStateType,
 } from '@src/network/utils'
-import type { Connection } from '@src/network/connection'
-import { EngineDebugger } from '@src/lib/debugger'
-import { markOnce } from '@src/lib/performance'
-import { reportRejection } from '@src/lib/trap'
-import {
-  type WebSocketRequest,
-  type ClientMetrics,
-} from '@kittycad/lib/dist/types/src'
 
 export function createOnIceCandidate({
   initiateConnectionExclusive,

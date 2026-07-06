@@ -1,27 +1,27 @@
-import { btnName } from '@src/lib/cameraControls'
-import { DprDetector } from '@src/lib/DprDetector'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { DprDetector } from '@src/lib/DprDetector'
+import { btnName } from '@src/lib/cameraControls'
 import { reportRejection } from '@src/lib/trap'
-import type { Object3D, Mesh, ColorRepresentation, Texture } from 'three'
+import type { ColorRepresentation, Mesh, Object3D, Texture } from 'three'
 import {
-  PerspectiveCamera,
-  OrthographicCamera,
-  Scene,
-  WebGLRenderer,
-  MeshStandardMaterial,
-  DirectionalLight,
   AmbientLight,
   BufferGeometry,
-  Vector2,
-  Matrix4,
-  Quaternion,
-  Vector3,
-  Raycaster,
-  LineSegments,
-  LineBasicMaterial,
+  DirectionalLight,
   Float32BufferAttribute,
-  TextureLoader,
+  LineBasicMaterial,
+  LineSegments,
+  Matrix4,
+  MeshStandardMaterial,
+  OrthographicCamera,
+  PerspectiveCamera,
+  Quaternion,
+  Raycaster,
   SRGBColorSpace,
+  Scene,
+  TextureLoader,
+  Vector2,
+  Vector3,
+  WebGLRenderer,
 } from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 

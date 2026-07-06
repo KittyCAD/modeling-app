@@ -1,12 +1,54 @@
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { Connection } from '@src/network/connection'
+import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
 import {
+  decode as msgpackDecode,
+  encode as msgpackEncode,
+} from '@msgpack/msgpack'
+import type { useModelingContext } from '@src/hooks/useModelingContext'
+import { defaultSourceRange } from '@src/lang/sourceRange'
+import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
+import type { CommandLog } from '@src/lang/std/commandLog'
+import { CommandLogType } from '@src/lang/std/commandLog'
+import type { SourceRange } from '@src/lang/wasm'
+import {
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+  PENDING_COMMAND_TIMEOUT,
+  SYSTEM_HIGHLIGHT_COLOR,
+  SYSTEM_SELECTION_COLOR,
+} from '@src/lib/constants'
+import { EngineDebugger } from '@src/lib/debugger'
+import {
+  isExportResponse,
+  isModelingBatchResponse,
+  isModelingResponse,
+} from '@src/lib/kcSdkGuards'
+import type RustContext from '@src/lib/rustContext'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import {
+  type Themes,
   darkModeMatcher,
   getOppositeTheme,
   getThemeColorForEngine,
-  type Themes,
 } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import {
+  binaryToUuid,
+  hexToRgba,
+  isArray,
+  promiseFactory,
+  uuidv4,
+} from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
+import { Connection } from '@src/network/connection'
+import {
+  createOnDarkThemeMediaQueryChange,
+  createOnEngineConnectionClosed,
+  createOnEngineConnectionOpened,
+  createOnEngineConnectionRestartRequest,
+  createOnEngineConnectionStarted,
+  createOnEngineOffline,
+} from '@src/network/connectionManagerEvents'
 import type {
   IEventListenerTracked,
   ManagerTearDown,
@@ -23,48 +65,6 @@ import {
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
 } from '@src/network/utils'
-import {
-  createOnDarkThemeMediaQueryChange,
-  createOnEngineConnectionClosed,
-  createOnEngineConnectionOpened,
-  createOnEngineConnectionRestartRequest,
-  createOnEngineConnectionStarted,
-  createOnEngineOffline,
-} from '@src/network/connectionManagerEvents'
-import type RustContext from '@src/lib/rustContext'
-import {
-  binaryToUuid,
-  hexToRgba,
-  isArray,
-  promiseFactory,
-  uuidv4,
-} from '@src/lib/utils'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
-import {
-  decode as msgpackDecode,
-  encode as msgpackEncode,
-} from '@msgpack/msgpack'
-import { EngineDebugger } from '@src/lib/debugger'
-import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
-import type { CommandLog } from '@src/lang/std/commandLog'
-import { CommandLogType } from '@src/lang/std/commandLog'
-import { defaultSourceRange } from '@src/lang/sourceRange'
-import type { SourceRange } from '@src/lang/wasm'
-import {
-  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
-  PENDING_COMMAND_TIMEOUT,
-  SYSTEM_HIGHLIGHT_COLOR,
-  SYSTEM_SELECTION_COLOR,
-} from '@src/lib/constants'
-import type { useModelingContext } from '@src/hooks/useModelingContext'
-import { reportRejection } from '@src/lib/trap'
-import type { WebSocketRequest, WebSocketResponse } from '@kittycad/lib'
-import {
-  isExportResponse,
-  isModelingBatchResponse,
-  isModelingResponse,
-} from '@src/lib/kcSdkGuards'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { maybeHandleLocalSelectionCommand } from '@src/clientSideScene/localSelectionCommandProxy'
 
 export type ConnectionSystemDeps = {
@@ -122,16 +122,15 @@ export class ConnectionManager extends EventTarget {
     [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
     }
-  } = {} as any
+  } = {}
   unreliableSubscriptions: {
     [event: string]: {
       [localUnsubscribeId: string]: (a: any) => void
     }
-  } = {} as any
+  } = {}
   _commandLogCallBack: (command: CommandLog[]) => void = () => {}
   // Rogue runtime dependency from the modeling machine. hope it is there!
-  modelingSend: ReturnType<typeof useModelingContext>['send'] =
-    (() => {}) as any
+  modelingSend: ReturnType<typeof useModelingContext>['send'] = () => {}
   // Any event listener into this map to be cleaned up later
   // helps avoids duplicates as well
   allEventListeners: Map<string, IEventListenerTracked>
@@ -468,6 +467,7 @@ export class ConnectionManager extends EventTarget {
 
   listenToDarkModeMatcher() {
     const onDarkThemeMediaQueryChange = createOnDarkThemeMediaQueryChange({
+      getTheme: () => this.settings.theme,
       setTheme: this.setTheme.bind(this),
     })
     this.trackListener('darkmodewatcher-change', {

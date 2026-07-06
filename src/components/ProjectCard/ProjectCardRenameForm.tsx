@@ -3,7 +3,9 @@ import { forwardRef } from 'react'
 
 import { ActionButton } from '@src/components/ActionButton'
 import Tooltip from '@src/components/Tooltip'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 
 interface ProjectCardRenameFormProps extends HTMLProps<HTMLFormElement> {
   project: Project
@@ -16,8 +18,9 @@ export const ProjectCardRenameForm = forwardRef(
     ref: React.Ref<HTMLInputElement>
   ) => {
     return (
-      <form {...props}>
+      <form {...props} {...noAutofillFormProps}>
         <input
+          {...noAutofillInputProps}
           className="min-w-0 dark:bg-chalkboard-80 dark:border-chalkboard-40 focus:outline-none"
           type="text"
           data-testid="project-rename-input"
@@ -25,9 +28,7 @@ export const ProjectCardRenameForm = forwardRef(
           onClickCapture={(e) => e.preventDefault()}
           name="newProjectName"
           required
-          autoCorrect="off"
-          autoCapitalize="off"
-          defaultValue={project.name}
+          defaultValue={getProjectDisplayName(project)}
           ref={ref}
           onKeyDown={(e) => {
             if (e.key === 'Escape') {

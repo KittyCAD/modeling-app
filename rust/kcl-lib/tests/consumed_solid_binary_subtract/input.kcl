@@ -1,0 +1,41 @@
+sketch1 = sketch(on = XY) {
+  bottom = line(start = [var -10, var -10], end = [var 10, var -10])
+  right = line(start = [var 10, var -10], end = [var 10, var 10])
+  top = line(start = [var 10, var 10], end = [var -10, var 10])
+  left = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+s1 = extrude(region(point = [0, 0], sketch = sketch1), length = 10)
+
+sketch2 = sketch(on = XY) {
+  bottom = line(start = [var -3, var -3], end = [var 3, var -3])
+  right = line(start = [var 3, var -3], end = [var 3, var 3])
+  top = line(start = [var 3, var 3], end = [var -3, var 3])
+  left = line(start = [var -3, var 3], end = [var -3, var -3])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+s2 = extrude(region(point = [0, 0], sketch = sketch2), length = 5)
+
+sketch3 = sketch(on = XY) {
+  bottom = line(start = [var 12, var 12], end = [var 14, var 12])
+  right = line(start = [var 14, var 12], end = [var 14, var 14])
+  top = line(start = [var 14, var 14], end = [var 12, var 14])
+  left = line(start = [var 12, var 14], end = [var 12, var 12])
+  coincident([bottom.end, right.start])
+  coincident([right.end, top.start])
+  coincident([top.end, left.start])
+  coincident([left.end, bottom.start])
+}
+
+s3 = extrude(region(point = [13, 13], sketch = sketch3), length = 5)
+
+result = subtract(s1, tools = [s2])
+diff = s1 - s3

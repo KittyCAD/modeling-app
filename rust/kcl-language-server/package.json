@@ -23,7 +23,7 @@
     "type": "git"
   },
   "engines": {
-    "vscode": "^1.110.0"
+    "vscode": "^1.120.0"
   },
   "enabledApiProposals": [],
   "activationEvents": ["onLanguage:kcl"],
@@ -116,16 +116,16 @@
     "@tsconfig/strictest": "^2.0.6",
     "@types/glob": "^9.0.0",
     "@types/mocha": "^10.0.10",
-    "@types/node": "^25.0.1",
-    "@types/vscode": "^1.110.0",
+    "@types/node": "^25.9.1",
+    "@types/vscode": "^1.120.0",
     "@typescript-eslint/eslint-plugin": "^8.27.0",
     "@typescript-eslint/parser": "^8.27.0",
-    "@vscode/test-electron": "^2.4.1",
-    "@vscode/vsce": "^3.3.2",
+    "@vscode/test-electron": "^3.0.0",
+    "@vscode/vsce": "^3.9.2",
     "cross-env": "^10.1.0",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "glob": "^13.0.6",
-    "mocha": "^11.1.0",
+    "mocha": "^11.7.6",
     "typescript": "^6.0.2"
   },
   "dependencies": {

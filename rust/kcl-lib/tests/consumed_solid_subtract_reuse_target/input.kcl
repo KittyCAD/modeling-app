@@ -1,0 +1,44 @@
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+tool1Sketch = sketch(on = XY) {
+  line1 = line(start = [var -11, var -11], end = [var -7, var -11])
+  line2 = line(start = [var -7, var -11], end = [var -7, var -7])
+  line3 = line(start = [var -7, var -7], end = [var -11, var -7])
+  line4 = line(start = [var -11, var -7], end = [var -11, var -11])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool1 = extrude(region(point = [-9, -9], sketch = tool1Sketch), length = 4)
+
+tool2Sketch = sketch(on = XY) {
+  line1 = line(start = [var 7, var 7], end = [var 11, var 7])
+  line2 = line(start = [var 11, var 7], end = [var 11, var 11])
+  line3 = line(start = [var 11, var 11], end = [var 7, var 11])
+  line4 = line(start = [var 7, var 11], end = [var 7, var 7])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  equalLength([line1, line2, line3, line4])
+}
+
+tool2 = extrude(region(point = [9, 9], sketch = tool2Sketch), length = 4)
+
+first = subtract(target, tools = [tool1])
+second = subtract(target, tools = [tool2])

@@ -1,6 +1,18 @@
+import type { TooltipProps } from '@src/components/Tooltip'
+import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+import {
+  DefaultLayoutPaneID,
+  DefaultLayoutToolbarID,
+  defaultLayoutConfig,
+  isDefaultLayoutPaneID,
+} from '@src/lib/layout/configs/default'
+import { parseLayoutInner } from '@src/lib/layout/parse'
 import type {
   Direction,
   Layout,
+  LayoutContribution,
+  LayoutContributionPlacement,
+  LayoutContributionResult,
   LayoutMatcher,
   LayoutMigration,
   LayoutMigrationMap,
@@ -11,29 +23,99 @@ import type {
   Side,
 } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
-import type React from 'react'
-import { capitaliseFC, throttle } from '@src/lib/utils'
-import type { TooltipProps } from '@src/components/Tooltip'
-import {
-  DefaultLayoutToolbarID,
-  defaultLayoutConfig,
-  isDefaultLayoutPaneID,
-} from '@src/lib/layout/configs/default'
 import { isErr } from '@src/lib/trap'
-import {
-  parseLayoutFromJsonString,
-  parseLayoutInner,
-} from '@src/lib/layout/parse'
-import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
+import { capitaliseFC, throttle } from '@src/lib/utils'
+import type React from 'react'
 
 /** Most recent layout system version */
 export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
 
-// Attempt to load a persisted layout
-const defaultLayoutLoadResult = loadLayout('default')
-export const defaultLayout = isErr(defaultLayoutLoadResult)
-  ? defaultLayoutConfig
-  : defaultLayoutLoadResult
+export const defaultLayout = defaultLayoutConfig
+
+const featureTreePaneWithBodies: PaneChild = {
+  id: DefaultLayoutPaneID.FeatureTree,
+  label: 'Feature Tree',
+  icon: 'model',
+  type: LayoutType.Splits,
+  orientation: 'block',
+  sizes: [70, 30],
+  children: [
+    {
+      id: 'operations-list',
+      label: 'Feature Tree',
+      type: LayoutType.Simple,
+      areaType: AreaType.FeatureTree,
+    },
+    {
+      id: 'bodies-list',
+      label: 'Bodies',
+      type: LayoutType.Simple,
+      areaType: AreaType.Bodies,
+    },
+  ],
+}
+
+const featureTreePaneWithoutBodies: PaneChild = {
+  id: DefaultLayoutPaneID.FeatureTree,
+  label: 'Feature Tree',
+  type: LayoutType.Simple,
+  icon: 'model',
+  areaType: AreaType.FeatureTree,
+}
+
+function isFeatureTreePaneWithoutBodies(layout: Layout) {
+  return (
+    layout.id === DefaultLayoutPaneID.FeatureTree &&
+    layout.type === LayoutType.Simple &&
+    layout.areaType === AreaType.FeatureTree
+  )
+}
+
+function isFeatureTreePaneWithBodies(layout: Layout) {
+  return (
+    layout.id === DefaultLayoutPaneID.FeatureTree &&
+    layout.type === LayoutType.Splits &&
+    layout.children.some(
+      (child) =>
+        child.type === LayoutType.Simple &&
+        child.areaType === AreaType.FeatureTree
+    ) &&
+    layout.children.some(
+      (child) =>
+        child.type === LayoutType.Simple && child.areaType === AreaType.Bodies
+    )
+  )
+}
+
+export function setBodiesPaneLayoutEnabled(
+  rootLayout: Layout,
+  enabled: boolean
+): Layout {
+  const featureTreePane = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: DefaultLayoutPaneID.FeatureTree,
+  })
+  const replacement =
+    enabled &&
+    featureTreePane &&
+    isFeatureTreePaneWithoutBodies(featureTreePane)
+      ? featureTreePaneWithBodies
+      : !enabled &&
+          featureTreePane &&
+          isFeatureTreePaneWithBodies(featureTreePane)
+        ? featureTreePaneWithoutBodies
+        : undefined
+
+  if (!replacement) {
+    return rootLayout
+  }
+
+  return findAndReplaceLayoutChildNode({
+    rootLayout: structuredClone(rootLayout),
+    targetNodeId: DefaultLayoutPaneID.FeatureTree,
+    newNode: replacement,
+  })
+}
 
 export function getOppositeSide(side: Side): Side {
   switch (side) {
@@ -259,13 +341,233 @@ export function findAndUpdateSplitSizes({
   return rootLayout
 }
 
-/** prefix for localStorage persisted layout data */
+function getInsertionIndex(
+  ids: readonly string[],
+  placement: LayoutContributionPlacement
+) {
+  if (
+    typeof placement.index === 'number' &&
+    Number.isInteger(placement.index)
+  ) {
+    return Math.min(Math.max(placement.index, 0), ids.length)
+  }
+
+  if (placement.beforeId) {
+    const beforeIndex = ids.indexOf(placement.beforeId)
+    if (beforeIndex >= 0) {
+      return beforeIndex
+    }
+  }
+
+  if (placement.afterId) {
+    const afterIndex = ids.indexOf(placement.afterId)
+    if (afterIndex >= 0) {
+      return afterIndex + 1
+    }
+  }
+
+  return placement.position === 'start' ? 0 : ids.length
+}
+
+function actionExists(rootLayout: Layout, actionId: string): boolean {
+  if (
+    rootLayout.type === LayoutType.Panes &&
+    rootLayout.actions?.some((action) => action.id === actionId)
+  ) {
+    return true
+  }
+
+  if ('children' in rootLayout && rootLayout.children) {
+    return rootLayout.children.some((child) => actionExists(child, actionId))
+  }
+
+  return false
+}
+
+function recomputePaneActiveState({
+  paneLayout,
+  activePaneIds,
+  sizeByPaneId,
+  insertedPaneId,
+  initiallyOpen,
+}: {
+  paneLayout: Extract<Layout, { type: LayoutType.Panes }>
+  activePaneIds: string[]
+  sizeByPaneId: Map<string, number>
+  insertedPaneId: string
+  initiallyOpen: boolean
+}) {
+  const nextActivePaneIds =
+    initiallyOpen && !activePaneIds.includes(insertedPaneId)
+      ? [...activePaneIds, insertedPaneId]
+      : activePaneIds
+
+  paneLayout.activeIndices = nextActivePaneIds
+    .map((id) => paneLayout.children.findIndex((child) => child.id === id))
+    .filter((index) => index >= 0)
+    .sort((a, b) => a - b)
+
+  if (!initiallyOpen) {
+    paneLayout.sizes = paneLayout.activeIndices.map((activeIndex) => {
+      const paneId = paneLayout.children[activeIndex]?.id
+      return paneId ? (sizeByPaneId.get(paneId) ?? 0) : 0
+    })
+    return
+  }
+
+  const openPaneCount = paneLayout.activeIndices.length
+  paneLayout.sizes = openPaneCount
+    ? new Array(openPaneCount).fill(100 / openPaneCount)
+    : []
+}
+
+export function applyLayoutContribution({
+  rootLayout,
+  contribution,
+}: {
+  rootLayout: Layout
+  contribution: LayoutContribution
+}): LayoutContributionResult {
+  if (contribution.kind === 'area') {
+    if (
+      findLayoutChildNode({ rootLayout, targetNodeId: contribution.pane.id })
+    ) {
+      return { applied: false, reason: 'already-present' }
+    }
+
+    const target = findLayoutChildNode({
+      rootLayout,
+      targetNodeId: contribution.placement.targetPaneId,
+    })
+
+    if (!target) {
+      return { applied: false, reason: 'target-not-found' }
+    }
+
+    if (target.type !== LayoutType.Panes) {
+      return { applied: false, reason: 'invalid-target' }
+    }
+
+    const activePaneIds = target.activeIndices
+      .map((activeIndex) => target.children[activeIndex]?.id)
+      .filter((id) => id !== undefined)
+    const sizeByPaneId = new Map(
+      target.activeIndices.map((activeIndex, sizeIndex) => [
+        target.children[activeIndex]?.id,
+        target.sizes[sizeIndex],
+      ])
+    )
+    const insertionIndex = getInsertionIndex(
+      target.children.map((child) => child.id),
+      contribution.placement
+    )
+
+    target.children.splice(
+      insertionIndex,
+      0,
+      structuredClone(contribution.pane)
+    )
+    recomputePaneActiveState({
+      paneLayout: target,
+      activePaneIds,
+      sizeByPaneId: new Map(
+        Array.from(sizeByPaneId.entries()).filter(
+          (entry): entry is [string, number] =>
+            entry[0] !== undefined && entry[1] !== undefined
+        )
+      ),
+      insertedPaneId: contribution.pane.id,
+      initiallyOpen: contribution.initiallyOpen ?? false,
+    })
+
+    return { applied: true, reason: 'applied' }
+  }
+
+  if (actionExists(rootLayout, contribution.action.id)) {
+    return { applied: false, reason: 'already-present' }
+  }
+
+  const target = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: contribution.placement.targetPaneId,
+  })
+
+  if (!target) {
+    return { applied: false, reason: 'target-not-found' }
+  }
+
+  if (target.type !== LayoutType.Panes) {
+    return { applied: false, reason: 'invalid-target' }
+  }
+
+  const actions = target.actions ?? []
+  const insertionIndex = getInsertionIndex(
+    actions.map((action) => action.id),
+    contribution.placement
+  )
+
+  target.actions = [...actions]
+  target.actions.splice(insertionIndex, 0, structuredClone(contribution.action))
+
+  return { applied: true, reason: 'applied' }
+}
+
+/** Legacy prefix for localStorage persisted layout data */
 export function getLayoutPersistKey(id = 'default') {
   return `layout-${id}`
 }
 
+export function createLayoutWithMetadata(layout: Layout): LayoutWithMetadata {
+  return {
+    version: LATEST_LAYOUT_VERSION,
+    layout,
+  }
+}
+
+export function parseLayoutWithMigrations(
+  layoutWithMetadata: unknown
+): LayoutWithMetadata | Error {
+  if (
+    !layoutWithMetadata ||
+    typeof layoutWithMetadata !== 'object' ||
+    !('version' in layoutWithMetadata) ||
+    !('layout' in layoutWithMetadata) ||
+    typeof layoutWithMetadata.version !== 'string' ||
+    !layoutWithMetadata.layout
+  ) {
+    return new Error('Invalid layout persistence metadata')
+  }
+
+  const migrationResult = applyLayoutMigrationMap(
+    layoutWithMetadata as LayoutWithMetadata,
+    getLayoutMigrations()
+  )
+  const parseResult = parseLayoutInner(migrationResult.layout)
+
+  if (isErr(parseResult)) {
+    return parseResult
+  }
+
+  return {
+    ...migrationResult,
+    layout: parseResult,
+  }
+}
+
+export function parseLayoutJsonWithMigrations(
+  layoutString: string
+): LayoutWithMetadata | Error {
+  try {
+    return parseLayoutWithMigrations(JSON.parse(layoutString))
+  } catch (e) {
+    return new Error(`Failed to parse layout from disk ${String(e)}`)
+  }
+}
+
 /**
- * Load in a layout's persisted JSON and parse and validate it
+ * Load a layout's legacy localStorage persisted JSON and parse and validate it.
+ * User layout persistence now lives in the hidden `layout.configs` user setting;
+ * this remains for migration from pre-settings layout storage.
  */
 export function loadLayout(id: string): Layout | Error {
   if (!globalThis.localStorage) {
@@ -275,36 +577,35 @@ export function loadLayout(id: string): Layout | Error {
   if (!layoutString) {
     return new Error('No persisted layout found')
   }
-  const parsedLayout = parseLayoutFromJsonString(layoutString, (l) =>
-    applyLayoutMigrationMap(l, getLayoutMigrations())
-  )
-  if (!isErr(parsedLayout)) {
-    saveLayoutInner({ layout: parsedLayout, layoutName: id })
-  }
-  return parsedLayout
+  const parsedLayout = parseLayoutJsonWithMigrations(layoutString)
+  return isErr(parsedLayout) ? parsedLayout : parsedLayout.layout
 }
 
 interface ISaveLayout {
   layout: Layout
   layoutName?: string
-  saveFn?: (key: string, value: string) => void | Promise<void>
+}
+
+type LayoutSaveHandler = (
+  props: ISaveLayout & { value: LayoutWithMetadata }
+) => void
+
+let layoutSaveHandler: LayoutSaveHandler | undefined
+
+export function setLayoutSaveHandler(handler: LayoutSaveHandler | undefined) {
+  layoutSaveHandler = handler
 }
 
 /**
- * Wrap the layout data in a versioned object
- * and save it to persisted storage.
+ * Wrap the layout data in a versioned object and hand it to the app-provided
+ * persistence handler.
  */
 function saveLayoutInner({ layout, layoutName = 'default' }: ISaveLayout) {
-  if (!globalThis.localStorage) {
-    return
-  }
-  globalThis.localStorage.setItem(
-    getLayoutPersistKey(layoutName),
-    globalThis.JSON?.stringify({
-      version: LATEST_LAYOUT_VERSION,
-      layout,
-    } satisfies LayoutWithMetadata)
-  )
+  layoutSaveHandler?.({
+    layout,
+    layoutName,
+    value: createLayoutWithMetadata(layout),
+  })
 }
 export const saveLayout = throttle(saveLayoutInner, LAYOUT_SAVE_THROTTLE)
 
@@ -730,43 +1031,6 @@ function getLayoutMigrations(): LayoutMigrationMap {
       {
         newVersion: 'v2',
         transformationSets: [{ matcher: true, transformations: [(l) => l] }],
-      },
-    ],
-    [
-      'v3',
-      {
-        newVersion: 'v4',
-        transformationSets: [
-          {
-            matcher: (l) =>
-              l.id === 'feature-tree' && l.type === LayoutType.Simple,
-            transformations: [
-              () =>
-                ({
-                  id: 'feature-tree',
-                  label: 'Feature Tree',
-                  icon: 'model',
-                  type: LayoutType.Splits,
-                  orientation: 'block',
-                  sizes: [70, 30],
-                  children: [
-                    {
-                      id: 'operations-list',
-                      label: 'Feature Tree',
-                      type: LayoutType.Simple,
-                      areaType: AreaType.FeatureTree,
-                    },
-                    {
-                      id: 'bodies-list',
-                      label: 'Bodies',
-                      type: LayoutType.Simple,
-                      areaType: AreaType.Bodies,
-                    },
-                  ],
-                }) satisfies PaneChild,
-            ],
-          },
-        ],
       },
     ],
   ])

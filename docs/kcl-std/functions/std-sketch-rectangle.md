@@ -5,6 +5,8 @@ excerpt: "Sketch a rectangle."
 layout: manual
 ---
 
+**WARNING:** This function is deprecated as of KCL 2.0.
+
 Sketch a rectangle.
 
 ```kcl
@@ -17,7 +19,7 @@ rectangle(
 ): Sketch
 ```
 
-This is part of sketch v1 and is soft deprecated in favor of
+This is part of sketch v1 and is deprecated in favor of
 [sketch-solve](/docs/kcl-std/modules/std-solver).
 
 A rectangle can be defined by its width, height, and location. Either the center or corner must be provided, but not both, to specify its location.

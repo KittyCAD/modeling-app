@@ -7,10 +7,10 @@ import CommandBarPathInput from '@src/components/CommandBar/CommandBarPathInput'
 import CommandBarSelectionInput from '@src/components/CommandBar/CommandBarSelectionInput'
 import CommandBarSelectionMixedInput from '@src/components/CommandBar/CommandBarSelectionMixedInput'
 import CommandBarTextareaInput from '@src/components/CommandBar/CommandBarTextareaInput'
-import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import CommandBarVector2DInput from '@src/components/CommandBar/CommandBarVector2DInput'
-import type { CommandArgument } from '@src/lib/commandTypes'
+import CommandBarVector3DInput from '@src/components/CommandBar/CommandBarVector3DInput'
 import { useApp } from '@src/lib/boot'
+import type { CommandArgument } from '@src/lib/commandTypes'
 
 function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()

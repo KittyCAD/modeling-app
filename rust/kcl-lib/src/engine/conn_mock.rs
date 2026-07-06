@@ -22,6 +22,7 @@ use uuid::Uuid;
 
 use crate::SourceRange;
 use crate::engine::AsyncTasks;
+use crate::engine::EngineBatchContext;
 use crate::engine::EngineStats;
 use crate::errors::KclError;
 use crate::exec::DefaultPlanes;
@@ -29,8 +30,6 @@ use crate::execution::IdGenerator;
 
 #[derive(Debug, Clone)]
 pub struct EngineConnection {
-    batch: Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>>,
-    batch_end: Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>>,
     ids_of_async_commands: Arc<RwLock<IndexMap<Uuid, SourceRange>>>,
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
     /// The default planes for the scene.
@@ -42,8 +41,6 @@ pub struct EngineConnection {
 impl EngineConnection {
     pub fn new() -> Result<EngineConnection> {
         Ok(EngineConnection {
-            batch: Arc::new(RwLock::new(Vec::new())),
-            batch_end: Arc::new(RwLock::new(IndexMap::new())),
             ids_of_async_commands: Arc::new(RwLock::new(IndexMap::new())),
             responses: Arc::new(RwLock::new(IndexMap::new())),
             default_planes: Default::default(),
@@ -55,14 +52,6 @@ impl EngineConnection {
 
 #[async_trait::async_trait]
 impl crate::engine::EngineManager for EngineConnection {
-    fn batch(&self) -> Arc<RwLock<Vec<(WebSocketRequest, SourceRange)>>> {
-        self.batch.clone()
-    }
-
-    fn batch_end(&self) -> Arc<RwLock<IndexMap<uuid::Uuid, (WebSocketRequest, SourceRange)>>> {
-        self.batch_end.clone()
-    }
-
     fn responses(&self) -> Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>> {
         self.responses.clone()
     }
@@ -85,6 +74,7 @@ impl crate::engine::EngineManager for EngineConnection {
 
     async fn clear_scene_post_hook(
         &self,
+        _batch_context: &EngineBatchContext,
         _id_generator: &mut IdGenerator,
         _source_range: SourceRange,
     ) -> Result<(), KclError> {

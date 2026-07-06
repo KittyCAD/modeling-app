@@ -1,15 +1,15 @@
-import type {
-  Layout,
-  Action,
-  SplitLayout,
-  PaneLayout,
-  SimpleLayout,
-} from '@src/lib/layout/types'
-import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
-import { parseLayoutInner, parseAction } from '@src/lib/layout/parse'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { testLayoutConfig } from '@src/lib/layout/configs/test'
-import { expect, describe, it } from 'vitest'
+import { parseAction, parseLayoutInner } from '@src/lib/layout/parse'
+import type {
+  Action,
+  Layout,
+  PaneLayout,
+  SimpleLayout,
+  SplitLayout,
+} from '@src/lib/layout/types'
+import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
+import { describe, expect, it } from 'vitest'
 
 const validSimpleLayout = {
   type: LayoutType.Simple,
@@ -64,12 +64,23 @@ describe('Layout utils', () => {
         )
       })
 
-      it('should error on missing or bad areaType', () => {
+      it('should parse extension areaType strings', () => {
+        const extensionAreaType = {
+          ...validSimpleLayout,
+          areaType: 'myExtension.myArea',
+        } as unknown as Layout
+
+        expect(parseLayoutInner(extensionAreaType)).toStrictEqual(
+          extensionAreaType
+        )
+      })
+
+      it('should error on missing or non-string areaType', () => {
         const { areaType: _, ...missingAreaType } = validSimpleLayout
 
         const badAreaType = {
           ...validSimpleLayout,
-          areaType: 'code',
+          areaType: 1,
         } as unknown as Layout
 
         expect(parseLayoutInner(badAreaType)).toBeInstanceOf(Error)
@@ -131,6 +142,15 @@ describe('Layout utils', () => {
       it('should parse valid action', () => {
         // Nothing should be altered if the layout is valid
         expect(parseAction(validAction)).toStrictEqual(validAction)
+      })
+
+      it('should parse extension actionType strings', () => {
+        const extensionAction = {
+          ...validAction,
+          actionType: 'myExtension.myAction',
+        } as unknown as Action
+
+        expect(parseAction(extensionAction)).toStrictEqual(extensionAction)
       })
 
       it('should heal a missing label', () => {

@@ -3,19 +3,19 @@ import { topLevelRange } from '@src/lang/util'
 import {
   clamp,
   getInVariableCase,
-  hexToRgba,
   hasDigitsLeftOfDecimal,
   hasLeadingZero,
+  hexToRgba,
   isClockwise,
   isOverlap,
+  mmToBaseUnit,
   onDragNumberCalculation,
   roundOff,
   roundOffWithUnits,
   simulateOnMouseDragMatch,
   stripQuotes,
-  mmToBaseUnit,
 } from '@src/lib/utils'
-import { expect, describe, it, test } from 'vitest'
+import { describe, expect, it, test } from 'vitest'
 
 describe('testing isOverlapping', () => {
   testBothOrders(topLevelRange(0, 3), topLevelRange(3, 10))

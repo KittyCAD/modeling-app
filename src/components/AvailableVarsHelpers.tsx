@@ -5,6 +5,7 @@ import {
 } from '@src/lang/create'
 import type { PrevVariable } from '@src/lang/queryAst'
 import type { BinaryPart } from '@src/lang/wasm'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const AvailableVars = ({
@@ -121,13 +122,12 @@ export const CreateNewVariable = ({
           />
         )}
         <input
+          {...noAutofillInputProps}
           type="text"
           disabled={!shouldCreateVariable}
           name="create-new-variable"
           id="create-new-variable"
           autoFocus={true}
-          autoCapitalize="off"
-          autoCorrect="off"
           className={`flex-1 sm:text-sm px-2 py-1 rounded-sm bg-chalkboard-10 dark:bg-chalkboard-90 text-chalkboard-90 dark:text-chalkboard-10 ${
             !shouldCreateVariable ? 'opacity-50' : ''
           }`}

@@ -84,7 +84,7 @@ describe('systemCertificates', () => {
     addCACert.mockClear()
     tlsModule.createSecureContext({
       ca: 'custom-ca',
-    } as never)
+    })
     expect(addCACert).not.toHaveBeenCalled()
   })
 })

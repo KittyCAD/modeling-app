@@ -4,46 +4,46 @@ import {
   type useLocation,
   useNavigate,
 } from 'react-router-dom'
-import { type SnapshotFrom, waitFor, type ActorRefFrom } from 'xstate'
+import { type ActorRefFrom, type SnapshotFrom, waitFor } from 'xstate'
 
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import { ActionButton } from '@src/components/ActionButton'
 import onboardingWorkflowAiHeadset from '@src/assets/onboarding-workflow-ai-headset.png'
 import onboardingWorkflowKitt from '@src/assets/onboarding-workflow-kitt.png'
+import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon, type CustomIconName } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import type { KclManager } from '@src/lang/KclManager'
+import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_DATA_ATTRIBUTE,
   ONBOARDING_PROJECT_NAME,
   ONBOARDING_TOAST_ID,
 } from '@src/lib/constants'
-import { fanParts } from '@src/lib/exampleKcl'
+import { coldPlateParts } from '@src/lib/exampleKcl'
+import {
+  DefaultLayoutPaneID,
+  defaultLayout,
+  setOpenPanes,
+} from '@src/lib/layout'
 import {
   type OnboardingPath,
+  type OnboardingStatus,
   isOnboardingPath,
   onboardingPaths,
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
+import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import { err, reportRejection } from '@src/lib/trap'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
+import { err, reportRejection } from '@src/lib/trap'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import {
   type SystemIOActor,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
-import {
-  defaultLayout,
-  setOpenPanes,
-  DefaultLayoutPaneID,
-} from '@src/lib/layout'
-import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { useApp } from '@src/lib/boot'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 // Get the 1-indexed step number of the current onboarding step
 function getStepNumber(
@@ -340,12 +340,12 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
     : deps.onboardingStatus
 
   /**
-   * Bulk create the assembly and navigate to the project
+   * Bulk create the tutorial sample and navigate to the project.
    */
   deps.systemIOActor.send({
     type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
     data: {
-      files: fanParts.map((part) => ({
+      files: coldPlateParts.map((part) => ({
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         ...part,
       })),

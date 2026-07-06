@@ -1,4 +1,4 @@
-import { AreaType, LayoutType, type Layout } from '@src/lib/layout/types'
+import { AreaType, type Layout, LayoutType } from '@src/lib/layout/types'
 
 export const testLayoutConfig: Layout = {
   id: 'test',

@@ -2,8 +2,10 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use anyhow::Result;
-use kittycad_modeling_cmds::units::UnitAngle;
-use kittycad_modeling_cmds::units::UnitLength;
+pub use kcl_api::NumericType;
+use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
+pub use kcl_api::UnitType;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -108,6 +110,18 @@ impl RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Solid)
     }
 
+    pub fn gdt() -> Self {
+        RuntimeType::Primitive(PrimitiveType::GdtAnnotation)
+    }
+
+    /// `[GdtAnnotation; 1+]`
+    pub fn gdts() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::GdtAnnotation)),
+            ArrayLen::Minimum(1),
+        )
+    }
+
     /// `[Helix; 1+]`
     pub fn helices() -> Self {
         RuntimeType::Array(
@@ -121,6 +135,14 @@ impl RuntimeType {
 
     pub fn plane() -> Self {
         RuntimeType::Primitive(PrimitiveType::Plane)
+    }
+
+    /// `[Plane; 1+]`
+    pub fn planes() -> Self {
+        RuntimeType::Array(
+            Box::new(RuntimeType::Primitive(PrimitiveType::Plane)),
+            ArrayLen::Minimum(1),
+        )
     }
 
     pub fn face() -> Self {
@@ -270,10 +292,10 @@ impl RuntimeType {
                 value, experimental, ..
             } => {
                 let result = match value {
-                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty.clone()),
-                    TypeDef::Alias(ty) => ty.clone(),
+                    TypeDef::RustRepr(ty, _) => RuntimeType::Primitive(ty),
+                    TypeDef::Alias(ty) => ty,
                 };
-                if *experimental && !suppress_warnings {
+                if experimental && !suppress_warnings {
                     exec_state.warn_experimental(&format!("the type `{alias}`"), source_range);
                 }
                 result
@@ -547,44 +569,110 @@ impl std::fmt::Display for PrimitiveType {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, ts_rs::TS)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum NumericType {
-    // Specified by the user (directly or indirectly)
-    Known(UnitType),
-    // Unspecified, using defaults
-    Default { len: UnitLength, angle: UnitAngle },
-    // Exceeded the ability of the type system to track.
-    Unknown,
-    // Type info has been explicitly cast away.
-    Any,
+pub trait NumericTypeExt {
+    fn count() -> Self;
+
+    fn mm() -> Self;
+
+    fn radians() -> Self;
+
+    fn degrees() -> Self;
+
+    fn length(unit: UnitLength) -> Self;
+
+    fn optional_length(unit: Option<UnitLength>) -> Self;
+
+    fn angle(unit: UnitAngle) -> Self;
+
+    /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
+    /// precise, only adjusting one number or the other when they are of known types.
+    ///
+    /// This combinator function is suitable for comparisons where uncertainty should
+    /// be handled by the user.
+    fn combine_eq(a: TyF64, b: TyF64, exec_state: &mut ExecState, source_range: SourceRange)
+    -> (f64, f64, NumericType);
+
+    /// Combine two types when we expect them to be equal, erring on the side of more coercion. Including adjusting when
+    /// we are certain about only one type.
+    ///
+    /// This combinator function is suitable for situations where the user would almost certainly want the types to be
+    /// coerced together, for example two arguments to the same function or two numbers in an array being used as a point.
+    ///
+    /// Prefer to use `combine_eq` if possible since using that prioritises correctness over ergonomics.
+    fn combine_eq_coerce(
+        a: TyF64,
+        b: TyF64,
+        for_errs: Option<(&mut ExecState, SourceRange)>,
+    ) -> (f64, f64, NumericType);
+
+    fn combine_eq_array(input: &[TyF64]) -> (Vec<f64>, NumericType);
+
+    /// Combine two types for multiplication-like operations.
+    fn combine_mul(a: TyF64, b: TyF64) -> (f64, f64, NumericType);
+
+    /// Combine two types for division-like operations.
+    fn combine_div(a: TyF64, b: TyF64) -> (f64, f64, NumericType);
+
+    /// Combine two types for modulo-like operations.
+    fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType);
+
+    /// Combine two types for range operations.
+    ///
+    /// This combinator function is suitable for ranges where uncertainty should
+    /// be handled by the user, and it doesn't make sense to convert units. So
+    /// this is one of th most conservative ways to combine types.
+    fn combine_range(
+        a: TyF64,
+        b: TyF64,
+        exec_state: &mut ExecState,
+        source_range: SourceRange,
+    ) -> Result<(f64, f64, NumericType), KclError>;
+
+    fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self;
+
+    fn subtype(&self, other: &NumericType) -> bool;
+
+    fn is_unknown(&self) -> bool;
+
+    fn is_fully_specified(&self) -> bool;
+
+    fn example_ty(&self) -> Option<String>;
+
+    fn coerce(&self, val: &KclValue) -> Result<KclValue, CoercionError>;
+
+    fn as_length(&self) -> Option<UnitLength>;
 }
 
-impl Default for NumericType {
-    fn default() -> Self {
-        NumericType::Default {
-            len: UnitLength::Millimeters,
-            angle: UnitAngle::Degrees,
-        }
-    }
-}
-
-impl NumericType {
-    pub const fn count() -> Self {
+impl NumericTypeExt for NumericType {
+    fn count() -> Self {
         NumericType::Known(UnitType::Count)
     }
 
-    pub const fn mm() -> Self {
+    fn mm() -> Self {
         NumericType::Known(UnitType::Length(UnitLength::Millimeters))
     }
 
-    pub const fn radians() -> Self {
+    fn radians() -> Self {
         NumericType::Known(UnitType::Angle(UnitAngle::Radians))
     }
 
-    pub const fn degrees() -> Self {
+    fn degrees() -> Self {
         NumericType::Known(UnitType::Angle(UnitAngle::Degrees))
+    }
+
+    fn length(unit: UnitLength) -> Self {
+        NumericType::Known(UnitType::Length(unit))
+    }
+
+    fn optional_length(unit: Option<UnitLength>) -> Self {
+        match unit {
+            Some(unit) => Self::length(unit),
+            None => NumericType::Unknown,
+        }
+    }
+
+    fn angle(unit: UnitAngle) -> Self {
+        NumericType::Known(UnitType::Angle(unit))
     }
 
     /// Combine two types when we expect them to be equal, erring on the side of less coercion. To be
@@ -592,7 +680,7 @@ impl NumericType {
     ///
     /// This combinator function is suitable for comparisons where uncertainty should
     /// be handled by the user.
-    pub fn combine_eq(
+    fn combine_eq(
         a: TyF64,
         b: TyF64,
         exec_state: &mut ExecState,
@@ -647,7 +735,7 @@ impl NumericType {
     /// coerced together, for example two arguments to the same function or two numbers in an array being used as a point.
     ///
     /// Prefer to use `combine_eq` if possible since using that prioritises correctness over ergonomics.
-    pub fn combine_eq_coerce(
+    fn combine_eq_coerce(
         a: TyF64,
         b: TyF64,
         for_errs: Option<(&mut ExecState, SourceRange)>,
@@ -697,8 +785,8 @@ impl NumericType {
                 (adjust_angle(a1, a.n, a2).0, b.n, t)
             }
 
-            (Default { len: l1, .. }, Known(UnitType::GenericLength)) => (a.n, b.n, l1.into()),
-            (Known(UnitType::GenericLength), Default { len: l2, .. }) => (a.n, b.n, l2.into()),
+            (Default { len: l1, .. }, Known(UnitType::GenericLength)) => (a.n, b.n, Self::length(l1)),
+            (Known(UnitType::GenericLength), Default { len: l2, .. }) => (a.n, b.n, Self::length(l2)),
             (Default { angle: a1, .. }, Known(UnitType::GenericAngle)) => {
                 if let Some((exec_state, source_range)) = for_errs
                     && b.n != 0.0
@@ -708,7 +796,7 @@ impl NumericType {
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
-                (a.n, b.n, a1.into())
+                (a.n, b.n, Self::angle(a1))
             }
             (Known(UnitType::GenericAngle), Default { angle: a2, .. }) => {
                 if let Some((exec_state, source_range)) = for_errs
@@ -719,7 +807,7 @@ impl NumericType {
                         annotations::WARN_ANGLE_UNITS,
                     );
                 }
-                (a.n, b.n, a2.into())
+                (a.n, b.n, Self::angle(a2))
             }
 
             (Known(_), Known(_)) | (Default { .. }, Default { .. }) | (_, Unknown) | (Unknown, _) => {
@@ -728,7 +816,7 @@ impl NumericType {
         }
     }
 
-    pub fn combine_eq_array(input: &[TyF64]) -> (Vec<f64>, NumericType) {
+    fn combine_eq_array(input: &[TyF64]) -> (Vec<f64>, NumericType) {
         use NumericType::*;
         let result = input.iter().map(|t| t.n).collect();
 
@@ -772,7 +860,7 @@ impl NumericType {
     }
 
     /// Combine two types for multiplication-like operations.
-    pub fn combine_mul(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    fn combine_mul(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -786,7 +874,7 @@ impl NumericType {
     }
 
     /// Combine two types for division-like operations.
-    pub fn combine_div(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    fn combine_div(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -800,7 +888,7 @@ impl NumericType {
     }
 
     /// Combine two types for modulo-like operations.
-    pub fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
+    fn combine_mod(a: TyF64, b: TyF64) -> (f64, f64, NumericType) {
         use NumericType::*;
         match (a.ty, b.ty) {
             (at @ Default { .. }, bt @ Default { .. }) if at == bt => (a.n, b.n, at),
@@ -818,7 +906,7 @@ impl NumericType {
     /// This combinator function is suitable for ranges where uncertainty should
     /// be handled by the user, and it doesn't make sense to convert units. So
     /// this is one of th most conservative ways to combine types.
-    pub fn combine_range(
+    fn combine_range(
         a: TyF64,
         b: TyF64,
         exec_state: &mut ExecState,
@@ -885,7 +973,7 @@ impl NumericType {
         }
     }
 
-    pub fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {
+    fn from_parsed(suffix: NumericSuffix, settings: &super::MetaSettings) -> Self {
         match suffix {
             NumericSuffix::None => NumericType::Default {
                 len: settings.default_length_units,
@@ -938,7 +1026,7 @@ impl NumericType {
         )
     }
 
-    pub fn is_fully_specified(&self) -> bool {
+    fn is_fully_specified(&self) -> bool {
         !matches!(
             self,
             NumericType::Unknown
@@ -1046,7 +1134,7 @@ impl NumericType {
         }
     }
 
-    pub fn as_length(&self) -> Option<UnitLength> {
+    fn as_length(&self) -> Option<UnitLength> {
         match self {
             Self::Known(UnitType::Length(len)) | Self::Default { len, .. } => Some(*len),
             _ => None,
@@ -1057,27 +1145,6 @@ impl NumericType {
 impl From<NumericType> for RuntimeType {
     fn from(t: NumericType) -> RuntimeType {
         RuntimeType::Primitive(PrimitiveType::Number(t))
-    }
-}
-
-impl From<UnitLength> for NumericType {
-    fn from(value: UnitLength) -> Self {
-        NumericType::Known(UnitType::Length(value))
-    }
-}
-
-impl From<Option<UnitLength>> for NumericType {
-    fn from(value: Option<UnitLength>) -> Self {
-        match value {
-            Some(v) => v.into(),
-            None => NumericType::Unknown,
-        }
-    }
-}
-
-impl From<UnitAngle> for NumericType {
-    fn from(value: UnitAngle) -> Self {
-        NumericType::Known(UnitType::Angle(value))
     }
 }
 
@@ -1111,40 +1178,6 @@ impl TryFrom<NumericType> for NumericSuffix {
             NumericType::Default { .. } => Ok(NumericSuffix::None),
             NumericType::Unknown => Ok(NumericSuffix::Unknown),
             NumericType::Any => Err(NumericSuffixTypeConvertError),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
-#[ts(export)]
-#[serde(tag = "type")]
-pub enum UnitType {
-    Count,
-    Length(UnitLength),
-    GenericLength,
-    Angle(UnitAngle),
-    GenericAngle,
-}
-
-impl UnitType {
-    pub(crate) fn to_suffix(self) -> Option<String> {
-        match self {
-            UnitType::Count => Some("_".to_owned()),
-            UnitType::GenericLength | UnitType::GenericAngle => None,
-            UnitType::Length(l) => Some(l.to_string()),
-            UnitType::Angle(a) => Some(a.to_string()),
-        }
-    }
-}
-
-impl std::fmt::Display for UnitType {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            UnitType::Count => write!(f, "Count"),
-            UnitType::Length(l) => l.fmt(f),
-            UnitType::GenericLength => write!(f, "Length"),
-            UnitType::Angle(a) => a.fmt(f),
-            UnitType::GenericAngle => write!(f, "Angle"),
         }
     }
 }
@@ -1497,6 +1530,7 @@ impl KclValue {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
                         constrainable: false,
+                        object_kind: Default::default(),
                     })
                 }
                 _ => Err(self.into()),
@@ -1540,6 +1574,7 @@ impl KclValue {
                         value: [("origin".to_owned(), origin), ("direction".to_owned(), direction)].into(),
                         meta: meta.clone(),
                         constrainable: false,
+                        object_kind: Default::default(),
                     })
                 }
                 _ => Err(self.into()),
@@ -1718,12 +1753,14 @@ impl KclValue {
                     // Note that we don't check for constrainability, coercing to a constrainable object
                     // adds that property.
                     constrainable,
+                    object_kind: Default::default(),
                 })
             }
             KclValue::KclNone { meta, .. } if tys.is_empty() => Ok(KclValue::Object {
                 value: HashMap::new(),
                 meta: meta.clone(),
                 constrainable,
+                object_kind: Default::default(),
             }),
             _ => Err(self.into()),
         }
@@ -1826,6 +1863,7 @@ mod test {
                 value: crate::execution::KclObjectFields::new(),
                 meta: Vec::new(),
                 constrainable: false,
+                object_kind: Default::default(),
             },
             KclValue::TagIdentifier(Box::new("foo".parse().unwrap())),
             KclValue::TagDeclarator(Box::new(crate::parsing::ast::types::TagDeclarator::new("foo"))),
@@ -1981,6 +2019,7 @@ mod test {
                 value: HashMap::new(),
                 meta: Vec::new(),
                 constrainable: false,
+                object_kind: Default::default(),
             },
             &mut exec_state,
         );
@@ -1995,6 +2034,7 @@ mod test {
             value: HashMap::new(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let obj1 = KclValue::Object {
             value: [(
@@ -2007,6 +2047,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let obj2 = KclValue::Object {
             value: [
@@ -2037,6 +2078,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
 
         let ty0 = RuntimeType::Object(vec![], false);
@@ -2356,6 +2398,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
         let a3d = KclValue::Object {
             value: [
@@ -2409,6 +2452,7 @@ mod test {
             .into(),
             meta: Vec::new(),
             constrainable: false,
+            object_kind: Default::default(),
         };
 
         let ty2d = RuntimeType::Primitive(PrimitiveType::Axis2d);
@@ -2556,12 +2600,12 @@ mod test {
         let mem = result.exec_state.stack();
         match mem
             .memory
-            .get_from(name, result.mem_env, SourceRange::default(), 0)
+            .get_from_owned(name, result.mem_env, SourceRange::default(), 0)
             .unwrap()
         {
             KclValue::Number { value, ty, .. } => {
                 assert_eq!(value.round(), expected);
-                assert_eq!(*ty, expected_ty);
+                assert_eq!(ty, expected_ty);
             }
             _ => unreachable!(),
         }

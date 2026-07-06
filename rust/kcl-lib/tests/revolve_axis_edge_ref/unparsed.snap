@@ -1,0 +1,16 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing revolve_axis_edge_ref.kcl
+---
+// Revolve with axis as an edge reference object (sideFaces) instead of Axis2d or Edge.
+axisSketch = startSketchOn(XY)
+axisProfile = startProfile(axisSketch, at = [-25, 25])
+  |> yLine(length = -50, tag = $axisSide)
+  |> xLine(length = 1)
+  |> yLine(length = 50)
+  |> close()
+axisSolid = extrude(axisProfile, length = 5, tagStart = $axisStart)
+
+profileSketch = startSketchOn(XY)
+profile = circle(profileSketch, center = [-50, 0], radius = 10)
+revolved = revolve(profile, angle = 90, axis = { sideFaces = [axisSide, axisStart] })

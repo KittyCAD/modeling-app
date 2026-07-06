@@ -1,5 +1,4 @@
-import type { OnboardingStatus } from '@rust/kcl-lib/bindings/OnboardingStatus'
-import type { OnboardingPath } from '@src/lib/onboardingPaths'
+import type { OnboardingPath, OnboardingStatus } from '@src/lib/onboardingPaths'
 import {
   consumeRememberedOnboardingWorkflowPanes,
   needsToOnboard,
@@ -7,7 +6,7 @@ import {
   useAdjacentOnboardingSteps,
 } from '@src/routes/Onboarding/utils'
 import type { Location } from 'react-router-dom'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('Onboarding utility functions', () => {
   describe('useAdjacentOnboardingSteps', () => {

@@ -1,13 +1,13 @@
 ---
 title: "gear::helical"
 subtitle: "Function in std::gear"
-excerpt: "A helical gear."
+excerpt: "A helical gear (like a spur gear, but the teeth are cut at an angle to the axis)."
 layout: manual
 ---
 
 **WARNING:** This function is experimental and may change or be removed.
 
-A helical gear.
+A helical gear (like a spur gear, but the teeth are cut at an angle to the axis).
 
 ```kcl
 gear::helical(
@@ -19,7 +19,8 @@ gear::helical(
 ): Solid
 ```
 
-
+The gear will be placed at (0, 0, 0) in the global scene, and extruded up the Z axis.
+Use `translate()` and `rotate()` to move it around once it's created.
 
 ### Arguments
 

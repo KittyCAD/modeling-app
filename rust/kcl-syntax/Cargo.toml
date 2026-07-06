@@ -1,0 +1,17 @@
+[package]
+name = "kcl-syntax"
+description = "Lossless syntax trees for KCL"
+version = "0.2.167"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+authors = ["KittyCAD, Inc"]
+
+[dependencies]
+logos = { workspace = true }
+
+[dev-dependencies]
+proptest = { workspace = true }
+
+[lints]
+workspace = true

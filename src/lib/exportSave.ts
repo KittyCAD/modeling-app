@@ -3,8 +3,8 @@ import toast from 'react-hot-toast'
 
 import { browserSaveFile } from '@src/lib/browserSaveFile'
 import { EXPORT_TOAST_MESSAGES } from '@src/lib/constants'
-import type ModelingAppFile from '@src/lib/modelingAppFile'
 import fsZds from '@src/lib/fs-zds'
+import type ModelingAppFile from '@src/lib/modelingAppFile'
 
 const save_ = async (file: ModelingAppFile, toastId: string) => {
   try {

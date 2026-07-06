@@ -1,9 +1,9 @@
-import { recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
 import { join } from 'path'
-import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { expect, describe, it } from 'vitest'
+import { recast } from '@src/lang/wasm'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
+import { err } from '@src/lib/trap'
+import { describe, expect, it } from 'vitest'
 const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
 
 describe('settings.spec.ts', () => {

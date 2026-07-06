@@ -1,18 +1,26 @@
-import { expect, describe, test, vi } from 'vitest'
+import { describe, expect, test, vi } from 'vitest'
 
+import type { Plane } from '@rust/kcl-lib/bindings/Plane'
+import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
+import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import type { ArtifactGraph, SourceRange } from '@src/lang/wasm'
+import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import type { Selection } from '@src/machines/modelingSharedTypes'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getSelectionReferences,
   getSelectionTypeDisplayText,
+  getStableOffsetPlaneData,
+  handleSelectionBatch,
+  selectSketchPlane,
 } from '@src/lib/selections'
-import { selectSketchPlane } from '@src/hooks/useEngineConnectionSubscriptions'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 
 describe('testing source range to artifact conversion', () => {
@@ -1187,6 +1195,57 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
   // Build the index locally instead of using engineCommandManager
   const artifactIndex = buildArtifactIndex(___artifactGraph)
 
+  function createPrimitiveEngineCommandManager({
+    parentEntityId,
+    primitiveIndex,
+    primitiveType,
+  }: {
+    parentEntityId: string
+    primitiveIndex: number
+    primitiveType: 'edge' | 'face'
+  }) {
+    return {
+      sendSceneCommand: vi.fn(async ({ cmd }: any) => {
+        if (cmd.type === 'entity_get_primitive_index') {
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_primitive_index',
+                  data: {
+                    entity_type: primitiveType,
+                    primitive_index: primitiveIndex,
+                  },
+                },
+              },
+            },
+          }
+        }
+
+        if (cmd.type === 'entity_get_parent_id') {
+          return {
+            success: true,
+            resp: {
+              type: 'modeling',
+              data: {
+                modeling_response: {
+                  type: 'entity_get_parent_id',
+                  data: {
+                    entity_id: parentEntityId,
+                  },
+                },
+              },
+            },
+          }
+        }
+
+        throw new Error(`Unexpected command ${cmd.type}`)
+      }),
+    }
+  }
+
   const cases = [
     [
       'basic segment selection',
@@ -1327,6 +1386,151 @@ profile004 = circle(sketch003, center = [-88.54, 209.41], radius = 42.72)
       }
     }
   )
+
+  test('prefers adjacent/opposite edge references over primitive index references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const edgeArtifact = ___artifactGraph.get(
+      'b197cdad-d60f-4e3c-afdd-58e6f1c323f1'
+    )
+    const segmentArtifact = ___artifactGraph.get(
+      '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e'
+    )
+    const sweepArtifact = ___artifactGraph.get(
+      '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
+    )
+    if (
+      edgeArtifact?.type !== 'sweepEdge' ||
+      segmentArtifact?.type !== 'segment' ||
+      sweepArtifact?.type !== 'sweep'
+    ) {
+      throw new Error('Expected sweep edge fixture artifacts')
+    }
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: edgeArtifact,
+          codeRef: segmentArtifact.codeRef,
+        },
+      ],
+      enginePrimitives: [],
+      artifactGraph: ___artifactGraph,
+      engineCommandManager: createPrimitiveEngineCommandManager({
+        parentEntityId: sweepArtifact.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(references).toHaveLength(1)
+    expect(references[0].code).toBe('getNextAdjacentEdge(seg01)')
+  })
+
+  test('prefers directly tagged swept face references over primitive index references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const wallArtifact = ___artifactGraph.get(
+      '1b3c0e51-a51b-41d3-ae0a-1c9e0c18b57a'
+    )
+    const segmentArtifact = ___artifactGraph.get(
+      '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e'
+    )
+    const sweepArtifact = ___artifactGraph.get(
+      '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
+    )
+    if (
+      wallArtifact?.type !== 'wall' ||
+      segmentArtifact?.type !== 'segment' ||
+      sweepArtifact?.type !== 'sweep'
+    ) {
+      throw new Error('Expected swept wall face fixture artifacts')
+    }
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: wallArtifact,
+          codeRef: segmentArtifact.codeRef,
+        },
+      ],
+      enginePrimitives: [
+        {
+          type: 'enginePrimitive',
+          entityId: wallArtifact.id,
+          parentEntityId: sweepArtifact.id,
+          primitiveIndex: 3,
+          primitiveType: 'face',
+        },
+      ],
+      artifactGraph: ___artifactGraph,
+      engineCommandManager: createPrimitiveEngineCommandManager({
+        parentEntityId: sweepArtifact.id,
+        primitiveIndex: 3,
+        primitiveType: 'face',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(references).toHaveLength(1)
+    expect(references[0].code).toBe('seg01')
+  })
+
+  test('prefers directly tagged edge references over primitive index references', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(MY_CODE, instance)
+    const segmentArtifact = ___artifactGraph.get(
+      '5b1bf38f-6ccc-5d51-a58e-a66fb7e9af9e'
+    )
+    const sweepArtifact = ___artifactGraph.get(
+      '0bfb95e2-1eae-560f-96e1-354e1ece4ac2'
+    )
+    if (
+      segmentArtifact?.type !== 'segment' ||
+      sweepArtifact?.type !== 'sweep'
+    ) {
+      throw new Error('Expected tagged segment fixture artifacts')
+    }
+
+    const references = await getSelectionReferences({
+      graphSelections: [
+        {
+          artifact: segmentArtifact,
+          codeRef: segmentArtifact.codeRef,
+        },
+      ],
+      enginePrimitives: [
+        {
+          type: 'enginePrimitive',
+          entityId: segmentArtifact.id,
+          parentEntityId: sweepArtifact.id,
+          primitiveIndex: 1,
+          primitiveType: 'edge',
+        },
+      ],
+      artifactGraph: ___artifactGraph,
+      engineCommandManager: createPrimitiveEngineCommandManager({
+        parentEntityId: sweepArtifact.id,
+        primitiveIndex: 1,
+        primitiveType: 'edge',
+      }) as any,
+      kclManager: {
+        ast,
+      } as any,
+      wasmInstance: instance,
+    })
+
+    expect(
+      references.find((reference) => reference.label === 'Edge')?.code
+    ).toBe('seg01')
+  })
 })
 
 describe('findLastRangeStartingBefore', () => {
@@ -1407,6 +1611,76 @@ describe('findLastRangeStartingBefore', () => {
 
     const result = findLastRangeStartingBefore(mockIndex, 50)
     expect(result).toBe(1)
+  })
+})
+
+describe('pattern copy selection highlighting', () => {
+  const selectionCodeRef = {
+    range: [10, 20, 0] as SourceRange,
+    pathToNode: [],
+  }
+  const patternArtifact = {
+    type: 'pattern',
+    id: 'pattern-command-id',
+    subType: 'transform',
+    sourceId: 'source-body-id',
+    copyIds: ['copy-body-id'],
+    copyFaceIds: ['copy-face-id'],
+    copyEdgeIds: ['copy-edge-id'],
+    codeRef: {
+      range: selectionCodeRef.range,
+      nodePath: [],
+    },
+  } as unknown as Artifact
+  const artifactGraph = new Map([[patternArtifact.id, patternArtifact]])
+
+  test('maps pattern code selections to copied engine entities', () => {
+    const selections: Selection[] = [
+      { artifact: patternArtifact, codeRef: selectionCodeRef },
+    ]
+
+    const result = codeToIdSelections(selections, artifactGraph, [])
+
+    expect(result.map(({ id }) => id)).toEqual([
+      'copy-body-id',
+      'copy-face-id',
+      'copy-edge-id',
+    ])
+  })
+
+  test('keeps a selected copied pattern entity highlighted through selection batching', () => {
+    const result = handleSelectionBatch({
+      selections: {
+        graphSelections: [
+          {
+            artifact: patternArtifact,
+            codeRef: selectionCodeRef,
+            engineEntityId: 'copy-face-id',
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      code: 'patternLinear3d(body, instances = 3)',
+      ast: {} as any,
+      systemDeps: {
+        engineCommandManager: {
+          connection: { pingIntervalId: 1 },
+        } as any,
+        sceneEntitiesManager: { activeSegments: {} } as any,
+        wasmInstance: {} as any,
+      },
+    })
+
+    const selectAdd = result.engineEvents.find(
+      (event) =>
+        event.type === 'modeling_cmd_req' && event.cmd.type === 'select_add'
+    )
+    expect(selectAdd?.type).toBe('modeling_cmd_req')
+    if (selectAdd?.type !== 'modeling_cmd_req') return
+    expect(selectAdd.cmd.type).toBe('select_add')
+    if (selectAdd.cmd.type !== 'select_add') return
+    expect(selectAdd.cmd.entities).toEqual(['copy-face-id'])
   })
 })
 
@@ -1491,6 +1765,139 @@ describe('getSelectionTypeDisplayText', () => {
     expect(getSelectionTypeDisplayText({} as any, selection as any)).toBe(
       '4 edges'
     )
+  })
+})
+
+describe('getStableOffsetPlaneData', () => {
+  const code = (
+    on: string,
+    planeDefinition = 'offsetPlane(XZ, offset = 0mm)'
+  ) =>
+    `plane001 = ${planeDefinition}
+sketch001 = sketch(on = ${on}) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}`
+
+  const normalizeSignedZero = (value: number) =>
+    Object.is(value, -0) ? 0 : value
+
+  const normalizeAxis = (axis: readonly number[]) =>
+    axis.map(normalizeSignedZero)
+
+  const axis = (point: Point3d) => normalizeAxis([point.x, point.y, point.z])
+
+  const getPlaneVariable = (
+    variables: ExecState['variables'],
+    name: string
+  ) => {
+    const variable = variables[name]
+    if (variable?.type !== 'Plane') {
+      throw new Error(`Expected ${name} to be a Plane variable`)
+    }
+    return variable.value
+  }
+
+  const setupStableOffsetPlaneData = async (
+    source: string
+  ): Promise<{
+    result: ReturnType<typeof getStableOffsetPlaneData>
+    plane001: Plane
+    sketchBlockPlaneInfo: PlaneInfo
+    effectiveArtifactHasVariable: boolean
+  }> => {
+    const { instance, rustContext } = await buildTheWorldAndNoEngineConnection()
+    const ast = assertParse(source, instance)
+    const execState = await enginelessExecutor(ast, rustContext)
+    const sketchBlock = [...execState.artifactGraph.values()].find(
+      (artifact): artifact is Extract<Artifact, { type: 'sketchBlock' }> =>
+        artifact.type === 'sketchBlock'
+    )
+    if (!sketchBlock?.planeId) {
+      throw new Error('Expected sketch block with a planeId')
+    }
+    const artifact = execState.artifactGraph.get(sketchBlock.planeId)
+    if (artifact?.type !== 'plane') {
+      throw new Error('Expected sketch block planeId to point to a plane')
+    }
+    if (!sketchBlock.planeInfo) {
+      throw new Error('Expected sketch block with evaluated planeInfo')
+    }
+    const result = getStableOffsetPlaneData(artifact, {
+      execState,
+      sceneInfra: {
+        baseUnitMultiplier: 1,
+      } as Pick<SceneInfra, 'baseUnitMultiplier'> as SceneInfra,
+      sketchBlock,
+    })
+
+    return {
+      result,
+      plane001: getPlaneVariable(execState.variables, 'plane001'),
+      sketchBlockPlaneInfo: sketchBlock.planeInfo,
+      effectiveArtifactHasVariable: Object.values(execState.variables).some(
+        (value) =>
+          value?.type === 'Plane' && value.value.artifactId === artifact.id
+      ),
+    }
+  }
+
+  test('uses the Rust-provided zAxis for variable-level plane negation', async () => {
+    const { result, plane001, sketchBlockPlaneInfo } =
+      await setupStableOffsetPlaneData(
+        code('plane001', '-offsetPlane(XZ, offset = 0mm)')
+      )
+
+    expect(axis(plane001.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(plane001.zAxis)).toEqual([0, 1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
+
+    if (result === false || result instanceof Error) {
+      throw new Error(`Expected offset plane data, got ${String(result)}`)
+    }
+    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
+  })
+
+  test('keeps the same zAxis for non-negated offset planes', async () => {
+    const {
+      result,
+      plane001,
+      sketchBlockPlaneInfo,
+      effectiveArtifactHasVariable,
+    } = await setupStableOffsetPlaneData(code('plane001'))
+
+    expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
+    expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, -1, 0])
+    expect(effectiveArtifactHasVariable).toBe(true)
+
+    if (result === false || result instanceof Error) {
+      throw new Error(`Expected offset plane data, got ${String(result)}`)
+    }
+    expect(result.negated).toBe(false)
+    expect(normalizeAxis(result.zAxis)).toEqual([0, -1, 0])
+  })
+
+  test('resolves sketch use-site negation when the effective plane artifact is not in variables', async () => {
+    const {
+      result,
+      plane001,
+      sketchBlockPlaneInfo,
+      effectiveArtifactHasVariable,
+    } = await setupStableOffsetPlaneData(code('-plane001'))
+
+    expect(axis(plane001.xAxis)).toEqual([1, 0, 0])
+    expect(axis(plane001.zAxis)).toEqual([0, -1, 0])
+    expect(axis(sketchBlockPlaneInfo.xAxis)).toEqual([-1, 0, 0])
+    expect(axis(sketchBlockPlaneInfo.zAxis)).toEqual([0, 1, 0])
+    expect(effectiveArtifactHasVariable).toBe(false)
+
+    if (result === false || result instanceof Error) {
+      throw new Error(`Expected offset plane data, got ${String(result)}`)
+    }
+    expect(result.negated).toBe(false)
+    expect(normalizeAxis(result.zAxis)).toEqual([0, 1, 0])
   })
 })
 

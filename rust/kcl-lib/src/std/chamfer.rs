@@ -4,9 +4,10 @@ use anyhow::Result;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
 use kcmc::shared::CutStrategy;
 use kcmc::shared::CutTypeV2;
-use kittycad_modeling_cmds::shared::Angle;
+use kcmc::shared::EdgeCutVersion;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::args::TyF64;
@@ -31,33 +32,77 @@ pub(crate) const DEFAULT_TOLERANCE: f64 = 0.0000001;
 
 /// Create chamfers on tagged paths.
 pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let solid = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
+    let solid: Box<Solid> = args.get_unlabeled_kw_arg("solid", &RuntimeType::solid(), exec_state)?;
     let length: TyF64 = args.get_kw_arg("length", &RuntimeType::length(), exec_state)?;
-    let tags = args.kw_arg_edge_array_and_source("tags")?;
     let second_length = args.get_kw_arg_opt("secondLength", &RuntimeType::length(), exec_state)?;
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
-    // TODO: custom profiles not ready yet
+    let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let edge_cut_version: EdgeCutVersion = edge_cut_number
+        .map(|num| {
+            num.try_into().map_err(|()| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("{} is not a version of the Zoo edge cut algorithm", num),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?
+        .unwrap_or_default();
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
-    super::fillet::validate_unique(&tags)?;
-    let tags: Vec<EdgeReference> = tags.into_iter().map(|item| item.0).collect();
-    let value = inner_chamfer(
-        solid,
-        length,
+    // Edge specifiers are object-shaped payloads, so there is no narrow RuntimeType for them yet.
+    // Keep this broad at the boundary and validate the shape in parse_tagged_edge_inputs.
+    let edge_refs = args.get_kw_arg_opt("edges", &RuntimeType::any_array(), exec_state)?;
+    let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
+
+    let edge_inputs = super::fillet::parse_tagged_edge_inputs(
+        edge_refs,
         tags,
-        second_length,
-        angle,
-        None,
-        tag,
-        csg_algorithm,
         exec_state,
-        args,
+        &args,
+        "You must provide either 'tags' or 'edges' to chamfer edges",
+        "You must provide either 'tags' or 'edges' to chamfer edges, not both",
     )
     .await?;
-    Ok(KclValue::Solid { value })
+
+    match edge_inputs {
+        super::fillet::TaggedEdgeInputs::EngineRefs(edge_refs) => {
+            let value = inner_chamfer_with_engine_refs(
+                solid,
+                length,
+                edge_refs,
+                second_length,
+                angle,
+                csg_algorithm,
+                edge_cut_version,
+                tag,
+                exec_state,
+                args,
+            )
+            .await?;
+            Ok(KclValue::Solid { value })
+        }
+        super::fillet::TaggedEdgeInputs::Tags(tags) => {
+            let value = inner_chamfer(
+                solid,
+                length,
+                tags,
+                second_length,
+                angle,
+                None,
+                tag,
+                csg_algorithm,
+                edge_cut_version,
+                exec_state,
+                args,
+            )
+            .await?;
+            Ok(KclValue::Solid { value })
+        }
+    }
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -70,6 +115,7 @@ async fn inner_chamfer(
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
     csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -146,8 +192,10 @@ async fn inner_chamfer(
                             .extra_face_ids(vec![])
                             .strategy(strategy)
                             .object_id(solid.id)
-                            .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
+                            // We can let the user set this in the future.
+                            .tolerance(LengthUnit(DEFAULT_TOLERANCE))
                             .cut_type(cut_type)
+                            .version(edge_cut_version)
                             .build(),
                     ),
                 )
@@ -171,6 +219,99 @@ async fn inner_chamfer(
                 }));
             }
         }
+    }
+
+    Ok(solid)
+}
+
+#[expect(clippy::too_many_arguments)]
+async fn inner_chamfer_with_engine_refs(
+    solid: Box<Solid>,
+    length: TyF64,
+    edge_references: Vec<kcmc::shared::EdgeSpecifier>,
+    second_length: Option<TyF64>,
+    angle: Option<TyF64>,
+    csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
+    tag: Option<TagNode>,
+    exec_state: &mut ExecState,
+    args: Args,
+) -> Result<Box<Solid>, KclError> {
+    if tag.is_some() && edge_references.len() > 1 {
+        return Err(KclError::new_type(KclErrorDetails::new(
+            "You can only tag one edge at a time with a tagged chamfer. Either delete the tag for the chamfer fn if you don't need it OR separate into individual chamfer functions for each edgeRef.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    if angle.is_some() && second_length.is_some() {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "Cannot specify both an angle and a second length. Specify only one.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let strategy = if second_length.is_some() || angle.is_some() {
+        CutStrategy::Csg
+    } else {
+        Default::default()
+    };
+
+    let second_distance = second_length.map(|x| LengthUnit(x.to_mm()));
+    let angle = angle.map(|x| Angle::from_degrees(x.to_degrees(exec_state, args.source_range)));
+    if let Some(angle) = angle
+        && (angle.ge(&Angle::quarter_circle()) || angle.le(&Angle::zero()))
+    {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            "The angle of a chamfer must be greater than zero and less than 90 degrees.".to_string(),
+            vec![args.source_range],
+        )));
+    }
+
+    let cut_type = CutTypeV2::Chamfer {
+        distance: LengthUnit(length.to_mm()),
+        second_distance,
+        angle,
+        swap: false,
+    };
+
+    let id = exec_state.next_uuid();
+    let num_extra_ids = edge_references.len().saturating_sub(1);
+    let mut extra_face_ids = Vec::with_capacity(num_extra_ids);
+    for _ in 0..num_extra_ids {
+        extra_face_ids.push(exec_state.next_uuid());
+    }
+
+    let mut solid = solid.clone();
+    exec_state
+        .batch_end_cmd(
+            ModelingCmdMeta::from_args_id(exec_state, &args, id),
+            ModelingCmd::from(
+                mcmd::Solid3dCutEdgeReferences::builder()
+                    .object_id(solid.id)
+                    .edges_references(edge_references)
+                    .cut_type(cut_type)
+                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                    .strategy(strategy)
+                    .extra_face_ids(extra_face_ids)
+                    .use_legacy(csg_algorithm.is_legacy())
+                    .version(edge_cut_version)
+                    .build(),
+            ),
+        )
+        .await?;
+
+    solid.pending_edge_cut_ids.push(id);
+
+    if let Some(ref tag) = tag {
+        solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {
+            face_id: id,
+            tag: Some(tag.clone()),
+            geo_meta: GeoMeta {
+                id,
+                metadata: args.source_range.into(),
+            },
+        }));
     }
 
     Ok(solid)

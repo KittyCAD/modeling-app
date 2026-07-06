@@ -8,11 +8,9 @@ import {
   ZOO_STUDIO_PROTOCOL,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
-import { Themes, darkModeMatcher, setThemeClass } from '@src/lib/theme'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { APP_DOWNLOAD_PATH } from '@src/routes/utils'
-import { useEffect } from 'react'
 import toast from 'react-hot-toast'
 
 /**
@@ -28,16 +26,6 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
   const hasAskToOpenParam =
     !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
 
-  // Watch the system theme for changes
-  useEffect(() => {
-    const listener = (e: MediaQueryListEvent) => {
-      setThemeClass(e.matches ? Themes.Dark : Themes.Light)
-    }
-
-    darkModeMatcher?.addEventListener('change', listener)
-    return () => darkModeMatcher?.removeEventListener('change', listener)
-  }, [])
-
   /**
    * This function removes the query param to ask to open in desktop app
    * and then navigates to the same route but with our custom protocol
@@ -49,7 +37,7 @@ export const OpenInDesktopAppHandler = (props: React.PropsWithChildren) => {
     const newURL = `${ZOO_STUDIO_PROTOCOL}://${globalThis.location.pathname.replace(
       '/',
       ''
-    )}${searchParams.size > 0 ? `?${newSearchParams.toString()}` : ''}`
+    )}${newSearchParams.size > 0 ? `?${newSearchParams.toString()}` : ''}`
 
     // TODO: find a way to workaround this limitation, modeling-app#6200
     // Electron issue: https://github.com/electron/electron/issues/40776

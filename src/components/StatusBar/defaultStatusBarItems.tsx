@@ -1,22 +1,28 @@
 import { Popover } from '@headlessui/react'
 import { HelpMenu } from '@src/components/HelpMenu'
+import { AutoUpdateDownloadStatus } from '@src/components/StatusBar/AutoUpdateDownloadStatus'
+import { AutoUpdateReadyStatus } from '@src/components/StatusBar/AutoUpdateReadyStatus'
 import { DownloadDesktopApp } from '@src/components/StatusBar/DownloadDesktopApp'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
   EnvironmentChip,
   EnvironmentDescription,
 } from '@src/components/environment/Environment'
+import type {
+  AutoUpdateDownloadProgress,
+  AutoUpdateReady,
+} from '@src/lib/autoUpdate'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
-import type { Location } from 'react-router-dom'
 
 export const defaultGlobalStatusBarItems = ({
-  location,
-  filePath,
+  autoUpdateDownloadProgress,
+  autoUpdateReady,
+  onRestartToUpdate,
 }: {
-  location: Location
-  filePath?: string
+  autoUpdateDownloadProgress?: AutoUpdateDownloadProgress | null
+  autoUpdateReady?: AutoUpdateReady | null
+  onRestartToUpdate?: () => void
 }): StatusBarItemType[] => [
   isDesktop()
     ? {
@@ -33,33 +39,32 @@ export const defaultGlobalStatusBarItems = ({
         'data-testid': 'download-desktop-app',
         component: DownloadDesktopApp,
       },
+  ...(isDesktop() && autoUpdateDownloadProgress && !autoUpdateReady
+    ? [
+        {
+          id: 'auto-update-download-status',
+          component: () => (
+            <AutoUpdateDownloadStatus progress={autoUpdateDownloadProgress} />
+          ),
+        },
+      ]
+    : []),
+  ...(isDesktop() && autoUpdateReady && onRestartToUpdate
+    ? [
+        {
+          id: 'auto-update-ready-status',
+          component: () => (
+            <AutoUpdateReadyStatus
+              update={autoUpdateReady}
+              onRestart={onRestartToUpdate}
+            />
+          ),
+        },
+      ]
+    : []),
   {
     id: 'environment',
     component: EnvironmentStatusBarItem,
-  },
-  {
-    id: 'telemetry',
-    element: 'link',
-    icon: 'stopwatch',
-    href: location.pathname.includes(PATHS.FILE)
-      ? filePath + PATHS.TELEMETRY + '?tab=project'
-      : PATHS.HOME + PATHS.TELEMETRY,
-    'data-testid': 'telemetry-link',
-    label: 'Telemetry',
-    hideLabel: true,
-    toolTip: {
-      children: 'Telemetry',
-    },
-  },
-  {
-    id: 'settings',
-    element: 'link',
-    icon: 'settings',
-    href: location.pathname.includes(PATHS.FILE)
-      ? location.pathname + PATHS.SETTINGS + '?tab=project'
-      : PATHS.HOME + PATHS.SETTINGS,
-    'data-testid': 'settings-link',
-    label: 'Settings',
   },
 ]
 
