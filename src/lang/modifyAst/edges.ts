@@ -65,6 +65,7 @@ import type {
   SweepArtifact,
   VariableDeclarator,
 } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
@@ -86,7 +87,9 @@ export function addFillet({
   artifactGraph,
   selection,
   radius,
+  tolerance,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -94,7 +97,9 @@ export function addFillet({
   artifactGraph: ArtifactGraph
   selection: Selections
   radius: KclCommandValue
+  tolerance?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -107,7 +112,7 @@ export function addFillet({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // When editing an existing fillet that already has edgeRefs, only update radius (and tag).
+  // When editing an existing fillet that already has edgeRefs, only update labeled args.
   // This avoids rebuilding from selection, which can fall back to deprecated tags/getCommonEdge.
   if (mNodeToEdit) {
     const existingResult = getNodeFromPath(
@@ -128,12 +133,16 @@ export function addFillet({
             const name = getLabelName(a)
             if (name === 'radius')
               return createLabeledArg('radius', valueOrVariable(radius))
+            if (name === 'tolerance' && tolerance)
+              return createLabeledArg('tolerance', valueOrVariable(tolerance))
+            if (name === 'version' && version)
+              return createLabeledArg('version', valueOrVariable(version))
             if (name === 'tag' && tag)
               return createLabeledArg('tag', createTagDeclarator(tag))
             return a
           })
         const call = createCallExpressionStdLibKw(
-          'fillet',
+          modelingStdLibCommandName('Fillet'),
           existingCall.unlabeled,
           newArgs
         )
@@ -179,6 +188,12 @@ export function addFillet({
   if ('variableName' in radius && radius.variableName) {
     insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   const pathToNodes: PathToNode[] = []
 
@@ -187,11 +202,23 @@ export function addFillet({
       const tagArgs = tag
         ? [createLabeledArg('tag', createTagDeclarator(tag))]
         : []
-      const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
-        createLabeledArg('edges', data.edgeRefsExpr),
-        createLabeledArg('radius', valueOrVariable(radius)),
-        ...tagArgs,
-      ])
+      const toleranceArgs = tolerance
+        ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+        : []
+      const versionArgs = version
+        ? [createLabeledArg('version', valueOrVariable(version))]
+        : []
+      const call = createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Fillet'),
+        data.solidsExpr,
+        [
+          createLabeledArg('edges', data.edgeRefsExpr),
+          createLabeledArg('radius', valueOrVariable(radius)),
+          ...toleranceArgs,
+          ...tagArgs,
+          ...versionArgs,
+        ]
+      )
 
       const pathToNode = setCallInAst({
         ast: modifiedAst,
@@ -209,11 +236,23 @@ export function addFillet({
       const tagArgs = tag
         ? [createLabeledArg('tag', createTagDeclarator(tag))]
         : []
-      const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
-        createLabeledArg('tags', data.tagsExpr),
-        createLabeledArg('radius', valueOrVariable(radius)),
-        ...tagArgs,
-      ])
+      const toleranceArgs = tolerance
+        ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+        : []
+      const versionArgs = version
+        ? [createLabeledArg('version', valueOrVariable(version))]
+        : []
+      const call = createCallExpressionStdLibKw(
+        modelingStdLibCommandName('Fillet'),
+        data.solidsExpr,
+        [
+          createLabeledArg('tags', data.tagsExpr),
+          createLabeledArg('radius', valueOrVariable(radius)),
+          ...toleranceArgs,
+          ...tagArgs,
+          ...versionArgs,
+        ]
+      )
 
       const pathToNode = setCallInAst({
         ast: modifiedAst,

@@ -874,7 +874,7 @@ chamfer001 = chamfer(
 
     // find artifact
     const maybeArtifact = [...artifactGraph].find(([, artifact]) => {
-      if (!('codeRef' in artifact)) return false
+      if (!('codeRef' in artifact) || !artifact.codeRef) return false
       return isOverlap(artifact.codeRef.range, edgeTreatmentRange)
     })
 

@@ -1,4 +1,5 @@
 import type {
+  CodeRef,
   Artifact as RustArtifact,
   ArtifactGraph as RustArtifactGraph,
   Cap as RustCapArtifact,
@@ -84,13 +85,22 @@ export type SweepEdgeArtifact = {
   id: ArtifactId
   segId: ArtifactId
   sweepId?: ArtifactId
+  subType?: string
+  commonSurfaceIds?: ArtifactId[]
+  codeRef?: CodeRef
+}
+export type EdgeCutEdgeArtifact = {
+  type: 'edgeCutEdge'
+  id: ArtifactId
+  edgeCutId?: ArtifactId
+  segId?: ArtifactId
+  subType?: string
+  codeRef?: CodeRef
 }
 export type Artifact =
   | Exclude<
       RustArtifact,
-      {
-        type: 'segment' | 'sweep' | 'wall' | 'cap' | 'edgeCut'
-      }
+      { type: 'segment' | 'sweep' | 'wall' | 'cap' | 'edgeCut' }
     >
   | ({ type: 'segment' } & SegmentArtifact)
   | ({ type: 'sweep' } & SweepArtifact)
@@ -98,6 +108,7 @@ export type Artifact =
   | ({ type: 'cap' } & CapArtifact)
   | ({ type: 'edgeCut' } & EdgeCut)
   | SweepEdgeArtifact
+  | EdgeCutEdgeArtifact
 export type { ArtifactId } from '@rust/kcl-lib/bindings/ArtifactId'
 export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
@@ -480,7 +491,7 @@ function artifactGraphFromRust(
   // Translate NodePath to PathToNode.
   for (const [_id, artifact] of artifactGraph) {
     if (!artifact) continue
-    if (!('codeRef' in artifact)) continue
+    if (!('codeRef' in artifact) || !artifact.codeRef) continue
     const pathToNode = pathToNodeFromRustNodePath(artifact.codeRef.nodePath)
     artifact.codeRef.pathToNode = pathToNode
   }

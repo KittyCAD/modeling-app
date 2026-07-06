@@ -1748,7 +1748,7 @@ function getMultiRegionExtrudeOutputIndex(
   wasmInstance: ModuleType,
   artifactGraph: ArtifactGraph
 ): number | null {
-  if (!artifact.pathId || !('codeRef' in artifact)) {
+  if (!artifact.pathId || !('codeRef' in artifact) || !artifact.codeRef) {
     return null
   }
 
@@ -1776,7 +1776,11 @@ function getMultiRegionExtrudeOutputIndex(
   }
 
   const regionArtifact = artifactGraph.get(artifact.pathId)
-  if (!regionArtifact || !('codeRef' in regionArtifact)) {
+  if (
+    !regionArtifact ||
+    !('codeRef' in regionArtifact) ||
+    !regionArtifact.codeRef
+  ) {
     return null
   }
   const regionName = getVariableNameFromNodePath(

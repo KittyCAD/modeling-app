@@ -58,7 +58,7 @@ function formatArtifactGraph(
     let sourceRanges: SourceRange[] = []
     let range: SourceRange | null = null
     let featureTreeFromSourceRange: ReturnType<typeof computeOperationList> = []
-    if ('codeRef' in artifact) {
+    if ('codeRef' in artifact && artifact.codeRef) {
       const codeRef = artifact.codeRef
       range = codeRef.range
       codeRefToIds = codeRangeToIds(codeRef.range, wasmInstance, deps)

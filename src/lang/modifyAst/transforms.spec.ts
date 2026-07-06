@@ -781,6 +781,31 @@ scale(
       return recast(result.modifiedAst, instance)
     }
 
+    async function runAddAxisRotateTest(
+      code: string,
+      instance: ModuleType,
+      kclManager: KclManager,
+      rustContext: RustContext
+    ) {
+      const {
+        artifactGraph,
+        ast,
+        sketches: objects,
+      } = await getAstAndSketchSelections(code, instance, kclManager)
+      const result = addRotate({
+        ast,
+        artifactGraph,
+        objects,
+        axis: 'Z',
+        angle: await getKclCommandValue('90deg', instance, rustContext),
+        global: true,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+      await runNewAstAndCheckForSweep(result.modifiedAst, rustContext)
+      return recast(result.modifiedAst, instance)
+    }
+
     it('should add a standalone call on sweep selection', async () => {
       const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
@@ -793,6 +818,25 @@ extrude001 = extrude(profile001, length = 1)`
   global = true,
 )`
       const newCode = await runAddRotateTest(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile,
+        rustContextInThisFile
+      )
+      expect(newCode).toContain(code + '\n' + expectedNewLine)
+    })
+
+    it('should add a named axis as a bare identifier', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = circle(sketch001, center = [0, 0], radius = 1)
+extrude001 = extrude(profile001, length = 1)`
+      const expectedNewLine = `rotate(
+  extrude001,
+  axis = Z,
+  angle = 90deg,
+  global = true,
+)`
+      const newCode = await runAddAxisRotateTest(
         code,
         instanceInThisFile,
         kclManagerInThisFile,

@@ -618,7 +618,7 @@ export function getCodeRefsByArtifactId(
     const consumedCodeRef = getEdgeCutConsumedCodeRef(artifact, artifactGraph)
     if (err(consumedCodeRef)) return [codeRef]
     return [codeRef, consumedCodeRef]
-  } else if (artifact && 'codeRef' in artifact) {
+  } else if (artifact && 'codeRef' in artifact && artifact.codeRef) {
     return [artifact.codeRef]
   } else {
     return null
@@ -996,6 +996,7 @@ export function getFaceCodeRef(
     return artifact.faceCodeRef
   }
   if ('codeRef' in artifact) {
+    if (!artifact.codeRef) return null
     return artifact.codeRef
   }
   return null
@@ -1021,6 +1022,7 @@ export function getArtifactsMatchingPathToNode(
   return [...artifactGraph.values()].filter(
     (artifact) =>
       'codeRef' in artifact &&
+      artifact.codeRef &&
       hasSamePathToNode(artifact.codeRef.pathToNode, pathToNode)
   )
 }
