@@ -58,8 +58,8 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_PRELUDE_BODY_TYPE_SOLID,
