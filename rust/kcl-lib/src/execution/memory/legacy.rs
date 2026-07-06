@@ -287,7 +287,11 @@ impl EnvironmentsBlocks {
             assert_eq!(ENVIRONMENTS_BLOCK_LEN, block.capacity());
             assert_eq!(block.capacity(), block.len());
         }
-        self.blocks.push_back_mut(Vec::with_capacity(ENVIRONMENTS_BLOCK_LEN))
+        self.blocks
+            .push_back(Vec::with_capacity(ENVIRONMENTS_BLOCK_LEN));
+        self.blocks
+            .back_mut()
+            .expect("internal consistency error")
     }
 
     /// Get an [Environment] given some environment id.
