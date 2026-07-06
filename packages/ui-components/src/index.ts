@@ -4,6 +4,10 @@ export type {
   DraggableSide,
 } from './components/Draggable/Draggable'
 export {
+  CopyTextButton,
+  type CopyTextButtonProps,
+} from './components/CopyTextButton'
+export {
   BillingDialog,
   type BillingDialogProps,
 } from './components/BillingDialog'

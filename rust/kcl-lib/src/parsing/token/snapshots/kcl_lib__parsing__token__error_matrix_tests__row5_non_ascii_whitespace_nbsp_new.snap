@@ -1,0 +1,8 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_new(\"a\\u{00A0}b\")"
+---
+source: "a\u{a0}b"
+tokens: 3
+issues: 1
+final:  Err [lexical] "found unknown token '\u{a0}'" @ [SourceRange([1, 3, 0])]
