@@ -5197,12 +5197,15 @@ fn sketch_face_of_scene_object_ast_expr(
 
     match &on_object.kind {
         ObjectKind::Wall(wall) => {
-            let (solid_range, sweep_range, segment_range) = match ranges.as_slice() {
-                [sweep_range, segment_range] => (sweep_range, sweep_range, segment_range),
-                [solid_range, sweep_range, segment_range] => (solid_range, sweep_range, segment_range),
+            let (solid_range, sweep_range, path_range, segment_range) = match ranges.as_slice() {
+                [sweep_range, segment_range] => (sweep_range, sweep_range, None, segment_range),
+                [solid_range, sweep_range, segment_range] => (solid_range, sweep_range, None, segment_range),
+                [solid_range, sweep_range, path_range, segment_range] => {
+                    (solid_range, sweep_range, Some(path_range), segment_range)
+                }
                 _ => {
                     return Err(KclError::refactor(format!(
-                        "Expected wall source metadata to have 2 or 3 ranges, got {}; artifact_id={:?}",
+                        "Expected wall source metadata to have 2, 3, or 4 ranges, got {}; artifact_id={:?}",
                         ranges.len(),
                         on_object.artifact_id
                     )));
@@ -5253,7 +5256,9 @@ fn sketch_face_of_scene_object_ast_expr(
                 None,
             )?;
 
-            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name) {
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name)
+                .or_else(|| path_range.and_then(|path_range| region_name_from_path_source(ast, path_range)))
+            {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(KclError::refactor(format!(
                         "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
@@ -5317,6 +5322,27 @@ fn indexed_solid_expr_for_sweep_output(solid_expr: ast::Expr, solid_output_index
         Some(output_index) => create_index_expression(solid_expr, output_index),
         None => solid_expr,
     }
+}
+
+fn region_name_from_path_source(
+    ast: &ast::Node<ast::Program>,
+    path_range: &(SourceRange, Option<crate::NodePath>),
+) -> Option<String> {
+    let source_ref = SourceRef::Simple {
+        range: path_range.0,
+        node_path: path_range.1.clone(),
+    };
+    let candidate = variable_name_containing_source_ref(ast, &source_ref)?;
+    let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+        return None;
+    };
+    if region_call.callee.name.name != "region" {
+        return None;
+    }
+    Some(candidate)
 }
 
 fn downstream_composite_code_ref_for_source(artifact_graph: &ArtifactGraph, source_id: ArtifactId) -> Option<&CodeRef> {
@@ -5460,12 +5486,19 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     .unwrap_or(segment);
                 let solid_code_ref =
                     downstream_composite_code_ref_for_source(artifact_graph, wall.sweep_id).unwrap_or(&sweep.code_ref);
+                let path_code_ref = artifact_graph
+                    .get(&segment.path_id)
+                    .or_else(|| artifact_graph.get(&sweep.path_id))
+                    .and_then(|artifact| match artifact {
+                        Artifact::Path(path) => Some(&path.code_ref),
+                        _ => None,
+                    });
                 let mut ranges = Vec::new();
-                if solid_code_ref.range != sweep.code_ref.range || solid_code_ref.node_path != sweep.code_ref.node_path
-                {
-                    ranges.push(code_ref_source_ref_range(solid_code_ref));
-                }
+                ranges.push(code_ref_source_ref_range(solid_code_ref));
                 ranges.push(code_ref_source_ref_range(&sweep.code_ref));
+                if let Some(path_code_ref) = path_code_ref {
+                    ranges.push(code_ref_source_ref_range(path_code_ref));
+                }
                 ranges.push(code_ref_source_ref_range(&source_segment.code_ref));
                 let solid_output_index = (solid_code_ref.range == sweep.code_ref.range
                     && solid_code_ref.node_path == sweep.code_ref.node_path)
@@ -13951,6 +13984,50 @@ extrude001 = extrude([region001, region002], length = 5)
 
         assert!(src_delta.text.contains("faceOf(extrude001["));
         assert!(!src_delta.text.contains("faceOf(extrude001, face = END)"));
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_multi_region_extrude_wall_indexes_selected_solid() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  rect1Line1 = line(start = [0, 0], end = [1, 0])
+  rect1Line2 = line(start = [1, 0], end = [1, 1])
+  rect1Line3 = line(start = [1, 1], end = [0, 1])
+  rect1Line4 = line(start = [0, 1], end = [0, 0])
+  rect2Line1 = line(start = [3, 0], end = [4, 0])
+  rect2Line2 = line(start = [4, 0], end = [4, 1])
+  rect2Line3 = line(start = [4, 1], end = [3, 1])
+  rect2Line4 = line(start = [3, 1], end = [3, 0])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [0.5, 0.5], sketch = sketch001)
+region002 = region(point = [3.5, 0.5], sketch = sketch001)
+extrude001 = extrude([region001, region002], length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let wall_object_id = find_first_wall_object_id(&frontend.scene_graph).expect("expected a wall object");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(wall_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        assert!(src_delta.text.contains("faceOf(extrude001["));
+        assert!(src_delta.text.contains(".tags."));
+        assert!(!src_delta.text.contains("faceOf(extrude001, face ="));
 
         ctx.close().await;
     }
