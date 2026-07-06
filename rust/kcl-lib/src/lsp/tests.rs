@@ -14,11 +14,10 @@ use tower_lsp::lsp_types::WorkspaceEdit;
 use crate::SourceRange;
 use crate::errors::Suggestion;
 use crate::lsp::LspSuggestion;
+use crate::lsp::test_util::copilot_lsp_server;
 use crate::lsp::test_util::kcl_lsp_server;
 use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
-
-const LSP_SOURCE_FILE_COUNT: usize = 8;
 
 #[track_caller]
 fn assert_diagnostic_count(diagnostics: Option<&Vec<Diagnostic>>, n: usize) {
@@ -69,7 +68,7 @@ async fn test_updating_kcl_lsp_files() {
         }
     );
 
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT);
+    assert_eq!(server.code_map.len(), 11);
 
     // Run open file.
     server
@@ -84,7 +83,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 1);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -100,7 +99,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 1);
+    assert_eq!(server.code_map.len(), 12);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -119,7 +118,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
+    assert_eq!(server.code_map.len(), 13);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -145,7 +144,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
+    assert_eq!(server.code_map.len(), 13);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -166,7 +165,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
+    assert_eq!(server.code_map.len(), 13);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -186,7 +185,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 3);
+    assert_eq!(server.code_map.len(), 14);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -207,7 +206,7 @@ async fn test_updating_kcl_lsp_files() {
         .await;
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
+    assert_eq!(server.code_map.len(), 13);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -241,7 +240,7 @@ async fn test_updating_kcl_lsp_files() {
     );
 
     // Check the code map.
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT + 2);
+    assert_eq!(server.code_map.len(), 13);
     assert_eq!(
         server.code_map.get("file:///test.kcl").unwrap().clone(),
         "test".as_bytes()
@@ -277,12 +276,287 @@ async fn test_updating_kcl_lsp_files() {
             name: "my-project2".to_string()
         }
     );
-    assert_eq!(server.code_map.len(), LSP_SOURCE_FILE_COUNT);
+    assert_eq!(server.code_map.len(), 11);
     // Just make sure that one of the current files read from disk is accurate.
     assert_eq!(
         server.code_map.get(&format!("{string_path}/util.rs")).unwrap().clone(),
         include_str!("util.rs").as_bytes()
     );
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_updating_copilot_lsp_files() {
+    let server = copilot_lsp_server().await.unwrap();
+
+    assert_eq!(server.code_map.len(), 0);
+
+    // Get the path to the current file.
+    let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("src").join("lsp");
+    let string_path = format!("file://{}", path.display());
+
+    // Run workspace folders change.
+    server
+        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
+            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
+                added: vec![tower_lsp::lsp_types::WorkspaceFolder {
+                    uri: string_path.as_str().try_into().unwrap(),
+                    name: "my-project".to_string(),
+                }],
+                removed: vec![],
+            },
+        })
+        .await;
+
+    // Get the workspace folders.
+    assert_eq!(server.workspace_folders.len(), 1);
+    assert_eq!(
+        server.workspace_folders.get("my-project").unwrap().clone(),
+        tower_lsp::lsp_types::WorkspaceFolder {
+            uri: string_path.as_str().try_into().unwrap(),
+            name: "my-project".to_string()
+        }
+    );
+
+    assert_eq!(server.code_map.len(), 11);
+
+    // Run open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "test".to_string(),
+            },
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+
+    // Close the file.
+    server
+        .did_close(tower_lsp::lsp_types::DidCloseTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.kcl".try_into().unwrap(),
+            },
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 12);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+
+    // Open another file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test2.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                text: "test2".to_string(),
+            },
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.code_map.get("file:///test2.kcl").unwrap().clone(),
+        "test2".as_bytes()
+    );
+
+    // Run on change.
+    server
+        .did_change(tower_lsp::lsp_types::DidChangeTextDocumentParams {
+            text_document: tower_lsp::lsp_types::VersionedTextDocumentIdentifier {
+                uri: "file:///test2.kcl".try_into().unwrap(),
+                version: 2,
+            },
+            content_changes: vec![tower_lsp::lsp_types::TextDocumentContentChangeEvent {
+                range: None,
+                range_length: None,
+                text: "changed".to_string(),
+            }],
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.code_map.get("file:///test2.kcl").unwrap().clone(),
+        "changed".as_bytes()
+    );
+
+    // Rename a file.
+    server
+        .did_rename_files(tower_lsp::lsp_types::RenameFilesParams {
+            files: vec![tower_lsp::lsp_types::FileRename {
+                old_uri: "file:///test2.kcl".into(),
+                new_uri: "file:///test3.kcl".into(),
+            }],
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.code_map.get("file:///test3.kcl").unwrap().clone(),
+        "changed".as_bytes()
+    );
+
+    // Create a file.
+    server
+        .did_create_files(tower_lsp::lsp_types::CreateFilesParams {
+            files: vec![tower_lsp::lsp_types::FileCreate {
+                uri: "file:///test4.kcl".into(),
+            }],
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 14);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.code_map.get("file:///test3.kcl").unwrap().clone(),
+        "changed".as_bytes()
+    );
+    assert_eq!(server.code_map.get("file:///test4.kcl").unwrap().clone(), "".as_bytes());
+
+    // Delete a file.
+    server
+        .did_delete_files(tower_lsp::lsp_types::DeleteFilesParams {
+            files: vec![tower_lsp::lsp_types::FileDelete {
+                uri: "file:///test4.kcl".into(),
+            }],
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.code_map.get("file:///test3.kcl").unwrap().clone(),
+        "changed".as_bytes()
+    );
+
+    // If we are adding the same folder we already had we should not nuke the code_map.
+    server
+        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
+            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
+                added: vec![tower_lsp::lsp_types::WorkspaceFolder {
+                    uri: string_path.as_str().try_into().unwrap(),
+                    name: "my-project".to_string(),
+                }],
+                removed: vec![],
+            },
+        })
+        .await;
+
+    // Get the workspace folders.
+    assert_eq!(server.workspace_folders.len(), 1);
+    assert_eq!(
+        server.workspace_folders.get("my-project").unwrap().clone(),
+        tower_lsp::lsp_types::WorkspaceFolder {
+            uri: string_path.as_str().try_into().unwrap(),
+            name: "my-project".to_string()
+        }
+    );
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.code_map.get("file:///test3.kcl").unwrap().clone(),
+        "changed".as_bytes()
+    );
+
+    // If we change nothing it should not change the current code map.
+    server
+        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
+            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
+                added: vec![],
+                removed: vec![],
+            },
+        })
+        .await;
+
+    // Get the workspace folders.
+    assert_eq!(server.workspace_folders.len(), 1);
+    assert_eq!(
+        server.workspace_folders.get("my-project").unwrap().clone(),
+        tower_lsp::lsp_types::WorkspaceFolder {
+            uri: string_path.as_str().try_into().unwrap(),
+            name: "my-project".to_string()
+        }
+    );
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 13);
+    assert_eq!(
+        server.code_map.get("file:///test.kcl").unwrap().clone(),
+        "test".as_bytes()
+    );
+    assert_eq!(
+        server.code_map.get("file:///test3.kcl").unwrap().clone(),
+        "changed".as_bytes()
+    );
+
+    // Remove folders.
+    // Run workspace folders change.
+    server
+        .did_change_workspace_folders(tower_lsp::lsp_types::DidChangeWorkspaceFoldersParams {
+            event: tower_lsp::lsp_types::WorkspaceFoldersChangeEvent {
+                added: vec![tower_lsp::lsp_types::WorkspaceFolder {
+                    uri: string_path.as_str().try_into().unwrap(),
+                    name: "my-project2".to_string(),
+                }],
+                removed: vec![tower_lsp::lsp_types::WorkspaceFolder {
+                    uri: string_path.as_str().try_into().unwrap(),
+                    name: "my-project".to_string(),
+                }],
+            },
+        })
+        .await;
+
+    // Get the workspace folders.
+    assert_eq!(server.workspace_folders.len(), 1);
+    assert_eq!(
+        server.workspace_folders.get("my-project2").unwrap().clone(),
+        tower_lsp::lsp_types::WorkspaceFolder {
+            uri: string_path.as_str().try_into().unwrap(),
+            name: "my-project2".to_string()
+        }
+    );
+    assert_eq!(server.code_map.len(), 11);
 }
 
 #[tokio::test(flavor = "multi_thread")]
@@ -2229,6 +2503,178 @@ async fn test_kcl_lsp_diagnostic_has_lints() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_copilot_lsp_set_editor_info() {
+    let server = copilot_lsp_server().await.unwrap();
+
+    // Send set editor info request.
+    server
+        .set_editor_info(crate::lsp::copilot::types::CopilotEditorInfo {
+            editor_info: crate::lsp::copilot::types::EditorInfo {
+                name: "vscode".to_string(),
+                version: "1.0.0".to_string(),
+            },
+            editor_configuration: crate::lsp::copilot::types::EditorConfiguration {
+                disabled_languages: vec![],
+                enable_auto_completions: true,
+            },
+            editor_plugin_info: crate::lsp::copilot::types::EditorInfo {
+                name: "copilot".to_string(),
+                version: "1.0.0".to_string(),
+            },
+        })
+        .await
+        .unwrap();
+
+    // Check the editor info.
+    // Acquire the lock.
+    let editor_info = server.editor_info.read().unwrap();
+    assert_eq!(editor_info.editor_info.name, "vscode");
+    assert_eq!(editor_info.editor_info.version, "1.0.0");
+}
+
+#[tokio::test(flavor = "multi_thread")]
+#[ignore] // Ignore til hosted model is faster (@jessfraz working on).
+async fn test_copilot_lsp_completions_raw() {
+    let server = copilot_lsp_server().await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.copilot".try_into().unwrap(),
+                language_id: "copilot".to_string(),
+                version: 1,
+                text: "st".to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let completions = server
+        .get_completions(
+            "kcl".to_string(),
+            r#"bracket = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  "#
+            .to_string(),
+            r#"  |> close()
+  |> extrude(length = 10)"#
+                .to_string(),
+        )
+        .await
+        .unwrap();
+
+    // Check the completions.
+    assert_eq!(completions.len(), 1);
+    println!("got completion:\n```\n{}\n```", completions[0]);
+
+    // Test the cache.
+    let completions_hit_cache = server
+        .get_completions(
+            "kcl".to_string(),
+            r#"bracket = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  "#
+            .to_string(),
+            r#"  |> close()
+  |> extrude(length = 10)"#
+                .to_string(),
+        )
+        .await
+        .unwrap();
+
+    assert_eq!(completions, completions_hit_cache);
+}
+
+#[tokio::test(flavor = "multi_thread")]
+#[ignore] // Ignore til hosted model is faster (@jessfraz working on).
+async fn test_copilot_lsp_completions() {
+    let server = copilot_lsp_server().await.unwrap();
+
+    // Send open file.
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.copilot".try_into().unwrap(),
+                language_id: "copilot".to_string(),
+                version: 1,
+                text: "st".to_string(),
+            },
+        })
+        .await;
+
+    // Send completion request.
+    let params = crate::lsp::copilot::types::CopilotLspCompletionParams {
+        doc: crate::lsp::copilot::types::CopilotDocParams {
+            indent_size: 4,
+            insert_spaces: true,
+            language_id: "kcl".to_string(),
+            path: "file:///test.copilot".to_string(),
+            position: crate::lsp::copilot::types::CopilotPosition { line: 3, character: 3 },
+            relative_path: "test.copilot".to_string(),
+            source: r#"bracket = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+
+  |> close()
+  |> extrude(length = 10)
+"#
+            .to_string(),
+            tab_size: 4,
+            uri: "file:///test.copilot".into(),
+        },
+    };
+    let completions = server.get_completions_cycling(params.clone()).await.unwrap();
+
+    // Check the completions.
+    assert_eq!(completions.completions.len(), 1);
+
+    // Accept the completion.
+    let completion = completions.completions.first().unwrap();
+
+    // Send completion accept request.
+    server
+        .accept_completion(crate::lsp::copilot::types::CopilotAcceptCompletionParams { uuid: completion.uuid })
+        .await;
+
+    // Test the cache.
+    let completions_hit_cache = server.get_completions_cycling(params).await.unwrap();
+
+    assert_eq!(completions.completions, completions_hit_cache.completions);
+
+    // Reject the completion.
+    let completion = completions.completions.first().unwrap();
+
+    // Send completion reject request.
+    server
+        .reject_completions(crate::lsp::copilot::types::CopilotRejectCompletionParams {
+            uuids: vec![completion.uuid],
+        })
+        .await;
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn test_copilot_on_save() {
+    let server = copilot_lsp_server().await.unwrap();
+
+    // Send save file.
+    server
+        .did_save(tower_lsp::lsp_types::DidSaveTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentIdentifier {
+                uri: "file:///test.copilot".try_into().unwrap(),
+            },
+            text: Some("my file".to_string()),
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 1);
+    assert_eq!(
+        server.code_map.get("file:///test.copilot").unwrap().clone(),
+        "my file".as_bytes()
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_on_save() {
     let server = kcl_lsp_server(false).await.unwrap();
 
@@ -2251,7 +2697,46 @@ async fn test_kcl_on_save() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_copilot_rename_not_exists() {
+    let server = copilot_lsp_server().await.unwrap();
+
+    // Send rename request.
+    server
+        .did_rename_files(tower_lsp::lsp_types::RenameFilesParams {
+            files: vec![tower_lsp::lsp_types::FileRename {
+                old_uri: "file:///test.copilot".into(),
+                new_uri: "file:///test2.copilot".into(),
+            }],
+        })
+        .await;
+
+    // Check the code map.
+    assert_eq!(server.code_map.len(), 1);
+    assert_eq!(
+        server.code_map.get("file:///test2.copilot").unwrap().clone(),
+        "".as_bytes()
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_lsp_initialized() {
+    let copilot_server = copilot_lsp_server().await.unwrap();
+
+    // Send initialize request.
+    copilot_server
+        .initialize(tower_lsp::lsp_types::InitializeParams::default())
+        .await
+        .unwrap();
+
+    // Send initialized request.
+    copilot_server
+        .initialized(tower_lsp::lsp_types::InitializedParams {})
+        .await;
+
+    // Check the code map.
+    assert_eq!(copilot_server.code_map.len(), 0);
+
+    // Now do the same for kcl.
     let kcl_server = kcl_lsp_server(false).await.unwrap();
 
     // Send initialize request.
@@ -2266,6 +2751,8 @@ async fn test_lsp_initialized() {
     // Check the code map.
     assert_eq!(kcl_server.code_map.len(), 0);
 
+    // Now shut them down.
+    copilot_server.shutdown().await.unwrap();
     kcl_server.shutdown().await.unwrap();
 }
 

@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use std::sync::RwLock;
 
 use anyhow::Result;
 use tower_lsp::LanguageServer;
@@ -51,6 +52,36 @@ pub async fn kcl_lsp_server(execute: bool) -> Result<crate::lsp::kcl::Backend> {
     .custom_method("kcl/updateCanExecute", crate::lsp::kcl::Backend::update_can_execute)
     .finish();
 
+    let server = service.inner();
+
+    server
+        .initialize(tower_lsp::lsp_types::InitializeParams::default())
+        .await?;
+
+    server.initialized(tower_lsp::lsp_types::InitializedParams {}).await;
+
+    Ok(server.clone())
+}
+
+// Create a fake copilot lsp server for testing.
+pub async fn copilot_lsp_server() -> Result<crate::lsp::copilot::Backend> {
+    // We don't actually need to authenticate to the backend for this test.
+    let zoo_client = kittycad::Client::new_from_env();
+
+    // Create the backend.
+    let (service, _) = tower_lsp::LspService::new(|client| crate::lsp::copilot::Backend {
+        client,
+        fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+        workspace_folders: Default::default(),
+        code_map: Default::default(),
+        zoo_client,
+        editor_info: Arc::new(RwLock::new(crate::lsp::copilot::types::CopilotEditorInfo::default())),
+        cache: Arc::new(crate::lsp::copilot::cache::CopilotCache::new()),
+        telemetry: Default::default(),
+        is_initialized: Default::default(),
+        diagnostics_map: Default::default(),
+        dev_mode: Default::default(),
+    });
     let server = service.inner();
 
     server
