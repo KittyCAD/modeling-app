@@ -20,6 +20,7 @@ import {
   isOpfsCloudConflictCopyProjectName,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
+  shouldOpfsCloudAutoSyncLocalProject,
 } from '@src/lib/fs-zds/opfsCloud'
 import { withRemoteProjectMetadataInArchiveFiles } from '@src/lib/fs-zds/opfsCloud/projectArchive'
 import { describe, expect, it } from 'vitest'
@@ -485,5 +486,31 @@ describe('opfsCloud sync helpers', () => {
       projectPaths: ['/projects/current'],
       pendingCount: 0,
     })
+  })
+
+  it('does not auto-enroll unlinked local projects when existing local sync is disabled', () => {
+    expect(
+      shouldOpfsCloudAutoSyncLocalProject({
+        syncExistingLocalProjects: false,
+        hasRemoteProjectId: false,
+        hasBaseManifest: false,
+      })
+    ).toBe(false)
+
+    expect(
+      shouldOpfsCloudAutoSyncLocalProject({
+        syncExistingLocalProjects: false,
+        hasRemoteProjectId: true,
+        hasBaseManifest: false,
+      })
+    ).toBe(true)
+
+    expect(
+      shouldOpfsCloudAutoSyncLocalProject({
+        syncExistingLocalProjects: false,
+        hasRemoteProjectId: false,
+        hasBaseManifest: true,
+      })
+    ).toBe(true)
   })
 })

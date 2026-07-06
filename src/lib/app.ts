@@ -16,6 +16,7 @@ import {
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
+import { configureCloudSync } from '@src/lib/cloudSync'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -24,7 +25,6 @@ import {
 } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -312,12 +312,12 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
-    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
-    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.auth.actor.subscribe(this.syncCloudSyncBacking)
+    this.userFeatures.actor.subscribe(this.syncCloudSyncBacking)
+    this.settings.actor.subscribe(this.syncCloudSyncBacking)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncOpfsCloudBacking()
+    this.syncCloudSyncBacking()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -656,8 +656,8 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncOpfsCloudBacking = () => {
-    if (typeof window === 'undefined' || window.electron) {
+  syncCloudSyncBacking = () => {
+    if (typeof window === 'undefined') {
       return
     }
 
@@ -665,19 +665,23 @@ export class App implements AppSubsystems {
     const token = authSnapshot.matches('loggedIn')
       ? authSnapshot.context.token
       : undefined
+    const settingsContext = this.settings.actor.getSnapshot().context
+    const cloudSyncPluginEnabled =
+      settingsContext.plugins?.['cloud-sync']?.current !== false
     const enabled =
       Boolean(token) &&
+      cloudSyncPluginEnabled &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
         false
       )
 
-    configureOpfsCloudSync({
+    configureCloudSync({
       enabled,
       token,
-      projectDirectoryPath:
-        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+      projectDirectoryPath: settingsContext.app.projectDirectory.current,
+      syncExistingLocalProjects: !window.electron,
     })
   }
 

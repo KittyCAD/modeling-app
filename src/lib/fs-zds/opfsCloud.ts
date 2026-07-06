@@ -94,7 +94,7 @@ const SYNC_DEBOUNCE_MS = 2500
 const SYNC_RETRY_MS = 30_000
 const REMOTE_INDEX_INTERVAL_MS = 5 * 60 * 1000
 
-const localFs = opfs.impl
+let localFs: IZooDesignStudioFS = opfs.impl
 
 let config: OPFSCloudConfig = {
   enabled: false,
@@ -136,6 +136,37 @@ function getConfiguredProjectDirectoryPath() {
   )
 }
 
+function getConfiguredProjectRoot(targetPath: string) {
+  const normalizedTargetPath = normalizePathForSync(targetPath)
+  const projectDirectory = getConfiguredProjectDirectoryPath()
+  if (normalizedTargetPath === projectDirectory) {
+    return undefined
+  }
+
+  const relativePath = normalizeRelativePath(
+    localFs.relative(projectDirectory, normalizedTargetPath)
+  )
+  if (
+    !relativePath ||
+    relativePath === '..' ||
+    relativePath.startsWith('../')
+  ) {
+    return getOpfsCloudProjectRoot(targetPath)
+  }
+
+  const [projectName] = webSafePathSplit(relativePath).filter(Boolean)
+  return projectName
+    ? normalizePathForSync(localFs.join(projectDirectory, projectName))
+    : undefined
+}
+
+function isConfiguredProjectDirectoryPath(targetPath: string) {
+  return (
+    normalizePathForSync(targetPath) === getConfiguredProjectDirectoryPath() ||
+    isOpfsCloudProjectDirectoryPath(targetPath)
+  )
+}
+
 function projectNameFromPath(projectPath: string) {
   return localFs.basename(normalizePathForSync(projectPath))
 }
@@ -161,6 +192,28 @@ function projectPathInDirectory(
 
 function isProjectSyncExcluded(metadata: ProjectMetadata | undefined) {
   return Boolean(metadata?.syncExcluded)
+}
+
+export function shouldOpfsCloudAutoSyncLocalProject({
+  syncExistingLocalProjects,
+  hasRemoteProjectId,
+  hasBaseManifest,
+}: {
+  syncExistingLocalProjects: boolean | undefined
+  hasRemoteProjectId: boolean
+  hasBaseManifest: boolean
+}) {
+  return (
+    syncExistingLocalProjects !== false || hasRemoteProjectId || hasBaseManifest
+  )
+}
+
+function shouldAutoSyncLocalProject(metadata: ProjectMetadata) {
+  return shouldOpfsCloudAutoSyncLocalProject({
+    syncExistingLocalProjects: config.syncExistingLocalProjects,
+    hasRemoteProjectId: Boolean(metadata.remoteProjectId),
+    hasBaseManifest: Boolean(metadata.baseManifest),
+  })
 }
 
 const CLOUD_CONFLICT_PROJECT_NAME_PATTERN = /\s+\(cloud conflict \d{8}T\d{6}\)/g
@@ -1909,6 +1962,11 @@ async function enqueueExistingLocalProjectsForInitialSync() {
     return
   }
 
+  if (config.syncExistingLocalProjects === false) {
+    initialLocalScanComplete = true
+    return
+  }
+
   const projectDirectory = getConfiguredProjectDirectoryPath()
   if (!(await exists(projectDirectory))) {
     initialLocalScanComplete = true
@@ -2126,6 +2184,10 @@ async function registerProjectMutation(
     return
   }
   metadata = await bindRemoteProjectIdFromToml(metadata)
+  if (!shouldAutoSyncLocalProject(metadata)) {
+    await putProjectMetadata(metadata)
+    return
+  }
 
   if (kind === 'delete') {
     metadata = {
@@ -2152,8 +2214,8 @@ async function registerProjectRename(sourcePath: string, targetPath: string) {
     return
   }
 
-  const sourceProjectRoot = getOpfsCloudProjectRoot(sourcePath)
-  const targetProjectRoot = getOpfsCloudProjectRoot(targetPath)
+  const sourceProjectRoot = getConfiguredProjectRoot(sourcePath)
+  const targetProjectRoot = getConfiguredProjectRoot(targetPath)
   if (!targetProjectRoot) {
     return
   }
@@ -2188,9 +2250,9 @@ async function registerProjectRename(sourcePath: string, targetPath: string) {
 }
 
 async function afterWriteLikeMutation(targetPath: string) {
-  const projectRoot = getOpfsCloudProjectRoot(targetPath)
+  const projectRoot = getConfiguredProjectRoot(targetPath)
   if (!projectRoot) {
-    if (isOpfsCloudProjectDirectoryPath(targetPath)) {
+    if (isConfiguredProjectDirectoryPath(targetPath)) {
       scheduleSync()
     }
     return
@@ -2200,7 +2262,7 @@ async function afterWriteLikeMutation(targetPath: string) {
 }
 
 async function afterRemoveMutation(targetPath: string) {
-  const projectRoot = getOpfsCloudProjectRoot(targetPath)
+  const projectRoot = getConfiguredProjectRoot(targetPath)
   if (!projectRoot) {
     return
   }
@@ -2209,6 +2271,29 @@ async function afterRemoveMutation(targetPath: string) {
     projectRoot,
     isProjectRootPath(targetPath, projectRoot) ? 'delete' : 'upsert',
     targetPath
+  )
+}
+
+export function configureOpfsCloudLocalFileSystem(
+  nextLocalFs: IZooDesignStudioFS
+) {
+  localFs = nextLocalFs
+}
+
+export async function notifyOpfsCloudWriteLikeMutation(targetPath: string) {
+  await afterWriteLikeMutation(targetPath).catch(markCloudMetadataFailure)
+}
+
+export async function notifyOpfsCloudRemoveMutation(targetPath: string) {
+  await afterRemoveMutation(targetPath).catch(markCloudMetadataFailure)
+}
+
+export async function notifyOpfsCloudRenameMutation(
+  sourcePath: string,
+  targetPath: string
+) {
+  await registerProjectRename(sourcePath, targetPath).catch(
+    markCloudMetadataFailure
   )
 }
 
@@ -2224,7 +2309,10 @@ export function configureOpfsCloudSync(nextConfig: OPFSCloudConfig) {
     previousConfig.environmentName !== config.environmentName
   const projectDirectoryChanged =
     previousConfig.projectDirectoryPath !== config.projectDirectoryPath
-  if (cloudIdentityChanged || projectDirectoryChanged) {
+  const syncPolicyChanged =
+    previousConfig.syncExistingLocalProjects !==
+    config.syncExistingLocalProjects
+  if (cloudIdentityChanged || projectDirectoryChanged || syncPolicyChanged) {
     lastRemoteIndexSyncAt = 0
     initialLocalScanComplete = false
     conflictCopyRepairComplete = false
@@ -2270,8 +2358,8 @@ type ReadFileOptions = undefined | 'utf8' | { encoding: 'utf-8' }
 const readFile = (async (targetPath: string, options?: ReadFileOptions) => {
   const result = await localFs.readFile(targetPath, options)
   if (isConfiguredForCloud()) {
-    const projectRoot = getOpfsCloudProjectRoot(targetPath)
-    if (projectRoot || isOpfsCloudProjectDirectoryPath(targetPath)) {
+    const projectRoot = getConfiguredProjectRoot(targetPath)
+    if (projectRoot || isConfiguredProjectDirectoryPath(targetPath)) {
       scheduleSync()
     }
   }
@@ -2281,8 +2369,8 @@ const readFile = (async (targetPath: string, options?: ReadFileOptions) => {
 const readdir: IZooDesignStudioFS['readdir'] = async (targetPath, options) => {
   const result = await localFs.readdir(targetPath, options)
   if (isConfiguredForCloud()) {
-    const projectRoot = getOpfsCloudProjectRoot(targetPath)
-    if (projectRoot || isOpfsCloudProjectDirectoryPath(targetPath)) {
+    const projectRoot = getConfiguredProjectRoot(targetPath)
+    if (projectRoot || isConfiguredProjectDirectoryPath(targetPath)) {
       scheduleSync()
     }
   }
@@ -2292,8 +2380,8 @@ const readdir: IZooDesignStudioFS['readdir'] = async (targetPath, options) => {
 const stat: IZooDesignStudioFS['stat'] = async (targetPath, options) => {
   const result = await localFs.stat(targetPath, options)
   if (isConfiguredForCloud()) {
-    const projectRoot = getOpfsCloudProjectRoot(targetPath)
-    if (projectRoot || isOpfsCloudProjectDirectoryPath(targetPath)) {
+    const projectRoot = getConfiguredProjectRoot(targetPath)
+    if (projectRoot || isConfiguredProjectDirectoryPath(targetPath)) {
       scheduleSync()
     }
   }

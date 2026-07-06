@@ -9,7 +9,7 @@ import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
 import {
   CloudConflictDialog,
-  useOpfsCloudProjectConflict,
+  useCloudSyncProjectConflict,
 } from '@src/components/CloudConflictDialog'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
@@ -202,7 +202,7 @@ function ProjectMenuPopover({
       : [`mod+${isDesktop() ? '' : 'shift'}+,`],
     platform
   )
-  const cloudConflictMetadata = useOpfsCloudProjectConflict(project?.path)
+  const cloudConflictMetadata = useCloudSyncProjectConflict(project?.path)
   const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands

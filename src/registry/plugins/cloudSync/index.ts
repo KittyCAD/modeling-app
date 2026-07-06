@@ -10,19 +10,19 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { ActionIcon } from '@src/components/ActionIcon'
 import {
   CloudConflictDialog,
-  useOpfsCloudProjectConflict,
-  useOpfsCloudProjectConflicts,
+  useCloudSyncProjectConflict,
+  useCloudSyncProjectConflicts,
 } from '@src/components/CloudConflictDialog'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import {
-  type OPFSCloudSyncStatus,
-  opfsCloudSyncStatus,
-  retryOpfsCloudSync,
-} from '@src/lib/fs-zds/opfsCloud'
-import type { ProjectMetadata } from '@src/lib/fs-zds/opfsCloud'
+  type CloudSyncProjectMetadata,
+  type CloudSyncStatus,
+  cloudSyncStatus,
+  retryCloudSync,
+} from '@src/lib/cloudSync'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
@@ -30,6 +30,7 @@ import {
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { Fragment, createElement, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
@@ -42,7 +43,7 @@ type CloudSyncStatusBarPresentation = {
 }
 
 export function getCloudSyncStatusBarPresentation(
-  status: OPFSCloudSyncStatus
+  status: CloudSyncStatus
 ): CloudSyncStatusBarPresentation {
   const isSyncing = status.state === 'syncing'
   const isBlocked = status.state === 'failed' || status.state === 'conflict'
@@ -82,12 +83,12 @@ export function getCloudSyncStatusBarPresentation(
 function CloudSyncStatusBarItem() {
   useSignals()
   const location = useLocation()
-  const status = opfsCloudSyncStatus.value
-  const conflictMetadata = useOpfsCloudProjectConflict(status.activeProjectPath)
-  const conflictMetadataList = useOpfsCloudProjectConflicts()
+  const status = cloudSyncStatus.value
+  const conflictMetadata = useCloudSyncProjectConflict(status.activeProjectPath)
+  const conflictMetadataList = useCloudSyncProjectConflicts()
   const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const [selectedConflict, setSelectedConflict] = useState<
-    ProjectMetadata | undefined
+    CloudSyncProjectMetadata | undefined
   >()
   if (!status.enabled) {
     return null
@@ -216,7 +217,7 @@ function CloudSyncStatusBarItem() {
                 setIsInspectingConflict(true)
                 return
               }
-              retryOpfsCloudSync()
+              retryCloudSync()
             },
           },
           ...statusBarButtonChildren
@@ -250,7 +251,7 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
           OPFS_CLOUD_FEATURE_FLAG,
           false
         ) &&
-        opfsCloudSyncStatus.value.enabled
+        cloudSyncStatus.value.enabled
         ? {
             id: 'cloud-sync',
             component: CloudSyncStatusBarItem,
@@ -269,9 +270,17 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
   }
 }, 'cloud-sync.status-bar-item')
 
-const cloudSyncExtension = defineRegistryItem({
-  id: 'cloud-sync-extension',
+const cloudSyncStatusBarItemContribution = defineRegistryItem({
+  id: 'cloud-sync.status-bar-item-contribution',
   uses: [cloudSyncStatusBarItem],
 })
 
-export default cloudSyncExtension
+const cloudSync = createZdsPlugin({
+  id: 'cloud-sync',
+  title: 'Cloud sync',
+  description: 'Cloud-backed project sync controls and status.',
+  items: [cloudSyncStatusBarItemContribution],
+  defaultSetting: 'core',
+})
+
+export default cloudSync

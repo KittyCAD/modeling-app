@@ -87,6 +87,7 @@ export type OPFSCloudConfig = {
   baseUrl?: string
   environmentName?: string
   projectDirectoryPath?: string
+  syncExistingLocalProjects?: boolean
 }
 
 /** Coarse user-visible sync state exposed to status bar consumers. */
