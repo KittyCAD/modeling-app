@@ -324,6 +324,7 @@ export function addSweep({
   path,
   wasmInstance,
   sectional,
+  tolerance,
   relativeTo,
   translateProfileToPath,
   orientProfilePerpendicular,
@@ -339,6 +340,7 @@ export function addSweep({
   path: Selections
   wasmInstance: ModuleType
   sectional?: boolean
+  tolerance?: KclCommandValue
   relativeTo?: SweepRelativeTo
   translateProfileToPath?: boolean
   orientProfilePerpendicular?: boolean
@@ -438,6 +440,9 @@ export function addSweep({
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
       : []
+  const toleranceExpr = tolerance
+    ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+    : []
   // `relativeTo` is legacy for new sweep calls; only preserve or update it when
   // editing existing code that already depends on that argument.
   const relativeToExpr =
@@ -501,6 +506,7 @@ export function addSweep({
     [
       createLabeledArg('path', pathExpr),
       ...sectionalExpr,
+      ...toleranceExpr,
       ...relativeToExpr,
       ...tagStartExpr,
       ...tagEndExpr,
@@ -513,6 +519,9 @@ export function addSweep({
 
   if (version && 'variableName' in version && version.variableName) {
     insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -543,6 +552,7 @@ export function addLoft({
   vDegree,
   bezApproximateRational,
   baseCurveIndex,
+  tolerance,
   tagStart,
   tagEnd,
   bodyType,
@@ -555,6 +565,7 @@ export function addLoft({
   vDegree?: KclCommandValue
   bezApproximateRational?: boolean
   baseCurveIndex?: KclCommandValue
+  tolerance?: KclCommandValue
   tagStart?: string
   tagEnd?: string
   bodyType?: KclPreludeBodyType
@@ -619,6 +630,9 @@ export function addLoft({
   const baseCurveIndexExpr = baseCurveIndex
     ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
     : []
+  const toleranceExpr = tolerance
+    ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+    : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
@@ -637,6 +651,7 @@ export function addLoft({
       ...vDegreeExpr,
       ...bezApproximateRationalExpr,
       ...baseCurveIndexExpr,
+      ...toleranceExpr,
       ...tagStartExpr,
       ...tagEndExpr,
       ...bodyTypeExpr,
@@ -653,6 +668,9 @@ export function addLoft({
     baseCurveIndex.variableName
   ) {
     insertVariableAndOffsetPathToNode(baseCurveIndex, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -683,6 +701,7 @@ export function addRevolve({
   wasmInstance,
   axis,
   edge,
+  tolerance,
   symmetric,
   bidirectionalAngle,
   tagStart,
@@ -697,6 +716,7 @@ export function addRevolve({
   wasmInstance: ModuleType
   axis?: string
   edge?: Selections
+  tolerance?: KclCommandValue
   symmetric?: boolean
   bidirectionalAngle?: KclCommandValue
   tagStart?: string
@@ -764,6 +784,9 @@ export function addRevolve({
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
+  const toleranceExpr = tolerance
+    ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+    : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
         createLabeledArg(
@@ -789,6 +812,7 @@ export function addRevolve({
     [
       createLabeledArg('angle', valueOrVariable(angle)),
       createLabeledArg('axis', getAxisResult.generatedAxis),
+      ...toleranceExpr,
       ...symmetricExpr,
       ...bidirectionalAngleExpr,
       ...tagStartExpr,
@@ -800,6 +824,9 @@ export function addRevolve({
   // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
 
   if (
