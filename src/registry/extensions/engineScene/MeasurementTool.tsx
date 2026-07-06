@@ -5,7 +5,7 @@ import type {
   UnitLength,
   UnitVolume,
 } from '@kittycad/lib'
-import { Draggable } from '@kittycad/ui-components'
+import { CopyTextButton, Draggable } from '@kittycad/ui-components'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
@@ -16,7 +16,6 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, uuidv4 } from '@src/lib/utils'
 import {
-  type ReactNode,
   type RefObject,
   useCallback,
   useEffect,
@@ -219,9 +218,6 @@ function MeasurementSelectionSummary({
           <span className="text-chalkboard-80 dark:text-chalkboard-30">
             {getMeasurementEntityLabel(entity)}
           </span>
-          <code className="truncate font-mono text-[10px] text-chalkboard-60 dark:text-chalkboard-50">
-            {entity.id}
-          </code>
         </div>
       ))}
     </div>
@@ -448,39 +444,16 @@ function getMeasurementResultText(
   ].join('\n')
 }
 
-async function copyMeasurementText(text: string) {
-  try {
-    await navigator.clipboard.writeText(text)
-    toast.success('Copied measurement to clipboard.')
-  } catch {
-    toast.error('Failed to copy measurement.')
-  }
+function showMeasurementCopySuccess() {
+  toast.success('Copied measurement to clipboard.')
 }
 
-function CopyableMeasurementBlock({
-  text,
-  children,
-  className,
-  title = 'Copy measurement',
-}: {
-  text: string
-  children: ReactNode
-  className: string
-  title?: string
-}) {
-  return (
-    <button
-      type="button"
-      title={title}
-      className={`m-0 w-full border-0 bg-transparent text-left hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90 ${className}`}
-      onClick={() => {
-        void copyMeasurementText(text)
-      }}
-    >
-      {children}
-    </button>
-  )
+function showMeasurementCopyError() {
+  toast.error('Failed to copy measurement.')
 }
+
+const copyMeasurementButtonClassName =
+  'm-0 w-full border-0 bg-transparent text-left hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:hover:bg-chalkboard-90 dark:focus:bg-chalkboard-90'
 
 export function MeasurementTool() {
   useSignals()
@@ -661,9 +634,12 @@ export function MeasurementTool() {
       )}
 
       {matchingResult?.type === 'distance' && (
-        <CopyableMeasurementBlock
-          text={getMeasurementResultText(matchingResult, unit)}
-          className="grid grid-cols-2 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80"
+        <CopyTextButton
+          textToCopy={getMeasurementResultText(matchingResult, unit)}
+          title="Copy measurement"
+          onCopySuccess={showMeasurementCopySuccess}
+          onCopyError={showMeasurementCopyError}
+          className={`${copyMeasurementButtonClassName} grid grid-cols-2 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80`}
         >
           <MeasurementValue
             label={
@@ -681,26 +657,32 @@ export function MeasurementTool() {
               unit={unit}
             />
           )}
-        </CopyableMeasurementBlock>
+        </CopyTextButton>
       )}
 
       {matchingResult?.type === 'edgeLength' && (
-        <CopyableMeasurementBlock
-          text={getMeasurementResultText(matchingResult, unit)}
-          className="grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80"
+        <CopyTextButton
+          textToCopy={getMeasurementResultText(matchingResult, unit)}
+          title="Copy measurement"
+          onCopySuccess={showMeasurementCopySuccess}
+          onCopyError={showMeasurementCopyError}
+          className={`${copyMeasurementButtonClassName} grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80`}
         >
           <MeasurementValue
             label="Length"
             value={matchingResult.length}
             unit={matchingResult.unit}
           />
-        </CopyableMeasurementBlock>
+        </CopyTextButton>
       )}
 
       {matchingResult?.type === 'bodyDetails' && (
-        <CopyableMeasurementBlock
-          text={getMeasurementResultText(matchingResult, unit)}
-          className="grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80"
+        <CopyTextButton
+          textToCopy={getMeasurementResultText(matchingResult, unit)}
+          title="Copy measurement"
+          onCopySuccess={showMeasurementCopySuccess}
+          onCopyError={showMeasurementCopyError}
+          className={`${copyMeasurementButtonClassName} grid grid-cols-1 gap-3 border-t border-chalkboard-20 pt-2 dark:border-chalkboard-80`}
         >
           <MeasurementValue
             label="Volume"
@@ -717,17 +699,19 @@ export function MeasurementTool() {
             point={matchingResult.centerOfMass}
             unit={matchingResult.centerOfMassUnit}
           />
-        </CopyableMeasurementBlock>
+        </CopyTextButton>
       )}
 
       {errorMessage && (
-        <CopyableMeasurementBlock
-          text={errorMessage}
+        <CopyTextButton
+          textToCopy={errorMessage}
           title="Copy measurement error"
-          className="whitespace-pre-wrap break-words border-t border-chalkboard-20 pt-2 text-xs text-destroy-80 dark:border-chalkboard-80"
+          onCopySuccess={showMeasurementCopySuccess}
+          onCopyError={showMeasurementCopyError}
+          className={`${copyMeasurementButtonClassName} whitespace-pre-wrap break-words border-t border-chalkboard-20 pt-2 text-xs text-destroy-80 dark:border-chalkboard-80`}
         >
           <span>{errorMessage}</span>
-        </CopyableMeasurementBlock>
+        </CopyTextButton>
       )}
     </div>
   )
