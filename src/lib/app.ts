@@ -84,7 +84,6 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { projectsValueSpec } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
@@ -328,19 +327,6 @@ export class App implements AppSubsystems {
       this.syncPluginSettings
     )
     this.syncPluginSettings(this.settings.actor.getSnapshot())
-
-    const projectsSignal = this.registry.signal(projectsValueSpec)
-    effect(() => {
-      const projects = projectsSignal.value
-      if (projects === undefined) {
-        return
-      }
-
-      this.systemIOActor.send({
-        type: SystemIOMachineEvents.setFolders,
-        data: { folders: projects },
-      })
-    })
   }
 
   /**

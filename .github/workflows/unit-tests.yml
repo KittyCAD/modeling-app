@@ -21,7 +21,7 @@ jobs:
   track-setup:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
 
       - name: Track setup
         run: .github/ci-cd-scripts/track-step.sh
@@ -43,7 +43,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: build-wasm
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -80,7 +80,7 @@ jobs:
     runs-on: namespace-profile-ubuntu-2-cores
     needs: build-wasm
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
 
       - uses: actions/setup-node@v6.4.0
         with:

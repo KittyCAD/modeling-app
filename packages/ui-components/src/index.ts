@@ -28,6 +28,10 @@ export type {
 export { SubmitButton } from './components/SubmitButton/SubmitButton'
 export type { SubmitButtonProps } from './components/SubmitButton/SubmitButton'
 export {
+  CopyTextButton,
+  type CopyTextButtonProps,
+} from './components/CopyTextButton'
+export {
   BillingDialog,
   type BillingDialogProps,
 } from './components/BillingDialog'
