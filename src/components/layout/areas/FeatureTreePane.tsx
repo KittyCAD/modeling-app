@@ -1144,6 +1144,30 @@ const OperationItem = ({
     }
   }
 
+  function canExportDxf(
+    item: Operation
+  ): item is Parameters<typeof exportSketchToDxf>[0] {
+    return (
+      (item.type === 'StdLibCall' &&
+        (item.name === 'startSketchOn' || item.name === 'subtract2d')) ||
+      (item.type === 'GroupBegin' && item.group.type === 'SketchBlock')
+    )
+  }
+
+  function exportDxf() {
+    if (!canExportDxf(item)) {
+      return
+    }
+    exportSketchToDxf(item, {
+      engineCommandManager,
+      kclManager,
+      toast,
+      uuidv4,
+      base64Decode,
+      browserSaveFile,
+    }).catch(reportRejection)
+  }
+
   const menuItems = useMemo(
     () => {
       const viewSourceMenuItem = (
@@ -1198,46 +1222,10 @@ const OperationItem = ({
               </ContextMenuItem>,
             ]
           : []),
-        ...(item.type === 'StdLibCall' && item.name === 'startSketchOn'
+        ...(canExportDxf(item)
           ? [
               <ContextMenuItem
-                onClick={() => {
-                  const exportDxf = async () => {
-                    if (item.type !== 'StdLibCall') return
-                    await exportSketchToDxf(item, {
-                      engineCommandManager,
-                      kclManager,
-                      toast,
-                      uuidv4,
-                      base64Decode,
-                      browserSaveFile,
-                    })
-                  }
-                  void exportDxf()
-                }}
-                data-testid="context-menu-export-dxf"
-              >
-                Export to DXF
-              </ContextMenuItem>,
-            ]
-          : []),
-        ...(item.type === 'StdLibCall' && item.name === 'subtract2d'
-          ? [
-              <ContextMenuItem
-                onClick={() => {
-                  const exportDxf = async () => {
-                    if (item.type !== 'StdLibCall') return
-                    await exportSketchToDxf(item, {
-                      engineCommandManager,
-                      kclManager,
-                      toast,
-                      uuidv4,
-                      base64Decode,
-                      browserSaveFile,
-                    })
-                  }
-                  void exportDxf()
-                }}
+                onClick={exportDxf}
                 data-testid="context-menu-export-dxf"
               >
                 Export to DXF

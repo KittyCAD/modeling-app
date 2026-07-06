@@ -4,6 +4,7 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLiteral,
+  createLocalName,
   createVariableDeclaration,
 } from '@src/lang/create'
 import {
@@ -41,6 +42,7 @@ export function addTranslate({
   y,
   z,
   global,
+  xyz,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -51,6 +53,7 @@ export function addTranslate({
   y?: KclCommandValue
   z?: KclCommandValue
   global?: boolean
+  xyz?: KclCommandValue
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
   // 1. Clone the ast and nodeToEdit so we can freely edit them
@@ -80,12 +83,13 @@ export function addTranslate({
     global !== undefined
       ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
       : []
+  const xyzExpr = xyz ? [createLabeledArg('xyz', valueOrVariable(xyz))] : []
 
   const objectsExpr = createVariableExpressionsArray(vars.exprs)
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Translate'),
     objectsExpr,
-    [...xExpr, ...yExpr, ...zExpr, ...globalExpr]
+    [...xExpr, ...yExpr, ...zExpr, ...globalExpr, ...xyzExpr]
   )
 
   // Insert variables for labeled arguments if provided
@@ -97,6 +101,9 @@ export function addTranslate({
   }
   if (z && 'variableName' in z && z.variableName) {
     insertVariableAndOffsetPathToNode(z, modifiedAst, mNodeToEdit)
+  }
+  if (xyz && 'variableName' in xyz && xyz.variableName) {
+    insertVariableAndOffsetPathToNode(xyz, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -127,6 +134,8 @@ export function addRotate({
   roll,
   pitch,
   yaw,
+  axis,
+  angle,
   global,
   nodeToEdit,
 }: {
@@ -137,6 +146,8 @@ export function addRotate({
   roll?: KclCommandValue
   pitch?: KclCommandValue
   yaw?: KclCommandValue
+  axis?: string
+  angle?: KclCommandValue
   global?: boolean
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -165,6 +176,10 @@ export function addRotate({
     ? [createLabeledArg('pitch', valueOrVariable(pitch))]
     : []
   const yawExpr = yaw ? [createLabeledArg('yaw', valueOrVariable(yaw))] : []
+  const axisExpr = axis ? [createLabeledArg('axis', createLocalName(axis))] : []
+  const angleExpr = angle
+    ? [createLabeledArg('angle', valueOrVariable(angle))]
+    : []
   const globalExpr =
     global !== undefined
       ? [createLabeledArg('global', createLiteral(global, wasmInstance))]
@@ -174,7 +189,14 @@ export function addRotate({
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Rotate'),
     objectsExpr,
-    [...rollExpr, ...pitchExpr, ...yawExpr, ...globalExpr]
+    [
+      ...rollExpr,
+      ...pitchExpr,
+      ...yawExpr,
+      ...axisExpr,
+      ...angleExpr,
+      ...globalExpr,
+    ]
   )
 
   // Insert variables for labeled arguments if provided
@@ -186,6 +208,9 @@ export function addRotate({
   }
   if (yaw && 'variableName' in yaw && yaw.variableName) {
     insertVariableAndOffsetPathToNode(yaw, modifiedAst, mNodeToEdit)
+  }
+  if (angle && 'variableName' in angle && angle.variableName) {
+    insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
