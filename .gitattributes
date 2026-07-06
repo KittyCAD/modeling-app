@@ -1,6 +1,16 @@
 ﻿# Set default behavior to automatically normalize line endings.
 * text=auto
 
+# Biome writes LF. Keep formatter-managed source files LF in every checkout so
+# formatting does not create CRLF/LF-only diffs on Windows.
+.gitattributes text eol=lf
+*.cjs text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+
 # Force batch scripts to always use CRLF line endings so that if a repo is accessed
 # in Windows via a file share from Linux, the scripts will work.
 *.{cmd,[cC][mM][dD]} text working-tree-encoding=UTF-16LE eol=CRLF
