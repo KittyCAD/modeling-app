@@ -97,7 +97,7 @@ const isSketchSolveMode = (context: EngineSceneExtensionContext) =>
 const defaultStreamClassName = defineEngineSceneStreamClassName({
   id: 'engine-scene.stream-default',
   order: 0,
-  className: 'absolute inset-[-4px] z-0',
+  className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
 })
 
 const toolbarViewExtension = defineEngineSceneViewExtension({

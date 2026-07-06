@@ -189,7 +189,7 @@ describe('engineScene extension', () => {
       {
         id: 'engine-scene.stream-default',
         order: 0,
-        className: 'absolute inset-[-4px] z-0',
+        className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
       },
     ])
     expect(registry.get(engineSceneStreamLayersValueSpec)).toEqual([])
@@ -208,6 +208,23 @@ describe('engineScene extension', () => {
         },
       ])
     ).toBe('absolute z-0 inset-4 transition-all bg-ml-green rounded-lg')
+  })
+
+  it('preserves granular stream inset class name overrides', () => {
+    expect(
+      mergeEngineSceneClassNames([
+        {
+          id: 'default',
+          order: 0,
+          className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
+        },
+        {
+          id: 'extension',
+          order: 10,
+          className: 'inset-x-0 inset-y-4',
+        },
+      ])
+    ).toBe('absolute z-0 inset-x-0 inset-y-4')
   })
 
   it('registers sketch-only view extensions from modeling state', () => {

@@ -1,6 +1,7 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import type { ComponentType, Dispatch, SetStateAction } from 'react'
+import { twMerge } from 'tailwind-merge'
 import type { EventFrom, StateFrom } from 'xstate'
 
 export const engineSceneViewExtensionZones = [
@@ -192,91 +193,8 @@ export function EngineSceneViewExtensionOverlay({
   )
 }
 
-const classNameConflictGroups: Array<{
-  group: string
-  test: (baseClassName: string) => boolean
-}> = [
-  {
-    group: 'position',
-    test: (baseClassName) =>
-      ['static', 'fixed', 'absolute', 'relative', 'sticky'].includes(
-        baseClassName
-      ),
-  },
-  { group: 'inset', test: (baseClassName) => /^-?inset-/.test(baseClassName) },
-  { group: 'z', test: (baseClassName) => /^z-/.test(baseClassName) },
-  {
-    group: 'overflow',
-    test: (baseClassName) => /^overflow(?:-[xy])?-/.test(baseClassName),
-  },
-  {
-    group: 'rounded',
-    test: (baseClassName) => /^rounded(?:-[a-z]+)?(?:-|$)/.test(baseClassName),
-  },
-  { group: 'bg', test: (baseClassName) => /^bg-/.test(baseClassName) },
-  {
-    group: 'transition',
-    test: (baseClassName) => /^transition(?:-|$)/.test(baseClassName),
-  },
-  {
-    group: 'duration',
-    test: (baseClassName) => /^duration-/.test(baseClassName),
-  },
-  { group: 'ease', test: (baseClassName) => /^ease-/.test(baseClassName) },
-  {
-    group: 'shadow',
-    test: (baseClassName) => /^shadow(?:-|$)/.test(baseClassName),
-  },
-]
-
-function getClassNameConflictKey(className: string): string | null {
-  const importantPrefix = className.startsWith('!') ? '!' : ''
-  const normalizedClassName = importantPrefix ? className.slice(1) : className
-  const classNameParts = normalizedClassName.split(':')
-  const baseClassName = classNameParts.pop() ?? ''
-  const variantPrefix = classNameParts.length
-    ? `${classNameParts.join(':')}:`
-    : ''
-  const conflictGroup = classNameConflictGroups.find((group) =>
-    group.test(baseClassName)
-  )
-
-  return conflictGroup
-    ? `${importantPrefix}${variantPrefix}${conflictGroup.group}`
-    : null
-}
-
 export function mergeEngineSceneClassNames(
   contributions: readonly EngineSceneStreamClassName[]
 ): string {
-  const classNames: Array<string | null> = []
-  const conflictIndexes = new Map<string, number>()
-  const seenClassNames = new Set<string>()
-
-  for (const contribution of contributions) {
-    for (const className of contribution.className.split(/\s+/)) {
-      if (!className) {
-        continue
-      }
-
-      const conflictKey = getClassNameConflictKey(className)
-      if (conflictKey) {
-        const previousIndex = conflictIndexes.get(conflictKey)
-        if (previousIndex !== undefined) {
-          classNames[previousIndex] = null
-        }
-        conflictIndexes.set(conflictKey, classNames.length)
-        classNames.push(className)
-        continue
-      }
-
-      if (seenClassNames.has(className)) {
-        continue
-      }
-      seenClassNames.add(className)
-      classNames.push(className)
-    }
-  }
-
-  return classNames.filter((className) => className !== null).join(' ')
+  return twMerge(...contributions.map((contribution) => contribution.className))
 }
