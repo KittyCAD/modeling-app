@@ -1,6 +1,7 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
+import { PublishMarkdownEditor } from '@src/components/PublishMarkdownEditor'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
@@ -11,7 +12,6 @@ import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogProps = {
-  onClose: () => void
   onSubmit: (args: ProjectPublishSubmission) => Promise<boolean>
   initialTitle?: string
   publishDisabled?: boolean
@@ -24,7 +24,6 @@ type PublishDialogProps = {
 const AQUARIUM_TERMS_URL = 'https://zoo.dev/aquarium-terms-of-use'
 
 export function PublishDialog({
-  onClose,
   onSubmit,
   initialTitle = '',
   publishDisabled = false,
@@ -213,29 +212,22 @@ export function PublishDialog({
             </div>
 
             <div>
-              <label
-                htmlFor="publish-project-description"
+              <p
+                id="publish-project-description-label"
                 className="text-xs font-medium uppercase tracking-[0.14em] text-chalkboard-60 dark:text-chalkboard-40"
               >
                 Description*
-              </label>
-              <textarea
-                {...noAutofillInputProps}
+              </p>
+              <PublishMarkdownEditor
                 id="publish-project-description"
-                required
-                rows={4}
                 value={description}
-                onChange={(event) => {
+                onChange={(value) => {
                   setHasEditedDescription(true)
-                  setDescription(event.target.value)
+                  setDescription(value)
                 }}
+                labelledBy="publish-project-description-label"
                 placeholder="Tell people about what you made..."
-                aria-invalid={hasTriedSubmit && !descriptionIsValid}
-                className={`mt-2 w-full resize-none rounded border bg-chalkboard-10/90 px-2.5 py-2 text-sm text-chalkboard-100 placeholder:text-chalkboard-60 focus:outline-none focus-visible:outline-appForeground dark:bg-chalkboard-90/80 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-40 ${
-                  hasTriedSubmit && !descriptionIsValid
-                    ? 'border-destroy-60'
-                    : 'border-chalkboard-20/80 dark:border-chalkboard-80/70'
-                }`}
+                hasError={hasTriedSubmit && !descriptionIsValid}
               />
               {hasTriedSubmit && !descriptionIsValid && (
                 <p className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40">
@@ -289,28 +281,31 @@ export function PublishDialog({
                       )
 
                       return (
-                        <button
+                        <label
                           key={category.id}
-                          type="button"
-                          role="checkbox"
-                          aria-checked={isSelected}
-                          className={`flex w-full items-start gap-3 rounded-xl border px-3 py-3 text-left transition-colors focus-visible:outline-appForeground ${
+                          className={`relative flex w-full cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 text-left transition-colors ${
                             isSelected
                               ? 'border-chalkboard-30/80 bg-chalkboard-10/90 dark:border-chalkboard-60/80 dark:bg-chalkboard-90/80'
                               : 'border-chalkboard-20/80 bg-chalkboard-10/40 hover:border-chalkboard-30/80 dark:border-chalkboard-80/70 dark:bg-chalkboard-100/20 dark:hover:border-chalkboard-70'
                           }`}
-                          onClick={() => {
-                            setHasEditedCategories(true)
-                            setSelectedCategoryIds((current) =>
-                              isSelected
-                                ? current.filter(
-                                    (value) => value !== category.id
-                                  )
-                                : [...current, category.id]
-                            )
-                          }}
                         >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              setHasEditedCategories(true)
+                              setSelectedCategoryIds((current) =>
+                                isSelected
+                                  ? current.filter(
+                                      (value) => value !== category.id
+                                    )
+                                  : [...current, category.id]
+                              )
+                            }}
+                            className="absolute inset-0 z-10 m-0 h-full w-full cursor-pointer appearance-none rounded-xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-appForeground"
+                          />
                           <div
+                            aria-hidden="true"
                             className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border ${
                               isSelected
                                 ? 'border-chalkboard-30 bg-chalkboard-100 text-chalkboard-10 dark:border-chalkboard-30 dark:bg-chalkboard-10 dark:text-chalkboard-100'
@@ -327,7 +322,7 @@ export function PublishDialog({
                               {category.description}
                             </p>
                           </div>
-                        </button>
+                        </label>
                       )
                     })}
                   </div>
