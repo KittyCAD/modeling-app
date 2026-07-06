@@ -1,8 +1,8 @@
 import type {
+  CodeRef,
   Artifact as RustArtifact,
   ArtifactGraph as RustArtifactGraph,
   Cap as RustCapArtifact,
-  CodeRef,
   EdgeCut as RustEdgeCut,
   Segment as RustSegmentArtifact,
   Sweep as RustSweepArtifact,

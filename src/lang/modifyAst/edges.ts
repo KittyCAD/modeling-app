@@ -65,8 +65,8 @@ import type {
   SweepArtifact,
   VariableDeclarator,
 } from '@src/lang/wasm'
-import type { KclCommandValue } from '@src/lib/commandTypes'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import {
   getBodySelectionFromPrimitiveParentEntityId,
