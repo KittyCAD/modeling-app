@@ -100,7 +100,7 @@ function getEdgeRefPayloadFromSelection(
 
   if (selection.artifact?.type === 'segment') {
     return {
-      side_faces: selection.artifact.commonSurfaceIds,
+      side_faces: selection.artifact.commonSurfaceIds ?? [],
     }
   }
 
@@ -109,7 +109,7 @@ function getEdgeRefPayloadFromSelection(
   }
 
   return {
-    side_faces: selection.artifact.commonSurfaceIds,
+    side_faces: selection.artifact.commonSurfaceIds ?? [],
   }
 }
 
