@@ -7,11 +7,16 @@ import {
 } from '@src/lang/create'
 import {
   createVariableExpressionsArray,
+  insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { getVariableExprsFromSelection } from '@src/lang/queryAst'
+import {
+  getVariableExprsFromSelection,
+  valueOrVariable,
+} from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -21,12 +26,14 @@ export function addUnion({
   ast,
   artifactGraph,
   solids,
+  tolerance,
   nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   solids: Selections
+  tolerance?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -54,8 +61,11 @@ export function addUnion({
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Boolean Union'),
     objectsExpr,
-    []
+    tolerance ? [createLabeledArg('tolerance', valueOrVariable(tolerance))] : []
   )
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -81,12 +91,14 @@ export function addIntersect({
   ast,
   artifactGraph,
   solids,
+  tolerance,
   nodeToEdit,
   wasmInstance,
 }: {
   ast: Node<Program>
   artifactGraph: ArtifactGraph
   solids: Selections
+  tolerance?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -114,8 +126,11 @@ export function addIntersect({
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Boolean Intersect'),
     objectsExpr,
-    []
+    tolerance ? [createLabeledArg('tolerance', valueOrVariable(tolerance))] : []
   )
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -142,6 +157,7 @@ export function addSubtract({
   artifactGraph,
   solids,
   tools,
+  tolerance,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -149,6 +165,7 @@ export function addSubtract({
   artifactGraph: ArtifactGraph
   solids: Selections
   tools: Selections
+  tolerance?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }): Error | { modifiedAst: Node<Program>; pathToNode: PathToNode } {
@@ -196,8 +213,16 @@ export function addSubtract({
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Boolean Subtract'),
     objectsExpr,
-    [createLabeledArg('tools', toolsExpr)]
+    [
+      createLabeledArg('tools', toolsExpr),
+      ...(tolerance
+        ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+        : []),
+    ]
   )
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
   if (vars.pathIfPipe && toolVars.pathIfPipe) {
     return new Error(
       'Cannot use both solids and tools in a subtraction operation with a pipe'

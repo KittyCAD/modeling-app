@@ -708,7 +708,7 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
             {
               entityRef: {
                 type: 'edge',
-                side_faces: edge.commonSurfaceIds,
+                side_faces: edge.commonSurfaceIds ?? [],
               },
             },
           ],

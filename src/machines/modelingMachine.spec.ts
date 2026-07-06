@@ -1025,7 +1025,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1035,7 +1035,7 @@ p3 = [342.51, 216.38],
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
               kclManagerInThisFile.code,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               filter
             )
             const constraint = constraintInfo[0]
@@ -1159,7 +1159,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1169,7 +1169,7 @@ p3 = [342.51, 216.38],
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
               kclManagerInThisFile.code,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               filter
             )
             const constraint = constraintInfo[constraintIndex]
@@ -1307,7 +1307,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1317,7 +1317,7 @@ p3 = [342.51, 216.38],
             const constraintInfo = getConstraintInfoKw(
               callExp.node,
               kclManagerInThisFile.code,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               filter
             )
             const constraint = constraintInfo[constraintIndex]
@@ -1439,7 +1439,7 @@ p3 = [342.51, 216.38],
 
             const callExp = getNodeFromPath<Node<CallExpressionKw>>(
               kclManagerInThisFile.ast,
-              artifact.codeRef.pathToNode,
+              artifact.codeRef!.pathToNode,
               instanceInThisFile,
               'CallExpressionKw'
             )
@@ -1450,7 +1450,7 @@ p3 = [342.51, 216.38],
             // Now that we're in sketchIdle state, test the "Constrain with named value" event
             actor.send({
               type: 'Constrain remove constraints',
-              data: artifact.codeRef.pathToNode,
+              data: artifact.codeRef!.pathToNode,
             })
 
             // Wait for the state to change in response to the constraint

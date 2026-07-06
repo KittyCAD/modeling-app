@@ -196,7 +196,7 @@ export function expandWall(
   const edgeCuts = edgeCutEdgeIds?.length
     ? Array.from(
         getArtifactsOfTypes(
-          { keys: wall.edgeCutEdgeIds, types: ['edgeCut'] },
+          { keys: edgeCutEdgeIds, types: ['edgeCut'] },
           artifactGraph
         ).values()
       )
@@ -232,7 +232,7 @@ export function expandCap(
   const edgeCuts = edgeCutEdgeIds?.length
     ? Array.from(
         getArtifactsOfTypes(
-          { keys: cap.edgeCutEdgeIds, types: ['edgeCut'] },
+          { keys: edgeCutEdgeIds, types: ['edgeCut'] },
           artifactGraph
         ).values()
       )
@@ -475,7 +475,7 @@ export function getCommonFacesForEdge(
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
   const faces = getArtifactsOfTypes(
-    { keys: artifact.commonSurfaceIds, types: ['wall', 'cap'] },
+    { keys: artifact.commonSurfaceIds ?? [], types: ['wall', 'cap'] },
     artifactGraph
   )
   if (err(faces)) return faces
@@ -637,7 +637,7 @@ export function getCodeRefsByArtifactId(
     const consumedCodeRef = getEdgeCutConsumedCodeRef(artifact, artifactGraph)
     if (err(consumedCodeRef)) return [codeRef]
     return [codeRef, consumedCodeRef]
-  } else if (artifact && 'codeRef' in artifact) {
+  } else if (artifact && 'codeRef' in artifact && artifact.codeRef) {
     return [artifact.codeRef]
   } else {
     return null
@@ -1015,6 +1015,7 @@ export function getFaceCodeRef(
     return artifact.faceCodeRef
   }
   if ('codeRef' in artifact) {
+    if (!artifact.codeRef) return null
     return artifact.codeRef
   }
   return null
@@ -1040,6 +1041,7 @@ export function getArtifactsMatchingPathToNode(
   return [...artifactGraph.values()].filter(
     (artifact) =>
       'codeRef' in artifact &&
+      artifact.codeRef &&
       hasSamePathToNode(artifact.codeRef.pathToNode, pathToNode)
   )
 }

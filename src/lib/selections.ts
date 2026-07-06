@@ -608,7 +608,7 @@ function getTaggableEdgeArtifact(
 
   const consumedEdge = getArtifactOfTypes(
     {
-      key: selection.artifact.consumedEdgeId,
+      key: selection.artifact.consumedEdgeId ?? '',
       types: ['segment', 'sweepEdge'],
     },
     artifactGraph
