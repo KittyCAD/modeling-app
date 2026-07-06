@@ -1,5 +1,5 @@
-import { KclInput } from '@src/components/KclInput'
 import { submitConstraintEdit } from '@src/clientSideScene/submitConstraintEdit'
+import { KclInput } from '@src/components/KclInput'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useSingletons } from '@src/lib/boot'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
