@@ -165,7 +165,7 @@ export function PublishDialog({
       leaveFrom="opacity-100 translate-y-0 scale-100"
       leaveTo="opacity-0 translate-y-1 scale-[0.98]"
     >
-      <Popover.Panel className="absolute right-0 top-full z-20 mt-3 flex w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
+      <Popover.Panel className="absolute right-0 top-full z-20 mt-3 flex max-h-[calc(100vh-5rem)] w-[30rem] max-w-[calc(100vw-2rem)] flex-col overflow-y-auto overscroll-contain rounded border border-chalkboard-30/80 bg-chalkboard-10/95 text-sm text-chalkboard-100 shadow-2xl backdrop-blur-sm dark:border-chalkboard-80/60 dark:bg-chalkboard-90/95 dark:text-chalkboard-10">
         <div className="border-b border-chalkboard-20/70 bg-chalkboard-20/70 px-4 py-4 text-chalkboard-100 dark:border-chalkboard-80/70 dark:bg-chalkboard-80/70 dark:text-chalkboard-10">
           <div className="min-w-0">
             <h2 className="text-base font-medium leading-none">
@@ -255,14 +255,14 @@ export function PublishDialog({
               )}
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2">
               <p className="text-xs font-medium uppercase tracking-[0.14em] text-chalkboard-60 dark:text-chalkboard-40">
                 Categories*
               </p>
 
               <div
                 aria-invalid={hasTriedSubmit && !categoriesIsValid}
-                className={`max-h-72 overflow-y-auto rounded-xl border bg-chalkboard-10/70 p-2 dark:bg-chalkboard-100/40 ${
+                className={`max-h-64 overflow-y-auto rounded-lg border bg-chalkboard-10/70 p-1.5 dark:bg-chalkboard-100/40 ${
                   hasTriedSubmit && !categoriesIsValid
                     ? 'border-destroy-60'
                     : 'border-chalkboard-20/80 dark:border-chalkboard-80/70'
@@ -293,7 +293,7 @@ export function PublishDialog({
                     No Aquarium categories are currently available.
                   </div>
                 ) : (
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-1.5">
                     {categories.map((category) => {
                       const isSelected = selectedCategoryIds.includes(
                         category.id
@@ -302,7 +302,7 @@ export function PublishDialog({
                       return (
                         <label
                           key={category.id}
-                          className={`relative flex w-full cursor-pointer items-start gap-3 rounded-xl border px-3 py-3 text-left transition-colors ${
+                          className={`relative flex w-full cursor-pointer items-start gap-2 rounded-lg border px-2.5 py-2 text-left transition-colors ${
                             isSelected
                               ? 'border-chalkboard-30/80 bg-chalkboard-10/90 dark:border-chalkboard-60/80 dark:bg-chalkboard-90/80'
                               : 'border-chalkboard-20/80 bg-chalkboard-10/40 hover:border-chalkboard-30/80 dark:border-chalkboard-80/70 dark:bg-chalkboard-100/20 dark:hover:border-chalkboard-70'
@@ -321,11 +321,11 @@ export function PublishDialog({
                                   : [...current, category.id]
                               )
                             }}
-                            className="absolute inset-0 z-10 m-0 h-full w-full cursor-pointer appearance-none rounded-xl border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-appForeground"
+                            className="absolute inset-0 z-10 m-0 h-full w-full cursor-pointer appearance-none rounded-lg border-0 bg-transparent p-0 focus-visible:outline focus-visible:outline-2 focus-visible:outline-appForeground"
                           />
                           <div
                             aria-hidden="true"
-                            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded border ${
+                            className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border ${
                               isSelected
                                 ? 'border-chalkboard-30 bg-chalkboard-100 text-chalkboard-10 dark:border-chalkboard-30 dark:bg-chalkboard-10 dark:text-chalkboard-100'
                                 : 'border-chalkboard-30 bg-transparent text-transparent dark:border-chalkboard-70'
@@ -334,10 +334,10 @@ export function PublishDialog({
                             <CheckIcon />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-base font-medium leading-5 text-chalkboard-100 dark:text-chalkboard-10">
+                            <p className="text-sm font-medium leading-4 text-chalkboard-100 dark:text-chalkboard-10">
                               {category.display_name}
                             </p>
-                            <p className="mt-1 text-sm leading-5 text-chalkboard-60 dark:text-chalkboard-40">
+                            <p className="mt-0.5 text-xs leading-4 text-chalkboard-60 dark:text-chalkboard-40">
                               {category.description}
                             </p>
                           </div>
@@ -479,7 +479,7 @@ function CheckIcon() {
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-4 w-4"
+      className="h-3 w-3"
       aria-hidden="true"
     >
       <path
