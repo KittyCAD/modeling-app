@@ -190,6 +190,8 @@ export const LayoutRootNode = memo(
   },
   (oldProps, newProps) =>
     isEqual(oldProps.layout, newProps.layout) &&
+    oldProps.areaLibrary === newProps.areaLibrary &&
+    oldProps.actionLibrary === newProps.actionLibrary &&
     oldProps.enableContextMenus === newProps.enableContextMenus &&
     oldProps.showDebugPanel === newProps.showDebugPanel &&
     isEqual(oldProps.notifications, newProps.notifications) &&
@@ -587,9 +589,31 @@ function NotificationBadge({ pane }: { pane: PaneChild }) {
 
 function ActionButton({ action, side }: { action: Action; side: Side }) {
   const { actionLibrary } = useLayoutState()
-  const platform = usePlatform()
   const resolvedAction =
     actionLibrary[action.actionType] ?? missingActionDefinition
+  const resolvedActionState =
+    resolvedAction === missingActionDefinition ? 'missing' : 'active'
+
+  return (
+    <ResolvedActionButton
+      key={`${action.actionType}-${resolvedActionState}`}
+      action={action}
+      side={side}
+      resolvedAction={resolvedAction}
+    />
+  )
+}
+
+function ResolvedActionButton({
+  action,
+  side,
+  resolvedAction,
+}: {
+  action: Action
+  side: Side
+  resolvedAction: ActionTypeDefinition
+}) {
+  const platform = usePlatform()
   const disabledReason = resolvedAction.useDisabled?.()
   const hidden = resolvedAction.useHidden?.()
   useHotkeys(resolvedAction.shortcut || '', () => resolvedAction.execute(), {
