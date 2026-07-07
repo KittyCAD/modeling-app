@@ -68,12 +68,11 @@ function CommandArgOptionInput({
   const [selectedOption, setSelectedOption] = useState<
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
-  // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   const initialQuery = useMemo(() => {
     if (!showSelectedValue) return ''
     const optionValue = (currentOption || resolvedOptions[0])?.value
     return optionValueInputText(optionValue)
-  }, [arg.options, argName, currentOption, resolvedOptions, showSelectedValue])
+  }, [currentOption, resolvedOptions, showSelectedValue])
   const [query, setQuery] = useState(initialQuery)
   const [filteredOptions, setFilteredOptions] =
     useState<typeof resolvedOptions>()
