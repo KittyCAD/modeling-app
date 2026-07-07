@@ -16,7 +16,6 @@ import {
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
 import { MachineManager } from '@src/lib/MachineManager'
-import { configureCloudSync } from '@src/lib/cloudSync'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -71,6 +70,7 @@ import {
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
   commandSystemService,
@@ -312,12 +312,12 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncCloudSyncBacking)
-    this.userFeatures.actor.subscribe(this.syncCloudSyncBacking)
-    this.settings.actor.subscribe(this.syncCloudSyncBacking)
+    this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncCloudSyncBacking()
+    this.syncCloudSyncRuntimePolicy()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -656,7 +656,7 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncCloudSyncBacking = () => {
+  syncCloudSyncRuntimePolicy = () => {
     if (typeof window === 'undefined') {
       return
     }
@@ -677,7 +677,7 @@ export class App implements AppSubsystems {
         false
       )
 
-    configureCloudSync({
+    this.registry.get(cloudSyncService).configure({
       enabled,
       token,
       projectDirectoryPath: settingsContext.app.projectDirectory.current,

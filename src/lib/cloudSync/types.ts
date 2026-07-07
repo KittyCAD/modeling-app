@@ -1,5 +1,3 @@
-import type { OPFSOptions } from '@src/lib/fs-zds/opfs'
-
 /** Cloud API project revision token used for guarded updates. */
 export type Revision = string
 
@@ -20,7 +18,7 @@ export type ProjectArchiveFile = {
   data: Uint8Array
 }
 
-/** Durable per-project sync metadata stored locally in the OPFSCloud sync DB. */
+/** Durable per-project sync metadata stored locally in the cloud sync DB. */
 export type ProjectMetadata = {
   schemaVersion: 1
   localProjectPath: string
@@ -67,7 +65,7 @@ export type RemoteProjectSummary = {
   [key: string]: unknown
 }
 
-/** Full remote project metadata used by OPFSCloud before archive download. */
+/** Full remote project metadata used by cloud sync before archive download. */
 export type RemoteProject = RemoteProjectSummary
 
 /** Metadata fields sent alongside whole-project cloud archive uploads. */
@@ -80,8 +78,8 @@ export type ProjectUploadBody = {
   expected_revision?: Revision
 }
 
-/** Runtime configuration for enabling and targeting OPFSCloud replication. */
-export type OPFSCloudConfig = {
+/** Runtime configuration for enabling and targeting cloud sync replication. */
+export type CloudSyncConfig = {
   enabled: boolean
   token?: string
   baseUrl?: string
@@ -91,7 +89,7 @@ export type OPFSCloudConfig = {
 }
 
 /** Coarse user-visible sync state exposed to status bar consumers. */
-export type OPFSCloudSyncState =
+export type CloudSyncState =
   | 'disabled'
   | 'idle'
   | 'syncing'
@@ -99,9 +97,9 @@ export type OPFSCloudSyncState =
   | 'conflict'
 
 /** Current aggregate sync status for UI and diagnostics. */
-export type OPFSCloudSyncStatus = {
+export type CloudSyncStatus = {
   enabled: boolean
-  state: OPFSCloudSyncState
+  state: CloudSyncState
   pendingCount: number
   activeProjectPath?: string
   lastFailure?: string
@@ -109,11 +107,8 @@ export type OPFSCloudSyncStatus = {
   lastSyncedAt?: string
 }
 
-/** OPFS backing options accepted by the OPFSCloud wrapper. */
-export type OPFSCloudOptions = OPFSOptions
-
 /** Local project that has been associated with a remote cloud project. */
-export type OpfsCloudLocalProject = {
+export type CloudSyncLocalProject = {
   projectPath: string
   projectName: string
   remoteProjectId: string
@@ -121,7 +116,7 @@ export type OpfsCloudLocalProject = {
 }
 
 /** Project metadata index entry enriched with pending local-change state. */
-export type OpfsCloudProjectMetadataIndexEntry = ProjectMetadata & {
+export type CloudSyncProjectMetadataIndexEntry = ProjectMetadata & {
   hasPendingChanges: boolean
 }
 

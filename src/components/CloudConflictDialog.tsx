@@ -68,8 +68,6 @@ export function useCloudSyncProjectConflict(projectPath?: string) {
   return metadata
 }
 
-export const useOpfsCloudProjectConflict = useCloudSyncProjectConflict
-
 export function useCloudSyncProjectConflicts() {
   useSignals()
   const status = cloudSyncStatus.value
@@ -120,8 +118,6 @@ export function useCloudSyncProjectConflicts() {
 
   return metadata
 }
-
-export const useOpfsCloudProjectConflicts = useCloudSyncProjectConflicts
 
 export function CloudConflictDialog({
   projectPath,
