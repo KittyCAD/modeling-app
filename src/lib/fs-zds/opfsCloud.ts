@@ -1436,6 +1436,30 @@ export function getOpfsCloudRemoteIndexAction({
   return 'clone-remote'
 }
 
+export type OpfsCloudKnownLocalRemoteIndexAction =
+  | 'defer-pending-local-changes'
+  | 'sync-known-local'
+  | 'index-known-local'
+
+export function getOpfsCloudKnownLocalRemoteIndexAction({
+  hasPendingLocalChanges,
+  remoteChanged,
+  localChangedFromSyncBase,
+}: {
+  hasPendingLocalChanges: boolean
+  remoteChanged: boolean
+  localChangedFromSyncBase: boolean
+}): OpfsCloudKnownLocalRemoteIndexAction {
+  if (hasPendingLocalChanges && remoteChanged) {
+    return 'defer-pending-local-changes'
+  }
+  if (!hasPendingLocalChanges && (remoteChanged || localChangedFromSyncBase)) {
+    return 'sync-known-local'
+  }
+
+  return 'index-known-local'
+}
+
 async function syncDeletedProject(metadata: ProjectMetadata) {
   if (metadata.remoteProjectId) {
     try {
@@ -1515,6 +1539,20 @@ async function reconcileMissingRemoteProject(
   return nextMetadata
 }
 
+async function localProjectChangedFromSyncBase(metadata: ProjectMetadata) {
+  if (!metadata.remoteProjectId) {
+    return false
+  }
+  if (!metadata.baseManifest) {
+    return true
+  }
+
+  const localManifest = await collectLocalProjectFiles(
+    metadata.localProjectPath
+  ).then(projectManifestFromFiles)
+  return !projectManifestsEqual(localManifest, metadata.baseManifest)
+}
+
 async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   let metadata = await getOrCreateProjectMetadata(projectPath)
   if (isProjectSyncExcluded(metadata)) {
@@ -1529,6 +1567,11 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   }
 
   try {
+    metadata = await bindRemoteProjectIdFromToml(metadata)
+    if (!shouldAutoSyncLocalProject(metadata) && entries.length === 0) {
+      return
+    }
+
     const latestKind = latestOutboxKind(entries)
     const localProjectExists = await exists(metadata.localProjectPath)
     const initialAction = getOpfsCloudProjectSyncPreflightAction({
@@ -1550,7 +1593,6 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
       return
     }
 
-    metadata = await bindRemoteProjectIdFromToml(metadata)
     if (metadata.remoteProjectId) {
       await writeLocalProjectCloudProjectId(
         metadata.localProjectPath,
@@ -1858,24 +1900,35 @@ async function syncRemoteIndex() {
               remoteProject.title
             )
         const remoteRevision = getRevision(remoteProject)
-        if (
+        const hasUnqueuedLocalChanges =
+          !hasPendingLocalChanges &&
+          (await localProjectChangedFromSyncBase(nextLocalMetadata))
+        const remoteChanged = Boolean(
           remoteRevision &&
-          nextLocalMetadata.remoteRevision &&
-          remoteRevision !== nextLocalMetadata.remoteRevision
-        ) {
-          if (hasPendingLocalChanges) {
-            const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
-            if (remoteUpdatedAt) {
-              const indexedMetadata = {
-                ...nextLocalMetadata,
-                remoteUpdatedAt,
-              }
-              await putProjectMetadata(indexedMetadata)
-              upsertMetadata(indexedMetadata)
-            }
-            continue
-          }
+            nextLocalMetadata.remoteRevision &&
+            remoteRevision !== nextLocalMetadata.remoteRevision
+        )
+        const knownLocalRemoteIndexAction =
+          getOpfsCloudKnownLocalRemoteIndexAction({
+            hasPendingLocalChanges,
+            remoteChanged,
+            localChangedFromSyncBase: hasUnqueuedLocalChanges,
+          })
 
+        if (knownLocalRemoteIndexAction === 'defer-pending-local-changes') {
+          const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
+          if (remoteUpdatedAt) {
+            const indexedMetadata = {
+              ...nextLocalMetadata,
+              remoteUpdatedAt,
+            }
+            await putProjectMetadata(indexedMetadata)
+            upsertMetadata(indexedMetadata)
+          }
+          continue
+        }
+
+        if (knownLocalRemoteIndexAction === 'sync-known-local') {
           await syncProject(nextLocalMetadata.localProjectPath, [])
           const syncedMetadata = await getProjectMetadata(
             nextLocalMetadata.localProjectPath

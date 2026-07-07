@@ -10,6 +10,7 @@ import {
   filterOpfsCloudProjectFilesForSync,
   getOpfsCloudConflictCopyCleanupPlan,
   getOpfsCloudInitialLocalProjectSyncAction,
+  getOpfsCloudKnownLocalRemoteIndexAction,
   getOpfsCloudMissingRemoteProjectAction,
   getOpfsCloudProjectModifiedTime,
   getOpfsCloudProjectRoot,
@@ -245,6 +246,40 @@ describe('opfsCloud sync helpers', () => {
         hasMatchingLocalProject: true,
       })
     ).toBe('adopt-matching-local')
+  })
+
+  it('syncs known cloud-linked projects with unqueued local changes during remote index scans', () => {
+    expect(
+      getOpfsCloudKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: false,
+        remoteChanged: false,
+        localChangedFromSyncBase: true,
+      })
+    ).toBe('sync-known-local')
+
+    expect(
+      getOpfsCloudKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: false,
+        remoteChanged: true,
+        localChangedFromSyncBase: false,
+      })
+    ).toBe('sync-known-local')
+
+    expect(
+      getOpfsCloudKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: true,
+        remoteChanged: true,
+        localChangedFromSyncBase: true,
+      })
+    ).toBe('defer-pending-local-changes')
+
+    expect(
+      getOpfsCloudKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: false,
+        remoteChanged: false,
+        localChangedFromSyncBase: false,
+      })
+    ).toBe('index-known-local')
   })
 
   it('skips sync-excluded conflict copies during the initial local scan', () => {
