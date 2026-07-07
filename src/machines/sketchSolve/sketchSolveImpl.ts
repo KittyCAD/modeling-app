@@ -1571,11 +1571,7 @@ export function spawnTool(
 }
 
 export const tearDownSketchSolve = fromPromise(
-  async ({
-    input,
-  }: {
-    input: { context: SketchSolveContext }
-  }) => {
+  async ({ input }: { input: { context: SketchSolveContext } }) => {
     // Let the rust side know this sketch is being exited
     await input.context.rustContext.exitSketch(
       SKETCH_FILE_VERSION,
