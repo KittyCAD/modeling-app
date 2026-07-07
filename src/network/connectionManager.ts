@@ -1102,11 +1102,7 @@ export class ConnectionManager extends EventTarget {
    * within the engine command manager. This will reject a specific pendingCommand which will prevent it from
    * hanging forever
    */
-  rejectPendingCommand({
-    cmdId,
-  }: {
-    cmdId: string
-  }) {
+  rejectPendingCommand({ cmdId }: { cmdId: string }) {
     if (this.pendingCommands[cmdId]) {
       const pendingCommand = this.pendingCommands[cmdId]
       pendingCommand.reject([
