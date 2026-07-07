@@ -146,14 +146,14 @@ input {
 }
 
 .mono {
-  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 code,
 #code-mirror-override .cm-content {
-  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 #code-mirror-override {
@@ -375,8 +375,9 @@ code,
   font-size: 12px;
   opacity: 0;
   color: red;
-  background: #ffff00 url("/clientSideSceneAssets/extra-segment-texture.svg")
-    center / 10px 10px no-repeat;
+  background:
+    #ffff00 url("/clientSideSceneAssets/extra-segment-texture.svg") center /
+    10px 10px no-repeat;
   border-radius: 100%;
   background-size: 10px 10px;
 }
@@ -655,7 +656,7 @@ code,
 }
 
 .animate-shimmer {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
   animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-name: loading-shimmer;
@@ -664,7 +665,7 @@ code,
 }
 
 .animate-delta-in {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
   animation-duration: 1.5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;

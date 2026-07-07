@@ -166,7 +166,11 @@ describe('updateSelectedCodeHighlight', () => {
           from,
           to,
           empty,
-        }: { from: number; to: number; empty: boolean }) => ({
+        }: {
+          from: number
+          to: number
+          empty: boolean
+        }) => ({
           from,
           to,
           empty,
