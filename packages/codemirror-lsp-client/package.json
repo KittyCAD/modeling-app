@@ -19,13 +19,13 @@
   "private": false,
   "dependencies": {
     "@codemirror/autocomplete": "6.20.3",
-    "@codemirror/language": "^6.12.3",
+    "@codemirror/language": "^6.12.4",
     "@codemirror/state": "^6.5.4",
     "@lezer/highlight": "^1.2.1",
     "@ts-stack/markdown": "^1.5.0",
     "json-rpc-2.0": "^1.7.1",
     "typescript": "^6.0.2",
-    "vscode-languageserver-protocol": "^3.17.5",
+    "vscode-languageserver-protocol": "^3.18.1",
     "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
