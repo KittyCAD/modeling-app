@@ -2,6 +2,16 @@
 
 `src/lib/cloudSync` is the local-first sync engine used by the cloud sync plugin and service extension. User-visible file system operations go through the normal app filesystem first, while cloud replication runs in the background through a durable metadata store and outbox.
 
+## Registry Shape
+
+The cloud sync subsystem has both always-on infrastructure and toggleable runtime behavior. The implementation lives with the domain code:
+
+- `registry/contract.ts` defines the service shape other app code can depend on.
+- `registry/extension.ts` provides the always-on cloud sync service to the app registry.
+- `registry/plugin.tsx` defines the user-toggleable plugin UI and status-bar contribution.
+
+The files under `src/registry/extensions/cloudSync`, `src/registry/plugins/cloudSync`, and `src/registry/contracts/cloudSync.ts` are intentionally thin shims for registry discovery and compatibility with existing import paths.
+
 ## Sync Flows
 
 ### Local Reads And Home Loading
