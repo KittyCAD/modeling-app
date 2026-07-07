@@ -215,7 +215,7 @@ export function MarkdownEditor({
             disabled={!editor}
             onClick={() => editor?.chain().focus().toggleBold().run()}
           >
-            <span className="font-semibold">B</span>
+            <BoldIcon />
           </EditorToolbarButton>
         )}
         {enabledFeatures.has('italic') && (
@@ -225,7 +225,7 @@ export function MarkdownEditor({
             disabled={!editor}
             onClick={() => editor?.chain().focus().toggleItalic().run()}
           >
-            <span className="italic">I</span>
+            <ItalicIcon />
           </EditorToolbarButton>
         )}
         {hasLink && (
@@ -351,79 +351,101 @@ function EditorToolbarButton({
   )
 }
 
+function BoldIcon() {
+  return (
+    <ToolbarIcon>
+      <ToolbarIconPath d="M6 4h8a4 4 0 0 1 0 8H6z" />
+      <ToolbarIconPath d="M6 12h9a4 4 0 0 1 0 8H6z" />
+    </ToolbarIcon>
+  )
+}
+
+function ItalicIcon() {
+  return (
+    <ToolbarIcon>
+      <ToolbarIconPath d="M19 4h-9" />
+      <ToolbarIconPath d="M14 20H5" />
+      <ToolbarIconPath d="M15 4 9 20" />
+    </ToolbarIcon>
+  )
+}
+
 function LinkIcon() {
   return (
-    <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
-      <path
-        d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L11 4.93"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-      <path
-        d="M14 11a5 5 0 0 0-7.07 0L4.81 13.12a5 5 0 0 0 7.07 7.07L13 19.07"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
+    <ToolbarIcon>
+      <ToolbarIconPath d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L11 4.93" />
+      <ToolbarIconPath d="M14 11a5 5 0 0 0-7.07 0L4.81 13.12a5 5 0 0 0 7.07 7.07L13 19.07" />
+    </ToolbarIcon>
   )
 }
 
 function UndoIcon() {
   return (
-    <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
-      <path
-        d="M9 14 4 9l5-5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-      <path
-        d="M4 9h10a6 6 0 0 1 0 12h-1"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
+    <ToolbarIcon>
+      <ToolbarIconPath d="M9 14 4 9l5-5" />
+      <ToolbarIconPath d="M4 9h10a6 6 0 0 1 0 12h-1" />
+    </ToolbarIcon>
   )
 }
 
 function RedoIcon() {
   return (
-    <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
-      <path
-        d="m15 14 5-5-5-5"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-      <path
-        d="M20 9H10a6 6 0 0 0 0 12h1"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
+    <ToolbarIcon>
+      <ToolbarIconPath d="m15 14 5-5-5-5" />
+      <ToolbarIconPath d="M20 9H10a6 6 0 0 0 0 12h1" />
+    </ToolbarIcon>
   )
 }
 
 function ListIcon({ ordered }: { ordered: boolean }) {
+  if (ordered) {
+    return (
+      <ToolbarIcon>
+        <ToolbarIconPath d="M10 6h11" />
+        <ToolbarIconPath d="M10 12h11" />
+        <ToolbarIconPath d="M10 18h11" />
+        <ToolbarIconPath d="M4 6h1v4" />
+        <ToolbarIconPath d="M4 10h2" />
+        <ToolbarIconPath d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1" />
+      </ToolbarIcon>
+    )
+  }
+
   return (
-    <span className="grid h-4 w-4 grid-cols-[0.35rem_1fr] items-center gap-x-1 text-[0.55rem] leading-none">
-      <span className="text-center">{ordered ? '1' : '-'}</span>
-      <span className="h-px bg-current" />
-      <span className="text-center">{ordered ? '2' : '-'}</span>
-      <span className="h-px bg-current" />
-      <span className="text-center">{ordered ? '3' : '-'}</span>
-      <span className="h-px bg-current" />
-    </span>
+    <ToolbarIcon>
+      <ToolbarIconPath d="M8 6h13" />
+      <ToolbarIconPath d="M8 12h13" />
+      <ToolbarIconPath d="M8 18h13" />
+      <ToolbarIconPath d="M3 6h.01" strokeWidth={3} />
+      <ToolbarIconPath d="M3 12h.01" strokeWidth={3} />
+      <ToolbarIconPath d="M3 18h.01" strokeWidth={3} />
+    </ToolbarIcon>
+  )
+}
+
+function ToolbarIcon({ children }: { children: ReactNode }) {
+  return (
+    <svg aria-hidden="true" className="h-4 w-4" fill="none" viewBox="0 0 24 24">
+      {children}
+    </svg>
+  )
+}
+
+function ToolbarIconPath({
+  d,
+  strokeWidth = 2,
+}: {
+  d: string
+  strokeWidth?: number
+}) {
+  return (
+    <path
+      d={d}
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={strokeWidth}
+    />
   )
 }
 
