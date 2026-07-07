@@ -5390,10 +5390,6 @@ fn code_ref_source_ref_range(code_ref: &CodeRef) -> SourceRefRange {
     }
 }
 
-fn backtrace_range_from_source_ref_range(source: &SourceRefRange) -> (SourceRange, Option<crate::NodePath>) {
-    (source.range, source.node_path.clone())
-}
-
 fn solid_output_index_for_sweep(
     artifact_graph: &ArtifactGraph,
     sweep_id: ArtifactId,
@@ -5469,17 +5465,11 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     path: path_code_ref.map(code_ref_source_ref_range),
                     segment: code_ref_source_ref_range(&source_segment.code_ref),
                 };
-                let mut ranges = Vec::new();
-                ranges.push(backtrace_range_from_source_ref_range(&source.solid));
-                ranges.push(backtrace_range_from_source_ref_range(&source.sweep));
-                if let Some(path_source) = &source.path {
-                    ranges.push(backtrace_range_from_source_ref_range(path_source));
-                }
-                ranges.push(backtrace_range_from_source_ref_range(&source.segment));
                 let solid_output_index = (solid_code_ref.range == sweep.code_ref.range
                     && solid_code_ref.node_path == sweep.code_ref.node_path)
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
                     .flatten();
+                let object_source = source_ref_from_source_ref_range(&source.solid);
                 let id = ObjectId(scene_objects.len());
                 scene_objects.push(crate::front::Object {
                     id,
@@ -5491,7 +5481,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: wall.id,
-                    source: SourceRef::BackTrace { ranges },
+                    source: object_source,
                 });
                 existing_artifact_ids.insert(wall.id);
             }
@@ -5517,16 +5507,11 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     solid: code_ref_source_ref_range(solid_code_ref),
                     sweep: code_ref_source_ref_range(&sweep.code_ref),
                 };
-                let mut ranges = Vec::new();
-                if solid_code_ref.range != sweep.code_ref.range || solid_code_ref.node_path != sweep.code_ref.node_path
-                {
-                    ranges.push(backtrace_range_from_source_ref_range(&source.solid));
-                }
-                ranges.push(backtrace_range_from_source_ref_range(&source.sweep));
                 let solid_output_index = (solid_code_ref.range == sweep.code_ref.range
                     && solid_code_ref.node_path == sweep.code_ref.node_path)
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
                     .flatten();
+                let object_source = source_ref_from_source_ref_range(&source.solid);
                 scene_objects.push(crate::front::Object {
                     id,
                     kind: ObjectKind::Cap(crate::frontend::api::Cap {
@@ -5538,7 +5523,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: cap.id,
-                    source: SourceRef::BackTrace { ranges },
+                    source: object_source,
                 });
                 existing_artifact_ids.insert(cap.id);
             }
