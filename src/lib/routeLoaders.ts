@@ -39,11 +39,7 @@ export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
  * The OPFS cloud feature flag enables the home, multi-project view on web.
  */
 export const baseLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async ({ request }) => {
     const url = new URL(request.url)
     const routerSearch = getRouterSearchFromRequestUrl(
@@ -100,11 +96,7 @@ export const baseLoader =
   }
 
 export const fileLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
     const {
       settings: { actor: settingsActor },
@@ -261,11 +253,7 @@ export const fileLoader =
 
 // Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async (): Promise<HomeLoaderData | Response> => {
     // If on unflagged web, bump out to root, which will redirect to a project.
     if (!window.electron && !(await webHomeRouteEnabled(app))) {

@@ -230,7 +230,10 @@ function LayoutNode({
 function SplitLayout({
   layout,
   onClose,
-}: { layout: SplitLayoutType; onClose?: (id: string) => void }) {
+}: {
+  layout: SplitLayoutType
+  onClose?: (id: string) => void
+}) {
   return (
     <SplitLayoutContents
       direction={orientationToDirection(layout.orientation)}

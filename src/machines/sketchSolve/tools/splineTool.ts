@@ -595,7 +595,10 @@ function getListenerSnappingCandidate({
 function addFirstPointListener({
   self,
   context,
-}: { self: any; context: ToolContext }) {
+}: {
+  self: any
+  context: ToolContext
+}) {
   context.sceneInfra.setCallbacks({
     onClick: (args) => {
       if (!args || args.mouseEvent.which !== 1) return
@@ -639,7 +642,10 @@ function addFirstPointListener({
 function addSecondPointListener({
   self,
   context,
-}: { self: any; context: ToolContext }) {
+}: {
+  self: any
+  context: ToolContext
+}) {
   let previewLine = getPreviewLine(context.sceneInfra)
   context.sceneInfra.setCallbacks({
     onClick: (args) => {
@@ -724,7 +730,10 @@ function addInitialSplineMoveListener({
 function addAppendMoveListener({
   self,
   context,
-}: { self: any; context: ToolContext }) {
+}: {
+  self: any
+  context: ToolContext
+}) {
   let hasStarted = false
   context.sceneInfra.setCallbacks({
     onMove: (args) => {
