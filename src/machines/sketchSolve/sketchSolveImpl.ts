@@ -1003,6 +1003,20 @@ function getSourceRangesForObjectId(
   objectId: number
 ): SourceRange[] {
   const object = objects[objectId]
+  if (object?.kind.type === 'Wall') {
+    return uniqueSourceRanges([
+      object.kind.source.solid.range,
+      object.kind.source.sweep.range,
+      object.kind.source.path?.range,
+      object.kind.source.segment.range,
+    ])
+  }
+  if (object?.kind.type === 'Cap') {
+    return uniqueSourceRanges([
+      object.kind.source.solid.range,
+      object.kind.source.sweep.range,
+    ])
+  }
 
   if (object?.source.type === 'Simple') {
     return [object.source.range]
@@ -1011,6 +1025,12 @@ function getSourceRangesForObjectId(
     return object.source.ranges.map(([range]) => range)
   }
   return []
+}
+
+function uniqueSourceRanges(ranges: Array<SourceRange | undefined>) {
+  return dedupeSourceRanges(
+    ranges.filter((range): range is SourceRange => range !== undefined)
+  )
 }
 
 function getObjectIdsForCodeSelectionRanges(

@@ -49,6 +49,7 @@ use crate::front::Perpendicular;
 use crate::front::PointCtor;
 use crate::front::Symmetric;
 use crate::front::Tangent;
+use crate::frontend::api::CapSource;
 use crate::frontend::api::Expr;
 use crate::frontend::api::FileId;
 use crate::frontend::api::Number;
@@ -62,7 +63,9 @@ use crate::frontend::api::SceneGraphDelta;
 use crate::frontend::api::SketchCheckpointId;
 use crate::frontend::api::SourceDelta;
 use crate::frontend::api::SourceRef;
+use crate::frontend::api::SourceRefRange;
 use crate::frontend::api::Version;
+use crate::frontend::api::WallSource;
 use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
@@ -5191,32 +5194,11 @@ fn sketch_face_of_scene_object_ast_expr(
     ast: &mut ast::Node<ast::Program>,
     on_object: &crate::front::Object,
 ) -> Result<Option<ast::Expr>, KclError> {
-    let SourceRef::BackTrace { ranges } = &on_object.source else {
-        return Ok(None);
-    };
-
     match &on_object.kind {
         ObjectKind::Wall(wall) => {
-            let (solid_range, sweep_range, path_range, segment_range) = match ranges.as_slice() {
-                [sweep_range, segment_range] => (sweep_range, sweep_range, None, segment_range),
-                [solid_range, sweep_range, segment_range] => (solid_range, sweep_range, None, segment_range),
-                [solid_range, sweep_range, path_range, segment_range] => {
-                    (solid_range, sweep_range, Some(path_range), segment_range)
-                }
-                _ => {
-                    return Err(KclError::refactor(format!(
-                        "Expected wall source metadata to have 2, 3, or 4 ranges, got {}; artifact_id={:?}",
-                        ranges.len(),
-                        on_object.artifact_id
-                    )));
-                }
-            };
             let solid_ref = get_or_insert_ast_reference(
                 ast,
-                &SourceRef::Simple {
-                    range: solid_range.0,
-                    node_path: solid_range.1.clone(),
-                },
+                &source_ref_from_source_ref_range(&wall.source.solid),
                 "solid",
                 None,
             )?;
@@ -5232,10 +5214,7 @@ fn sketch_face_of_scene_object_ast_expr(
             );
             let sweep_ref = get_or_insert_ast_reference(
                 ast,
-                &SourceRef::Simple {
-                    range: sweep_range.0,
-                    node_path: sweep_range.1.clone(),
-                },
+                &source_ref_from_source_ref_range(&wall.source.sweep),
                 "solid",
                 None,
             )?;
@@ -5248,17 +5227,17 @@ fn sketch_face_of_scene_object_ast_expr(
             let sweep_name = sweep_name_expr.name.name.clone();
             let segment_ref = get_or_insert_ast_reference(
                 ast,
-                &SourceRef::Simple {
-                    range: segment_range.0,
-                    node_path: segment_range.1.clone(),
-                },
+                &source_ref_from_source_ref_range(&wall.source.segment),
                 LINE_VARIABLE,
                 None,
             )?;
 
-            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name)
-                .or_else(|| path_range.and_then(|path_range| region_name_from_path_source(ast, path_range)))
-            {
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name).or_else(|| {
+                wall.source
+                    .path
+                    .as_ref()
+                    .and_then(|path_source| region_name_from_path_source(ast, path_source))
+            }) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(KclError::refactor(format!(
                         "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
@@ -5276,25 +5255,8 @@ fn sketch_face_of_scene_object_ast_expr(
             Ok(Some(create_face_of_ast(solid_expr, face_expr)))
         }
         ObjectKind::Cap(cap) => {
-            let solid_range = match ranges.as_slice() {
-                [solid_range] | [solid_range, _] => solid_range,
-                _ => {
-                    return Err(KclError::refactor(format!(
-                        "Expected cap source metadata to have 1 or 2 ranges, got {}; artifact_id={:?}",
-                        ranges.len(),
-                        on_object.artifact_id
-                    )));
-                }
-            };
-            let solid_ref = get_or_insert_ast_reference(
-                ast,
-                &SourceRef::Simple {
-                    range: solid_range.0,
-                    node_path: solid_range.1.clone(),
-                },
-                "solid",
-                None,
-            )?;
+            let solid_ref =
+                get_or_insert_ast_reference(ast, &source_ref_from_source_ref_range(&cap.source.solid), "solid", None)?;
             let ast::Expr::Name(solid_name_expr) = solid_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve solid reference for selected cap: artifact_id={:?}",
@@ -5324,14 +5286,15 @@ fn indexed_solid_expr_for_sweep_output(solid_expr: ast::Expr, solid_output_index
     }
 }
 
-fn region_name_from_path_source(
-    ast: &ast::Node<ast::Program>,
-    path_range: &(SourceRange, Option<crate::NodePath>),
-) -> Option<String> {
-    let source_ref = SourceRef::Simple {
-        range: path_range.0,
-        node_path: path_range.1.clone(),
-    };
+fn source_ref_from_source_ref_range(source: &SourceRefRange) -> SourceRef {
+    SourceRef::Simple {
+        range: source.range,
+        node_path: source.node_path.clone(),
+    }
+}
+
+fn region_name_from_path_source(ast: &ast::Node<ast::Program>, path_source: &SourceRefRange) -> Option<String> {
+    let source_ref = source_ref_from_source_ref_range(path_source);
     let candidate = variable_name_containing_source_ref(ast, &source_ref)?;
     let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
         return None;
@@ -5419,9 +5382,16 @@ fn composite_contains_input(solid_ids: &[ArtifactId], tool_ids: &[ArtifactId], i
     solid_ids.contains(&input_id) || tool_ids.contains(&input_id)
 }
 
-fn code_ref_source_ref_range(code_ref: &CodeRef) -> (SourceRange, Option<crate::NodePath>) {
+fn code_ref_source_ref_range(code_ref: &CodeRef) -> SourceRefRange {
     let node_path = (!code_ref.node_path.is_empty()).then(|| code_ref.node_path.clone());
-    (code_ref.range, node_path)
+    SourceRefRange {
+        range: code_ref.range,
+        node_path,
+    }
+}
+
+fn backtrace_range_from_source_ref_range(source: &SourceRefRange) -> (SourceRange, Option<crate::NodePath>) {
+    (source.range, source.node_path.clone())
 }
 
 fn solid_output_index_for_sweep(
@@ -5493,13 +5463,19 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                         Artifact::Path(path) => Some(&path.code_ref),
                         _ => None,
                     });
+                let source = WallSource {
+                    solid: code_ref_source_ref_range(solid_code_ref),
+                    sweep: code_ref_source_ref_range(&sweep.code_ref),
+                    path: path_code_ref.map(code_ref_source_ref_range),
+                    segment: code_ref_source_ref_range(&source_segment.code_ref),
+                };
                 let mut ranges = Vec::new();
-                ranges.push(code_ref_source_ref_range(solid_code_ref));
-                ranges.push(code_ref_source_ref_range(&sweep.code_ref));
-                if let Some(path_code_ref) = path_code_ref {
-                    ranges.push(code_ref_source_ref_range(path_code_ref));
+                ranges.push(backtrace_range_from_source_ref_range(&source.solid));
+                ranges.push(backtrace_range_from_source_ref_range(&source.sweep));
+                if let Some(path_source) = &source.path {
+                    ranges.push(backtrace_range_from_source_ref_range(path_source));
                 }
-                ranges.push(code_ref_source_ref_range(&source_segment.code_ref));
+                ranges.push(backtrace_range_from_source_ref_range(&source.segment));
                 let solid_output_index = (solid_code_ref.range == sweep.code_ref.range
                     && solid_code_ref.node_path == sweep.code_ref.node_path)
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
@@ -5507,7 +5483,11 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                 let id = ObjectId(scene_objects.len());
                 scene_objects.push(crate::front::Object {
                     id,
-                    kind: ObjectKind::Wall(crate::frontend::api::Wall { id, solid_output_index }),
+                    kind: ObjectKind::Wall(crate::frontend::api::Wall {
+                        id,
+                        source,
+                        solid_output_index,
+                    }),
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: wall.id,
@@ -5533,12 +5513,16 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                 };
                 let solid_code_ref =
                     downstream_composite_code_ref_for_source(artifact_graph, cap.sweep_id).unwrap_or(&sweep.code_ref);
+                let source = CapSource {
+                    solid: code_ref_source_ref_range(solid_code_ref),
+                    sweep: code_ref_source_ref_range(&sweep.code_ref),
+                };
                 let mut ranges = Vec::new();
                 if solid_code_ref.range != sweep.code_ref.range || solid_code_ref.node_path != sweep.code_ref.node_path
                 {
-                    ranges.push(code_ref_source_ref_range(solid_code_ref));
+                    ranges.push(backtrace_range_from_source_ref_range(&source.solid));
                 }
-                ranges.push(code_ref_source_ref_range(&sweep.code_ref));
+                ranges.push(backtrace_range_from_source_ref_range(&source.sweep));
                 let solid_output_index = (solid_code_ref.range == sweep.code_ref.range
                     && solid_code_ref.node_path == sweep.code_ref.node_path)
                     .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
@@ -5548,6 +5532,7 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     kind: ObjectKind::Cap(crate::frontend::api::Cap {
                         id,
                         kind,
+                        source,
                         solid_output_index,
                     }),
                     label: Default::default(),
@@ -14053,18 +14038,14 @@ region(segments = [
             .scene_graph
             .objects
             .iter()
-            .find_map(|object| {
-                if !matches!(object.kind, ObjectKind::Wall(_)) {
-                    return None;
+            .find_map(|object| match &object.kind {
+                ObjectKind::Wall(wall)
+                    if wall.source.path.as_ref().is_some_and(|path| path.range == region_range)
+                        && wall.source.segment.range == segment_range =>
+                {
+                    Some(object.id)
                 }
-                match &object.source {
-                    SourceRef::BackTrace { ranges }
-                        if ranges.len() == 4 && ranges[2].0 == region_range && ranges[3].0 == segment_range =>
-                    {
-                        Some(object.id)
-                    }
-                    _ => None,
-                }
+                _ => None,
             })
             .expect("expected a wall object for region001.tags.rect1Line1");
 
@@ -14159,15 +14140,12 @@ part = subtract(boxSolid, tools = [cutSolid])
             .iter()
             .find(|object| {
                 matches!(
-                    object.kind,
+                    &object.kind,
                     ObjectKind::Cap(crate::frontend::api::Cap {
                         kind: crate::frontend::api::CapKind::End,
+                        source,
                         ..
-                    })
-                ) && matches!(
-                    &object.source,
-                    SourceRef::BackTrace { ranges }
-                        if ranges.len() == 2 && ranges[0].0 == composite_range && ranges[1].0 == sweep_range
+                    }) if source.solid.range == composite_range && source.sweep.range == sweep_range
                 )
             })
             .expect("expected end cap object to trace through subtract and original extrude");
