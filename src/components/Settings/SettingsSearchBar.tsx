@@ -1,8 +1,12 @@
 import { Combobox } from '@headlessui/react'
 import { useSignalEffect } from '@preact/signals-react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { CustomIcon } from '@src/components/CustomIcon'
 import { getKeybindingRows } from '@src/components/Settings/keybindingRows'
+import Fuse from 'fuse.js'
+import { useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -13,16 +17,13 @@ import {
   hiddenOnPlatform,
 } from '@src/lib/settings/settingsUtils'
 import {
-  getKeymapItemScopes,
   KEYMAP_SCHEMA_VERSION,
   type KeymapScope,
+  getKeymapItemScopes,
   keymapScopesValueSpec,
   keymapService,
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
-import Fuse from 'fuse.js'
-import { useMemo, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 

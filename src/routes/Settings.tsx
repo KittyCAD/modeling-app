@@ -1,6 +1,9 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { pluginsValueSpec } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
+import { Fragment, useEffect, useRef } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+
+import { pluginsValueSpec } from '@kittycad/registry'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PluginsList } from '@src/components/PluginList'
 import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
@@ -19,8 +22,6 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-import { Fragment, useEffect, useRef } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 type SettingsTab = SettingsLevel | 'keybindings' | 'plugins'
 

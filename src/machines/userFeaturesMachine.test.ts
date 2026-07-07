@@ -1,10 +1,6 @@
 import type { UserFeature } from '@kittycad/lib'
 import type * as ClientErrorsModule from '@src/lib/clientErrors'
 import {
-  BODIES_PANE_FEATURE_FLAG,
-  EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-} from '@src/lib/constants'
-import {
   USER_FEATURES_POLL_INTERVAL_MS,
   USER_FEATURES_RETRY_INTERVAL_MS,
   UserFeaturesActor,
@@ -41,7 +37,10 @@ describe('userFeaturesMachine', () => {
 
   it('loads feature ids once for a token and answers membership from context', async () => {
     const fetchFeatures = vi.fn(async () => ({
-      featureIds: new Set<UserFeature>([EXPERIMENTAL_POINT_AND_CLICK_FLAG]),
+      featureIds: new Set<UserFeature>([
+        'plugins',
+        'sketch_experimental_features',
+      ]),
     }))
     const actor = createActor(
       userFeaturesMachine.provide({
@@ -64,19 +63,9 @@ describe('userFeaturesMachine', () => {
       const context = actor.getSnapshot().context
       expect(fetchFeatures).toHaveBeenCalledTimes(1)
       expect(context.token).toBe('token-a')
-      expect(
-        userFeaturesContextHas(
-          context,
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-          false
-        )
-      ).toBe(true)
-      expect(
-        userFeaturesContextHas(context, BODIES_PANE_FEATURE_FLAG, false)
-      ).toBe(false)
-      expect(
-        userFeaturesContextHas(context, BODIES_PANE_FEATURE_FLAG, true)
-      ).toBe(true)
+      expect(userFeaturesContextHas(context, 'plugins', false)).toBe(true)
+      expect(userFeaturesContextHas(context, 'bodies_pane', false)).toBe(false)
+      expect(userFeaturesContextHas(context, 'bodies_pane', true)).toBe(true)
     } finally {
       actor.stop()
     }
@@ -90,9 +79,7 @@ describe('userFeaturesMachine', () => {
             TestFetchUserFeaturesResult,
             TestFetchUserFeaturesInput
           >(async () => ({
-            featureIds: new Set<UserFeature>([
-              EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-            ]),
+            featureIds: new Set<UserFeature>(['plugins']),
           })),
         },
       })
@@ -126,9 +113,7 @@ describe('userFeaturesMachine', () => {
             }
 
             return {
-              featureIds: new Set<UserFeature>([
-                EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-              ]),
+              featureIds: new Set<UserFeature>(['plugins']),
             }
           }),
         },
@@ -139,11 +124,7 @@ describe('userFeaturesMachine', () => {
       actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
       await waitFor(actor, (state) => state.matches(UserFeaturesState.Ready))
       expect(
-        userFeaturesContextHas(
-          actor.getSnapshot().context,
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-          false
-        )
+        userFeaturesContextHas(actor.getSnapshot().context, 'plugins', false)
       ).toBe(true)
 
       actor.send({ type: UserFeaturesTransition.Load, token: 'token-b' })
@@ -152,13 +133,7 @@ describe('userFeaturesMachine', () => {
       const context = actor.getSnapshot().context
       expect(context.featureIds.size).toBe(0)
       expect(context.token).toBe('token-b')
-      expect(
-        userFeaturesContextHas(
-          context,
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-          false
-        )
-      ).toBe(false)
+      expect(userFeaturesContextHas(context, 'plugins', false)).toBe(false)
       expect(mockState.reportClientError).toHaveBeenCalledWith({
         code: 'user_features_fetch_error',
         message: 'feature service unavailable',
@@ -181,13 +156,11 @@ describe('userFeaturesMachine', () => {
     vi.useFakeTimers()
     const fetchFeatures = vi
       .fn()
-      .mockResolvedValueOnce({
-        featureIds: new Set<UserFeature>([BODIES_PANE_FEATURE_FLAG]),
-      })
+      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>(['plugins']) })
       .mockResolvedValueOnce({
         featureIds: new Set<UserFeature>([
-          BODIES_PANE_FEATURE_FLAG,
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+          'plugins',
+          'sketch_experimental_features',
         ]),
       })
     const actor = createActor(
@@ -209,7 +182,7 @@ describe('userFeaturesMachine', () => {
       expect(
         userFeaturesContextHas(
           actor.getSnapshot().context,
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+          'sketch_experimental_features',
           false
         )
       ).toBe(false)
@@ -231,7 +204,7 @@ describe('userFeaturesMachine', () => {
       expect(
         userFeaturesContextHas(
           actor.getSnapshot().context,
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
+          'sketch_experimental_features',
           false
         )
       ).toBe(true)
@@ -246,9 +219,7 @@ describe('userFeaturesMachine', () => {
     const fetchFeatures = vi
       .fn()
       .mockResolvedValueOnce(new Error('feature service unavailable'))
-      .mockResolvedValueOnce({
-        featureIds: new Set<UserFeature>([EXPERIMENTAL_POINT_AND_CLICK_FLAG]),
-      })
+      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>(['plugins']) })
     const actor = createActor(
       userFeaturesMachine.provide({
         actors: {
@@ -282,11 +253,7 @@ describe('userFeaturesMachine', () => {
         })
       )
       expect(
-        userFeaturesContextHas(
-          actor.getSnapshot().context,
-          EXPERIMENTAL_POINT_AND_CLICK_FLAG,
-          false
-        )
+        userFeaturesContextHas(actor.getSnapshot().context, 'plugins', false)
       ).toBe(true)
     } finally {
       actor.stop()
