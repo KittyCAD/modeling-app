@@ -1,7 +1,10 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
 import { ActionButton } from '@src/components/ActionButton'
-import { PublishMarkdownEditor } from '@src/components/PublishMarkdownEditor'
+import {
+  normalizePublishMarkdownValue,
+  PublishMarkdownEditor,
+} from '@src/components/PublishMarkdownEditor'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
@@ -113,8 +116,12 @@ export function PublishDialog({
     }
   }, [loadCategories])
 
+  const normalizedDescription = useMemo(
+    () => normalizePublishMarkdownValue(description),
+    [description]
+  )
   const titleIsValid = title.trim().length > 0
-  const descriptionIsValid = description.trim().length > 0
+  const descriptionIsValid = normalizedDescription.trim().length > 0
   const categoriesIsValid = selectedCategoryIds.length > 0
   const lastSubmittedText = useMemo(
     () => getLastSubmittedText(publicationDetails),
@@ -126,7 +133,7 @@ export function PublishDialog({
 
     if (
       !titleIsValid ||
-      !descriptionIsValid ||
+      normalizedDescription.trim().length === 0 ||
       !categoriesIsValid ||
       isSubmitting ||
       publishDisabled
@@ -138,7 +145,7 @@ export function PublishDialog({
     try {
       await onSubmit({
         title: title.trim(),
-        description: description.trim(),
+        description: normalizedDescription.trim(),
         categoryIds: selectedCategoryIds,
       })
     } finally {
@@ -228,9 +235,18 @@ export function PublishDialog({
                 labelledBy="publish-project-description-label"
                 placeholder="Tell people about what you made..."
                 hasError={hasTriedSubmit && !descriptionIsValid}
+                required={true}
+                describedBy={
+                  hasTriedSubmit && !descriptionIsValid
+                    ? 'publish-project-description-error'
+                    : undefined
+                }
               />
               {hasTriedSubmit && !descriptionIsValid && (
-                <p className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40">
+                <p
+                  id="publish-project-description-error"
+                  className="mt-2 text-xs leading-5 text-destroy-60 dark:text-destroy-40"
+                >
                   A description is required.
                 </p>
               )}

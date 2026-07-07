@@ -1,7 +1,8 @@
 import {
+  defaultNormalizeMarkdownLinkHref,
   MarkdownEditor,
   type MarkdownEditorNormalizeLinkHref,
-  defaultNormalizeMarkdownLinkHref,
+  normalizeMarkdownEditorValue,
 } from '@kittycad/ui-components'
 
 type PublishMarkdownEditorProps = {
@@ -11,6 +12,8 @@ type PublishMarkdownEditorProps = {
   hasError?: boolean
   labelledBy?: string
   placeholder?: string
+  required?: boolean
+  describedBy?: string
 }
 
 export function PublishMarkdownEditor({
@@ -20,6 +23,8 @@ export function PublishMarkdownEditor({
   hasError = false,
   labelledBy,
   placeholder = '',
+  required = false,
+  describedBy,
 }: PublishMarkdownEditorProps) {
   return (
     <MarkdownEditor
@@ -28,10 +33,12 @@ export function PublishMarkdownEditor({
       onChange={onChange}
       ariaLabel="Project description"
       className="mt-2"
+      describedBy={describedBy}
       invalid={hasError}
       labelledBy={labelledBy}
       normalizeLinkHref={normalizePublishMarkdownLinkHref}
       placeholder={placeholder}
+      required={required}
       testId="publish-project-description-editor"
     />
   )
@@ -39,3 +46,9 @@ export function PublishMarkdownEditor({
 
 export const normalizePublishMarkdownLinkHref: MarkdownEditorNormalizeLinkHref =
   defaultNormalizeMarkdownLinkHref
+
+export function normalizePublishMarkdownValue(value: string) {
+  return normalizeMarkdownEditorValue(value, {
+    normalizeLinkHref: normalizePublishMarkdownLinkHref,
+  })
+}

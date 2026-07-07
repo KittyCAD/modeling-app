@@ -440,41 +440,6 @@ code,
     border-bottom-right-radius: var(--br);
     border-bottom-left-radius: var(--br);
   }
-
-  .markdown-editor .ProseMirror {
-    @apply min-h-28 max-h-56 overflow-y-auto px-2.5 py-2 outline-none;
-    white-space: pre-wrap;
-    overflow-wrap: anywhere;
-  }
-
-  .markdown-editor .ProseMirror p {
-    @apply my-1 leading-5;
-  }
-
-  .markdown-editor .ProseMirror ul,
-  .markdown-editor .ProseMirror ol {
-    @apply list-outside pl-5 my-2;
-  }
-
-  .markdown-editor .ProseMirror ul li {
-    @apply list-disc;
-  }
-
-  .markdown-editor .ProseMirror ol li {
-    @apply list-decimal;
-  }
-
-  .markdown-editor .ProseMirror li p {
-    @apply inline;
-  }
-
-  .markdown-editor .ProseMirror a {
-    @apply text-primary underline underline-offset-2;
-  }
-
-  .markdown-editor .ProseMirror strong {
-    @apply font-semibold;
-  }
 }
 
 @layer utilities {

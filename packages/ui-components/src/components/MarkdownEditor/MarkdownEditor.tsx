@@ -1,8 +1,9 @@
 import { Link } from '@tiptap/extension-link'
-import { Markdown } from '@tiptap/markdown'
+import { Markdown, MarkdownManager } from '@tiptap/markdown'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
 import { type ReactNode, useEffect, useMemo } from 'react'
+import './MarkdownEditor.css'
 
 export type MarkdownEditorFeature =
   | 'bold'
@@ -22,6 +23,7 @@ export interface MarkdownEditorProps {
   onChange: (value: string) => void
   ariaLabel?: string
   className?: string
+  describedBy?: string
   editorClassName?: string
   features?: readonly MarkdownEditorFeature[]
   invalid?: boolean
@@ -29,6 +31,7 @@ export interface MarkdownEditorProps {
   normalizeLinkHref?: MarkdownEditorNormalizeLinkHref
   placeholder?: string
   promptForLink?: (currentHref: string) => string | null
+  required?: boolean
   testId?: string
 }
 
@@ -42,6 +45,12 @@ export const defaultMarkdownEditorFeatures = [
 ] as const satisfies readonly MarkdownEditorFeature[]
 
 const SAFE_LINK_PROTOCOLS = new Set(['http:', 'https:', 'mailto:'])
+const MARKDOWN_OPTIONS = {
+  markedOptions: {
+    breaks: true,
+    gfm: true,
+  },
+}
 
 export function MarkdownEditor({
   id,
@@ -49,6 +58,7 @@ export function MarkdownEditor({
   onChange,
   ariaLabel = 'Markdown editor',
   className = '',
+  describedBy,
   editorClassName = '',
   features = defaultMarkdownEditorFeatures,
   invalid = false,
@@ -56,9 +66,18 @@ export function MarkdownEditor({
   normalizeLinkHref = defaultNormalizeMarkdownLinkHref,
   placeholder = '',
   promptForLink,
+  required = false,
   testId = 'markdown-editor',
 }: MarkdownEditorProps) {
-  const enabledFeatures = useMemo(() => new Set(features), [features])
+  const featureKey = useMemo(() => [...features].sort().join('|'), [features])
+  const normalizedFeatures = useMemo(
+    () => [...new Set(features)] as MarkdownEditorFeature[],
+    [featureKey]
+  )
+  const enabledFeatures = useMemo(
+    () => new Set(normalizedFeatures),
+    [normalizedFeatures]
+  )
   const hasLists =
     enabledFeatures.has('bulletList') || enabledFeatures.has('orderedList')
   const hasLink = enabledFeatures.has('link')
@@ -69,73 +88,44 @@ export function MarkdownEditor({
       ...(labelledBy
         ? { 'aria-labelledby': labelledBy }
         : { 'aria-label': ariaLabel }),
+      ...(describedBy ? { 'aria-describedby': describedBy } : {}),
       'aria-invalid': invalid ? 'true' : 'false',
       'aria-multiline': 'true',
+      'aria-required': required ? 'true' : 'false',
       'data-testid': testId,
       id,
       role: 'textbox',
     }),
-    [ariaLabel, id, invalid, labelledBy, testId]
+    [ariaLabel, describedBy, id, invalid, labelledBy, required, testId]
   )
 
   const extensions = useMemo(
     () => [
-      StarterKit.configure({
-        blockquote: false,
-        bold: enabledFeatures.has('bold') ? undefined : false,
-        bulletList: enabledFeatures.has('bulletList') ? undefined : false,
-        code: false,
-        codeBlock: false,
-        heading: false,
-        horizontalRule: false,
-        italic: enabledFeatures.has('italic') ? undefined : false,
-        link: false,
-        listItem: hasLists ? undefined : false,
-        listKeymap: hasLists ? undefined : false,
-        orderedList: enabledFeatures.has('orderedList') ? undefined : false,
-        strike: false,
-        underline: false,
-        undoRedo: hasUndoRedo ? undefined : false,
+      ...createMarkdownEditorBaseExtensions({
+        features: normalizedFeatures,
+        normalizeLinkHref,
       }),
-      ...(hasLink
-        ? [
-            createSafeLinkExtension(normalizeLinkHref).configure({
-              autolink: true,
-              defaultProtocol: 'https',
-              HTMLAttributes: {
-                target: '_blank',
-                rel: 'noopener noreferrer nofollow',
-                class: null,
-              },
-              isAllowedUri: (url) => normalizeLinkHref(url) !== null,
-              linkOnPaste: true,
-              openOnClick: false,
-            }),
-          ]
-        : []),
-      Markdown.configure({
-        markedOptions: {
-          breaks: true,
-          gfm: true,
-        },
-      }),
+      Markdown.configure(MARKDOWN_OPTIONS),
     ],
-    [enabledFeatures, hasLink, hasLists, hasUndoRedo, normalizeLinkHref]
+    [normalizedFeatures, normalizeLinkHref]
   )
 
-  const editor = useEditor({
-    content: value,
-    contentType: 'markdown',
-    editorProps: {
-      attributes: editorAttributes,
+  const editor = useEditor(
+    {
+      content: value,
+      contentType: 'markdown',
+      editorProps: {
+        attributes: editorAttributes,
+      },
+      extensions,
+      immediatelyRender: true,
+      onUpdate: ({ editor }) => {
+        onChange(editor.getMarkdown())
+      },
+      shouldRerenderOnTransaction: true,
     },
-    extensions,
-    immediatelyRender: true,
-    onUpdate: ({ editor }) => {
-      onChange(editor.getMarkdown())
-    },
-    shouldRerenderOnTransaction: true,
-  })
+    [extensions]
+  )
 
   useEffect(() => {
     if (!editor || editor.isDestroyed) {
@@ -296,6 +286,77 @@ export function MarkdownEditor({
       </div>
     </div>
   )
+}
+
+export function normalizeMarkdownEditorValue(
+  value: string,
+  {
+    features = defaultMarkdownEditorFeatures,
+    normalizeLinkHref = defaultNormalizeMarkdownLinkHref,
+  }: {
+    features?: readonly MarkdownEditorFeature[]
+    normalizeLinkHref?: MarkdownEditorNormalizeLinkHref
+  } = {}
+) {
+  const manager = new MarkdownManager({
+    ...MARKDOWN_OPTIONS,
+    extensions: createMarkdownEditorBaseExtensions({
+      features,
+      normalizeLinkHref,
+    }),
+  })
+
+  return manager.serialize(manager.parse(value))
+}
+
+function createMarkdownEditorBaseExtensions({
+  features,
+  normalizeLinkHref,
+}: {
+  features: readonly MarkdownEditorFeature[]
+  normalizeLinkHref: MarkdownEditorNormalizeLinkHref
+}) {
+  const enabledFeatures = new Set(features)
+  const hasLists =
+    enabledFeatures.has('bulletList') || enabledFeatures.has('orderedList')
+  const hasLink = enabledFeatures.has('link')
+  const hasUndoRedo = enabledFeatures.has('undoRedo')
+
+  return [
+    StarterKit.configure({
+      blockquote: false,
+      bold: enabledFeatures.has('bold') ? undefined : false,
+      bulletList: enabledFeatures.has('bulletList') ? undefined : false,
+      code: false,
+      codeBlock: false,
+      heading: false,
+      horizontalRule: false,
+      italic: enabledFeatures.has('italic') ? undefined : false,
+      link: false,
+      listItem: hasLists ? undefined : false,
+      listKeymap: hasLists ? undefined : false,
+      orderedList: enabledFeatures.has('orderedList') ? undefined : false,
+      strike: false,
+      underline: false,
+      undoRedo: hasUndoRedo ? undefined : false,
+    }),
+    ...(hasLink
+      ? [
+          createSafeLinkExtension(normalizeLinkHref).configure({
+            autolink: true,
+            defaultProtocol: 'https',
+            HTMLAttributes: {
+              target: '_blank',
+              rel: 'noopener noreferrer nofollow',
+              class: null,
+            },
+            isAllowedUri: (url) => normalizeLinkHref(url) !== null,
+            linkOnPaste: true,
+            openOnClick: false,
+          }),
+        ]
+      : []),
+  ]
 }
 
 function createSafeLinkExtension(

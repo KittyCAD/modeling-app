@@ -1,10 +1,10 @@
+import {
+  normalizePublishMarkdownLinkHref,
+  normalizePublishMarkdownValue,
+  PublishMarkdownEditor,
+} from '@src/components/PublishMarkdownEditor'
 import { render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
-
-import {
-  PublishMarkdownEditor,
-  normalizePublishMarkdownLinkHref,
-} from '@src/components/PublishMarkdownEditor'
 
 describe('PublishMarkdownEditor', () => {
   it('renders supported Markdown formatting and strips unsafe Markdown links', async () => {
@@ -52,5 +52,13 @@ describe('PublishMarkdownEditor', () => {
     )
     expect(normalizePublishMarkdownLinkHref('javascript:alert(1)')).toBeNull()
     expect(normalizePublishMarkdownLinkHref('data:text/html,test')).toBeNull()
+  })
+
+  it('normalizes publish Markdown before submit', () => {
+    expect(
+      normalizePublishMarkdownValue(
+        'A [safe](zoo.dev/docs) link and an [unsafe](javascript:alert(1)) link.'
+      )
+    ).toBe('A [safe](https://zoo.dev/docs) link and an unsafe link.')
   })
 })
