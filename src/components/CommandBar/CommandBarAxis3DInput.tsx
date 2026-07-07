@@ -219,6 +219,7 @@ function CommandBarAxis3DInput({
           stepBack={stepBack}
           onSubmit={(data) => onSubmit(data as Axis3DCommandValue)}
           placeholder="Select a default axis"
+          showSelectedValue
         />
       ) : (
         <CommandBarVector3DInput

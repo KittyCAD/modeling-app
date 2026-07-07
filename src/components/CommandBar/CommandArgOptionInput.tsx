@@ -14,18 +14,34 @@ import type {
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
 
+function optionValueInputText(value: unknown) {
+  if (typeof value === 'string') return value
+  if (
+    value &&
+    typeof value === 'object' &&
+    'valueText' in value &&
+    typeof value.valueText === 'string'
+  ) {
+    return value.valueText
+  }
+
+  return ''
+}
+
 function CommandArgOptionInput({
   arg,
   argName,
   stepBack,
   onSubmit,
   placeholder,
+  showSelectedValue = false,
 }: {
   arg: CommandArgument<unknown> & { inputType: 'options' }
   argName: string
   stepBack: () => void
   onSubmit: (data: unknown) => void
   placeholder?: string
+  showSelectedValue?: boolean
 }) {
   const actorContext = useSelector(arg.machineActor, contextSelector)
   const { commands } = useApp()
@@ -53,7 +69,11 @@ function CommandArgOptionInput({
     CommandArgumentOption<unknown>
   >(currentOption || resolvedOptions[0])
   // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  const initialQuery = useMemo(() => '', [arg.options, argName])
+  const initialQuery = useMemo(() => {
+    if (!showSelectedValue) return ''
+    const optionValue = (currentOption || resolvedOptions[0])?.value
+    return optionValueInputText(optionValue)
+  }, [arg.options, argName, currentOption, resolvedOptions, showSelectedValue])
   const [query, setQuery] = useState(initialQuery)
   const [filteredOptions, setFilteredOptions] =
     useState<typeof resolvedOptions>()
@@ -74,7 +94,7 @@ function CommandArgOptionInput({
     setQuery(initialQuery)
     setSelectedOption(currentOption || resolvedOptions[0])
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [argName])
+  }, [argName, initialQuery])
 
   // Auto focus and select the input when the component mounts
   useEffect(() => {
@@ -96,9 +116,13 @@ function CommandArgOptionInput({
   // Filter the options based on the query,
   // resetting the query when the options change
   useEffect(() => {
+    const shouldShowAllOptions =
+      showSelectedValue && initialQuery !== '' && query === initialQuery
     const results = fuse.search(query).map((result) => result.item)
-    setFilteredOptions(query.length > 0 ? results : resolvedOptions)
-  }, [query, resolvedOptions, fuse])
+    setFilteredOptions(
+      query.length > 0 && !shouldShowAllOptions ? results : resolvedOptions
+    )
+  }, [query, resolvedOptions, fuse, initialQuery, showSelectedValue])
 
   function handleSelectOption(option: CommandArgumentOption<unknown>) {
     // We deal with the whole option object internally

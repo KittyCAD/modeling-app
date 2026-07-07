@@ -2365,8 +2365,7 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'axis',
           })
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('Y')
-          await cmdBar.progressCmdBar()
+          await cmdBar.selectOption({ name: 'Y-axis' }).click()
         })
 
         await test.step('Configure center', async () => {
@@ -2635,8 +2634,7 @@ solid001 = extrude(sketch001, length = 5)`
             highlightedHeaderArg: 'axis',
           })
           // Update axis from Y to Z and auto-progress
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('Z')
-          await cmdBar.progressCmdBar()
+          await cmdBar.selectOption({ name: 'Z-axis' }).click()
           // Review changes to axis
           await cmdBar.expectState({
             stage: 'review',
@@ -2901,8 +2899,7 @@ solid001 = extrude(sketch001, length = 5)`
             },
             highlightedHeaderArg: 'axis',
           })
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('Y')
-          await cmdBar.progressCmdBar()
+          await cmdBar.selectOption({ name: 'Y-axis' }).click()
         })
 
         await test.step('Configure use original', async () => {
@@ -2991,8 +2988,7 @@ solid001 = extrude(sketch001, length = 5)`
       await test.step('Edit parameters', async () => {
         await test.step('Edit axis parameter', async () => {
           // Update axis from Y to Z and auto-progress
-          await cmdBar.currentArgumentInput.locator('.cm-content').fill('Z')
-          await cmdBar.progressCmdBar()
+          await cmdBar.selectOption({ name: 'Z-axis' }).click()
           // Review changes to axis
           await cmdBar.expectState({
             stage: 'review',
