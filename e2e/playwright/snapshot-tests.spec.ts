@@ -19,6 +19,15 @@ const screenshotOptions = (page: Page) => ({
   mask: lowerRightMasks(page),
 })
 
+async function waitForThemeApplied(page: Page, mode: Themes) {
+  const expectDark = mode === Themes.Dark
+  await expect
+    .poll(async () =>
+      page.locator('body').evaluate((el) => el.classList.contains('dark'))
+    )
+    .toBe(expectDark)
+}
+
 test.beforeEach(async ({ page }) => {
   // Make the user avatar image always 404
   // so we see the fallback menu icon for all snapshot tests
@@ -51,7 +60,6 @@ type SnapshotTestContext = Pick<
 function runTestForTheme(mode: Themes) {
   return async ({
     page,
-    cmdBar,
     scene,
     toolbar,
     editor,
@@ -90,12 +98,12 @@ function runTestForTheme(mode: Themes) {
       format: 'ratio',
     })
 
+    await page.setViewportSize(SCREENSHOT_SIZE)
+    await scene.settled()
+    await waitForThemeApplied(page, mode)
     let step = 1
 
     await test.step('Create a project', async () => {
-      await page.setViewportSize(SCREENSHOT_SIZE)
-      await scene.settled()
-
       await toolbar.openFeatureTreePane()
       await editor.openPane()
 
