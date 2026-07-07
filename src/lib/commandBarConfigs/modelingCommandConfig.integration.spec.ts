@@ -349,7 +349,7 @@ describe('stdlib command arg derivation', () => {
     ).toBe(false)
   })
 
-  it('uses KCL inputs for axis arguments that can be named axes or vectors', () => {
+  it('uses axis3d inputs for axis arguments that can be default axes or vectors', () => {
     for (const commandName of [
       'Rotate',
       'Pattern Circular 3D',
@@ -361,11 +361,9 @@ describe('stdlib command arg derivation', () => {
       }
 
       expect(commandConfig.args?.axis).toMatchObject({
-        inputType: 'kcl',
+        inputType: 'axis3d',
         description:
-          'Enter a default axis (`X`, `Y`, or `Z`), a 3D vector array like `[0, 1, 0]`, or a variable that references either form.',
-        allowArrays: true,
-        allowUncalculated: true,
+          'Choose a default axis (`X`, `Y`, or `Z`) or switch to Vector for a custom 3D vector.',
       })
       expect(
         commandConfig.args?.axis?.valueSummary?.({

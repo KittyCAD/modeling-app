@@ -2096,6 +2096,10 @@ export function getLastVariable(
   typeFilter?: Array<Artifact['type']>,
   nodeToEdit?: PathToNode
 ) {
+  const nodeToEditStart = nodeToEdit
+    ? getNodeStartFromPath(ast, nodeToEdit, wasmInstance)
+    : undefined
+
   for (const artifact of orderedDescArtifacts) {
     if (typeFilter && !typeFilter.includes(artifact.type)) {
       continue
@@ -2107,7 +2111,14 @@ export function getLastVariable(
       const isSameAsNodeToEdit =
         nodeToEdit &&
         stringifyPathToNode(pathToNode) === stringifyPathToNode(nodeToEdit)
-      if (pathToNode && pathToNode.length > 1 && !isSameAsNodeToEdit) {
+      const isAtOrAfterNodeToEdit =
+        nodeToEditStart !== undefined && codeRef.range[0] >= nodeToEditStart
+      if (
+        pathToNode &&
+        pathToNode.length > 1 &&
+        !isSameAsNodeToEdit &&
+        !isAtOrAfterNodeToEdit
+      ) {
         const varDec = getNodeFromPath<VariableDeclaration>(
           ast,
           pathToNode,
@@ -2125,6 +2136,26 @@ export function getLastVariable(
     }
   }
   return null
+}
+
+function getNodeStartFromPath(
+  ast: Node<Program>,
+  pathToNode: PathToNode,
+  wasmInstance: ModuleType
+): number | undefined {
+  const node = getNodeFromPath<{ start?: number }>(
+    ast,
+    pathToNode,
+    wasmInstance,
+    undefined,
+    false,
+    true
+  )
+  if (err(node) || node.deepPath.length !== pathToNode.length) {
+    return undefined
+  }
+
+  return typeof node.node.start === 'number' ? node.node.start : undefined
 }
 
 export function getEdgeCutMeta(

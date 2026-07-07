@@ -55,7 +55,7 @@ vi.mock('@src/lib/hotkeyWrapper', () => ({
 
 vi.mock('@src/lib/useCalculateKclExpression', () => ({
   useCalculateKclExpression: () => ({
-    calcResult: 'NAN',
+    calcResult: '1',
     isExecuting: false,
     isNewVariableNameUnique: true,
     newVariableInsertIndex: 0,
@@ -63,8 +63,8 @@ vi.mock('@src/lib/useCalculateKclExpression', () => ({
     prevVariables: [],
     setNewVariableName: vi.fn(),
     valueNode: {
-      type: 'Name',
-      name: 'Y',
+      type: 'Literal',
+      value: 1,
     },
   }),
 }))
@@ -72,12 +72,11 @@ vi.mock('@src/lib/useCalculateKclExpression', () => ({
 describe('CommandBarKclInput', () => {
   it('renders argument descriptions', async () => {
     const arg = {
-      name: 'axis',
+      name: 'value',
       inputType: 'kcl',
       required: true,
-      defaultValue: 'Y',
-      description:
-        'Enter a default axis (`X`, `Y`, or `Z`), a 3D vector array like `[0, 1, 0]`, or a variable that references either form.',
+      defaultValue: '1',
+      description: 'Enter a KCL expression.',
     } satisfies CommandArgument<unknown> & {
       inputType: 'kcl'
       name: string
@@ -105,11 +104,8 @@ describe('CommandBarKclInput', () => {
       await mocks.wasmPromise
     })
 
-    expect(await screen.findByText(/Enter a default axis/)).toBeInTheDocument()
-    expect(screen.getByText('X')).toBeInTheDocument()
-    expect(screen.getByText('[0, 1, 0]')).toBeInTheDocument()
     expect(
-      screen.getByText(/or a variable that references either form/)
+      await screen.findByText('Enter a KCL expression.')
     ).toBeInTheDocument()
   })
 })
