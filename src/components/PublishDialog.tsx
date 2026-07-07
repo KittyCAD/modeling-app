@@ -1,10 +1,10 @@
 import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
-import { ActionButton } from '@src/components/ActionButton'
 import {
-  normalizePublishMarkdownValue,
-  PublishMarkdownEditor,
-} from '@src/components/PublishMarkdownEditor'
+  MarkdownEditor,
+  normalizeMarkdownEditorValue,
+} from '@kittycad/ui-components'
+import { ActionButton } from '@src/components/ActionButton'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
@@ -117,7 +117,7 @@ export function PublishDialog({
   }, [loadCategories])
 
   const normalizedDescription = useMemo(
-    () => normalizePublishMarkdownValue(description),
+    () => normalizeMarkdownEditorValue(description),
     [description]
   )
   const titleIsValid = title.trim().length > 0
@@ -225,22 +225,25 @@ export function PublishDialog({
               >
                 Description*
               </p>
-              <PublishMarkdownEditor
+              <MarkdownEditor
                 id="publish-project-description"
                 value={description}
                 onChange={(value) => {
                   setHasEditedDescription(true)
                   setDescription(value)
                 }}
-                labelledBy="publish-project-description-label"
-                placeholder="Tell people about what you made..."
-                hasError={hasTriedSubmit && !descriptionIsValid}
-                required={true}
+                ariaLabel="Project description"
+                className="mt-2"
                 describedBy={
                   hasTriedSubmit && !descriptionIsValid
                     ? 'publish-project-description-error'
                     : undefined
                 }
+                invalid={hasTriedSubmit && !descriptionIsValid}
+                labelledBy="publish-project-description-label"
+                placeholder="Tell people about what you made..."
+                required={true}
+                testId="publish-project-description-editor"
               />
               {hasTriedSubmit && !descriptionIsValid && (
                 <p
