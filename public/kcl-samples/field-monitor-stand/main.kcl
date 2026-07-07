@@ -60,7 +60,7 @@ bodyProfile = sketch(on = YZ) {
   distance([line2.start, line2.end]) == plateLength
   distance([line3.start, line3.end]) == width
   distance([line6.start, line6.end]) == width
-  angle([line1, line2]) == plateAngle
+  angleDimension(lines = [line1, line2], sector = 1, labelPosition = [3.15mm, 3.38mm]) == plateAngle
 }
 
 bodyRegion = region(segments = [bodyProfile.line1, bodyProfile.line2])
