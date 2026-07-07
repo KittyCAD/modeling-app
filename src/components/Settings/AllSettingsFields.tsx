@@ -28,19 +28,18 @@ import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
 import type { ForwardedRef } from 'react'
 import { forwardRef, useMemo } from 'react'
+import { Fragment } from 'react/jsx-runtime'
 import toast from 'react-hot-toast'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment } from 'react/jsx-runtime'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
   isFileSettings: boolean
-  showPlugins: boolean
 }
 
 export const AllSettingsFields = forwardRef(
   (
-    { searchParamTab, isFileSettings, showPlugins }: AllSettingsFieldsProps,
+    { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
     const { settings, layout, systemIOActor } = useApp()
@@ -83,7 +82,6 @@ export const AllSettingsFields = forwardRef(
       <div className="relative overflow-y-auto">
         <div ref={scrollRef} className="flex flex-col gap-4 px-2">
           {Object.entries(context)
-            .filter(([category]) => showPlugins || category !== 'plugins')
             .filter(([_, categorySettings]) =>
               // Filter out categories that don't have any non-hidden settings
               Object.values(categorySettings).some(

@@ -1,9 +1,6 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { useSignals } from '@preact/signals-react/runtime'
-import { Fragment, useEffect, useRef } from 'react'
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-
 import { pluginsValueSpec } from '@kittycad/registry'
+import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PluginsList } from '@src/components/PluginList'
 import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
@@ -22,8 +19,8 @@ import {
   keymapService,
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
-
-const PLUGINS_FEATURE_FLAG = 'plugins'
+import { Fragment, useEffect, useRef } from 'react'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
 type SettingsTab = SettingsLevel | 'keybindings' | 'plugins'
 
@@ -42,7 +39,6 @@ export const Settings = () => {
   const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const showPluginsTab = app.userFeatures.useHas(PLUGINS_FEATURE_FLAG, false)
   const close = () => {
     // This makes sure input texts are saved before closing the dialog (eg. default project name).
     if (document.activeElement instanceof HTMLInputElement) {
@@ -57,10 +53,7 @@ export const Settings = () => {
   const requestedSettingsTab = isSettingsTab(requestedTab)
     ? requestedTab
     : defaultTab
-  const searchParamTab =
-    requestedSettingsTab === 'plugins' && !showPluginsTab
-      ? defaultTab
-      : requestedSettingsTab
+  const searchParamTab = requestedSettingsTab
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const settingsSearchKeybinding = keymapKeystrokesDisplay(
@@ -141,10 +134,7 @@ export const Settings = () => {
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
-                <SettingsSearchBar
-                  showPlugins={showPluginsTab}
-                  keybinding={settingsSearchKeybinding}
-                />
+                <SettingsSearchBar keybinding={settingsSearchKeybinding} />
                 <button
                   type="button"
                   onClick={close}
@@ -159,7 +149,6 @@ export const Settings = () => {
               value={searchParamTab}
               onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
               showProjectTab={isFileSettings}
-              showPluginsTab={showPluginsTab}
             />
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
@@ -176,18 +165,16 @@ export const Settings = () => {
                   <SettingsSectionsList
                     searchParamTab={searchParamTab}
                     scrollRef={scrollRef}
-                    showPlugins={showPluginsTab}
                   />
                   <AllSettingsFields
                     searchParamTab={searchParamTab}
                     isFileSettings={isFileSettings}
-                    showPlugins={showPluginsTab}
                     ref={scrollRef}
                   />
                 </>
               ) : searchParamTab === 'keybindings' ? (
                 <AllKeybindingsFields ref={scrollRef} />
-              ) : searchParamTab === 'plugins' && showPluginsTab ? (
+              ) : searchParamTab === 'plugins' ? (
                 <PluginsList
                   ref={scrollRef}
                   registry={app.registry}
