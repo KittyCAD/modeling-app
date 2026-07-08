@@ -20,32 +20,32 @@ flowchart LR
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     14[Solid2d]
   end
-  1["Cap End"]
+  7["Plane<br>[80, 97, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  16["Sweep Extrusion<br>[311, 363, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  25[Wall]
+    %% face_code_ref=Missing NodePath
+  24[Wall]
+    %% face_code_ref=Missing NodePath
+  23[Wall]
     %% face_code_ref=Missing NodePath
   2["Cap Start"]
     %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  22["SweepEdge Opposite"]
+  19["SweepEdge Adjacent"]
+  21["SweepEdge Opposite"]
+  18["SweepEdge Adjacent"]
+  20["SweepEdge Opposite"]
+  17["SweepEdge Adjacent"]
   3["EdgeCut Chamfer<br>[369, 501, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
   6["Plane<br>[632, 675, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-  7["Plane<br>[80, 97, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   15["StartSketchOnPlane<br>[609, 626, 0]"]
     %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  16["Sweep Extrusion<br>[311, 363, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Opposite"]
-  23[Wall]
-    %% face_code_ref=Missing NodePath
-  24[Wall]
-    %% face_code_ref=Missing NodePath
-  25[Wall]
-    %% face_code_ref=Missing NodePath
   16 --- 1
   20 <--x 1
   21 <--x 1
@@ -88,8 +88,8 @@ flowchart LR
   17 x--> 23
   24 --- 18
   18 x--> 24
-  19 x--> 25
   25 --- 19
+  19 x--> 25
   23 --- 20
   24 --- 21
   25 --- 22

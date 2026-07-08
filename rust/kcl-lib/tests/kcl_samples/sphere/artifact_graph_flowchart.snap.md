@@ -1,13 +1,5 @@
 ```mermaid
 flowchart LR
-  subgraph path1 [Path]
-    1["Path Region<br>[586, 634, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[586, 634, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    7["Segment<br>[586, 634, 0]"]
-      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  end
   subgraph path2 [Path]
     2["Path<br>[302, 572, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -16,8 +8,20 @@ flowchart LR
     5["Segment<br>[403, 490, 0]"]
       %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
+  subgraph path1 [Path]
+    1["Path Region<br>[586, 634, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    6["Segment<br>[586, 634, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    7["Segment<br>[586, 634, 0]"]
+      %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  end
   3["Plane<br>[228, 245, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  12["Sweep Revolve<br>[688, 731, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  13[Wall]
+    %% face_code_ref=Missing NodePath
   8["SketchBlock<br>[302, 572, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   9["SketchBlockConstraint Coincident<br>[493, 528, 0]"]
@@ -26,10 +30,6 @@ flowchart LR
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
   11["SketchBlockConstraint Radius<br>[551, 570, 0]"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 4 }, ExpressionStatementExpr]
-  12["Sweep Revolve<br>[688, 731, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  13[Wall]
-    %% face_code_ref=Missing NodePath
   2 x--> 1
   3 x--> 1
   1 <--x 6

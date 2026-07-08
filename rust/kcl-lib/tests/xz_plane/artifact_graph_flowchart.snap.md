@@ -3,34 +3,34 @@ flowchart LR
   subgraph path3 [Path]
     3["Path<br>[33, 58, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    7["Segment<br>[64, 94, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     5["Segment<br>[100, 128, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     6["Segment<br>[134, 142, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    7["Segment<br>[64, 94, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
     8[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
   4["Plane<br>[10, 27, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   9["Sweep Extrusion<br>[148, 171, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-  10["SweepEdge Adjacent"]
-  11["SweepEdge Adjacent"]
-  12["SweepEdge Adjacent"]
-  13["SweepEdge Opposite"]
-  14["SweepEdge Opposite"]
-  15["SweepEdge Opposite"]
-  16[Wall]
-    %% face_code_ref=Missing NodePath
   17[Wall]
+    %% face_code_ref=Missing NodePath
+  16[Wall]
     %% face_code_ref=Missing NodePath
   18[Wall]
     %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  14["SweepEdge Opposite"]
+  11["SweepEdge Adjacent"]
+  13["SweepEdge Opposite"]
+  10["SweepEdge Adjacent"]
+  15["SweepEdge Opposite"]
+  12["SweepEdge Adjacent"]
   9 --- 1
   13 <--x 1
   14 <--x 1
@@ -67,8 +67,8 @@ flowchart LR
   10 x--> 16
   17 --- 11
   11 x--> 17
-  12 x--> 18
   18 --- 12
+  12 x--> 18
   16 --- 13
   17 --- 14
   18 --- 15

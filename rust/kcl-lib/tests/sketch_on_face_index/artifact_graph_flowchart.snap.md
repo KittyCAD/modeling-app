@@ -1,12 +1,5 @@
 ```mermaid
 flowchart LR
-  subgraph path5 [Path]
-    5["Path<br>[221, 241, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-    8["Segment<br>[221, 241, 0]"]
-      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-    10[Solid2d]
-  end
   subgraph path6 [Path]
     6["Path<br>[33, 51, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
@@ -14,30 +7,37 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     11[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=[ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  2["Cap End"]
+  subgraph path5 [Path]
+    5["Path<br>[221, 241, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+    8["Segment<br>[221, 241, 0]"]
+      %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+    10[Solid2d]
+  end
+  7["Plane<br>[10, 27, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  14["Sweep Extrusion<br>[57, 76, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  20[Wall]
     %% face_code_ref=Missing NodePath
   3["Cap Start"]
     %% face_code_ref=Missing NodePath
-  4["EdgeCut Fillet<br>[332, 382, 0]"]
-    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr]
-  7["Plane<br>[10, 27, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  12["StartSketchOnFace<br>[183, 217, 0]"]
-    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  1["Cap End"]
+    %% face_code_ref=[ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  18["SweepEdge Opposite"]
+  16["SweepEdge Adjacent"]
   13["Sweep Extrusion<br>[245, 266, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-  14["Sweep Extrusion<br>[57, 76, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  15["SweepEdge Adjacent"]
-  16["SweepEdge Adjacent"]
-  17["SweepEdge Opposite"]
-  18["SweepEdge Opposite"]
   19[Wall]
     %% face_code_ref=Missing NodePath
-  20[Wall]
+  2["Cap End"]
     %% face_code_ref=Missing NodePath
+  17["SweepEdge Opposite"]
+  15["SweepEdge Adjacent"]
+  4["EdgeCut Fillet<br>[332, 382, 0]"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr]
+  12["StartSketchOnFace<br>[183, 217, 0]"]
+    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   1 --- 5
   8 <--x 1
   1 <--x 12

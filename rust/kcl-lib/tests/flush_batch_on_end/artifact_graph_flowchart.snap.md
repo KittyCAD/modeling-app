@@ -14,22 +14,22 @@ flowchart LR
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     9[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
   5["Plane<br>[197, 214, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   10["Sweep Extrusion<br>[702, 739, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  11["SweepEdge Adjacent"]
-  12["SweepEdge Adjacent"]
-  13["SweepEdge Opposite"]
-  14["SweepEdge Opposite"]
   15[Wall]
     %% face_code_ref=Missing NodePath
   16[Wall]
     %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  13["SweepEdge Opposite"]
+  11["SweepEdge Adjacent"]
+  14["SweepEdge Opposite"]
+  12["SweepEdge Adjacent"]
   10 --- 1
   13 <--x 1
   14 <--x 1

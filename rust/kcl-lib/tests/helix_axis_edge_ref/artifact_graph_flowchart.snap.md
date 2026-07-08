@@ -15,32 +15,32 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     11[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  3["Helix<br>[581, 697, 0]: Consumed: false"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   5["Plane<br>[95, 112, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   12["Sweep Extrusion<br>[519, 575, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  13["SweepEdge Adjacent"]
-  14["SweepEdge Adjacent"]
-  15["SweepEdge Adjacent"]
-  16["SweepEdge Adjacent"]
-  17["SweepEdge Opposite"]
-  18["SweepEdge Opposite"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Opposite"]
-  21[Wall]
-    %% face_code_ref=Missing NodePath
-  22[Wall]
+  24[Wall]
     %% face_code_ref=Missing NodePath
   23[Wall]
     %% face_code_ref=Missing NodePath
-  24[Wall]
+  22[Wall]
     %% face_code_ref=Missing NodePath
+  21[Wall]
+    %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  20["SweepEdge Opposite"]
+  16["SweepEdge Adjacent"]
+  19["SweepEdge Opposite"]
+  15["SweepEdge Adjacent"]
+  18["SweepEdge Opposite"]
+  14["SweepEdge Adjacent"]
+  17["SweepEdge Opposite"]
+  13["SweepEdge Adjacent"]
+  3["Helix<br>[581, 697, 0]: Consumed: false"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   12 --- 1
   17 <--x 1
   18 <--x 1
@@ -89,8 +89,8 @@ flowchart LR
   14 x--> 22
   23 --- 15
   15 x--> 23
-  16 x--> 24
   24 --- 16
+  16 x--> 24
   21 --- 17
   22 --- 18
   23 --- 19

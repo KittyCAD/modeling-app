@@ -1,5 +1,12 @@
 ```mermaid
 flowchart LR
+  subgraph path7 [Path]
+    7["Path<br>[46, 98, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    16["Segment<br>[46, 98, 0]"]
+      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
+    18[Solid2d]
+  end
   subgraph path6 [Path]
     6["Path<br>[140, 188, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -15,43 +22,22 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     17[Solid2d]
   end
-  subgraph path7 [Path]
-    7["Path<br>[46, 98, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    16["Segment<br>[46, 98, 0]"]
-      %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    18[Solid2d]
-  end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap End"]
+  9["Plane<br>[23, 40, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
+  19["Sweep Extrusion<br>[104, 123, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
+  35[Wall]
     %% face_code_ref=Missing NodePath
   3["Cap Start"]
     %% face_code_ref=Missing NodePath
-  4["Cap Start"]
+  1["Cap End"]
     %% face_code_ref=Missing NodePath
-  5["CompositeSolid Subtract<br>[467, 499, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  30["SweepEdge Opposite"]
+  25["SweepEdge Adjacent"]
   8["Plane<br>[153, 170, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }, CallKwUnlabeledArg]
-  9["Plane<br>[23, 40, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  10["PrimitiveFace<br>[513, 550, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  19["Sweep Extrusion<br>[104, 123, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
   20["Sweep Extrusion<br>[434, 454, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-  21["SweepEdge Adjacent"]
-  22["SweepEdge Adjacent"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Opposite"]
-  27["SweepEdge Opposite"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Opposite"]
   31[Wall]
     %% face_code_ref=Missing NodePath
   32[Wall]
@@ -60,8 +46,22 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   34[Wall]
     %% face_code_ref=Missing NodePath
-  35[Wall]
+  4["Cap Start"]
     %% face_code_ref=Missing NodePath
+  2["Cap End"]
+    %% face_code_ref=Missing NodePath
+  26["SweepEdge Opposite"]
+  21["SweepEdge Adjacent"]
+  27["SweepEdge Opposite"]
+  22["SweepEdge Adjacent"]
+  28["SweepEdge Opposite"]
+  23["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  5["CompositeSolid Subtract<br>[467, 499, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  10["PrimitiveFace<br>[513, 550, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   19 --- 1
   30 <--x 1
   20 --- 2
@@ -127,8 +127,8 @@ flowchart LR
   22 x--> 32
   33 --- 23
   23 x--> 33
-  24 x--> 34
   34 --- 24
+  24 x--> 34
   35 --- 25
   31 --- 26
   32 --- 27

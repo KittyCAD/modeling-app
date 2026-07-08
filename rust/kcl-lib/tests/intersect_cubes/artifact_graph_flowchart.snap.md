@@ -26,56 +26,56 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 5 }]
     19[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap End"]
-    %% face_code_ref=Missing NodePath
-  3["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  4["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  5["CompositeSolid Intersect<br>[480, 509, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   8["Plane<br>[33, 50, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  9["Plane<br>[33, 50, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   20["Sweep Extrusion<br>[328, 354, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 6 }]
-  21["Sweep Extrusion<br>[328, 354, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 6 }]
-  22["SweepEdge Adjacent"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Adjacent"]
-  30["SweepEdge Opposite"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Opposite"]
   38[Wall]
-    %% face_code_ref=Missing NodePath
-  39[Wall]
     %% face_code_ref=Missing NodePath
   40[Wall]
     %% face_code_ref=Missing NodePath
-  41[Wall]
-    %% face_code_ref=Missing NodePath
   42[Wall]
-    %% face_code_ref=Missing NodePath
-  43[Wall]
     %% face_code_ref=Missing NodePath
   44[Wall]
     %% face_code_ref=Missing NodePath
+  3["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  30["SweepEdge Opposite"]
+  22["SweepEdge Adjacent"]
+  32["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  34["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  36["SweepEdge Opposite"]
+  28["SweepEdge Adjacent"]
+  9["Plane<br>[33, 50, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  21["Sweep Extrusion<br>[328, 354, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, ReturnStatementArg, PipeBodyItem { index: 6 }]
+  39[Wall]
+    %% face_code_ref=Missing NodePath
+  41[Wall]
+    %% face_code_ref=Missing NodePath
+  43[Wall]
+    %% face_code_ref=Missing NodePath
   45[Wall]
     %% face_code_ref=Missing NodePath
+  4["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  2["Cap End"]
+    %% face_code_ref=Missing NodePath
+  31["SweepEdge Opposite"]
+  23["SweepEdge Adjacent"]
+  33["SweepEdge Opposite"]
+  25["SweepEdge Adjacent"]
+  35["SweepEdge Opposite"]
+  27["SweepEdge Adjacent"]
+  37["SweepEdge Opposite"]
+  29["SweepEdge Adjacent"]
+  5["CompositeSolid Intersect<br>[480, 509, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   20 --- 1
   30 <--x 1
   32 <--x 1
@@ -172,10 +172,10 @@ flowchart LR
   26 x--> 42
   43 --- 27
   27 x--> 43
-  28 x--> 44
   44 --- 28
-  29 x--> 45
+  28 x--> 44
   45 --- 29
+  29 x--> 45
   38 --- 30
   39 --- 31
   40 --- 32
