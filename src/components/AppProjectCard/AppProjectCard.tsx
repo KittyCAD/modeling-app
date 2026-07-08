@@ -209,11 +209,13 @@ function AppProjectCard({
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 
-  const badges = (hasCloudConflict || hasChangesRequested) && (
+  const badges = (statusBadgeLabel ||
+    hasCloudConflict ||
+    hasChangesRequested) && (
     <>
       {statusBadgeLabel && (
         <span
-          className="absolute top-2 right-2 z-10 rounded bg-chalkboard-20 px-1.5 py-0.5 text-[10px] font-medium text-chalkboard-90 dark:bg-chalkboard-80 dark:text-chalkboard-10 pointer-events-none"
+          className="rounded bg-chalkboard-20 px-1.5 py-0.5 text-[10px] font-medium text-chalkboard-90 dark:bg-chalkboard-80 dark:text-chalkboard-10"
           data-testid="project-status-badge"
         >
           {statusBadgeLabel}
