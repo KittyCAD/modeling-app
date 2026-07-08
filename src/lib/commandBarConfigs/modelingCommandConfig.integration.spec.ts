@@ -2,18 +2,18 @@ import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { type Artifact, assertParse } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
-  type ModelingCommandSchema,
   extrudeSelectionRequiresBodyType,
   getDefaultGdtTolerance,
+  type ModelingCommandSchema,
   modelingMachineCommandConfig,
   profileSelectionRequiresBodyType,
 } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import {
-  type StdLibCommandDriftConfig,
   modelingCommandStdLibDriftConfig,
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
   modelingStdLibCommandUsesExperimentalFeatures,
+  type StdLibCommandDriftConfig,
   stdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { STD_LIB_COMMANDS } from '@src/lib/commandBarConfigs/modelingCommandStdLibCommands'
@@ -22,8 +22,10 @@ import type {
   KclCommandValue,
 } from '@src/lib/commandTypes'
 import { isArray } from '@src/lib/utils'
-import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  ModelingMachineContext,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
@@ -184,6 +186,25 @@ describe('Extrude bodyType argument', () => {
         length: parsedLength(),
       })
     ).toBe(true)
+  })
+
+  it('skips codemod mock execution for edge extrusion profiles', () => {
+    const skipMockExecution = modelingCommandCodemods.Extrude?.skipMockExecution
+    if (typeof skipMockExecution !== 'function') {
+      throw new Error('Extrude should configure mock execution skipping')
+    }
+
+    expect(
+      skipMockExecution({
+        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+      })
+    ).toBe(true)
+
+    expect(
+      skipMockExecution({
+        sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
+      })
+    ).toBe(false)
   })
 
   it('requires bodyType when extruding engine edge selections after length is confirmed', () => {

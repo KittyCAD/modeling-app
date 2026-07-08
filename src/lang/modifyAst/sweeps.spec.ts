@@ -844,8 +844,12 @@ extrude001 = extrude([s.line1, s.line2], length = 1, bodyType = SURFACE)`
     })
 
     it('should add a surface extrude call from a body edge', async () => {
-      const code = `${triangleRegion}
-extrude001 = extrude(s.line1, length = 1, bodyType = SURFACE)`
+      const code = `@settings(kclVersion = 2.0)
+
+${triangleRegion}
+hidden001 = hide(s)
+region001 = region(point = [1mm, 1mm], sketch = s)
+extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       const { ast, artifactGraph } = await getAstAndArtifactGraph(
         code,
         instanceInThisFile,
@@ -875,6 +879,7 @@ extrude001 = extrude(s.line1, length = 1, bodyType = SURFACE)`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain('extrude002 = extrude(')
+      expect(newCode).toContain('getOppositeEdge(extrude001.sketch.tags.line1)')
       expect(newCode).toContain('length = 2')
       expect(newCode).toContain('bodyType = SURFACE')
       expect(newCode).toContain('method = NEW')

@@ -32,6 +32,7 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   getRegionSketchTagExprFromSourceSurface,
+  getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
@@ -154,18 +155,6 @@ function getEdgeProfileExprsFromSelection({
     }
     const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
-    const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-      sourceSurfaceArtifact as Artifact,
-      edgeArtifact,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance
-    )
-    if (regionSketchTagExpr) {
-      exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
-      continue
-    }
-
     const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
       sourceSurfaceArtifact as Artifact,
       edgeArtifact,
@@ -182,6 +171,54 @@ function getEdgeProfileExprsFromSelection({
         sketchSegmentName
       )
       exprs.push(getEdgeTagCall(sketchTagExpr, edgeArtifact))
+      continue
+    }
+
+    let segmentName = getSketchSegmentName(
+      modifiedAst,
+      edgeArtifact.segId,
+      artifactGraph,
+      wasmInstance
+    )
+    if (!segmentName) {
+      const selectedSegment = getArtifactOfTypes(
+        { key: edgeArtifact.segId, types: ['segment'] },
+        artifactGraph
+      )
+      if (
+        !err(selectedSegment) &&
+        selectedSegment.type === 'segment' &&
+        selectedSegment.originalSegId
+      ) {
+        segmentName = getSketchSegmentName(
+          modifiedAst,
+          selectedSegment.originalSegId,
+          artifactGraph,
+          wasmInstance
+        )
+      }
+    }
+    if (segmentName) {
+      const sketchTagExpr = createMemberExpression(
+        createMemberExpression(
+          createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+          'tags'
+        ),
+        segmentName
+      )
+      exprs.push(getEdgeTagCall(sketchTagExpr, edgeArtifact))
+      continue
+    }
+
+    const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      edgeArtifact,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (regionSketchTagExpr) {
+      exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
       continue
     }
 

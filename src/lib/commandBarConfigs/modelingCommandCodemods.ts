@@ -39,9 +39,9 @@ import {
 } from '@src/lang/modifyAst/gears'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
+  defineModelingCodemod,
   type ModelingCodemod,
   type ModelingCodemodResult,
-  defineModelingCodemod,
 } from '@src/lang/modifyAst/modelingCodemod'
 import {
   addPatternCircular3D,
@@ -75,6 +75,7 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type ModelingCodemodCommandSchema = {
@@ -113,6 +114,23 @@ type ModelingCodemodOptions<CommandName extends ModelingCodemodCommandName> =
     ModelingCommandCodemodConfig<CommandName>,
     'enableExperimentalFeatures' | 'run'
   >
+
+const extrudeUsesEdgeProfile = (
+  args: ModelingCodemodCommandSchema['Extrude']
+) =>
+  Boolean(
+    args.sketches?.graphSelections.some(
+      (selection) =>
+        selection.artifact?.type === 'segment' ||
+        selection.artifact?.type === 'sweepEdge' ||
+        selection.artifact?.type === 'primitiveEdge'
+    ) ||
+      args.sketches?.otherSelections.some(
+        (selection) =>
+          isEnginePrimitiveSelection(selection) &&
+          selection.primitiveType === 'edge'
+      )
+  )
 
 const withStdLibExperimentalFeatures = <
   CommandName extends ModelingCodemodCommandName,
@@ -224,7 +242,9 @@ const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
   })
 
 export const modelingCommandCodemods = {
-  Extrude: withArtifactGraph('Extrude', addExtrude),
+  Extrude: withArtifactGraph('Extrude', addExtrude, {
+    skipMockExecution: extrudeUsesEdgeProfile,
+  }),
   Sweep: withArtifactGraph('Sweep', addSweep),
   Loft: withArtifactGraph('Loft', addLoft),
   Revolve: withArtifactGraph('Revolve', addRevolve),
