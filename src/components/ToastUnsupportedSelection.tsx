@@ -2,11 +2,7 @@ import toast from 'react-hot-toast'
 
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 
-export function ToastUnsupportedSelection({
-  toastId,
-}: {
-  toastId: string
-}) {
+export function ToastUnsupportedSelection({ toastId }: { toastId: string }) {
   const githubIssueUrl = 'https://github.com/KittyCAD/modeling-app/issues/6368'
 
   return (

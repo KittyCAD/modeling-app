@@ -31,7 +31,9 @@ export const createOnEngineConnectionRestartRequest = ({
 
 export const createOnEngineOffline = ({
   dispatchEvent,
-}: { dispatchEvent: (event: Event) => boolean }) => {
+}: {
+  dispatchEvent: (event: Event) => boolean
+}) => {
   const onEngineOffline = () => {
     dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline))
   }

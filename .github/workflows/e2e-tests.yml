@@ -116,7 +116,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5.0.5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -259,7 +259,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5.0.5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -365,7 +365,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5.0.5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -457,7 +457,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5.0.5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -472,7 +472,7 @@ jobs:
         continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 1000 # average build times are <16 minutes
+          max_timeout: 1200 # average build times are 17-19 minutes
           check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
@@ -484,7 +484,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: staging
-          max_timeout: 1000 # average build times are <16 minutes
+          max_timeout: 1200 # average build times are 17-19 minutes
           check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
