@@ -2228,8 +2228,9 @@ export async function startCloudSyncProject(projectPath: string) {
 }
 
 /**
- * User-initiated disconnect. Remote deletion completes before local metadata is
- * detached so a failed cloud delete leaves the project linked and retryable.
+ * User-initiated disconnect. Local metadata is detached before remote deletion
+ * so a concurrent remote-index sync cannot mirror the remote delete into a
+ * local directory delete.
  */
 export async function disconnectCloudSyncProject(projectPath: string) {
   if (!isConfiguredForCloud()) {
@@ -2242,20 +2243,49 @@ export async function disconnectCloudSyncProject(projectPath: string) {
     await getOrCreateProjectMetadata(normalizedProjectPath)
   )
   const remoteProjectId = metadata.remoteProjectId
+  const disconnectedAt = nowIso()
+
+  await removeLocalProjectCloudProjectId(normalizedProjectPath)
+  await putProjectMetadata({
+    ...metadata,
+    localProjectPath: normalizedProjectPath,
+    projectName: projectNameFromPath(normalizedProjectPath),
+    remoteProjectId: undefined,
+    remoteRevision: undefined,
+    remoteUpdatedAt: undefined,
+    baseManifest: undefined,
+    tombstone: false,
+    conflict: undefined,
+    lastFailure: undefined,
+    lastSyncedAt: undefined,
+    syncExcluded: {
+      reason: 'user-disconnected',
+      remoteProjectId,
+      createdAt: disconnectedAt,
+    },
+  })
 
   if (remoteProjectId) {
     try {
       await deleteRemoteProject(config, remoteProjectId)
     } catch (error) {
       if (!(error instanceof CloudApiError && error.status === 404)) {
+        await putProjectMetadata({
+          ...metadata,
+          localProjectPath: normalizedProjectPath,
+          projectName: projectNameFromPath(normalizedProjectPath),
+          syncExcluded: undefined,
+        })
+        await writeLocalProjectCloudProjectId(
+          normalizedProjectPath,
+          remoteProjectId
+        ).catch(markCloudMetadataFailure)
         // eslint-disable-next-line suggest-no-throw/suggest-no-throw
         throw error
       }
     }
   }
 
-  const disconnectedAt = nowIso()
-  await removeLocalProjectCloudProjectId(normalizedProjectPath)
   await clearOutboxEntriesForProject(normalizedProjectPath)
   await putProjectMetadata({
     ...metadata,
