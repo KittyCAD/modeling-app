@@ -1,20 +1,28 @@
-import { expect, test } from '@playwright/test'
+import { expect, type Page, test } from '@playwright/test'
 
 import {
   type CloudProject,
   PROJECT_DIR,
   createRemoteListGate,
+  opfsPathExists,
   projectTitles,
   projectToml,
   readOpfsTextFiles,
   routeCloudProjects,
-  seedOpfsCloudState,
-} from '@e2e/playwright/lib/opfsCloudTestUtils'
+  seedCloudSyncState,
+} from '@e2e/playwright/lib/cloudSyncTestUtils'
 import { setup } from '@e2e/playwright/test-utils'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
+async function openHomeProject(page: Page, projectTitle: string) {
+  await page
+    .getByTestId('project-link')
+    .filter({ hasText: projectTitle })
+    .click()
+}
+
 test(
-  'streams remote-only projects into empty OPFS and persists successful clones',
+  'streams remote-only projects into an empty local list and materializes opened clones',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
     const remoteProjects: CloudProject[] = [
@@ -78,6 +86,7 @@ test(
       .toEqual(
         expect.arrayContaining([
           'Remote empty one',
+          'Remote empty broken',
           'Remote empty two',
           'Remote empty three',
         ])
@@ -85,44 +94,52 @@ test(
     await expect
       .poll(async () => (await projectTitles(page))[0])
       .toBe('Remote empty one')
+    expect(apiCalls.downloads).toEqual([])
+
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/remote-empty-one/main.kcl`)
+      )
+      .toBe(false)
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/remote-empty-two/main.kcl`)
+      )
+      .toBe(false)
+
+    await openHomeProject(page, 'Remote empty one')
+    await expect(page).toHaveURL(/\/file\/.*main\.kcl/)
+    await expect.poll(() => apiCalls.downloads).toEqual(['remote-empty-one'])
 
     const localFiles = await readOpfsTextFiles(page, {
       remoteOne: `${PROJECT_DIR}/remote-empty-one/main.kcl`,
       remoteOneToml: `${PROJECT_DIR}/remote-empty-one/project.toml`,
-      remoteTwo: `${PROJECT_DIR}/remote-empty-two/main.kcl`,
-      remoteThree: `${PROJECT_DIR}/remote-empty-three/main.kcl`,
     })
 
     expect(localFiles.remoteOne).toContain('remoteEmptyOne = 1')
     expect(localFiles.remoteOneToml).toContain(
       'project_id = "remote-empty-one"'
     )
-    expect(localFiles.remoteTwo).toContain('remoteEmptyTwo = 1')
-    expect(localFiles.remoteThree).toContain('remoteEmptyThree = 1')
 
-    const remoteListResponsesAfterHydration = apiCalls.remoteListResponses
+    const remoteListResponsesAfterMaterialization = apiCalls.remoteListResponses
     remoteListGate.hold()
 
-    await page.reload()
+    await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
     await expect
       .poll(() => projectTitles(page))
-      .toEqual(
-        expect.arrayContaining([
-          'Remote empty one',
-          'Remote empty two',
-          'Remote empty three',
-        ])
-      )
+      .toEqual(expect.arrayContaining(['Remote empty one']))
     await expect
       .poll(async () => (await projectTitles(page))[0])
       .toBe('Remote empty one')
-    expect(apiCalls.remoteListResponses).toBe(remoteListResponsesAfterHydration)
+    expect(apiCalls.remoteListResponses).toBe(
+      remoteListResponsesAfterMaterialization
+    )
   }
 )
 
 test(
-  'hydrates cloud projects into OPFS without replacing the local-first home list',
+  'streams cloud projects without replacing the local-first home list',
   { tag: ['@web'] },
   async ({ context, page }, testInfo) => {
     const remoteOnlyProject: CloudProject = {
@@ -216,7 +233,7 @@ test(
       'main.kcl': 'staleLocalDirty = 2\n',
     }
 
-    await seedOpfsCloudState(page, {
+    await seedCloudSyncState(page, {
       projects: [
         {
           projectName: 'local-only-project',
@@ -275,13 +292,13 @@ test(
     // still blocked. After the gate opens, cloud sync should append or update
     // projects without briefly clearing the already-visible local project cards.
     await page.evaluate(() => {
-      type OpfsCloudHomeWindow = Window &
+      type CloudSyncHomeWindow = Window &
         typeof globalThis & {
-          __opfsCloudHomeSnapshots?: string[][]
-          __opfsCloudHomeObserver?: MutationObserver
+          __cloudSyncHomeSnapshots?: string[][]
+          __cloudSyncHomeObserver?: MutationObserver
         }
 
-      const opfsCloudWindow = window as OpfsCloudHomeWindow
+      const cloudSyncWindow = window as CloudSyncHomeWindow
       const snapshots: string[][] = []
       const readTitles = () =>
         Array.from(document.querySelectorAll('[data-testid="project-title"]'))
@@ -296,12 +313,12 @@ test(
         characterData: true,
       })
       snapshots.push(readTitles())
-      opfsCloudWindow.__opfsCloudHomeSnapshots = snapshots
-      opfsCloudWindow.__opfsCloudHomeObserver = observer
+      cloudSyncWindow.__cloudSyncHomeSnapshots = snapshots
+      cloudSyncWindow.__cloudSyncHomeObserver = observer
     })
 
     // Let the mocked cloud index request finish. This introduces:
-    // - one remote-only project that must be cloned into OPFS,
+    // - one remote-only project that should appear as a cloud-only card,
     // - one clean synced project whose remote revision is newer,
     // - one stale dirty project whose remote update should reject.
     remoteListGate.release()
@@ -328,9 +345,9 @@ test(
         (
           window as Window &
             typeof globalThis & {
-              __opfsCloudHomeSnapshots?: string[][]
+              __cloudSyncHomeSnapshots?: string[][]
             }
-        ).__opfsCloudHomeSnapshots || []
+        ).__cloudSyncHomeSnapshots || []
     )
     const snapshotsAfterLocalList = snapshots.filter((titles) =>
       [
@@ -345,12 +362,18 @@ test(
     )
 
     // Verify the reconciliation policy at the OPFS layer, not just in the UI:
-    // remote-only projects are cloned locally, clean synced projects can accept
-    // newer remote contents, local-only projects are created remotely and get a
-    // cloud project id, and stale dirty projects keep their local dirty file.
+    // remote-only projects are listed without being cloned, clean synced
+    // projects can accept newer remote contents, local-only projects are
+    // created remotely and get a cloud project id, and stale dirty projects
+    // keep their local dirty file.
+    expect(apiCalls.downloads).not.toContain('remote-only-project')
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/remote-only-project/main.kcl`)
+      )
+      .toBe(false)
+
     const localFiles = await readOpfsTextFiles(page, {
-      remoteOnly: `${PROJECT_DIR}/remote-only-project/main.kcl`,
-      remoteOnlyToml: `${PROJECT_DIR}/remote-only-project/project.toml`,
       cleanSynced: `${PROJECT_DIR}/clean-synced-project/main.kcl`,
       cleanSyncedToml: `${PROJECT_DIR}/clean-synced-project/project.toml`,
       localOnly: `${PROJECT_DIR}/local-only-project/main.kcl`,
@@ -358,10 +381,6 @@ test(
       staleDirty: `${PROJECT_DIR}/stale-dirty-project/main.kcl`,
     })
 
-    expect(localFiles.remoteOnly).toContain('remoteOnly = 1')
-    expect(localFiles.remoteOnlyToml).toContain(
-      'project_id = "remote-only-project"'
-    )
     expect(localFiles.cleanSynced).toContain('cleanRemoteUpdate = 2')
     expect(localFiles.cleanSyncedToml).toContain(
       'project_id = "clean-synced-project"'
@@ -373,13 +392,31 @@ test(
     expect(localFiles.staleDirty).toContain('staleLocalDirty = 2')
     expect(staleUpdateCalls()[0]?.url).toContain('expected_revision')
 
-    const remoteListResponsesAfterHydration = apiCalls.remoteListResponses
+    await openHomeProject(page, 'Remote only project')
+    await expect(page).toHaveURL(/\/file\/.*main\.kcl/)
+    await expect
+      .poll(() => apiCalls.downloads)
+      .toEqual(expect.arrayContaining(['remote-only-project']))
+
+    const remoteOnlyFiles = await readOpfsTextFiles(page, {
+      remoteOnly: `${PROJECT_DIR}/remote-only-project/main.kcl`,
+      remoteOnlyToml: `${PROJECT_DIR}/remote-only-project/project.toml`,
+    })
+    expect(remoteOnlyFiles.remoteOnly).toContain('remoteOnly = 1')
+    expect(remoteOnlyFiles.remoteOnlyToml).toContain(
+      'project_id = "remote-only-project"'
+    )
+    const remoteOnlyDownloadsAfterFirstOpen = apiCalls.downloads.filter(
+      (projectId) => projectId === 'remote-only-project'
+    ).length
+
+    const remoteListResponsesAfterMaterialization = apiCalls.remoteListResponses
     remoteListGate.hold()
 
-    // Reload with the remote index blocked. A successfully cloned remote-only
+    // Reload with the remote index blocked. A successfully materialized
     // project should now behave like a normal local OPFS project, so Home should
     // show it from local state without needing another remote list response.
-    await page.reload()
+    await page.goto('/')
     await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
     await expect
       .poll(() => projectTitles(page))
@@ -391,11 +428,13 @@ test(
           'Remote only project',
         ])
       )
-    expect(apiCalls.remoteListResponses).toBe(remoteListResponsesAfterHydration)
+    expect(apiCalls.remoteListResponses).toBe(
+      remoteListResponsesAfterMaterialization
+    )
 
     // Simulate a user/client losing the local clone after the first successful
-    // hydration. The next reload should be able to clone the remote-only project
-    // again when the cloud index is eventually allowed to complete.
+    // materialization. The next cloud index response should restore the card,
+    // and opening that card should clone the remote-only project again.
     await page.evaluate(async () => {
       const root = await navigator.storage.getDirectory()
       const documents = await root.getDirectoryHandle('documents')
@@ -404,22 +443,15 @@ test(
       )
       await projects.removeEntry('remote-only-project', { recursive: true })
     })
-    const remoteOnlyExistsAfterManualRemoval = await page.evaluate(
-      async ({ projectDirectory }) => {
-        try {
-          await window.fsZds.stat(`${projectDirectory}/remote-only-project`)
-          return true
-        } catch {
-          return false
-        }
-      },
-      { projectDirectory: PROJECT_DIR }
+    const remoteOnlyExistsAfterManualRemoval = await opfsPathExists(
+      page,
+      `${PROJECT_DIR}/remote-only-project`
     )
     expect(remoteOnlyExistsAfterManualRemoval).toBe(false)
 
     // Start the reload while the remote list is blocked to prove the project is
-    // really absent locally, then release the gate and confirm cloud hydration
-    // restores both the Home card and the OPFS file contents.
+    // really absent locally, then release the gate and confirm the cloud index
+    // restores the Home card without restoring OPFS files until the card opens.
     remoteListGate.hold()
     await page.reload()
     await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible()
@@ -427,6 +459,27 @@ test(
     await expect
       .poll(() => projectTitles(page), { timeout: 20_000 })
       .toEqual(expect.arrayContaining(['Remote only project']))
+    await expect
+      .poll(() =>
+        opfsPathExists(page, `${PROJECT_DIR}/remote-only-project/main.kcl`)
+      )
+      .toBe(false)
+    expect(
+      apiCalls.downloads.filter(
+        (projectId) => projectId === 'remote-only-project'
+      ).length
+    ).toBe(remoteOnlyDownloadsAfterFirstOpen)
+
+    await openHomeProject(page, 'Remote only project')
+    await expect(page).toHaveURL(/\/file\/.*main\.kcl/)
+    await expect
+      .poll(
+        () =>
+          apiCalls.downloads.filter(
+            (projectId) => projectId === 'remote-only-project'
+          ).length
+      )
+      .toBeGreaterThan(remoteOnlyDownloadsAfterFirstOpen)
     await expect
       .poll(() =>
         page.evaluate(
