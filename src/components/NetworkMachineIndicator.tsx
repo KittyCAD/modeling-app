@@ -28,7 +28,9 @@ export const useNetworkMachineStatus = (): StatusBarItemType => {
 
 function NetworkMachinesPopoverContent({
   machines,
-}: { machines: components['schemas']['MachineInfoResponse'][] }) {
+}: {
+  machines: components['schemas']['MachineInfoResponse'][]
+}) {
   return (
     <div
       className="absolute left-2 bottom-full mb-1 w-64 flex flex-col gap-1 align-stretch bg-chalkboard-10 dark:bg-chalkboard-90 rounded shadow-lg border border-solid border-chalkboard-20/50 dark:border-chalkboard-80/50 text-sm"

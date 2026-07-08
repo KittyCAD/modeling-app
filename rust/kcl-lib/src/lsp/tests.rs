@@ -1688,6 +1688,53 @@ async fn test_kcl_lsp_semantic_tokens_large_file() {
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn test_kcl_lsp_new_lexer_retains_semantic_tokens_on_lexical_error() {
+    // With the new lexer a lexical error still yields semantic tokens (so the
+    // editor keeps highlighting) alongside a diagnostic, and produces no AST.
+    // (Uses the process-global test override; race-free under nextest isolation.)
+    let _guard = crate::parsing::token::LexerMode::override_for_test(crate::parsing::token::LexerMode::New);
+
+    let server = kcl_lsp_server(false).await.unwrap();
+
+    server
+        .did_open(tower_lsp::lsp_types::DidOpenTextDocumentParams {
+            text_document: tower_lsp::lsp_types::TextDocumentItem {
+                uri: "file:///test.kcl".try_into().unwrap(),
+                language_id: "kcl".to_string(),
+                version: 1,
+                // `~` is a lexical (unknown-token) error; the rest is valid KCL
+                // and must still produce semantic tokens.
+                text: "myVar = 42\n~\n".to_string(),
+            },
+        })
+        .await;
+
+    let uri = "file:///test.kcl";
+
+    // A lexical error is reported as a diagnostic.
+    let has_diagnostic = server
+        .diagnostics_map
+        .get(uri)
+        .as_deref()
+        .is_some_and(|diagnostics| !diagnostics.is_empty());
+    assert!(has_diagnostic, "expected a lexical diagnostic");
+
+    // No AST is produced.
+    assert!(server.ast_map.get(uri).is_none(), "expected no AST on a lexical error");
+
+    // Semantic tokens are retained despite the lexical error.
+    let has_semantic_tokens = server
+        .semantic_tokens_map
+        .get(uri)
+        .as_deref()
+        .is_some_and(|tokens| !tokens.is_empty());
+    assert!(
+        has_semantic_tokens,
+        "expected semantic tokens to be retained despite the lexical error"
+    );
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn test_kcl_lsp_semantic_tokens_with_modifiers() {
     let server = kcl_lsp_server(false).await.unwrap();
 
