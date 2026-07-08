@@ -693,7 +693,7 @@ async fn inner_extrude(
                     )
                 }
                 Point3dAxis3dOrGeometryReference::EdgeToReference(spec) => {
-                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, exec_state, &args).await?;
+                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())

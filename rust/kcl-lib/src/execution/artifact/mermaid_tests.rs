@@ -356,6 +356,10 @@ impl ArtifactGraph {
         Ok(())
     }
 
+    // Stabilize Mermaid rendering for semantically equivalent graphs whose
+    // insertion/traversal order differs. This does not hide real engine
+    // nondeterminism: if execution produces different artifact content, the
+    // rendered snapshot should still change.
     fn flowchart_sort_key(&self, id: ArtifactId) -> String {
         let Some(artifact) = self.map.get(&id) else {
             return String::new();
@@ -866,6 +870,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());

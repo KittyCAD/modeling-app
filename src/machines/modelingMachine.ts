@@ -4209,9 +4209,7 @@ export const modelingMachine = setup({
       }
     }),
     'submit-prompt-edit': fromPromise(
-      async ({}: {
-        input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
+      async ({}: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {}
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,

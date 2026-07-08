@@ -1,0 +1,5 @@
+export const SLICER_PLUGIN_ID = 'slicer'
+export const EXPORT_TO_SLICER_COMMAND_GROUP_ID = 'modeling'
+export const EXPORT_TO_SLICER_COMMAND_NAME = 'Export to Slicer'
+export const EXPORT_TO_SLICER_COMMAND_ID = 'zds.slicer.export'
+export const EXPORT_TO_SLICER_ACTION_TYPE = 'slicer.export'

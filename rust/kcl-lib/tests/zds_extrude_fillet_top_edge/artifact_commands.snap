@@ -240,6 +240,16 @@ description: Artifact commands zds_extrude_fillet_top_edge.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
         "edge_ids": [

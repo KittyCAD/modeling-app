@@ -1,5 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
+assertion_line: 505
 description: Artifact commands sketch_block_get_common_edge_fillet.kcl
 ---
 {
@@ -226,6 +227,16 @@ description: Artifact commands sketch_block_get_common_edge_fillet.kcl
           "[uuid]"
         ]
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

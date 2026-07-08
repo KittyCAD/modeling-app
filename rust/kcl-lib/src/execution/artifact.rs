@@ -65,6 +65,11 @@ pub struct ArtifactCommand {
     /// without an engine command, in which case, we would make this field
     /// optional.
     pub command: ModelingCmd,
+    /// Whether this command should be omitted when deriving the semantic
+    /// artifact graph. Query-only commands can still be useful in command
+    /// snapshots without becoming frontend selection artifacts.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub omit_from_graph: bool,
 }
 
 pub type DummyPathToNode = Vec<()>;
@@ -921,6 +926,9 @@ pub(super) fn build_artifact_graph(
     }
 
     for artifact_command in artifact_commands {
+        if artifact_command.omit_from_graph {
+            continue;
+        }
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
             current_plane_id = Some(entity_id);
         }
