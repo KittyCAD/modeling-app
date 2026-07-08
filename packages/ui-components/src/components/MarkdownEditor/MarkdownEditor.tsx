@@ -121,7 +121,10 @@ export function MarkdownEditor({
       extensions,
       immediatelyRender: true,
       onUpdate: ({ editor }) => {
-        onChange(editor.getMarkdown())
+        const nextValue = getMarkdownOrNull(editor)
+        if (nextValue !== null) {
+          onChange(nextValue)
+        }
       },
       shouldRerenderOnTransaction: true,
     },
@@ -307,7 +310,24 @@ export function normalizeMarkdownEditorValue(
     }),
   })
 
-  return manager.serialize(manager.parse(value))
+  return serializeMarkdownOrFallback(
+    () => manager.serialize(manager.parse(value)),
+    value
+  )
+}
+
+function getMarkdownOrNull(editor: { getMarkdown: () => string }) {
+  return serializeMarkdownOrFallback(() => editor.getMarkdown(), null)
+}
+
+function serializeMarkdownOrFallback<T>(serialize: () => string, fallback: T) {
+  try {
+    return serialize()
+  } catch {
+    // Tiptap's markdown serializer can throw for transient editor states, such
+    // as the empty ordered-list item created while typing `1. `.
+    return fallback
+  }
 }
 
 function createMarkdownEditorBaseExtensions({
