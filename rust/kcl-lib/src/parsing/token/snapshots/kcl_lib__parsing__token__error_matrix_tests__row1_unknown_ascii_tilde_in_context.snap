@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_old(\"12 ~ 8\")"
+---
+source: "12 ~ 8"
+lex:   Ok (5 tokens)
+parse: Err [lexical] "found unknown token '~'" @ [SourceRange([3, 4, 0])]
