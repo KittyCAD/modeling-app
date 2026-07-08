@@ -24,7 +24,6 @@ import {
 } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -71,6 +70,7 @@ import {
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
   commandSystemService,
@@ -312,12 +312,12 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
-    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
-    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncOpfsCloudBacking()
+    this.syncCloudSyncRuntimePolicy()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -656,8 +656,8 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncOpfsCloudBacking = () => {
-    if (typeof window === 'undefined' || window.electron) {
+  syncCloudSyncRuntimePolicy = () => {
+    if (typeof window === 'undefined') {
       return
     }
 
@@ -665,19 +665,23 @@ export class App implements AppSubsystems {
     const token = authSnapshot.matches('loggedIn')
       ? authSnapshot.context.token
       : undefined
+    const settingsContext = this.settings.actor.getSnapshot().context
+    const cloudSyncPluginEnabled =
+      settingsContext.plugins?.['cloud-sync']?.current !== false
     const enabled =
       Boolean(token) &&
+      cloudSyncPluginEnabled &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
         false
       )
 
-    configureOpfsCloudSync({
+    this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      projectDirectoryPath:
-        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+      projectDirectoryPath: settingsContext.app.projectDirectory.current,
+      syncExistingLocalProjects: !window.electron,
     })
   }
 
@@ -721,6 +725,7 @@ export class App implements AppSubsystems {
         .get(zdsPluginActivationSettingsValueSpec)
         .map((setting) => [setting.pluginId, setting])
     )
+    const activePluginIds: string[] = []
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
       const activationSetting = pluginActivationSettings.get(plugin.id)
@@ -737,6 +742,9 @@ export class App implements AppSubsystems {
       if (typeof desiredActive !== 'boolean') {
         continue
       }
+      if (desiredActive) {
+        activePluginIds.push(plugin.id)
+      }
 
       const toggle = this.registry.get(plugin.service)
       if (toggle.active.value === desiredActive) {
@@ -749,6 +757,14 @@ export class App implements AppSubsystems {
       }
 
       toggle.disable()
+    }
+
+    const syncActivePlugins =
+      typeof window !== 'undefined'
+        ? window.electron?.pluginIpc.syncActivePlugins
+        : undefined
+    if (syncActivePlugins) {
+      void syncActivePlugins(activePluginIds).catch(reportRejection)
     }
   }
 

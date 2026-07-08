@@ -12,9 +12,7 @@ interface IRowCollapse {
   keyIndex: number
 }
 
-export const Generic = (props: {
-  content: string
-}) => {
+export const Generic = (props: { content: string }) => {
   return <div>{props.content}</div>
 }
 
@@ -180,9 +178,7 @@ export const DesignPlan = (props: {
   )
 }
 
-export const ThoughtFor = (props: {
-  start: number
-}) => {
+export const ThoughtFor = (props: { start: number }) => {
   return <div>Worked for {ms(props.start - Date.now(), { long: true })}</div>
 }
 
@@ -427,9 +423,7 @@ const ImageFileItem = (props: {
   )
 }
 
-export const FilesSnapshot = (props: {
-  files: MlCopilotFile[]
-}) => {
+export const FilesSnapshot = (props: { files: MlCopilotFile[] }) => {
   const [objectUrls, setObjectUrls] = useState<string[]>([])
 
   useEffect(() => {

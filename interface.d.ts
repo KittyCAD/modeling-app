@@ -4,6 +4,7 @@ import type { Stats } from 'fs'
 import type fs from 'node:fs/promises'
 import type path from 'path'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
 import type { ZooLabel } from 'menu/roles'
@@ -29,6 +30,10 @@ export interface IElectronAPI {
   openExternal: typeof shell.openExternal
   openInNewWindow: (name: string) => void
   showInFolder: typeof shell.showItemInFolder
+  pluginIpc: {
+    invoke: <T>(channel: PluginIpcChannel, payload?: unknown) => Promise<T>
+    syncActivePlugins: (pluginIds: readonly string[]) => Promise<void>
+  }
   /** Require to be called first before {@link loginWithDeviceFlow} */
   startDeviceFlow: (host: string) => Promise<DeviceFlowAuthorization>
   /** Registered by first calling {@link startDeviceFlow}, which sets up the device flow handle */
