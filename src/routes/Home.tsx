@@ -17,7 +17,7 @@ import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import ProjectCard from '@src/components/ProjectCard/ProjectCard'
+import AppProjectCard from '@src/components/ProjectCard/AppProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,
@@ -687,7 +687,7 @@ function ProjectGrid({
           {searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {sortedSearchResults.map((project) => (
-                <ProjectCard
+                <AppProjectCard
                   key={project.name}
                   project={project}
                   projectStatus={
