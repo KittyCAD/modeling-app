@@ -2,6 +2,7 @@ import { defineRegistryItem, provideService } from '@kittycad/registry'
 import {
   cloudSyncStatus,
   configureCloudSync,
+  disconnectCloudSyncProject,
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
   getCloudSyncProjectMetadataIndex,
@@ -10,6 +11,7 @@ import {
   resolveCloudSyncProjectConflict,
   retryCloudSync,
   setCloudSyncProjectScope,
+  startCloudSyncProject,
 } from '@src/lib/cloudSync'
 import {
   type CloudSyncRegistryService,
@@ -22,6 +24,8 @@ const serviceImpl: CloudSyncRegistryService = {
   installFileSystemObserver: installCloudSyncFileSystemObserver,
   retry: retryCloudSync,
   setProjectScope: setCloudSyncProjectScope,
+  startProjectSync: startCloudSyncProject,
+  disconnectProjectSync: disconnectCloudSyncProject,
   ensureProjectLocallySynced: ensureCloudProjectLocallySynced,
   getProjectMetadata: getCloudSyncProjectMetadata,
   getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,

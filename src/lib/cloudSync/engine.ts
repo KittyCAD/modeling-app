@@ -2181,6 +2181,107 @@ export function setCloudSyncProjectScope(projectPath?: string) {
   scheduleSync(0)
 }
 
+export async function startCloudSyncProject(projectPath: string) {
+  if (!isConfiguredForCloud()) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync is not enabled.')
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const stat = await localFs.stat(normalizedProjectPath)
+  if (!statIsDirectory(stat)) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync can only start from a project directory.')
+  }
+
+  const metadata = await bindRemoteProjectIdFromToml(
+    await getOrCreateProjectMetadata(normalizedProjectPath)
+  )
+
+  await clearOutboxEntriesForProject(normalizedProjectPath)
+  await putProjectMetadata({
+    ...metadata,
+    localProjectPath: normalizedProjectPath,
+    projectName: projectNameFromPath(normalizedProjectPath),
+    tombstone: false,
+    syncExcluded: undefined,
+    conflict: undefined,
+    lastFailure: undefined,
+  })
+  await appendOutboxEntry({
+    projectPath: normalizedProjectPath,
+    kind: 'upsert',
+    targetPath: normalizedProjectPath,
+    createdAt: nowIso(),
+  })
+  updateStatus({
+    state: 'idle',
+    activeProjectPath: undefined,
+    lastFailure: undefined,
+    lastFailureAt: undefined,
+  })
+  scheduleSync(0)
+}
+
+export async function disconnectCloudSyncProject(projectPath: string) {
+  if (!isConfiguredForCloud()) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync is not enabled.')
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const metadata = await bindRemoteProjectIdFromToml(
+    await getOrCreateProjectMetadata(normalizedProjectPath)
+  )
+  const remoteProjectId = metadata.remoteProjectId
+
+  if (remoteProjectId) {
+    try {
+      await deleteRemoteProject(config, remoteProjectId)
+    } catch (error) {
+      if (!(error instanceof CloudApiError && error.status === 404)) {
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw error
+      }
+    }
+  }
+
+  const disconnectedAt = nowIso()
+  await removeLocalProjectCloudProjectId(normalizedProjectPath)
+  await clearOutboxEntriesForProject(normalizedProjectPath)
+  await putProjectMetadata({
+    ...metadata,
+    localProjectPath: normalizedProjectPath,
+    projectName: projectNameFromPath(normalizedProjectPath),
+    remoteProjectId: undefined,
+    remoteRevision: undefined,
+    remoteUpdatedAt: undefined,
+    baseManifest: undefined,
+    tombstone: false,
+    conflict: undefined,
+    lastFailure: undefined,
+    lastSyncedAt: undefined,
+    syncExcluded: {
+      reason: 'user-disconnected',
+      remoteProjectId,
+      createdAt: disconnectedAt,
+    },
+  })
+  if (remoteProjectId) {
+    cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.filter(
+      (project) => project.id !== remoteProjectId
+    )
+  }
+  updateStatus({
+    state: 'idle',
+    activeProjectPath: undefined,
+    lastFailure: undefined,
+    lastFailureAt: undefined,
+    lastSyncedAt: disconnectedAt,
+  })
+  scheduleRemoteIndexSync(0)
+}
+
 function attachVisibilityChangeListener() {
   if (
     detachVisibilityChangeListener ||

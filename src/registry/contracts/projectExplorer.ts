@@ -1,5 +1,6 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
-import type { ReactNode } from 'react'
+import type { ComponentType, ReactNode } from 'react'
+import type { Project } from '@src/lib/project'
 
 export interface ProjectExplorerRowContextMenuRow {
   path: string
@@ -26,19 +27,45 @@ export interface ProjectExplorerRowContextMenuItem {
 
 export interface ProjectExplorerProjectMenuItemContext {
   projectPath: string
+  project: Project
 }
 
-export interface ProjectExplorerProjectMenuItem {
+export interface ProjectExplorerProjectMenuItemComponentProps {
+  context: ProjectExplorerProjectMenuItemContext
+  className: string
+  close: () => void
+}
+
+type ProjectExplorerProjectMenuItemBase = {
   id: string
   order?: number
-  label: ReactNode
-  dataTestId?: string
   disabled?:
     | boolean
     | ((context: ProjectExplorerProjectMenuItemContext) => boolean)
   isVisible?: (context: ProjectExplorerProjectMenuItemContext) => boolean
-  onSelect: (context: ProjectExplorerProjectMenuItemContext) => void
 }
+
+type ProjectExplorerProjectMenuItemSlotProps = {
+  label:
+    | ReactNode
+    | ((context: ProjectExplorerProjectMenuItemContext) => ReactNode)
+  dataTestId?:
+    | string
+    | ((context: ProjectExplorerProjectMenuItemContext) => string | undefined)
+  className?:
+    | string
+    | ((context: ProjectExplorerProjectMenuItemContext) => string | undefined)
+}
+
+export type ProjectExplorerProjectMenuItem =
+  | (ProjectExplorerProjectMenuItemBase &
+      ProjectExplorerProjectMenuItemSlotProps & {
+        onSelect: (context: ProjectExplorerProjectMenuItemContext) => void
+        Component?: undefined
+      })
+  | (ProjectExplorerProjectMenuItemBase & {
+      Component: ComponentType<ProjectExplorerProjectMenuItemComponentProps>
+    })
 
 const byOrder = (
   a: ProjectExplorerRowContextMenuItem | ProjectExplorerProjectMenuItem,

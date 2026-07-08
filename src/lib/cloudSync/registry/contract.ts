@@ -16,6 +16,8 @@ export type CloudSyncRegistryService = {
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
   retry: () => void
   setProjectScope: (projectPath?: string) => void
+  startProjectSync: (projectPath: string) => Promise<void>
+  disconnectProjectSync: (projectPath: string) => Promise<void>
   ensureProjectLocallySynced: (
     remoteProjectId: string
   ) => Promise<CloudSyncLocalProject | undefined>
