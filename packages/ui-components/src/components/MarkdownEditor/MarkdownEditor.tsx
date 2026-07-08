@@ -1,3 +1,4 @@
+import { Extension } from '@tiptap/core'
 import { Link } from '@tiptap/extension-link'
 import { Markdown, MarkdownManager } from '@tiptap/markdown'
 import { EditorContent, useEditor } from '@tiptap/react'
@@ -17,8 +18,17 @@ export type MarkdownEditorNormalizeLinkHref = (
   value: string | undefined
 ) => string | null
 
+export type MarkdownEditorActionName =
+  | 'toggleBold'
+  | 'toggleItalic'
+  | 'setLink'
+  | 'toggleBulletList'
+  | 'toggleOrderedList'
+  | 'undo'
+  | 'redo'
+
 export type MarkdownEditorActions = {
-  setLink: () => boolean
+  [ActionName in MarkdownEditorActionName]: () => boolean
 }
 
 export interface MarkdownEditorProps {
@@ -34,9 +44,11 @@ export interface MarkdownEditorProps {
   labelledBy?: string
   normalizeLinkHref?: MarkdownEditorNormalizeLinkHref
   onActionsChange?: (actions: MarkdownEditorActions | null) => void
+  onFocusChange?: (isFocused: boolean) => void
   placeholder?: string
   promptForLink?: (currentHref: string) => string | null
   required?: boolean
+  suppressDefaultKeyboardShortcuts?: boolean
   testId?: string
 }
 
@@ -56,6 +68,25 @@ const MARKDOWN_OPTIONS = {
     gfm: true,
   },
 }
+const MarkdownEditorShortcutSuppressor = Extension.create({
+  name: 'markdownEditorShortcutSuppressor',
+  priority: 1000,
+  addKeyboardShortcuts() {
+    return {
+      'Mod-b': () => true,
+      'Mod-B': () => true,
+      'Mod-i': () => true,
+      'Mod-I': () => true,
+      'Mod-Shift-8': () => true,
+      'Mod-Shift-7': () => true,
+      'Mod-z': () => true,
+      'Mod-я': () => true,
+      'Shift-Mod-z': () => true,
+      'Mod-y': () => true,
+      'Shift-Mod-я': () => true,
+    }
+  },
+})
 
 export function MarkdownEditor({
   id,
@@ -70,15 +101,17 @@ export function MarkdownEditor({
   labelledBy,
   normalizeLinkHref = defaultNormalizeMarkdownLinkHref,
   onActionsChange,
+  onFocusChange,
   placeholder = '',
   promptForLink,
   required = false,
+  suppressDefaultKeyboardShortcuts = false,
   testId = 'markdown-editor',
 }: MarkdownEditorProps) {
   const featureKey = useMemo(() => [...features].sort().join('|'), [features])
+  // biome-ignore lint/correctness/useExhaustiveDependencies: featureKey intentionally keys by feature content, not array identity.
   const normalizedFeatures = useMemo(
     () => [...new Set(features)] as MarkdownEditorFeature[],
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- featureKey intentionally keys by feature content, not array identity.
     [featureKey]
   )
   const enabledFeatures = useMemo(
@@ -111,10 +144,11 @@ export function MarkdownEditor({
       ...createMarkdownEditorBaseExtensions({
         features: normalizedFeatures,
         normalizeLinkHref,
+        suppressDefaultKeyboardShortcuts,
       }),
       Markdown.configure(MARKDOWN_OPTIONS),
     ],
-    [normalizedFeatures, normalizeLinkHref]
+    [normalizedFeatures, normalizeLinkHref, suppressDefaultKeyboardShortcuts]
   )
 
   const editor = useEditor(
@@ -123,6 +157,16 @@ export function MarkdownEditor({
       contentType: 'markdown',
       editorProps: {
         attributes: editorAttributes,
+        handleDOMEvents: {
+          focus: () => {
+            onFocusChange?.(true)
+            return false
+          },
+          blur: () => {
+            onFocusChange?.(false)
+            return false
+          },
+        },
       },
       extensions,
       immediatelyRender: true,
@@ -152,6 +196,22 @@ export function MarkdownEditor({
       emitUpdate: false,
     })
   }, [editor, value])
+
+  const toggleBold = useCallback(() => {
+    if (!editor || !enabledFeatures.has('bold')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleBold().run()
+  }, [editor, enabledFeatures])
+
+  const toggleItalic = useCallback(() => {
+    if (!editor || !enabledFeatures.has('italic')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleItalic().run()
+  }, [editor, enabledFeatures])
 
   const setLink = useCallback(() => {
     if (!editor || !hasLink) {
@@ -200,11 +260,57 @@ export function MarkdownEditor({
     return true
   }, [editor, hasLink, normalizeLinkHref, promptForLink])
 
+  const toggleBulletList = useCallback(() => {
+    if (!editor || !enabledFeatures.has('bulletList')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleBulletList().run()
+  }, [editor, enabledFeatures])
+
+  const toggleOrderedList = useCallback(() => {
+    if (!editor || !enabledFeatures.has('orderedList')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleOrderedList().run()
+  }, [editor, enabledFeatures])
+
+  const undo = useCallback(() => {
+    if (!editor || !hasUndoRedo || !editor.can().undo()) {
+      return false
+    }
+
+    return editor.chain().focus().undo().run()
+  }, [editor, hasUndoRedo])
+
+  const redo = useCallback(() => {
+    if (!editor || !hasUndoRedo || !editor.can().redo()) {
+      return false
+    }
+
+    return editor.chain().focus().redo().run()
+  }, [editor, hasUndoRedo])
+
   const actions = useMemo<MarkdownEditorActions>(
     () => ({
+      toggleBold,
+      toggleItalic,
       setLink,
+      toggleBulletList,
+      toggleOrderedList,
+      undo,
+      redo,
     }),
-    [setLink]
+    [
+      toggleBold,
+      toggleItalic,
+      setLink,
+      toggleBulletList,
+      toggleOrderedList,
+      undo,
+      redo,
+    ]
   )
 
   useEffect(() => {
@@ -228,7 +334,7 @@ export function MarkdownEditor({
             label="Bold"
             pressed={editor?.isActive('bold') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleBold().run()}
+            onClick={toggleBold}
           >
             <BoldIcon />
           </EditorToolbarButton>
@@ -238,7 +344,7 @@ export function MarkdownEditor({
             label="Italic"
             pressed={editor?.isActive('italic') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleItalic().run()}
+            onClick={toggleItalic}
           >
             <ItalicIcon />
           </EditorToolbarButton>
@@ -261,7 +367,7 @@ export function MarkdownEditor({
             label="Bulleted list"
             pressed={editor?.isActive('bulletList') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleBulletList().run()}
+            onClick={toggleBulletList}
           >
             <ListIcon ordered={false} />
           </EditorToolbarButton>
@@ -271,7 +377,7 @@ export function MarkdownEditor({
             label="Numbered list"
             pressed={editor?.isActive('orderedList') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+            onClick={toggleOrderedList}
           >
             <ListIcon ordered={true} />
           </EditorToolbarButton>
@@ -283,7 +389,7 @@ export function MarkdownEditor({
           <EditorToolbarButton
             label="Undo"
             disabled={!editor?.can().undo()}
-            onClick={() => editor?.chain().focus().undo().run()}
+            onClick={undo}
           >
             <UndoIcon />
           </EditorToolbarButton>
@@ -292,7 +398,7 @@ export function MarkdownEditor({
           <EditorToolbarButton
             label="Redo"
             disabled={!editor?.can().redo()}
-            onClick={() => editor?.chain().focus().redo().run()}
+            onClick={redo}
           >
             <RedoIcon />
           </EditorToolbarButton>
@@ -354,9 +460,11 @@ function serializeMarkdownOrFallback<T>(serialize: () => string, fallback: T) {
 function createMarkdownEditorBaseExtensions({
   features,
   normalizeLinkHref,
+  suppressDefaultKeyboardShortcuts = false,
 }: {
   features: readonly MarkdownEditorFeature[]
   normalizeLinkHref: MarkdownEditorNormalizeLinkHref
+  suppressDefaultKeyboardShortcuts?: boolean
 }) {
   const enabledFeatures = new Set(features)
   const hasLists =
@@ -382,6 +490,9 @@ function createMarkdownEditorBaseExtensions({
       underline: false,
       undoRedo: hasUndoRedo ? undefined : false,
     }),
+    ...(suppressDefaultKeyboardShortcuts
+      ? [MarkdownEditorShortcutSuppressor]
+      : []),
     ...(hasLink
       ? [
           createSafeLinkExtension(normalizeLinkHref).configure({

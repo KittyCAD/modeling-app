@@ -1,6 +1,7 @@
 import {
   defaultNormalizeMarkdownLinkHref,
   MarkdownEditor,
+  type MarkdownEditorActionName,
   type MarkdownEditorActions,
   normalizeMarkdownEditorValue,
 } from '@kittycad/ui-components'
@@ -96,7 +97,7 @@ describe('MarkdownEditor', () => {
     )
   })
 
-  it('exposes a link action for external keymap integrations', async () => {
+  it('exposes editor actions for external keymap integrations', async () => {
     const onChange = vi.fn()
     const actionsRef: { current: MarkdownEditorActions | null } = {
       current: null,
@@ -121,6 +122,20 @@ describe('MarkdownEditor', () => {
     const actions = actionsRef.current
     if (!actions) {
       throw new Error('Missing Markdown editor actions')
+    }
+
+    const actionNames = [
+      'toggleBold',
+      'toggleItalic',
+      'setLink',
+      'toggleBulletList',
+      'toggleOrderedList',
+      'undo',
+      'redo',
+    ] as const satisfies readonly MarkdownEditorActionName[]
+
+    for (const actionName of actionNames) {
+      expect(actions[actionName]).toEqual(expect.any(Function))
     }
 
     expect(actions.setLink()).toBe(true)

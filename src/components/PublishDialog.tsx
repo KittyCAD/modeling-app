@@ -13,14 +13,7 @@ import type {
   ProjectPublishSubmission,
 } from '@src/lib/share'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import {
-  type FocusEvent,
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
 type PublishDialogMarkdownEditorKeymap = {
   focusScope: {
@@ -198,28 +191,6 @@ export function PublishDialog({
     }
   }
 
-  const handleDescriptionEditorFocus = useCallback(
-    (event: FocusEvent<HTMLDivElement>) => {
-      if (eventTargetIsInside(event.currentTarget, event.relatedTarget)) {
-        return
-      }
-
-      setDescriptionEditorFocused(true)
-    },
-    []
-  )
-
-  const handleDescriptionEditorBlur = useCallback(
-    (event: FocusEvent<HTMLDivElement>) => {
-      if (eventTargetIsInside(event.currentTarget, event.relatedTarget)) {
-        return
-      }
-
-      setDescriptionEditorFocused(false)
-    },
-    []
-  )
-
   return (
     <Transition
       appear
@@ -292,32 +263,29 @@ export function PublishDialog({
               >
                 Description*
               </p>
-              <div
-                onFocus={handleDescriptionEditorFocus}
-                onBlur={handleDescriptionEditorBlur}
-              >
-                <MarkdownEditor
-                  id="publish-project-description"
-                  value={description}
-                  onChange={(value) => {
-                    setHasEditedDescription(true)
-                    setDescription(value)
-                  }}
-                  ariaLabel="Project description"
-                  className="mt-2"
-                  describedBy={
-                    hasTriedSubmit && !descriptionIsValid
-                      ? 'publish-project-description-error'
-                      : undefined
-                  }
-                  invalid={hasTriedSubmit && !descriptionIsValid}
-                  labelledBy="publish-project-description-label"
-                  onActionsChange={setDescriptionEditorActions}
-                  placeholder="Tell people about what you made..."
-                  required={true}
-                  testId="publish-project-description-editor"
-                />
-              </div>
+              <MarkdownEditor
+                id="publish-project-description"
+                value={description}
+                onChange={(value) => {
+                  setHasEditedDescription(true)
+                  setDescription(value)
+                }}
+                ariaLabel="Project description"
+                className="mt-2"
+                describedBy={
+                  hasTriedSubmit && !descriptionIsValid
+                    ? 'publish-project-description-error'
+                    : undefined
+                }
+                invalid={hasTriedSubmit && !descriptionIsValid}
+                labelledBy="publish-project-description-label"
+                onActionsChange={setDescriptionEditorActions}
+                onFocusChange={setDescriptionEditorFocused}
+                placeholder="Tell people about what you made..."
+                required={true}
+                suppressDefaultKeyboardShortcuts={true}
+                testId="publish-project-description-editor"
+              />
               {hasTriedSubmit && !descriptionIsValid && (
                 <p
                   id="publish-project-description-error"
@@ -500,13 +468,6 @@ function getSubmitButtonLabel(
     publicationDetails.publicationStatus !== undefined
     ? 'Update submission'
     : 'Submit for review'
-}
-
-function eventTargetIsInside(
-  currentTarget: HTMLElement,
-  nextTarget: EventTarget | null
-) {
-  return nextTarget instanceof Node && currentTarget.contains(nextTarget)
 }
 
 function getLastSubmittedText(

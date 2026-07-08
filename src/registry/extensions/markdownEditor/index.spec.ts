@@ -3,6 +3,7 @@ import {
   provideService,
   Registry,
 } from '@kittycad/registry'
+import type { MarkdownEditorActions } from '@kittycad/ui-components'
 import { MachineManager } from '@src/lib/MachineManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
@@ -32,6 +33,30 @@ const persistenceMocks = vi.hoisted(() => ({
 
 vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
 
+function createMarkdownEditorActions(
+  overrides: Partial<MarkdownEditorActions> = {}
+): MarkdownEditorActions {
+  return {
+    toggleBold: vi.fn(() => true),
+    toggleItalic: vi.fn(() => true),
+    setLink: vi.fn(() => true),
+    toggleBulletList: vi.fn(() => true),
+    toggleOrderedList: vi.fn(() => true),
+    undo: vi.fn(() => true),
+    redo: vi.fn(() => true),
+    ...overrides,
+  }
+}
+
+function createModKeyboardEvent(key: string, { shift = false } = {}) {
+  return new KeyboardEvent('keydown', {
+    key,
+    ctrlKey: true,
+    metaKey: true,
+    shiftKey: shift,
+  })
+}
+
 describe('markdown editor extension', () => {
   beforeEach(() => {
     persistenceMocks.readUserKeymapFile.mockResolvedValue({
@@ -41,7 +66,7 @@ describe('markdown editor extension', () => {
     persistenceMocks.writeUserKeymapFile.mockResolvedValue(undefined)
   })
 
-  it('routes Mod+K to the focused Markdown editor link action', () => {
+  it('routes Markdown editor shortcuts only while the Markdown editor scope is focused', () => {
     const registry = new Registry()
     registry.configure([defaultKeymapItem, markdownEditorExtension])
 
@@ -51,21 +76,40 @@ describe('markdown editor extension', () => {
     const tree = registry.get(keymapValueSpec)
     const keymapScopes = registry.get(keymapScopesValueSpec)
     const baseMatch = matchKeymapKeystrokes(tree, [], ['mod+k'], keymapScopes)
-    const markdownEditorMatch = matchKeymapKeystrokes(
-      tree,
-      [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
-      ['mod+k'],
-      keymapScopes
-    )
+    const expectedShortcuts = [
+      ['mod+b', MARKDOWN_EDITOR_COMMAND_IDS.toggleBold],
+      ['mod+shift+b', MARKDOWN_EDITOR_COMMAND_IDS.toggleBold],
+      ['mod+i', MARKDOWN_EDITOR_COMMAND_IDS.toggleItalic],
+      ['mod+shift+i', MARKDOWN_EDITOR_COMMAND_IDS.toggleItalic],
+      ['mod+k', MARKDOWN_EDITOR_COMMAND_IDS.setLink],
+      ['mod+shift+8', MARKDOWN_EDITOR_COMMAND_IDS.toggleBulletList],
+      ['mod+shift+*', MARKDOWN_EDITOR_COMMAND_IDS.toggleBulletList],
+      ['mod+shift+7', MARKDOWN_EDITOR_COMMAND_IDS.toggleOrderedList],
+      ['mod+shift+&', MARKDOWN_EDITOR_COMMAND_IDS.toggleOrderedList],
+      ['mod+z', MARKDOWN_EDITOR_COMMAND_IDS.undo],
+      ['mod+я', MARKDOWN_EDITOR_COMMAND_IDS.undo],
+      ['mod+shift+z', MARKDOWN_EDITOR_COMMAND_IDS.redo],
+      ['mod+y', MARKDOWN_EDITOR_COMMAND_IDS.redo],
+      ['mod+shift+я', MARKDOWN_EDITOR_COMMAND_IDS.redo],
+    ] as const
 
     expect(baseMatch).toMatchObject({
       type: 'full',
       item: { command: 'zds.commandPalette.open' },
     })
-    expect(markdownEditorMatch).toMatchObject({
-      type: 'full',
-      item: { command: MARKDOWN_EDITOR_COMMAND_IDS.setLink },
-    })
+    for (const [keystroke, command] of expectedShortcuts) {
+      expect(
+        matchKeymapKeystrokes(
+          tree,
+          [MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE],
+          [keystroke],
+          keymapScopes
+        )
+      ).toMatchObject({
+        type: 'full',
+        item: { command },
+      })
+    }
 
     if (!command) {
       throw new Error('Missing Markdown editor link command')
@@ -73,7 +117,9 @@ describe('markdown editor extension', () => {
 
     const service = registry.get(markdownEditorService)
     const setLink = vi.fn(() => true)
-    const unregister = service.registerActiveEditor({ setLink })
+    const unregister = service.registerActiveEditor(
+      createMarkdownEditorActions({ setLink })
+    )
 
     expect(command.onSubmit()).toBe(true)
     expect(setLink).toHaveBeenCalledTimes(1)
@@ -85,7 +131,7 @@ describe('markdown editor extension', () => {
     registry[Symbol.dispose]()
   })
 
-  it('executes the active editor link action through the keymap service', () => {
+  it('executes active editor actions through the keymap service', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -105,18 +151,34 @@ describe('markdown editor extension', () => {
 
     const keymap = registry.get(keymapService)
     const service = registry.get(markdownEditorService)
+    const toggleBold = vi.fn(() => true)
     const setLink = vi.fn(() => true)
-    const unregister = service.registerActiveEditor({ setLink })
-    const event = new KeyboardEvent('keydown', {
-      key: 'k',
-      ctrlKey: true,
-      metaKey: true,
-    })
+    const toggleBulletList = vi.fn(() => true)
+    const toggleOrderedList = vi.fn(() => true)
+    const redo = vi.fn(() => true)
+    const unregister = service.registerActiveEditor(
+      createMarkdownEditorActions({
+        toggleBold,
+        setLink,
+        toggleBulletList,
+        toggleOrderedList,
+        redo,
+      })
+    )
+    const expectedActions: [KeyboardEvent, () => void][] = [
+      [createModKeyboardEvent('b'), toggleBold],
+      [createModKeyboardEvent('k'), setLink],
+      [createModKeyboardEvent('*', { shift: true }), toggleBulletList],
+      [createModKeyboardEvent('&', { shift: true }), toggleOrderedList],
+      [createModKeyboardEvent('z', { shift: true }), redo],
+    ]
 
     keymap.applyScope(MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE)
 
-    expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
-    expect(setLink).toHaveBeenCalledTimes(1)
+    for (const [event, actionSpy] of expectedActions) {
+      expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
+      expect(actionSpy).toHaveBeenCalledTimes(1)
+    }
 
     unregister()
     registry[Symbol.dispose]()
