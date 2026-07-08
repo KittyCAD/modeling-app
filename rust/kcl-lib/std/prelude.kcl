@@ -665,8 +665,8 @@ export fn assert(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn faceId(
-  /// The solid whose faces we're trying to find
-  @body: Solid,
+  /// The solid or imported geometry whose faces we're trying to find
+  @body: Solid | ImportedGeometry,
   /// Face to identify.
   /// The index is a stable ordering of faces, used when you can't get the
   /// usual ID of a face.
@@ -693,8 +693,8 @@ export fn faceId(
 /// ```
 @(impl = std_rust, feature_tree = false)
 export fn edgeId(
-  /// The solid whose edges we're trying to find
-  @body: Solid,
+  /// The solid or imported geometry whose edges we're trying to find
+  @body: Solid | ImportedGeometry,
   /// Edge to identify.
   /// The index is a stable ordering of edges, used when you can't get the
   /// usual ID of an edge.
