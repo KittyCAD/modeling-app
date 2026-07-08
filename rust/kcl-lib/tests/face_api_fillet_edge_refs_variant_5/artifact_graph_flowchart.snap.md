@@ -26,48 +26,48 @@ flowchart LR
       %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
     19[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap End"]
-    %% face_code_ref=Missing NodePath
-  3["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  4["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  5["CompositeSolid Subtract<br>[843, 882, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   8["Plane<br>[208, 225, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  9["Plane<br>[523, 540, 0]"]
-    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   20["Sweep Extrusion<br>[403, 466, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  21["Sweep Extrusion<br>[800, 831, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  22["SweepEdge Adjacent"]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Opposite"]
-  29["SweepEdge Opposite"]
-  30["SweepEdge Opposite"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Opposite"]
   34[Wall]
     %% face_code_ref=Missing NodePath
   35[Wall]
     %% face_code_ref=Missing NodePath
   36[Wall]
     %% face_code_ref=Missing NodePath
-  37[Wall]
+  3["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  28["SweepEdge Opposite"]
+  22["SweepEdge Adjacent"]
+  29["SweepEdge Opposite"]
+  23["SweepEdge Adjacent"]
+  30["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  9["Plane<br>[523, 540, 0]"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  21["Sweep Extrusion<br>[800, 831, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  39[Wall]
     %% face_code_ref=Missing NodePath
   38[Wall]
     %% face_code_ref=Missing NodePath
-  39[Wall]
+  37[Wall]
     %% face_code_ref=Missing NodePath
+  4["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  2["Cap End"]
+    %% face_code_ref=Missing NodePath
+  33["SweepEdge Opposite"]
+  27["SweepEdge Adjacent"]
+  32["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  31["SweepEdge Opposite"]
+  25["SweepEdge Adjacent"]
+  5["CompositeSolid Subtract<br>[843, 882, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   20 --- 1
   28 <--x 1
   29 <--x 1
@@ -140,14 +140,14 @@ flowchart LR
   22 x--> 34
   35 --- 23
   23 x--> 35
-  24 x--> 36
   36 --- 24
+  24 x--> 36
   37 --- 25
   25 x--> 37
   38 --- 26
   26 x--> 38
-  27 x--> 39
   39 --- 27
+  27 x--> 39
   34 --- 28
   35 --- 29
   36 --- 30

@@ -313,10 +313,7 @@ impl ArtifactGraph {
         let mut groups = IndexMap::new();
         let mut ungrouped = Vec::new();
 
-        let mut artifacts = self.map.values().collect::<Vec<_>>();
-        artifacts.sort_by_key(|artifact| *stable_id_map.get(&artifact.id()).unwrap());
-
-        for artifact in artifacts {
+        for artifact in self.map.values() {
             let id = artifact.id();
 
             let grouped = match artifact {
@@ -357,14 +354,10 @@ impl ArtifactGraph {
             }
         }
 
-        let mut groups = groups.into_iter().collect::<Vec<_>>();
-        groups.sort_by_key(|(group_id, _)| *stable_id_map.get(group_id).unwrap());
-
-        for (group_id, mut artifact_ids) in groups {
+        for (group_id, artifact_ids) in groups {
             let group_id = *stable_id_map.get(&group_id).unwrap();
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
             let indented = format!("{prefix}  ");
-            artifact_ids.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
             for artifact_id in artifact_ids {
                 let artifact = self.map.get(&artifact_id).unwrap();
                 let id = *stable_id_map.get(&artifact_id).unwrap();
@@ -373,7 +366,6 @@ impl ArtifactGraph {
             writeln!(output, "{prefix}end")?;
         }
 
-        ungrouped.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
         for artifact_id in ungrouped {
             let artifact = self.map.get(&artifact_id).unwrap();
             let id = *stable_id_map.get(&artifact_id).unwrap();
@@ -716,7 +708,6 @@ impl ArtifactGraph {
             }
         }
 
-        edges.par_sort_by(|ak, _, bk, _| if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) });
         let mut edges = edges.into_iter().collect::<Vec<_>>();
 
         let reverse_stable_id_map = stable_id_map
