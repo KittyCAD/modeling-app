@@ -3,14 +3,14 @@ import {
   getMimeType,
   prepareProjectFilesForCloudUpload,
   toArrayBuffer,
-} from '@src/lib/fs-zds/opfsCloud/projectArchive'
+} from '@src/lib/cloudSync/projectArchive'
 import type {
-  OPFSCloudConfig,
+  CloudSyncConfig,
   ProjectArchiveFile,
   RemoteProject,
   RemoteProjectSummary,
   Revision,
-} from '@src/lib/fs-zds/opfsCloud/types'
+} from '@src/lib/cloudSync/types'
 
 export class CloudApiError extends Error {
   status: number
@@ -21,7 +21,7 @@ export class CloudApiError extends Error {
   }
 }
 
-function getBaseUrl(config: OPFSCloudConfig) {
+function getBaseUrl(config: CloudSyncConfig) {
   return (config.baseUrl || env().VITE_ZOO_API_BASE_URL || '').replace(
     /\/+$/g,
     ''
@@ -29,7 +29,7 @@ function getBaseUrl(config: OPFSCloudConfig) {
 }
 
 async function cloudFetch(
-  config: OPFSCloudConfig,
+  config: CloudSyncConfig,
   targetPath: string,
   init: RequestInit = {}
 ): Promise<Response> {
@@ -72,7 +72,7 @@ async function cloudFetch(
 }
 
 async function cloudJson<T>(
-  config: OPFSCloudConfig,
+  config: CloudSyncConfig,
   targetPath: string,
   init: RequestInit = {}
 ): Promise<T> {
@@ -89,19 +89,19 @@ function appendExpectedRevisionParam(pathname: string, revision?: Revision) {
   return `${url.pathname}${url.search}`
 }
 
-export async function listRemoteProjects(config: OPFSCloudConfig) {
+export async function listRemoteProjects(config: CloudSyncConfig) {
   return cloudJson<RemoteProjectSummary[]>(config, '/user/projects')
 }
 
 export async function getRemoteProject(
-  config: OPFSCloudConfig,
+  config: CloudSyncConfig,
   projectId: string
 ) {
   return cloudJson<RemoteProject>(config, `/user/projects/${projectId}`)
 }
 
 export async function deleteRemoteProject(
-  config: OPFSCloudConfig,
+  config: CloudSyncConfig,
   projectId: string
 ) {
   await cloudFetch(config, `/user/projects/${projectId}`, {
@@ -110,7 +110,7 @@ export async function deleteRemoteProject(
 }
 
 export async function downloadRemoteProjectArchive(
-  config: OPFSCloudConfig,
+  config: CloudSyncConfig,
   projectId: string
 ) {
   const response = await cloudFetch(
@@ -121,7 +121,7 @@ export async function downloadRemoteProjectArchive(
 }
 
 export async function createRemoteProject(
-  config: OPFSCloudConfig,
+  config: CloudSyncConfig,
   projectPath: string,
   files: ProjectArchiveFile[]
 ) {
@@ -138,7 +138,7 @@ export async function updateRemoteProject({
   files,
   expectedRevision,
 }: {
-  config: OPFSCloudConfig
+  config: CloudSyncConfig
   projectPath: string
   projectId: string
   files: ProjectArchiveFile[]
