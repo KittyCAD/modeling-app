@@ -1413,7 +1413,7 @@ export type CloudSyncRemoteIndexAction =
   | 'skip'
   | 'sync-known-local'
   | 'adopt-matching-local'
-  | 'clone-remote'
+  | 'index-remote'
 
 export function getCloudSyncRemoteIndexAction({
   hasRemoteProjectId,
@@ -1435,7 +1435,7 @@ export function getCloudSyncRemoteIndexAction({
   if (hasMatchingLocalProject) {
     return 'adopt-matching-local'
   }
-  return 'clone-remote'
+  return 'index-remote'
 }
 
 export type CloudSyncKnownLocalRemoteIndexAction =
@@ -1879,17 +1879,6 @@ async function syncRemoteIndex() {
         if (!knownLocalPathIsCurrent) {
           await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
           metadata = metadata.filter((entry) => entry !== knownLocalMetadata)
-          const clonedProject = await cloneRemoteProjectToLocal(
-            remoteProject,
-            projectDirectory,
-            knownLocalProjectPath
-          )
-          const clonedMetadata = await getProjectMetadata(
-            clonedProject.projectPath
-          )
-          if (clonedMetadata) {
-            upsertMetadata(clonedMetadata)
-          }
           continue
         }
 
@@ -1983,17 +1972,8 @@ async function syncRemoteIndex() {
         continue
       }
 
-      if (existingLocalAction !== 'clone-remote') {
+      if (existingLocalAction !== 'adopt-matching-local') {
         continue
-      }
-
-      const clonedProject = await cloneRemoteProjectToLocal(
-        remoteProject,
-        projectDirectory
-      )
-      const clonedMetadata = await getProjectMetadata(clonedProject.projectPath)
-      if (clonedMetadata) {
-        upsertMetadata(clonedMetadata)
       }
     } catch (error) {
       failures.push(error)
