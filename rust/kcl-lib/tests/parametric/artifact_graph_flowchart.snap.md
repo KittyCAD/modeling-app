@@ -17,38 +17,38 @@ flowchart LR
       %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
     11[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
   4["Plane<br>[228, 245, 0]"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   12["Sweep Extrusion<br>[463, 486, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 8 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 8 }]
-  13["SweepEdge Adjacent"]
-  14["SweepEdge Adjacent"]
-  15["SweepEdge Adjacent"]
-  16["SweepEdge Adjacent"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Opposite"]
-  23["SweepEdge Opposite"]
-  24["SweepEdge Opposite"]
-  25[Wall]
-    %% face_code_ref=Missing NodePath
-  26[Wall]
-    %% face_code_ref=Missing NodePath
-  27[Wall]
-    %% face_code_ref=Missing NodePath
-  28[Wall]
+  30[Wall]
     %% face_code_ref=Missing NodePath
   29[Wall]
     %% face_code_ref=Missing NodePath
-  30[Wall]
+  28[Wall]
     %% face_code_ref=Missing NodePath
+  27[Wall]
+    %% face_code_ref=Missing NodePath
+  26[Wall]
+    %% face_code_ref=Missing NodePath
+  25[Wall]
+    %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  24["SweepEdge Opposite"]
+  18["SweepEdge Adjacent"]
+  23["SweepEdge Opposite"]
+  17["SweepEdge Adjacent"]
+  22["SweepEdge Opposite"]
+  16["SweepEdge Adjacent"]
+  21["SweepEdge Opposite"]
+  15["SweepEdge Adjacent"]
+  20["SweepEdge Opposite"]
+  14["SweepEdge Adjacent"]
+  19["SweepEdge Opposite"]
+  13["SweepEdge Adjacent"]
   12 --- 1
   19 <--x 1
   20 <--x 1
@@ -118,8 +118,8 @@ flowchart LR
   16 x--> 28
   29 --- 17
   17 x--> 29
-  18 x--> 30
   30 --- 18
+  18 x--> 30
   25 --- 19
   26 --- 20
   27 --- 21

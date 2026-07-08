@@ -1,12 +1,5 @@
 ```mermaid
 flowchart LR
-  subgraph path6 [Path]
-    6["Path<br>[622, 686, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    17["Segment<br>[622, 686, 0]"]
-      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    18[Solid2d]
-  end
   subgraph path7 [Path]
     7["Path<br>[88, 134, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
@@ -26,42 +19,17 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 7 }]
     19[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap End"]
-    %% face_code_ref=Missing NodePath
-  3["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  4["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  5["CompositeSolid Subtract<br>[759, 802, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  subgraph path6 [Path]
+    6["Path<br>[622, 686, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    17["Segment<br>[622, 686, 0]"]
+      %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    18[Solid2d]
+  end
   8["Plane<br>[47, 64, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  9["Plane<br>[567, 597, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-  20["StartSketchOnPlane<br>[553, 598, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   21["Sweep Extrusion<br>[468, 539, 0]<br>Consumed: true"]
     %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  22["Sweep Extrusion<br>[704, 748, 0]<br>Consumed: true"]
-    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  23["SweepEdge Adjacent"]
-  24["SweepEdge Adjacent"]
-  25["SweepEdge Adjacent"]
-  26["SweepEdge Adjacent"]
-  27["SweepEdge Adjacent"]
-  28["SweepEdge Adjacent"]
-  29["SweepEdge Adjacent"]
-  30["SweepEdge Adjacent"]
-  31["SweepEdge Opposite"]
-  32["SweepEdge Opposite"]
-  33["SweepEdge Opposite"]
-  34["SweepEdge Opposite"]
-  35["SweepEdge Opposite"]
-  36["SweepEdge Opposite"]
-  37["SweepEdge Opposite"]
-  38["SweepEdge Opposite"]
   39[Wall]
     %% face_code_ref=Missing NodePath
   40[Wall]
@@ -76,8 +44,40 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   45[Wall]
     %% face_code_ref=Missing NodePath
+  3["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  31["SweepEdge Opposite"]
+  23["SweepEdge Adjacent"]
+  32["SweepEdge Opposite"]
+  24["SweepEdge Adjacent"]
+  33["SweepEdge Opposite"]
+  25["SweepEdge Adjacent"]
+  34["SweepEdge Opposite"]
+  26["SweepEdge Adjacent"]
+  35["SweepEdge Opposite"]
+  27["SweepEdge Adjacent"]
+  36["SweepEdge Opposite"]
+  28["SweepEdge Adjacent"]
+  37["SweepEdge Opposite"]
+  29["SweepEdge Adjacent"]
+  9["Plane<br>[567, 597, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
+  22["Sweep Extrusion<br>[704, 748, 0]<br>Consumed: true"]
+    %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   46[Wall]
     %% face_code_ref=Missing NodePath
+  4["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  2["Cap End"]
+    %% face_code_ref=Missing NodePath
+  38["SweepEdge Opposite"]
+  30["SweepEdge Adjacent"]
+  5["CompositeSolid Subtract<br>[759, 802, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 6 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  20["StartSketchOnPlane<br>[553, 598, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   21 --- 1
   31 <--x 1
   32 <--x 1
@@ -175,8 +175,8 @@ flowchart LR
   27 x--> 43
   44 --- 28
   28 x--> 44
-  29 x--> 45
   45 --- 29
+  29 x--> 45
   46 --- 30
   39 --- 31
   40 --- 32

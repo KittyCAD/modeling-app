@@ -3,10 +3,10 @@ flowchart LR
   subgraph path1 [Path]
     1["Path<br>[0, 230, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
-    3["Segment<br>[119, 208, 0]"]
-      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     4["Segment<br>[25, 111, 0]"]
       %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    3["Segment<br>[119, 208, 0]"]
+      %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   2["Plane<br>[0, 230, 0]"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]

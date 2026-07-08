@@ -1,5 +1,16 @@
 ```mermaid
 flowchart LR
+  subgraph path2 [Path]
+    2["Path<br>[36, 73, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+    10["Segment<br>[79, 103, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
+    5["Segment<br>[109, 199, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
+    6["Segment<br>[205, 212, 0]"]
+      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
+    12[Solid2d]
+  end
   subgraph path1 [Path]
     1["Path<br>[259, 284, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
@@ -11,27 +22,16 @@ flowchart LR
       %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
     11[Solid2d]
   end
-  subgraph path2 [Path]
-    2["Path<br>[36, 73, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-    5["Segment<br>[109, 199, 0]"]
-      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
-    6["Segment<br>[205, 212, 0]"]
-      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
-    10["Segment<br>[79, 103, 0]"]
-      %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
-    12[Solid2d]
-  end
   3["Plane<br>[15, 32, 0]"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  4["Plane<br>[238, 255, 0]"]
-    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   13["Sweep Revolve<br>[218, 235, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 5 }]
-  14["Sweep Revolve<br>[436, 453, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 5 }]
   15[Wall]
     %% face_code_ref=Missing NodePath
+  4["Plane<br>[238, 255, 0]"]
+    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  14["Sweep Revolve<br>[436, 453, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, ExpressionStatementExpr, PipeBodyItem { index: 5 }]
   16[Wall]
     %% face_code_ref=Missing NodePath
   4 --- 1

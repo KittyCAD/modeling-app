@@ -19,24 +19,10 @@ flowchart LR
       %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 2 }]
     12[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  5["Pattern Transform<br>[301, 355, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
-    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
   6["Plane<br>[110, 127, 0]"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   13["Sweep Extrusion<br>[276, 295, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 3 }]
-  14["SweepEdge Adjacent"]
-  15["SweepEdge Adjacent"]
-  16["SweepEdge Adjacent"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Opposite"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Opposite"]
   22[Wall]
     %% face_code_ref=Missing NodePath
   23[Wall]
@@ -45,6 +31,20 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   25[Wall]
     %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  18["SweepEdge Opposite"]
+  14["SweepEdge Adjacent"]
+  19["SweepEdge Opposite"]
+  15["SweepEdge Adjacent"]
+  20["SweepEdge Opposite"]
+  16["SweepEdge Adjacent"]
+  21["SweepEdge Opposite"]
+  17["SweepEdge Adjacent"]
+  5["Pattern Transform<br>[301, 355, 0]<br>Copies: 2<br>Faces: 12<br>Edges: 24"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 4 }]
   13 --- 1
   18 <--x 1
   19 <--x 1
@@ -96,8 +96,8 @@ flowchart LR
   15 x--> 23
   24 --- 16
   16 x--> 24
-  17 x--> 25
   25 --- 17
+  17 x--> 25
   22 --- 18
   23 --- 19
   24 --- 20

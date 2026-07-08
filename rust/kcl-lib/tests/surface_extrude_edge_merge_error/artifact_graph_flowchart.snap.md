@@ -1,17 +1,5 @@
 ```mermaid
 flowchart LR
-  subgraph path1 [Path]
-    1["Path Region<br>[583, 646, 0]<br>Consumed: true"]
-      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    7["Segment<br>[583, 646, 0]"]
-      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    8["Segment<br>[583, 646, 0]"]
-      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    9["Segment<br>[583, 646, 0]"]
-      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    10["Segment<br>[583, 646, 0]"]
-      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  end
   subgraph path2 [Path]
     2["Path<br>[192, 542, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -22,24 +10,22 @@ flowchart LR
     6["Segment<br>[468, 540, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
+  subgraph path1 [Path]
+    1["Path Region<br>[583, 646, 0]<br>Consumed: true"]
+      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    8["Segment<br>[583, 646, 0]"]
+      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    7["Segment<br>[583, 646, 0]"]
+      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    9["Segment<br>[583, 646, 0]"]
+      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+    10["Segment<br>[583, 646, 0]"]
+      %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  end
   3["Plane<br>[192, 542, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  11["SketchBlock<br>[192, 542, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  12["SketchBlockConstraint Horizontal<br>[299, 335, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
-  13["SketchBlockConstraint Vertical<br>[423, 457, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
   14["Sweep Extrusion<br>[660, 710, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  15["SweepEdge Adjacent"]
-  16["SweepEdge Adjacent"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Opposite"]
-  20["SweepEdge Opposite"]
-  21["SweepEdge Opposite"]
-  22["SweepEdge Opposite"]
   23[Wall]
     %% face_code_ref=Missing NodePath
   24[Wall]
@@ -48,6 +34,20 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   26[Wall]
     %% face_code_ref=Missing NodePath
+  21["SweepEdge Opposite"]
+  15["SweepEdge Adjacent"]
+  22["SweepEdge Opposite"]
+  16["SweepEdge Adjacent"]
+  19["SweepEdge Opposite"]
+  17["SweepEdge Adjacent"]
+  20["SweepEdge Opposite"]
+  18["SweepEdge Adjacent"]
+  11["SketchBlock<br>[192, 542, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  12["SketchBlockConstraint Horizontal<br>[299, 335, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
+  13["SketchBlockConstraint Vertical<br>[423, 457, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 3 }, ExpressionStatementExpr]
   2 x--> 1
   3 x--> 1
   1 <--x 7
@@ -98,8 +98,8 @@ flowchart LR
   16 x--> 24
   25 --- 17
   17 x--> 25
-  18 x--> 26
   26 --- 18
+  18 x--> 26
   24 <--x 19
   25 <--x 20
   23 --- 21

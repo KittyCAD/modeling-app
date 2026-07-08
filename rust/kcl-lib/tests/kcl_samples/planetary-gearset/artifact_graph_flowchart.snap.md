@@ -52,66 +52,28 @@ flowchart LR
       %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     38[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap End"]
-    %% face_code_ref=Missing NodePath
-  3["Cap End"]
-    %% face_code_ref=Missing NodePath
-  4["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  5["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  6["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  11["Pattern Circular<br>[1107, 1272, 0]<br>Copies: 3<br>Faces: 150<br>Edges: 432"]
-    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
-  12["Pattern Circular<br>[489, 599, 0]<br>Copies: 0<br>Faces: 0<br>Edges: 0"]
-    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
-  13["Pattern Circular<br>[657, 769, 0]<br>Copies: 0<br>Faces: 0<br>Edges: 0"]
-    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  14["Pattern Circular<br>[865, 978, 0]<br>Copies: 0<br>Faces: 0<br>Edges: 0"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   15["Plane<br>[489, 599, 0]"]
+    %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
+  12["Pattern Circular<br>[489, 599, 0]<br>Copies: 0<br>Faces: 0<br>Edges: 0"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
   16["Plane<br>[489, 599, 0]"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
-  17["Plane<br>[657, 769, 0]"]
-    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  18["Plane<br>[865, 978, 0]"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  39["StartSketchOnPlane<br>[884, 937, 15]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  40["StartSketchOnPlane<br>[884, 937, 15]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
-  41["StartSketchOnPlane<br>[884, 937, 15]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   42["Sweep ExtrusionTwist<br>[489, 599, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
-  43["Sweep ExtrusionTwist<br>[657, 769, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
-  44["Sweep ExtrusionTwist<br>[865, 978, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  45["SweepEdge Adjacent"]
-  46["SweepEdge Adjacent"]
-  47["SweepEdge Adjacent"]
-  48["SweepEdge Adjacent"]
-  49["SweepEdge Adjacent"]
-  50["SweepEdge Adjacent"]
-  51["SweepEdge Adjacent"]
-  52["SweepEdge Adjacent"]
-  53["SweepEdge Adjacent"]
-  54["SweepEdge Opposite"]
-  55["SweepEdge Opposite"]
-  56["SweepEdge Opposite"]
-  57["SweepEdge Opposite"]
-  58["SweepEdge Opposite"]
-  59["SweepEdge Opposite"]
-  60["SweepEdge Opposite"]
-  61["SweepEdge Opposite"]
-  62["SweepEdge Opposite"]
   63[Wall]
     %% face_code_ref=Missing NodePath
+  4["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  54["SweepEdge Opposite"]
+  45["SweepEdge Adjacent"]
+  17["Plane<br>[657, 769, 0]"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  13["Pattern Circular<br>[657, 769, 0]<br>Copies: 0<br>Faces: 0<br>Edges: 0"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
+  43["Sweep ExtrusionTwist<br>[657, 769, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 1 }, ExpressionStatementExpr, PipeBodyItem { index: 0 }]
   64[Wall]
     %% face_code_ref=Missing NodePath
   65[Wall]
@@ -120,6 +82,24 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   67[Wall]
     %% face_code_ref=Missing NodePath
+  5["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  2["Cap End"]
+    %% face_code_ref=Missing NodePath
+  55["SweepEdge Opposite"]
+  46["SweepEdge Adjacent"]
+  56["SweepEdge Opposite"]
+  47["SweepEdge Adjacent"]
+  57["SweepEdge Opposite"]
+  48["SweepEdge Adjacent"]
+  58["SweepEdge Opposite"]
+  49["SweepEdge Adjacent"]
+  18["Plane<br>[865, 978, 0]"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  14["Pattern Circular<br>[865, 978, 0]<br>Copies: 0<br>Faces: 0<br>Edges: 0"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  44["Sweep ExtrusionTwist<br>[865, 978, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   68[Wall]
     %% face_code_ref=Missing NodePath
   69[Wall]
@@ -128,6 +108,26 @@ flowchart LR
     %% face_code_ref=Missing NodePath
   71[Wall]
     %% face_code_ref=Missing NodePath
+  6["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  3["Cap End"]
+    %% face_code_ref=Missing NodePath
+  59["SweepEdge Opposite"]
+  50["SweepEdge Adjacent"]
+  60["SweepEdge Opposite"]
+  51["SweepEdge Adjacent"]
+  61["SweepEdge Opposite"]
+  52["SweepEdge Adjacent"]
+  62["SweepEdge Opposite"]
+  53["SweepEdge Adjacent"]
+  11["Pattern Circular<br>[1107, 1272, 0]<br>Copies: 3<br>Faces: 150<br>Edges: 432"]
+    %% [ProgramBodyItem { index: 4 }, ExpressionStatementExpr, PipeBodyItem { index: 1 }]
+  39["StartSketchOnPlane<br>[884, 937, 15]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  40["StartSketchOnPlane<br>[884, 937, 15]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
+  41["StartSketchOnPlane<br>[884, 937, 15]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 8 }, ReturnStatementArg, PipeBodyItem { index: 0 }]
   42 --- 1
   54 <--x 1
   43 --- 2
