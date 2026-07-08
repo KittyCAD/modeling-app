@@ -40,6 +40,8 @@ const markdownEditorExtension = defineRegistryItemFactory(() => {
     actions: MarkdownEditorActions
   }[] = []
 
+  const runLinkAction = () => activeEditors.at(-1)?.actions.setLink() ?? false
+
   const serviceImpl: MarkdownEditorService = {
     registerActiveEditor: (actions) => {
       const registration = {
@@ -58,7 +60,6 @@ const markdownEditorExtension = defineRegistryItemFactory(() => {
         }
       }
     },
-    runLinkAction: () => activeEditors.at(-1)?.actions.setLink() ?? false,
   }
 
   const setLinkCommand: Command = {
@@ -69,7 +70,7 @@ const markdownEditorExtension = defineRegistryItemFactory(() => {
     description: 'Add or edit a link in the focused Markdown editor.',
     hideFromSearch: true,
     needsReview: false,
-    onSubmit: () => serviceImpl.runLinkAction(),
+    onSubmit: runLinkAction,
   }
 
   return {

@@ -5,7 +5,6 @@ export const MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE = 'markdown-editor-focused'
 
 export type MarkdownEditorService = {
   registerActiveEditor: (actions: MarkdownEditorActions) => () => void
-  runLinkAction: () => boolean
 }
 
 export const markdownEditorContract = defineContract({

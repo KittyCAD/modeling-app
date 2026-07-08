@@ -1,19 +1,46 @@
-import { Registry } from '@kittycad/registry'
+import {
+  defineRegistryItem,
+  provideService,
+  Registry,
+} from '@kittycad/registry'
+import { MachineManager } from '@src/lib/MachineManager'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import {
+  KEYMAP_SCHEMA_VERSION,
   keymapScopesValueSpec,
+  keymapService,
   keymapValueSpec,
   matchKeymapKeystrokes,
 } from '@src/registry/contracts/keymap'
+import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
   markdownEditorService,
 } from '@src/registry/contracts/markdownEditor'
+import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { commandsExtension } from '@src/registry/extensions/commands'
+import keymapExtension from '@src/registry/extensions/keymap'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import markdownEditorExtension, { MARKDOWN_EDITOR_COMMAND_IDS } from '.'
 
+const persistenceMocks = vi.hoisted(() => ({
+  readUserKeymapFile: vi.fn(),
+  writeUserKeymapFile: vi.fn(),
+}))
+
+vi.mock('@src/registry/extensions/keymap/persistence', () => persistenceMocks)
+
 describe('markdown editor extension', () => {
+  beforeEach(() => {
+    persistenceMocks.readUserKeymapFile.mockResolvedValue({
+      version: KEYMAP_SCHEMA_VERSION,
+      bindings: [],
+    })
+    persistenceMocks.writeUserKeymapFile.mockResolvedValue(undefined)
+  })
+
   it('routes Mod+K to the focused Markdown editor link action', () => {
     const registry = new Registry()
     registry.configure([defaultKeymapItem, markdownEditorExtension])
@@ -55,6 +82,43 @@ describe('markdown editor extension', () => {
 
     expect(command.onSubmit()).toBe(false)
 
+    registry[Symbol.dispose]()
+  })
+
+  it('executes the active editor link action through the keymap service', () => {
+    const registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-wasm-promise',
+        provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
+      }),
+      defineRegistryItem({
+        id: 'test-machine-manager',
+        providesServices: [
+          provideService(machineManagerService, new MachineManager()),
+        ],
+      }),
+      commandsExtension,
+      keymapExtension,
+      markdownEditorExtension,
+    ])
+
+    const keymap = registry.get(keymapService)
+    const service = registry.get(markdownEditorService)
+    const setLink = vi.fn(() => true)
+    const unregister = service.registerActiveEditor({ setLink })
+    const event = new KeyboardEvent('keydown', {
+      key: 'k',
+      ctrlKey: true,
+      metaKey: true,
+    })
+
+    keymap.applyScope(MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE)
+
+    expect(keymap.handleKeyDown(event, { source: 'global' })).toBe(true)
+    expect(setLink).toHaveBeenCalledTimes(1)
+
+    unregister()
     registry[Symbol.dispose]()
   })
 })
