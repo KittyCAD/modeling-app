@@ -2,6 +2,7 @@ import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
 import {
   MarkdownEditor,
+  type MarkdownEditorActions,
   normalizeMarkdownEditorValue,
 } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
@@ -12,7 +13,22 @@ import type {
   ProjectPublishSubmission,
 } from '@src/lib/share'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
+import {
+  type FocusEvent,
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
+
+type PublishDialogMarkdownEditorKeymap = {
+  focusScope: {
+    onFocus: () => void
+    onBlur: () => void
+  }
+  registerActions: (actions: MarkdownEditorActions) => () => void
+}
 
 type PublishDialogProps = {
   onSubmit: (args: ProjectPublishSubmission) => Promise<boolean>
@@ -22,6 +38,7 @@ type PublishDialogProps = {
   accountUrl: string
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
+  markdownEditorKeymap?: PublishDialogMarkdownEditorKeymap
 }
 
 const AQUARIUM_TERMS_URL = 'https://zoo.dev/aquarium-terms-of-use'
@@ -34,6 +51,7 @@ export function PublishDialog({
   accountUrl,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
+  markdownEditorKeymap,
 }: PublishDialogProps) {
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState('')
@@ -46,6 +64,10 @@ export function PublishDialog({
   const [categories, setCategories] = useState<ProjectCategoryResponse[]>([])
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
   const [categoriesError, setCategoriesError] = useState<string | null>(null)
+  const [descriptionEditorActions, setDescriptionEditorActions] =
+    useState<MarkdownEditorActions | null>(null)
+  const [descriptionEditorFocused, setDescriptionEditorFocused] =
+    useState(false)
 
   useEffect(() => {
     if (!publicationDetails) {
@@ -116,6 +138,29 @@ export function PublishDialog({
     }
   }, [loadCategories])
 
+  useEffect(() => {
+    if (!markdownEditorKeymap || !descriptionEditorFocused) {
+      return
+    }
+
+    markdownEditorKeymap.focusScope.onFocus()
+    return () => {
+      markdownEditorKeymap.focusScope.onBlur()
+    }
+  }, [descriptionEditorFocused, markdownEditorKeymap])
+
+  useEffect(() => {
+    if (
+      !markdownEditorKeymap ||
+      !descriptionEditorFocused ||
+      !descriptionEditorActions
+    ) {
+      return
+    }
+
+    return markdownEditorKeymap.registerActions(descriptionEditorActions)
+  }, [descriptionEditorActions, descriptionEditorFocused, markdownEditorKeymap])
+
   const normalizedDescription = useMemo(
     () => normalizeMarkdownEditorValue(description),
     [description]
@@ -152,6 +197,28 @@ export function PublishDialog({
       setIsSubmitting(false)
     }
   }
+
+  const handleDescriptionEditorFocus = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      if (eventTargetIsInside(event.currentTarget, event.relatedTarget)) {
+        return
+      }
+
+      setDescriptionEditorFocused(true)
+    },
+    []
+  )
+
+  const handleDescriptionEditorBlur = useCallback(
+    (event: FocusEvent<HTMLDivElement>) => {
+      if (eventTargetIsInside(event.currentTarget, event.relatedTarget)) {
+        return
+      }
+
+      setDescriptionEditorFocused(false)
+    },
+    []
+  )
 
   return (
     <Transition
@@ -225,26 +292,32 @@ export function PublishDialog({
               >
                 Description*
               </p>
-              <MarkdownEditor
-                id="publish-project-description"
-                value={description}
-                onChange={(value) => {
-                  setHasEditedDescription(true)
-                  setDescription(value)
-                }}
-                ariaLabel="Project description"
-                className="mt-2"
-                describedBy={
-                  hasTriedSubmit && !descriptionIsValid
-                    ? 'publish-project-description-error'
-                    : undefined
-                }
-                invalid={hasTriedSubmit && !descriptionIsValid}
-                labelledBy="publish-project-description-label"
-                placeholder="Tell people about what you made..."
-                required={true}
-                testId="publish-project-description-editor"
-              />
+              <div
+                onFocus={handleDescriptionEditorFocus}
+                onBlur={handleDescriptionEditorBlur}
+              >
+                <MarkdownEditor
+                  id="publish-project-description"
+                  value={description}
+                  onChange={(value) => {
+                    setHasEditedDescription(true)
+                    setDescription(value)
+                  }}
+                  ariaLabel="Project description"
+                  className="mt-2"
+                  describedBy={
+                    hasTriedSubmit && !descriptionIsValid
+                      ? 'publish-project-description-error'
+                      : undefined
+                  }
+                  invalid={hasTriedSubmit && !descriptionIsValid}
+                  labelledBy="publish-project-description-label"
+                  onActionsChange={setDescriptionEditorActions}
+                  placeholder="Tell people about what you made..."
+                  required={true}
+                  testId="publish-project-description-editor"
+                />
+              </div>
               {hasTriedSubmit && !descriptionIsValid && (
                 <p
                   id="publish-project-description-error"
@@ -427,6 +500,13 @@ function getSubmitButtonLabel(
     publicationDetails.publicationStatus !== undefined
     ? 'Update submission'
     : 'Submit for review'
+}
+
+function eventTargetIsInside(
+  currentTarget: HTMLElement,
+  nextTarget: EventTarget | null
+) {
+  return nextTarget instanceof Node && currentTarget.contains(nextTarget)
 }
 
 function getLastSubmittedText(

@@ -1,6 +1,7 @@
 import {
   defaultNormalizeMarkdownLinkHref,
   MarkdownEditor,
+  type MarkdownEditorActions,
   normalizeMarkdownEditorValue,
 } from '@kittycad/ui-components'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
@@ -87,6 +88,42 @@ describe('MarkdownEditor', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Link' }))
 
+    await waitFor(() => {
+      expect(onChange).toHaveBeenCalled()
+    })
+    expect(onChange.mock.calls.at(-1)?.[0]).toContain(
+      '[https://zoo.dev/docs](https://zoo.dev/docs)'
+    )
+  })
+
+  it('exposes a link action for external keymap integrations', async () => {
+    const onChange = vi.fn()
+    const actionsRef: { current: MarkdownEditorActions | null } = {
+      current: null,
+    }
+
+    render(
+      <MarkdownEditor
+        id="description"
+        value=""
+        onChange={onChange}
+        onActionsChange={(nextActions) => {
+          actionsRef.current = nextActions
+        }}
+        promptForLink={() => 'zoo.dev/docs'}
+      />
+    )
+
+    await waitFor(() => {
+      expect(actionsRef.current).not.toBeNull()
+    })
+
+    const actions = actionsRef.current
+    if (!actions) {
+      throw new Error('Missing Markdown editor actions')
+    }
+
+    expect(actions.setLink()).toBe(true)
     await waitFor(() => {
       expect(onChange).toHaveBeenCalled()
     })

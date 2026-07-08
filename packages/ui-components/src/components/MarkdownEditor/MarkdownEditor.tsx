@@ -2,7 +2,7 @@ import { Link } from '@tiptap/extension-link'
 import { Markdown, MarkdownManager } from '@tiptap/markdown'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
-import { type ReactNode, useEffect, useMemo } from 'react'
+import { type ReactNode, useCallback, useEffect, useMemo } from 'react'
 import './MarkdownEditor.css'
 
 export type MarkdownEditorFeature =
@@ -17,6 +17,10 @@ export type MarkdownEditorNormalizeLinkHref = (
   value: string | undefined
 ) => string | null
 
+export type MarkdownEditorActions = {
+  setLink: () => boolean
+}
+
 export interface MarkdownEditorProps {
   id: string
   value: string
@@ -29,6 +33,7 @@ export interface MarkdownEditorProps {
   invalid?: boolean
   labelledBy?: string
   normalizeLinkHref?: MarkdownEditorNormalizeLinkHref
+  onActionsChange?: (actions: MarkdownEditorActions | null) => void
   placeholder?: string
   promptForLink?: (currentHref: string) => string | null
   required?: boolean
@@ -64,6 +69,7 @@ export function MarkdownEditor({
   invalid = false,
   labelledBy,
   normalizeLinkHref = defaultNormalizeMarkdownLinkHref,
+  onActionsChange,
   placeholder = '',
   promptForLink,
   required = false,
@@ -147,9 +153,9 @@ export function MarkdownEditor({
     })
   }, [editor, value])
 
-  function setLink() {
-    if (!editor) {
-      return
+  const setLink = useCallback(() => {
+    if (!editor || !hasLink) {
+      return false
     }
 
     const currentHref = editor.getAttributes('link').href
@@ -161,17 +167,17 @@ export function MarkdownEditor({
         )
 
     if (rawHref === null) {
-      return
+      return true
     }
 
     if (!rawHref.trim()) {
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
+      return true
     }
 
     const safeHref = normalizeLinkHref(rawHref)
     if (!safeHref) {
-      return
+      return true
     }
 
     if (editor.state.selection.empty && !editor.isActive('link')) {
@@ -182,7 +188,7 @@ export function MarkdownEditor({
           contentType: 'markdown',
         })
         .run()
-      return
+      return true
     }
 
     editor
@@ -191,7 +197,22 @@ export function MarkdownEditor({
       .extendMarkRange('link')
       .setLink({ href: safeHref })
       .run()
-  }
+    return true
+  }, [editor, hasLink, normalizeLinkHref, promptForLink])
+
+  const actions = useMemo<MarkdownEditorActions>(
+    () => ({
+      setLink,
+    }),
+    [setLink]
+  )
+
+  useEffect(() => {
+    onActionsChange?.(actions)
+    return () => {
+      onActionsChange?.(null)
+    }
+  }, [actions, onActionsChange])
 
   return (
     <div
@@ -424,8 +445,8 @@ function EditorToolbarButton({
       onClick={onClick}
       className={`m-0 flex h-7 w-7 items-center justify-center rounded border px-0 text-xs leading-none transition-colors focus-visible:outline-appForeground disabled:opacity-50 ${
         pressed
-          ? 'border-chalkboard-50 bg-chalkboard-20 text-chalkboard-100 dark:border-chalkboard-50 dark:bg-chalkboard-70 dark:text-chalkboard-10'
-          : 'border-transparent bg-transparent text-chalkboard-70 hover:border-chalkboard-20 hover:bg-chalkboard-20/60 hover:text-chalkboard-100 dark:text-chalkboard-30 dark:hover:border-chalkboard-70 dark:hover:bg-chalkboard-80/70 dark:hover:text-chalkboard-10'
+          ? 'border-chalkboard-50 bg-chalkboard-20 text-chalkboard-100 dark:border-transparent dark:bg-chalkboard-70 dark:text-chalkboard-10'
+          : 'border-transparent bg-transparent text-chalkboard-70 hover:border-chalkboard-20 hover:bg-chalkboard-20/60 hover:text-chalkboard-100 dark:border-transparent dark:text-chalkboard-30 dark:hover:border-transparent dark:hover:bg-chalkboard-80/70 dark:hover:text-chalkboard-10'
       }`}
     >
       {children}
