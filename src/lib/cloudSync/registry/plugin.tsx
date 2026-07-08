@@ -31,7 +31,7 @@ import {
 } from '@src/registry/contracts/statusBar'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { Fragment, createElement, useState } from 'react'
+import { Fragment, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 type CloudSyncStatusBarPresentation = {
@@ -110,17 +110,18 @@ function CloudSyncStatusBarItem() {
   const selectedConflictProjectPath = selectedConflict?.localProjectPath
   const shouldListConflicts = status.state === 'conflict' && isHomeRoute
 
-  const statusBarButtonChildren = [
-    createElement(ActionIcon, {
-      key: 'icon',
-      icon: presentation.icon,
-      iconClassName: presentation.iconClassName,
-      bgClassName: 'bg-transparent dark:bg-transparent',
-      size: 'sm',
-    }),
-    createElement('span', { key: 'label' }, presentation.label),
-    createElement(Tooltip, { key: 'tooltip' }, presentation.tooltip),
-  ]
+  const statusBarButtonContent = (
+    <>
+      <ActionIcon
+        icon={presentation.icon}
+        iconClassName={presentation.iconClassName}
+        bgClassName="bg-transparent dark:bg-transparent"
+        size="sm"
+      />
+      <span>{presentation.label}</span>
+      <Tooltip>{presentation.tooltip}</Tooltip>
+    </>
+  )
 
   const blockedClassName =
     status.state === 'conflict'
@@ -130,114 +131,83 @@ function CloudSyncStatusBarItem() {
         : ''
   const statusBarClassName = `${defaultStatusBarItemClassNames} ${blockedClassName}`
 
-  return createElement(
-    Fragment,
-    null,
-    shouldListConflicts
-      ? createElement(
-          Popover,
-          { className: 'relative flex items-stretch' },
-          createElement(
-            Popover.Button,
-            {
-              as: Fragment,
-            },
-            createElement(
-              'button',
-              {
-                className: statusBarClassName,
-                'data-testid': 'cloud-sync-status',
-                type: 'button',
-              },
-              ...statusBarButtonChildren
-            )
-          ),
-          createElement(
-            Popover.Panel,
-            {
-              as: Fragment,
-            },
-            createElement(
-              'div',
-              {
-                className:
-                  'absolute left-0 bottom-full z-20 mb-1 flex w-72 max-w-[calc(100vw-1rem)] flex-col gap-1 rounded border border-chalkboard-30 bg-chalkboard-10 p-2 text-xs shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-90',
-                'data-testid': 'cloud-conflict-list',
-              },
-              createElement(
-                'div',
-                {
-                  className:
-                    'px-2 py-1 font-bold text-chalkboard-100 dark:text-chalkboard-10',
-                },
-                'Projects with cloud conflicts'
-              ),
-              conflictMetadataList === undefined
-                ? createElement(
-                    'p',
-                    {
-                      className:
-                        'px-2 py-1 text-chalkboard-70 dark:text-chalkboard-40',
-                    },
-                    'Loading conflicted projects...'
-                  )
-                : conflictMetadataList.length > 0
-                  ? conflictMetadataList.map((metadata) =>
-                      createElement(
-                        'button',
-                        {
-                          key: metadata.localProjectPath,
-                          type: 'button',
-                          className:
-                            'rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80',
-                          onClick: () => setSelectedConflict(metadata),
-                        },
-                        metadata.projectName
-                      )
-                    )
-                  : createElement(
-                      'p',
-                      {
-                        className:
-                          'px-2 py-1 text-chalkboard-70 dark:text-chalkboard-40',
-                      },
-                      'No conflicted projects found.'
-                    )
-            )
-          )
-        )
-      : createElement(
-          'button',
-          {
-            type: 'button',
-            className: statusBarClassName,
-            'data-testid': 'cloud-sync-status',
-            onClick: () => {
-              if (canInspectConflict) {
-                setIsInspectingConflict(true)
-                return
-              }
-              retryCloudSync()
-            },
-          },
-          ...statusBarButtonChildren
-        ),
-    isInspectingConflict &&
-      status.activeProjectPath &&
-      createElement(CloudConflictDialog, {
-        projectPath: status.activeProjectPath,
-        projectName: projectName || 'this project',
-        onDismiss: () => setIsInspectingConflict(false),
-        onResolved: () => setIsInspectingConflict(false),
-      }),
-    selectedConflictProjectPath &&
-      selectedConflictProjectName &&
-      createElement(CloudConflictDialog, {
-        projectPath: selectedConflictProjectPath,
-        projectName: selectedConflictProjectName,
-        onDismiss: () => setSelectedConflict(undefined),
-        onResolved: () => setSelectedConflict(undefined),
-      })
+  return (
+    <>
+      {shouldListConflicts ? (
+        <Popover className="relative flex items-stretch">
+          <Popover.Button as={Fragment}>
+            <button
+              className={statusBarClassName}
+              data-testid="cloud-sync-status"
+              type="button"
+            >
+              {statusBarButtonContent}
+            </button>
+          </Popover.Button>
+          <Popover.Panel as={Fragment}>
+            <div
+              className="absolute left-0 bottom-full z-20 mb-1 flex w-72 max-w-[calc(100vw-1rem)] flex-col gap-1 rounded border border-chalkboard-30 bg-chalkboard-10 p-2 text-xs shadow-lg dark:border-chalkboard-80 dark:bg-chalkboard-90"
+              data-testid="cloud-conflict-list"
+            >
+              <div className="px-2 py-1 font-bold text-chalkboard-100 dark:text-chalkboard-10">
+                Projects with cloud conflicts
+              </div>
+              {conflictMetadataList === undefined ? (
+                <p className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-40">
+                  Loading conflicted projects...
+                </p>
+              ) : conflictMetadataList.length > 0 ? (
+                conflictMetadataList.map((metadata) => (
+                  <button
+                    key={metadata.localProjectPath}
+                    type="button"
+                    className="rounded px-2 py-1 text-left text-chalkboard-100 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none dark:text-chalkboard-10 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
+                    onClick={() => setSelectedConflict(metadata)}
+                  >
+                    {metadata.projectName}
+                  </button>
+                ))
+              ) : (
+                <p className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-40">
+                  No conflicted projects found.
+                </p>
+              )}
+            </div>
+          </Popover.Panel>
+        </Popover>
+      ) : (
+        <button
+          type="button"
+          className={statusBarClassName}
+          data-testid="cloud-sync-status"
+          onClick={() => {
+            if (canInspectConflict) {
+              setIsInspectingConflict(true)
+              return
+            }
+            retryCloudSync()
+          }}
+        >
+          {statusBarButtonContent}
+        </button>
+      )}
+      {isInspectingConflict && status.activeProjectPath && (
+        <CloudConflictDialog
+          projectPath={status.activeProjectPath}
+          projectName={projectName || 'this project'}
+          onDismiss={() => setIsInspectingConflict(false)}
+          onResolved={() => setIsInspectingConflict(false)}
+        />
+      )}
+      {selectedConflictProjectPath && selectedConflictProjectName && (
+        <CloudConflictDialog
+          projectPath={selectedConflictProjectPath}
+          projectName={selectedConflictProjectName}
+          onDismiss={() => setSelectedConflict(undefined)}
+          onResolved={() => setSelectedConflict(undefined)}
+        />
+      )}
+    </>
   )
 }
 
