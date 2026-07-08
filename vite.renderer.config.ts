@@ -33,6 +33,13 @@ export default defineConfig((env) => {
       outDir: `.vite/renderer/${name}`,
       target: 'es2022',
     },
+    // Three 0.184 uses class static blocks that esbuild can minify into
+    // anonymous class expressions which crash during startup.
+    esbuild: {
+      supported: {
+        'class-static-blocks': false,
+      },
+    },
     // Needed for electron-forge (in npm run tron:start)
     optimizeDeps: { esbuildOptions: { target: 'es2022' } },
     plugins: [
