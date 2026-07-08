@@ -1,21 +1,20 @@
 import type { UserFeature, UserResponse } from '@kittycad/lib'
 import {
-  Registry,
-  type RegistryItem,
-  Slot,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
+  type RegistryItem,
+  Slot,
 } from '@kittycad/registry'
-import { type Signal, effect, signal } from '@preact/signals-core'
+import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import {
-  type PreparedZookeeperPatchFileReplay,
   buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
 } from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -26,18 +25,19 @@ import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
-  type Layout,
-  type LayoutService,
   createLayoutService,
   createLayoutServiceRegistryItem,
   createLayoutWithMetadata,
   defaultLayout,
+  type Layout,
+  type LayoutService,
   loadLayout,
   saveLayout,
   setBodiesPaneLayoutEnabled,
   setLayoutSaveHandler,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -314,7 +314,6 @@ export class App implements AppSubsystems {
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
     this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
-    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
     this.syncCloudSyncRuntimePolicy()
@@ -665,12 +664,8 @@ export class App implements AppSubsystems {
     const token = authSnapshot.matches('loggedIn')
       ? authSnapshot.context.token
       : undefined
-    const settingsContext = this.settings.actor.getSnapshot().context
-    const cloudSyncPluginEnabled =
-      settingsContext.plugins?.['cloud-sync']?.current !== false
     const enabled =
       Boolean(token) &&
-      cloudSyncPluginEnabled &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
@@ -680,7 +675,6 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      projectDirectoryPath: settingsContext.app.projectDirectory.current,
       syncExistingLocalProjects: !window.electron,
     })
   }
