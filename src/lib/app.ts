@@ -85,6 +85,7 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import { systemIOService } from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
@@ -794,6 +795,9 @@ export class App implements AppSubsystems {
             executingEditorService,
             kclManager.executingEditorService
           ),
+          provideService(systemIOService, {
+            actor: this.systemIOActor,
+          }),
         ],
       }),
     ])

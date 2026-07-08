@@ -45,6 +45,10 @@ export type HomeProjectEntryContribution = Omit<
   source: Exclude<HomeProjectSource, 'merged'>
 }
 
+export type HomeProjectEntryContributionGroup =
+  | HomeProjectEntryContribution
+  | readonly HomeProjectEntryContribution[]
+
 function contributionKey(entry: HomeProjectEntryContribution) {
   if (entry.remoteProjectId) {
     return `remote:${entry.remoteProjectId}`
@@ -97,8 +101,11 @@ function mergeHomeProjectEntries(
 }
 
 export function coalesceHomeProjectEntries(
-  contributions: readonly HomeProjectEntryContribution[]
+  contributionGroups: readonly HomeProjectEntryContributionGroup[]
 ) {
+  const contributions = contributionGroups.flatMap((contribution) =>
+    Array.isArray(contribution) ? contribution : [contribution]
+  )
   const buckets = new Map<
     string,
     {
@@ -128,7 +135,7 @@ export function coalesceHomeProjectEntries(
 
 export const homeProjectsContract = defineContract({
   homeProjectEntriesValueSpec: defineValueSpec<
-    HomeProjectEntryContribution,
+    HomeProjectEntryContributionGroup,
     HomeProjectEntry[]
   >({
     name: 'home-project-entries',
