@@ -21,7 +21,6 @@ import {
 } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   createLayoutService,
   createLayoutServiceRegistryItem,
@@ -79,6 +78,10 @@ import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
+  type RuntimeRegistryService,
+  runtimeService,
+} from '@src/registry/contracts/runtime'
+import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
@@ -133,10 +136,6 @@ function getZookeeperReplayFallbackFilePath(
   return candidates.find((path) => path && !deletedPaths.has(path))
 }
 
-function isPlaywrightRuntime() {
-  return typeof window !== 'undefined' && isPlaywright()
-}
-
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
   interface Window {
@@ -178,6 +177,8 @@ export type AppLayoutSystem = {
 
 export type AppRegistrySystem = Registry
 
+export type AppRuntimeSystem = RuntimeRegistryService
+
 export type AppDebug = {
   mlEphantManagerActor?: MlEphantManagerActor
 }
@@ -195,6 +196,7 @@ export interface AppSubsystems {
   userFeatures: AppUserFeaturesSystem
   layout: AppLayoutSystem
   registry: AppRegistrySystem
+  runtime: AppRuntimeSystem
 }
 
 export class App implements AppSubsystems {
@@ -235,6 +237,8 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
+  /** Runtime environment metadata */
+  runtime: AppRuntimeSystem
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -255,6 +259,7 @@ export class App implements AppSubsystems {
     this.settings = subsystems.settings
     this.layout = subsystems.layout
     this.registry = subsystems.registry
+    this.runtime = subsystems.runtime
     this.userFeatures = subsystems.userFeatures
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
@@ -306,6 +311,7 @@ export class App implements AppSubsystems {
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
+    const runtime = appRegistry.get(runtimeService)
     const settingsActor = settings.actor
     const engineCommandManager = new ConnectionManager({
       settingsActor,
@@ -328,7 +334,7 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
-    const usePlaywrightLayout = isPlaywrightRuntime()
+    const usePlaywrightLayout = runtime.get().isPlaywright
     const layoutConfigName = usePlaywrightLayout
       ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
       : DEFAULT_LAYOUT_CONFIG_NAME
@@ -453,6 +459,7 @@ export class App implements AppSubsystems {
       userFeatures,
       layout,
       registry: appRegistry,
+      runtime,
     }
   }
 
