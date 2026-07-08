@@ -116,6 +116,39 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = false
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
+const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
+  'fillet',
+  'chamfer',
+  'extrude',
+  'revolve',
+  'helix',
+  'gdt::flatness',
+  'gdt::straightness',
+  'gdt::circularity',
+  'gdt::cylindricity',
+  'gdt::position',
+  'gdt::profile',
+  'gdt::profileLine',
+  'gdt::profileSurface',
+  'gdt::distance',
+  'gdt::perpendicularity',
+  'gdt::angularity',
+  'gdt::concentricity',
+  'gdt::symmetry',
+  'gdt::runout',
+  'gdt::parallelism',
+  'gdt::annotation',
+])
+
+export function supportsZ0006AutoFixBeforeFeatureTreeEdit(
+  operation: Operation
+): boolean {
+  return (
+    operation.type === 'StdLibCall' &&
+    Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES.has(operation.name)
+  )
+}
+
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
     <LayoutPanel
@@ -946,12 +979,7 @@ const OperationItem = ({
           const op = item
           const needsZ0006FixBeforeEdit =
             ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
-            op.type === 'StdLibCall' &&
-            (op.name === 'fillet' ||
-              op.name === 'chamfer' ||
-              op.name === 'extrude' ||
-              op.name === 'revolve' ||
-              op.name === 'helix')
+            supportsZ0006AutoFixBeforeFeatureTreeEdit(op)
 
           let operationToEdit: Operation = item
           if (needsZ0006FixBeforeEdit) {
