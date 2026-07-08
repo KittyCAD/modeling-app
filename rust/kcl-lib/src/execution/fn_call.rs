@@ -830,6 +830,18 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
     result
 }
 
+/// Build the error message for a labeled argument whose label doesn't match any
+/// parameter of the callee. Shared between keyword function calls and sketch
+/// blocks so the wording stays consistent.
+pub(crate) fn unexpected_kw_arg_message(label: &str, callee_name: Option<&str>) -> String {
+    format!(
+        "`{label}` is not an argument of {}",
+        callee_name
+            .map(|n| format!("`{n}`"))
+            .unwrap_or_else(|| "this function".to_owned()),
+    )
+}
+
 fn type_check_params_kw(
     fn_name: Option<&str>,
     fn_def: &FunctionSource,
@@ -1045,12 +1057,7 @@ fn type_check_params_kw(
             None => {
                 exec_state.err(CompilationIssue::err(
                     arg.source_range,
-                    format!(
-                        "`{label}` is not an argument of {}",
-                        fn_name
-                            .map(|n| format!("`{n}`"))
-                            .unwrap_or_else(|| "this function".to_owned()),
-                    ),
+                    unexpected_kw_arg_message(&label, fn_name),
                 ));
             }
         }
@@ -1380,7 +1387,7 @@ mod test {
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(EngineManager::new_mock()),
                 engine_batch: crate::engine::EngineBatchContext::default(),
-                fs: Arc::new(crate::fs::FileManager::new()),
+                fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),

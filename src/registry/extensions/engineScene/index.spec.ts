@@ -6,6 +6,7 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { commandsValueSpec } from '@src/registry/contracts/commands'
 import {
   type EngineSceneExtensionContext,
   engineSceneStreamClassNamesValueSpec,
@@ -16,11 +17,16 @@ import {
 } from '@src/registry/contracts/engineScene'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  MODE_MODELING_KEYMAP_SCOPE,
+  keymapValueSpec,
+} from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
-import engineSceneExtension from '.'
+import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
+import { measurementToolService } from './measurementToolService'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
   ExperimentalFeaturesMenu: () => null,
@@ -119,6 +125,7 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
+      'measure',
       'selection',
       'selection-filter',
       'units',
@@ -126,7 +133,40 @@ describe('engineScene extension', () => {
     ])
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
-    ).toEqual([['file'], ['file'], ['file'], ['file']])
+    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file']])
+  })
+
+  it('contributes a command and modeling keybinding to open the measure tool', () => {
+    measurementToolService.close()
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const command = registry
+      .get(commandsValueSpec)
+      .find(
+        (candidate) => candidate.id === ENGINE_SCENE_COMMAND_IDS.openMeasureTool
+      )
+    const keymapItem = registry
+      .get(keymapValueSpec)
+      .items.find((item) => item.id === 'engine-scene.measure.open')
+
+    expect(command).toMatchObject({
+      displayName: 'Open measure tool',
+      icon: 'ruler',
+      needsReview: false,
+    })
+    expect(keymapItem).toMatchObject({
+      title: 'Open measure tool',
+      scopes: [MODE_MODELING_KEYMAP_SCOPE],
+      keystrokes: ['shift+m'],
+      command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
+    })
+
+    expect(measurementToolService.isOpen.value).toBe(false)
+    command?.onSubmit()
+    expect(measurementToolService.isOpen.value).toBe(true)
+
+    measurementToolService.close()
   })
 
   it('hides the experimental features item when file settings deny it', () => {
@@ -150,13 +190,14 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['selection', 'selection-filter', 'units'])
+    ).toEqual(['measure', 'selection', 'selection-filter', 'units'])
 
     showExperimentalFeaturesStatusBarItem.value = true
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
+      'measure',
       'selection',
       'selection-filter',
       'units',
@@ -189,7 +230,7 @@ describe('engineScene extension', () => {
       {
         id: 'engine-scene.stream-default',
         order: 0,
-        className: 'absolute inset-[-4px] z-0',
+        className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
       },
     ])
     expect(registry.get(engineSceneStreamLayersValueSpec)).toEqual([])
@@ -208,6 +249,23 @@ describe('engineScene extension', () => {
         },
       ])
     ).toBe('absolute z-0 inset-4 transition-all bg-ml-green rounded-lg')
+  })
+
+  it('preserves granular stream inset class name overrides', () => {
+    expect(
+      mergeEngineSceneClassNames([
+        {
+          id: 'default',
+          order: 0,
+          className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
+        },
+        {
+          id: 'extension',
+          order: 10,
+          className: 'inset-x-0 inset-y-4',
+        },
+      ])
+    ).toBe('absolute z-0 inset-x-0 inset-y-4')
   })
 
   it('registers sketch-only view extensions from modeling state', () => {

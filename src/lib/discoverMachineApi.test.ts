@@ -1,9 +1,8 @@
 import type BonjourModule from 'bonjour-service'
+import type { Browser, Service } from 'bonjour-service'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 type Bonjour = InstanceType<typeof BonjourModule>
-type Browser = InstanceType<(typeof BonjourModule)['Browser']>
-type Service = InstanceType<(typeof BonjourModule)['Service']>
-import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { discoverMachineApi } from '@src/lib/discoverMachineApi'
 
