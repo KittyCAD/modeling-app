@@ -387,13 +387,15 @@ const collectAllFilesRecursiveFrom = async (
     PROJECT_SETTINGS_FILE_NAME,
   ])
 
+  let stats: IStat
   // Make sure the filesystem object exists.
   try {
-    await fsZds.stat(targetPath)
+    stats = await fsZds.stat(targetPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(new Error(`Directory ${targetPath} does not exist`))
     }
+    return Promise.reject(e)
   }
 
   // Make sure the path is a directory.
@@ -407,6 +409,7 @@ const collectAllFilesRecursiveFrom = async (
   let entry: FileEntry = {
     name: name,
     path: targetPath,
+    metadata: convertIStatToFileMetadata(stats),
     children: [],
   }
 
@@ -438,7 +441,13 @@ const collectAllFilesRecursiveFrom = async (
     }
 
     const ePath = fsZds.join(targetPath, e)
-    const isEDir = await statIsDirectory(ePath)
+    let eStats: IStat
+    try {
+      eStats = await fsZds.stat(ePath)
+    } catch {
+      continue
+    }
+    const isEDir = Boolean(eStats.mode & fsZdsConstants.S_IFDIR)
     const relativePath = fsZds.relative(projectRoot, ePath).replace(/\\/g, '/')
 
     if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isEDir)) {
@@ -467,6 +476,7 @@ const collectAllFilesRecursiveFrom = async (
         /* FileEntry */ {
           name: e,
           path: ePath,
+          metadata: convertIStatToFileMetadata(eStats),
           children: null,
         }
       )

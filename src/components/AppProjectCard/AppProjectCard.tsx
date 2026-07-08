@@ -29,6 +29,15 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   projectStatus?: ProjectStatus
 }
 
+const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
+  {
+    local: 'Local',
+    'cloud-only': 'Cloud-only',
+    syncing: 'Syncing',
+    synced: 'Synced',
+    conflicted: 'Conflicted',
+  }
+
 function getDisplayedTime(dateTimeMs: number) {
   const date = new Date(dateTimeMs)
   const startOfToday = new Date()
@@ -195,9 +204,21 @@ function AppProjectCard({
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
+  const statusBadgeLabel =
+    project.source === 'merged'
+      ? undefined
+      : homeProjectStatusBadgeLabels[project.status]
 
   const badges = (hasCloudConflict || hasChangesRequested) && (
     <>
+      {statusBadgeLabel && (
+        <span
+          className="absolute top-2 right-2 z-10 rounded bg-chalkboard-20 px-1.5 py-0.5 text-[10px] font-medium text-chalkboard-90 dark:bg-chalkboard-80 dark:text-chalkboard-10 pointer-events-none"
+          data-testid="project-status-badge"
+        >
+          {statusBadgeLabel}
+        </span>
+      )}
       {hasCloudConflict && (
         <span
           className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10"

@@ -106,6 +106,53 @@ describe('ProjectCard', () => {
     )
   })
 
+  test('shows status badges for non-merged project cards', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        id: 'local:/projects/local-title',
+        name: 'local-title',
+        title: 'Local title',
+        status: 'local',
+        remoteProjectId: undefined,
+      },
+    })
+
+    expect(screen.getByTestId('project-status-badge')).toHaveTextContent(
+      'Local'
+    )
+  })
+
+  test('shows cloud-only status badges for remote project cards', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'remote',
+        status: 'cloud-only',
+        localProjectPath: undefined,
+        localProjectName: undefined,
+        defaultFile: undefined,
+        kclFileCount: undefined,
+        directoryCount: undefined,
+      },
+    })
+
+    expect(screen.getByTestId('project-status-badge')).toHaveTextContent(
+      'Cloud-only'
+    )
+  })
+
+  test('does not show status badges for merged project cards', () => {
+    renderProjectCard({
+      project: {
+        ...cloudProject,
+        source: 'merged',
+      },
+    })
+
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
   test('eagerly shows cloud project rename modified time while sync continues', async () => {
     const project = {
       ...cloudProject,
