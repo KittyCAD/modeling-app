@@ -17,6 +17,11 @@ vi.mock('@src/lib/desktop', () => ({
 }))
 
 vi.mock('@src/lib/boot', () => ({
+  useApp: () => ({
+    registry: {
+      reconfigure: vi.fn(),
+    },
+  }),
   useSingletons: () => ({
     kclManager: {
       astSignal: { value: null },
