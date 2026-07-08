@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
-import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
-import { ProjectCardRenameForm } from '@src/components/ProjectCard/ProjectCardRenameForm'
+import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
+import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
@@ -176,11 +176,11 @@ function AppProjectCard({
     ''
   )
 
-  const badges = (
+  const badges = (hasCloudConflict || hasChangesRequested) && (
     <>
       {hasCloudConflict && (
         <span
-          className="absolute top-2 left-2 z-10 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10 pointer-events-none"
+          className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10"
           data-testid="cloud-conflict-badge"
         >
           Inspect Conflicts
@@ -188,9 +188,7 @@ function AppProjectCard({
       )}
       {hasChangesRequested && (
         <span
-          className={`absolute ${
-            hasCloudConflict ? 'top-8' : 'top-2'
-          } left-2 z-10 rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10 pointer-events-none`}
+          className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-80 dark:bg-warn-80 dark:text-warn-10"
           data-testid="changes-requested-badge"
         >
           Changes requested

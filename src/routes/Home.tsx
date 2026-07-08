@@ -17,7 +17,7 @@ import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import AppProjectCard from '@src/components/ProjectCard/AppProjectCard'
+import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,

@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { Project } from '@src/lib/project'
 
-import AppProjectCard from '@src/components/ProjectCard/AppProjectCard'
+import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {

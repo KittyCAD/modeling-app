@@ -14,6 +14,7 @@ export type ProjectCardClassNameSlot =
   | 'openLinkDisabled'
   | 'thumbnailFrame'
   | 'thumbnail'
+  | 'badges'
   | 'body'
   | 'title'
   | 'actions'
@@ -67,6 +68,8 @@ export const defaultProjectCardClassNames: Record<
     'h-36 relative overflow-hidden bg-gradient-to-b from-transparent to-primary/10 rounded-t-sm',
   thumbnail:
     'h-full w-full transition-transform group-hover:scale-105 object-cover',
+  badges:
+    'absolute top-2 right-2 z-10 flex flex-col items-end gap-1 pointer-events-none',
   body: 'pb-2 flex flex-col flex-grow flex-auto gap-2 rounded-b-sm',
   title: 'font-sans relative z-0 p-2 truncate',
   actions:
@@ -133,7 +136,7 @@ export function ProjectCard({
     children: (
       <>
         <div className={classes.thumbnailFrame}>
-          {badges}
+          {badges && <div className={classes.badges}>{badges}</div>}
           {thumbnailUrl ? (
             <img
               src={thumbnailUrl}
