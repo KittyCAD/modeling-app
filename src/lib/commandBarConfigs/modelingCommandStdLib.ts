@@ -210,13 +210,11 @@ export const modelingCommandStdLibDriftConfig = {
     editFlow: true,
     flowArgOrder: ['sketches', 'path', 'bodyType'],
     deprecatedStdLibArgs: ['relativeTo'],
-    omittedStdLibArgs: ['tolerance'],
   },
   Loft: {
     stdLibName: 'loft',
     editFlow: true,
     flowArgOrder: ['sketches', 'bodyType'],
-    omittedStdLibArgs: ['tolerance'],
   },
   Revolve: {
     stdLibName: 'revolve',
@@ -230,7 +228,6 @@ export const modelingCommandStdLibDriftConfig = {
       'bodyType',
     ],
     uiOnlyArgs: ['axisOrEdge', 'edge'],
-    omittedStdLibArgs: ['tolerance'],
   },
   Shell: {
     stdLibName: 'shell',
@@ -271,7 +268,7 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'fillet',
     editFlow: true,
     flowArgOrder: ['selection', 'radius'],
-    omittedStdLibArgs: ['solid', 'edges', 'tolerance'],
+    omittedStdLibArgs: ['solid', 'edges'],
     argAliases: {
       tags: 'selection',
     },
@@ -355,13 +352,11 @@ export const modelingCommandStdLibDriftConfig = {
     stdLibName: 'translate',
     editFlow: true,
     flowArgOrder: ['objects'],
-    omittedStdLibArgs: ['xyz'],
   },
   Rotate: {
     stdLibName: 'rotate',
     editFlow: true,
     flowArgOrder: ['objects'],
-    omittedStdLibArgs: ['axis', 'angle'],
   },
   Scale: {
     stdLibName: 'scale',
@@ -533,17 +528,14 @@ export const modelingCommandStdLibDriftConfig = {
   'Boolean Subtract': {
     stdLibName: 'subtract',
     flowArgOrder: ['solids', 'tools'],
-    omittedStdLibArgs: ['tolerance'],
   },
   'Boolean Union': {
     stdLibName: 'union',
     flowArgOrder: ['solids'],
-    omittedStdLibArgs: ['tolerance'],
   },
   'Boolean Intersect': {
     stdLibName: 'intersect',
     flowArgOrder: ['solids'],
-    omittedStdLibArgs: ['tolerance'],
   },
   'Boolean Split': {
     stdLibName: 'split',
@@ -566,7 +558,6 @@ export const modelingCommandStdLibDriftConfig = {
   'Join Surfaces': {
     stdLibName: 'joinSurfaces',
     flowArgOrder: ['selection'],
-    omittedStdLibArgs: ['tolerance'],
   },
 } as const satisfies Partial<
   Record<ModelingCommandName, StdLibCommandDriftConfig>
