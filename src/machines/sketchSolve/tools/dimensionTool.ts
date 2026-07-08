@@ -800,7 +800,9 @@ function addDimensionListener({
 
 function removeDimensionListener({
   context,
-}: { context: DimensionToolContext }) {
+}: {
+  context: DimensionToolContext
+}) {
   deactivateRuntime(context.runtime)
   toastToolbar.dismiss(ANGLE_SECTOR_PROMPT_TOAST_ID)
   context.sceneInfra.setCallbacks({
