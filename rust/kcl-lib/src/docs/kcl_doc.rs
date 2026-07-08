@@ -1008,6 +1008,7 @@ impl ArgData {
                     "angleEnd" => "180deg",
                     "angle" => "180deg",
                     "arcDegrees" => "360deg",
+                    "sector" => "1",
                     _ => "10",
                 };
                 Some((index, format!(r#"{label}${{{index}:{value}}}"#)))
