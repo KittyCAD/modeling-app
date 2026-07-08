@@ -1,73 +1,73 @@
 ```mermaid
 flowchart LR
-  subgraph path2 [Path]
-    2["Path<br>[35, 60, 0]<br>Consumed: true"]
+  subgraph path3 [Path]
+    3["Path<br>[35, 60, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    3["Segment<br>[66, 85, 0]"]
+    6["Segment<br>[66, 85, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    4["Segment<br>[91, 131, 0]"]
+    7["Segment<br>[91, 131, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
     5["Segment<br>[137, 157, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   end
-  1["Plane<br>[12, 29, 0]"]
+  4["Plane<br>[12, 29, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  6["Sweep Extrusion<br>[163, 183, 0]<br>Consumed: false"]
+  8["Sweep Extrusion<br>[163, 183, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-  7[Wall]
+  16[Wall]
     %% face_code_ref=Missing NodePath
-  8[Wall]
+  17[Wall]
     %% face_code_ref=Missing NodePath
-  9[Wall]
+  15[Wall]
     %% face_code_ref=Missing NodePath
-  10["Cap Start"]
+  2["Cap Start"]
     %% face_code_ref=Missing NodePath
-  11["Cap End"]
+  1["Cap End"]
     %% face_code_ref=Missing NodePath
-  12["SweepEdge Opposite"]
-  13["SweepEdge Adjacent"]
+  13["SweepEdge Opposite"]
+  10["SweepEdge Adjacent"]
   14["SweepEdge Opposite"]
-  15["SweepEdge Adjacent"]
-  16["SweepEdge Opposite"]
-  17["SweepEdge Adjacent"]
-  1 --- 2
-  2 --- 3
-  2 --- 4
-  2 --- 5
-  2 ---- 6
+  11["SweepEdge Adjacent"]
+  12["SweepEdge Opposite"]
+  9["SweepEdge Adjacent"]
+  8 --- 1
+  12 <--x 1
+  13 <--x 1
+  14 <--x 1
+  5 <--x 2
+  6 <--x 2
+  7 <--x 2
+  8 --- 2
+  4 --- 3
+  3 --- 5
+  3 --- 6
   3 --- 7
-  3 x--> 10
-  3 --- 12
-  3 --- 13
-  4 --- 8
-  4 x--> 10
-  4 --- 14
-  4 --- 15
+  3 ---- 8
   5 --- 9
-  5 x--> 10
-  5 --- 16
-  5 --- 17
-  6 --- 7
-  6 --- 8
-  6 --- 9
+  5 --- 12
+  5 --- 15
   6 --- 10
-  6 --- 11
-  6 --- 12
   6 --- 13
-  6 --- 14
-  6 --- 15
   6 --- 16
-  6 --- 17
-  7 --- 12
-  7 --- 13
-  17 <--x 7
-  13 <--x 8
+  7 --- 11
+  7 --- 14
+  7 --- 17
+  8 --- 9
+  8 --- 10
+  8 --- 11
+  8 --- 12
+  8 --- 13
   8 --- 14
   8 --- 15
-  15 <--x 9
-  9 --- 16
-  9 --- 17
-  12 <--x 11
-  14 <--x 11
-  16 <--x 11
+  8 --- 16
+  8 --- 17
+  15 --- 9
+  9 x--> 15
+  16 --- 10
+  10 x--> 16
+  17 --- 11
+  11 x--> 17
+  15 --- 12
+  16 --- 13
+  17 --- 14
 ```
