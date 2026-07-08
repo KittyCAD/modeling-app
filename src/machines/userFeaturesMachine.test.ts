@@ -37,10 +37,7 @@ describe('userFeaturesMachine', () => {
 
   it('loads feature ids once for a token and answers membership from context', async () => {
     const fetchFeatures = vi.fn(async () => ({
-      featureIds: new Set<UserFeature>([
-        'plugins',
-        'sketch_experimental_features',
-      ]),
+      featureIds: new Set<UserFeature>(['sketch_experimental_features']),
     }))
     const actor = createActor(
       userFeaturesMachine.provide({
@@ -63,9 +60,9 @@ describe('userFeaturesMachine', () => {
       const context = actor.getSnapshot().context
       expect(fetchFeatures).toHaveBeenCalledTimes(1)
       expect(context.token).toBe('token-a')
-      expect(userFeaturesContextHas(context, 'plugins', false)).toBe(true)
-      expect(userFeaturesContextHas(context, 'bodies_pane', false)).toBe(false)
-      expect(userFeaturesContextHas(context, 'bodies_pane', true)).toBe(true)
+      expect(
+        userFeaturesContextHas(context, 'sketch_experimental_features', false)
+      ).toBe(true)
     } finally {
       actor.stop()
     }
@@ -79,7 +76,7 @@ describe('userFeaturesMachine', () => {
             TestFetchUserFeaturesResult,
             TestFetchUserFeaturesInput
           >(async () => ({
-            featureIds: new Set<UserFeature>(['plugins']),
+            featureIds: new Set<UserFeature>(['sketch_experimental_features']),
           })),
         },
       })
@@ -113,7 +110,9 @@ describe('userFeaturesMachine', () => {
             }
 
             return {
-              featureIds: new Set<UserFeature>(['plugins']),
+              featureIds: new Set<UserFeature>([
+                'sketch_experimental_features',
+              ]),
             }
           }),
         },
@@ -124,7 +123,11 @@ describe('userFeaturesMachine', () => {
       actor.send({ type: UserFeaturesTransition.Load, token: 'token-a' })
       await waitFor(actor, (state) => state.matches(UserFeaturesState.Ready))
       expect(
-        userFeaturesContextHas(actor.getSnapshot().context, 'plugins', false)
+        userFeaturesContextHas(
+          actor.getSnapshot().context,
+          'sketch_experimental_features',
+          false
+        )
       ).toBe(true)
 
       actor.send({ type: UserFeaturesTransition.Load, token: 'token-b' })
@@ -133,7 +136,9 @@ describe('userFeaturesMachine', () => {
       const context = actor.getSnapshot().context
       expect(context.featureIds.size).toBe(0)
       expect(context.token).toBe('token-b')
-      expect(userFeaturesContextHas(context, 'plugins', false)).toBe(false)
+      expect(
+        userFeaturesContextHas(context, 'sketch_experimental_features', false)
+      ).toBe(false)
       expect(mockState.reportClientError).toHaveBeenCalledWith({
         code: 'user_features_fetch_error',
         message: 'feature service unavailable',
@@ -156,12 +161,9 @@ describe('userFeaturesMachine', () => {
     vi.useFakeTimers()
     const fetchFeatures = vi
       .fn()
-      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>(['plugins']) })
+      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>() })
       .mockResolvedValueOnce({
-        featureIds: new Set<UserFeature>([
-          'plugins',
-          'sketch_experimental_features',
-        ]),
+        featureIds: new Set<UserFeature>(['sketch_experimental_features']),
       })
     const actor = createActor(
       userFeaturesMachine.provide({
@@ -219,7 +221,9 @@ describe('userFeaturesMachine', () => {
     const fetchFeatures = vi
       .fn()
       .mockResolvedValueOnce(new Error('feature service unavailable'))
-      .mockResolvedValueOnce({ featureIds: new Set<UserFeature>(['plugins']) })
+      .mockResolvedValueOnce({
+        featureIds: new Set<UserFeature>(['sketch_experimental_features']),
+      })
     const actor = createActor(
       userFeaturesMachine.provide({
         actors: {
@@ -253,7 +257,11 @@ describe('userFeaturesMachine', () => {
         })
       )
       expect(
-        userFeaturesContextHas(actor.getSnapshot().context, 'plugins', false)
+        userFeaturesContextHas(
+          actor.getSnapshot().context,
+          'sketch_experimental_features',
+          false
+        )
       ).toBe(true)
     } finally {
       actor.stop()
