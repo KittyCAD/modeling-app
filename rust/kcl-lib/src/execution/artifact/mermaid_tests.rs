@@ -383,6 +383,10 @@ impl ArtifactGraph {
         Ok(())
     }
 
+    // Stabilize Mermaid rendering for semantically equivalent graphs whose
+    // insertion/traversal order differs. This does not hide real engine
+    // nondeterminism: if execution produces different artifact content, the
+    // rendered snapshot should still change.
     fn flowchart_sort_key(&self, id: ArtifactId) -> String {
         let Some(artifact) = self.map.get(&id) else {
             return String::new();

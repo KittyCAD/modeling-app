@@ -6,7 +6,10 @@ import { useEffect } from 'react'
 export function useOnVitestEngineOnline({
   callback,
   engineCommandManager,
-}: { callback: () => void; engineCommandManager: ConnectionManager }) {
+}: {
+  callback: () => void
+  engineCommandManager: ConnectionManager
+}) {
   useEffect(() => {
     const onlineRequest = (event: CustomEvent) => {
       EngineDebugger.addLog({

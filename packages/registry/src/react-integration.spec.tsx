@@ -52,11 +52,7 @@ function WorkspaceToggle({ registry }: { registry: Registry }) {
   )
 }
 
-function AnalyticsToggle({
-  registry,
-}: {
-  registry: Registry
-}) {
+function AnalyticsToggle({ registry }: { registry: Registry }) {
   useSignals()
   const analyticsToggle = registry.get(analyticsToggleService)
 

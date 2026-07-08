@@ -3081,7 +3081,7 @@ export function getDefaultSketchPlaneData(
   }
 }
 
-function isDefaultPlaneSelection(
+export function isDefaultPlaneSelection(
   selection: Selections['otherSelections'][number]
 ): selection is DefaultPlaneSelection {
   return (
