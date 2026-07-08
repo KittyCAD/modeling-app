@@ -243,6 +243,7 @@ const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
 
 export const modelingCommandCodemods = {
   Extrude: withArtifactGraph('Extrude', addExtrude, {
+    // Surface edge extrudes make engine child-ID queries that mock execution cannot answer.
     skipMockExecution: extrudeUsesEdgeProfile,
   }),
   Sweep: withArtifactGraph('Sweep', addSweep),

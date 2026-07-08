@@ -6,7 +6,6 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createMemberExpression,
   createName,
   createTagDeclarator,
 } from '@src/lang/create'
@@ -31,6 +30,7 @@ import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
+  createSketchTagMemberExpression,
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
@@ -41,6 +41,7 @@ import {
 } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
+  getOriginalSegmentArtifact,
   getSweepArtifactFromSelection,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
@@ -102,6 +103,43 @@ function hasEdgeProfileSelection(selections: Selections): boolean {
   )
 }
 
+function getOriginalSketchSegmentNameForEdge({
+  edgeArtifact,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+}: {
+  edgeArtifact: Extract<Artifact, { type: 'sweepEdge' }>
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): string | null {
+  const segmentName = getSketchSegmentName(
+    modifiedAst,
+    edgeArtifact.segId,
+    artifactGraph,
+    wasmInstance
+  )
+  if (segmentName) {
+    return segmentName
+  }
+
+  const originalSegment = getOriginalSegmentArtifact(
+    edgeArtifact.segId,
+    artifactGraph
+  )
+  if (!originalSegment || originalSegment.id === edgeArtifact.segId) {
+    return null
+  }
+
+  return getSketchSegmentName(
+    modifiedAst,
+    originalSegment.id,
+    artifactGraph,
+    wasmInstance
+  )
+}
+
 function getEdgeProfileExprsFromSelection({
   selections,
   modifiedAst,
@@ -155,58 +193,27 @@ function getEdgeProfileExprsFromSelection({
     }
     const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
-    const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
-      sourceSurfaceArtifact as Artifact,
-      edgeArtifact,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance
-    )
+    const sketchSegmentName =
+      getSketchSegmentNameFromSourceSurface(
+        sourceSurfaceArtifact as Artifact,
+        edgeArtifact,
+        artifactGraph,
+        modifiedAst,
+        wasmInstance
+      ) ??
+      getOriginalSketchSegmentNameForEdge({
+        edgeArtifact,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+      })
     if (sketchSegmentName) {
-      const sketchTagExpr = createMemberExpression(
-        createMemberExpression(
-          createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
-          'tags'
-        ),
-        sketchSegmentName
-      )
-      exprs.push(getEdgeTagCall(sketchTagExpr, edgeArtifact))
-      continue
-    }
-
-    let segmentName = getSketchSegmentName(
-      modifiedAst,
-      edgeArtifact.segId,
-      artifactGraph,
-      wasmInstance
-    )
-    if (!segmentName) {
-      const selectedSegment = getArtifactOfTypes(
-        { key: edgeArtifact.segId, types: ['segment'] },
-        artifactGraph
-      )
-      if (
-        !err(selectedSegment) &&
-        selectedSegment.type === 'segment' &&
-        selectedSegment.originalSegId
-      ) {
-        segmentName = getSketchSegmentName(
-          modifiedAst,
-          selectedSegment.originalSegId,
-          artifactGraph,
-          wasmInstance
+      exprs.push(
+        getEdgeTagCall(
+          createSketchTagMemberExpression(sourceSurfaceExpr, sketchSegmentName),
+          edgeArtifact
         )
-      }
-    }
-    if (segmentName) {
-      const sketchTagExpr = createMemberExpression(
-        createMemberExpression(
-          createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
-          'tags'
-        ),
-        segmentName
       )
-      exprs.push(getEdgeTagCall(sketchTagExpr, edgeArtifact))
       continue
     }
 

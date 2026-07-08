@@ -2232,6 +2232,19 @@ export function getSketchSegmentName(
   return null
 }
 
+export function createSketchTagMemberExpression(
+  sourceSurfaceExpr: Expr,
+  segmentName: string
+): Expr {
+  return createMemberExpression(
+    createMemberExpression(
+      createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+      'tags'
+    ),
+    segmentName
+  )
+}
+
 export function getSketchSegmentNameFromSourceSurface(
   sourceSurfaceArtifact: Artifact,
   segmentArtifact: Artifact,
