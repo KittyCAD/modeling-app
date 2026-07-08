@@ -5,7 +5,7 @@ import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -107,6 +107,8 @@ function createUserFeaturesForTest(
     context: contextSignal.value,
     matches: (state: string) => state === UserFeaturesState.Ready,
   }
+  const stateSignal = signal(snapshot)
+  const readySignal = signal(true)
   const listeners = new Set<(nextSnapshot: typeof snapshot) => void>()
 
   const userFeatures = {
@@ -121,7 +123,10 @@ function createUserFeaturesForTest(
       stop: vi.fn(),
     },
     send: vi.fn(),
+    state: stateSignal,
+    context: contextSignal,
     contextSignal,
+    ready: readySignal,
     has: (featureFlagId: UserFeature, defaultValue: boolean) =>
       contextSignal.value.featureIds.has(featureFlagId) ? true : defaultValue,
     useContext: () => contextSignal.value,
@@ -135,6 +140,7 @@ function createUserFeaturesForTest(
         context: contextSignal.value,
         matches: snapshot.matches,
       }
+      stateSignal.value = snapshot
       for (const listener of listeners) {
         listener(snapshot)
       }

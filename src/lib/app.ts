@@ -1,21 +1,20 @@
-import type { UserFeature, UserResponse } from '@kittycad/lib'
+import type { UserResponse } from '@kittycad/lib'
 import {
-  Registry,
-  type RegistryItem,
-  Slot,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
+  type RegistryItem,
+  Slot,
 } from '@kittycad/registry'
-import { type Signal, effect, signal } from '@preact/signals-core'
+import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import {
-  type PreparedZookeeperPatchFileReplay,
   buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
 } from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -26,18 +25,19 @@ import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
-  type Layout,
-  type LayoutService,
   createLayoutService,
   createLayoutServiceRegistryItem,
   createLayoutWithMetadata,
   defaultLayout,
+  type Layout,
+  type LayoutService,
   loadLayout,
   saveLayout,
   setBodiesPaneLayoutEnabled,
   setLayoutSaveHandler,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -62,12 +62,8 @@ import {
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import {
-  type UserFeaturesActorRef,
-  type UserFeaturesContext,
-  type UserFeaturesService,
   UserFeaturesTransition,
   userFeaturesContextHas,
-  userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
@@ -85,7 +81,10 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import {
+  type UserFeaturesRegistryService,
+  userFeaturesService,
+} from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import {
@@ -140,6 +139,17 @@ function createAppRegistryItems({
   machineManager: MachineManager
   userFeatures?: AppUserFeaturesSystem
 }): RegistryItem[] {
+  const registryItems = userFeatures
+    ? coreRegistryItems.filter(
+        (item) =>
+          !(
+            typeof item === 'object' &&
+            'id' in item &&
+            item.id === 'user-features'
+          )
+      )
+    : coreRegistryItems
+
   return [
     defineRegistryItem({
       id: 'app.wasm-promise',
@@ -155,8 +165,7 @@ function createAppRegistryItems({
             id: 'app.user-features',
             providesServices: [
               provideService(userFeaturesService, {
-                context: userFeatures.contextSignal,
-                has: userFeatures.has,
+                ...userFeatures,
               }),
             ],
           }),
@@ -165,7 +174,7 @@ function createAppRegistryItems({
     appCommandsSlot.of(),
     appRegistryServicesSlot.of(),
     engineSceneRuntimeExtensionsSlot.of(),
-    ...coreRegistryItems,
+    ...registryItems,
   ]
 }
 
@@ -203,13 +212,7 @@ export type AppBillingSystem = {
   useContext: () => ContextFrom<typeof billingMachine>
 }
 
-export type AppUserFeaturesSystem = UserFeaturesService & {
-  actor: UserFeaturesActorRef
-  send: UserFeaturesActorRef['send']
-  contextSignal: Signal<UserFeaturesContext>
-  useContext: () => UserFeaturesContext
-  useHas: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
-}
+export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
 export type AppLayoutSystem = {
   signal: Signal<Layout>
@@ -335,7 +338,10 @@ export class App implements AppSubsystems {
    * The default app subsystems during normal runtime.
    * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
    */
-  static getDefaultSystems(wasmPromise = initialiseWasm()) {
+  static getDefaultSystems(
+    wasmPromise = initialiseWasm(),
+    overrides: { userFeatures?: AppUserFeaturesSystem } = {}
+  ) {
     const authActor = createActor(authMachine).start()
     const auth: AppAuthSystem = {
       actor: authActor,
@@ -355,8 +361,13 @@ export class App implements AppSubsystems {
 
     const appRegistry = new Registry()
     appRegistry.configure(
-      createAppRegistryItems({ wasmPromise, machineManager })
+      createAppRegistryItems({
+        wasmPromise,
+        machineManager,
+        userFeatures: overrides.userFeatures,
+      })
     )
+    const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
     const settingsActor = settings.actor
@@ -379,31 +390,6 @@ export class App implements AppSubsystems {
       actor: billingActor,
       send: billingActor.send.bind(App),
       useContext: () => useSelector(billingActor, ({ context }) => context),
-    }
-
-    const userFeaturesActor = createActor(userFeaturesMachine).start()
-    const userFeaturesContextSignal = signal<UserFeaturesContext>(
-      userFeaturesActor.getSnapshot().context
-    )
-    userFeaturesActor.subscribe((snapshot) => {
-      userFeaturesContextSignal.value = snapshot.context
-    })
-    const userFeatures: AppUserFeaturesSystem = {
-      actor: userFeaturesActor,
-      send: userFeaturesActor.send.bind(App),
-      contextSignal: userFeaturesContextSignal,
-      has: (featureFlagId, defaultValue) =>
-        userFeaturesContextHas(
-          userFeaturesActor.getSnapshot().context,
-          featureFlagId,
-          defaultValue
-        ),
-      useContext: () =>
-        useSelector(userFeaturesActor, ({ context }) => context),
-      useHas: (featureFlagId, defaultValue) =>
-        useSelector(userFeaturesActor, ({ context }) =>
-          userFeaturesContextHas(context, featureFlagId, defaultValue)
-        ),
     }
 
     const usePlaywrightLayout = isPlaywrightRuntime()
@@ -436,7 +422,11 @@ export class App implements AppSubsystems {
       ),
     }
     appRegistry.configure([
-      ...createAppRegistryItems({ wasmPromise, machineManager, userFeatures }),
+      ...createAppRegistryItems({
+        wasmPromise,
+        machineManager,
+        userFeatures: overrides.userFeatures,
+      }),
       createLayoutServiceRegistryItem(layoutService),
     ])
 
@@ -510,7 +500,7 @@ export class App implements AppSubsystems {
     }
     settingsActor.subscribe(hydrateLayoutFromSettings)
     hydrateLayoutFromSettings(settingsActor.getSnapshot())
-    userFeaturesActor.subscribe(syncBodiesPaneFeatureLayout)
+    userFeatures.actor.subscribe(syncBodiesPaneFeatureLayout)
     effect(() => {
       const contributions = appRegistry.signal(
         layoutContributionsValueSpec
@@ -548,9 +538,9 @@ export class App implements AppSubsystems {
   static fromProvided(
     provided: Partial<ReturnType<typeof App.getDefaultSystems>>
   ) {
-    const defaults = provided.wasmPromise
-      ? App.getDefaultSystems(provided.wasmPromise) // Allows us to instantiate without WASM!
-      : App.getDefaultSystems()
+    const defaults = App.getDefaultSystems(provided.wasmPromise, {
+      userFeatures: provided.userFeatures,
+    })
     const combined = Object.assign(defaults, provided)
     return new App(combined)
   }
