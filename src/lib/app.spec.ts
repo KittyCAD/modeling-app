@@ -14,6 +14,7 @@ import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { loadWasm } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
@@ -95,6 +96,7 @@ function disposeApp(app: App) {
   app.auth.actor.stop()
   app.billing.actor.stop()
   app.userFeatures.actor.stop()
+  app.registry[Symbol.dispose]()
 }
 
 function createUserFeaturesForTest(
@@ -168,6 +170,20 @@ async function waitForHistoryIdle(kclManager: KclManager) {
 }
 
 describe('project system', () => {
+  it('uses the registry user-features service by default', () => {
+    const app = App.fromProvided({
+      wasmPromise: loadWasm(),
+    })
+
+    try {
+      const registryUserFeatures = app.registry.get(userFeaturesService)
+
+      expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
+    } finally {
+      disposeApp(app)
+    }
+  })
+
   it('syncs plugin settings into plugin activation and only persists overrides', async () => {
     const previousElectron = window.electron
     const syncActivePlugins = vi.fn().mockResolvedValue(undefined)

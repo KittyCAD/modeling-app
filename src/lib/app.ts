@@ -133,23 +133,10 @@ function isPlaywrightRuntime() {
 function createAppRegistryItems({
   wasmPromise,
   machineManager,
-  userFeatures,
 }: {
   wasmPromise: Promise<ModuleType>
   machineManager: MachineManager
-  userFeatures?: AppUserFeaturesSystem
 }): RegistryItem[] {
-  const registryItems = userFeatures
-    ? coreRegistryItems.filter(
-        (item) =>
-          !(
-            typeof item === 'object' &&
-            'id' in item &&
-            item.id === 'user-features'
-          )
-      )
-    : coreRegistryItems
-
   return [
     defineRegistryItem({
       id: 'app.wasm-promise',
@@ -159,22 +146,10 @@ function createAppRegistryItems({
       id: 'app.machine-manager',
       providesServices: [provideService(machineManagerService, machineManager)],
     }),
-    ...(userFeatures
-      ? [
-          defineRegistryItem({
-            id: 'app.user-features',
-            providesServices: [
-              provideService(userFeaturesService, {
-                ...userFeatures,
-              }),
-            ],
-          }),
-        ]
-      : []),
     appCommandsSlot.of(),
     appRegistryServicesSlot.of(),
     engineSceneRuntimeExtensionsSlot.of(),
-    ...registryItems,
+    ...coreRegistryItems,
   ]
 }
 
@@ -338,10 +313,7 @@ export class App implements AppSubsystems {
    * The default app subsystems during normal runtime.
    * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
    */
-  static getDefaultSystems(
-    wasmPromise = initialiseWasm(),
-    overrides: { userFeatures?: AppUserFeaturesSystem } = {}
-  ) {
+  static getDefaultSystems(wasmPromise = initialiseWasm()) {
     const authActor = createActor(authMachine).start()
     const auth: AppAuthSystem = {
       actor: authActor,
@@ -361,11 +333,7 @@ export class App implements AppSubsystems {
 
     const appRegistry = new Registry()
     appRegistry.configure(
-      createAppRegistryItems({
-        wasmPromise,
-        machineManager,
-        userFeatures: overrides.userFeatures,
-      })
+      createAppRegistryItems({ wasmPromise, machineManager })
     )
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
@@ -421,12 +389,7 @@ export class App implements AppSubsystems {
         saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
       ),
     }
-    appRegistry.configure([
-      ...createAppRegistryItems({
-        wasmPromise,
-        machineManager,
-        userFeatures: overrides.userFeatures,
-      }),
+    appRegistry.reconfigure(appRegistryServicesSlot, [
       createLayoutServiceRegistryItem(layoutService),
     ])
 
@@ -538,9 +501,7 @@ export class App implements AppSubsystems {
   static fromProvided(
     provided: Partial<ReturnType<typeof App.getDefaultSystems>>
   ) {
-    const defaults = App.getDefaultSystems(provided.wasmPromise, {
-      userFeatures: provided.userFeatures,
-    })
+    const defaults = App.getDefaultSystems(provided.wasmPromise)
     const combined = Object.assign(defaults, provided)
     return new App(combined)
   }
