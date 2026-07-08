@@ -1,4 +1,8 @@
-import { defineContract, defineValueSpec } from '@kittycad/registry'
+import {
+  defineContract,
+  defineService,
+  defineValueSpec,
+} from '@kittycad/registry'
 
 export type HomeProjectSource = 'local' | 'remote' | 'merged'
 
@@ -48,6 +52,21 @@ export type HomeProjectEntryContribution = Omit<
 export type HomeProjectEntryContributionGroup =
   | HomeProjectEntryContribution
   | readonly HomeProjectEntryContribution[]
+
+export type HomeProjectOpenResult = {
+  defaultFile: string
+}
+
+export interface HomeProjectActionsService {
+  canOpen: (project: HomeProjectEntry) => boolean
+  canRename: (project: HomeProjectEntry) => boolean
+  canDelete: (project: HomeProjectEntry) => boolean
+  open: (
+    project: HomeProjectEntry
+  ) => Promise<HomeProjectOpenResult | undefined>
+  rename: (project: HomeProjectEntry, requestedName: string) => Promise<void>
+  delete: (project: HomeProjectEntry) => Promise<void>
+}
 
 function contributionKey(entry: HomeProjectEntryContribution) {
   if (entry.remoteProjectId) {
@@ -134,6 +153,9 @@ export function coalesceHomeProjectEntries(
 }
 
 export const homeProjectsContract = defineContract({
+  homeProjectActionsService: defineService<HomeProjectActionsService>(
+    'home-project-actions'
+  ),
   homeProjectEntriesValueSpec: defineValueSpec<
     HomeProjectEntryContributionGroup,
     HomeProjectEntry[]
@@ -144,4 +166,5 @@ export const homeProjectsContract = defineContract({
   }),
 })
 
-export const { homeProjectEntriesValueSpec } = homeProjectsContract
+export const { homeProjectActionsService, homeProjectEntriesValueSpec } =
+  homeProjectsContract

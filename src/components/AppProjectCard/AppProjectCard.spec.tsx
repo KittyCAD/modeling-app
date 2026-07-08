@@ -2,7 +2,10 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { BrowserRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, test, vi } from 'vitest'
 
-import type { Project } from '@src/lib/project'
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
+} from '@src/registry/contracts/homeProjects'
 
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 
@@ -17,46 +20,56 @@ vi.mock('@src/lib/fs-zds', () => ({
 
 const now = Date.now()
 const cloudProject = {
+  id: 'remote:project-123',
   name: 'old-cloud-title',
   title: 'Old cloud title',
-  cloudProjectId: 'project-123',
-  path: '/projects/old-cloud-title',
-  children: [],
+  source: 'local',
+  status: 'synced',
+  remoteProjectId: 'project-123',
+  localProjectPath: '/projects/old-cloud-title',
+  localProjectName: 'old-cloud-title',
   readWriteAccess: true,
-  metadata: {
-    created: now,
-    modified: now,
-    size: 32,
-    accessed: null,
-    type: null,
-    permission: null,
+  modified: now,
+  thumbnail: {
+    type: 'local',
+    path: '/projects/old-cloud-title/thumbnail.png',
   },
-  kcl_file_count: 1,
-  directory_count: 0,
-  default_file: '/projects/old-cloud-title/main.kcl',
-} satisfies Project
+  kclFileCount: 1,
+  directoryCount: 0,
+  defaultFile: '/projects/old-cloud-title/main.kcl',
+} satisfies HomeProjectEntry
+
+function createProjectActions({
+  rename = vi.fn().mockResolvedValue(undefined),
+}: {
+  rename?: HomeProjectActionsService['rename']
+} = {}): HomeProjectActionsService {
+  return {
+    canOpen: () => true,
+    canRename: () => true,
+    canDelete: () => true,
+    open: vi.fn().mockResolvedValue({
+      defaultFile: '/projects/old-cloud-title/main.kcl',
+    }),
+    rename,
+    delete: vi.fn().mockResolvedValue(undefined),
+  }
+}
 
 function renderProjectCard({
   project = cloudProject,
-  handleRenameProject = vi.fn().mockResolvedValue(undefined),
+  projectActions = createProjectActions(),
 }: {
-  project?: Project
-  handleRenameProject?: (
-    e: React.FormEvent<HTMLFormElement>,
-    f: Project
-  ) => Promise<void>
+  project?: HomeProjectEntry
+  projectActions?: HomeProjectActionsService
 } = {}) {
   render(
     <BrowserRouter>
-      <AppProjectCard
-        project={project}
-        handleRenameProject={handleRenameProject}
-        handleDeleteProject={vi.fn().mockResolvedValue(undefined)}
-      />
+      <AppProjectCard project={project} projectActions={projectActions} />
     </BrowserRouter>
   )
 
-  return { handleRenameProject }
+  return { projectActions }
 }
 
 describe('ProjectCard', () => {
@@ -68,7 +81,10 @@ describe('ProjectCard', () => {
   })
 
   test('eagerly shows cloud project renames while sync continues', async () => {
-    const { handleRenameProject } = renderProjectCard()
+    const rename = vi.fn().mockResolvedValue(undefined)
+    const { projectActions } = renderProjectCard({
+      projectActions: createProjectActions({ rename }),
+    })
 
     expect(screen.getByTestId('project-title')).toHaveTextContent(
       'Old cloud title'
@@ -82,7 +98,7 @@ describe('ProjectCard', () => {
       screen.getByTestId('project-rename-input').closest('form')!
     )
 
-    await waitFor(() => expect(handleRenameProject).toHaveBeenCalled())
+    await waitFor(() => expect(projectActions.rename).toHaveBeenCalled())
     await waitFor(() =>
       expect(screen.getByTestId('project-title')).toHaveTextContent(
         'New cloud title'
@@ -93,12 +109,13 @@ describe('ProjectCard', () => {
   test('eagerly shows cloud project rename modified time while sync continues', async () => {
     const project = {
       ...cloudProject,
-      metadata: {
-        ...cloudProject.metadata,
-        modified: 1,
-      },
+      modified: 1,
     }
-    const { handleRenameProject } = renderProjectCard({ project })
+    const rename = vi.fn().mockResolvedValue(undefined)
+    const { projectActions } = renderProjectCard({
+      project,
+      projectActions: createProjectActions({ rename }),
+    })
     const previousEditedTime =
       screen.getByTestId('project-edit-date').textContent
 
@@ -110,7 +127,7 @@ describe('ProjectCard', () => {
       screen.getByTestId('project-rename-input').closest('form')!
     )
 
-    await waitFor(() => expect(handleRenameProject).toHaveBeenCalled())
+    await waitFor(() => expect(projectActions.rename).toHaveBeenCalled())
     await waitFor(() =>
       expect(screen.getByTestId('project-edit-date')).not.toHaveTextContent(
         previousEditedTime ?? ''
@@ -122,7 +139,8 @@ describe('ProjectCard', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        cloudConflict: {
+        status: 'conflicted',
+        conflict: {
           conflictProjectPath: '/projects/old-cloud-title conflict',
           createdAt: new Date(now).toISOString(),
           remoteRevision: 'revision-123',

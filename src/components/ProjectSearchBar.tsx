@@ -4,10 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
-import type { Project } from '@src/lib/project'
 import { projectSearchFocusRequest } from '@src/lib/searchFocusRequests'
 
-export function useProjectSearch(projects: Project[] | undefined) {
+type SearchableProject = {
+  name?: string
+  title?: string
+}
+
+export function useProjectSearch<T extends SearchableProject>(
+  projects: T[] | undefined
+) {
   const [query, setQuery] = useState('')
   const [searchResults, setSearchResults] = useState(projects)
 

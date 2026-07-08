@@ -1,8 +1,9 @@
 import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
 import type { FormEvent, HTMLAttributes } from 'react'
+import { toast } from 'react-hot-toast'
 import { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { ActionButton } from '@src/components/ActionButton'
 import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
@@ -10,22 +11,22 @@ import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
-import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
+import { FILE_EXT } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
+  HomeProjectThumbnail,
+} from '@src/registry/contracts/homeProjects'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
-  project: Project
+  project: HomeProjectEntry
+  projectActions: HomeProjectActionsService
   projectStatus?: ProjectStatus
-  handleRenameProject: (
-    e: FormEvent<HTMLFormElement>,
-    f: Project
-  ) => Promise<void>
-  handleDeleteProject: (f: Project) => Promise<void>
 }
 
 function getDisplayedTime(dateTimeMs: number) {
@@ -37,18 +38,28 @@ function getDisplayedTime(dateTimeMs: number) {
     : date.toLocaleTimeString()
 }
 
-function useProjectThumbnailUrl(project: Project) {
+function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
   const [imageUrl, setImageUrl] = useState('')
 
   useEffect(() => {
+    if (!thumbnail) {
+      setImageUrl('')
+      return
+    }
+
+    if (thumbnail.type === 'remote') {
+      setImageUrl(thumbnail.url)
+      return
+    }
+
+    const localThumbnail = thumbnail
     let disposed = false
     let createdImageUrl: string | undefined
 
     async function setupImageUrl() {
-      const projectImagePath = fsZds.join(project.path, PROJECT_IMAGE_NAME)
       try {
-        await fsZds.stat(projectImagePath)
-        const imageData = await fsZds.readFile(projectImagePath)
+        await fsZds.stat(localThumbnail.path)
+        const imageData = await fsZds.readFile(localThumbnail.path)
         const blob = new Blob([new Uint8Array(imageData)], {
           type: 'image/png',
         })
@@ -77,49 +88,44 @@ function useProjectThumbnailUrl(project: Project) {
         URL.revokeObjectURL(createdImageUrl)
       }
     }
-  }, [project.path, project.kcl_file_count, project.directory_count])
+  }, [thumbnail])
 
   return imageUrl
 }
 
 function AppProjectCard({
   project,
+  projectActions,
   projectStatus,
-  handleRenameProject,
-  handleDeleteProject,
   ...props
 }: AppProjectCardProps) {
+  const navigate = useNavigate()
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
   const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const hasChangesRequested =
     projectStatus?.publicationStatus === 'changes_requested'
-  const hasCloudConflict = Boolean(project.cloudConflict)
-  const imageUrl = useProjectThumbnailUrl(project)
+  const hasCloudConflict = Boolean(project.conflict && project.localProjectPath)
+  const imageUrl = useProjectThumbnailUrl(project.thumbnail)
   /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
-    projectPath: string
+    projectId: string
     name: string
     modified: number
   } | null>(null)
 
   let inputRef = useRef<HTMLInputElement>(null)
-  const projectDisplayName = getProjectDisplayName(project)
+  const projectDisplayName = getHomeProjectDisplayName(project)
   const displayedProject =
-    optimisticProjectName?.projectPath === project.path
+    optimisticProjectName?.projectId === project.id
       ? {
           ...project,
           title: optimisticProjectName.name,
-          metadata: project.metadata
-            ? {
-                ...project.metadata,
-                modified: Math.max(
-                  project.metadata.modified ?? Number.NEGATIVE_INFINITY,
-                  optimisticProjectName.modified
-                ),
-              }
-            : project.metadata,
+          modified: Math.max(
+            project.modified ?? Number.NEGATIVE_INFINITY,
+            optimisticProjectName.modified
+          ),
         }
       : project
 
@@ -128,18 +134,28 @@ function AppProjectCard({
     const newProjectName = new FormData(e.currentTarget).get('newProjectName')
 
     if (
-      project.cloudProjectId &&
+      !project.remoteProjectId &&
+      typeof newProjectName === 'string' &&
+      newProjectName.startsWith('.')
+    ) {
+      toast.error('Project names cannot start with a period.')
+      return
+    }
+
+    if (
+      project.remoteProjectId &&
       typeof newProjectName === 'string' &&
       newProjectName !== projectDisplayName
     ) {
       setOptimisticProjectName({
-        projectPath: project.path,
+        projectId: project.id,
         name: newProjectName,
         modified: Date.now(),
       })
     }
 
-    handleRenameProject(e, project)
+    projectActions
+      .rename(project, String(newProjectName))
       .then(() => setIsEditing(false))
       .catch((error) => {
         setOptimisticProjectName(null)
@@ -161,20 +177,24 @@ function AppProjectCard({
         return null
       }
       if (
-        !project.cloudProjectId ||
-        optimisticName.projectPath !== project.path ||
+        !project.remoteProjectId ||
+        optimisticName.projectId !== project.id ||
         optimisticName.name === projectDisplayName
       ) {
         return null
       }
       return optimisticName
     })
-  }, [project.cloudProjectId, project.path, projectDisplayName])
+  }, [project.remoteProjectId, project.id, projectDisplayName])
 
-  const projectName = getProjectDisplayName(displayedProject).replace(
-    FILE_EXT,
-    ''
-  )
+  const projectName = getHomeProjectDisplayName(displayedProject)
+  const canRename = projectActions.canRename(project)
+  const canDelete = projectActions.canDelete(project)
+  const canOpen = projectActions.canOpen(project) || hasCloudConflict
+  const openHref =
+    project.readWriteAccess && project.defaultFile
+      ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
+      : ''
 
   const badges = (hasCloudConflict || hasChangesRequested) && (
     <>
@@ -199,17 +219,17 @@ function AppProjectCard({
 
   const details = (
     <>
-      {project.readWriteAccess && (
+      {project.kclFileCount !== undefined && (
         <span className="px-2 text-chalkboard-60 text-xs">
-          <span data-testid="project-file-count">{project.kcl_file_count}</span>{' '}
-          file{project.kcl_file_count === 1 ? '' : 's'}{' '}
-          {project.directory_count > 0 && (
+          <span data-testid="project-file-count">{project.kclFileCount}</span>{' '}
+          file{project.kclFileCount === 1 ? '' : 's'}{' '}
+          {(project.directoryCount ?? 0) > 0 && (
             <>
               {'/ '}
               <span data-testid="project-folder-count">
-                {project.directory_count}
+                {project.directoryCount}
               </span>{' '}
-              folder{project.directory_count === 1 ? '' : 's'}
+              folder{project.directoryCount === 1 ? '' : 's'}
             </>
           )}
         </span>
@@ -217,8 +237,8 @@ function AppProjectCard({
       <span className="px-2 text-chalkboard-60 text-xs">
         Edited{' '}
         <span data-testid="project-edit-date">
-          {displayedProject.metadata?.modified
-            ? getDisplayedTime(displayedProject.metadata.modified)
+          {displayedProject.modified
+            ? getDisplayedTime(displayedProject.modified)
             : 'never'}
         </span>
       </span>
@@ -228,7 +248,7 @@ function AppProjectCard({
   const actions = (
     <>
       <ActionButton
-        disabled={!project.readWriteAccess}
+        disabled={!canRename}
         Element="button"
         iconStart={{
           icon: 'sketch',
@@ -245,7 +265,7 @@ function AppProjectCard({
         <Tooltip position="top-right">Rename project</Tooltip>
       </ActionButton>
       <ActionButton
-        disabled={!project.readWriteAccess}
+        disabled={!canDelete}
         Element="button"
         iconStart={{
           icon: 'trash',
@@ -270,7 +290,7 @@ function AppProjectCard({
         <DeleteConfirmationDialog
           title="Delete Project"
           onConfirm={toSync(async () => {
-            await handleDeleteProject(project)
+            await projectActions.delete(project)
             setIsConfirmingDelete(false)
           }, reportRejection)}
           onDismiss={() => setIsConfirmingDelete(false)}
@@ -285,9 +305,9 @@ function AppProjectCard({
           </p>
         </DeleteConfirmationDialog>
       )}
-      {isInspectingConflict && (
+      {isInspectingConflict && project.localProjectPath && (
         <CloudConflictDialog
-          projectPath={project.path}
+          projectPath={project.localProjectPath}
           projectName={projectName}
           onDismiss={() => setIsInspectingConflict(false)}
           onResolved={() => setIsInspectingConflict(false)}
@@ -301,7 +321,7 @@ function AppProjectCard({
       {...props}
       title={projectName}
       titleText={projectName}
-      canOpen={project.readWriteAccess}
+      canOpen={canOpen}
       isEditing={isEditing}
       thumbnailUrl={imageUrl}
       badges={badges}
@@ -313,28 +333,35 @@ function AppProjectCard({
           onSubmit={handleSave}
           className="flex items-center gap-2 p-2"
           onClick={(e) => e.stopPropagation()}
-          project={displayedProject}
+          projectName={projectName}
           onDismiss={() => setIsEditing(false)}
           ref={inputRef}
         />
       }
       dialogs={dialogs}
       onOpen={(e) => {
-        if (!hasCloudConflict) {
+        e.preventDefault()
+        if (!canOpen) {
           return
         }
-        e.preventDefault()
-        setIsInspectingConflict(true)
+        if (hasCloudConflict) {
+          setIsInspectingConflict(true)
+          return
+        }
+
+        void projectActions
+          .open(project)
+          .then((result) => {
+            if (result?.defaultFile) {
+              void navigate(
+                `${PATHS.FILE}/${encodeURIComponent(result.defaultFile)}`
+              )
+            }
+          })
+          .catch(reportRejection)
       }}
       renderOpenLink={({ href: _href, ...linkProps }) => (
-        <Link
-          {...linkProps}
-          to={
-            project.readWriteAccess
-              ? `${PATHS.FILE}/${encodeURIComponent(project.default_file)}`
-              : ''
-          }
-        />
+        <Link {...linkProps} to={openHref} />
       )}
     />
   )
