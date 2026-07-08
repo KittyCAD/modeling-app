@@ -45,6 +45,7 @@ import type {
   ProjectManifest,
   ProjectMetadata,
   RemoteProject,
+  RemoteProjectSummary,
   Revision,
 } from '@src/lib/cloudSync/types'
 import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
@@ -76,6 +77,7 @@ export type {
   ProjectArchiveFile,
   ProjectManifest,
   ProjectMetadata,
+  RemoteProjectSummary,
 } from '@src/lib/cloudSync/types'
 export {
   getCloudSyncProjectMetadata,
@@ -112,6 +114,7 @@ export const cloudSyncStatus = signal<CloudSyncStatus>({
   state: 'disabled',
   pendingCount: 0,
 })
+export const cloudSyncRemoteProjects = signal<RemoteProjectSummary[]>([])
 
 function updateStatus(next: Partial<CloudSyncStatus>) {
   cloudSyncStatus.value = {
@@ -1781,6 +1784,7 @@ async function syncRemoteIndex() {
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const remoteProjects = await listRemoteProjects(config)
+  cloudSyncRemoteProjects.value = remoteProjects
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
   )
@@ -2379,6 +2383,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     initialLocalScanComplete = false
     conflictCopyRepairComplete = false
     lastRemoteIndexSyncAt = 0
+    cloudSyncRemoteProjects.value = []
     updateStatus({
       enabled: false,
       state: 'disabled',

@@ -19,6 +19,7 @@ import Tooltip from '@src/components/Tooltip'
 import {
   type CloudSyncProjectMetadata,
   type CloudSyncStatus,
+  cloudSyncRemoteProjects,
   cloudSyncStatus,
   retryCloudSync,
 } from '@src/lib/cloudSync'
@@ -29,6 +30,10 @@ import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
+import {
+  type HomeProjectEntryContribution,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { Fragment, useState } from 'react'
@@ -245,10 +250,45 @@ const cloudSyncStatusBarItemContribution = defineRegistryItem({
   uses: [cloudSyncStatusBarItem],
 })
 
+const cloudSyncRemoteHomeProjectEntries = computed<
+  HomeProjectEntryContribution[]
+>(() => {
+  if (!cloudSyncStatus.value.enabled) {
+    return []
+  }
+
+  return cloudSyncRemoteProjects.value.map((project) => {
+    const modified = project.updated_at ? Date.parse(project.updated_at) : NaN
+    const name = project.title || project.id
+
+    return {
+      source: 'remote',
+      status: 'cloud-only',
+      name,
+      title: project.title,
+      remoteProjectId: project.id,
+      modified: Number.isNaN(modified) ? undefined : modified,
+      readWriteAccess: true,
+    }
+  })
+})
+
+const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItem({
+  id: 'cloud-sync.remote-home-project-entries',
+  provides: [
+    provide(homeProjectEntriesValueSpec, cloudSyncRemoteHomeProjectEntries, {
+      key: 'cloud-sync.remote-home-project-entries',
+    }),
+  ],
+})
+
 export const cloudSyncPlugin = createZdsPlugin({
   id: 'cloud-sync',
   title: 'Cloud sync',
   description: 'Cloud-backed project sync controls and status.',
-  items: [cloudSyncStatusBarItemContribution],
+  items: [
+    cloudSyncStatusBarItemContribution,
+    cloudSyncRemoteHomeProjectEntryContribution,
+  ],
   defaultSetting: 'core',
 })
