@@ -1921,8 +1921,7 @@ export function refactorZ0006Unified(
     wasmInstance
   )
 
-  const out = recast(modifiedAst, wasmInstance)
-  return err(out) ? out : out
+  return recast(modifiedAst, wasmInstance)
 }
 
 function faceRefToArtifactId(v: OpKclValue): string | null {
