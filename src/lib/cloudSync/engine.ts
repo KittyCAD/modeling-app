@@ -2181,6 +2181,10 @@ export function setCloudSyncProjectScope(projectPath?: string) {
   scheduleSync(0)
 }
 
+/**
+ * User-initiated project enrollment. This bypasses the automatic enrollment
+ * policy so local-only projects can be opted into cloud sync one at a time.
+ */
 export async function startCloudSyncProject(projectPath: string) {
   if (!isConfiguredForCloud()) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw
@@ -2223,6 +2227,10 @@ export async function startCloudSyncProject(projectPath: string) {
   scheduleSync(0)
 }
 
+/**
+ * User-initiated disconnect. Remote deletion completes before local metadata is
+ * detached so a failed cloud delete leaves the project linked and retryable.
+ */
 export async function disconnectCloudSyncProject(projectPath: string) {
   if (!isConfiguredForCloud()) {
     // eslint-disable-next-line suggest-no-throw/suggest-no-throw

@@ -30,9 +30,15 @@ export interface ProjectExplorerProjectMenuItemContext {
   project: Project
 }
 
+/**
+ * Render props for project menu contributions that need hooks, local state, or
+ * dialogs instead of a simple label and onSelect callback.
+ */
 export interface ProjectExplorerProjectMenuItemComponentProps {
   context: ProjectExplorerProjectMenuItemContext
+  /** The base menu item classes from ProjectSidebarMenu. */
   className: string
+  /** Close the menu popover before opening long-lived dialogs or async flows. */
   close: () => void
 }
 
@@ -58,11 +64,13 @@ type ProjectExplorerProjectMenuItemSlotProps = {
 }
 
 export type ProjectExplorerProjectMenuItem =
+  /** Simple stateless menu item rendered by ProjectSidebarMenu. */
   | (ProjectExplorerProjectMenuItemBase &
       ProjectExplorerProjectMenuItemSlotProps & {
         onSelect: (context: ProjectExplorerProjectMenuItemContext) => void
         Component?: undefined
       })
+  /** Stateful menu item rendered by the contributing extension or plugin. */
   | (ProjectExplorerProjectMenuItemBase & {
       Component: ComponentType<ProjectExplorerProjectMenuItemComponentProps>
     })

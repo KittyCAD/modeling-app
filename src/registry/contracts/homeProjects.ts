@@ -3,6 +3,7 @@ import {
   defineService,
   defineValueSpec,
 } from '@kittycad/registry'
+import { isArray } from '@src/lib/utils'
 
 export type HomeProjectSource = 'local' | 'remote' | 'merged'
 
@@ -90,12 +91,12 @@ function entryFromContribution(
 function mergeHomeProjectEntries(
   local: HomeProjectEntry | undefined,
   remote: HomeProjectEntry | undefined
-): HomeProjectEntry {
+): HomeProjectEntry | undefined {
   if (!local && !remote) {
-    throw new Error('Expected a local or remote Home project entry.')
+    return undefined
   }
   if (!local) {
-    return remote as HomeProjectEntry
+    return remote
   }
   if (!remote) {
     return local
@@ -119,11 +120,15 @@ function mergeHomeProjectEntries(
   }
 }
 
+/**
+ * Coalesce independently contributed local and remote entries so Home renders a
+ * single card for projects that are present in both places.
+ */
 export function coalesceHomeProjectEntries(
   contributionGroups: readonly HomeProjectEntryContributionGroup[]
 ) {
   const contributions = contributionGroups.flatMap((contribution) =>
-    Array.isArray(contribution) ? contribution : [contribution]
+    isArray(contribution) ? contribution : [contribution]
   )
   const buckets = new Map<
     string,
@@ -147,9 +152,10 @@ export function coalesceHomeProjectEntries(
     buckets.set(key, bucket)
   }
 
-  return Array.from(buckets.values(), ({ local, remote }) =>
-    mergeHomeProjectEntries(local, remote)
-  )
+  return Array.from(buckets.values()).flatMap(({ local, remote }) => {
+    const entry = mergeHomeProjectEntries(local, remote)
+    return entry ? [entry] : []
+  })
 }
 
 export const homeProjectsContract = defineContract({
