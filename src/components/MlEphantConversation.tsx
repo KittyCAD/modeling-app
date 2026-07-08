@@ -285,14 +285,8 @@ export const MlEphantConversationInput = (
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
   const [isZoodleActive, setIsZoodleActive] = useState(false)
-  const zoodleRuntimeExtensionActive = useRef(false)
 
   const stopZoodleRuntimeExtension = useCallback(() => {
-    if (!zoodleRuntimeExtensionActive.current) {
-      return
-    }
-
-    zoodleRuntimeExtensionActive.current = false
     setIsZoodleActive(false)
     deactivateZoodleRuntimeExtension(registry)
   }, [registry])
@@ -417,7 +411,7 @@ export const MlEphantConversationInput = (
   }
 
   const onAnnotateScreenshot = () => {
-    if (zoodleRuntimeExtensionActive.current) {
+    if (isZoodleActive) {
       stopZoodleRuntimeExtension()
       return
     }
@@ -426,7 +420,6 @@ export const MlEphantConversationInput = (
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      zoodleRuntimeExtensionActive.current = true
       setIsZoodleActive(true)
       activateZoodleRuntimeExtension(registry, {
         imageDataUrl: dataUrl,
@@ -440,7 +433,6 @@ export const MlEphantConversationInput = (
         },
       })
     } catch (e) {
-      zoodleRuntimeExtensionActive.current = false
       setIsZoodleActive(false)
       console.error('Failed to capture viewport screenshot for annotation', e)
     }
