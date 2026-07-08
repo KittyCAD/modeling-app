@@ -310,6 +310,10 @@ async function createZ0006Actions({
         name: 'Convert this edge reference to edge specifiers',
         apply: (view: EditorView, _from: number, _to: number) => {
           try {
+            // Diagnostics can survive briefly during the execution debounce.
+            // Avoid applying a stale full-document refactor over newer edits.
+            if (view.state.doc.toString().trim() !== sourceCode.trim()) return
+
             view.dispatch({
               changes: {
                 from: 0,
