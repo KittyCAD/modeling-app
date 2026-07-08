@@ -79,6 +79,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
@@ -166,6 +167,7 @@ function createAppRegistryItems({
       : []),
     appCommandsSlot.of(),
     appRegistryServicesSlot.of(),
+    engineSceneRuntimeExtensionsSlot.of(),
     ...coreRegistryItems,
   ]
 }
