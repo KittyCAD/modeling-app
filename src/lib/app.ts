@@ -1,21 +1,20 @@
-import type { UserFeature, UserResponse } from '@kittycad/lib'
+import type { UserFeature } from '@kittycad/lib'
 import {
-  Registry,
-  type RegistryItem,
-  Slot,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
+  type RegistryItem,
+  Slot,
 } from '@kittycad/registry'
-import { type Signal, effect, signal } from '@preact/signals-core'
+import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import {
-  type PreparedZookeeperPatchFileReplay,
   buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
 } from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { initialiseWasm } from '@src/lang/wasmUtils'
-import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -26,18 +25,19 @@ import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
-  type Layout,
-  type LayoutService,
   createLayoutService,
   createLayoutServiceRegistryItem,
   createLayoutWithMetadata,
   defaultLayout,
+  type Layout,
+  type LayoutService,
   loadLayout,
   saveLayout,
   setBodiesPaneLayoutEnabled,
   setLayoutSaveHandler,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -49,7 +49,6 @@ import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
@@ -70,6 +69,10 @@ import {
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import {
+  type AuthRegistryService,
+  authService,
+} from '@src/registry/contracts/auth'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
@@ -183,13 +186,7 @@ declare global {
   }
 }
 
-export type AppAuthSystem = {
-  actor: ActorRefFrom<typeof authMachine>
-  send: ActorRefFrom<typeof authMachine>['send']
-  useAuthState: () => SnapshotFrom<typeof authMachine>
-  useToken: () => string
-  useUser: () => UserResponse | undefined
-}
+export type AppAuthSystem = AuthRegistryService
 
 export type AppCommandSystem = CommandSystemService
 
@@ -334,16 +331,6 @@ export class App implements AppSubsystems {
    * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
    */
   static getDefaultSystems(wasmPromise = initialiseWasm()) {
-    const authActor = createActor(authMachine).start()
-    const auth: AppAuthSystem = {
-      actor: authActor,
-      send: (...args: Parameters<typeof authActor.send>) =>
-        authActor.send(...args),
-      useAuthState: () => useSelector(authActor, (state) => state),
-      useToken: () => useSelector(authActor, (state) => state.context.token),
-      useUser: () => useSelector(authActor, (state) => state.context.user),
-    }
-
     const machineManager = window.electron
       ? new MachineManager({
           getMachineApiIp: window.electron.getMachineApiIp,
@@ -355,6 +342,7 @@ export class App implements AppSubsystems {
     appRegistry.configure(
       createAppRegistryItems({ wasmPromise, machineManager })
     )
+    const auth = appRegistry.get(authService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
     const settingsActor = settings.actor
