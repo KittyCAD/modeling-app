@@ -72,6 +72,8 @@ pub struct ExecState {
 
 pub type ModuleInfoMap = IndexMap<ModuleId, ModuleInfo>;
 
+/// This is read-only after creation. Any state that needs to be modified during
+/// execution should be in [`ModuleState`].
 #[derive(Debug, Clone)]
 pub(super) struct GlobalState {
     /// Map from source file absolute path to module ID.
@@ -92,6 +94,10 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
     pub drag_anchors: Vec<SegmentDragAnchor>,
+    /// When true, we're not actually executing to produce a sketch or model.
+    /// Instead, simply check that the code makes sense, like by checking
+    /// function arguments.
+    pub check_only: bool,
 }
 
 impl GlobalState {
@@ -364,6 +370,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.check_only = mock_config.check_only;
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -386,6 +393,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.check_only = mock_config.check_only;
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -990,6 +998,7 @@ impl GlobalState {
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
+            check_only: false,
         };
 
         let root_id = ModuleId::default();

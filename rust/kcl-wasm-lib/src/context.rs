@@ -240,6 +240,52 @@ impl Context {
         ctx.run_mock(&program, &mock_config).await
     }
 
+    /// Check a program for problems by executing it without an engine.
+    ///
+    /// This is mock execution with extra leniency. Unlike `executeMock`, it
+    /// doesn't read or write the memory cache shared with sketch mode.
+    #[wasm_bindgen(js_name = check)]
+    pub async fn check(
+        &self,
+        program_ast_json: &str,
+        path: Option<String>,
+        settings: &str,
+    ) -> Result<JsValue, JsValue> {
+        console_error_panic_hook::set_once();
+
+        self.check_typed(program_ast_json, path, settings)
+            .await
+            .and_then(|outcome| {
+                JsValue::from_serde(&outcome).map_err(|e| {
+                    // The serde-wasm-bindgen does not work here because of weird HashMap issues.
+                    // DO NOT USE serde_wasm_bindgen::to_value it will break the frontend.
+                    KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                        "Could not serialize successful KCL result. {TRUE_BUG} Details: {e}"
+                    )))
+                })
+            })
+            .map_err(|e: KclErrorWithOutputs| JsValue::from_serde(&e).unwrap())
+    }
+
+    async fn check_typed(
+        &self,
+        program_ast_json: &str,
+        path: Option<String>,
+        settings: &str,
+    ) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        let program: Program = serde_json::from_str(program_ast_json).map_err(|e| {
+            let err = KclError::internal(format!("Could not deserialize KCL AST. {TRUE_BUG} Details: {e}"));
+            KclErrorWithOutputs::no_outputs(err)
+        })?;
+        let program = program.fill_node_paths();
+        let ctx = self.create_executor_ctx(settings, path, true).map_err(|e| {
+            KclErrorWithOutputs::no_outputs(KclError::internal(format!(
+                "Could not create KCL executor context. {TRUE_BUG} Details: {e}"
+            )))
+        })?;
+        ctx.check(&program).await
+    }
+
     /// Export a scene to a file.
     #[wasm_bindgen]
     pub async fn export(&self, format_json: &str, settings: &str) -> Result<JsValue, String> {

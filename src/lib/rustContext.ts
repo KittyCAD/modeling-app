@@ -200,6 +200,35 @@ export default class RustContext {
     }
   }
 
+  /**
+   * Check a program for problems by executing it without an engine.
+   *
+   * This is mock execution with extra leniency. Unlike `executeMock`, it
+   * doesn't read or write the memory cache shared with sketch mode.
+   */
+  async check(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string,
+    callbacks?: ExecCallbacks
+  ): Promise<ExecState> {
+    const instance = await this._checkContextInstance()
+    const executionContext = callbacks
+      ? instance.cloneWithExecuteCallbacks(callbacks)
+      : instance
+
+    try {
+      const result = await executionContext.check(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+      return execStateFromRust(result)
+    } catch (e: any) {
+      return Promise.reject(errFromErrWithOutputs(e))
+    }
+  }
+
   /** Export a scene to a file. */
   async export(
     format: DeepPartial<OutputFormat3d>,
