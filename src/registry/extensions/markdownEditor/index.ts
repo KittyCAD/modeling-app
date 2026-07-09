@@ -43,7 +43,6 @@ type MarkdownEditorKeymapDefinition = {
   action: MarkdownEditorActionName
   keystrokes: readonly string[]
   hidden?: boolean
-  userBindingCommand?: MarkdownEditorCommandId
 }
 
 const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
@@ -61,7 +60,6 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
     action: 'toggleBold',
     keystrokes: ['mod+shift+b'],
     hidden: true,
-    userBindingCommand: MARKDOWN_EDITOR_COMMAND_IDS.toggleBold,
   },
   {
     id: 'markdown-editor.italic',
@@ -77,7 +75,6 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
     action: 'toggleItalic',
     keystrokes: ['mod+shift+i'],
     hidden: true,
-    userBindingCommand: MARKDOWN_EDITOR_COMMAND_IDS.toggleItalic,
   },
   {
     id: 'markdown-editor.link',
@@ -100,7 +97,6 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
     action: 'toggleBulletList',
     keystrokes: ['mod+shift+*'],
     hidden: true,
-    userBindingCommand: MARKDOWN_EDITOR_COMMAND_IDS.toggleBulletList,
   },
   {
     id: 'markdown-editor.ordered-list',
@@ -116,7 +112,6 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
     action: 'toggleOrderedList',
     keystrokes: ['mod+shift+&'],
     hidden: true,
-    userBindingCommand: MARKDOWN_EDITOR_COMMAND_IDS.toggleOrderedList,
   },
   {
     id: 'markdown-editor.undo',
@@ -132,7 +127,6 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
     action: 'undo',
     keystrokes: ['mod+я'],
     hidden: true,
-    userBindingCommand: MARKDOWN_EDITOR_COMMAND_IDS.undo,
   },
   {
     id: 'markdown-editor.redo',
@@ -148,7 +142,6 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
     action: 'redo',
     keystrokes: ['mod+y'],
     hidden: true,
-    userBindingCommand: MARKDOWN_EDITOR_COMMAND_IDS.redo,
   },
   {
     id: 'markdown-editor.redo-russian',
@@ -157,7 +150,6 @@ const markdownEditorKeymaps: readonly MarkdownEditorKeymapDefinition[] = [
     action: 'redo',
     keystrokes: ['mod+shift+я'],
     hidden: true,
-    userBindingCommand: MARKDOWN_EDITOR_COMMAND_IDS.redo,
   },
 ]
 
@@ -170,7 +162,6 @@ const markdownEditorKeymapItems: readonly KeymapItem[] =
     keystrokes: keymap.keystrokes,
     command: keymap.command,
     hidden: keymap.hidden,
-    userBindingCommand: keymap.userBindingCommand,
   }))
 
 const markdownEditorCommands: readonly Command[] = Object.values(

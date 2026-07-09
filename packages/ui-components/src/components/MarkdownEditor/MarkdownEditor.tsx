@@ -109,9 +109,9 @@ export function MarkdownEditor({
   testId = 'markdown-editor',
 }: MarkdownEditorProps) {
   const featureKey = useMemo(() => [...features].sort().join('|'), [features])
-  // biome-ignore lint/correctness/useExhaustiveDependencies: featureKey intentionally keys by feature content, not array identity.
   const normalizedFeatures = useMemo(
     () => [...new Set(features)] as MarkdownEditorFeature[],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- featureKey intentionally keys by feature content, not array identity.
     [featureKey]
   )
   const enabledFeatures = useMemo(
