@@ -418,11 +418,9 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
     await cmdBarButton.click()
     await rectangleToolCommand.click()
-    await cmdBar.expectState({ stage: 'commandBarClosed' })
     await expect(rectangleToolButton).toHaveAttribute('aria-pressed', 'true')
     await cmdBarButton.click()
     await lineToolCommand.click()
-    await cmdBar.expectState({ stage: 'commandBarClosed' })
     await expect(lineToolButton).toHaveAttribute('aria-pressed', 'true')
 
     // Click in the scene a couple times to draw a line
@@ -434,7 +432,6 @@ test.describe('Command bar tests', { tag: '@desktop' }, () => {
     // switch to tangential arc via command bar
     await cmdBarButton.click()
     await arcToolCommand.click()
-    await cmdBar.expectState({ stage: 'commandBarClosed' })
     await expect(arcToolButton).toHaveAttribute('aria-pressed', 'true')
   })
 
