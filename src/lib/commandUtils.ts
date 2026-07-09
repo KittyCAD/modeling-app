@@ -21,6 +21,12 @@ export interface CommandWithDisabledState {
   disabled: boolean
 }
 
+export function isModelingDialogCommand(
+  command: Pick<Command, 'groupId' | 'useModelingDialog'> | undefined
+): command is Command & { groupId: 'modeling'; useModelingDialog: true } {
+  return command?.groupId === 'modeling' && command.useModelingDialog === true
+}
+
 /**
  * Sorting logic for commands in the command combo box.
  */

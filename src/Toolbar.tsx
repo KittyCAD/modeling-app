@@ -19,6 +19,7 @@ import {
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { isModelingDialogCommand } from '@src/lib/commandUtils'
 import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
@@ -137,8 +138,7 @@ const Toolbar_ = memo(
     const selectedCommand = commandBarState.context.selectedCommand
     const activeModelingDialogCommandKey =
       !commandBarState.matches('Closed') &&
-      selectedCommand?.groupId === 'modeling' &&
-      selectedCommand.useModelingDialog === true
+      isModelingDialogCommand(selectedCommand)
         ? getCommandBarTargetKey({
             groupId: selectedCommand.groupId,
             name: selectedCommand.name,
