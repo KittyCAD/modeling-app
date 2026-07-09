@@ -354,7 +354,11 @@ impl ArtifactGraph {
             }
         }
 
-        for (group_id, artifact_ids) in groups {
+        groups.sort_by_key(|group_id, _| *stable_id_map.get(group_id).unwrap());
+        ungrouped.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
+
+        for (group_id, mut artifact_ids) in groups {
+            artifact_ids.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
             let group_id = *stable_id_map.get(&group_id).unwrap();
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
             let indented = format!("{prefix}  ");
@@ -375,10 +379,9 @@ impl ArtifactGraph {
         Ok(())
     }
 
-    // Stabilize Mermaid rendering for semantically equivalent graphs whose
-    // insertion/traversal order differs. This does not hide real engine
-    // nondeterminism: if execution produces different artifact content, the
-    // rendered snapshot should still change.
+    // Keep Mermaid node order close to source order so the rendered graph
+    // remains readable, but make ties deterministic for generated topology
+    // where several artifacts share the same source range.
     fn flowchart_sort_key(&self, id: ArtifactId) -> String {
         let Some(artifact) = self.map.get(&id) else {
             return String::new();
@@ -394,10 +397,47 @@ impl ArtifactGraph {
         neighbors.sort();
 
         format!(
-            "{}|neighbors={}",
+            "{}|{}|neighbors={}",
+            Self::flowchart_source_sort_key(artifact),
             Self::flowchart_basic_sort_key(artifact),
             neighbors.join(",")
         )
+    }
+
+    fn flowchart_source_sort_key(artifact: &Artifact) -> String {
+        fn code_ref_key(code_ref: &CodeRef) -> String {
+            let range = code_ref.range;
+            format!(
+                "{:020}:{:020}:{:020}",
+                range.module_id().as_usize(),
+                range.start(),
+                range.end()
+            )
+        }
+
+        match artifact {
+            Artifact::CompositeSolid(composite_solid) => code_ref_key(&composite_solid.code_ref),
+            Artifact::Plane(plane) => code_ref_key(&plane.code_ref),
+            Artifact::Path(path) => code_ref_key(&path.code_ref),
+            Artifact::Segment(segment) => code_ref_key(&segment.code_ref),
+            Artifact::Solid2d(_) => "zzzz:Solid2d".to_owned(),
+            Artifact::PrimitiveFace(face) => code_ref_key(&face.code_ref),
+            Artifact::PrimitiveEdge(edge) => code_ref_key(&edge.code_ref),
+            Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => code_ref_key(code_ref),
+            Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => code_ref_key(code_ref),
+            Artifact::SketchBlock(SketchBlock { code_ref, .. }) => code_ref_key(code_ref),
+            Artifact::SketchBlockConstraint(constraint) => code_ref_key(&constraint.code_ref),
+            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => code_ref_key(code_ref),
+            Artifact::Sweep(sweep) => code_ref_key(&sweep.code_ref),
+            Artifact::Wall(wall) => code_ref_key(&wall.face_code_ref),
+            Artifact::Cap(cap) => code_ref_key(&cap.face_code_ref),
+            Artifact::SweepEdge(_) => "zzzz:SweepEdge".to_owned(),
+            Artifact::EdgeCut(edge_cut) => code_ref_key(&edge_cut.code_ref),
+            Artifact::EdgeCutEdge(_) => "zzzz:EdgeCutEdge".to_owned(),
+            Artifact::Helix(helix) => code_ref_key(&helix.code_ref),
+            Artifact::GdtAnnotation(annotation) => code_ref_key(&annotation.code_ref),
+            Artifact::Pattern(pattern) => code_ref_key(&pattern.code_ref),
+        }
     }
 
     fn flowchart_basic_sort_key(artifact: &Artifact) -> String {
