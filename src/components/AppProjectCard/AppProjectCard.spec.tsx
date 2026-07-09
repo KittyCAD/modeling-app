@@ -130,7 +130,7 @@ describe('ProjectCard', () => {
     )
   })
 
-  test('shows status badges for non-merged project cards', () => {
+  test('shows status badges for project cards with one source', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
@@ -166,11 +166,11 @@ describe('ProjectCard', () => {
     )
   })
 
-  test('does not show status badges for merged project cards', () => {
+  test('does not show status badges for cards with both local and remote sources', () => {
     renderProjectCard({
       project: {
         ...cloudProject,
-        source: 'merged',
+        source: 'both',
       },
     })
 

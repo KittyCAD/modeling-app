@@ -5,7 +5,7 @@ import {
 } from '@kittycad/registry'
 import { isArray } from '@src/lib/utils'
 
-export type HomeProjectSource = 'local' | 'remote' | 'merged'
+export type HomeProjectSource = 'local' | 'remote' | 'both'
 
 export type HomeProjectStatus =
   | 'local'
@@ -47,7 +47,7 @@ export type HomeProjectEntryContribution = Omit<
   'id' | 'source'
 > & {
   id?: string
-  source: Exclude<HomeProjectSource, 'merged'>
+  source: Exclude<HomeProjectSource, 'both'>
 }
 
 export type HomeProjectEntryContributionGroup =
@@ -118,7 +118,7 @@ function mergeHomeProjectEntries(
     ...remote,
     ...local,
     id: local.id || remote.id,
-    source: 'merged',
+    source: 'both',
     status: conflict
       ? 'conflicted'
       : remote.status === 'syncing'

@@ -194,7 +194,7 @@ describe('cloud sync project menu item', () => {
 })
 
 describe('cloud sync home project entries', () => {
-  test('marks merged home entries as conflicted from cloud sync metadata', async () => {
+  test('marks home entries with both sources as conflicted from cloud sync metadata', async () => {
     cloudSyncStatus.value = {
       enabled: true,
       state: 'conflict',

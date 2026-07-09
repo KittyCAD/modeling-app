@@ -213,7 +213,7 @@ function AppProjectCard({
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
   const statusBadgeLabel =
-    project.source === 'merged'
+    project.source === 'both'
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 

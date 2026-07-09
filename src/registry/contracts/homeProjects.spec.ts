@@ -99,7 +99,7 @@ describe('coalesceHomeProjectEntries', () => {
     ).toEqual([
       expect.objectContaining({
         id: 'local:/projects/local-name',
-        source: 'merged',
+        source: 'both',
         status: 'synced',
         name: 'local-name',
         title: 'Local title',
@@ -141,7 +141,7 @@ describe('coalesceHomeProjectEntries', () => {
     ).toEqual([
       expect.objectContaining({
         id: 'local:/projects/local-name',
-        source: 'merged',
+        source: 'both',
         status: 'conflicted',
         name: 'local-name',
         title: 'Local title',
