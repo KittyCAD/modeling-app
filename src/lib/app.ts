@@ -315,10 +315,9 @@ export class App implements AppSubsystems {
       engineSceneRuntimeExtensionsSlot.of(),
       ...coreRegistryItems,
     ])
-    const wasmPromise = appRegistry.get(wasmPromiseValueSpec)
-    if (!wasmPromise) {
-      throw new Error('Missing WASM promise registry value.')
-    }
+    const wasmPromise =
+      appRegistry.get(wasmPromiseValueSpec) ??
+      Promise.reject(new Error('Missing WASM promise registry value.'))
     const machineManager = appRegistry.get(machineManagerService).manager
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
