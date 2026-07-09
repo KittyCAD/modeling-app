@@ -6,6 +6,7 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import { clamp } from '@src/lib/utils'
 import {
   defineEngineSceneStreamClassName,
   defineEngineSceneStreamLayer,
@@ -42,9 +43,10 @@ const clampZoodleBrushSize = (brushSize: number) => {
     ? brushSize
     : ZOODLE_BRUSH_SIZE_DEFAULT_PX
 
-  return Math.min(
-    ZOODLE_BRUSH_SIZE_MAX_PX,
-    Math.max(ZOODLE_BRUSH_SIZE_MIN_PX, finiteBrushSize)
+  return clamp(
+    finiteBrushSize,
+    ZOODLE_BRUSH_SIZE_MIN_PX,
+    ZOODLE_BRUSH_SIZE_MAX_PX
   )
 }
 
