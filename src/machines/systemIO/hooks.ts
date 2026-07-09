@@ -137,7 +137,10 @@ export const useWatchForNewFileRequestsFromMlEphant = (
           if (!('reasoning' in response)) {
             return []
           }
-          if (response.reasoning.type !== 'deleted_kcl_file') {
+          if (
+            response.reasoning.type !== 'deleted_kcl_file' &&
+            response.reasoning.type !== 'deleted_project_file'
+          ) {
             return []
           }
           return response.reasoning.file_name
