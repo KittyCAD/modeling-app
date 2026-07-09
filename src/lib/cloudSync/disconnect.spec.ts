@@ -1,3 +1,4 @@
+import 'fake-indexeddb/auto'
 import {
   cloudSyncRemoteProjects,
   configureCloudSyncEngine,
@@ -5,104 +6,27 @@ import {
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
 } from '@src/lib/cloudSync'
-import { CloudApiError } from '@src/lib/cloudSync/cloudApi'
 import {
   appendOutboxEntry,
   getAllOutboxEntries,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
-import type {
-  CloudSyncProjectMetadataIndexEntry,
-  OutboxEntry,
-  ProjectMetadata,
-} from '@src/lib/cloudSync/types'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const cloudApiMocks = vi.hoisted(() => ({
-  deleteRemoteProject: vi.fn<() => Promise<void>>(),
-}))
-
-const syncDbMocks = vi.hoisted(() => {
-  const projects = new Map<string, ProjectMetadata>()
-  const outboxEntries: OutboxEntry[] = []
-  let nextOutboxId = 1
-  const normalize = (path: string) =>
-    path.replace(/\\/g, '/').replace(/\/+/g, '/')
-
-  return {
-    reset: () => {
-      projects.clear()
-      outboxEntries.splice(0, outboxEntries.length)
-      nextOutboxId = 1
-    },
-    getProjectMetadata: vi.fn(async (projectPath: string) =>
-      projects.get(normalize(projectPath))
-    ),
-    getCloudSyncProjectMetadata: vi.fn(async (projectPath: string) =>
-      projects.get(normalize(projectPath))
-    ),
-    getCloudSyncProjectMetadataIndex: vi.fn(async () => {
-      const pendingProjectPaths = new Set(
-        outboxEntries.map((entry) => normalize(entry.projectPath))
-      )
-      return new Map<string, CloudSyncProjectMetadataIndexEntry>(
-        [...projects.values()].map((metadata) => [
-          normalize(metadata.localProjectPath),
-          {
-            ...metadata,
-            hasPendingChanges:
-              pendingProjectPaths.has(normalize(metadata.localProjectPath)) ||
-              Boolean(metadata.tombstone),
-          },
-        ])
-      )
-    }),
-    putProjectMetadata: vi.fn(async (metadata: ProjectMetadata) => {
-      const normalizedProjectPath = normalize(metadata.localProjectPath)
-      projects.set(normalizedProjectPath, {
-        ...metadata,
-        localProjectPath: normalizedProjectPath,
-      })
-    }),
-    deleteProjectMetadata: vi.fn(async (projectPath: string) => {
-      projects.delete(normalize(projectPath))
-    }),
-    getAllProjectMetadata: vi.fn(async () => [...projects.values()]),
-    appendOutboxEntry: vi.fn(async (entry: Omit<OutboxEntry, 'id'>) => {
-      outboxEntries.push({
-        ...entry,
-        id: nextOutboxId,
-      })
-      nextOutboxId += 1
-    }),
-    getAllOutboxEntries: vi.fn(async () => [...outboxEntries]),
-    clearOutboxEntriesForProject: vi.fn(async (projectPath: string) => {
-      const normalizedProjectPath = normalize(projectPath)
-      const remainingEntries = outboxEntries.filter(
-        (entry) => normalize(entry.projectPath) !== normalizedProjectPath
-      )
-      outboxEntries.splice(0, outboxEntries.length, ...remainingEntries)
-    }),
-  }
-})
-
-vi.mock('@src/lib/cloudSync/cloudApi', async (importOriginal) => {
-  const actual = await importOriginal<object>()
-  return {
-    ...actual,
-    deleteRemoteProject: cloudApiMocks.deleteRemoteProject,
-  }
-})
-
-vi.mock('@src/lib/cloudSync/syncDb', () => syncDbMocks)
-
+const syncDatabaseName = 'zds-opfs-cloud-sync'
 const projectPath = '/documents/Projects/bracket'
 const projectTomlPath = `${projectPath}/${PROJECT_SETTINGS_FILE_NAME}`
 const remoteProjectId = 'remote-project-123'
 const remoteRevision = 'revision-123'
+const remoteProjectUrl = `https://example.test/user/projects/${remoteProjectId}`
+
+let deleteProjectFetch: typeof fetch = async () =>
+  new Response(null, { status: 204 })
+
+const fetchMock = vi.fn<typeof fetch>()
 
 function normalizePath(path: string) {
   return path.replace(/\/+/g, '/')
@@ -118,6 +42,83 @@ function dirname(path: string) {
 
 function basename(path: string) {
   return webSafePathSplit(path).at(-1) || ''
+}
+
+function getFetchUrl(input: Parameters<typeof fetch>[0]) {
+  if (typeof input === 'string') {
+    return input
+  }
+  if (input instanceof URL) {
+    return input.toString()
+  }
+  return input.url
+}
+
+function getFetchMethod(
+  input: Parameters<typeof fetch>[0],
+  init?: Parameters<typeof fetch>[1]
+) {
+  if (init?.method) {
+    return init.method
+  }
+  if (typeof input === 'object' && 'method' in input) {
+    return input.method
+  }
+  return 'GET'
+}
+
+async function deleteSyncDatabase() {
+  if (typeof indexedDB === 'undefined') {
+    throw new Error('IndexedDB is unavailable in this test environment.')
+  }
+
+  await new Promise<void>((resolve, reject) => {
+    const request = indexedDB.deleteDatabase(syncDatabaseName)
+    request.onerror = () => {
+      reject(
+        request.error ??
+          new Error(`Failed to delete IndexedDB database ${syncDatabaseName}.`)
+      )
+    }
+    request.onblocked = () => {
+      reject(new Error(`IndexedDB database ${syncDatabaseName} is blocked.`))
+    }
+    request.onsuccess = () => resolve()
+  })
+}
+
+function installFetchMock() {
+  deleteProjectFetch = async () => new Response(null, { status: 204 })
+  fetchMock.mockReset()
+  fetchMock.mockImplementation(async (input, init) => {
+    const url = getFetchUrl(input)
+    const method = getFetchMethod(input, init)
+
+    if (url === remoteProjectUrl && method === 'DELETE') {
+      return deleteProjectFetch(input, init)
+    }
+
+    if (url === 'https://example.test/user/projects' && method === 'GET') {
+      return new Response(JSON.stringify([]), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+    }
+
+    return new Response(
+      JSON.stringify({ message: `Unexpected fetch: ${method} ${url}` }),
+      {
+        status: 500,
+        statusText: 'Unexpected fetch',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+  })
+  vi.stubGlobal('fetch', fetchMock)
 }
 
 function createStat(mode: number, size = 0): IStat {
@@ -238,9 +239,9 @@ async function seedLinkedProject() {
 }
 
 describe('disconnectCloudSyncProject', () => {
-  beforeEach(() => {
-    syncDbMocks.reset()
-    cloudApiMocks.deleteRemoteProject.mockReset()
+  beforeEach(async () => {
+    await deleteSyncDatabase()
+    installFetchMock()
     cloudSyncRemoteProjects.value = [{ id: remoteProjectId }]
     configureCloudSyncEngine({
       enabled: true,
@@ -250,9 +251,10 @@ describe('disconnectCloudSyncProject', () => {
     })
   })
 
-  afterEach(() => {
+  afterEach(async () => {
     configureCloudSyncEngine({ enabled: false })
-    syncDbMocks.reset()
+    vi.unstubAllGlobals()
+    await deleteSyncDatabase()
   })
 
   it('detaches local sync metadata before deleting the remote project', async () => {
@@ -273,13 +275,13 @@ describe('disconnectCloudSyncProject', () => {
 
     let finishDelete: (() => void) | undefined
     const deleteStarted = new Promise<void>((resolve) => {
-      cloudApiMocks.deleteRemoteProject.mockImplementation(
-        () =>
-          new Promise<void>((deleteResolve) => {
-            finishDelete = deleteResolve
-            resolve()
-          })
-      )
+      deleteProjectFetch = async () =>
+        new Promise<Response>((resolveFetch) => {
+          finishDelete = () => {
+            resolveFetch(new Response(null, { status: 204 }))
+          }
+          resolve()
+        })
     })
 
     const disconnect = disconnectCloudSyncProject(projectPath)
@@ -300,6 +302,13 @@ describe('disconnectCloudSyncProject', () => {
     finishDelete?.()
     await disconnect
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      remoteProjectUrl,
+      expect.objectContaining({
+        credentials: 'include',
+        method: 'DELETE',
+      })
+    )
     expect(await getCloudSyncProjectMetadata(projectPath)).toMatchObject({
       remoteProjectId: undefined,
       remoteRevision: undefined,
@@ -322,14 +331,26 @@ describe('disconnectCloudSyncProject', () => {
     ])
     configureCloudSyncLocalFileSystem(createTestFs(files))
     await seedLinkedProject()
-    cloudApiMocks.deleteRemoteProject.mockRejectedValue(
-      new CloudApiError(500, 'Remote delete failed.')
-    )
+    deleteProjectFetch = async () =>
+      new Response(JSON.stringify({ message: 'Remote delete failed.' }), {
+        status: 500,
+        statusText: 'Internal Server Error',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
 
     await expect(disconnectCloudSyncProject(projectPath)).rejects.toThrow(
       'Remote delete failed.'
     )
 
+    expect(fetchMock).toHaveBeenCalledWith(
+      remoteProjectUrl,
+      expect.objectContaining({
+        credentials: 'include',
+        method: 'DELETE',
+      })
+    )
     expect(await getCloudSyncProjectMetadata(projectPath)).toMatchObject({
       remoteProjectId,
       remoteRevision,
