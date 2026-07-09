@@ -2,8 +2,11 @@ import {
   type RegistryLike,
   defineRegistryItem,
   provide,
+  provideService,
 } from '@kittycad/registry'
+import { signal } from '@preact/signals-core'
 import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
+import { clamp } from '@src/lib/utils'
 import {
   defineEngineSceneStreamClassName,
   defineEngineSceneStreamLayer,
@@ -11,6 +14,16 @@ import {
   engineSceneStreamClassNamesValueSpec,
   engineSceneStreamLayersValueSpec,
 } from '@src/registry/contracts/engineScene'
+import {
+  ZOODLE_BRUSH_SIZE_DEFAULT_PX,
+  ZOODLE_BRUSH_SIZE_MAX_PX,
+  ZOODLE_BRUSH_SIZE_MIN_PX,
+  type ZoodleService,
+  type ZoodleToolKey,
+  defaultZoodleToolKey,
+  zoodleService,
+  zoodleToolDefinitions,
+} from '@src/registry/contracts/zoodle'
 
 export interface ZoodleRuntimeExtensionSession {
   imageDataUrl: string
@@ -21,21 +34,53 @@ export interface ZoodleRuntimeExtensionSession {
 const zoodleStreamStackClassName = defineEngineSceneStreamClassName({
   id: 'zookeeper.zoodle.stream-stack',
   order: 100,
-  className: 'z-20',
+  className:
+    'inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green',
 })
+
+const clampZoodleBrushSize = (brushSize: number) => {
+  const finiteBrushSize = Number.isFinite(brushSize)
+    ? brushSize
+    : ZOODLE_BRUSH_SIZE_DEFAULT_PX
+
+  return clamp(
+    finiteBrushSize,
+    ZOODLE_BRUSH_SIZE_MIN_PX,
+    ZOODLE_BRUSH_SIZE_MAX_PX
+  )
+}
+
+function createZoodleService(): ZoodleService {
+  const activeToolKey = signal<ZoodleToolKey>(defaultZoodleToolKey)
+  const brushSize = signal(ZOODLE_BRUSH_SIZE_DEFAULT_PX)
+
+  return {
+    toolDefinitions: zoodleToolDefinitions,
+    activeToolKey,
+    brushSize,
+    equipTool(toolKey) {
+      activeToolKey.value = toolKey
+    },
+    setBrushSize(nextBrushSize) {
+      brushSize.value = clampZoodleBrushSize(nextBrushSize)
+    },
+  }
+}
 
 export function createZoodleRuntimeExtension(
   session: ZoodleRuntimeExtensionSession
 ) {
+  const zoodle = createZoodleService()
   const zoodleAnnotationLayer = defineEngineSceneStreamLayer({
     id: 'zookeeper.zoodle.annotation-layer',
     order: 100,
-    wrapperClassName: 'z-50',
+    wrapperClassName: 'z-50 rounded-lg overflow-hidden',
     Component: () => (
       <ViewportAnnotationOverlay
         imageDataUrl={session.imageDataUrl}
         onCancel={session.onCancel}
         onSend={session.onSend}
+        zoodle={zoodle}
       />
     ),
   })
@@ -54,6 +99,7 @@ export function createZoodleRuntimeExtension(
         key: zoodleAnnotationLayer.id,
       }),
     ],
+    providesServices: [provideService(zoodleService, zoodle)],
   })
 }
 
