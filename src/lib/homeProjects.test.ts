@@ -1,7 +1,6 @@
-import { describe, expect, test } from 'vitest'
-
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import type { FileMetadata, Project } from '@src/lib/project'
+import { describe, expect, test } from 'vitest'
 
 function metadata(modified: number): FileMetadata {
   return {

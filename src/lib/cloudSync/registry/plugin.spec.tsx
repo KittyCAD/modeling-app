@@ -1,23 +1,22 @@
 import {
-  Registry,
   defineRegistryItem,
   provideService,
+  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
+import type { App } from '@src/lib/app'
+import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
+import { cloudSyncPlugin } from '@src/lib/cloudSync/registry/plugin'
+import type { Project } from '@src/lib/project'
+import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
-
-import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
-import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
-import { cloudSyncPlugin } from '@src/lib/cloudSync/registry/plugin'
-import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
-import { cloudSyncService } from '@src/registry/contracts/cloudSync'
-import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
-import type { App } from '@src/lib/app'
-import type { Project } from '@src/lib/project'
 
 vi.mock('@src/components/CloudConflictDialog', () => ({
   CloudConflictDialog: () => null,

@@ -1,6 +1,6 @@
 import { defineContract, defineValueSpec } from '@kittycad/registry'
-import type { ComponentType, ReactNode } from 'react'
 import type { Project } from '@src/lib/project'
+import type { ComponentType, ReactNode } from 'react'
 
 export interface ProjectExplorerRowContextMenuRow {
   path: string

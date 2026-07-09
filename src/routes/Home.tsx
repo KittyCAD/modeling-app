@@ -1,31 +1,21 @@
+import { BillingDialog } from '@kittycad/ui-components'
 import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import type { HTMLProps } from 'react'
-import { useEffect, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
-
-import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
+import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
@@ -72,8 +62,8 @@ import {
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import {
-  HOME_KEYMAP_SCOPE,
   findKeymapItemForCommand,
+  HOME_KEYMAP_SCOPE,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
@@ -89,6 +79,15 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
+import type { HTMLProps } from 'react'
+import { useEffect, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
@@ -190,9 +189,11 @@ const Home = () => {
         })
         .catch(reportRejection)
     }
-    billing.send({ type: BillingTransition.Update, apiToken })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
+
+  useEffect(() => {
+    billing.send({ type: BillingTransition.Update, apiToken })
+  }, [apiToken, billing])
 
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value

@@ -1,7 +1,6 @@
 import type { BrowserContext, Page, Route } from '@playwright/test'
-import JSZip from 'jszip'
-
 import { PROJECT_FOLDER } from '@src/lib/constants'
+import JSZip from 'jszip'
 
 // Test utilities for the cloud sync contract. These helpers are grouped
 // because the E2E scenarios need the local project tree, the cloud sync

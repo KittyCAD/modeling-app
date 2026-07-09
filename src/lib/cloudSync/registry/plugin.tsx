@@ -7,8 +7,8 @@ import {
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import { ActionIcon } from '@src/components/ActionIcon'
 import { ActionButton } from '@src/components/ActionButton'
+import { ActionIcon } from '@src/components/ActionIcon'
 import {
   CloudConflictDialog,
   useCloudSyncProjectConflict,
@@ -35,10 +35,6 @@ import {
   cloudSyncService,
 } from '@src/registry/contracts/cloudSync'
 import {
-  nullableStatusBarItem,
-  statusBarGlobalItemsValueSpec,
-} from '@src/registry/contracts/statusBar'
-import {
   type HomeProjectEntryContribution,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
@@ -46,6 +42,10 @@ import {
   type ProjectExplorerProjectMenuItemComponentProps,
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
+import {
+  nullableStatusBarItem,
+  statusBarGlobalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { Fragment, useEffect, useState } from 'react'
@@ -116,15 +116,7 @@ function useCloudSyncProjectMetadata(
     return () => {
       cancelled = true
     }
-  }, [
-    cloudSync,
-    projectPath,
-    status.enabled,
-    status.state,
-    status.pendingCount,
-    status.lastFailureAt,
-    status.lastSyncedAt,
-  ])
+  }, [cloudSync, projectPath, status.enabled])
 
   return metadata
 }

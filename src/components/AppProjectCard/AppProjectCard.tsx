@@ -1,14 +1,8 @@
 import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
-import type { FormEvent, HTMLAttributes } from 'react'
-import { toast } from 'react-hot-toast'
-import { useEffect, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { Link, useNavigate } from 'react-router-dom'
-
 import { ActionButton } from '@src/components/ActionButton'
+import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
-import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
 import { FILE_EXT } from '@src/lib/constants'
@@ -22,6 +16,11 @@ import type {
   HomeProjectEntry,
   HomeProjectThumbnail,
 } from '@src/registry/contracts/homeProjects'
+import type { FormEvent, HTMLAttributes } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { toast } from 'react-hot-toast'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { Link, useNavigate } from 'react-router-dom'
 
 type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
@@ -134,7 +133,7 @@ function AppProjectCard({
     modified: number
   } | null>(null)
 
-  let inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
   const projectDisplayName = getHomeProjectDisplayName(project)
   const displayedProject =
     optimisticProjectName?.projectId === project.id
@@ -187,8 +186,7 @@ function AppProjectCard({
       inputRef.current.focus()
       inputRef.current.select()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [isEditing, inputRef.current])
+  }, [isEditing])
 
   useEffect(() => {
     setOptimisticProjectName((optimisticName) => {

@@ -1,7 +1,4 @@
 import {
-  type OutboxEntry,
-  type ProjectArchiveFile,
-  type ProjectManifest,
   filterCloudSyncProjectFilesForSync,
   getCloudSyncConflictCopyCleanupPlan,
   getCloudSyncInitialLocalProjectSyncAction,
@@ -14,6 +11,9 @@ import {
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
   isCloudSyncConflictCopyProjectName,
+  type OutboxEntry,
+  type ProjectArchiveFile,
+  type ProjectManifest,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
   shouldCloudSyncAutoSyncLocalProject,

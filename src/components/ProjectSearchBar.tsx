@@ -1,10 +1,9 @@
 import { useSignalEffect } from '@preact/signals-react'
-import Fuse from 'fuse.js'
-import { useEffect, useRef, useState } from 'react'
-
 import { CustomIcon } from '@src/components/CustomIcon'
 import { noAutofillInputProps } from '@src/lib/autofill'
 import { projectSearchFocusRequest } from '@src/lib/searchFocusRequests'
+import Fuse from 'fuse.js'
+import { useMemo, useRef, useState } from 'react'
 
 type SearchableProject = {
   name?: string
@@ -15,21 +14,21 @@ export function useProjectSearch<T extends SearchableProject>(
   projects: T[] | undefined
 ) {
   const [query, setQuery] = useState('')
-  const [searchResults, setSearchResults] = useState(projects)
-
-  const fuse = new Fuse(projects ?? [], {
-    keys: [
-      { name: 'title', weight: 0.8 },
-      { name: 'name', weight: 0.2 },
-    ],
-    includeScore: true,
-  })
-
-  useEffect(() => {
+  const fuse = useMemo(
+    () =>
+      new Fuse(projects ?? [], {
+        keys: [
+          { name: 'title', weight: 0.8 },
+          { name: 'name', weight: 0.2 },
+        ],
+        includeScore: true,
+      }),
+    [projects]
+  )
+  const searchResults = useMemo(() => {
     const results = fuse.search(query).map((result) => result.item)
-    setSearchResults(query.length > 0 ? results : (projects ?? []))
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [query, projects])
+    return query.length > 0 ? results : (projects ?? [])
+  }, [fuse, projects, query])
 
   return {
     searchResults,

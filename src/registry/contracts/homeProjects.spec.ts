@@ -1,6 +1,5 @@
-import { describe, expect, test } from 'vitest'
-
 import { coalesceHomeProjectEntries } from '@src/registry/contracts/homeProjects'
+import { describe, expect, test } from 'vitest'
 
 describe('coalesceHomeProjectEntries', () => {
   test('keeps local-only projects as local entries', () => {

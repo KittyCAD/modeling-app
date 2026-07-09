@@ -69,21 +69,28 @@ function getFetchMethod(
 
 async function deleteSyncDatabase() {
   if (typeof indexedDB === 'undefined') {
-    throw new Error('IndexedDB is unavailable in this test environment.')
+    return Promise.reject(
+      new Error('IndexedDB is unavailable in this test environment.')
+    )
   }
 
   await new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error(`IndexedDB database ${syncDatabaseName} is blocked.`))
+    }, 1000)
     const request = indexedDB.deleteDatabase(syncDatabaseName)
     request.onerror = () => {
+      clearTimeout(timeout)
       reject(
         request.error ??
           new Error(`Failed to delete IndexedDB database ${syncDatabaseName}.`)
       )
     }
-    request.onblocked = () => {
-      reject(new Error(`IndexedDB database ${syncDatabaseName} is blocked.`))
+    request.onblocked = () => undefined
+    request.onsuccess = () => {
+      clearTimeout(timeout)
+      resolve()
     }
-    request.onsuccess = () => resolve()
   })
 }
 

@@ -1,14 +1,12 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { BrowserRouter } from 'react-router-dom'
-import { beforeEach, describe, expect, test, vi } from 'vitest'
-
+import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
+import fsZds from '@src/lib/fs-zds'
 import type {
   HomeProjectActionsService,
   HomeProjectEntry,
 } from '@src/registry/contracts/homeProjects'
-
-import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
-import fsZds from '@src/lib/fs-zds'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { BrowserRouter } from 'react-router-dom'
+import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -75,6 +73,26 @@ function renderProjectCard({
   return { projectActions }
 }
 
+function clickRenameProject() {
+  const renameButton = screen.getByText('Rename project').closest('button')
+  expect(renameButton).not.toBeNull()
+  if (!renameButton) {
+    return
+  }
+
+  fireEvent.click(renameButton)
+}
+
+function submitRenameProject() {
+  const renameForm = screen.getByTestId('project-rename-input').closest('form')
+  expect(renameForm).not.toBeNull()
+  if (!renameForm) {
+    return
+  }
+
+  fireEvent.submit(renameForm)
+}
+
 describe('ProjectCard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -98,13 +116,11 @@ describe('ProjectCard', () => {
       'Old cloud title'
     )
 
-    fireEvent.click(screen.getByText('Rename project').closest('button')!)
+    clickRenameProject()
     fireEvent.change(screen.getByTestId('project-rename-input'), {
       target: { value: 'New cloud title' },
     })
-    fireEvent.submit(
-      screen.getByTestId('project-rename-input').closest('form')!
-    )
+    submitRenameProject()
 
     await waitFor(() => expect(projectActions.rename).toHaveBeenCalled())
     await waitFor(() =>
@@ -210,13 +226,11 @@ describe('ProjectCard', () => {
     const previousEditedTime =
       screen.getByTestId('project-edit-date').textContent
 
-    fireEvent.click(screen.getByText('Rename project').closest('button')!)
+    clickRenameProject()
     fireEvent.change(screen.getByTestId('project-rename-input'), {
       target: { value: 'New cloud title' },
     })
-    fireEvent.submit(
-      screen.getByTestId('project-rename-input').closest('form')!
-    )
+    submitRenameProject()
 
     await waitFor(() => expect(projectActions.rename).toHaveBeenCalled())
     await waitFor(() =>

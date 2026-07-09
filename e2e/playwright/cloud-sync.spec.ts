@@ -1,10 +1,8 @@
-import { expect, type Page, test } from '@playwright/test'
-
 import {
   type CloudProject,
-  PROJECT_DIR,
   createRemoteListGate,
   opfsPathExists,
+  PROJECT_DIR,
   projectTitles,
   projectToml,
   readOpfsTextFiles,
@@ -12,6 +10,7 @@ import {
   seedCloudSyncState,
 } from '@e2e/playwright/lib/cloudSyncTestUtils'
 import { setup } from '@e2e/playwright/test-utils'
+import { expect, type Page, test } from '@playwright/test'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 
 async function openHomeProject(page: Page, projectTitle: string) {

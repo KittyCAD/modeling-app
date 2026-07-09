@@ -43,7 +43,7 @@ export type FileEntry = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
 }
 
 /**
@@ -84,6 +84,6 @@ export type Project = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
   readWriteAccess: boolean
 }

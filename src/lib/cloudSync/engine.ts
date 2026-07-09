@@ -10,8 +10,8 @@ import {
   updateRemoteProject,
 } from '@src/lib/cloudSync/cloudApi'
 import {
-  INTERNAL_OPFS_META_FILE,
   getCloudSyncProjectRoot,
+  INTERNAL_OPFS_META_FILE,
   isCloudSyncProjectDirectoryPath,
   isProjectRootPath,
   normalizePathForSync,
@@ -52,10 +52,10 @@ import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs from '@src/lib/fs-zds/opfs'
 import {
-  type GitignoreStackEntry,
   appendGitignoreForDirectoryWithFs,
   createGitignoreStackFromFiles,
   createInitialGitignoreStackWithFs,
+  type GitignoreStackEntry,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import { webSafePathSplit } from '@src/lib/pathUtils'
@@ -68,26 +68,26 @@ import {
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 
+export { getCloudSyncProjectRoot } from '@src/lib/cloudSync/paths'
+export {
+  prepareProjectFilesForCloudUpload,
+  projectManifestsEqual,
+} from '@src/lib/cloudSync/projectArchive'
+export {
+  getCloudSyncProjectMetadata,
+  getCloudSyncProjectMetadataIndex,
+} from '@src/lib/cloudSync/syncDb'
 export type {
-  CloudSyncState,
-  CloudSyncStatus,
   CloudSyncLocalProject,
   CloudSyncProjectMetadataIndexEntry,
+  CloudSyncState,
+  CloudSyncStatus,
   OutboxEntry,
   ProjectArchiveFile,
   ProjectManifest,
   ProjectMetadata,
   RemoteProjectSummary,
 } from '@src/lib/cloudSync/types'
-export {
-  getCloudSyncProjectMetadata,
-  getCloudSyncProjectMetadataIndex,
-} from '@src/lib/cloudSync/syncDb'
-export { getCloudSyncProjectRoot } from '@src/lib/cloudSync/paths'
-export {
-  prepareProjectFilesForCloudUpload,
-  projectManifestsEqual,
-} from '@src/lib/cloudSync/projectArchive'
 
 export type CloudSyncConflictResolution = 'local' | 'cloud'
 
@@ -1950,12 +1950,6 @@ async function syncRemoteIndex() {
         remoteProject.id,
         projectName
       )
-      const existingLocalAction = getCloudSyncRemoteIndexAction({
-        hasRemoteProjectId: Boolean(remoteProject.id),
-        isRemoteProjectTombstoned: false,
-        hasKnownLocalMetadata: false,
-        hasMatchingLocalProject: Boolean(existingProjectPath),
-      })
       if (existingProjectPath) {
         const nextMetadata = {
           ...(await getOrCreateProjectMetadata(existingProjectPath)),
@@ -1969,11 +1963,6 @@ async function syncRemoteIndex() {
         if (syncedMetadata) {
           upsertMetadata(syncedMetadata)
         }
-        continue
-      }
-
-      if (existingLocalAction !== 'adopt-matching-local') {
-        continue
       }
     } catch (error) {
       failures.push(error)

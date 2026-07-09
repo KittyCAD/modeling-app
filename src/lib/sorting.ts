@@ -24,10 +24,12 @@ export function getSortIcon(
 }
 
 export function getNextSearchParams(currentSort: string, newSort: string) {
-  if (currentSort === null || !currentSort)
+  if (currentSort === null || !currentSort) {
     return { sort_by: newSort + (newSort !== 'modified' ? DESC : '') }
-  if (currentSort.includes(newSort) && !currentSort.includes(DESC))
+  }
+  if (currentSort.includes(newSort) && !currentSort.includes(DESC)) {
     return { sort_by: '' }
+  }
   return {
     sort_by: newSort + (currentSort.includes(DESC) ? '' : DESC),
   }
