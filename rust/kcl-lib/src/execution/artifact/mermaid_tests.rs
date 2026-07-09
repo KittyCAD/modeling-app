@@ -282,11 +282,8 @@ impl ArtifactGraph {
         let mut next_id = 1_u32;
         let mut stable_id_map = AHashMap::default();
 
-        let mut artifact_ids = self.map.keys().copied().collect::<Vec<_>>();
-        artifact_ids.sort_by_key(|id| self.flowchart_sort_key(*id));
-
-        for id in artifact_ids {
-            stable_id_map.insert(id, next_id);
+        for id in self.map.keys() {
+            stable_id_map.insert(*id, next_id);
             next_id = next_id.checked_add(1).unwrap();
         }
 
@@ -354,11 +351,7 @@ impl ArtifactGraph {
             }
         }
 
-        groups.sort_by_key(|group_id, _| *stable_id_map.get(group_id).unwrap());
-        ungrouped.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
-
-        for (group_id, mut artifact_ids) in groups {
-            artifact_ids.sort_by_key(|artifact_id| *stable_id_map.get(artifact_id).unwrap());
+        for (group_id, artifact_ids) in groups {
             let group_id = *stable_id_map.get(&group_id).unwrap();
             writeln!(output, "{prefix}subgraph path{group_id} [Path]")?;
             let indented = format!("{prefix}  ");
@@ -377,116 +370,6 @@ impl ArtifactGraph {
         }
 
         Ok(())
-    }
-
-    // Keep Mermaid node order close to source order so the rendered graph
-    // remains readable, but make ties deterministic for generated topology
-    // where several artifacts share the same source range.
-    fn flowchart_sort_key(&self, id: ArtifactId) -> String {
-        let Some(artifact) = self.map.get(&id) else {
-            return String::new();
-        };
-
-        let mut neighbors = artifact
-            .back_edges()
-            .into_iter()
-            .chain(artifact.child_ids())
-            .filter_map(|id| self.map.get(&id))
-            .map(Self::flowchart_basic_sort_key)
-            .collect::<Vec<_>>();
-        neighbors.sort();
-
-        format!(
-            "{}|{}|neighbors={}",
-            Self::flowchart_source_sort_key(artifact),
-            Self::flowchart_basic_sort_key(artifact),
-            neighbors.join(",")
-        )
-    }
-
-    fn flowchart_source_sort_key(artifact: &Artifact) -> String {
-        fn code_ref_key(code_ref: &CodeRef) -> String {
-            let range = code_ref.range;
-            format!(
-                "{:020}:{:020}:{:020}",
-                range.module_id().as_usize(),
-                range.start(),
-                range.end()
-            )
-        }
-
-        match artifact {
-            Artifact::CompositeSolid(composite_solid) => code_ref_key(&composite_solid.code_ref),
-            Artifact::Plane(plane) => code_ref_key(&plane.code_ref),
-            Artifact::Path(path) => code_ref_key(&path.code_ref),
-            Artifact::Segment(segment) => code_ref_key(&segment.code_ref),
-            Artifact::Solid2d(_) => "zzzz:Solid2d".to_owned(),
-            Artifact::PrimitiveFace(face) => code_ref_key(&face.code_ref),
-            Artifact::PrimitiveEdge(edge) => code_ref_key(&edge.code_ref),
-            Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => code_ref_key(code_ref),
-            Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => code_ref_key(code_ref),
-            Artifact::SketchBlock(SketchBlock { code_ref, .. }) => code_ref_key(code_ref),
-            Artifact::SketchBlockConstraint(constraint) => code_ref_key(&constraint.code_ref),
-            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => code_ref_key(code_ref),
-            Artifact::Sweep(sweep) => code_ref_key(&sweep.code_ref),
-            Artifact::Wall(wall) => code_ref_key(&wall.face_code_ref),
-            Artifact::Cap(cap) => code_ref_key(&cap.face_code_ref),
-            Artifact::SweepEdge(_) => "zzzz:SweepEdge".to_owned(),
-            Artifact::EdgeCut(edge_cut) => code_ref_key(&edge_cut.code_ref),
-            Artifact::EdgeCutEdge(_) => "zzzz:EdgeCutEdge".to_owned(),
-            Artifact::Helix(helix) => code_ref_key(&helix.code_ref),
-            Artifact::GdtAnnotation(annotation) => code_ref_key(&annotation.code_ref),
-            Artifact::Pattern(pattern) => code_ref_key(&pattern.code_ref),
-        }
-    }
-
-    fn flowchart_basic_sort_key(artifact: &Artifact) -> String {
-        fn code_ref_key(code_ref: &CodeRef) -> String {
-            let range = code_ref.range;
-            format!("{}:{}:{}", range.module_id().as_usize(), range.start(), range.end())
-        }
-
-        match artifact {
-            Artifact::CompositeSolid(composite_solid) => {
-                format!(
-                    "CompositeSolid:{:?}:{}",
-                    composite_solid.sub_type,
-                    code_ref_key(&composite_solid.code_ref)
-                )
-            }
-            Artifact::Plane(plane) => format!("Plane:{}", code_ref_key(&plane.code_ref)),
-            Artifact::Path(path) => format!("Path:{:?}:{}", path.sub_type, code_ref_key(&path.code_ref)),
-            Artifact::Segment(segment) => format!("Segment:{}", code_ref_key(&segment.code_ref)),
-            Artifact::Solid2d(_) => "Solid2d".to_owned(),
-            Artifact::PrimitiveFace(face) => format!("PrimitiveFace:{}", code_ref_key(&face.code_ref)),
-            Artifact::PrimitiveEdge(edge) => format!("PrimitiveEdge:{}", code_ref_key(&edge.code_ref)),
-            Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
-                format!("StartSketchOnFace:{}", code_ref_key(code_ref))
-            }
-            Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
-                format!("StartSketchOnPlane:{}", code_ref_key(code_ref))
-            }
-            Artifact::SketchBlock(SketchBlock { code_ref, .. }) => format!("SketchBlock:{}", code_ref_key(code_ref)),
-            Artifact::SketchBlockConstraint(constraint) => {
-                format!(
-                    "SketchBlockConstraint:{:?}:{}",
-                    constraint.constraint_type,
-                    code_ref_key(&constraint.code_ref)
-                )
-            }
-            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => format!("PlaneOfFace:{}", code_ref_key(code_ref)),
-            Artifact::Sweep(sweep) => format!("Sweep:{:?}:{}", sweep.sub_type, code_ref_key(&sweep.code_ref)),
-            Artifact::Wall(_) => "Wall".to_owned(),
-            Artifact::Cap(cap) => format!("Cap:{:?}", cap.sub_type),
-            Artifact::SweepEdge(sweep_edge) => format!("SweepEdge:{:?}", sweep_edge.sub_type),
-            Artifact::EdgeCut(edge_cut) => {
-                format!("EdgeCut:{:?}:{}", edge_cut.sub_type, code_ref_key(&edge_cut.code_ref))
-            }
-            Artifact::EdgeCutEdge(_) => "EdgeCutEdge".to_owned(),
-            Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
-            Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
-            Artifact::Pattern(pattern) => format!("Pattern:{:?}:{}", pattern.sub_type, code_ref_key(&pattern.code_ref)),
-        }
     }
 
     fn flowchart_node<W: Write>(
@@ -683,6 +566,67 @@ impl ArtifactGraph {
         Ok(())
     }
 
+    fn flowchart_duplicate_segment_key(artifact: &Artifact) -> Option<String> {
+        fn code_ref_key(code_ref: &CodeRef) -> String {
+            let range = code_ref.range;
+            format!("{}:{}:{}", range.module_id().as_usize(), range.start(), range.end())
+        }
+
+        match artifact {
+            Artifact::Segment(segment) => Some(format!("Segment:{}", code_ref_key(&segment.code_ref))),
+            _ => None,
+        }
+    }
+
+    fn flowchart_basic_sort_key(artifact: &Artifact) -> String {
+        fn code_ref_key(code_ref: &CodeRef) -> String {
+            let range = code_ref.range;
+            format!("{}:{}:{}", range.module_id().as_usize(), range.start(), range.end())
+        }
+
+        match artifact {
+            Artifact::CompositeSolid(composite_solid) => {
+                format!(
+                    "CompositeSolid:{:?}:{}",
+                    composite_solid.sub_type,
+                    code_ref_key(&composite_solid.code_ref)
+                )
+            }
+            Artifact::Plane(plane) => format!("Plane:{}", code_ref_key(&plane.code_ref)),
+            Artifact::Path(path) => format!("Path:{:?}:{}", path.sub_type, code_ref_key(&path.code_ref)),
+            Artifact::Segment(segment) => format!("Segment:{}", code_ref_key(&segment.code_ref)),
+            Artifact::Solid2d(_) => "Solid2d".to_owned(),
+            Artifact::PrimitiveFace(face) => format!("PrimitiveFace:{}", code_ref_key(&face.code_ref)),
+            Artifact::PrimitiveEdge(edge) => format!("PrimitiveEdge:{}", code_ref_key(&edge.code_ref)),
+            Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
+                format!("StartSketchOnFace:{}", code_ref_key(code_ref))
+            }
+            Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
+                format!("StartSketchOnPlane:{}", code_ref_key(code_ref))
+            }
+            Artifact::SketchBlock(SketchBlock { code_ref, .. }) => format!("SketchBlock:{}", code_ref_key(code_ref)),
+            Artifact::SketchBlockConstraint(constraint) => {
+                format!(
+                    "SketchBlockConstraint:{:?}:{}",
+                    constraint.constraint_type,
+                    code_ref_key(&constraint.code_ref)
+                )
+            }
+            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => format!("PlaneOfFace:{}", code_ref_key(code_ref)),
+            Artifact::Sweep(sweep) => format!("Sweep:{:?}:{}", sweep.sub_type, code_ref_key(&sweep.code_ref)),
+            Artifact::Wall(_) => "Wall".to_owned(),
+            Artifact::Cap(cap) => format!("Cap:{:?}", cap.sub_type),
+            Artifact::SweepEdge(sweep_edge) => format!("SweepEdge:{:?}", sweep_edge.sub_type),
+            Artifact::EdgeCut(edge_cut) => {
+                format!("EdgeCut:{:?}:{}", edge_cut.sub_type, code_ref_key(&edge_cut.code_ref))
+            }
+            Artifact::EdgeCutEdge(_) => "EdgeCutEdge".to_owned(),
+            Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
+            Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
+            Artifact::Pattern(pattern) => format!("Pattern:{:?}:{}", pattern.sub_type, code_ref_key(&pattern.code_ref)),
+        }
+    }
+
     fn flowchart_edges<W: Write>(
         &self,
         output: &mut W,
@@ -758,13 +702,69 @@ impl ArtifactGraph {
             reverse_stable_id_map
                 .get(&node_id)
                 .and_then(|artifact_id| self.map.get(artifact_id))
+                .and_then(Self::flowchart_duplicate_segment_key)
+                .unwrap_or_else(|| format!("Node:{node_id}"))
+        };
+        let signature_node_key = |node_id: NodeId| {
+            reverse_stable_id_map
+                .get(&node_id)
+                .and_then(|artifact_id| self.map.get(artifact_id))
                 .map(Self::flowchart_basic_sort_key)
-                .unwrap_or_default()
+                .unwrap_or_else(|| format!("Node:{node_id}"))
         };
 
-        // Generated topology can contain multiple nodes that are identical in
-        // the rendered graph. Pair those duplicate source/target classes by
-        // node ID so symmetric engine response ordering does not flip snapshots.
+        let mut duplicate_nodes = BTreeMap::<String, Vec<NodeId>>::new();
+        for node_id in reverse_stable_id_map.keys() {
+            duplicate_nodes.entry(node_key(*node_id)).or_default().push(*node_id);
+        }
+        for node_ids in duplicate_nodes.values_mut() {
+            node_ids.sort_unstable();
+        }
+        let mut source_remap = AHashMap::<NodeId, NodeId>::default();
+        for node_ids in duplicate_nodes.values() {
+            if node_ids.len() < 2 {
+                continue;
+            }
+
+            let mut signatures = node_ids
+                .iter()
+                .map(|source_id| {
+                    let mut edge_signature = edges
+                        .iter()
+                        .filter_map(|((edge_source_id, target_id), edge)| {
+                            if edge_source_id != source_id {
+                                return None;
+                            }
+                            Some(format!(
+                                "{}|{:?}|{:?}|{:?}",
+                                signature_node_key(*target_id),
+                                edge.direction,
+                                edge.flow,
+                                edge.kind
+                            ))
+                        })
+                        .collect::<Vec<_>>();
+                    edge_signature.sort();
+                    (*source_id, edge_signature.join(","))
+                })
+                .collect::<Vec<_>>();
+            signatures.sort_by(|a, b| a.1.cmp(&b.1).then(a.0.cmp(&b.0)));
+
+            for (canonical_source_id, (source_id, _)) in node_ids.iter().copied().zip(signatures) {
+                source_remap.insert(source_id, canonical_source_id);
+            }
+        }
+        for ((source_id, _), _) in &mut edges {
+            if let Some(canonical_source_id) = source_remap.get(source_id) {
+                *source_id = *canonical_source_id;
+            }
+        }
+
+        // Region creation emits several segment artifacts with the same source
+        // range. When engine topology returns those symmetric segments in a
+        // different order, the Mermaid graph is semantically unchanged but a
+        // directed edge can flip between duplicate segment node IDs. Normalize
+        // only that duplicate-segment case and leave node ordering alone.
         let mut edge_groups = BTreeMap::<String, Vec<usize>>::new();
         for (index, ((source_id, target_id), edge)) in edges.iter().enumerate() {
             edge_groups
@@ -780,7 +780,7 @@ impl ArtifactGraph {
                 .push(index);
         }
         for group in edge_groups.values() {
-            if group.len() < 2 {
+            if group.len() == 1 {
                 continue;
             }
 
