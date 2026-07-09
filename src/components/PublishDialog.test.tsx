@@ -1,6 +1,6 @@
 import { Popover } from '@headlessui/react'
+import type { MarkdownEditorActions } from '@kittycad/ui-components'
 import { PublishDialog } from '@src/components/PublishDialog'
-import type { CurrentProjectPublicationDetails } from '@src/lib/share'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -26,39 +26,45 @@ describe('PublishDialog', () => {
     vi.unstubAllGlobals()
   })
 
-  it('submits normalized Markdown descriptions', async () => {
-    const onSubmit = vi.fn().mockResolvedValue(true)
-    const publicationDetails = {
-      projectId: 'project-1',
-      publicationStatus: 'draft',
-      title: 'Robot arm',
-      description:
-        'A [safe](zoo.dev/docs) link and an [unsafe](javascript:alert(1)) link.',
-      categoryIds: ['robotics'],
-      updatedAt: '2026-07-07T00:00:00.000Z',
-    } satisfies CurrentProjectPublicationDetails
+  it('registers the description editor with the Markdown keymap while focused', async () => {
+    const unregisterActions = vi.fn()
+    const registerActions = vi.fn((actions: MarkdownEditorActions) => {
+      void actions
+      return unregisterActions
+    })
+    const focusScope = {
+      onFocus: vi.fn(),
+      onBlur: vi.fn(),
+    }
 
     render(
       <Popover>
         <PublishDialog
-          onSubmit={onSubmit}
+          onSubmit={vi.fn()}
           accountUrl="https://zoo.dev/account"
-          publicationDetails={publicationDetails}
+          markdownEditorKeymap={{ focusScope, registerActions }}
         />
       </Popover>
     )
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('Title*')).toHaveValue('Robot arm')
-    })
-    fireEvent.click(screen.getByRole('button', { name: 'Submit for review' }))
+    const editor = await screen.findByTestId(
+      'publish-project-description-editor'
+    )
+    fireEvent.focus(editor)
 
     await waitFor(() => {
-      expect(onSubmit).toHaveBeenCalledWith({
-        title: 'Robot arm',
-        description: 'A [safe](https://zoo.dev/docs) link and an unsafe link.',
-        categoryIds: ['robotics'],
-      })
+      expect(focusScope.onFocus).toHaveBeenCalledTimes(1)
+      expect(registerActions).toHaveBeenCalledTimes(1)
+    })
+    expect(registerActions.mock.calls[0][0]).toMatchObject({
+      setLink: expect.any(Function),
+    })
+
+    fireEvent.blur(editor)
+
+    await waitFor(() => {
+      expect(unregisterActions).toHaveBeenCalledTimes(1)
+      expect(focusScope.onBlur).toHaveBeenCalledTimes(1)
     })
   })
 })

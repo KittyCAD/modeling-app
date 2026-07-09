@@ -34,7 +34,7 @@ export type ProjectMetadata = {
     createdAt: string
   }
   syncExcluded?: {
-    reason: 'conflict-copy'
+    reason: 'conflict-copy' | 'user-disconnected'
     sourceProjectPath?: string
     remoteProjectId?: string
     createdAt: string
