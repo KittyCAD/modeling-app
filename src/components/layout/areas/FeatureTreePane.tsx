@@ -800,7 +800,7 @@ function getFeatureTreeArtifactForEditOperation(
   if (
     'sourceRange' in operation &&
     operation.sourceRange != null &&
-    Array.isArray(operation.sourceRange) &&
+    isArray(operation.sourceRange) &&
     operation.sourceRange.length >= 2
   ) {
     const sourceRange = operation.sourceRange
@@ -1089,8 +1089,7 @@ const OperationItem = ({
     modelingActor,
     commandBarActor,
     selectOperation,
-    systemDeps.kclManager,
-    systemDeps.rustContext,
+    systemDeps,
   ])
 
   function enterAppearanceFlow() {

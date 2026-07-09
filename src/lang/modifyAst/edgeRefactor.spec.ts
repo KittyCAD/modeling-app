@@ -937,7 +937,7 @@ describe('refactorZ0006Unified', () => {
           sourceRange: [0, 10, 0],
           stdlibFn: 'getOppositeEdge',
         },
-      ] as EdgeRefactorMeta[]
+      ] as unknown as EdgeRefactorMeta[]
 
       const hydrated = await hydrateEdgeRefactorMetadata({
         edgeRefactorMetadata: metadata,

@@ -1,15 +1,15 @@
-import {
-  PROJECT_ENTRYPOINT,
-  PROJECT_SETTINGS_FILE_NAME,
-} from '@src/lib/constants'
-import opfs from '@src/lib/fs-zds/opfs'
-import { normalizeRelativePath } from '@src/lib/fs-zds/opfsCloud/paths'
+import { normalizeRelativePath } from '@src/lib/cloudSync/paths'
 import type {
   ProjectArchiveFile,
   ProjectManifest,
   ProjectUploadBody,
   Revision,
-} from '@src/lib/fs-zds/opfsCloud/types'
+} from '@src/lib/cloudSync/types'
+import {
+  PROJECT_ENTRYPOINT,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
+import opfs from '@src/lib/fs-zds/opfs'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectTitleFromProjectTomlContents,
@@ -20,10 +20,10 @@ import { isArray } from '@src/lib/utils'
 import JSZip from 'jszip'
 
 const localFs = opfs.impl
-export const OPFS_CLOUD_UNTITLED_PROJECT_TITLE = 'Untitled'
+export const CLOUD_SYNC_UNTITLED_PROJECT_TITLE = 'Untitled'
 
 export function getRemoteProjectTitleForProjectToml(title?: string) {
-  return title?.trim() || OPFS_CLOUD_UNTITLED_PROJECT_TITLE
+  return title?.trim() || CLOUD_SYNC_UNTITLED_PROJECT_TITLE
 }
 
 export function prepareProjectFilesForCloudUpload(

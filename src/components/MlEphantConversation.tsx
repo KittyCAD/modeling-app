@@ -5,9 +5,11 @@ import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
-import { useSingletons } from '@src/lib/boot'
-import { takeViewportScreenshot } from '@src/lib/screenshot'
+import { noAutofillInputProps } from '@src/lib/autofill'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { getSelectionTypeDisplayText } from '@src/lib/selections'
+import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
 import type {
   Conversation,
@@ -15,9 +17,13 @@ import type {
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
-import { type Selections } from '@src/machines/modelingSharedTypes'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  activateZoodleRuntimeExtension,
+  deactivateZoodleRuntimeExtension,
+} from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
 import type { ChangeEvent, ReactNode } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
 
@@ -143,7 +149,9 @@ export interface MlEphantExtraInputsProps {
   onSetMode: (mode: MlCopilotModeId) => void
   onAttachFiles: () => void
   onCaptureScreenshot: () => void
+  onAnnotateScreenshot: () => void
   attachmentsDisabled?: boolean
+  isZoodleActive?: boolean
   modeOptions?: MlCopilotModeOption[]
 }
 
@@ -195,6 +203,24 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           <CustomIcon name="camera" className="w-5 h-5" />
           <Tooltip position="top" hoverOnly={true}>
             <span>Capture viewport screenshot</span>
+          </Tooltip>
+        </button>
+        <button
+          type="button"
+          data-testid="ml-ephant-annotate-screenshot-button"
+          onClick={props.onAnnotateScreenshot}
+          disabled={props.attachmentsDisabled && !props.isZoodleActive}
+          aria-pressed={props.isZoodleActive ?? false}
+          className={`h-7 w-7 flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60 ${
+            props.isZoodleActive
+              ? 'bg-ml-green text-chalkboard-100 hover:bg-ml-green'
+              : 'bg-default'
+          }`}
+          aria-label="Zoodle"
+        >
+          <CustomIcon name="sketch" className="w-5 h-5" />
+          <Tooltip position="top" hoverOnly={true}>
+            <span>Zoodle</span>
           </Tooltip>
         </button>
       </div>
@@ -257,6 +283,7 @@ interface MlEphantConversationInputProps {
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
+  const { registry } = useApp()
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
@@ -267,6 +294,18 @@ export const MlEphantConversationInput = (
   const lastModeScopeKey = useRef(props.modeScopeKey)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
+  const [isZoodleActive, setIsZoodleActive] = useState(false)
+
+  const stopZoodleRuntimeExtension = useCallback(() => {
+    setIsZoodleActive(false)
+    deactivateZoodleRuntimeExtension(registry)
+  }, [registry])
+
+  useEffect(() => {
+    return () => {
+      stopZoodleRuntimeExtension()
+    }
+  }, [stopZoodleRuntimeExtension])
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -362,24 +401,51 @@ export const MlEphantConversationInput = (
     fileInputRef.current?.click()
   }
 
+  const appendDataUrlAttachment = (dataUrl: string, fileName: string) => {
+    const file = dataUrlToFile(dataUrl, fileName)
+    if (err(file)) {
+      console.error('Failed to create screenshot attachment', file)
+      return
+    }
+    appendAttachments([file])
+  }
+
   const onCaptureScreenshot = () => {
     if (props.disabled) return
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      // Convert data URL to File without fetch (fetch of data: URLs is
-      // blocked by CSP in the browser).
-      const [header, base64] = dataUrl.split(',')
-      const mime = header.match(/:(.*?);/)?.[1] ?? 'image/png'
-      const bytes = atob(base64)
-      const buf = new Uint8Array(bytes.length)
-      for (let i = 0; i < bytes.length; i++) {
-        buf[i] = bytes.charCodeAt(i)
-      }
-      const file = new File([buf], 'viewport-screenshot.png', { type: mime })
-      appendAttachments([file])
+      appendDataUrlAttachment(dataUrl, 'viewport-screenshot.png')
     } catch (e) {
       console.error('Failed to capture viewport screenshot', e)
+    }
+  }
+
+  const onAnnotateScreenshot = () => {
+    if (isZoodleActive) {
+      stopZoodleRuntimeExtension()
+      return
+    }
+
+    if (props.disabled) return
+    try {
+      const dataUrl = takeViewportScreenshot()
+      if (!dataUrl) return
+      setIsZoodleActive(true)
+      activateZoodleRuntimeExtension(registry, {
+        imageDataUrl: dataUrl,
+        onCancel: stopZoodleRuntimeExtension,
+        onSend: (annotatedDataUrl) => {
+          appendDataUrlAttachment(
+            annotatedDataUrl,
+            'annotated-viewport-screenshot.png'
+          )
+          stopZoodleRuntimeExtension()
+        },
+      })
+    } catch (e) {
+      setIsZoodleActive(false)
+      console.error('Failed to capture viewport screenshot for annotation', e)
     }
   }
 
@@ -473,6 +539,7 @@ export const MlEphantConversationInput = (
           className="hidden"
         />
         <textarea
+          {...noAutofillInputProps}
           autoCapitalize="off"
           autoCorrect="off"
           spellCheck="false"
@@ -535,7 +602,9 @@ export const MlEphantConversationInput = (
             }}
             onAttachFiles={onAttachFiles}
             onCaptureScreenshot={onCaptureScreenshot}
+            onAnnotateScreenshot={onAnnotateScreenshot}
             attachmentsDisabled={props.disabled}
+            isZoodleActive={isZoodleActive}
             modeOptions={props.modeOptions}
           />
           <div className="flex flex-none flex-row gap-1">

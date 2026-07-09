@@ -1,27 +1,29 @@
 import {
+  filterCloudSyncProjectFilesForSync,
+  getCloudSyncConflictCopyCleanupPlan,
+  getCloudSyncInitialLocalProjectSyncAction,
+  getCloudSyncKnownLocalRemoteIndexAction,
+  getCloudSyncMissingRemoteProjectAction,
+  getCloudSyncProjectModifiedTime,
+  getCloudSyncProjectRoot,
+  getCloudSyncProjectSyncPreflightAction,
+  getCloudSyncRemoteArchiveReconciliationAction,
+  getCloudSyncRemoteIndexAction,
+  getCloudSyncScopePlan,
+  isCloudSyncConflictCopyProjectName,
+  type OutboxEntry,
+  type ProjectArchiveFile,
+  type ProjectManifest,
+  prepareProjectFilesForCloudUpload,
+  projectManifestsEqual,
+  shouldCloudSyncAutoSyncLocalProject,
+} from '@src/lib/cloudSync'
+import { withRemoteProjectMetadataInArchiveFiles } from '@src/lib/cloudSync/projectArchive'
+import {
   PROJECT_FOLDER,
   PROJECT_IMAGE_NAME,
   PROJECT_SETTINGS_FILE_NAME,
 } from '@src/lib/constants'
-import {
-  type OutboxEntry,
-  type ProjectArchiveFile,
-  type ProjectManifest,
-  filterOpfsCloudProjectFilesForSync,
-  getOpfsCloudConflictCopyCleanupPlan,
-  getOpfsCloudInitialLocalProjectSyncAction,
-  getOpfsCloudMissingRemoteProjectAction,
-  getOpfsCloudProjectModifiedTime,
-  getOpfsCloudProjectRoot,
-  getOpfsCloudProjectSyncPreflightAction,
-  getOpfsCloudRemoteArchiveReconciliationAction,
-  getOpfsCloudRemoteIndexAction,
-  getOpfsCloudSyncScopePlan,
-  isOpfsCloudConflictCopyProjectName,
-  prepareProjectFilesForCloudUpload,
-  projectManifestsEqual,
-} from '@src/lib/fs-zds/opfsCloud'
-import { withRemoteProjectMetadataInArchiveFiles } from '@src/lib/fs-zds/opfsCloud/projectArchive'
 import { describe, expect, it } from 'vitest'
 
 const encoder = new TextEncoder()
@@ -33,26 +35,26 @@ function projectFile(relativePath: string, contents = ''): ProjectArchiveFile {
   }
 }
 
-describe('opfsCloud sync helpers', () => {
+describe('cloudSync sync helpers', () => {
   it('identifies project roots beneath the OPFS project directory', () => {
     expect(
-      getOpfsCloudProjectRoot(`/documents/${PROJECT_FOLDER}/bracket/main.kcl`)
+      getCloudSyncProjectRoot(`/documents/${PROJECT_FOLDER}/bracket/main.kcl`)
     ).toBe(`/documents/${PROJECT_FOLDER}/bracket`)
 
     expect(
-      getOpfsCloudProjectRoot(
+      getCloudSyncProjectRoot(
         `/documents/${PROJECT_FOLDER}/bracket/nested/part.kcl`
       )
     ).toBe(`/documents/${PROJECT_FOLDER}/bracket`)
 
     expect(
-      getOpfsCloudProjectRoot(`/documents/${PROJECT_FOLDER}`)
+      getCloudSyncProjectRoot(`/documents/${PROJECT_FOLDER}`)
     ).toBeUndefined()
   })
 
   it('normalizes Windows separators when identifying project roots', () => {
     expect(
-      getOpfsCloudProjectRoot(
+      getCloudSyncProjectRoot(
         `\\documents\\${PROJECT_FOLDER}\\bracket\\main.kcl`
       )
     ).toBe(`/documents/${PROJECT_FOLDER}/bracket`)
@@ -163,7 +165,7 @@ describe('opfsCloud sync helpers', () => {
   })
 
   it('excludes files ignored by project .gitignore from cloud sync manifests and uploads', () => {
-    const files = filterOpfsCloudProjectFilesForSync([
+    const files = filterCloudSyncProjectFilesForSync([
       projectFile('main.kcl', 'cube = 1'),
       projectFile('.gitignore', `${PROJECT_IMAGE_NAME}\ndist/\n`),
       projectFile(PROJECT_IMAGE_NAME, 'generated image'),
@@ -213,20 +215,20 @@ describe('opfsCloud sync helpers', () => {
     expect(projectToml).toContain('title = "New cloud title"')
   })
 
-  it('clones remote projects that exist in cloud but have no local match', () => {
+  it('indexes remote projects that exist in cloud but have no local match', () => {
     expect(
-      getOpfsCloudRemoteIndexAction({
+      getCloudSyncRemoteIndexAction({
         hasRemoteProjectId: true,
         isRemoteProjectTombstoned: false,
         hasKnownLocalMetadata: false,
         hasMatchingLocalProject: false,
       })
-    ).toBe('clone-remote')
+    ).toBe('index-remote')
   })
 
   it('skips remote projects that were tombstoned locally', () => {
     expect(
-      getOpfsCloudRemoteIndexAction({
+      getCloudSyncRemoteIndexAction({
         hasRemoteProjectId: true,
         isRemoteProjectTombstoned: true,
         hasKnownLocalMetadata: false,
@@ -237,7 +239,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('adopts an existing local project when its project.toml matches the cloud id', () => {
     expect(
-      getOpfsCloudRemoteIndexAction({
+      getCloudSyncRemoteIndexAction({
         hasRemoteProjectId: true,
         isRemoteProjectTombstoned: false,
         hasKnownLocalMetadata: false,
@@ -246,9 +248,43 @@ describe('opfsCloud sync helpers', () => {
     ).toBe('adopt-matching-local')
   })
 
+  it('syncs known cloud-linked projects with unqueued local changes during remote index scans', () => {
+    expect(
+      getCloudSyncKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: false,
+        remoteChanged: false,
+        localChangedFromSyncBase: true,
+      })
+    ).toBe('sync-known-local')
+
+    expect(
+      getCloudSyncKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: false,
+        remoteChanged: true,
+        localChangedFromSyncBase: false,
+      })
+    ).toBe('sync-known-local')
+
+    expect(
+      getCloudSyncKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: true,
+        remoteChanged: true,
+        localChangedFromSyncBase: true,
+      })
+    ).toBe('defer-pending-local-changes')
+
+    expect(
+      getCloudSyncKnownLocalRemoteIndexAction({
+        hasPendingLocalChanges: false,
+        remoteChanged: false,
+        localChangedFromSyncBase: false,
+      })
+    ).toBe('index-known-local')
+  })
+
   it('skips sync-excluded conflict copies during the initial local scan', () => {
     expect(
-      getOpfsCloudInitialLocalProjectSyncAction({
+      getCloudSyncInitialLocalProjectSyncAction({
         hasBaseManifest: false,
         tombstone: false,
         syncExcluded: true,
@@ -258,7 +294,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('still queues unsynced normal projects during the initial local scan', () => {
     expect(
-      getOpfsCloudInitialLocalProjectSyncAction({
+      getCloudSyncInitialLocalProjectSyncAction({
         hasBaseManifest: false,
         tombstone: false,
         syncExcluded: false,
@@ -268,7 +304,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('removes clean local mirrors when their remote project is missing', () => {
     expect(
-      getOpfsCloudMissingRemoteProjectAction({
+      getCloudSyncMissingRemoteProjectAction({
         localProjectExists: true,
         hasPendingLocalChanges: false,
         hasBaseManifest: true,
@@ -279,7 +315,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('detaches local projects when their missing remote cannot be safely removed', () => {
     expect(
-      getOpfsCloudMissingRemoteProjectAction({
+      getCloudSyncMissingRemoteProjectAction({
         localProjectExists: true,
         hasPendingLocalChanges: true,
         hasBaseManifest: true,
@@ -288,7 +324,7 @@ describe('opfsCloud sync helpers', () => {
     ).toBe('detach-dirty-local')
 
     expect(
-      getOpfsCloudMissingRemoteProjectAction({
+      getCloudSyncMissingRemoteProjectAction({
         localProjectExists: true,
         hasPendingLocalChanges: false,
         hasBaseManifest: false,
@@ -297,7 +333,7 @@ describe('opfsCloud sync helpers', () => {
     ).toBe('detach-dirty-local')
 
     expect(
-      getOpfsCloudMissingRemoteProjectAction({
+      getCloudSyncMissingRemoteProjectAction({
         localProjectExists: true,
         hasPendingLocalChanges: false,
         hasBaseManifest: true,
@@ -308,7 +344,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('forgets metadata when a missing remote project is also missing locally', () => {
     expect(
-      getOpfsCloudMissingRemoteProjectAction({
+      getCloudSyncMissingRemoteProjectAction({
         localProjectExists: false,
         hasPendingLocalChanges: false,
         hasBaseManifest: true,
@@ -319,16 +355,16 @@ describe('opfsCloud sync helpers', () => {
 
   it('detects conflict copy project folder names', () => {
     expect(
-      isOpfsCloudConflictCopyProjectName(
+      isCloudSyncConflictCopyProjectName(
         'demo-project (cloud conflict 20260612T001401)'
       )
     ).toBe(true)
     expect(
-      isOpfsCloudConflictCopyProjectName(
+      isCloudSyncConflictCopyProjectName(
         'demo-project (cloud conflict 20260612T001401) (cloud conflict 20260612T124057)'
       )
     ).toBe(true)
-    expect(isOpfsCloudConflictCopyProjectName('demo-project')).toBe(false)
+    expect(isCloudSyncConflictCopyProjectName('demo-project')).toBe(false)
   })
 
   it('marks existing conflict copies as excluded and deletes exact duplicate copies', () => {
@@ -342,7 +378,7 @@ describe('opfsCloud sync helpers', () => {
         'main.kcl': { byteSize: 11, sha256: 'b' },
       },
     }
-    const cleanupPlan = getOpfsCloudConflictCopyCleanupPlan([
+    const cleanupPlan = getCloudSyncConflictCopyCleanupPlan([
       {
         projectPath: '/projects/demo-project',
         projectName: 'demo-project',
@@ -383,7 +419,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('pushes local edits only when the remote revision is still the synced base', () => {
     expect(
-      getOpfsCloudProjectSyncPreflightAction({
+      getCloudSyncProjectSyncPreflightAction({
         latestKind: 'upsert',
         localProjectExists: true,
         tombstone: false,
@@ -397,7 +433,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('compares the remote archive before mutating either side when remote is ahead', () => {
     expect(
-      getOpfsCloudProjectSyncPreflightAction({
+      getCloudSyncProjectSyncPreflightAction({
         latestKind: 'upsert',
         localProjectExists: true,
         tombstone: false,
@@ -411,7 +447,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('hydrates clean local projects from newer remote archives', () => {
     expect(
-      getOpfsCloudRemoteArchiveReconciliationAction({
+      getCloudSyncRemoteArchiveReconciliationAction({
         hasBaseManifest: true,
         localMatchesRemote: false,
         localClean: true,
@@ -421,7 +457,7 @@ describe('opfsCloud sync helpers', () => {
 
   it('marks a conflict when local and remote archives both changed differently', () => {
     expect(
-      getOpfsCloudRemoteArchiveReconciliationAction({
+      getCloudSyncRemoteArchiveReconciliationAction({
         hasBaseManifest: true,
         localMatchesRemote: false,
         localClean: false,
@@ -439,11 +475,11 @@ describe('opfsCloud sync helpers', () => {
       hasPendingChanges: false,
     } as const
 
-    expect(getOpfsCloudProjectModifiedTime(metadata, 100)).toBe(
+    expect(getCloudSyncProjectModifiedTime(metadata, 100)).toBe(
       Date.parse(metadata.remoteUpdatedAt)
     )
     expect(
-      getOpfsCloudProjectModifiedTime(
+      getCloudSyncProjectModifiedTime(
         { ...metadata, hasPendingChanges: true },
         100
       )
@@ -466,13 +502,13 @@ describe('opfsCloud sync helpers', () => {
       },
     ]
 
-    expect(getOpfsCloudSyncScopePlan(entries)).toEqual({
+    expect(getCloudSyncScopePlan(entries)).toEqual({
       shouldSyncRemoteIndex: true,
       projectPaths: ['/projects/current', '/projects/conflicted'],
       pendingCount: 2,
     })
 
-    expect(getOpfsCloudSyncScopePlan(entries, '/projects/current')).toEqual({
+    expect(getCloudSyncScopePlan(entries, '/projects/current')).toEqual({
       shouldSyncRemoteIndex: false,
       projectPaths: ['/projects/current'],
       pendingCount: 1,
@@ -480,10 +516,36 @@ describe('opfsCloud sync helpers', () => {
   })
 
   it('keeps syncing the open project even when it has no queued local edits', () => {
-    expect(getOpfsCloudSyncScopePlan([], '/projects/current')).toEqual({
+    expect(getCloudSyncScopePlan([], '/projects/current')).toEqual({
       shouldSyncRemoteIndex: false,
       projectPaths: ['/projects/current'],
       pendingCount: 0,
     })
+  })
+
+  it('does not auto-enroll unlinked local projects when existing local sync is disabled', () => {
+    expect(
+      shouldCloudSyncAutoSyncLocalProject({
+        syncExistingLocalProjects: false,
+        hasRemoteProjectId: false,
+        hasBaseManifest: false,
+      })
+    ).toBe(false)
+
+    expect(
+      shouldCloudSyncAutoSyncLocalProject({
+        syncExistingLocalProjects: false,
+        hasRemoteProjectId: true,
+        hasBaseManifest: false,
+      })
+    ).toBe(true)
+
+    expect(
+      shouldCloudSyncAutoSyncLocalProject({
+        syncExistingLocalProjects: false,
+        hasRemoteProjectId: false,
+        hasBaseManifest: true,
+      })
+    ).toBe(true)
   })
 })

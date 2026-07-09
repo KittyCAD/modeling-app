@@ -6,6 +6,13 @@ import {
 import { computed } from '@preact/signals-core'
 import type { Command } from '@src/lib/commandTypes'
 import { provideCommand } from '@src/registry/contracts/commands'
+import {
+  type EngineSceneExtensionContext,
+  defineEngineSceneStreamClassName,
+  defineEngineSceneViewExtension,
+  engineSceneStreamClassNamesValueSpec,
+  engineSceneViewExtensionsValueSpec,
+} from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   type KeymapItem,
@@ -19,6 +26,12 @@ import {
 import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
+import {
+  EngineSceneGizmoViewExtension,
+  EngineSceneToolbarViewExtension,
+  SketchBackgroundOpacityViewExtension,
+  SketchConstraintsToggleViewExtension,
+} from './viewExtensionControls'
 
 const ENGINE_SCENE_COMMAND_GROUP_ID = 'engineScene'
 const ENGINE_SCENE_KEYMAP_SOURCE = 'Engine scene'
@@ -121,6 +134,46 @@ const EngineSceneSelectionFilterControls = () =>
     createElement(SelectionFilterControls)
   )
 
+const isSketchSolveMode = (context: EngineSceneExtensionContext) =>
+  context.modelingState.matches('sketchSolveMode')
+
+const defaultStreamClassName = defineEngineSceneStreamClassName({
+  id: 'engine-scene.stream-default',
+  order: 0,
+  className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
+})
+
+const toolbarViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.toolbar',
+  zone: 'top',
+  order: 0,
+  Component: EngineSceneToolbarViewExtension,
+  wrapperClassName: 'w-full min-w-0 flex justify-center',
+})
+
+const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.sketch-background-opacity',
+  zone: 'bottom-left',
+  order: 0,
+  Component: SketchBackgroundOpacityViewExtension,
+  shouldRegister: isSketchSolveMode,
+})
+
+const sketchConstraintsToggleViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.sketch-constraints-toggle',
+  zone: 'bottom-left',
+  order: 10,
+  Component: SketchConstraintsToggleViewExtension,
+  shouldRegister: isSketchSolveMode,
+})
+
+const gizmoViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.gizmo',
+  zone: 'bottom-right',
+  order: 0,
+  Component: EngineSceneGizmoViewExtension,
+})
+
 const EngineSceneMeasurementStatusBarItem = () =>
   createElement(
     Suspense,
@@ -133,7 +186,7 @@ const EngineSceneMeasurementStatusBarItem = () =>
  *
  * Future home for the whole engine scene layout and modeling state machine
  * behavior. For now it contributes always-on local status bar items owned by
- * the scene.
+ * the scene and the default view chrome rendered around the engine stream.
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
@@ -216,6 +269,29 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
           statusBarLocalItemsValueSpec,
           experimentalFeaturesStatusBarItem
         ),
+        provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
+          key: defaultStreamClassName.id,
+        }),
+        provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
+          key: toolbarViewExtension.id,
+        }),
+        provide(
+          engineSceneViewExtensionsValueSpec,
+          sketchBackgroundOpacityViewExtension,
+          {
+            key: sketchBackgroundOpacityViewExtension.id,
+          }
+        ),
+        provide(
+          engineSceneViewExtensionsValueSpec,
+          sketchConstraintsToggleViewExtension,
+          {
+            key: sketchConstraintsToggleViewExtension.id,
+          }
+        ),
+        provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
+          key: gizmoViewExtension.id,
+        }),
       ],
       uses: [executionIndicator],
     }),

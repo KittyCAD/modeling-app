@@ -1,14 +1,14 @@
 ```mermaid
 flowchart LR
-  subgraph path1 [Path]
-    1["Path<br>[45, 447, 0]<br>Consumed: false"]
+  subgraph path2 [Path]
+    2["Path<br>[45, 447, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    4["Segment<br>[69, 156, 0]"]
+    3["Segment<br>[69, 156, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    3["Segment<br>[163, 251, 0]"]
+    4["Segment<br>[163, 251, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  2["Plane<br>[45, 447, 0]"]
+  1["Plane<br>[45, 447, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   5["SketchBlock<br>[45, 447, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
@@ -22,9 +22,9 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 5 }, ExpressionStatementExpr]
   10["SketchBlockConstraint EqualRadius<br>[426, 445, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 8 }, ExpressionStatementExpr]
-  2 --- 1
-  1 --- 3
-  1 --- 4
-  5 --- 1
-  2 <--x 5
+  1 --- 2
+  1 <--x 5
+  2 --- 3
+  2 --- 4
+  5 --- 2
 ```
