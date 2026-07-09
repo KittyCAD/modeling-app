@@ -712,6 +712,34 @@ impl ArtifactGraph {
                 .map(Self::flowchart_basic_sort_key)
                 .unwrap_or_else(|| format!("Node:{node_id}"))
         };
+        let neighborhood_node_key = |node_id: NodeId, edges: &[((NodeId, NodeId), EdgeInfo)]| {
+            let mut neighbors = edges
+                .iter()
+                .filter_map(|((source_id, target_id), edge)| {
+                    if *source_id == node_id {
+                        Some(format!(
+                            "out:{}|{:?}|{:?}|{:?}",
+                            signature_node_key(*target_id),
+                            edge.direction,
+                            edge.flow,
+                            edge.kind
+                        ))
+                    } else if *target_id == node_id {
+                        Some(format!(
+                            "in:{}|{:?}|{:?}|{:?}",
+                            signature_node_key(*source_id),
+                            edge.direction,
+                            edge.flow,
+                            edge.kind
+                        ))
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<_>>();
+            neighbors.sort();
+            format!("{}|neighbors={}", signature_node_key(node_id), neighbors.join(","))
+        };
 
         let mut duplicate_nodes = BTreeMap::<String, Vec<NodeId>>::new();
         for node_id in reverse_stable_id_map.keys() {
@@ -734,7 +762,7 @@ impl ArtifactGraph {
             let mut signatures = node_ids
                 .iter()
                 .map(|source_id| {
-                    let mut edge_signature = edges
+                    let mut semantic_edge_signature = edges
                         .iter()
                         .filter_map(|((edge_source_id, target_id), edge)| {
                             if edge_source_id != source_id {
@@ -742,20 +770,44 @@ impl ArtifactGraph {
                             }
                             Some(format!(
                                 "{}|{:?}|{:?}|{:?}",
-                                signature_node_key(*target_id),
+                                neighborhood_node_key(*target_id, &edges),
                                 edge.direction,
                                 edge.flow,
                                 edge.kind
                             ))
                         })
                         .collect::<Vec<_>>();
-                    edge_signature.sort();
-                    (*source_id, edge_signature.join(","))
+                    semantic_edge_signature.sort();
+
+                    // Some generated region segments have the same source
+                    // range and the same semantic edge neighborhood. In that
+                    // rare tie, use the existing Mermaid target IDs as a
+                    // stable local tie-breaker rather than changing the whole
+                    // graph order.
+                    let mut target_id_edge_signature = edges
+                        .iter()
+                        .filter_map(|((edge_source_id, target_id), edge)| {
+                            if edge_source_id != source_id {
+                                return None;
+                            }
+                            Some(format!(
+                                "{}|{:?}|{:?}|{:?}",
+                                target_id, edge.direction, edge.flow, edge.kind
+                            ))
+                        })
+                        .collect::<Vec<_>>();
+                    target_id_edge_signature.sort();
+
+                    (
+                        *source_id,
+                        semantic_edge_signature.join(","),
+                        target_id_edge_signature.join(","),
+                    )
                 })
                 .collect::<Vec<_>>();
-            signatures.sort_by(|a, b| a.1.cmp(&b.1).then(a.0.cmp(&b.0)));
+            signatures.sort_by(|a, b| a.1.cmp(&b.1).then(a.2.cmp(&b.2)).then(a.0.cmp(&b.0)));
 
-            for (canonical_source_id, (source_id, _)) in node_ids.iter().copied().zip(signatures) {
+            for (canonical_source_id, (source_id, _, _)) in node_ids.iter().copied().zip(signatures) {
                 source_remap.insert(source_id, canonical_source_id);
             }
         }
