@@ -49,26 +49,36 @@ function getDisplayedTime(dateTimeMs: number) {
 
 function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
   const [imageUrl, setImageUrl] = useState('')
+  const thumbnailType = thumbnail?.type
+  const localThumbnailPath =
+    thumbnail?.type === 'local' ? thumbnail.path : undefined
+  const remoteThumbnailUrl =
+    thumbnail?.type === 'remote' ? thumbnail.url : undefined
 
   useEffect(() => {
-    if (!thumbnail) {
+    if (!thumbnailType) {
       setImageUrl('')
       return
     }
 
-    if (thumbnail.type === 'remote') {
-      setImageUrl(thumbnail.url)
+    if (thumbnailType === 'remote') {
+      setImageUrl(remoteThumbnailUrl ?? '')
       return
     }
 
-    const localThumbnail = thumbnail
+    if (!localThumbnailPath) {
+      setImageUrl('')
+      return
+    }
+
+    const thumbnailPath = localThumbnailPath
     let disposed = false
     let createdImageUrl: string | undefined
 
     async function setupImageUrl() {
       try {
-        await fsZds.stat(localThumbnail.path)
-        const imageData = await fsZds.readFile(localThumbnail.path)
+        await fsZds.stat(thumbnailPath)
+        const imageData = await fsZds.readFile(thumbnailPath)
         const blob = new Blob([new Uint8Array(imageData)], {
           type: 'image/png',
         })
@@ -97,7 +107,7 @@ function useProjectThumbnailUrl(thumbnail: HomeProjectThumbnail | undefined) {
         URL.revokeObjectURL(createdImageUrl)
       }
     }
-  }, [thumbnail])
+  }, [localThumbnailPath, remoteThumbnailUrl, thumbnailType])
 
   return imageUrl
 }

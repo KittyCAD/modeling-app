@@ -69,7 +69,7 @@ export interface HomeProjectActionsService {
   delete: (project: HomeProjectEntry) => Promise<void>
 }
 
-function contributionKey(entry: HomeProjectEntryContribution) {
+function contributionBucketKey(entry: HomeProjectEntryContribution) {
   if (entry.remoteProjectId) {
     return `remote:${entry.remoteProjectId}`
   }
@@ -79,12 +79,22 @@ function contributionKey(entry: HomeProjectEntryContribution) {
   return `${entry.source}:${entry.id ?? entry.name}`
 }
 
+function contributionStableId(entry: HomeProjectEntryContribution) {
+  if (entry.localProjectPath) {
+    return `local:${entry.localProjectPath}`
+  }
+  if (entry.remoteProjectId) {
+    return `remote:${entry.remoteProjectId}`
+  }
+  return `${entry.source}:${entry.id ?? entry.name}`
+}
+
 function entryFromContribution(
   contribution: HomeProjectEntryContribution
 ): HomeProjectEntry {
   return {
     ...contribution,
-    id: contribution.id ?? contributionKey(contribution),
+    id: contribution.id ?? contributionStableId(contribution),
   }
 }
 
@@ -107,9 +117,7 @@ function mergeHomeProjectEntries(
   return {
     ...remote,
     ...local,
-    id: local.remoteProjectId
-      ? `remote:${local.remoteProjectId}`
-      : local.id || remote.id,
+    id: local.id || remote.id,
     source: 'merged',
     status: conflict
       ? 'conflicted'
@@ -142,7 +150,7 @@ export function coalesceHomeProjectEntries(
   >()
 
   for (const contribution of contributions) {
-    const key = contributionKey(contribution)
+    const key = contributionBucketKey(contribution)
     const entry = entryFromContribution(contribution)
     const bucket = buckets.get(key) ?? {}
 

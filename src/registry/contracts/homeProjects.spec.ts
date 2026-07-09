@@ -49,6 +49,30 @@ describe('coalesceHomeProjectEntries', () => {
     ])
   })
 
+  test('keeps cloud-linked local projects keyed by local path', () => {
+    expect(
+      coalesceHomeProjectEntries([
+        {
+          source: 'local',
+          status: 'synced',
+          name: 'local-project',
+          localProjectPath: '/projects/local-project',
+          localProjectName: 'local-project',
+          remoteProjectId: 'remote-123',
+          modified: 10,
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        id: 'local:/projects/local-project',
+        source: 'local',
+        status: 'synced',
+        remoteProjectId: 'remote-123',
+      }),
+    ])
+  })
+
   test('merges local and remote entries with the same cloud project id', () => {
     expect(
       coalesceHomeProjectEntries([
@@ -75,7 +99,7 @@ describe('coalesceHomeProjectEntries', () => {
       ])
     ).toEqual([
       expect.objectContaining({
-        id: 'remote:remote-123',
+        id: 'local:/projects/local-name',
         source: 'merged',
         status: 'synced',
         name: 'local-name',
@@ -117,7 +141,7 @@ describe('coalesceHomeProjectEntries', () => {
       ])
     ).toEqual([
       expect.objectContaining({
-        id: 'remote:remote-123',
+        id: 'local:/projects/local-name',
         source: 'merged',
         status: 'conflicted',
         name: 'local-name',

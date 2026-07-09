@@ -8,6 +8,7 @@ import type {
 } from '@src/registry/contracts/homeProjects'
 
 import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
+import fsZds from '@src/lib/fs-zds'
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -19,6 +20,8 @@ vi.mock('@src/lib/fs-zds', () => ({
 }))
 
 const now = Date.now()
+let createObjectURLMock: ReturnType<typeof vi.fn>
+let revokeObjectURLMock: ReturnType<typeof vi.fn>
 const cloudProject = {
   id: 'remote:project-123',
   name: 'old-cloud-title',
@@ -74,9 +77,14 @@ function renderProjectCard({
 
 describe('ProjectCard', () => {
   beforeEach(() => {
+    vi.clearAllMocks()
+    vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array())
+    createObjectURLMock = vi.fn(() => 'blob:thumbnail')
+    revokeObjectURLMock = vi.fn()
     vi.stubGlobal('URL', {
       ...URL,
-      createObjectURL: vi.fn(() => 'blob:thumbnail'),
+      createObjectURL: createObjectURLMock,
+      revokeObjectURL: revokeObjectURLMock,
     })
   })
 
@@ -151,6 +159,42 @@ describe('ProjectCard', () => {
     })
 
     expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('keeps local thumbnail object URLs stable when the project object changes', async () => {
+    vi.mocked(fsZds.readFile).mockResolvedValue(new Uint8Array([1, 2, 3]))
+    const projectActions = createProjectActions()
+    const { rerender } = render(
+      <BrowserRouter>
+        <AppProjectCard
+          project={cloudProject}
+          projectActions={projectActions}
+        />
+      </BrowserRouter>
+    )
+
+    await waitFor(() => expect(fsZds.readFile).toHaveBeenCalledTimes(1))
+    expect(createObjectURLMock).toHaveBeenCalledTimes(1)
+
+    rerender(
+      <BrowserRouter>
+        <AppProjectCard
+          project={{
+            ...cloudProject,
+            modified: now + 1,
+            thumbnail: {
+              type: 'local',
+              path: '/projects/old-cloud-title/thumbnail.png',
+            },
+          }}
+          projectActions={projectActions}
+        />
+      </BrowserRouter>
+    )
+
+    expect(fsZds.readFile).toHaveBeenCalledTimes(1)
+    expect(createObjectURLMock).toHaveBeenCalledTimes(1)
+    expect(revokeObjectURLMock).not.toHaveBeenCalled()
   })
 
   test('eagerly shows cloud project rename modified time while sync continues', async () => {
