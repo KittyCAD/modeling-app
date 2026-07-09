@@ -92,6 +92,7 @@ async function waitForAuthSettled(app: App) {
 
 function disposeApp(app: App) {
   app.closeProject()
+  app.registry[Symbol.dispose]()
   app.systemIOActor.stop()
   app.settings.actor.stop()
   app.commands.actor.stop()

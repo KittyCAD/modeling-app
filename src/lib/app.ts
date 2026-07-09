@@ -15,25 +15,13 @@ import {
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import {
-  BODIES_PANE_FEATURE_FLAG,
-  OPFS_CLOUD_FEATURE_FLAG,
-} from '@src/lib/constants'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import {
-  createLayoutService,
-  createLayoutServiceRegistryItem,
-  createLayoutWithMetadata,
-  defaultLayout,
-  type Layout,
-  type LayoutService,
-  loadLayout,
-  saveLayout,
-  setBodiesPaneLayoutEnabled,
-  setLayoutSaveHandler,
-} from '@src/lib/layout'
-import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+  type LayoutRegistryService,
+  layoutService,
+} from '@src/lib/layout/registry/contract'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
@@ -42,7 +30,7 @@ import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { err, reportRejection } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
@@ -75,12 +63,7 @@ import {
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
-import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
-import {
-  type RuntimeRegistryService,
-  runtimeService,
-} from '@src/registry/contracts/runtime'
 import {
   type SettingsRegistryService,
   settingsService,
@@ -106,8 +89,6 @@ import type {
 } from 'xstate'
 import { createActor } from 'xstate'
 
-const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
-const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
 
 type AppRegistryOptions = {
@@ -166,18 +147,9 @@ export type AppBillingSystem = {
 
 export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
-export type AppLayoutSystem = {
-  signal: Signal<Layout>
-  get: () => Layout
-  set: (l: Layout) => void
-  reset: () => void
-  service: LayoutService
-  saveEffectUnsubscribeFn: ReturnType<typeof effect>
-}
+export type AppLayoutSystem = LayoutRegistryService
 
 export type AppRegistrySystem = Registry
-
-export type AppRuntimeSystem = RuntimeRegistryService
 
 export type AppDebug = {
   mlEphantManagerActor?: MlEphantManagerActor
@@ -196,7 +168,6 @@ export interface AppSubsystems {
   userFeatures: AppUserFeaturesSystem
   layout: AppLayoutSystem
   registry: AppRegistrySystem
-  runtime: AppRuntimeSystem
 }
 
 export class App implements AppSubsystems {
@@ -237,8 +208,6 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
-  /** Runtime environment metadata */
-  runtime: AppRuntimeSystem
   /**
    * The interface to reading/writing to IO.
    * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
@@ -259,7 +228,6 @@ export class App implements AppSubsystems {
     this.settings = subsystems.settings
     this.layout = subsystems.layout
     this.registry = subsystems.registry
-    this.runtime = subsystems.runtime
     this.userFeatures = subsystems.userFeatures
     this.systemIOActor = createActor(systemIOMachineImpl, {
       input: {
@@ -311,8 +279,9 @@ export class App implements AppSubsystems {
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
-    const runtime = appRegistry.get(runtimeService)
     const settingsActor = settings.actor
+    const layout = appRegistry.get(layoutService)
+    layout.get()
     const engineCommandManager = new ConnectionManager({
       settingsActor,
     })
@@ -334,119 +303,6 @@ export class App implements AppSubsystems {
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
 
-    const usePlaywrightLayout = runtime.get().isPlaywright
-    const layoutConfigName = usePlaywrightLayout
-      ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
-      : DEFAULT_LAYOUT_CONFIG_NAME
-    const runtimeDefaultLayout = usePlaywrightLayout
-      ? playwrightLayoutConfig
-      : defaultLayout
-    const layoutSignal = signal<Layout>(runtimeDefaultLayout)
-    const getRuntimeDefaultLayout = () =>
-      setBodiesPaneLayoutEnabled(
-        structuredClone(runtimeDefaultLayout),
-        !usePlaywrightLayout &&
-          userFeatures.has(BODIES_PANE_FEATURE_FLAG, false)
-      )
-    const layoutService = createLayoutService(layoutSignal)
-    const layout: AppLayoutSystem = {
-      signal: layoutSignal,
-      get: () => layoutSignal.value,
-      set: (l: Layout) => {
-        layoutSignal.value = structuredClone(l)
-      },
-      reset: () => {
-        layoutSignal.value = getRuntimeDefaultLayout()
-      },
-      service: layoutService,
-      saveEffectUnsubscribeFn: effect(() =>
-        saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
-      ),
-    }
-    appRegistry.reconfigure(appRegistryServicesSlot, [
-      createLayoutServiceRegistryItem(layoutService),
-    ])
-
-    let hasHydratedLayout = false
-    let lastBodiesPaneFeatureEnabled: boolean | undefined
-    const applyRegistryLayoutContributions = () =>
-      layoutService.applyContributions(
-        appRegistry.get(layoutContributionsValueSpec)
-      )
-    const syncBodiesPaneFeatureLayout = () => {
-      if (!hasHydratedLayout || usePlaywrightLayout) {
-        return
-      }
-
-      const enabled = userFeatures.has(BODIES_PANE_FEATURE_FLAG, false)
-      if (enabled === lastBodiesPaneFeatureEnabled) {
-        return
-      }
-
-      const currentLayout = layoutSignal.peek()
-      const nextLayout = setBodiesPaneLayoutEnabled(currentLayout, enabled)
-      if (nextLayout !== currentLayout) {
-        layoutSignal.value = nextLayout
-      }
-      lastBodiesPaneFeatureEnabled = enabled
-    }
-    const hydrateLayoutFromSettings = (
-      snapshot: SnapshotFrom<typeof settingsActor>
-    ) => {
-      if (hasHydratedLayout || snapshot.value !== 'idle') {
-        return
-      }
-
-      setLayoutSaveHandler(({ layout, layoutName }) => {
-        const currentLayouts = getOnlySettingsFromContext(
-          settingsActor.getSnapshot().context
-        ).layout.configs.current
-
-        settingsActor.send({
-          type: 'set.layout.configs',
-          data: {
-            level: 'user',
-            value: {
-              ...currentLayouts,
-              [layoutName ?? 'default']: createLayoutWithMetadata(layout),
-            },
-          },
-        })
-      })
-
-      const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
-      const settingsLayout =
-        settingsSnapshot.layout.configs.current[layoutConfigName] ??
-        settingsSnapshot.layout.configs.current.default
-      if (settingsLayout) {
-        layoutSignal.value = structuredClone(settingsLayout.layout)
-      } else {
-        const legacyLayout = loadLayout(layoutConfigName)
-        const fallbackLegacyLayout =
-          err(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
-            ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
-            : legacyLayout
-        if (!err(fallbackLegacyLayout)) {
-          layoutSignal.value = structuredClone(fallbackLegacyLayout)
-        }
-      }
-
-      hasHydratedLayout = true
-      applyRegistryLayoutContributions()
-      syncBodiesPaneFeatureLayout()
-    }
-    settingsActor.subscribe(hydrateLayoutFromSettings)
-    hydrateLayoutFromSettings(settingsActor.getSnapshot())
-    userFeatures.actor.subscribe(syncBodiesPaneFeatureLayout)
-    effect(() => {
-      const contributions = appRegistry.signal(
-        layoutContributionsValueSpec
-      ).value
-      if (hasHydratedLayout) {
-        layoutService.applyContributions(contributions)
-      }
-    })
-
     return {
       wasmPromise,
       auth,
@@ -459,7 +315,6 @@ export class App implements AppSubsystems {
       userFeatures,
       layout,
       registry: appRegistry,
-      runtime,
     }
   }
 

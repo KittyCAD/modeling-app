@@ -1,8 +1,3 @@
-import {
-  type RegistryItemDefinition,
-  defineRegistryItem,
-  provideService,
-} from '@kittycad/registry'
 import type { Signal } from '@preact/signals-core'
 import type {
   Layout,
@@ -11,7 +6,6 @@ import type {
   LayoutService,
 } from '@src/lib/layout/types'
 import { applyLayoutContribution } from '@src/lib/layout/utils'
-import { layoutService as layoutServiceToken } from '@src/registry/contracts/layout'
 
 export function createLayoutService(
   layoutSignal: Signal<Layout>
@@ -38,13 +32,4 @@ export function createLayoutService(
     },
     applyContributions,
   }
-}
-
-export function createLayoutServiceRegistryItem(
-  layoutService: LayoutService
-): RegistryItemDefinition {
-  return defineRegistryItem({
-    id: 'core.layout-service',
-    providesServices: [provideService(layoutServiceToken, layoutService)],
-  })
 }

@@ -1603,6 +1603,7 @@ async function waitForHistoryIdle(kclManager: KclManager) {
 async function disposeApp(app: App) {
   const projectPath = app.project?.path
   app.closeProject()
+  app.registry[Symbol.dispose]()
   app.systemIOActor.stop()
   app.settings.actor.stop()
   app.commands.actor.stop()
