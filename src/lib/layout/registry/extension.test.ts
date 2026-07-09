@@ -102,7 +102,7 @@ describe('layout extension', () => {
 
     expect(layout.get()).toEqual(playwrightLayoutConfig)
     expect(layout.signal.value).toEqual(playwrightLayoutConfig)
-    expect(layout.service).toMatchObject({
+    expect(layout).toMatchObject({
       applyContribution: expect.any(Function),
       applyContributions: expect.any(Function),
     })

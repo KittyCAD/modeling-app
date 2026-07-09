@@ -8,7 +8,7 @@ import { computed, effect, signal } from '@preact/signals-core'
 import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import { createLayoutService } from '@src/lib/layout/service'
-import type { Layout, LayoutService } from '@src/lib/layout/types'
+import type { Layout } from '@src/lib/layout/types'
 import {
   createLayoutWithMetadata,
   defaultLayout,
@@ -166,8 +166,6 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       reset: () => {
         layoutSignal.value = getRuntimeDefaultLayout()
       },
-      service: baseLayoutService,
-      saveEffectUnsubscribeFn,
     }
     disposeLayout = () => {
       settingsSubscription.unsubscribe()
@@ -179,21 +177,15 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     return layout
   }
 
-  const serviceFacade: LayoutService = {
-    applyContribution: (contribution) =>
-      ensureLayout().applyContribution(contribution),
-    applyContributions: (contributions) =>
-      ensureLayout().applyContributions(contributions),
-  }
-
   const serviceImpl: LayoutRegistryService = {
-    ...serviceFacade,
     signal: computed(() => ensureLayout().signal.value),
     get: () => ensureLayout().get(),
     set: (layout) => ensureLayout().set(layout),
     reset: () => ensureLayout().reset(),
-    service: serviceFacade,
-    saveEffectUnsubscribeFn: () => ensureLayout().saveEffectUnsubscribeFn(),
+    applyContribution: (contribution) =>
+      ensureLayout().applyContribution(contribution),
+    applyContributions: (contributions) =>
+      ensureLayout().applyContributions(contributions),
   }
 
   return {

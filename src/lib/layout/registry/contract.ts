@@ -13,13 +13,13 @@ import type {
   LayoutService,
 } from '@src/lib/layout/types'
 
-export type LayoutRegistryService = LayoutService & {
+export type LayoutRegistryService = {
   signal: ReadonlySignal<Layout>
   get: () => Layout
   set: (layout: Layout) => void
   reset: () => void
-  service: LayoutService
-  saveEffectUnsubscribeFn: () => void
+  applyContribution: LayoutService['applyContribution']
+  applyContributions: LayoutService['applyContributions']
 }
 
 export const layoutContract = defineContract({
