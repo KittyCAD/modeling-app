@@ -65,6 +65,17 @@ const volumeUnitByLengthUnit: Record<UnitLength, UnitVolume> = {
   yd: 'yd3',
 }
 
+const millimetersByLengthUnit: Record<UnitLength, number> = {
+  mm: 1,
+  cm: 10,
+  m: 1000,
+  in: 25.4,
+  ft: 304.8,
+  yd: 914.4,
+}
+
+const lengthUnitConversionDecimalPlaces = 7
+
 function getMeasurementKindForArtifact(
   artifact: Artifact | undefined
 ): MeasurementSelectionKind {
@@ -198,6 +209,16 @@ export function getAreaUnit(unit: UnitLength): UnitArea {
 
 export function getVolumeUnit(unit: UnitLength): UnitVolume {
   return volumeUnitByLengthUnit[unit]
+}
+
+/** Converts engine length measurements, returned in millimeters, to a display unit. */
+export function convertLengthFromMm(value: number, unit: UnitLength): number {
+  const roundedValue = Number(
+    (value / millimetersByLengthUnit[unit]).toFixed(
+      lengthUnitConversionDecimalPlaces
+    )
+  )
+  return Object.is(roundedValue, -0) ? 0 : roundedValue
 }
 
 export function formatDistance(value: number): string {
