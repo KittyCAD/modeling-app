@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 
 import type { Project } from '@src/lib/project'
 
-import ProjectCard from '@src/components/ProjectCard/ProjectCard'
+import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -48,7 +48,7 @@ function renderProjectCard({
 } = {}) {
   render(
     <BrowserRouter>
-      <ProjectCard
+      <AppProjectCard
         project={project}
         handleRenameProject={handleRenameProject}
         handleDeleteProject={vi.fn().mockResolvedValue(undefined)}

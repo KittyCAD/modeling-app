@@ -213,8 +213,11 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             new Promise<void>((resolve) => {
               let pendingHistoryStarted = false
               let requestSettled = false
+              let historyWriteCompleted = !shouldRecordZookeeperHistory
+              let postWriteCompleted = !shouldRecordZookeeperHistory
               const settleRequest = () => {
                 if (requestSettled) return
+                if (!historyWriteCompleted || !postWriteCompleted) return
                 requestSettled = true
                 resolve()
               }
@@ -250,10 +253,13 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                       if (pendingHistoryReserved || pendingHistoryStarted) {
                         cancelPendingZookeeperHistoryWrite({ exchangeId })
                       }
+                      historyWriteCompleted = true
+                      postWriteCompleted = true
                       settleRequest()
                     },
                     onFileSystemSuccess: () => {
                       if (historyRecorded) {
+                        historyWriteCompleted = true
                         settleRequest()
                         return
                       }
@@ -300,30 +306,44 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                               error
                             )
                           })
-                          .finally(settleRequest)
+                          .finally(() => {
+                            historyWriteCompleted = true
+                            settleRequest()
+                          })
                         return
                       }
+                      historyWriteCompleted = true
+                      postWriteCompleted = true
                       settleRequest()
                     },
-                    ...(shouldRefreshActiveEditorAfterPlainOutput &&
-                    activeFileOutput
+                    ...(shouldRecordZookeeperHistory ||
+                    (shouldRefreshActiveEditorAfterPlainOutput &&
+                      activeFileOutput)
                       ? {
                           onSuccess: () => {
+                            if (shouldRecordZookeeperHistory) {
+                              postWriteCompleted = true
+                              settleRequest()
+                              return
+                            }
+                            if (!activeFileOutput) return
                             if (kclManager.path !== activeFilePath) return
                             if (
-                              kclManager.code === activeFileOutput.requestedCode
-                            )
-                              return
-                            kclManager.updateCodeEditor(
-                              activeFileOutput.requestedCode,
-                              {
-                                shouldAddToHistory: false,
-                                shouldClearHistory: true,
-                                shouldExecute: true,
-                                shouldResetCamera: true,
-                                shouldWriteToDisk: true,
-                              }
-                            )
+                              kclManager.code !== activeFileOutput.requestedCode
+                            ) {
+                              kclManager.updateCodeEditor(
+                                activeFileOutput.requestedCode,
+                                {
+                                  shouldAddToHistory: false,
+                                  shouldClearHistory: true,
+                                  shouldExecute: true,
+                                  shouldResetCamera: true,
+                                  shouldWriteToDisk: true,
+                                }
+                              )
+                            }
+                            postWriteCompleted = true
+                            settleRequest()
                           },
                         }
                       : {}),
@@ -337,6 +357,8 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                   'Failed to process Zookeeper file request.',
                   error
                 )
+                historyWriteCompleted = true
+                postWriteCompleted = true
                 settleRequest()
               })
             })

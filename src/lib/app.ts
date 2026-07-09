@@ -24,7 +24,6 @@ import {
 } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -71,11 +70,13 @@ import {
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
@@ -163,6 +164,7 @@ function createAppRegistryItems({
       : []),
     appCommandsSlot.of(),
     appRegistryServicesSlot.of(),
+    engineSceneRuntimeExtensionsSlot.of(),
     ...coreRegistryItems,
   ]
 }
@@ -312,12 +314,12 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
-    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
-    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncOpfsCloudBacking()
+    this.syncCloudSyncRuntimePolicy()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -656,8 +658,8 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncOpfsCloudBacking = () => {
-    if (typeof window === 'undefined' || window.electron) {
+  syncCloudSyncRuntimePolicy = () => {
+    if (typeof window === 'undefined') {
       return
     }
 
@@ -665,19 +667,23 @@ export class App implements AppSubsystems {
     const token = authSnapshot.matches('loggedIn')
       ? authSnapshot.context.token
       : undefined
+    const settingsContext = this.settings.actor.getSnapshot().context
+    const cloudSyncPluginEnabled =
+      settingsContext.plugins?.['cloud-sync']?.current !== false
     const enabled =
       Boolean(token) &&
+      cloudSyncPluginEnabled &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
         false
       )
 
-    configureOpfsCloudSync({
+    this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      projectDirectoryPath:
-        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+      projectDirectoryPath: settingsContext.app.projectDirectory.current,
+      syncExistingLocalProjects: !window.electron,
     })
   }
 
