@@ -18,7 +18,6 @@ import type {
 } from '@src/registry/contracts/homeProjects'
 import type { FormEvent, HTMLAttributes } from 'react'
 import { useEffect, useRef, useState } from 'react'
-import { toast } from 'react-hot-toast'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Link, useNavigate } from 'react-router-dom'
 
@@ -156,16 +155,6 @@ function AppProjectCard({
     const newProjectName = new FormData(e.currentTarget).get('newProjectName')
 
     if (
-      !project.remoteProjectId &&
-      typeof newProjectName === 'string' &&
-      newProjectName.startsWith('.')
-    ) {
-      toast.error('Project names cannot start with a period.')
-      return
-    }
-
-    if (
-      project.remoteProjectId &&
       typeof newProjectName === 'string' &&
       newProjectName !== projectDisplayName
     ) {
@@ -198,7 +187,6 @@ function AppProjectCard({
         return null
       }
       if (
-        !project.remoteProjectId ||
         optimisticName.projectId !== project.id ||
         optimisticName.name === projectDisplayName
       ) {
@@ -206,7 +194,7 @@ function AppProjectCard({
       }
       return optimisticName
     })
-  }, [project.remoteProjectId, project.id, projectDisplayName])
+  }, [project.id, projectDisplayName])
 
   const projectName = getHomeProjectDisplayName(displayedProject)
   const canRename = projectActions.canRename(project)

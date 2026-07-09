@@ -136,6 +136,48 @@ describe('ProjectCard', () => {
     )
   })
 
+  test('eagerly shows local project title renames', async () => {
+    const localProject = {
+      ...cloudProject,
+      id: 'local:/projects/local-folder',
+      name: 'local-folder',
+      title: 'Old local title',
+      source: 'local',
+      status: 'local',
+      remoteProjectId: undefined,
+      localProjectPath: '/projects/local-folder',
+      localProjectName: 'local-folder',
+      defaultFile: '/projects/local-folder/main.kcl',
+    } satisfies HomeProjectEntry
+    const rename = vi.fn().mockResolvedValue(undefined)
+    const { projectActions } = renderProjectCard({
+      project: localProject,
+      projectActions: createProjectActions({ rename }),
+    })
+
+    expect(screen.getByTestId('project-title')).toHaveTextContent(
+      'Old local title'
+    )
+
+    clickRenameProject()
+    fireEvent.change(screen.getByTestId('project-rename-input'), {
+      target: { value: '.New local title' },
+    })
+    submitRenameProject()
+
+    await waitFor(() =>
+      expect(projectActions.rename).toHaveBeenCalledWith(
+        localProject,
+        '.New local title'
+      )
+    )
+    await waitFor(() =>
+      expect(screen.getByTestId('project-title')).toHaveTextContent(
+        '.New local title'
+      )
+    )
+  })
+
   test('shows status badges for project cards with one source', () => {
     renderProjectCard({
       project: {

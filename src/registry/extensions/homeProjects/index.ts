@@ -6,14 +6,13 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
-import { getProjectInfo } from '@src/lib/desktop'
+import {
+  getProjectInfo,
+  writeProjectTitleToProjectToml,
+} from '@src/lib/desktop'
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectActionsService,
@@ -23,93 +22,11 @@ import {
 } from '@src/registry/contracts/homeProjects'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
-import type { AnyActorRef } from 'xstate'
 
 function localHomeProjectEntriesFromProjects(
   projects: readonly Project[] | undefined
 ): HomeProjectEntryContribution[] {
   return projects?.map(homeProjectEntryFromProject) ?? []
-}
-
-function sendSystemIOEventAndWaitForMutationRefresh({
-  actor,
-  event,
-  mutationState,
-  isRefreshComplete,
-}: {
-  actor: AnyActorRef
-  event: Parameters<AnyActorRef['send']>[0]
-  mutationState:
-    | SystemIOMachineStates.renamingProject
-    | SystemIOMachineStates.deletingProject
-  isRefreshComplete?: (snapshot: SystemIOMutationSnapshot) => boolean
-}) {
-  return new Promise<void>((resolve) => {
-    let sawMutationState = false
-    let sawRefreshState = false
-    let settled = false
-    let subscription: { unsubscribe: () => void } | undefined
-
-    const finish = () => {
-      if (settled) {
-        return
-      }
-      settled = true
-      clearTimeout(timeout)
-      subscription?.unsubscribe()
-      resolve()
-    }
-    const timeout = setTimeout(finish, 5000)
-    const mutationRefreshComplete = (snapshot: SystemIOMutationSnapshot) =>
-      snapshot.matches(SystemIOMachineStates.idle) &&
-      (!isRefreshComplete || !sawRefreshState || isRefreshComplete(snapshot))
-
-    subscription = actor.subscribe((snapshot: SystemIOMutationSnapshot) => {
-      if (snapshot.matches(mutationState)) {
-        sawMutationState = true
-      }
-      if (snapshot.matches(SystemIOMachineStates.readingFolders)) {
-        sawRefreshState = true
-      }
-      if (sawMutationState && mutationRefreshComplete(snapshot)) {
-        finish()
-      }
-    })
-
-    actor.send(event)
-
-    const snapshot = actor.getSnapshot() as SystemIOMutationSnapshot
-    if (snapshot.matches(mutationState)) {
-      sawMutationState = true
-    }
-    if (snapshot.matches(SystemIOMachineStates.readingFolders)) {
-      sawRefreshState = true
-    }
-    if (
-      (!sawMutationState && snapshot.matches(SystemIOMachineStates.idle)) ||
-      (sawMutationState && mutationRefreshComplete(snapshot))
-    ) {
-      finish()
-    }
-  })
-}
-
-type SystemIOMutationSnapshot = {
-  matches: (state: SystemIOMachineStates) => boolean
-  context?: {
-    folders?: Project[]
-  }
-}
-
-function refreshedFoldersIncludeProjectDisplayName(
-  snapshot: SystemIOMutationSnapshot,
-  requestedName: string
-) {
-  return Boolean(
-    snapshot.context?.folders?.some(
-      (folder) => getProjectDisplayName(folder) === requestedName
-    )
-  )
 }
 
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
@@ -127,7 +44,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           project.remoteProjectId
       ),
     canRename: (project) =>
-      Boolean(project.localProjectName && project.readWriteAccess),
+      Boolean(project.localProjectPath && project.readWriteAccess),
     canDelete: (project) =>
       Boolean(project.localProjectName && project.readWriteAccess),
     open: async (project) => {
@@ -156,28 +73,16 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       return { defaultFile: projectInfo.default_file }
     },
     rename: async (project, requestedName) => {
-      if (!serviceImpl.canRename(project) || !project.localProjectName) {
+      if (!serviceImpl.canRename(project) || !project.localProjectPath) {
         return
       }
 
-      const actor = systemIO.value?.actor
-      if (!actor) {
-        return
-      }
-
-      await sendSystemIOEventAndWaitForMutationRefresh({
-        actor,
-        mutationState: SystemIOMachineStates.renamingProject,
-        isRefreshComplete: (snapshot) =>
-          refreshedFoldersIncludeProjectDisplayName(snapshot, requestedName),
-        event: {
-          type: SystemIOMachineEvents.renameProject,
-          data: {
-            requestedProjectName: requestedName,
-            projectName: project.localProjectName,
-            redirect: false,
-          },
-        },
+      await writeProjectTitleToProjectToml(
+        project.localProjectPath,
+        requestedName
+      )
+      systemIO.value?.actor.send({
+        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
     },
     delete: async (project) => {
@@ -185,19 +90,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return
       }
 
-      const actor = systemIO.value?.actor
-      if (!actor) {
-        return
-      }
-
-      await sendSystemIOEventAndWaitForMutationRefresh({
-        actor,
-        mutationState: SystemIOMachineStates.deletingProject,
-        event: {
-          type: SystemIOMachineEvents.deleteProject,
-          data: {
-            requestedProjectName: project.localProjectName,
-          },
+      systemIO.value?.actor.send({
+        type: SystemIOMachineEvents.deleteProject,
+        data: {
+          requestedProjectName: project.localProjectName,
         },
       })
     },
