@@ -1,9 +1,9 @@
-import { normalizePathForSync } from '@src/lib/fs-zds/opfsCloud/paths'
+import { normalizePathForSync } from '@src/lib/cloudSync/paths'
 import type {
-  OpfsCloudProjectMetadataIndexEntry,
+  CloudSyncProjectMetadataIndexEntry,
   OutboxEntry,
   ProjectMetadata,
-} from '@src/lib/fs-zds/opfsCloud/types'
+} from '@src/lib/cloudSync/types'
 
 const DB_NAME = 'zds-opfs-cloud-sync'
 const DB_VERSION = 1
@@ -91,11 +91,11 @@ export async function getProjectMetadata(projectPath: string) {
   )
 }
 
-export async function getOpfsCloudProjectMetadata(projectPath: string) {
+export async function getCloudSyncProjectMetadata(projectPath: string) {
   return getProjectMetadata(normalizePathForSync(projectPath))
 }
 
-export async function getOpfsCloudProjectMetadataIndex() {
+export async function getCloudSyncProjectMetadataIndex() {
   const [metadata, outboxEntries] = await Promise.all([
     getAllProjectMetadata(),
     getAllOutboxEntries(),
@@ -104,7 +104,7 @@ export async function getOpfsCloudProjectMetadataIndex() {
     outboxEntries.map((entry) => normalizePathForSync(entry.projectPath))
   )
 
-  return new Map<string, OpfsCloudProjectMetadataIndexEntry>(
+  return new Map<string, CloudSyncProjectMetadataIndexEntry>(
     metadata.map((entry) => [
       normalizePathForSync(entry.localProjectPath),
       {

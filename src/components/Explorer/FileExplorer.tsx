@@ -10,7 +10,7 @@ import {
   isRowFake,
   shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
-import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
 import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'

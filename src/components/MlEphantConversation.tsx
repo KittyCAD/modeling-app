@@ -5,8 +5,8 @@ import { isExternalFileDrag } from '@src/components/Explorer/utils'
 import Loading from '@src/components/Loading'
 import { MakeathonAnnouncement } from '@src/components/MakeathonAnnouncement'
 import Tooltip from '@src/components/Tooltip'
-import { ViewportAnnotationOverlay } from '@src/components/ViewportAnnotationOverlay'
 import { noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import { dataUrlToFile, takeViewportScreenshot } from '@src/lib/screenshot'
 import { err } from '@src/lib/trap'
 import { isNonNullable } from '@src/lib/utils'
@@ -17,8 +17,12 @@ import type {
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
+import {
+  activateZoodleRuntimeExtension,
+  deactivateZoodleRuntimeExtension,
+} from '@src/registry/extensions/engineScene/zoodleRuntimeExtension'
 import type { ChangeEvent, ReactNode } from 'react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const noop = () => {}
 
@@ -159,6 +163,7 @@ export interface MlEphantExtraInputsProps {
   onCaptureScreenshot: () => void
   onAnnotateScreenshot: () => void
   attachmentsDisabled?: boolean
+  isZoodleActive?: boolean
   modeOptions?: MlCopilotModeOption[]
 }
 
@@ -212,8 +217,13 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           type="button"
           data-testid="ml-ephant-annotate-screenshot-button"
           onClick={props.onAnnotateScreenshot}
-          disabled={props.attachmentsDisabled}
-          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          disabled={props.attachmentsDisabled && !props.isZoodleActive}
+          aria-pressed={props.isZoodleActive ?? false}
+          className={`h-7 w-7 flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60 ${
+            props.isZoodleActive
+              ? 'bg-ml-green text-chalkboard-100 hover:bg-ml-green'
+              : 'bg-default'
+          }`}
           aria-label="Zoodle"
         >
           <CustomIcon name="sketch" className="w-5 h-5" />
@@ -263,6 +273,7 @@ interface MlEphantConversationInputProps {
 export const MlEphantConversationInput = (
   props: MlEphantConversationInputProps
 ) => {
+  const { registry } = useApp()
   const refDiv = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [value, setValue] = useState<string>('')
@@ -273,9 +284,18 @@ export const MlEphantConversationInput = (
   const lastModeScopeKey = useRef(props.modeScopeKey)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
-  const [annotationImageDataUrl, setAnnotationImageDataUrl] = useState<
-    string | null
-  >(null)
+  const [isZoodleActive, setIsZoodleActive] = useState(false)
+
+  const stopZoodleRuntimeExtension = useCallback(() => {
+    setIsZoodleActive(false)
+    deactivateZoodleRuntimeExtension(registry)
+  }, [registry])
+
+  useEffect(() => {
+    return () => {
+      stopZoodleRuntimeExtension()
+    }
+  }, [stopZoodleRuntimeExtension])
 
   // Without this the cursor ends up at the start of the text
   useEffect(() => setValue(props.defaultPrompt || ''), [props.defaultPrompt])
@@ -391,12 +411,29 @@ export const MlEphantConversationInput = (
   }
 
   const onAnnotateScreenshot = () => {
+    if (isZoodleActive) {
+      stopZoodleRuntimeExtension()
+      return
+    }
+
     if (props.disabled) return
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      setAnnotationImageDataUrl(dataUrl)
+      setIsZoodleActive(true)
+      activateZoodleRuntimeExtension(registry, {
+        imageDataUrl: dataUrl,
+        onCancel: stopZoodleRuntimeExtension,
+        onSend: (annotatedDataUrl) => {
+          appendDataUrlAttachment(
+            annotatedDataUrl,
+            'annotated-viewport-screenshot.png'
+          )
+          stopZoodleRuntimeExtension()
+        },
+      })
     } catch (e) {
+      setIsZoodleActive(false)
       console.error('Failed to capture viewport screenshot for annotation', e)
     }
   }
@@ -548,6 +585,7 @@ export const MlEphantConversationInput = (
             onCaptureScreenshot={onCaptureScreenshot}
             onAnnotateScreenshot={onAnnotateScreenshot}
             attachmentsDisabled={props.disabled}
+            isZoodleActive={isZoodleActive}
             modeOptions={props.modeOptions}
           />
           <div className="flex flex-none flex-row gap-1">
@@ -590,19 +628,6 @@ export const MlEphantConversationInput = (
         Zookeeper can make mistakes. We send selection context to help. Always
         verify information.
       </div>
-      {annotationImageDataUrl && (
-        <ViewportAnnotationOverlay
-          imageDataUrl={annotationImageDataUrl}
-          onCancel={() => setAnnotationImageDataUrl(null)}
-          onSend={(annotatedDataUrl) => {
-            appendDataUrlAttachment(
-              annotatedDataUrl,
-              'annotated-viewport-screenshot.png'
-            )
-            setAnnotationImageDataUrl(null)
-          }}
-        />
-      )}
     </div>
   )
 }
