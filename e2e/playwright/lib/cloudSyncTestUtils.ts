@@ -1,12 +1,11 @@
 import type { BrowserContext, Page, Route } from '@playwright/test'
+import { PROJECT_FOLDER } from '@src/lib/constants'
 import JSZip from 'jszip'
 
-import { PROJECT_FOLDER } from '@src/lib/constants'
-
-// Test utilities for the OPFSCloud sync contract. These helpers are grouped
-// because the E2E scenarios need the local OPFS project tree, the OPFSCloud
-// IndexedDB sync metadata/outbox, and the cloud Projects API mock to agree
-// about the same project ids, revisions, manifests, and archive contents.
+// Test utilities for the cloud sync contract. These helpers are grouped
+// because the E2E scenarios need the local project tree, the cloud sync
+// IndexedDB metadata/outbox, and the cloud Projects API mock to agree about the
+// same project ids, revisions, manifests, and archive contents.
 
 export const PROJECT_DIR = `/documents/${PROJECT_FOLDER}`
 export const CLOUD_ENVIRONMENT = 'dev.zoo.dev'
@@ -66,8 +65,8 @@ export async function projectTitles(page: Page) {
 }
 
 export function createRemoteListGate(initiallyReleased = false) {
-  // Lets tests force Home to render local OPFS projects first, then release the
-  // remote list later to assert that cloud hydration does not replace the list.
+  // Lets tests force Home to render local projects first, then release the
+  // remote list later to assert that cloud sync does not replace the list.
   let released = initiallyReleased
   const waiters: Array<() => void> = []
 
@@ -109,7 +108,7 @@ export async function routeCloudProjects(
     updateProject?: (request: ProjectRequest) => JsonRouteResponse | undefined
   }
 ) {
-  // Mock the subset of the Projects API that OPFSCloud uses: remote listing,
+  // Mock the subset of the Projects API that cloud sync uses: remote listing,
   // project create/update metadata, and whole-project archive downloads.
   // Tests inspect `calls` to verify that local-first sync queued the expected
   // guarded cloud writes without relying on a real backend.
@@ -128,6 +127,7 @@ export async function routeCloudProjects(
   const brokenArchiveProjectIds = new Set(options.brokenArchiveProjectIds ?? [])
   const calls = {
     creates: [] as string[],
+    downloads: [] as string[],
     remoteListResponses: 0,
     updates: [] as ProjectRequest[],
   }
@@ -183,6 +183,8 @@ export async function routeCloudProjects(
     }
 
     if (projectId && pathname.endsWith('/download')) {
+      calls.downloads.push(projectId)
+
       if (brokenArchiveProjectIds.has(projectId)) {
         await fulfillJson(route, { message: 'broken archive' }, 500)
         return
@@ -213,7 +215,7 @@ export async function routeCloudProjects(
   }
 }
 
-export async function seedOpfsCloudState(
+export async function seedCloudSyncState(
   page: Page,
   seed: {
     projects: Array<{
@@ -421,6 +423,17 @@ export async function readOpfsTextFiles<T extends Record<string, string>>(
     )
     return Object.fromEntries(entries)
   }, pathsByName) as Promise<Record<keyof T, string>>
+}
+
+export async function opfsPathExists(page: Page, path: string) {
+  return page.evaluate(async (pathToCheck) => {
+    try {
+      await window.fsZds.stat(pathToCheck)
+      return true
+    } catch {
+      return false
+    }
+  }, path)
 }
 
 async function fulfillJson(route: Route, body: unknown, status = 200) {
