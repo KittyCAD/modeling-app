@@ -1,8 +1,11 @@
 use async_recursion::async_recursion;
 use indexmap::IndexMap;
+use kcl_api::Group;
+use kcl_api::OpArg;
 
 use crate::CompilationIssue;
 use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -18,10 +21,8 @@ use crate::execution::StatementKind;
 use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
-use crate::execution::cad_op::Group;
-use crate::execution::cad_op::OpArg;
-use crate::execution::cad_op::OpKclValue;
 use crate::execution::cad_op::Operation;
+use crate::execution::cad_op::op_from_kcl_value;
 use crate::execution::control_continue;
 use crate::execution::kcl_value::FunctionBody;
 use crate::execution::kcl_value::FunctionSource;
@@ -381,7 +382,7 @@ impl FunctionSource {
             let op_labeled_args = args
                 .labeled
                 .iter()
-                .map(|(k, arg)| (k.clone(), OpArg::new(OpKclValue::from(&arg.value), arg.source_range)))
+                .map(|(k, arg)| (k.clone(), OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)))
                 .collect();
 
             // If you're calling a stdlib function, track that call as an operation.
@@ -390,7 +391,7 @@ impl FunctionSource {
                     name: fn_name.clone().unwrap_or_else(|| "unknown function".to_owned()),
                     unlabeled_arg: args
                         .unlabeled_kw_arg_unconverted()
-                        .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                        .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                     labeled_args: op_labeled_args,
                     node_path: NodePath::placeholder(),
                     source_range: callsite,
@@ -405,7 +406,7 @@ impl FunctionSource {
                         function_source_range: self.ast.as_source_range(),
                         unlabeled_arg: args
                             .unlabeled_kw_arg_unconverted()
-                            .map(|arg| OpArg::new(OpKclValue::from(&arg.value), arg.source_range)),
+                            .map(|arg| OpArg::new(op_from_kcl_value(&arg.value), arg.source_range)),
                         labeled_args: op_labeled_args,
                     },
                     node_path: NodePath::placeholder(),
@@ -829,6 +830,18 @@ fn type_err_str(expected: &Type, found: &KclValue, source_range: &SourceRange, e
     result
 }
 
+/// Build the error message for a labeled argument whose label doesn't match any
+/// parameter of the callee. Shared between keyword function calls and sketch
+/// blocks so the wording stays consistent.
+pub(crate) fn unexpected_kw_arg_message(label: &str, callee_name: Option<&str>) -> String {
+    format!(
+        "`{label}` is not an argument of {}",
+        callee_name
+            .map(|n| format!("`{n}`"))
+            .unwrap_or_else(|| "this function".to_owned()),
+    )
+}
+
 fn type_check_params_kw(
     fn_name: Option<&str>,
     fn_def: &FunctionSource,
@@ -1044,12 +1057,7 @@ fn type_check_params_kw(
             None => {
                 exec_state.err(CompilationIssue::err(
                     arg.source_range,
-                    format!(
-                        "`{label}` is not an argument of {}",
-                        fn_name
-                            .map(|n| format!("`{n}`"))
-                            .unwrap_or_else(|| "this function".to_owned()),
-                    ),
+                    unexpected_kw_arg_message(&label, fn_name),
                 ));
             }
         }
@@ -1184,6 +1192,7 @@ mod test {
     use crate::execution::memory::Stack;
     use crate::execution::parse_execute;
     use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
     use crate::parsing::ast::types::DefaultParamVal;
     use crate::parsing::ast::types::FunctionExpression;
     use crate::parsing::ast::types::Identifier;
@@ -1378,7 +1387,7 @@ mod test {
             let exec_ctxt = ExecutorContext {
                 engine: Arc::new(EngineManager::new_mock()),
                 engine_batch: crate::engine::EngineBatchContext::default(),
-                fs: Arc::new(crate::fs::FileManager::new()),
+                fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
                 settings: Default::default(),
                 context_type: ContextType::Mock,
                 execution_callbacks: Default::default(),

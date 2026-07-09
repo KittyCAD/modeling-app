@@ -1,0 +1,88 @@
+import { Registry } from '@kittycad/registry'
+import {
+  engineSceneRuntimeExtensionsSlot,
+  engineSceneStreamClassNamesValueSpec,
+  engineSceneStreamLayersValueSpec,
+  mergeEngineSceneClassNames,
+} from '@src/registry/contracts/engineScene'
+import {
+  ZOODLE_BRUSH_SIZE_DEFAULT_PX,
+  ZOODLE_BRUSH_SIZE_MAX_PX,
+  ZOODLE_BRUSH_SIZE_MIN_PX,
+  zoodleService,
+} from '@src/registry/contracts/zoodle'
+import { describe, expect, it, vi } from 'vitest'
+import engineSceneExtension from '.'
+import { activateZoodleRuntimeExtension } from './zoodleRuntimeExtension'
+
+describe('zoodle runtime extension', () => {
+  it('insets the engine stream while Zoodle is active', () => {
+    const registry = new Registry()
+    registry.configure([
+      engineSceneExtension,
+      engineSceneRuntimeExtensionsSlot.of(),
+    ])
+
+    activateZoodleRuntimeExtension(registry, {
+      imageDataUrl: 'data:image/png;base64,aGVsbG8=',
+      onCancel: vi.fn(),
+      onSend: vi.fn(),
+    })
+
+    expect(registry.get(engineSceneStreamLayersValueSpec)).toHaveLength(1)
+    expect(
+      mergeEngineSceneClassNames(
+        registry.get(engineSceneStreamClassNamesValueSpec)
+      )
+    ).toBe(
+      'absolute inset-4 z-20 rounded-lg transition-all duration-150 ease-out before:content-[""] before:absolute before:-inset-4 before:bg-ml-green'
+    )
+  })
+
+  it('provides a session-scoped Zoodle tool service', () => {
+    const registry = new Registry()
+    registry.configure([
+      engineSceneExtension,
+      engineSceneRuntimeExtensionsSlot.of(),
+    ])
+
+    activateZoodleRuntimeExtension(registry, {
+      imageDataUrl: 'data:image/png;base64,aGVsbG8=',
+      onCancel: vi.fn(),
+      onSend: vi.fn(),
+    })
+
+    const zoodle = registry.get(zoodleService)
+
+    expect(zoodle.activeToolKey.value).toBe('drawOrange')
+    expect(zoodle.brushSize.value).toBe(ZOODLE_BRUSH_SIZE_DEFAULT_PX)
+    expect(zoodle.toolDefinitions.drawOrange).toMatchObject({
+      type: 'draw',
+      color: '#ff8800',
+    })
+    expect(zoodle.toolDefinitions.drawZooBlue).toMatchObject({
+      type: 'draw',
+      color: 'currentColor',
+      colorClassName: 'text-primary',
+    })
+    expect(zoodle.toolDefinitions.drawDefault).toMatchObject({
+      type: 'draw',
+      color: 'currentColor',
+      colorClassName: 'text-default',
+    })
+    expect(zoodle.toolDefinitions.erase).toMatchObject({
+      type: 'erase',
+      lineWidthMultiplier: 4,
+    })
+
+    zoodle.equipTool('erase')
+
+    expect(zoodle.activeToolKey.value).toBe('erase')
+
+    zoodle.setBrushSize(ZOODLE_BRUSH_SIZE_MAX_PX + 1)
+    expect(zoodle.brushSize.value).toBe(ZOODLE_BRUSH_SIZE_MAX_PX)
+
+    zoodle.setBrushSize(ZOODLE_BRUSH_SIZE_MIN_PX - 1)
+    expect(zoodle.brushSize.value).toBe(ZOODLE_BRUSH_SIZE_MIN_PX)
+  })
+})

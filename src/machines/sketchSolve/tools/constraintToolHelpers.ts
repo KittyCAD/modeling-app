@@ -2,7 +2,6 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import {
   buildEqualLengthConstraintInput,
   buildFixedConstraintInput,
@@ -27,8 +26,6 @@ import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 type HorizontalVerticalPayload =
   | Extract<ApiConstraint, { type: 'Horizontal' }>
   | Extract<ApiConstraint, { type: 'Vertical' }>
-  | Extract<ApiConstraint, { type: 'HorizontalDistance' }>
-  | Extract<ApiConstraint, { type: 'VerticalDistance' }>
 
 export type ConstraintToolPayload =
   | Extract<ApiConstraint, { type: 'Coincident' }>
@@ -73,10 +70,6 @@ export type NormalizeConstraintToolSelectionResult = {
   selectionIds: SketchSolveSelectionId[]
   match: ConstraintToolSelectionMatch | null
   status: 'empty' | 'partial' | 'complete' | 'invalid'
-}
-
-type ConstraintToolApplyOptions = {
-  defaultLengthUnit: NumericSuffix
 }
 
 function toConstraintSegments(
@@ -234,8 +227,7 @@ function buildConstraintToolPayloads(
   toolName: ConstraintToolName,
   match: ConstraintToolSelectionMatch,
   selectionIds: readonly SketchSolveSelectionId[],
-  objects: readonly ApiObject[],
-  defaultLengthUnit: NumericSuffix
+  objects: readonly ApiObject[]
 ): ConstraintToolPayload[] | null {
   const objectSelectionIds = getSelectionObjectIds(selectionIds)
 
@@ -353,10 +345,8 @@ function buildConstraintToolPayloads(
 
       return [
         {
-          type: 'VerticalDistance',
+          type: 'Horizontal',
           points: toConstraintSegments(selectionIds),
-          distance: { value: 0, units: defaultLengthUnit },
-          source: { expr: '0', is_literal: true },
         },
       ]
     case 'verticalConstraintTool':
@@ -373,10 +363,8 @@ function buildConstraintToolPayloads(
 
       return [
         {
-          type: 'HorizontalDistance',
+          type: 'Vertical',
           points: toConstraintSegments(selectionIds),
-          distance: { value: 0, units: defaultLengthUnit },
-          source: { expr: '0', is_literal: true },
         },
       ]
     case 'perpendicularConstraintTool': {
@@ -453,8 +441,7 @@ export function normalizeConstraintToolSelection(
 export function getConstraintToolPreparedApply(
   toolName: ConstraintToolName,
   selectionIds: readonly SketchSolveSelectionId[],
-  objects: readonly ApiObject[],
-  options: ConstraintToolApplyOptions
+  objects: readonly ApiObject[]
 ): ConstraintToolPreparedApply | null {
   const selectionResult = getConstraintToolSelectionMatches(
     toolName,
@@ -470,8 +457,7 @@ export function getConstraintToolPreparedApply(
     toolName,
     match,
     selectionIds,
-    objects,
-    options.defaultLengthUnit
+    objects
   )
   if (!payloads || payloads.length === 0) {
     return null
@@ -491,8 +477,7 @@ export function resolveConstraintToolClickAction(
   toolName: ConstraintToolName,
   currentSelectionIds: readonly SketchSolveSelectionId[],
   clickedSelectionId: SketchSolveSelectionId | null,
-  objects: readonly ApiObject[],
-  options: ConstraintToolApplyOptions
+  objects: readonly ApiObject[]
 ): ConstraintToolClickAction {
   if (clickedSelectionId === null) {
     return {
@@ -520,8 +505,7 @@ export function resolveConstraintToolClickAction(
     toolName,
     currentSelectionIds,
     [clickedSelectionId],
-    objects,
-    options
+    objects
   )
 }
 
@@ -529,8 +513,7 @@ export function resolveConstraintToolSelectionAction(
   toolName: ConstraintToolName,
   currentSelectionIds: readonly SketchSolveSelectionId[],
   candidateSelectionIds: readonly SketchSolveSelectionId[],
-  objects: readonly ApiObject[],
-  options: ConstraintToolApplyOptions
+  objects: readonly ApiObject[]
 ): ConstraintToolSelectionAction {
   const uniqueCandidateSelectionIds = uniqueSelectionIds(candidateSelectionIds)
   if (uniqueCandidateSelectionIds.length === 0) {
@@ -582,8 +565,7 @@ export function resolveConstraintToolSelectionAction(
     const preparedApply = getConstraintToolPreparedApply(
       toolName,
       normalizedCombinedSelectionIds,
-      objects,
-      options
+      objects
     )
     if (preparedApply) {
       return {

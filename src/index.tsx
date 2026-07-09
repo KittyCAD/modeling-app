@@ -5,7 +5,6 @@ import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
 import '@src/index.css'
-import env from '@src/env'
 import type { App } from '@src/lib/app'
 import {
   clearAutoUpdateDownloadProgress,
@@ -35,20 +34,6 @@ function launchApp(app: App) {
 /** initialize behaviors that rely on singletons */
 function initSingletonBehavior(app: App) {
   const { singletons } = app
-  markOnce('code/env', {
-    name: 'code/env',
-    startTime: performance.now(),
-    entryType: 'mark',
-    detail: {
-      env: {
-        NODE_ENV: env().NODE_ENV,
-        VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
-        VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
-        VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
-        VITE_MLEPHANT_WEBSOCKET_URL: env().VITE_MLEPHANT_WEBSOCKET_URL,
-      },
-    },
-  })
   markOnce('code/willAuth')
   initializeWindowExceptionHandler(singletons.kclManager)
 

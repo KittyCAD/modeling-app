@@ -1,4 +1,9 @@
 import { newKclFile } from '@src/lang/project'
+import {
+  cloudSyncStatus,
+  getCloudSyncProjectMetadataIndex,
+  getCloudSyncProjectModifiedTime,
+} from '@src/lib/cloudSync'
 import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
   canReadWriteDirectory,
@@ -20,11 +25,6 @@ import {
 } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
-import {
-  getOpfsCloudProjectMetadataIndex,
-  getOpfsCloudProjectModifiedTime,
-  opfsCloudSyncStatus,
-} from '@src/lib/fs-zds/opfsCloud'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
@@ -473,8 +473,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await mkdirOrNOOP(projectDirectoryPath)
-        const cloudProjectMetadataByPath = opfsCloudSyncStatus.value.enabled
-          ? await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
+        const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
+          ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
           : new Map()
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries: ProjectDirectoryEntry[] = []
@@ -498,7 +498,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             name: entry,
             path: projectPath,
             modified:
-              getOpfsCloudProjectModifiedTime(
+              getCloudSyncProjectModifiedTime(
                 cloudProjectMetadataByPath.get(
                   normalizeProjectPathForCloudMetadata(projectPath)
                 ),
@@ -525,7 +525,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           project.cloudProjectId ??= cloudMetadata?.remoteProjectId
           project.cloudConflict = cloudMetadata?.conflict
           if (project.metadata) {
-            project.metadata.modified = getOpfsCloudProjectModifiedTime(
+            project.metadata.modified = getCloudSyncProjectModifiedTime(
               cloudMetadata,
               project.metadata.modified
             )
@@ -873,60 +873,66 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            onFileSystemError?: () => void
             onFileSystemSuccess?: () => void
             onSuccess?: () => void
           }
         }) => {
-          const wasmInstance = await input.context.wasmInstancePromise
-          const message = await sharedBulkCreateWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-              override: input.override,
-            },
-          })
-          // We won't delete until everything's created / updated first.
-          const totalDeleted = await sharedBulkDeleteWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-            },
-          })
+          try {
+            const wasmInstance = await input.context.wasmInstancePromise
+            const message = await sharedBulkCreateWorkflow({
+              input: {
+                ...input,
+                wasmInstance,
+                override: input.override,
+              },
+            })
+            // We won't delete until everything's created / updated first.
+            const totalDeleted = await sharedBulkDeleteWorkflow({
+              input: {
+                ...input,
+                wasmInstance,
+              },
+            })
 
-          message.message += `, ${totalDeleted} deleted`
-          input.onFileSystemSuccess?.()
+            message.message += `, ${totalDeleted} deleted`
+            input.onFileSystemSuccess?.()
 
-          const project = input.context.app.project
-          const requestedRelativePath = normalizeKCLFileDeletePath(
-            input.requestedFileNameWithExtension
-          )
-          const deletesRequestedFile = (input.filesToDelete ?? []).some(
-            (file) =>
-              normalizeKCLFileDeletePath(file.requestedFileName) ===
-              requestedRelativePath
-          )
-          const requestedAbsolutePath = project
-            ? fsZds.join(project.path, input.requestedFileNameWithExtension)
-            : ''
-          const shouldNavigate =
-            !project ||
-            project.name !== input.requestedProjectName ||
-            project.executingPath !== requestedAbsolutePath ||
-            deletesRequestedFile
+            const project = input.context.app.project
+            const requestedRelativePath = normalizeKCLFileDeletePath(
+              input.requestedFileNameWithExtension
+            )
+            const deletesRequestedFile = (input.filesToDelete ?? []).some(
+              (file) =>
+                normalizeKCLFileDeletePath(file.requestedFileName) ===
+                requestedRelativePath
+            )
+            const requestedAbsolutePath = project
+              ? fsZds.join(project.path, input.requestedFileNameWithExtension)
+              : ''
+            const shouldNavigate =
+              !project ||
+              project.name !== input.requestedProjectName ||
+              project.executingPath !== requestedAbsolutePath ||
+              deletesRequestedFile
 
-          if (!shouldNavigate) {
-            input.onSuccess?.()
-          }
+            if (!shouldNavigate) {
+              input.onSuccess?.()
+            }
 
-          return {
-            ...message,
-            projectName: input.requestedProjectName,
-            fileName: input.requestedFileNameWithExtension || '',
-            subRoute: input.requestedSubRoute || '',
-            shouldNavigate,
-            ...(shouldNavigate && input.onSuccess
-              ? { onProjectLoaderComplete: input.onSuccess }
-              : {}),
+            return {
+              ...message,
+              projectName: input.requestedProjectName,
+              fileName: input.requestedFileNameWithExtension || '',
+              subRoute: input.requestedSubRoute || '',
+              shouldNavigate,
+              ...(shouldNavigate && input.onSuccess
+                ? { onProjectLoaderComplete: input.onSuccess }
+                : {}),
+            }
+          } catch (error: unknown) {
+            input.onFileSystemError?.()
+            return Promise.reject(error)
           }
         }
       ),

@@ -13,13 +13,13 @@ jobs:
   build-wasm:
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
       - id: filter
         name: Check for Rust changes
-        uses: dorny/paths-filter@v4
+        uses: dorny/paths-filter@v4.0.1
         continue-on-error: true # this step fails when invoked as 'workflow_call'
         with:
           filters: |
@@ -72,7 +72,7 @@ jobs:
 
       - name: Install Rust
         if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: false # configured below
           rustflags: '' # use .cargo/config.toml
@@ -109,6 +109,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: prepared-wasm
+          retention-days: 7
           path: |
             rust/kcl-wasm-lib/pkg/kcl_wasm_lib*
 

@@ -4,10 +4,14 @@ use async_recursion::async_recursion;
 use ezpz::Constraint;
 use ezpz::NonLinearSystemError;
 use indexmap::IndexMap;
-use kittycad_modeling_cmds as kcmc;
+use kcl_api::Group;
+use kcl_api::NumericType;
+use kcl_api::Operation;
+use kcl_api::UnitAngle;
 
 use crate::CompilationIssue;
 use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
@@ -22,13 +26,11 @@ use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
-use crate::execution::Group;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::ModuleArtifactState;
-use crate::execution::Operation;
 use crate::execution::PreserveMem;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::SKETCH_OBJECT_META;
@@ -45,11 +47,12 @@ use crate::execution::UnsolvedSegment;
 use crate::execution::UnsolvedSegmentKind;
 use crate::execution::annotations;
 use crate::execution::annotations::FnAttrs;
-use crate::execution::cad_op::OpKclValue;
+use crate::execution::cad_op::op_from_kcl_value;
 use crate::execution::control_continue;
 use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
+use crate::execution::fn_call::unexpected_kw_arg_message;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
 use crate::execution::kcl_value::KclObjectKind;
@@ -67,7 +70,7 @@ use crate::execution::sketch_solve::substitute_sketch_var_in_segment;
 use crate::execution::sketch_solve::substitute_sketch_vars;
 use crate::execution::state::ModuleState;
 use crate::execution::state::SketchBlockState;
-use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::front::LineCtor;
@@ -1021,7 +1024,7 @@ impl ExecutorContext {
                     if should_show_in_feature_tree {
                         exec_state.push_op(Operation::VariableDeclaration {
                             name: var_name.clone(),
-                            value: OpKclValue::from(&rhs),
+                            value: op_from_kcl_value(&rhs),
                             visibility: variable_declaration.visibility,
                             node_path: NodePath::placeholder(),
                             source_range,
@@ -2095,9 +2098,18 @@ impl Node<SketchBlock> {
                 range,
                 self.node_path.clone(),
                 ctx.clone(),
-                Some("sketch block".to_owned()),
+                Some(SketchBlock::CALLEE_NAME.to_owned()),
             );
             args.labeled = labeled;
+
+            // Report any arguments that aren't valid sketch block parameters.
+            // This is non-fatal so that the rest of the block still executes,
+            // matching how unexpected keyword arguments are handled for
+            // function calls.
+            //
+            // Checking arguments should be done after evaluating them, the same
+            // order as if we were calling a function.
+            self.check_for_unexpected_arguments(&args, exec_state)?;
 
             let arg_on_value: KclValue =
                 args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
@@ -2171,6 +2183,29 @@ impl Node<SketchBlock> {
 
             Ok((sketch_id, sketch_surface))
         }
+    }
+
+    /// Report a non-fatal error for each argument that isn't a valid sketch
+    /// block parameter. Currently, the only valid parameter is `on`.
+    fn check_for_unexpected_arguments(&self, args: &Args, exec_state: &mut ExecState) -> Result<(), KclError> {
+        if !args.unlabeled.is_empty() {
+            let message = "Sketch block doesn't support unlabeled arguments; argument shorthand should have already been desugared";
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message.to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        for (label, arg) in &args.labeled {
+            if label == SKETCH_BLOCK_PARAM_ON {
+                continue;
+            }
+            exec_state.err(CompilationIssue::err(
+                arg.source_range,
+                unexpected_kw_arg_message(label, Some(SketchBlock::CALLEE_NAME)),
+            ));
+        }
+        Ok(())
     }
 
     async fn load_sketch2_into_current_scope(
@@ -3232,19 +3267,19 @@ impl Node<MemberExpression> {
             (KclValue::Plane { value: plane }, Property::String(property), false) => match property.as_str() {
                 "zAxis" => {
                     let (p, u) = plane.info.z_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 "yAxis" => {
                     let (p, u) = plane.info.y_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 "xAxis" => {
                     let (p, u) = plane.info.x_axis.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 "origin" => {
                     let (p, u) = plane.info.origin.as_3_dims();
-                    Ok(KclValue::array_from_point3d(p, u.into(), vec![meta]).continue_())
+                    Ok(KclValue::array_from_point3d(p, NumericType::optional_length(u), vec![meta]).continue_())
                 }
                 other => Err(KclError::new_undefined_value(
                     KclErrorDetails::new(
@@ -3734,15 +3769,15 @@ impl Node<BinaryExpression> {
                                 ezpz::datatypes::inputs::DatumPoint::new_xy(dx, dy),
                             );
                             let desired_angle = match n.ty {
-                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Degrees))
+                                NumericType::Known(crate::exec::UnitType::Angle(crate::exec::UnitAngle::Degrees))
                                 | NumericType::Default {
                                     len: _,
-                                    angle: kcmc::units::UnitAngle::Degrees,
+                                    angle: UnitAngle::Degrees,
                                 } => ezpz::datatypes::Angle::from_degrees(n.n),
-                                NumericType::Known(crate::exec::UnitType::Angle(kcmc::units::UnitAngle::Radians))
+                                NumericType::Known(crate::exec::UnitType::Angle(crate::exec::UnitAngle::Radians))
                                 | NumericType::Default {
                                     len: _,
-                                    angle: kcmc::units::UnitAngle::Radians,
+                                    angle: UnitAngle::Radians,
                                 } => ezpz::datatypes::Angle::from_radians(n.n),
                                 NumericType::Known(crate::exec::UnitType::Count)
                                 | NumericType::Known(crate::exec::UnitType::GenericLength)
@@ -5779,6 +5814,7 @@ impl Node<PipeExpression> {
 mod test {
     use std::sync::Arc;
 
+    use kcl_api::UnitLength;
     use tokio::io::AsyncWriteExt;
 
     use super::*;
@@ -5817,18 +5853,12 @@ arr1 = [42]: [number(cm)]
             .unwrap();
         if let KclValue::HomArray { value, ty } = arr1 {
             assert_eq!(value.len(), 1, "Expected Vec with specific length: found {value:?}");
-            assert_eq!(
-                ty,
-                RuntimeType::known_length(kittycad_modeling_cmds::units::UnitLength::Centimeters)
-            );
+            assert_eq!(ty, RuntimeType::known_length(UnitLength::Centimeters));
             // Compare, ignoring meta.
             if let KclValue::Number { value, ty, .. } = &value[0] {
                 // It should not convert units.
                 assert_eq!(*value, 42.0);
-                assert_eq!(
-                    *ty,
-                    NumericType::Known(UnitType::Length(kittycad_modeling_cmds::units::UnitLength::Centimeters))
-                );
+                assert_eq!(*ty, NumericType::Known(UnitType::Length(UnitLength::Centimeters)));
             } else {
                 panic!("Expected a number; found {:?}", value[0]);
             }
@@ -6000,7 +6030,7 @@ d = b + c
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(engine_manager::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
-            fs: Arc::new(crate::fs::FileManager::new()),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()

@@ -1,0 +1,28 @@
+[package]
+name = "kcl-api"
+version = "0.2.168"
+edition = "2024"
+description = "KCL API"
+license = "MIT"
+repository = "https://github.com/KittyCAD/modeling-app"
+
+[features]
+pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
+
+[dependencies]
+indexmap = { workspace = true, features = ["serde", "rayon"] }
+kittycad-unit-conversion-derive = "0.1.0"
+kcl-error = { version = "=0.2.168", path = "../kcl-error" }
+# Fork of <crates.io/crates/measurements>
+measurements = { package = "kittycad-measurements", version = "0.11.2" }
+parse-display = "0.11.0"
+parse-display-derive = "0.11.0"
+pyo3 = { version = "0.28.3", optional = true }
+pyo3-stub-gen = { version = "0.22.3", optional = true, default-features = false, features = ["either", "numpy", "ordered-float"] }
+schemars = { version = "0.8.17", features = ["impl_json_schema", "indexmap2", "url", "uuid1", "preserve_order"] }
+serde = { workspace = true }
+ts-rs = { version = "12.0.1", features = ["uuid-impl", "url-impl", "chrono-impl", "indexmap-impl", "no-serde-warnings", "serde-json-impl"] }
+uuid = { workspace = true, features = ["v4", "v5", "js", "serde"] }
+
+[lints]
+workspace = true

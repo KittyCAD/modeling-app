@@ -96,6 +96,7 @@ pub(super) enum TaggedEdgeInputs {
 pub(super) async fn parse_tagged_edge_inputs(
     edge_refs: Option<Vec<KclValue>>,
     tags_with_source: Option<Vec<(EdgeReference, SourceRange)>>,
+    solid: Option<&Solid>,
     exec_state: &mut ExecState,
     args: &Args,
     missing_args_message: &str,
@@ -107,7 +108,8 @@ pub(super) async fn parse_tagged_edge_inputs(
             vec![args.source_range],
         ))),
         (Some(edge_refs), None) => {
-            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, args).await?;
+            let edge_refs_parsed =
+                super::edge::parse_edge_refs_to_references(edge_refs, solid, exec_state, args).await?;
             Ok(TaggedEdgeInputs::EngineRefs(edge_refs_parsed))
         }
         (None, Some(tags_with_source)) => {
@@ -151,6 +153,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let edge_inputs = parse_tagged_edge_inputs(
         edge_refs,
         tags,
+        Some(solid.as_ref()),
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to fillet edges",

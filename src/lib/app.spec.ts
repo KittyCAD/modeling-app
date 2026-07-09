@@ -163,6 +163,14 @@ async function waitForHistoryIdle(kclManager: KclManager) {
 
 describe('project system', () => {
   it('syncs plugin settings into plugin activation and only persists overrides', async () => {
+    const previousElectron = window.electron
+    const syncActivePlugins = vi.fn().mockResolvedValue(undefined)
+    window.electron = {
+      pluginIpc: {
+        invoke: vi.fn(),
+        syncActivePlugins,
+      },
+    } as unknown as typeof window.electron
     const app = App.fromProvided({
       wasmPromise: loadWasm(),
     })
@@ -178,6 +186,9 @@ describe('project system', () => {
 
       const pluginToggle = app.registry.get(plugin!.service)
       expect(pluginToggle.active.value).toBe(true)
+      expect(syncActivePlugins).toHaveBeenCalledWith(
+        expect.arrayContaining([pluginId])
+      )
 
       app.settings.actor.send({
         type: `set.plugins.${pluginId}`,
@@ -191,6 +202,7 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       expect(pluginToggle.active.value).toBe(false)
+      expect(syncActivePlugins.mock.calls.at(-1)?.[0]).not.toContain(pluginId)
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
       ).toEqual({
@@ -209,6 +221,7 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       expect(pluginToggle.active.value).toBe(true)
+      expect(syncActivePlugins.mock.calls.at(-1)?.[0]).toContain(pluginId)
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.[
           pluginId
@@ -216,6 +229,7 @@ describe('project system', () => {
       ).toBeUndefined()
     } finally {
       disposeApp(app)
+      window.electron = previousElectron
     }
   })
 
@@ -294,7 +308,6 @@ describe('project system', () => {
         expect.arrayContaining([
           'command-bar.open',
           'code-editor.render',
-          'share.open',
           'publish.open',
         ])
       )

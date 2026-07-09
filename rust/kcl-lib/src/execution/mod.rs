@@ -18,12 +18,12 @@ pub use artifact::StartSketchOnPlane;
 use cache::GlobalState;
 pub use cache::bust_cache;
 pub use cache::clear_mem_cache;
-pub use cad_op::Group;
-pub use cad_op::Operation;
 pub use geometry::*;
 pub use id_generator::IdGenerator;
 pub(crate) use import::PreImportedGeometry;
 use indexmap::IndexMap;
+pub use kcl_api::Operation;
+use kcl_api::ast::node_path::NodePath;
 pub use kcl_value::KclObjectFields;
 pub use kcl_value::KclObjectKind;
 pub use kcl_value::KclValue;
@@ -60,12 +60,11 @@ pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::TangencyMode;
-use uuid::Uuid;
 
 use crate::CompilationIssue;
 use crate::ExecError;
 use crate::KclErrorWithOutputs;
-use crate::NodePath;
+use crate::NodePathExt;
 use crate::SourceRange;
 use crate::collections::AhashIndexSet;
 use crate::engine::EngineBatchContext;
@@ -75,6 +74,7 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::cache::CacheInformation;
 use crate::execution::cache::CacheResult;
+use crate::execution::cad_op::OperationExt;
 use crate::execution::import_graph::Universe;
 use crate::execution::import_graph::UniverseMap;
 use crate::execution::typed_path::TypedPath;
@@ -82,6 +82,7 @@ use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
 use crate::fs::FileManager;
+use crate::fs::FileSystemHandle;
 use crate::modules::ModuleExecutionOutcome;
 use crate::modules::ModuleId;
 use crate::modules::ModulePath;
@@ -796,14 +797,26 @@ pub enum ContextType {
 /// The executor context.
 /// Cloning will return another handle to the same engine connection/session,
 /// as this uses `Arc` under the hood.
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct ExecutorContext {
     pub engine: Arc<EngineManager>,
     pub engine_batch: EngineBatchContext,
-    pub fs: Arc<FileManager>,
+    pub fs: FileSystemHandle,
     pub settings: ExecutorSettings,
     pub context_type: ContextType,
     pub execution_callbacks: Option<Arc<dyn ExecutionCallbacks>>,
+}
+
+impl std::fmt::Debug for ExecutorContext {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ExecutorContext")
+            .field("engine", &self.engine)
+            .field("engine_batch", &self.engine_batch)
+            .field("settings", &self.settings)
+            .field("context_type", &self.context_type)
+            .field("execution_callbacks", &self.execution_callbacks)
+            .finish()
+    }
 }
 
 /// The executor settings.
@@ -951,7 +964,7 @@ impl ExecutorContext {
     /// Create a new live executor context from an engine and file manager.
     pub fn new_with_engine_and_fs(
         engine: Arc<EngineManager>,
-        fs: Arc<FileManager>,
+        fs: FileSystemHandle,
         settings: ExecutorSettings,
     ) -> Self {
         ExecutorContext {
@@ -978,7 +991,7 @@ impl ExecutorContext {
     /// Create a new live executor context from an engine using the local file manager.
     #[cfg(not(target_arch = "wasm32"))]
     pub fn new_with_engine(engine: Arc<EngineManager>, settings: ExecutorSettings) -> Self {
-        Self::new_with_engine_and_fs(engine, Arc::new(FileManager::new()), settings)
+        Self::new_with_engine_and_fs(engine, crate::fs::new_file_system_handle(FileManager::new()), settings)
     }
 
     /// Create a new default executor context.
@@ -1014,7 +1027,7 @@ impl ExecutorContext {
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+    pub fn new(engine: Arc<EngineManager>, fs: FileSystemHandle, settings: ExecutorSettings) -> Self {
         Self::new_with_engine_and_fs(engine, fs, settings)
     }
 
@@ -1023,7 +1036,7 @@ impl ExecutorContext {
         ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
-            fs: Arc::new(FileManager::new()),
+            fs: crate::fs::new_file_system_handle(FileManager::new()),
             settings: settings.unwrap_or_default(),
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
@@ -1031,7 +1044,7 @@ impl ExecutorContext {
     }
 
     #[cfg(target_arch = "wasm32")]
-    pub fn new_mock(engine: Arc<EngineManager>, fs: Arc<FileManager>, settings: ExecutorSettings) -> Self {
+    pub fn new_mock(engine: Arc<EngineManager>, fs: FileSystemHandle, settings: ExecutorSettings) -> Self {
         ExecutorContext {
             engine,
             engine_batch: EngineBatchContext::default(),
@@ -1049,7 +1062,7 @@ impl ExecutorContext {
         fs_manager: crate::fs::wasm::FileSystemManager,
         settings: ExecutorSettings,
     ) -> Result<Self, String> {
-        let fs = Arc::new(FileManager::new(fs_manager));
+        let fs = crate::fs::new_file_system_handle(FileManager::new(fs_manager));
 
         Ok(ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
@@ -1066,7 +1079,7 @@ impl ExecutorContext {
         ExecutorContext {
             engine,
             engine_batch: EngineBatchContext::default(),
-            fs: Arc::new(FileManager::new()),
+            fs: crate::fs::new_file_system_handle(FileManager::new()),
             settings: Default::default(),
             context_type: ContextType::MockCustomForwarded,
             execution_callbacks: Default::default(),
@@ -2107,54 +2120,10 @@ impl ExecutorContext {
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, Ord, PartialOrd, Hash, ts_rs::TS)]
-pub struct ArtifactId(Uuid);
+pub use kcl_api::ArtifactId;
 
-impl ArtifactId {
-    pub fn new(uuid: Uuid) -> Self {
-        Self(uuid)
-    }
-
-    /// A placeholder artifact ID that will be filled in later.
-    pub fn placeholder() -> Self {
-        Self(Uuid::nil())
-    }
-}
-
-impl From<Uuid> for ArtifactId {
-    fn from(uuid: Uuid) -> Self {
-        Self::new(uuid)
-    }
-}
-
-impl From<&Uuid> for ArtifactId {
-    fn from(uuid: &Uuid) -> Self {
-        Self::new(*uuid)
-    }
-}
-
-impl From<ArtifactId> for Uuid {
-    fn from(id: ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<&ArtifactId> for Uuid {
-    fn from(id: &ArtifactId) -> Self {
-        id.0
-    }
-}
-
-impl From<ModelingCmdId> for ArtifactId {
-    fn from(id: ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
-}
-
-impl From<&ModelingCmdId> for ArtifactId {
-    fn from(id: &ModelingCmdId) -> Self {
-        Self::new(*id.as_ref())
-    }
+pub fn cmd_id_ref_to_artifact_id(id: &ModelingCmdId) -> ArtifactId {
+    ArtifactId::new(*id.as_ref())
 }
 
 #[cfg(test)]
@@ -2172,7 +2141,7 @@ pub(crate) async fn parse_execute_with_project_dir(
     let exec_ctxt = ExecutorContext {
         engine: Arc::new(EngineManager::new_mock()),
         engine_batch: EngineBatchContext::default(),
-        fs: Arc::new(crate::fs::FileManager::new()),
+        fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
         settings: ExecutorSettings {
             project_directory,
             ..Default::default()
@@ -2241,13 +2210,13 @@ impl ProgramLookup {
 
 #[cfg(test)]
 mod tests {
+    use kcl_api::NumericType;
     use pretty_assertions::assert_eq;
 
     use super::*;
     use crate::ModuleId;
     use crate::errors::KclErrorDetails;
     use crate::errors::Severity;
-    use crate::exec::NumericType;
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 
@@ -2303,7 +2272,7 @@ mod tests {
         let ctx = ExecutorContext {
             engine: Arc::new(EngineManager::new_mock()),
             engine_batch: EngineBatchContext::default(),
-            fs: Arc::new(crate::fs::FileManager::new()),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()

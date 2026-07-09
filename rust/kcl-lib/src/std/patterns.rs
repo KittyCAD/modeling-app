@@ -36,6 +36,7 @@ use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::std::args::TyF64;
@@ -44,9 +45,18 @@ use crate::std::shapes::POINT_ZERO_ZERO;
 use crate::std::utils::point_3d_to_mm;
 use crate::std::utils::point_to_mm;
 pub const POINT_ZERO_ZERO_ZERO: [TyF64; 3] = [
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
-    TyF64::new(0.0, crate::exec::NumericType::mm()),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
+    TyF64::new(
+        0.0,
+        crate::exec::NumericType::Known(crate::exec::UnitType::Length(crate::exec::UnitLength::Millimeters)),
+    ),
 ];
 
 const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your geometry";

@@ -3,6 +3,8 @@
 #[cfg(test)]
 mod gen_std_tests;
 pub mod kcl_doc;
+#[cfg(test)]
+mod stdlib_command_bindings;
 
 #[cfg(test)]
 mod tests {
@@ -288,7 +290,7 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
+  @sketches: [Sketch | Face | TaggedFace | TaggedEdge | Edge | Segment; 1+],
   length?: number(Length),
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   symmetric?: bool,

@@ -24,7 +24,6 @@ import {
 } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
 import {
   type Layout,
@@ -71,11 +70,13 @@ import {
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
@@ -163,6 +164,7 @@ function createAppRegistryItems({
       : []),
     appCommandsSlot.of(),
     appRegistryServicesSlot.of(),
+    engineSceneRuntimeExtensionsSlot.of(),
     ...coreRegistryItems,
   ]
 }
@@ -174,6 +176,12 @@ declare global {
     engineCommandManager: ConnectionManager
     rustContext: RustContext
     engineDebugger: Debugger
+    /** Dev helper: on each click, logs two `makeMouseHelpers` lines (see buildSingletons). */
+    enableMousePositionLogs?: () => void
+    enableFillet?: () => void
+    zoomToFit?: () => void
+    /** Dev flag read by fillet debugging paths */
+    _enableFillet?: boolean
   }
 }
 
@@ -306,12 +314,12 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
-    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
-    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncOpfsCloudBacking()
+    this.syncCloudSyncRuntimePolicy()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
@@ -650,8 +658,8 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncOpfsCloudBacking = () => {
-    if (typeof window === 'undefined' || window.electron) {
+  syncCloudSyncRuntimePolicy = () => {
+    if (typeof window === 'undefined') {
       return
     }
 
@@ -659,19 +667,23 @@ export class App implements AppSubsystems {
     const token = authSnapshot.matches('loggedIn')
       ? authSnapshot.context.token
       : undefined
+    const settingsContext = this.settings.actor.getSnapshot().context
+    const cloudSyncPluginEnabled =
+      settingsContext.plugins?.['cloud-sync']?.current !== false
     const enabled =
       Boolean(token) &&
+      cloudSyncPluginEnabled &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
         false
       )
 
-    configureOpfsCloudSync({
+    this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      projectDirectoryPath:
-        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+      projectDirectoryPath: settingsContext.app.projectDirectory.current,
+      syncExistingLocalProjects: !window.electron,
     })
   }
 
@@ -715,6 +727,7 @@ export class App implements AppSubsystems {
         .get(zdsPluginActivationSettingsValueSpec)
         .map((setting) => [setting.pluginId, setting])
     )
+    const activePluginIds: string[] = []
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
       const activationSetting = pluginActivationSettings.get(plugin.id)
@@ -731,6 +744,9 @@ export class App implements AppSubsystems {
       if (typeof desiredActive !== 'boolean') {
         continue
       }
+      if (desiredActive) {
+        activePluginIds.push(plugin.id)
+      }
 
       const toggle = this.registry.get(plugin.service)
       if (toggle.active.value === desiredActive) {
@@ -743,6 +759,14 @@ export class App implements AppSubsystems {
       }
 
       toggle.disable()
+    }
+
+    const syncActivePlugins =
+      typeof window !== 'undefined'
+        ? window.electron?.pluginIpc.syncActivePlugins
+        : undefined
+    if (syncActivePlugins) {
+      void syncActivePlugins(activePluginIds).catch(reportRejection)
     }
   }
 
@@ -775,28 +799,54 @@ export class App implements AppSubsystems {
     ])
 
     if (typeof window !== 'undefined') {
-      // Accessible for tests mostly
       window.engineCommandManager = kclManager.engineCommandManager
       window.rustContext = kclManager.rustContext
       window.engineDebugger = EngineDebugger
-      ;(window as any).enableMousePositionLogs = () =>
-        document.addEventListener('mousemove', (e) =>
-          console.log(`await page.mouse.click(${e.clientX}, ${e.clientY})`)
-        )
-      ;(window as any).enableFillet = () => {
-        ;(window as any)._enableFillet = true
+
+      /**
+       * On each click, logs two lines for `SceneFixture.makeMouseHelpers` /
+       * `convertPagePositionToStream` (e2e/playwright/fixtures/sceneFixture.ts).
+       * Adds a document listener per call.
+       */
+      window.enableMousePositionLogs = () => {
+        const onClick = (e: MouseEvent) => {
+          const streamEl = document.querySelector('[data-testid="stream"]')
+          const vw = document.documentElement.clientWidth
+          const vh = document.documentElement.clientHeight
+          if (!streamEl || vw <= 0 || vh <= 0) return
+          const r = streamEl.getBoundingClientRect()
+          if (r.width <= 0 || r.height <= 0) return
+          const cx = e.clientX
+          const cy = e.clientY
+          const ratioX = (cx - r.left) / r.width
+          const ratioY = (cy - r.top) / r.height
+          const pixelX = ratioX * vw
+          const pixelY = ratioY * vh
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${ratioX.toFixed(4)}, ${ratioY.toFixed(4)}, { format: 'ratio' })`
+          )
+          console.log(
+            `[mouse→e2e] makeMouseHelpers(${Math.round(pixelX)}, ${Math.round(pixelY)}, { steps: 20, format: 'pixels' })`
+          )
+        }
+        document.addEventListener('click', onClick, true)
       }
-      ;(window as any).zoomToFit = () =>
-        kclManager.engineCommandManager.sendSceneCommand({
+
+      window.enableFillet = () => {
+        window._enableFillet = true
+      }
+      window.zoomToFit = () => {
+        void kclManager.engineCommandManager.sendSceneCommand({
           type: 'modeling_cmd_req',
           cmd_id: uuidv4(),
           cmd: {
             type: 'zoom_to_fit',
-            object_ids: [], // leave empty to zoom to all objects
-            padding: 0.2, // padding around the objects
-            animated: false, // don't animate the zoom for now
+            object_ids: [],
+            padding: 0.2,
+            animated: false,
           },
         })
+      }
     }
 
     this.commands.actor.send({ type: 'Set kclManager', data: kclManager })
