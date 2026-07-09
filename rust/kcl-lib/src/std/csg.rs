@@ -90,6 +90,29 @@ fn subtract_output_ids(
     output_ids
 }
 
+fn mock_csg_output_solids(
+    template: &Solid,
+    first_output_id: uuid::Uuid,
+    output_count: usize,
+    exec_state: &mut ExecState,
+) -> Vec<Solid> {
+    let mut first_solid = template.clone();
+    first_solid.set_id(first_output_id);
+    first_solid.artifact_id = first_output_id.into();
+    let mut solids = vec![first_solid.clone()];
+
+    for _ in 1..output_count {
+        let extra_solid_id = exec_state.next_uuid();
+        let mut new_solid = first_solid.clone();
+        new_solid.set_id(extra_solid_id);
+        new_solid.value_id = first_output_id;
+        new_solid.artifact_id = extra_solid_id.into();
+        solids.push(new_solid);
+    }
+
+    solids
+}
+
 pub(crate) async fn inner_union(
     solids: Vec<Solid>,
     tolerance: Option<TyF64>,
@@ -107,6 +130,12 @@ pub(crate) async fn inner_union(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
+        new_solids = mock_csg_output_solids(
+            &solids[0],
+            solid_out_id,
+            exec_state.mock_csg_output_count_for_current_top_level_declaration(1),
+            exec_state,
+        );
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Union, &new_solids);
         return Ok(new_solids);
     }
@@ -202,6 +231,12 @@ pub(crate) async fn inner_intersect(
     let mut new_solids = vec![solid.clone()];
 
     if args.ctx.no_engine_commands().await {
+        new_solids = mock_csg_output_solids(
+            &solids[0],
+            solid_out_id,
+            exec_state.mock_csg_output_count_for_current_top_level_declaration(1),
+            exec_state,
+        );
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Intersect, &new_solids);
         return Ok(new_solids);
     }
@@ -289,10 +324,12 @@ pub(crate) async fn inner_subtract(
     let tool_ids = tools.iter().map(|s| s.id).collect::<Vec<_>>();
 
     if args.ctx.no_engine_commands().await {
-        let mut solid = solids[0].clone();
-        solid.set_id(solid_out_id);
-        solid.artifact_id = solid_out_id.into();
-        let new_solids = vec![solid];
+        let new_solids = mock_csg_output_solids(
+            &solids[0],
+            solid_out_id,
+            exec_state.mock_csg_output_count_for_current_top_level_declaration(1),
+            exec_state,
+        );
         record_consumed_solids(exec_state, &solids, ConsumedSolidOperation::Subtract, &new_solids);
         record_consumed_solids(exec_state, &tools, ConsumedSolidOperation::Subtract, &[]);
         return Ok(new_solids);
@@ -416,12 +453,12 @@ pub(crate) async fn inner_imprint(
 
     if args.ctx.no_engine_commands().await {
         if separate_bodies {
-            let extra_solid_id = exec_state.next_uuid();
-            let mut new_solid = body.clone();
-            new_solid.set_id(extra_solid_id);
-            new_solid.value_id = body_out_id;
-            new_solid.artifact_id = extra_solid_id.into();
-            new_solids.push(new_solid);
+            new_solids = mock_csg_output_solids(
+                &targets[0],
+                body_out_id,
+                exec_state.mock_csg_output_count_for_current_top_level_declaration(2),
+                exec_state,
+            );
         }
         record_consumed_solids(exec_state, &targets, ConsumedSolidOperation::Split, &new_solids);
         if !keep_tools && let Some(tools) = tools.as_ref() {
@@ -506,6 +543,27 @@ mod tests {
 
     fn test_uuid(id: u128) -> Uuid {
         Uuid::from_u128(id)
+    }
+
+    fn rectangular_solid_code(name: &str, min_x: i32, min_y: i32, max_x: i32, max_y: i32) -> String {
+        let point_x = (min_x + max_x) / 2;
+        let point_y = (min_y + max_y) / 2;
+        format!(
+            r#"
+{name}Sketch = sketch(on = XY) {{
+  line1 = line(start = [var {min_x}, var {min_y}], end = [var {max_x}, var {min_y}])
+  line2 = line(start = [var {max_x}, var {min_y}], end = [var {max_x}, var {max_y}])
+  line3 = line(start = [var {max_x}, var {max_y}], end = [var {min_x}, var {max_y}])
+  line4 = line(start = [var {min_x}, var {max_y}], end = [var {min_x}, var {min_y}])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}}
+
+{name} = extrude(region(point = [{point_x}, {point_y}], sketch = {name}Sketch), length = 10)
+"#
+        )
     }
 
     #[test]
@@ -830,6 +888,93 @@ second = subtract(first, tools = [tool])
         ctx.close().await;
 
         assert!(outcome.variables.contains_key("second"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn split_mock_with_multiple_tools_supports_indexed_outputs() {
+        let code = r#"
+targetSketch = sketch(on = XY) {
+  line1 = line(start = [var -10, var -10], end = [var 10, var -10])
+  line2 = line(start = [var 10, var -10], end = [var 10, var 10])
+  line3 = line(start = [var 10, var 10], end = [var -10, var 10])
+  line4 = line(start = [var -10, var 10], end = [var -10, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+target = extrude(region(point = [0, 0], sketch = targetSketch), length = 20)
+
+tool1Sketch = sketch(on = XY) {
+  line1 = line(start = [var -8, var -10], end = [var -6, var -10])
+  line2 = line(start = [var -6, var -10], end = [var -6, var 10])
+  line3 = line(start = [var -6, var 10], end = [var -8, var 10])
+  line4 = line(start = [var -8, var 10], end = [var -8, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+tool1 = extrude(region(point = [-7, 0], sketch = tool1Sketch), length = 20)
+
+tool2Sketch = sketch(on = XY) {
+  line1 = line(start = [var 6, var -10], end = [var 8, var -10])
+  line2 = line(start = [var 8, var -10], end = [var 8, var 10])
+  line3 = line(start = [var 8, var 10], end = [var 6, var 10])
+  line4 = line(start = [var 6, var 10], end = [var 6, var -10])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+}
+
+tool2 = extrude(region(point = [7, 0], sketch = tool2Sketch), length = 20)
+
+splitResult = split(target, tools = [tool1, tool2])
+hide([splitResult[1], splitResult[2], splitResult[3], splitResult[4]])
+pieceFromHiddenSplit = splitResult[4]
+"#;
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        assert!(outcome.variables.contains_key("pieceFromHiddenSplit"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn boolean_mocks_support_indexed_outputs_required_by_program() {
+        let mut code = String::new();
+        code.push_str(&rectangular_solid_code("unionLeft", -30, 0, -24, 6));
+        code.push_str(&rectangular_solid_code("unionRight", -26, 2, -20, 8));
+        code.push_str(&rectangular_solid_code("intersectLeft", -8, 0, -2, 6));
+        code.push_str(&rectangular_solid_code("intersectRight", -6, 2, 0, 8));
+        code.push_str(&rectangular_solid_code("subtractTarget", 10, 0, 18, 8));
+        code.push_str(&rectangular_solid_code("subtractTool", 13, 2, 15, 6));
+        code.push_str(
+            r#"
+unionResult = union([unionLeft, unionRight])
+unionPiece = unionResult[2]
+
+intersectResult = intersect([intersectLeft, intersectRight])
+intersectPiece = intersectResult[1]
+
+subtractResult = subtract(subtractTarget, tools = [subtractTool])
+subtractPiece = subtractResult[2]
+"#,
+        );
+
+        let ctx = crate::ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(&code).unwrap();
+        let outcome = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
+
+        assert!(outcome.variables.contains_key("unionPiece"));
+        assert!(outcome.variables.contains_key("intersectPiece"));
+        assert!(outcome.variables.contains_key("subtractPiece"));
     }
 
     #[tokio::test(flavor = "multi_thread")]

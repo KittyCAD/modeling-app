@@ -3,6 +3,7 @@ use std::str::FromStr;
 use std::sync::Arc;
 
 use ahash::AHashMap;
+use ahash::AHashSet;
 use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitAngle;
@@ -59,8 +60,17 @@ use crate::modules::ModulePath;
 use crate::modules::ModuleRepr;
 use crate::modules::ModuleSource;
 use crate::parsing::ast::types::Annotation;
+use crate::parsing::ast::types::BinaryPart;
+use crate::parsing::ast::types::BodyItem;
+use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::IfExpression;
+use crate::parsing::ast::types::LiteralValue;
+use crate::parsing::ast::types::MemberExpression;
+use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::NodeRef;
+use crate::parsing::ast::types::Program as AstProgram;
 use crate::parsing::ast::types::TagNode;
+use crate::parsing::token::NumericSuffix;
 
 /// State for executing a program.
 #[derive(Debug, Clone)]
@@ -231,6 +241,232 @@ pub(super) struct ModuleState {
     /// the exact key lookup misses, this map lets us reject that solid by
     /// `engine_id`, unless the key is a recorded operation output.
     pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
+    /// Mock-only lower bounds for top-level CSG operation output arrays,
+    /// inferred from direct indexed uses elsewhere in the same module.
+    pub(super) mock_csg_output_minimums: AHashMap<String, usize>,
+}
+
+pub(crate) fn infer_mock_csg_output_minimums(program: &Node<AstProgram>) -> AHashMap<String, usize> {
+    let mut csg_declarations = AHashSet::default();
+    for item in &program.body {
+        if let BodyItem::VariableDeclaration(declaration) = item
+            && is_direct_csg_output_expr(&declaration.declaration.init)
+        {
+            csg_declarations.insert(declaration.declaration.id.name.to_string());
+        }
+    }
+
+    let mut minimums = AHashMap::default();
+    for item in &program.body {
+        collect_mock_csg_index_requirements_from_body_item(item, &csg_declarations, &mut minimums);
+    }
+
+    minimums
+}
+
+fn is_direct_csg_output_expr(expr: &Expr) -> bool {
+    match expr {
+        Expr::CallExpressionKw(call) => is_mock_sized_csg_call(call.callee.name.name.as_str()),
+        Expr::PipeExpression(pipe) => pipe.body.last().is_some_and(is_direct_csg_output_expr),
+        Expr::AscribedExpression(expr) => is_direct_csg_output_expr(&expr.expr),
+        Expr::LabelledExpression(expr) => is_direct_csg_output_expr(&expr.expr),
+        _ => false,
+    }
+}
+
+fn is_mock_sized_csg_call(name: &str) -> bool {
+    matches!(name, "union" | "subtract" | "intersect" | "split")
+}
+
+fn collect_mock_csg_index_requirements_from_body_item(
+    item: &BodyItem,
+    csg_declarations: &AHashSet<String>,
+    minimums: &mut AHashMap<String, usize>,
+) {
+    match item {
+        BodyItem::ExpressionStatement(statement) => {
+            collect_mock_csg_index_requirements_from_expr(&statement.expression, csg_declarations, minimums);
+        }
+        BodyItem::VariableDeclaration(declaration) => {
+            collect_mock_csg_index_requirements_from_expr(&declaration.declaration.init, csg_declarations, minimums);
+        }
+        BodyItem::ReturnStatement(statement) => {
+            collect_mock_csg_index_requirements_from_expr(&statement.argument, csg_declarations, minimums);
+        }
+        BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
+    }
+}
+
+fn collect_mock_csg_index_requirements_from_program(
+    program: &AstProgram,
+    csg_declarations: &AHashSet<String>,
+    minimums: &mut AHashMap<String, usize>,
+) {
+    for item in &program.body {
+        collect_mock_csg_index_requirements_from_body_item(item, csg_declarations, minimums);
+    }
+}
+
+fn collect_mock_csg_index_requirements_from_expr(
+    expr: &Expr,
+    csg_declarations: &AHashSet<String>,
+    minimums: &mut AHashMap<String, usize>,
+) {
+    match expr {
+        Expr::BinaryExpression(expr) => {
+            collect_mock_csg_index_requirements_from_binary_part(&expr.left, csg_declarations, minimums);
+            collect_mock_csg_index_requirements_from_binary_part(&expr.right, csg_declarations, minimums);
+        }
+        Expr::CallExpressionKw(call) => {
+            if let Some(unlabeled) = &call.unlabeled {
+                collect_mock_csg_index_requirements_from_expr(unlabeled, csg_declarations, minimums);
+            }
+            for arg in &call.arguments {
+                collect_mock_csg_index_requirements_from_expr(&arg.arg, csg_declarations, minimums);
+            }
+        }
+        Expr::PipeExpression(pipe) => {
+            for expr in &pipe.body {
+                collect_mock_csg_index_requirements_from_expr(expr, csg_declarations, minimums);
+            }
+        }
+        Expr::ArrayExpression(expr) => {
+            for element in &expr.elements {
+                collect_mock_csg_index_requirements_from_expr(element, csg_declarations, minimums);
+            }
+        }
+        Expr::ArrayRangeExpression(expr) => {
+            collect_mock_csg_index_requirements_from_expr(&expr.start_element, csg_declarations, minimums);
+            collect_mock_csg_index_requirements_from_expr(&expr.end_element, csg_declarations, minimums);
+        }
+        Expr::ObjectExpression(expr) => {
+            for property in &expr.properties {
+                collect_mock_csg_index_requirements_from_expr(&property.value, csg_declarations, minimums);
+            }
+        }
+        Expr::MemberExpression(expr) => {
+            collect_mock_csg_index_requirements_from_member_expression(expr, csg_declarations, minimums)
+        }
+        Expr::UnaryExpression(expr) => {
+            collect_mock_csg_index_requirements_from_binary_part(&expr.argument, csg_declarations, minimums);
+        }
+        Expr::IfExpression(expr) => {
+            collect_mock_csg_index_requirements_from_if_expression(expr, csg_declarations, minimums)
+        }
+        Expr::LabelledExpression(expr) => {
+            collect_mock_csg_index_requirements_from_expr(&expr.expr, csg_declarations, minimums);
+        }
+        Expr::AscribedExpression(expr) => {
+            collect_mock_csg_index_requirements_from_expr(&expr.expr, csg_declarations, minimums);
+        }
+        Expr::SketchBlock(expr) => {
+            for arg in &expr.arguments {
+                collect_mock_csg_index_requirements_from_expr(&arg.arg, csg_declarations, minimums);
+            }
+        }
+        // Function bodies have their own local scope. Leave them to the fallback behavior for now.
+        Expr::FunctionExpression(_) => {}
+        Expr::Literal(_)
+        | Expr::Name(_)
+        | Expr::TagDeclarator(_)
+        | Expr::PipeSubstitution(_)
+        | Expr::SketchVar(_)
+        | Expr::None(_) => {}
+    }
+}
+
+fn collect_mock_csg_index_requirements_from_member_expression(
+    expr: &MemberExpression,
+    csg_declarations: &AHashSet<String>,
+    minimums: &mut AHashMap<String, usize>,
+) {
+    if expr.computed
+        && let Expr::Name(name) = &expr.object
+        && csg_declarations.contains(name.name.name.as_str())
+        && let Some(index) = literal_array_index(&expr.property)
+    {
+        minimums
+            .entry(name.name.name.to_string())
+            .and_modify(|minimum| *minimum = (*minimum).max(index + 1))
+            .or_insert(index + 1);
+    }
+    collect_mock_csg_index_requirements_from_expr(&expr.object, csg_declarations, minimums);
+    collect_mock_csg_index_requirements_from_expr(&expr.property, csg_declarations, minimums);
+}
+
+fn collect_mock_csg_index_requirements_from_if_expression(
+    expr: &IfExpression,
+    csg_declarations: &AHashSet<String>,
+    minimums: &mut AHashMap<String, usize>,
+) {
+    collect_mock_csg_index_requirements_from_expr(&expr.cond, csg_declarations, minimums);
+    collect_mock_csg_index_requirements_from_program(&expr.then_val, csg_declarations, minimums);
+    for else_if in &expr.else_ifs {
+        collect_mock_csg_index_requirements_from_expr(&else_if.cond, csg_declarations, minimums);
+        collect_mock_csg_index_requirements_from_program(&else_if.then_val, csg_declarations, minimums);
+    }
+    collect_mock_csg_index_requirements_from_program(&expr.final_else, csg_declarations, minimums);
+}
+
+fn collect_mock_csg_index_requirements_from_binary_part(
+    part: &BinaryPart,
+    csg_declarations: &AHashSet<String>,
+    minimums: &mut AHashMap<String, usize>,
+) {
+    match part {
+        BinaryPart::BinaryExpression(expr) => {
+            collect_mock_csg_index_requirements_from_binary_part(&expr.left, csg_declarations, minimums);
+            collect_mock_csg_index_requirements_from_binary_part(&expr.right, csg_declarations, minimums);
+        }
+        BinaryPart::CallExpressionKw(call) => {
+            if let Some(unlabeled) = &call.unlabeled {
+                collect_mock_csg_index_requirements_from_expr(unlabeled, csg_declarations, minimums);
+            }
+            for arg in &call.arguments {
+                collect_mock_csg_index_requirements_from_expr(&arg.arg, csg_declarations, minimums);
+            }
+        }
+        BinaryPart::UnaryExpression(expr) => {
+            collect_mock_csg_index_requirements_from_binary_part(&expr.argument, csg_declarations, minimums);
+        }
+        BinaryPart::MemberExpression(expr) => {
+            collect_mock_csg_index_requirements_from_member_expression(expr, csg_declarations, minimums);
+        }
+        BinaryPart::ArrayExpression(expr) => {
+            for element in &expr.elements {
+                collect_mock_csg_index_requirements_from_expr(element, csg_declarations, minimums);
+            }
+        }
+        BinaryPart::ArrayRangeExpression(expr) => {
+            collect_mock_csg_index_requirements_from_expr(&expr.start_element, csg_declarations, minimums);
+            collect_mock_csg_index_requirements_from_expr(&expr.end_element, csg_declarations, minimums);
+        }
+        BinaryPart::ObjectExpression(expr) => {
+            for property in &expr.properties {
+                collect_mock_csg_index_requirements_from_expr(&property.value, csg_declarations, minimums);
+            }
+        }
+        BinaryPart::IfExpression(expr) => {
+            collect_mock_csg_index_requirements_from_if_expression(expr, csg_declarations, minimums)
+        }
+        BinaryPart::AscribedExpression(expr) => {
+            collect_mock_csg_index_requirements_from_expr(&expr.expr, csg_declarations, minimums);
+        }
+        BinaryPart::Literal(_) | BinaryPart::Name(_) | BinaryPart::SketchVar(_) => {}
+    }
+}
+
+fn literal_array_index(expr: &Expr) -> Option<usize> {
+    let Expr::Literal(literal) = expr else {
+        return None;
+    };
+    let LiteralValue::Number { value, suffix } = &literal.value else {
+        return None;
+    };
+    if *suffix != NumericSuffix::None || *value < 0.0 || value.fract() != 0.0 {
+        return None;
+    }
+    Some(*value as usize)
 }
 
 /// Internal identity for one runtime KCL solid value.
@@ -685,6 +921,27 @@ impl ExecState {
     /// boolean operation.
     pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
         self.mod_local.consumed_solid_ids.get(id)
+    }
+
+    pub(crate) fn set_mock_csg_output_minimums(&mut self, minimums: AHashMap<String, usize>) {
+        self.mod_local.mock_csg_output_minimums = minimums;
+    }
+
+    pub(crate) fn mock_csg_output_count_for_current_top_level_declaration(&self, default_count: usize) -> usize {
+        // Stdlib calls increment the user-level call stack. A direct top-level
+        // CSG call is at depth 1; calls inside user functions or nested calls
+        // are intentionally left to the existing fallback behavior.
+        if self.mod_local.call_stack_size != 1 {
+            return default_count;
+        }
+        let Some(declaration_name) = self.mod_local.being_declared.as_ref() else {
+            return default_count;
+        };
+        self.mod_local
+            .mock_csg_output_minimums
+            .get(declaration_name)
+            .copied()
+            .map_or(default_count, |minimum| default_count.max(minimum))
     }
 
     /// Follow direct replacement links until we find the latest known output.
@@ -1161,6 +1418,7 @@ impl ModuleState {
             denied_warnings: Vec::new(),
             consumed_solids: AHashMap::default(),
             consumed_solid_ids: AHashMap::default(),
+            mock_csg_output_minimums: AHashMap::default(),
             inside_stdlib: false,
         }
     }

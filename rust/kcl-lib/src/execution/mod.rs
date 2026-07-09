@@ -60,6 +60,7 @@ pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
 pub(crate) use state::TangencyMode;
+use state::infer_mock_csg_output_minimums;
 
 use crate::CompilationIssue;
 use crate::ExecError;
@@ -1244,6 +1245,7 @@ impl ExecutorContext {
 
         let use_prev_memory = mock_config.use_prev_memory;
         let mut exec_state = ExecState::new_mock(self, mock_config);
+        exec_state.set_mock_csg_output_minimums(infer_mock_csg_output_minimums(&program.ast));
         if use_prev_memory {
             match cache::read_old_memory().await {
                 Some(mem) => Self::restore_mock_memory(&mut exec_state, mem, mock_config)?,
