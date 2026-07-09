@@ -23,9 +23,9 @@ import {
   sketchOnExtrudedFace,
   splitPipedProfile,
 } from '@src/lang/modifyAst'
-import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import { deleteFromSelection } from '@src/lang/modifyAst/deleteFromSelection'
 import { giveSketchFnCallTag } from '@src/lang/modifyAst/giveSketchFnCallTag'
+import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
 import {
   findUsesOfTagInPipe,
   getNodeFromPath,
@@ -33,13 +33,11 @@ import {
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
-import { codeRefFromRange, getFaceCodeRef } from '@src/lang/std/artifactGraph'
-import { topLevelRange } from '@src/lang/util'
-import type { Identifier, Literal } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import { enginelessExecutor } from '@src/lib/testHelpers'
-import { err } from '@src/lib/trap'
+import {
+  codeRefFromRange,
+  getArtifactFromRange,
+  getFaceCodeRef,
+} from '@src/lang/std/artifactGraph'
 import {
   addTagForSketchOnFace,
   getConstraintInfoKw,
@@ -48,12 +46,18 @@ import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+import { topLevelRange } from '@src/lang/util'
+import type { Identifier, Literal } from '@src/lang/wasm'
+import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
+import { enginelessExecutor } from '@src/lib/testHelpers'
+import { err } from '@src/lib/trap'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
+import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, test, it } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, test } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let engineCommandManagerInThisFile: ConnectionManager = null!
@@ -737,6 +741,133 @@ ${!replace1 ? `  |> ${line}\n` : ''}  |> angledLine(angle = -65deg, length = ${
 })
 
 describe('Testing deleteFromSelection', () => {
+  it('deletes a surface loft selected from the feature tree operation range', async () => {
+    const codeBefore = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+sketch002 = sketch(on = YZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+loft001 = loft([sketch001.line1, sketch002.line1], bodyType = SURFACE)`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const loftOperation = getAllOperations(execState.operations).find(
+      (op) => op.type === 'StdLibCall' && op.name === 'loft'
+    )
+    if (!loftOperation || loftOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find loft operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        loftOperation.sourceRange,
+        execState.artifactGraph
+      ) ?? undefined
+    expect(artifact?.type).toBe('path')
+    if (artifact?.type === 'path') {
+      expect(artifact.subType).toBe('sketch')
+    }
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(loftOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).not.toContain('loft001 = loft')
+  })
+
+  it('deletes a surface extrude of a sketch segment selected from the feature tree operation range', async () => {
+    const codeBefore = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
+    const ast = assertParse(codeBefore, instanceInThisFile)
+    const execState = await enginelessExecutor(ast, rustContextInThisFile)
+    const extrudeOperation = getAllOperations(execState.operations).find(
+      (op) => op.type === 'StdLibCall' && op.name === 'extrude'
+    )
+    if (!extrudeOperation || extrudeOperation.type !== 'StdLibCall') {
+      throw new Error('Could not find extrude operation')
+    }
+    const artifact =
+      getArtifactFromRange(
+        extrudeOperation.sourceRange,
+        execState.artifactGraph
+      ) ?? undefined
+    expect(artifact?.type).toBe('path')
+    if (artifact?.type === 'path') {
+      expect(artifact.subType).toBe('sketch')
+    }
+    const result = await deleteFromSelection(
+      ast,
+      {
+        codeRef: codeRefFromRange(extrudeOperation.sourceRange, ast),
+        artifact,
+      },
+      execState.variables,
+      execState.artifactGraph,
+      instanceInThisFile
+    )
+    if (err(result)) throw result
+    const newCode = recast(result, instanceInThisFile)
+    expect(newCode).not.toContain('extrude001 = extrude')
+  })
+
+  it.each([
+    ['transform', `translate(bracket, x = 1, y = 2)`],
+    [
+      'fillet',
+      `fillet(extrude001, radius = 5, tags = [getOppositeEdge(seg02)])`,
+    ],
+    ['appearance', `appearance(extrude001, color = "#00ff00")`],
+    [
+      'gdt flatness',
+      `gdt::flatness(
+  faces = [capEnd001],
+  tolerance = 0.2in,
+  precision = 3,
+  framePlane = XZ,
+  framePosition = [20, 30],
+  fontSize = 24,
+)`,
+    ],
+    [
+      'gdt datum',
+      `gdt::datum(
+  face = capEnd001,
+  name = "B",
+  framePlane = YZ,
+  framePosition = [10, 5],
+  fontSize = 32,
+)`,
+    ],
+  ])(
+    'deletes an unassigned %s call expression selected from the feature tree operation range',
+    async (_name, codeBefore) => {
+      const ast = assertParse(codeBefore, instanceInThisFile)
+      const result = await deleteFromSelection(
+        ast,
+        {
+          codeRef: codeRefFromRange([0, codeBefore.length, 0], ast),
+        },
+        {},
+        new Map(),
+        instanceInThisFile
+      )
+      if (err(result)) throw result
+      expect(recast(result, instanceInThisFile)).toBe('')
+    }
+  )
+
   const cases = [
     [
       'basicCase',

@@ -4,7 +4,6 @@ import type {
   ApiConstraint,
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import { ORIGIN_TARGET } from '@src/machines/sketchSolve/sketchSolveSelection'
 import {
   getConstraintToolPreparedApply,
@@ -59,10 +58,6 @@ function createConstraintApiObject({
   }
 }
 
-const applyOptions = {
-  defaultLengthUnit: 'Mm',
-} satisfies { defaultLengthUnit: NumericSuffix }
-
 describe('constraintToolHelpers', () => {
   it('normalizes away incompatible selections when a tool is equipped', () => {
     const point = createPointApiObject({ id: 1 })
@@ -98,8 +93,7 @@ describe('constraintToolHelpers', () => {
     const validApply = getConstraintToolPreparedApply(
       'horizontalConstraintTool',
       [3],
-      objects,
-      applyOptions
+      objects
     )
     expect(validApply?.payload).toEqual({
       type: 'Horizontal',
@@ -109,8 +103,7 @@ describe('constraintToolHelpers', () => {
     const invalidApply = getConstraintToolPreparedApply(
       'horizontalConstraintTool',
       [20, 3],
-      objects,
-      applyOptions
+      objects
     )
     expect(invalidApply).toBeNull()
   })
@@ -122,8 +115,7 @@ describe('constraintToolHelpers', () => {
     const apply = getConstraintToolPreparedApply(
       'coincidentConstraintTool',
       [ORIGIN_TARGET, 1],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(apply?.payload).toEqual({
@@ -141,8 +133,7 @@ describe('constraintToolHelpers', () => {
     const apply = getConstraintToolPreparedApply(
       'coincidentConstraintTool',
       [1, 2, 3],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(apply?.payload).toEqual({
@@ -161,8 +152,7 @@ describe('constraintToolHelpers', () => {
     const apply = getConstraintToolPreparedApply(
       'midpointConstraintTool',
       [1, 10],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(apply?.payload).toEqual({
@@ -183,8 +173,7 @@ describe('constraintToolHelpers', () => {
     const pointArcApply = getConstraintToolPreparedApply(
       'midpointConstraintTool',
       [1, 10],
-      objects,
-      applyOptions
+      objects
     )
     expect(pointArcApply?.payload).toEqual({
       type: 'Midpoint',
@@ -195,13 +184,75 @@ describe('constraintToolHelpers', () => {
     const arcPointApply = getConstraintToolPreparedApply(
       'midpointConstraintTool',
       [10, 1],
-      objects,
-      applyOptions
+      objects
     )
     expect(arcPointApply?.payload).toEqual({
       type: 'Midpoint',
       point: 1,
       segment: 10,
+    })
+  })
+
+  it('prepares midpoint payloads from origin-segment selections', () => {
+    const lineStart = createPointApiObject({ id: 1 })
+    const lineEnd = createPointApiObject({ id: 2 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const center = createPointApiObject({ id: 3 })
+    const arcStart = createPointApiObject({ id: 4 })
+    const arcEnd = createPointApiObject({ id: 5 })
+    const arc = createArcApiObject({ id: 11, center: 3, start: 4, end: 5 })
+    const objects = createObjectsArray([
+      lineStart,
+      lineEnd,
+      line,
+      center,
+      arcStart,
+      arcEnd,
+      arc,
+    ])
+
+    const originLineApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 10],
+      objects
+    )
+    expect(originLineApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 10,
+    })
+
+    const lineOriginApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [10, ORIGIN_TARGET],
+      objects
+    )
+    expect(lineOriginApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 10,
+    })
+
+    const originArcApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 11],
+      objects
+    )
+    expect(originArcApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 11,
+    })
+
+    const arcOriginApply = getConstraintToolPreparedApply(
+      'midpointConstraintTool',
+      [11, ORIGIN_TARGET],
+      objects
+    )
+    expect(arcOriginApply?.payload).toEqual({
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 11,
     })
   })
 
@@ -230,8 +281,7 @@ describe('constraintToolHelpers', () => {
     const apply = getConstraintToolPreparedApply(
       'equalLengthConstraintTool',
       [10, 11, 12],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(apply?.payload).toEqual({
@@ -247,8 +297,7 @@ describe('constraintToolHelpers', () => {
     const apply = getConstraintToolPreparedApply(
       'fixedConstraintTool',
       [1],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(apply?.payload).toEqual({
@@ -275,8 +324,7 @@ describe('constraintToolHelpers', () => {
       'horizontalConstraintTool',
       [],
       3,
-      objects,
-      applyOptions
+      objects
     )
     expect(singleLineClick.type).toBe('apply')
 
@@ -284,8 +332,7 @@ describe('constraintToolHelpers', () => {
       'horizontalConstraintTool',
       [],
       1,
-      objects,
-      applyOptions
+      objects
     )
     expect(firstPointClick).toMatchObject({
       type: 'select',
@@ -296,8 +343,7 @@ describe('constraintToolHelpers', () => {
       'horizontalConstraintTool',
       [1],
       3,
-      objects,
-      applyOptions
+      objects
     )
     expect(invalidSecondClick).toEqual({
       type: 'clear',
@@ -308,16 +354,27 @@ describe('constraintToolHelpers', () => {
       'horizontalConstraintTool',
       [1],
       ORIGIN_TARGET,
-      objects,
-      applyOptions
+      objects
     )
     expect(validSecondClick.type).toBe('apply')
     if (validSecondClick.type === 'apply') {
       expect(validSecondClick.apply.payload).toEqual({
-        type: 'VerticalDistance',
+        type: 'Horizontal',
         points: [1, 'ORIGIN'],
-        distance: { value: 0, units: 'Mm' },
-        source: { expr: '0', is_literal: true },
+      })
+    }
+
+    const verticalPointPairClick = resolveConstraintToolClickAction(
+      'verticalConstraintTool',
+      [1],
+      ORIGIN_TARGET,
+      objects
+    )
+    expect(verticalPointPairClick.type).toBe('apply')
+    if (verticalPointPairClick.type === 'apply') {
+      expect(verticalPointPairClick.apply.payload).toEqual({
+        type: 'Vertical',
+        points: [1, 'ORIGIN'],
       })
     }
   })
@@ -342,8 +399,7 @@ describe('constraintToolHelpers', () => {
       'parallelConstraintTool',
       [],
       10,
-      objects,
-      applyOptions
+      objects
     )
     expect(firstClick).toMatchObject({
       type: 'select',
@@ -354,8 +410,7 @@ describe('constraintToolHelpers', () => {
       'parallelConstraintTool',
       [10],
       11,
-      objects,
-      applyOptions
+      objects
     )
     expect(secondClick.type).toBe('apply')
     if (secondClick.type === 'apply') {
@@ -392,8 +447,7 @@ describe('constraintToolHelpers', () => {
       'symmetricConstraintTool',
       [],
       [10, 11, 12],
-      objects,
-      applyOptions
+      objects
     )
     expect(areaSelection).toMatchObject({
       type: 'select',
@@ -426,8 +480,7 @@ describe('constraintToolHelpers', () => {
     const apply = getConstraintToolPreparedApply(
       'parallelConstraintTool',
       [10, 11, 12],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(apply?.selectionIds).toEqual([10, 11, 12])
@@ -458,8 +511,7 @@ describe('constraintToolHelpers', () => {
       'horizontalConstraintTool',
       [1],
       [10],
-      objects,
-      applyOptions
+      objects
     )
     expect(invalidBatch).toEqual({
       type: 'clear',
@@ -470,16 +522,13 @@ describe('constraintToolHelpers', () => {
       'horizontalConstraintTool',
       [1],
       [10, 2],
-      objects,
-      applyOptions
+      objects
     )
     expect(validBatch.type).toBe('apply')
     if (validBatch.type === 'apply') {
       expect(validBatch.apply.payload).toEqual({
-        type: 'VerticalDistance',
+        type: 'Horizontal',
         points: [1, 2],
-        distance: { value: 0, units: 'Mm' },
-        source: { expr: '0', is_literal: true },
       })
     }
   })
@@ -510,8 +559,7 @@ describe('constraintToolHelpers', () => {
       'parallelConstraintTool',
       [],
       [10, 11, 12],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(areaSelection.type).toBe('apply')
@@ -549,8 +597,7 @@ describe('constraintToolHelpers', () => {
     const batchApply = getConstraintToolPreparedApply(
       'horizontalConstraintTool',
       [10, 11],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(batchApply?.selectionIds).toEqual([10, 11])
@@ -596,8 +643,7 @@ describe('constraintToolHelpers', () => {
       'equalLengthConstraintTool',
       [],
       [10, 11, 12],
-      objects,
-      applyOptions
+      objects
     )
 
     expect(batchApply.type).toBe('apply')
@@ -634,8 +680,7 @@ describe('constraintToolHelpers', () => {
     const lineCircle = getConstraintToolPreparedApply(
       'tangentConstraintTool',
       [11, 12],
-      objects,
-      applyOptions
+      objects
     )
     expect(lineCircle?.payload).toEqual({
       type: 'Tangent',
@@ -645,8 +690,7 @@ describe('constraintToolHelpers', () => {
     const arcCircle = getConstraintToolPreparedApply(
       'tangentConstraintTool',
       [10, 12],
-      objects,
-      applyOptions
+      objects
     )
     expect(arcCircle?.payload).toEqual({
       type: 'Tangent',
@@ -679,8 +723,7 @@ describe('constraintToolHelpers', () => {
     const pointApply = getConstraintToolPreparedApply(
       'symmetricConstraintTool',
       [1, 2, 10],
-      objects,
-      applyOptions
+      objects
     )
     expect(pointApply?.payload).toEqual({
       type: 'Symmetric',
@@ -691,8 +734,7 @@ describe('constraintToolHelpers', () => {
     const lineApply = getConstraintToolPreparedApply(
       'symmetricConstraintTool',
       [10, 11, 12],
-      objects,
-      applyOptions
+      objects
     )
     expect(lineApply).toBeNull()
 
@@ -700,8 +742,7 @@ describe('constraintToolHelpers', () => {
       'symmetricConstraintTool',
       [10, 11, 12],
       10,
-      objects,
-      applyOptions
+      objects
     )
     expect(explicitAxisClick.type).toBe('apply')
     if (explicitAxisClick.type === 'apply') {

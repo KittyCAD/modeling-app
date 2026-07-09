@@ -4,6 +4,7 @@ import type {
   EntityGetPrimitiveIndex,
   OkModelingCmdResponse,
   Point2d,
+  RegionGetResolvableIntersectionInfo,
   WebSocketRequest,
 } from '@kittycad/lib'
 import { isModelingResponse } from '@src/lib/kcSdkGuards'
@@ -21,11 +22,24 @@ import {
 } from '@src/clientSideScene/sceneConstants'
 import { AXIS_GROUP, X_AXIS } from '@src/clientSideScene/sceneUtils'
 import {
+  createCallExpressionStdLibKw,
+  createExpressionStatement,
+  createLabeledArg,
+  createLiteral,
+  createLocalName,
+  createMemberExpression,
+  nonCodeMetaEmpty,
+} from '@src/lang/create'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
   findAllChildrenAndOrderByPlaceInCode,
   getEdgeCutMeta,
   getLastVariable,
   getNodeFromPath,
+  getRegionSketchTagExprFromSourceSurface,
   getSettingsAnnotation,
+  getSketchSegmentNameFromSourceSurface,
+  getVariableExprsFromSelection,
   isSingleCursorInPipe,
 } from '@src/lang/queryAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
@@ -39,15 +53,23 @@ import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import type { KclManager } from '@src/lang/KclManager'
 import {
+  getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
+  getOriginalSegmentArtifact,
   getPatternArtifactForCopyId,
+  getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
+  getSweepArtifactFromSelection,
   getSweepFromSuspectedSweepSurface,
   getWallCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type { PathToNodeMap } from '@src/lang/util'
-import { isCursorInSketchCommandRange, topLevelRange } from '@src/lang/util'
+import {
+  findKwArg,
+  isCursorInSketchCommandRange,
+  topLevelRange,
+} from '@src/lang/util'
 import type {
   ArtifactGraph,
   CallExpressionKw,
@@ -56,6 +78,7 @@ import type {
   Program,
   SourceRange,
 } from '@src/lang/wasm'
+import { recast } from '@src/lang/wasm'
 import type { ArtifactEntry, ArtifactIndex } from '@src/lib/artifactIndex'
 import type {
   CommandArgument,
@@ -67,7 +90,7 @@ import {
 } from '@src/lib/constants'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import { err, isErr } from '@src/lib/trap'
+import { err, isErr, reportRejection } from '@src/lib/trap'
 import {
   getNormalisedCoordinates,
   isArray,
@@ -80,6 +103,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ModelingMachineEvent } from '@src/machines/modelingMachine'
 import type {
   DefaultPlane,
+  DefaultPlaneSelection,
   EnginePrimitiveSelection,
   EngineRegionSelection,
   ExtrudeFacePlane,
@@ -111,8 +135,28 @@ async function getParentEntityIdForEntity(
   return parentIdResponse.data.entity_id
 }
 
+async function getResolvableIntersectionInfoForRegion(
+  regionId: ArtifactId,
+  engineCommandManager: ConnectionManager
+): Promise<RegionGetResolvableIntersectionInfo | null> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'region_get_resolvable_intersection_info',
+      region_id: regionId,
+    },
+  })
+  if (!isModelingResponse(response)) return null
+  const regionInfoResponse = response.resp.data.modeling_response
+  if (regionInfoResponse.type !== 'region_get_resolvable_intersection_info') {
+    return null
+  }
+  return regionInfoResponse.data
+}
+
 async function getRegionQueryPointForRegion(
-  regionId: string,
+  regionId: ArtifactId,
   engineCommandManager: ConnectionManager
 ): Promise<Point2d | null> {
   const response = await engineCommandManager.sendSceneCommand({
@@ -129,29 +173,27 @@ async function getRegionQueryPointForRegion(
   return queryPointResponse.data.query_point
 }
 
-export async function getEngineRegionSelectionFromEntity(
-  regionEntityId: string,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  engineCommandManager: ConnectionManager,
-  wasmInstance: ModuleType
-): Promise<EngineRegionSelection | null> {
-  const queryPointMm = await getRegionQueryPointForRegion(
-    regionEntityId,
-    engineCommandManager
-  )
-  if (!queryPointMm) return null
-  const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
-  const settings = getSettingsAnnotation(ast, wasmInstance)
-  const lengthUnit =
-    !isErr(settings) && settings.defaultLengthUnit
-      ? settings.defaultLengthUnit
-      : DEFAULT_DEFAULT_LENGTH_UNIT
-  const point: Point2d = {
-    x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
-    y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+function getSketchIdForRegionInfo(
+  regionInfo: RegionGetResolvableIntersectionInfo,
+  artifactGraph: ArtifactGraph
+): ArtifactId | null {
+  const segmentIds = [regionInfo.segment, regionInfo.intersection_segment]
+  for (const segmentId of segmentIds) {
+    const segment = getOriginalSegmentArtifact(segmentId, artifactGraph)
+    if (!segment) continue
+
+    const sketch = getSketchBlockForArtifact(segment, artifactGraph)
+    if (sketch) return sketch.id
   }
 
+  return null
+}
+
+async function getSketchIdForEngineRegionEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  engineCommandManager: ConnectionManager
+): Promise<ArtifactId | null> {
   const parentEntityId = await getParentEntityIdForEntity(
     regionEntityId,
     engineCommandManager
@@ -162,17 +204,67 @@ export async function getEngineRegionSelectionFromEntity(
   if (!path || path.type !== 'path') return null
 
   const sketch = getSketchBlockForPathArtifact(path, artifactGraph)
-  if (!sketch) return null
+  return sketch?.id ?? null
+}
+
+export async function getEngineRegionSelectionFromEntity(
+  regionEntityId: string,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  engineCommandManager: ConnectionManager,
+  wasmInstance: ModuleType,
+  useSegmentsBasedRegions = false
+): Promise<EngineRegionSelection | null> {
+  if (!useSegmentsBasedRegions) {
+    const queryPointMm = await getRegionQueryPointForRegion(
+      regionEntityId,
+      engineCommandManager
+    )
+    if (!queryPointMm) return null
+    const decimals = DEFAULT_LENGTH_UNIT_CONVERSION_DECIMAL_PLACES
+    const settings = getSettingsAnnotation(ast, wasmInstance)
+    const lengthUnit =
+      !isErr(settings) && settings.defaultLengthUnit
+        ? settings.defaultLengthUnit
+        : DEFAULT_DEFAULT_LENGTH_UNIT
+    const point: Point2d = {
+      x: mmToBaseUnit(queryPointMm.x, decimals, lengthUnit),
+      y: mmToBaseUnit(queryPointMm.y, decimals, lengthUnit),
+    }
+
+    const sketchId = await getSketchIdForEngineRegionEntity(
+      regionEntityId,
+      artifactGraph,
+      engineCommandManager
+    )
+    if (!sketchId) return null
+
+    return {
+      type: 'engineRegion',
+      id: regionEntityId,
+      point,
+      sketchId,
+    }
+  }
+
+  const regionInfo = await getResolvableIntersectionInfoForRegion(
+    regionEntityId,
+    engineCommandManager
+  )
+  if (!regionInfo) return null
+
+  const sketchId = getSketchIdForRegionInfo(regionInfo, artifactGraph)
+  if (!sketchId) return null
 
   return {
     type: 'engineRegion',
     id: regionEntityId,
-    point,
-    sketchId: sketch.id,
+    sketchId,
+    resolvableIntersectionInfo: regionInfo,
   }
 }
 
-async function getPrimitiveSelectionForEntity(
+export async function getPrimitiveSelectionForEntity(
   entityId: string,
   engineCommandManager: ConnectionManager
 ): Promise<EnginePrimitiveSelection | null> {
@@ -207,6 +299,812 @@ async function getPrimitiveSelectionForEntity(
   }
 }
 
+export type SelectionReference = {
+  id: string
+  label: string
+  code: string
+  graphSelection?: Selection
+  enginePrimitiveSelection?: EnginePrimitiveSelection
+}
+
+type ReferenceablePrimitiveSelection = EnginePrimitiveSelection & {
+  primitiveType: 'face' | 'edge'
+  graphSelection?: Selection
+  enginePrimitiveSelection?: EnginePrimitiveSelection
+}
+
+const BODY_REFERENCE_ARTIFACT_TYPES: Artifact['type'][] = [
+  'sweep',
+  'compositeSolid',
+  'pattern',
+  'helix',
+]
+
+function isReferenceablePrimitiveSelection(
+  selection: EnginePrimitiveSelection
+): selection is ReferenceablePrimitiveSelection {
+  return (
+    selection.primitiveType === 'face' || selection.primitiveType === 'edge'
+  )
+}
+
+function isBodyReferenceArtifact(
+  artifact: Artifact | undefined
+): artifact is Extract<
+  Artifact,
+  { type: 'sweep' | 'compositeSolid' | 'pattern' | 'helix' }
+> {
+  return (
+    artifact?.type === 'sweep' ||
+    artifact?.type === 'compositeSolid' ||
+    artifact?.type === 'pattern' ||
+    artifact?.type === 'helix'
+  )
+}
+
+function isSegmentReferenceArtifact(
+  artifact: Artifact | undefined
+): artifact is Extract<Artifact, { type: 'segment' }> {
+  return artifact?.type === 'segment'
+}
+
+function isPrimitiveReferenceArtifact(artifact: Artifact | undefined): boolean {
+  return (
+    artifact?.type === 'wall' ||
+    artifact?.type === 'cap' ||
+    artifact?.type === 'primitiveFace' ||
+    artifact?.type === 'sweepEdge' ||
+    artifact?.type === 'primitiveEdge' ||
+    artifact?.type === 'edgeCut'
+  )
+}
+
+function recastExpr(expr: Expr, wasmInstance: ModuleType) {
+  const code = recast(
+    {
+      start: 0,
+      end: 0,
+      moduleId: 0,
+      outerAttrs: [],
+      preComments: [],
+      commentStart: 0,
+      body: [createExpressionStatement(expr)],
+      nonCodeMeta: nonCodeMetaEmpty(),
+      shebang: null,
+      innerAttrs: [],
+    } as unknown as Parameters<typeof recast>[0],
+    wasmInstance
+  )
+  return err(code) ? null : code.trim()
+}
+
+export function getBodySelectionFromPrimitiveParentEntityId(
+  parentEntityId: string,
+  artifactGraph: ArtifactGraph,
+  {
+    bodyArtifactTypes = ['sweep', 'compositeSolid'],
+    codeRefLookup = 'last',
+    lookUpPatternCopies = false,
+  }: {
+    bodyArtifactTypes?: Artifact['type'][]
+    codeRefLookup?: 'first' | 'last'
+    lookUpPatternCopies?: boolean
+  } = {}
+): Selection | null {
+  const parentArtifact =
+    artifactGraph.get(parentEntityId) ??
+    (lookUpPatternCopies
+      ? getPatternArtifactForCopyId(parentEntityId, artifactGraph)
+      : undefined)
+  if (!parentArtifact) {
+    return null
+  }
+
+  if (
+    bodyArtifactTypes.includes(parentArtifact.type) &&
+    'codeRef' in parentArtifact
+  ) {
+    return {
+      artifact: parentArtifact,
+      codeRef: parentArtifact.codeRef,
+      engineEntityId:
+        parentArtifact.id === parentEntityId ? undefined : parentEntityId,
+    }
+  }
+
+  if (parentArtifact.type === 'path' && parentArtifact.sweepId) {
+    const parentSweep = getArtifactOfTypes(
+      { key: parentArtifact.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (!err(parentSweep)) {
+      return {
+        artifact: parentSweep as Artifact,
+        codeRef: parentSweep.codeRef,
+      }
+    }
+  }
+
+  if (
+    parentArtifact.type === 'cap' ||
+    parentArtifact.type === 'wall' ||
+    parentArtifact.type === 'edgeCut'
+  ) {
+    const parentSweep = getSweepFromSuspectedSweepSurface(
+      parentArtifact.id,
+      artifactGraph
+    )
+    if (!err(parentSweep)) {
+      return {
+        artifact: parentSweep as Artifact,
+        codeRef: parentSweep.codeRef,
+      }
+    }
+  }
+
+  const parentCodeRefs = getCodeRefsByArtifactId(parentEntityId, artifactGraph)
+  if (!parentCodeRefs || parentCodeRefs.length === 0) {
+    return null
+  }
+
+  return {
+    artifact: parentArtifact,
+    codeRef:
+      codeRefLookup === 'first'
+        ? parentCodeRefs[0]
+        : parentCodeRefs[parentCodeRefs.length - 1],
+  }
+}
+
+type SelectionExpressionBuilderContext = {
+  primitiveSelection: ReferenceablePrimitiveSelection
+  artifactGraph: ArtifactGraph
+  kclManager: KclManager
+  wasmInstance: ModuleType
+  engineCommandManager: ConnectionManager
+}
+
+type SelectionExpressionValidationContext =
+  SelectionExpressionBuilderContext & {
+    expr: Expr
+    code: string
+  }
+
+type SelectionExpressionApproach = {
+  create: (context: SelectionExpressionBuilderContext) => Expr | null
+  validate: (context: SelectionExpressionValidationContext) => Promise<boolean>
+}
+
+function createFaceApiReferenceExpr() {
+  return null
+}
+
+async function validateFaceApiReferenceExpr() {
+  return false
+}
+
+function getTaggableEdgeArtifact(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' | 'sweepEdge' }> | null {
+  if (
+    selection.artifact?.type === 'segment' ||
+    selection.artifact?.type === 'sweepEdge'
+  ) {
+    return selection.artifact
+  }
+
+  if (selection.artifact?.type !== 'edgeCut') {
+    return null
+  }
+
+  const consumedEdge = getArtifactOfTypes(
+    {
+      key: selection.artifact.consumedEdgeId,
+      types: ['segment', 'sweepEdge'],
+    },
+    artifactGraph
+  )
+  return err(consumedEdge) ? null : consumedEdge
+}
+
+function getEdgeTagCallExpr(tag: Expr, artifact: Artifact): Expr {
+  if (artifact.type === 'sweepEdge' && artifact.subType === 'opposite') {
+    return createCallExpressionStdLibKw('getOppositeEdge', tag, [])
+  }
+
+  if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
+    return createCallExpressionStdLibKw('getNextAdjacentEdge', tag, [])
+  }
+
+  return tag
+}
+
+function getSourceSurfaceExpr(
+  sourceSurfaceArtifact: Extract<Artifact, { type: 'sweep' }>,
+  { artifactGraph, kclManager, wasmInstance }: SelectionExpressionBuilderContext
+): Expr | null {
+  const sourceSurfaceVars = getVariableExprsFromSelection(
+    {
+      graphSelections: [
+        {
+          artifact: sourceSurfaceArtifact,
+          codeRef: sourceSurfaceArtifact.codeRef,
+        },
+      ],
+      otherSelections: [],
+    },
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance
+  )
+  if (err(sourceSurfaceVars) || sourceSurfaceVars.exprs.length !== 1) {
+    return null
+  }
+
+  return sourceSurfaceVars.exprs[0]
+}
+
+function getSegmentArtifactForTagReference(
+  artifact: Artifact,
+  artifactGraph: ArtifactGraph
+): Extract<Artifact, { type: 'segment' }> | null {
+  if (artifact.type === 'segment') {
+    return artifact
+  }
+
+  const segmentId =
+    artifact.type === 'sweepEdge'
+      ? artifact.segId
+      : artifact.type === 'wall'
+        ? artifact.segId
+        : null
+  if (!segmentId) {
+    return null
+  }
+
+  const segment = getArtifactOfTypes(
+    { key: segmentId, types: ['segment'] },
+    artifactGraph
+  )
+  return err(segment) ? null : segment
+}
+
+function getExistingSegmentTagExpr(
+  segmentArtifact: Extract<Artifact, { type: 'segment' }>,
+  { kclManager, wasmInstance }: SelectionExpressionBuilderContext
+): Expr | null {
+  const segmentNode = getNodeFromPath<CallExpressionKw>(
+    kclManager.ast,
+    segmentArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (err(segmentNode) || segmentNode.node.type !== 'CallExpressionKw') {
+    return null
+  }
+
+  const tagArg = findKwArg('tag', segmentNode.node)
+  if (tagArg?.type === 'TagDeclarator') {
+    return createLocalName(tagArg.value)
+  }
+
+  return tagArg?.type === 'Name' ? structuredClone(tagArg) : null
+}
+
+function getDirectTagExprFromSourceSurface({
+  sourceSurfaceArtifact,
+  sourceSurfaceExpr,
+  taggedArtifact,
+  context,
+}: {
+  sourceSurfaceArtifact: Extract<Artifact, { type: 'sweep' }>
+  sourceSurfaceExpr: Expr | null
+  taggedArtifact: Artifact
+  context: SelectionExpressionBuilderContext
+}): Expr | null {
+  const { artifactGraph, kclManager, wasmInstance } = context
+
+  const regionTagExpr = getRegionSketchTagExprFromSourceSurface(
+    sourceSurfaceArtifact,
+    taggedArtifact,
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance
+  )
+  if (regionTagExpr) {
+    return regionTagExpr
+  }
+
+  const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+    sourceSurfaceArtifact,
+    taggedArtifact,
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance,
+    { fallbackToFirstSegment: false }
+  )
+  if (sourceSurfaceExpr && sketchSegmentName) {
+    return createMemberExpression(
+      createMemberExpression(
+        createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+        'tags'
+      ),
+      sketchSegmentName
+    )
+  }
+
+  const segmentArtifact = getSegmentArtifactForTagReference(
+    taggedArtifact,
+    artifactGraph
+  )
+  return segmentArtifact
+    ? getExistingSegmentTagExpr(segmentArtifact, context)
+    : null
+}
+
+function createDirectTaggedFaceReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  const { primitiveSelection, artifactGraph } = context
+
+  if (primitiveSelection.primitiveType !== 'face') {
+    return null
+  }
+
+  const graphSelection = primitiveSelection.graphSelection
+  if (graphSelection?.artifact?.type !== 'wall') {
+    return null
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    graphSelection,
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return null
+  }
+  const sourceSurface = sourceSurfaceArtifact as Extract<
+    Artifact,
+    { type: 'sweep' }
+  >
+
+  return getDirectTagExprFromSourceSurface({
+    sourceSurfaceArtifact: sourceSurface,
+    sourceSurfaceExpr: getSourceSurfaceExpr(sourceSurface, context),
+    taggedArtifact: graphSelection.artifact,
+    context,
+  })
+}
+
+function createDirectTaggedEdgeReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  const { primitiveSelection, artifactGraph } = context
+
+  if (primitiveSelection.primitiveType !== 'edge') {
+    return null
+  }
+
+  const graphSelection = primitiveSelection.graphSelection
+  if (!graphSelection) {
+    return null
+  }
+
+  const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
+  if (!edgeArtifact || edgeArtifact.type === 'sweepEdge') {
+    return null
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    {
+      ...graphSelection,
+      artifact: edgeArtifact,
+    },
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return null
+  }
+  const sourceSurface = sourceSurfaceArtifact as Extract<
+    Artifact,
+    { type: 'sweep' }
+  >
+
+  const tagExpr = getDirectTagExprFromSourceSurface({
+    sourceSurfaceArtifact: sourceSurface,
+    sourceSurfaceExpr: getSourceSurfaceExpr(sourceSurface, context),
+    taggedArtifact: edgeArtifact,
+    context,
+  })
+  return tagExpr
+}
+
+function createAdjacentOrOppositeEdgeReferenceExpr({
+  primitiveSelection,
+  artifactGraph,
+  kclManager,
+  wasmInstance,
+}: SelectionExpressionBuilderContext): Expr | null {
+  if (primitiveSelection.primitiveType !== 'edge') {
+    return null
+  }
+
+  const graphSelection = primitiveSelection.graphSelection
+  if (!graphSelection) {
+    return null
+  }
+
+  const edgeArtifact = getTaggableEdgeArtifact(graphSelection, artifactGraph)
+  if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
+    return null
+  }
+
+  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+    {
+      ...graphSelection,
+      artifact: edgeArtifact,
+    },
+    artifactGraph
+  )
+  if (err(sourceSurfaceArtifact)) {
+    return null
+  }
+
+  const tagResult = modifyAstWithTagsForSelection(
+    kclManager.ast,
+    {
+      ...graphSelection,
+      artifact: edgeArtifact,
+      codeRef: graphSelection.codeRef,
+    },
+    artifactGraph,
+    wasmInstance,
+    ['oppositeAndAdjacentEdges']
+  )
+  const tagExpr = err(tagResult) ? null : tagResult.exprs[0]
+  if (!tagExpr) {
+    return null
+  }
+
+  return getEdgeTagCallExpr(tagExpr, edgeArtifact)
+}
+
+function createTagReferenceExpr(
+  context: SelectionExpressionBuilderContext
+): Expr | null {
+  return (
+    createDirectTaggedFaceReferenceExpr(context) ??
+    createDirectTaggedEdgeReferenceExpr(context) ??
+    createAdjacentOrOppositeEdgeReferenceExpr(context)
+  )
+}
+
+async function validateAvailableReferenceExpr({
+  code,
+}: SelectionExpressionValidationContext) {
+  return code.length > 0
+}
+
+function createPrimitiveIndexReferenceExpr({
+  primitiveSelection,
+  artifactGraph,
+  kclManager,
+  wasmInstance,
+}: SelectionExpressionBuilderContext): Expr | null {
+  if (!primitiveSelection.parentEntityId) {
+    return null
+  }
+
+  const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+    primitiveSelection.parentEntityId,
+    artifactGraph,
+    {
+      bodyArtifactTypes: BODY_REFERENCE_ARTIFACT_TYPES,
+      codeRefLookup: 'first',
+      lookUpPatternCopies: true,
+    }
+  )
+  if (!bodySelection) {
+    return null
+  }
+
+  const bodyVariables = getVariableExprsFromSelection(
+    { graphSelections: [bodySelection], otherSelections: [] },
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance,
+    undefined,
+    {
+      lastChildLookup: true,
+      artifactTypeFilter: BODY_REFERENCE_ARTIFACT_TYPES,
+    }
+  )
+  if (err(bodyVariables) || bodyVariables.exprs.length === 0) {
+    return null
+  }
+
+  const bodyExpr = bodyVariables.exprs[0]
+  const functionName =
+    primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
+  return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
+    createLabeledArg(
+      'index',
+      createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
+    ),
+  ])
+}
+
+const selectionExpressionApproaches: SelectionExpressionApproach[] = [
+  {
+    create: createFaceApiReferenceExpr,
+    validate: validateFaceApiReferenceExpr,
+  },
+  {
+    create: createTagReferenceExpr,
+    validate: validateAvailableReferenceExpr,
+  },
+  {
+    create: createPrimitiveIndexReferenceExpr,
+    validate: validateAvailableReferenceExpr,
+  },
+]
+
+async function createPrimitiveReferenceCode(
+  context: SelectionExpressionBuilderContext
+): Promise<string | null> {
+  for (const approach of selectionExpressionApproaches) {
+    const expr = approach.create(context)
+    if (!expr) {
+      continue
+    }
+
+    const code = recastExpr(expr, context.wasmInstance)
+    if (!code) {
+      continue
+    }
+
+    const isValid = await approach.validate({
+      ...context,
+      expr,
+      code,
+    })
+    if (isValid) {
+      return code
+    }
+  }
+
+  return null
+}
+
+function createExpressionReferences({
+  label,
+  selection,
+  artifactGraph,
+  kclManager,
+  wasmInstance,
+  options,
+}: {
+  label: string
+  selection: Selection
+  artifactGraph: ArtifactGraph
+  kclManager: KclManager
+  wasmInstance: ModuleType
+  options?: Parameters<typeof getVariableExprsFromSelection>[5]
+}): SelectionReference[] {
+  const variableExprs = getVariableExprsFromSelection(
+    { graphSelections: [selection], otherSelections: [] },
+    artifactGraph,
+    kclManager.ast,
+    wasmInstance,
+    undefined,
+    options
+  )
+  if (err(variableExprs)) {
+    return []
+  }
+
+  return variableExprs.exprs.flatMap((expr) => {
+    const code = recastExpr(expr, wasmInstance)
+    if (!code) {
+      return []
+    }
+
+    return [
+      {
+        id: `${label}:${selection.artifact?.id || selection.engineEntityId || code}:${code}`,
+        label,
+        code,
+        graphSelection: selection,
+      },
+    ]
+  })
+}
+
+export async function getSelectionReferences({
+  graphSelections,
+  enginePrimitives,
+  artifactGraph,
+  engineCommandManager,
+  kclManager,
+  wasmInstance,
+}: {
+  graphSelections: Selection[]
+  enginePrimitives: EnginePrimitiveSelection[]
+  artifactGraph: ArtifactGraph
+  engineCommandManager: ConnectionManager
+  kclManager: KclManager
+  wasmInstance: ModuleType
+}): Promise<SelectionReference[]> {
+  const references: SelectionReference[] = []
+  const primitiveSelections: ReferenceablePrimitiveSelection[] = []
+  const graphSelectionByEntityId = new Map<string, Selection>(
+    graphSelections.flatMap((selection): [string, Selection][] => {
+      const entityId = selection.artifact?.id || selection.engineEntityId
+      return entityId ? [[entityId, selection]] : []
+    })
+  )
+
+  for (const selection of graphSelections) {
+    if (isBodyReferenceArtifact(selection.artifact)) {
+      references.push(
+        ...createExpressionReferences({
+          label: 'Body',
+          selection,
+          artifactGraph,
+          kclManager,
+          wasmInstance,
+          options: {
+            lastChildLookup: true,
+            artifactTypeFilter: BODY_REFERENCE_ARTIFACT_TYPES,
+          },
+        })
+      )
+      continue
+    }
+
+    if (isSegmentReferenceArtifact(selection.artifact)) {
+      references.push(
+        ...createExpressionReferences({
+          label: 'Segment',
+          selection,
+          artifactGraph,
+          kclManager,
+          wasmInstance,
+        })
+      )
+      continue
+    }
+
+    if (!isPrimitiveReferenceArtifact(selection.artifact)) {
+      continue
+    }
+
+    const entityId = selection.artifact?.id || selection.engineEntityId
+    if (!entityId) {
+      continue
+    }
+
+    const primitiveSelection = await getPrimitiveSelectionForEntity(
+      entityId,
+      engineCommandManager
+    )
+    if (
+      primitiveSelection &&
+      isReferenceablePrimitiveSelection(primitiveSelection)
+    ) {
+      primitiveSelections.push({
+        ...primitiveSelection,
+        graphSelection: selection,
+      })
+    }
+  }
+
+  for (const selection of enginePrimitives) {
+    if (isReferenceablePrimitiveSelection(selection)) {
+      primitiveSelections.push({
+        ...selection,
+        graphSelection: graphSelectionByEntityId.get(selection.entityId),
+        enginePrimitiveSelection: selection,
+      })
+    }
+  }
+
+  const dedupedPrimitiveSelections = [
+    ...new Map(
+      primitiveSelections.map((selection) => [
+        `${selection.primitiveType}:${selection.parentEntityId || ''}:${selection.primitiveIndex}:${selection.entityId}`,
+        selection,
+      ])
+    ).values(),
+  ]
+
+  for (const primitiveSelection of dedupedPrimitiveSelections) {
+    const code = await createPrimitiveReferenceCode({
+      primitiveSelection,
+      artifactGraph,
+      engineCommandManager,
+      kclManager,
+      wasmInstance,
+    })
+    if (!code) {
+      continue
+    }
+
+    references.push({
+      id: `${primitiveSelection.primitiveType}:${primitiveSelection.entityId}`,
+      label: primitiveSelection.primitiveType === 'face' ? 'Face' : 'Edge',
+      code,
+      graphSelection: primitiveSelection.graphSelection,
+      enginePrimitiveSelection: primitiveSelection.enginePrimitiveSelection,
+    })
+  }
+
+  return [
+    ...new Map(
+      references.map((reference) => [
+        `${reference.label}:${reference.code}`,
+        reference,
+      ])
+    ).values(),
+  ]
+}
+
+function isSameCodeRange(left: Selection, right: Selection) {
+  return (
+    left.codeRef.range[0] === right.codeRef.range[0] &&
+    left.codeRef.range[1] === right.codeRef.range[1]
+  )
+}
+
+function isSameGraphSelection(left: Selection, right: Selection) {
+  if (left.artifact?.id && right.artifact?.id) {
+    return left.artifact.id === right.artifact.id
+  }
+
+  if (left.engineEntityId && right.engineEntityId) {
+    return left.engineEntityId === right.engineEntityId
+  }
+
+  return isSameCodeRange(left, right)
+}
+
+function isSameEnginePrimitiveSelection(
+  left: EnginePrimitiveSelection,
+  right: EnginePrimitiveSelection
+) {
+  return left.entityId === right.entityId
+}
+
+export function removeReferenceFromSelections(
+  selections: Selections,
+  reference: SelectionReference
+): Selections {
+  const graphSelectionToRemove = reference.graphSelection
+  const enginePrimitiveSelectionToRemove = reference.enginePrimitiveSelection
+
+  return {
+    graphSelections: graphSelectionToRemove
+      ? selections.graphSelections.filter(
+          (selection) =>
+            !isSameGraphSelection(selection, graphSelectionToRemove)
+        )
+      : selections.graphSelections,
+    otherSelections: enginePrimitiveSelectionToRemove
+      ? selections.otherSelections.filter(
+          (selection) =>
+            !(
+              isEnginePrimitiveSelection(selection) &&
+              isSameEnginePrimitiveSelection(
+                selection,
+                enginePrimitiveSelectionToRemove
+              )
+            )
+        )
+      : selections.otherSelections,
+  }
+}
+
 export function isEnginePrimitiveSelection(
   selection: Selections['otherSelections'][number]
 ): selection is EnginePrimitiveSelection {
@@ -234,11 +1132,13 @@ export async function getEventForSelectWithPoint(
     kclManager,
     rustContext,
     wasmInstance,
+    useSegmentsBasedRegions,
   }: {
     engineCommandManager: ConnectionManager
     kclManager: KclManager
     rustContext: RustContext
     wasmInstance: ModuleType
+    useSegmentsBasedRegions: boolean
   }
 ): Promise<ModelingMachineEvent | null> {
   const { ast, artifactGraph } = kclManager
@@ -290,7 +1190,8 @@ export async function getEventForSelectWithPoint(
       artifactGraph,
       ast,
       engineCommandManager,
-      wasmInstance
+      wasmInstance,
+      useSegmentsBasedRegions
     )
     if (regionSelection) {
       return {
@@ -468,6 +1369,13 @@ export function handleSelectionBatch({
         id: s.id,
         range: defaultSourceRange(),
       })
+      return
+    }
+    if (isDefaultPlaneSelection(s)) {
+      selectionToEngine.push({
+        id: s.id,
+        range: defaultSourceRange(),
+      })
     }
   })
   const engineEvents: WebSocketRequest[] = resetAndSetEngineEntitySelectionCmds(
@@ -505,6 +1413,18 @@ export function handleSelectionBatch({
 type SelectionToEngine = {
   id?: string
   range: SourceRange
+}
+
+export function isDefaultPlaneSelection(
+  selection: Selections['otherSelections'][number]
+): selection is DefaultPlaneSelection {
+  return (
+    typeof selection === 'object' && selection !== null && 'name' in selection
+  )
+}
+
+export function getSelectedDefaultPlane(selectionRanges: Selections) {
+  return selectionRanges.otherSelections.find(isDefaultPlaneSelection)
 }
 
 export function processCodeMirrorRanges({
@@ -745,7 +1665,7 @@ export function getSelectionCountByType(
       incrementOrInitializeSelectionType('other')
     } else if (isEngineRegionSelection(selection)) {
       incrementOrInitializeSelectionType('engineRegion')
-    } else if ('name' in selection) {
+    } else if (isDefaultPlaneSelection(selection)) {
       incrementOrInitializeSelectionType('plane')
     } else if (
       selection.type === 'enginePrimitive' &&
@@ -1322,9 +2242,10 @@ export async function getPlaneDataFromSketchBlock(
   }
 
   const artifact = artifactGraph.get(sketchBlock.planeId)
-  const offsetResult = await getOffsetSketchPlaneData(artifact, {
-    sceneEntitiesManager: systemDeps.sceneEntitiesManager,
+  const offsetResult = getStableOffsetPlaneData(artifact, {
+    execState: systemDeps.execState,
     sceneInfra: systemDeps.sceneInfra,
+    sketchBlock,
   })
   if (!isErr(offsetResult) && offsetResult) {
     return offsetResult
@@ -1366,6 +2287,44 @@ export function selectDefaultSketchPlane(
   return true
 }
 
+// Uses the executed sketch `on` plane so editing an offset-plane sketch is
+// independent of camera-facing scene data.
+export function getStableOffsetPlaneData(
+  artifact: Artifact | undefined,
+  systemDeps: {
+    execState: ExecState
+    sceneInfra: SceneInfra
+    sketchBlock?: Extract<Artifact, { type: 'sketchBlock' }>
+  }
+): Error | false | OffsetPlane {
+  if (artifact?.type !== 'plane') {
+    return false
+  }
+
+  const planeInfo = systemDeps.sketchBlock?.planeInfo
+
+  if (!planeInfo) {
+    return false
+  }
+
+  return {
+    type: 'offsetPlane',
+    zAxis: [planeInfo.zAxis.x, planeInfo.zAxis.y, planeInfo.zAxis.z],
+    yAxis: [planeInfo.yAxis.x, planeInfo.yAxis.y, planeInfo.yAxis.z],
+    position: [
+      planeInfo.origin.x / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.y / systemDeps.sceneInfra.baseUnitMultiplier,
+      planeInfo.origin.z / systemDeps.sceneInfra.baseUnitMultiplier,
+    ],
+    planeId: artifact.id,
+    pathToNode: artifact.codeRef.pathToNode,
+    negated: false,
+  }
+}
+
+// Uses engine sketch-mode plane data so offset-plane selection can keep the current camera-facing side.
+// The returned value depends on current camera view, ie. when viewing the back side zAxis will be flipped
+// due to getFaceDetails().
 export async function getOffsetSketchPlaneData(
   artifact: Artifact | undefined,
   systemDeps: {
@@ -1462,6 +2421,63 @@ export async function selectOffsetSketchPlane(
     return false
   }
   return true
+}
+
+export async function selectSketchPlane(
+  planeOrFaceId: string | undefined,
+  useSketchSolveMode: boolean | undefined,
+  kclManager?: KclManager
+) {
+  try {
+    if (!kclManager) return
+    if (!planeOrFaceId) return
+
+    if (useSketchSolveMode) {
+      kclManager.sceneInfra.modelingSend({
+        type: 'Select sketch solve plane',
+        data: planeOrFaceId,
+      })
+      return
+    }
+
+    const defaultSketchPlaneSelected = selectDefaultSketchPlane(planeOrFaceId, {
+      sceneInfra: kclManager.sceneInfra,
+      rustContext: kclManager.rustContext,
+    })
+    if (!err(defaultSketchPlaneSelected) && defaultSketchPlaneSelected) {
+      return
+    }
+
+    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
+      sceneInfra: kclManager.sceneInfra,
+      sceneEntitiesManager: kclManager.sceneEntitiesManager,
+    })
+    if (!err(offsetPlaneSelected) && offsetPlaneSelected) {
+      return
+    }
+
+    const sweepFaceSelected = await selectionBodyFace(
+      planeOrFaceId,
+      kclManager.artifactGraph,
+      kclManager.ast,
+      kclManager.execState,
+      {
+        rustContext: kclManager.rustContext,
+        sceneInfra: kclManager.sceneInfra,
+        sceneEntitiesManager: kclManager.sceneEntitiesManager,
+        wasmInstance: await kclManager.wasmInstancePromise,
+      }
+    )
+    if (sweepFaceSelected) {
+      kclManager.sceneInfra.modelingSend({
+        type: 'Select sketch plane',
+        data: sweepFaceSelected,
+      })
+    }
+  } catch (err) {
+    reportRejection(err)
+  }
 }
 
 export async function selectionBodyFace(

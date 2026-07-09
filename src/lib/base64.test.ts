@@ -1,4 +1,4 @@
-import { expect, describe, test } from 'vitest'
+import { describe, expect, test } from 'vitest'
 
 import { base64ToString, stringToBase64 } from '@src/lib/base64'
 

@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react'
-import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
-import { FilesSnapshot } from '@src/components/Thinking'
 import type { MlCopilotFile } from '@kittycad/lib'
+import { FilesSnapshot } from '@src/components/Thinking'
 
 // Mock a small valid PNG image (1x1 transparent pixel)
 const MOCK_PNG_DATA = [

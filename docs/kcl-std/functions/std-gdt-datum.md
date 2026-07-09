@@ -5,8 +5,6 @@ excerpt: "GD&T datum feature."
 layout: manual
 ---
 
-**WARNING:** This function is experimental and may change or be removed.
-
 GD&T datum feature.
 
 ```kcl
@@ -16,8 +14,7 @@ gdt::datum(
   framePosition?: Point2d,
   framePlane?: Plane,
   leaderScale?: number(_),
-  fontPointSize?: number(_),
-  fontScale?: number(_),
+  fontSize?: number(Length),
 ): GdtAnnotation
 ```
 
@@ -31,9 +28,8 @@ This is part of model-based definition (MBD).
 | `name` | [`string`](/docs/kcl-std/types/std-types-string) | The name of the datum. | Yes |
 | `framePosition` | [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The position of the feature control frame relative to the leader arrow. The default is `[100mm, 100mm]`. | No |
 | `framePlane` | [`Plane`](/docs/kcl-std/types/std-types-Plane) | The plane in which to display the feature control frame. The default is `XY`. Other standard planes like `XZ` and `YZ` can also be used. The frame may be displayed in a plane parallel to the given plane. | No |
-| `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Scale of the leader. The default is `1.0`. Must be greater than `0`. | No |
-| `fontPointSize` | [`number(_)`](/docs/kcl-std/types/std-types-number) | The font point size to use for the annotation text rendering. The default is `36`. | No |
-| `fontScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Scale to use for the annotation text after rendering with the point size. The default is `1.0`. Must be greater than `0`. | No |
+| `leaderScale` | [`number(_)`](/docs/kcl-std/types/std-types-number) | Visual scale of the leader dot. The default is `1.0`, which maps to the calibrated normal dot size. The value is normalized against `fontSize` so the dot stays consistent as text size changes. Must be greater than `0`. | No |
+| `fontSize` | [`number(Length)`](/docs/kcl-std/types/std-types-number) | The model-space height to use for annotation text. The default is `10mm`. Explicit units are supported; bare numbers use the file's default length unit. This changes the scene size, not the internal raster texture quality. | No |
 
 ### Returns
 
@@ -43,8 +39,6 @@ This is part of model-based definition (MBD).
 ### Examples
 
 ```kcl
-@settings(experimentalFeatures = allow, defaultLengthUnit = in)
-
 width = 5
 
 startSketchOn(XY)
@@ -69,8 +63,6 @@ gdt::datum(
 ![Rendered example of gdt::datum 0](/kcl-test-outputs/serial_test_example_fn_std-gdt-datum0.png)
 
 ```kcl
-@settings(experimentalFeatures = allow)
-
 blockProfile = sketch(on = XY) {
   edge1 = line(start = [var 0mm, var 0mm], end = [var 8mm, var 0mm])
   edge2 = line(start = [var 8mm, var 0mm], end = [var 8mm, var 5mm])

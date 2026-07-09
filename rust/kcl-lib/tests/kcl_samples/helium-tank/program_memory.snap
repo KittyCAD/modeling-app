@@ -15594,6 +15594,12 @@ description: Variables in memory after executing helium-tank.kcl
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",

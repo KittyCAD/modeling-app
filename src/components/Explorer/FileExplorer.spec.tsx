@@ -1,6 +1,6 @@
 import { FileExplorer } from '@src/components/Explorer/FileExplorer'
 import { render, screen } from '@testing-library/react'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('FileExplorer', () => {
   describe('FileExplorer', () => {
@@ -12,6 +12,9 @@ describe('FileExplorer', () => {
           contextMenuRow={null}
           isRenaming={false}
           isCopying={false}
+          isDeleting={false}
+          isInteractionDisabled={false}
+          onDeleteEnd={() => {}}
         />
       )
       const container = screen.getByTestId('file-explorer')

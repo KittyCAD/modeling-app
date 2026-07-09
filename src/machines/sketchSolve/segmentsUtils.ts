@@ -1,11 +1,11 @@
+import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SEGMENT_WIDTH_PX } from '@src/clientSideScene/sceneConstants'
-import type { Freedom, ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   SKETCH_HIGHLIGHT_COLOR,
   SKETCH_SELECTION_COLOR,
 } from '@src/lib/constants'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 
 export const DARK_CONSTRAINED_COLOR = 0x000000
 export const LIGHT_CONSTRAINED_COLOR = 0xffffff
@@ -82,6 +82,13 @@ export function deriveSegmentFreedom(
     }
     if (isPointSegment(centerPoint)) {
       pointFreedoms.push(centerPoint.kind.segment.freedom ?? null)
+    }
+  } else if (segmentData.type === 'ControlPointSpline') {
+    for (const controlId of segmentData.controls) {
+      const point = getObjById(controlId)
+      if (isPointSegment(point)) {
+        pointFreedoms.push(point.kind.segment.freedom ?? null)
+      }
     }
   }
 

@@ -1,18 +1,32 @@
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
-import { FILE_EXT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_ENTRYPOINT, REGEXP_UUIDV4 } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import {
+  type GitignoreStackEntry,
+  appendGitignoreForDirectory,
+  createInitialGitignoreStack,
+  isPathIgnoredByGitignore,
+} from '@src/lib/gitignore'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { Project } from '@src/lib/project'
+import { isErr } from '@src/lib/trap'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import {
+  getZookeeperEditPatchFromToolOutput,
+  isZookeeperProjectEntrypointPath,
+} from '@src/lib/zookeeperEditPatch'
+import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
-import type { ActorRefFrom } from 'xstate'
-import fsZds from '@src/lib/fs-zds'
-import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
+import type { ActorRefFrom, EventObject } from 'xstate'
+
+export { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 
 export type SystemIOActor = ActorRefFrom<typeof systemIOMachine>
 
@@ -79,62 +93,6 @@ export enum SystemIOMachineStates {
   savingMlEphantConversations = 'saving ml-ephant conversations',
 }
 
-const donePrefix = 'xstate.done.actor.'
-
-export enum SystemIOMachineEvents {
-  readFoldersFromProjectDirectory = 'read folders from project directory',
-  done_readFoldersFromProjectDirectory = donePrefix +
-    'read folders from project directory',
-  setProjectDirectoryPath = 'set project directory path',
-  navigateToProject = 'navigate to project',
-  navigateToFile = 'navigate to file',
-  createProject = 'create project',
-  renameProject = 'rename project',
-  done_renameProject = donePrefix + 'rename project',
-  deleteProject = 'delete project',
-  done_deleteProject = donePrefix + 'delete project',
-  createKCLFile = 'create kcl file',
-  setDefaultProjectFolderName = 'set default project folder name',
-  done_checkReadWrite = donePrefix + 'check read write',
-  /** TODO: rename this event to be more generic, like `createKCLFileAndNavigate` */
-  importFileFromURL = 'import file from URL',
-  done_importFileFromURL = donePrefix + 'import file from URL',
-  generateTextToCAD = 'generate text to CAD',
-  deleteKCLFile = 'delete kcl file',
-  bulkCreateKCLFiles = 'bulk create kcl files',
-  bulkCreateKCLFilesAndNavigateToProject = 'bulk create kcl files and navigate to project',
-  bulkImportProjectFilesAndNavigateToFile = 'bulk import project files and navigate to file',
-  bulkCreateKCLFilesAndNavigateToFile = 'bulk create kcl files and navigate to file',
-  done_bulkCreateKCLFilesAndNavigateToFile = donePrefix +
-    'bulk create kcl files and navigate to file',
-  bulkCreateAndDeleteKCLFilesAndNavigateToFile = 'bulk create and delete kcl files and navigate to file',
-  done_bulkCreateAndDeleteKCLFilesAndNavigateToFile = donePrefix +
-    'bulk create and delete kcl files and navigate to file',
-  renameFolder = 'rename folder',
-  renameFile = 'rename file',
-  deleteFileOrFolder = 'delete file or folder',
-  createBlankFile = 'create blank file',
-  createBlankFolder = 'create blank folder',
-  renameFileAndNavigateToFile = 'rename file and navigate to file',
-  done_renameFileAndNavigateToFile = donePrefix +
-    'rename file and navigate to file',
-  renameFolderAndNavigateToFile = 'rename folder and navigate to file',
-  done_renameFolderAndNavigateToFile = donePrefix +
-    'rename folder and navigate to file',
-  deleteFileOrFolderAndNavigate = 'delete file or folder and navigate',
-  done_deleteFileOrFolderAndNavigate = donePrefix +
-    'delete file or folder and navigate',
-  copyRecursive = 'copy recursive',
-  moveRecursive = 'move recursive',
-  moveRecursiveAndNavigate = 'move recursive and navigate',
-  done_moveRecursiveAndNavigate = donePrefix + 'move recursive and navigate',
-  getMlEphantConversations = 'get ml-ephant conversations',
-  done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
-  saveMlEphantConversations = 'save ml-ephant conversations',
-  done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
-  deleteMlEphantConversation = 'delete ml-ephant conversation',
-}
-
 export enum SystemIOMachineActions {
   setFolders = 'set folders',
   setProjectDirectoryPath = 'set project directory path',
@@ -148,6 +106,8 @@ export enum SystemIOMachineActions {
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
   setMlEphantConversations = 'set ml-ephant conversations',
+  deferSystemIOEvent = 'defer system IO event',
+  flushDeferredSystemIOEvent = 'flush deferred system IO event',
 }
 
 export enum SystemIOMachineGuards {
@@ -177,7 +137,12 @@ export type SystemIOContext = SystemIOInput & {
    * if we used a string the useEffect would not change
    */
   requestedProjectName: { name: string; subRoute?: string }
-  requestedFileName: { project: string; file: string; subRoute?: string }
+  requestedFileName: {
+    project: string
+    file: string
+    subRoute?: string
+    onProjectLoaderComplete?: () => void
+  }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
   requestedTextToCadGeneration: {
@@ -191,6 +156,9 @@ export type SystemIOContext = SystemIOInput & {
 
   /** Temporary storage to return to project after renaming */
   pendingRenamedProjectName?: string
+  /** Event captured while checking project-directory access. */
+  deferredSystemIOEvent?: EventObject
+  lastRecursiveMoveTarget?: string
   lastOperation: any
 
   // A mapping between project id and conversation ids.
@@ -269,10 +237,20 @@ export const determineProjectFilePathFromPrompt = (
   return finalPath
 }
 
+const normalizeRelativePath = (filePath: string) => filePath.replace(/\\/g, '/')
+
+const normalizePathForComparison = (filePath: string) => {
+  const normalized = normalizeRelativePath(fsZds.resolve(filePath))
+  return fsZds.sep === '\\' ? normalized.toLowerCase() : normalized
+}
+
 export const collectProjectFiles = async (args: {
   selectedFileContents: string
   fileNames: ExecState['filenames']
   projectContext?: Project
+  selectedFilePath?: string
+  warnIfProjectExceeds64Mb?: boolean
+  skipUnreadableFiles?: boolean
 }) => {
   let projectFiles: FileMeta[] = [
     {
@@ -290,27 +268,44 @@ export const collectProjectFiles = async (args: {
     }
   })
   let basePath = ''
-  if (args.projectContext?.children) {
+  if (args.projectContext) {
     // Use the entire project directory as the basePath for prompt to edit, do not use relative subdir paths
     basePath = args.projectContext?.path
+    const selectedAbsolutePath = args.selectedFilePath
+      ? normalizePathForComparison(args.selectedFilePath)
+      : undefined
+    const selectedRelativePath = args.selectedFilePath
+      ? normalizeRelativePath(
+          fsZds.relative(basePath, args.selectedFilePath) ?? ''
+        )
+      : undefined
+    const isSelectedFilePath = (absolutePath: string) => {
+      if (!args.selectedFilePath) return false
+
+      return (
+        normalizePathForComparison(absolutePath) === selectedAbsolutePath ||
+        normalizeRelativePath(fsZds.relative(basePath, absolutePath) ?? '') ===
+          selectedRelativePath
+      )
+    }
     const filePromises: Promise<FileMeta | null>[] = []
     let uploadSize = 0
-    const recursivelyPushFilePromises = (files: FileEntry[]) => {
-      // mutates filePromises declared above, so this function definition should stay here
-      // if pulled out, it would need to be refactored.
-      for (const file of files) {
-        if (file.children !== null) {
-          // is directory
-          recursivelyPushFilePromises(file.children)
-          continue
-        }
+    const pushFilePromise = (absolutePathToFileNameWithExtension: string) => {
+      // Normalize to forward slashes: this becomes the FileMeta.relPath that is
+      // sent to the ML/Zookeeper service as the `current_files` keys and the
+      // `source_ranges` file paths. On Windows fsZds.relative yields backslash
+      // separators, which the Linux server rejects as invalid file names.
+      const fileNameWithExtension = normalizeRelativePath(
+        fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+      )
 
-        const absolutePathToFileNameWithExtension = file.path
-        const fileNameWithExtension =
-          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
-
-        const filePromise = fsZds
-          .readFile(absolutePathToFileNameWithExtension)
+      filePromises.push(
+        Promise.resolve()
+          .then(() =>
+            isSelectedFilePath(absolutePathToFileNameWithExtension)
+              ? new TextEncoder().encode(args.selectedFileContents)
+              : fsZds.readFile(absolutePathToFileNameWithExtension)
+          )
           .then((file): FileMeta => {
             uploadSize += file.byteLength
             const decoder = new TextDecoder('utf-8')
@@ -336,20 +331,55 @@ export const collectProjectFiles = async (args: {
           })
           .catch((e) => {
             console.error('error reading file', e)
+            if (args.skipUnreadableFiles === false) {
+              return Promise.reject(isErr(e) ? e : new Error(String(e)))
+            }
             return null
           })
+      )
+    }
 
-        if (filePromise === undefined) {
+    const recursivelyPushFilePromisesFromPath = async (
+      path: string,
+      gitignoreStack: GitignoreStackEntry[]
+    ) => {
+      const entries = await fsZds.readdir(path)
+      for (const entry of entries) {
+        const absolutePathToFileNameWithExtension = fsZds.join(path, entry)
+        const relativePath = (
+          fsZds.relative(basePath, absolutePathToFileNameWithExtension) ?? ''
+        ).replace(/\\/g, '/')
+        const stat = await fsZds.stat(absolutePathToFileNameWithExtension)
+        const isDirectory = Boolean(stat.mode & fsZdsConstants.S_IFDIR)
+
+        if (
+          isPathIgnoredByGitignore(gitignoreStack, relativePath, isDirectory)
+        ) {
           continue
         }
 
-        filePromises.push(filePromise)
+        if (isDirectory) {
+          const childGitignoreStack = await appendGitignoreForDirectory(
+            gitignoreStack,
+            absolutePathToFileNameWithExtension,
+            basePath
+          )
+          await recursivelyPushFilePromisesFromPath(
+            absolutePathToFileNameWithExtension,
+            childGitignoreStack
+          )
+          continue
+        }
+
+        pushFilePromise(absolutePathToFileNameWithExtension)
       }
     }
-    recursivelyPushFilePromises(args.projectContext?.children)
+
+    const gitignoreStack = await createInitialGitignoreStack(basePath)
+    await recursivelyPushFilePromisesFromPath(basePath, gitignoreStack)
     projectFiles = (await Promise.all(filePromises)).filter(isNonNullable)
     const MB64 = 2 ** 20 * 64
-    if (uploadSize > MB64) {
+    if (args.warnIfProjectExceeds64Mb !== false && uploadSize > MB64) {
       toast.error(
         'Your project exceeds 64Mb, this will slow down Zookeeper.\nPlease remove any unnecessary files.'
       )
@@ -388,11 +418,12 @@ export const mlConversationsToJson = (
 }
 
 export const prepareMlEphantNewFileRequest = ({
+  fallbackFilePath,
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
   filesToDelete = [],
-}: MlEphantNewFileRequestProps) => {
+}: MlEphantNewFileRequestProps & { fallbackFilePath?: string }) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
     toolOutput.type !== 'edit_kcl_code'
@@ -416,17 +447,54 @@ export const prepareMlEphantNewFileRequest = ({
   // (e.g. "/newFile.kcl"). Strip it here so the returned value is genuinely
   // project-relative, matching what the field name promises.
   const rawRelativePath = getFilePathRelativeToProject(
-    fileFocusedOnInEditor?.path || '',
+    fileFocusedOnInEditor?.path || fallbackFilePath || '',
     projectNameCurrentlyOpened
   )
   const requestedFileNameWithExtension = rawRelativePath.startsWith(fsZds.sep)
     ? rawRelativePath.slice(fsZds.sep.length)
     : rawRelativePath
+  const rawZookeeperEditPatch = getZookeeperEditPatchFromToolOutput(toolOutput)
+  const zookeeperEditPatch = rawZookeeperEditPatch
+    ? {
+        ...rawZookeeperEditPatch,
+        changed_files: rawZookeeperEditPatch.changed_files?.filter(
+          (file) =>
+            file.status !== 'deleted' ||
+            !isZookeeperProjectEntrypointPath(file.path)
+        ),
+      }
+    : undefined
+  const filesToDeleteByPath = new Map<string, RequestedKCLFileDelete>()
+
+  for (const file of filesToDelete) {
+    if (isZookeeperProjectEntrypointPath(file.requestedFileName)) continue
+    filesToDeleteByPath.set(
+      normalizeKCLFileDeletePath(file.requestedFileName),
+      file
+    )
+  }
+
+  for (const file of zookeeperEditPatch?.changed_files ?? []) {
+    if (file.status !== 'deleted') continue
+    filesToDeleteByPath.set(normalizeKCLFileDeletePath(file.path), {
+      requestedFileName: file.path,
+    })
+  }
+
+  const normalizedRequestedFileName = normalizeKCLFileDeletePath(
+    requestedFileNameWithExtension
+  )
+  const requestedFileWasDeleted =
+    normalizedRequestedFileName.length > 0 &&
+    filesToDeleteByPath.has(normalizedRequestedFileName)
 
   return {
     files: requestedFiles,
-    filesToDelete,
+    filesToDelete: Array.from(filesToDeleteByPath.values()),
     requestedProjectName: projectNameCurrentlyOpened,
-    requestedFileNameWithExtension,
+    requestedFileNameWithExtension: requestedFileWasDeleted
+      ? PROJECT_ENTRYPOINT
+      : requestedFileNameWithExtension,
+    zookeeperEditPatch,
   }
 }

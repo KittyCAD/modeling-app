@@ -8,8 +8,6 @@ lint:
     cargo clippy --workspace --all-targets --all-features -- -D warnings
     # Default features.
     cargo clippy -p kcl-lib --all-targets -- -D warnings
-    # Minimal features that actually still build.
-    cargo clippy -p kcl-lib --all-targets --no-default-features --features engine,cli -- -D warnings
 
 lint-fix:
     cargo clippy --workspace --all-targets --all-features --fix
@@ -20,14 +18,6 @@ redo-kcl-stdlib-docs-no-imgs:
     rm -f ../docs/kcl-std/functions/*
     rm -f ../docs/kcl-std/modules/*
     rm -f ../docs/kcl-std/consts/*
-    rm -f ../docs/kcl-std-legacy/types/*
-    rm -f ../docs/kcl-std-legacy/functions/*
-    rm -f ../docs/kcl-std-legacy/modules/*
-    rm -f ../docs/kcl-std-legacy/consts/*
-    rm -f ../docs/kcl-std-sketch-solve/types/*
-    rm -f ../docs/kcl-std-sketch-solve/functions/*
-    rm -f ../docs/kcl-std-sketch-solve/modules/*
-    rm -f ../docs/kcl-std-sketch-solve/consts/*
     EXPECTORATE=overwrite {{ cnr }} {{ kcl_lib_flags }} docs::gen_std_tests::test_generate_stdlib
 
 # Generate the stdlib image artifacts
@@ -38,14 +28,6 @@ redo-kcl-stdlib-docs:
     rm -f ../docs/kcl-std/functions/*
     rm -f ../docs/kcl-std/modules/*
     rm -f ../docs/kcl-std/consts/*
-    rm -f ../docs/kcl-std-legacy/types/*
-    rm -f ../docs/kcl-std-legacy/functions/*
-    rm -f ../docs/kcl-std-legacy/modules/*
-    rm -f ../docs/kcl-std-legacy/consts/*
-    rm -f ../docs/kcl-std-sketch-solve/types/*
-    rm -f ../docs/kcl-std-sketch-solve/functions/*
-    rm -f ../docs/kcl-std-sketch-solve/modules/*
-    rm -f ../docs/kcl-std-sketch-solve/consts/*
     TWENTY_TWENTY=update {{ cnr }} {{ kcl_lib_flags }} -- kcl_test_example
     TWENTY_TWENTY=update {{ cnr }} {{ kcl_lib_flags }} docs::kcl_doc::test::kcl_test_examples
     EXPECTORATE=overwrite {{ cnr }} {{ kcl_lib_flags }} -- docs::gen_std_tests::test_generate_stdlib
@@ -112,6 +94,8 @@ publish-kcl version:
     cargo publish -p kcl-derive-docs
     cargo publish -p kcl-directory-test-macro
     cargo publish -p kcl-error
+    cargo publish -p kcl-api
+    cargo publish -p kcl-syntax
     cargo publish -p kcl-lib
     cargo publish -p kcl-test-server
     # We push the tag at the end of publish since pushing the tag

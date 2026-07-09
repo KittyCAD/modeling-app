@@ -1,44 +1,56 @@
-import type { MouseEventHandler } from 'react'
-import { use, useCallback, useMemo, useRef, useState } from 'react'
-import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
-import { useApp, useSingletons } from '@src/lib/boot'
-import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
-import { btnName } from '@src/lib/cameraControls'
-import { err, reportRejection } from '@src/lib/trap'
-import Loading from '@src/components/Loading'
 import { useAppState } from '@src/AppState'
+import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import Loading from '@src/components/Loading'
+import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
+import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
+import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
+import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
+import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
+import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
+import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
+import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
+import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
+import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
+import { useTryConnect } from '@src/hooks/network/useTryConnect'
+import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import {
-  getEngineRegionSelectionFromEntity,
-  sendSelectEventToEngine,
-} from '@src/lib/selections'
+import { findOperationForArtifact } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
   getSketchBlockForArtifact,
 } from '@src/lang/std/artifactGraph'
-import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
-import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
-import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
-import { useTryConnect } from '@src/hooks/network/useTryConnect'
-import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
-import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
-import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
-import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
-import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
-import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
-import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
+import { getAllOperations } from '@src/lang/wasm'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { btnName } from '@src/lib/cameraControls'
 import { EngineDebugger } from '@src/lib/debugger'
-import { getResolvedTheme, Themes } from '@src/lib/theme'
+import { prepareEditCommand } from '@src/lib/featureTree'
+import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
+import {
+  getEngineRegionSelectionFromEntity,
+  sendSelectEventToEngine,
+} from '@src/lib/selections'
+import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { err, reportRejection } from '@src/lib/trap'
+import type {
+  EngineSceneExtensionContext,
+  EngineSceneStreamLayer,
+} from '@src/registry/contracts/engineScene'
+import type { MouseEventHandler } from 'react'
+import { use, useCallback, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
 
-export const ConnectionStream = (props: {
+interface ConnectionStreamProps {
   authToken: string | undefined
   sketchSolveStreamDimming?: number
-}) => {
-  const { settings, project, wasmPromise } = useApp()
+  streamClassName?: string
+  streamLayers: readonly EngineSceneStreamLayer[]
+  streamLayerProps: EngineSceneExtensionContext
+}
+
+export const ConnectionStream = (props: ConnectionStreamProps) => {
+  const { settings, project, wasmPromise, commands } = useApp()
   const wasmInstance = use(wasmPromise)
   const { kclManager } = useSingletons()
   const engineCommandManager = kclManager.engineCommandManager
@@ -87,17 +99,18 @@ export const ConnectionStream = (props: {
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
+      engineCommandManager,
       isNetworkOkay,
-      modelingMachineState.value,
+      modelingMachineState,
       sceneInfra.camControls.wasDragging,
     ]
   )
 
   /**
-   * On double-click of sketch entities we automatically enter sketch mode with the selected sketch,
-   * allowing for quick editing of sketches. TODO: This should be moved to a more central place.
+   * On double-click of editable viewport entities we enter their edit flow.
+   * TODO: This should be moved to a more central place.
    */
-  const enterSketchModeIfSelectingSketch: MouseEventHandler<HTMLDivElement> =
+  const enterEditModeForViewportSelection: MouseEventHandler<HTMLDivElement> =
     useCallback(
       (e) => {
         if (
@@ -123,6 +136,26 @@ export const ConnectionStream = (props: {
               return
             }
             const artifact = kclManager.artifactGraph.get(entity_id)
+            if (artifact?.type === 'gdtAnnotation') {
+              const operation = findOperationForArtifact({
+                artifact,
+                operations: getAllOperations(kclManager.operationsByModule),
+              })
+              if (!operation) {
+                return
+              }
+
+              await prepareEditCommand({
+                artifactGraph: kclManager.artifactGraph,
+                code: kclManager.code,
+                commandBarActor: commands.actor,
+                operation,
+                rustContext: kclManager.rustContext,
+                artifact,
+              })
+              return
+            }
+
             const sketchBlockArtifact = getSketchBlockForArtifact(
               artifact,
               kclManager.artifactGraph
@@ -176,10 +209,18 @@ export const ConnectionStream = (props: {
       },
       // eslint-disable-next-line react-hooks/exhaustive-deps
       [
+        commands.actor,
+        engineCommandManager,
         isNetworkOkay,
-        modelingMachineState.value,
-        sceneInfra.camControls.wasDragging,
         kclManager.artifactGraph,
+        kclManager.ast,
+        kclManager.code,
+        kclManager.operationsByModule,
+        kclManager.rustContext,
+        modelingMachineState,
+        sceneInfra.camControls.wasDragging,
+        sceneInfra.modelingSend,
+        wasmInstance,
       ]
     )
 
@@ -453,12 +494,12 @@ export const ConnectionStream = (props: {
     <div
       role="presentation"
       ref={videoWrapperRef}
-      className="absolute inset-[-4px] z-0"
+      className={props.streamClassName ?? 'absolute inset-[-4px] z-0'}
       style={style}
       id="stream"
       data-testid="stream"
       onMouseUp={handleMouseUp}
-      onDoubleClick={enterSketchModeIfSelectingSketch}
+      onDoubleClick={enterEditModeForViewportSelection}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
     >
@@ -487,6 +528,17 @@ export const ConnectionStream = (props: {
         }
         sketchSolveStreamDimming={props.sketchSolveStreamDimming}
       />
+      {props.streamLayers.map((layer) => {
+        return (
+          <div
+            key={layer.id}
+            className={`absolute inset-0 ${layer.wrapperClassName ?? ''}`}
+            data-engine-scene-stream-layer-id={layer.id}
+          >
+            <layer.Component {...props.streamLayerProps} />
+          </div>
+        )
+      })}
       <ViewControlContextMenu
         event="mouseup"
         guard={viewControlContextMenuGuard}
@@ -522,7 +574,6 @@ export const ConnectionStream = (props: {
           Connecting and setting up scene...
         </Loading>
       )}
-      )
     </div>
   )
 }

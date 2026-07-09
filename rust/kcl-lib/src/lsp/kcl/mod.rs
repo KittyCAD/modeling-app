@@ -121,8 +121,11 @@ use crate::lsp::util::IntoDiagnostic;
 use crate::parsing::PIPE_OPERATOR;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::VariableKind;
+use crate::parsing::token::LexerMode;
 use crate::parsing::token::RESERVED_WORDS;
 use crate::parsing::token::TokenStream;
+use crate::parsing::token::adapter;
+use crate::parsing::token::lex;
 
 pub mod custom_notifications;
 mod hover;
@@ -167,7 +170,7 @@ pub struct Backend {
     /// The client for the backend.
     pub client: Client,
     /// The file system client to use.
-    pub fs: Arc<crate::fs::FileManager>,
+    pub fs: crate::fs::FileSystemHandle,
     /// The workspace folders.
     pub workspace_folders: DashMap<String, WorkspaceFolder>,
     /// The stdlib completions for the language.
@@ -215,7 +218,12 @@ impl Backend {
         fs: crate::fs::wasm::FileSystemManager,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
-        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(fs), zoo_client)
+        Self::with_file_system(
+            client,
+            executor_ctx,
+            crate::fs::new_file_system_handle(crate::fs::FileManager::new(fs)),
+            zoo_client,
+        )
     }
 
     #[cfg(not(target_arch = "wasm32"))]
@@ -224,13 +232,18 @@ impl Backend {
         executor_ctx: Option<crate::execution::ExecutorContext>,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
-        Self::with_file_manager(client, executor_ctx, crate::fs::FileManager::new(), zoo_client)
+        Self::with_file_system(
+            client,
+            executor_ctx,
+            crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
+            zoo_client,
+        )
     }
 
-    fn with_file_manager(
+    fn with_file_system(
         client: Client,
         executor_ctx: Option<crate::execution::ExecutorContext>,
-        fs: crate::fs::FileManager,
+        fs: crate::fs::FileSystemHandle,
         zoo_client: kittycad::Client,
     ) -> Result<Self, String> {
         let kcl_std = crate::docs::kcl_doc::walk_stdlib();
@@ -245,7 +258,7 @@ impl Backend {
 
         Ok(Self {
             client,
-            fs: Arc::new(fs),
+            fs,
             stdlib_completions,
             sketch_block_stdlib_completions,
             stdlib_signatures,
@@ -402,7 +415,7 @@ impl crate::lsp::backend::Backend for Backend {
         &self.client
     }
 
-    fn fs(&self) -> &Arc<crate::fs::FileManager> {
+    fn fs(&self) -> &crate::fs::FileSystemHandle {
         &self.fs
     }
 
@@ -466,14 +479,25 @@ impl crate::lsp::backend::Backend for Backend {
 
         // Lets update the tokens.
         let module_id = ModuleId::default();
-        let tokens = match crate::parsing::token::lex(&params.text, module_id) {
-            Ok(tokens) => tokens,
-            Err(err) => {
-                self.add_to_diagnostics(&params, &[err], true).await;
-                self.token_map.remove(&filename);
-                self.remove_from_ast_maps(&filename);
-                self.semantic_tokens_map.remove(&filename);
-                return;
+        // Mode-aware lex. The old lexer keeps its exact bail-on-error behavior.
+        // The new lexer always yields a token stream so semantic highlighting
+        // survives a lexical error; any lexical error is carried in `lex_error`
+        // and reported below, after semantic tokens are computed.
+        let (tokens, lex_error) = match LexerMode::resolve() {
+            LexerMode::Old => match lex(&params.text, module_id) {
+                Ok(tokens) => (tokens, None),
+                Err(err) => {
+                    self.add_to_diagnostics(&params, &[err], true).await;
+                    self.token_map.remove(&filename);
+                    self.remove_from_ast_maps(&filename);
+                    self.semantic_tokens_map.remove(&filename);
+                    return;
+                }
+            },
+            LexerMode::New => {
+                let result = adapter::lex_with_diagnostics(&params.text, module_id);
+                let lex_error = result.to_lexical_error();
+                (result.tokens, lex_error)
             }
         };
 
@@ -496,6 +520,16 @@ impl crate::lsp::backend::Backend for Backend {
             self.token_map.insert(params.uri.to_string(), tokens.clone());
             // Update our semantic tokens.
             self.update_semantic_tokens(&tokens, &params).await;
+        }
+
+        // With the new lexer a lexical error is surfaced as a diagnostic, but the
+        // token stream and semantic tokens (computed above) are retained so the
+        // editor keeps highlighting. No AST is produced (mirrors the parse-error
+        // path below).
+        if let Some(err) = lex_error {
+            self.add_to_diagnostics(&params, &[err], true).await;
+            self.remove_from_ast_maps(&filename);
+            return;
         }
 
         // Lets update the ast.
@@ -1980,7 +2014,7 @@ async fn with_cached_var<T>(name: &str, f: impl Fn(&KclValue) -> T) -> Option<T>
     let mem = cache::read_old_memory().await?;
     let value = mem.stack.get(name, SourceRange::default()).ok()?;
 
-    Some(f(value))
+    Some(f(&value))
 }
 
 #[cfg(test)]

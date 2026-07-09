@@ -9,11 +9,13 @@ import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import { updateEnvironment } from '@src/env'
 import env from '@src/env'
+import { noAutofillInputProps } from '@src/lib/autofill'
 import { useApp } from '@src/lib/boot'
 import { APP_NAME } from '@src/lib/constants'
 import { readEnvironmentFile, writeEnvironmentFile } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { mark } from '@src/lib/performance'
 import { Themes, getSystemTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { returnSelfOrGetHostNameFromURL, toSync } from '@src/lib/utils'
@@ -120,6 +122,20 @@ const SignIn = () => {
     signInAttemptRef.current = signInAttempt
     const requestedEnvironment = selectedEnvironment.trim()
     updateEnvironment(requestedEnvironment)
+    mark('config/env', {
+      name: 'config/env',
+      startTime: performance.now(),
+      entryType: 'mark',
+      detail: {
+        env: {
+          NODE_ENV: env().NODE_ENV,
+          VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
+          VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
+          VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
+          VITE_MLEPHANT_WEBSOCKET_URL: env().VITE_MLEPHANT_WEBSOCKET_URL,
+        },
+      },
+    })
     setUserCode('')
     setVerificationUri('')
 
@@ -273,6 +289,7 @@ const SignIn = () => {
                         </p>
                         <div className="flex flex-col gap-2 sm:flex-row">
                           <input
+                            {...noAutofillInputProps}
                             readOnly
                             aria-label="Sign-in URL"
                             value={verificationUri}

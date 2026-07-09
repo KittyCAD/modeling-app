@@ -1,6 +1,7 @@
 import { Registry, defineRegistryItem, provide } from '@kittycad/registry'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import {
+  filterStatusBarItemsForScopes,
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
@@ -80,5 +81,19 @@ describe('status bar registry contract', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual(['visible'])
+  })
+
+  it('filters scoped status bar items while keeping unscoped items', () => {
+    expect(
+      filterStatusBarItemsForScopes(
+        [
+          statusItem('unscoped', 0),
+          { ...statusItem('home', 0), scopes: ['home'] },
+          { ...statusItem('file', 0), scopes: ['file'] },
+          { ...statusItem('both', 0), scopes: ['home', 'file'] },
+        ],
+        ['home']
+      ).map((item) => item.id)
+    ).toEqual(['unscoped', 'home', 'both'])
   })
 })

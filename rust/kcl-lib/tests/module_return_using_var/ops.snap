@@ -84,12 +84,9 @@ description: Operations executed module_return_using_var.kcl
   ],
   "rust/kcl-lib/tests/module_return_using_var/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "cube.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "cube",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -99,9 +96,6 @@ description: Operations executed module_return_using_var.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

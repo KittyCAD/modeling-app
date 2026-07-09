@@ -107,12 +107,9 @@ description: Operations executed import_whole_simple.kcl
   ],
   "rust/kcl-lib/tests/import_whole_simple/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "exported_mod.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "foo",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -122,9 +119,6 @@ description: Operations executed import_whole_simple.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

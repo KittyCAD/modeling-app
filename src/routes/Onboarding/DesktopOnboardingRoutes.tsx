@@ -1,17 +1,19 @@
 import { Spinner } from '@src/components/Spinner'
+import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_PROJECT_NAME,
   SEARCH_PARAM_ML_PROMPT_KEY,
 } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
+import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   type DesktopOnboardingPath,
   desktopOnboardingPaths,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   OnboardingButtons,
@@ -24,8 +26,6 @@ import {
 } from '@src/routes/Onboarding/utils'
 import { useEffect, useState } from 'react'
 import { type RouteObject, useSearchParams } from 'react-router-dom'
-import { DefaultLayoutPaneID } from '@src/lib/layout'
-import { useApp } from '@src/lib/boot'
 
 type DesktopOnboardingRoute = RouteObject & {
   path: keyof typeof desktopOnboardingPaths

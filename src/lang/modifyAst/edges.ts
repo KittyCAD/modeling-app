@@ -20,7 +20,6 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { getBodySelectionFromPrimitiveParentEntityId } from '@src/lang/modifyAst/faces'
 import {
   modifyAstWithTagsForSelection,
   mutateAstWithTagForSketchSegment,
@@ -55,8 +54,12 @@ import type {
 } from '@src/lang/wasm'
 import { recast } from '@src/lang/wasm'
 import type { KclCommandValue } from '@src/lib/commandTypes'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
+import {
+  getBodySelectionFromPrimitiveParentEntityId,
+  isEnginePrimitiveSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
@@ -88,7 +91,9 @@ export function addFillet({
   artifactGraph,
   selection,
   radius,
+  tolerance,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -96,7 +101,9 @@ export function addFillet({
   artifactGraph: ArtifactGraph
   selection: Selections
   radius: KclCommandValue
+  tolerance?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -146,6 +153,12 @@ export function addFillet({
   if ('variableName' in radius && radius.variableName) {
     insertVariableAndOffsetPathToNode(radius, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create fillet calls for each body
   const pathToNodes: PathToNode[] = []
@@ -153,11 +166,23 @@ export function addFillet({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
-    const call = createCallExpressionStdLibKw('fillet', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('radius', valueOrVariable(radius)),
-      ...tagArgs,
-    ])
+    const toleranceArgs = tolerance
+      ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+      : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Fillet'),
+      data.solidsExpr,
+      [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('radius', valueOrVariable(radius)),
+        ...toleranceArgs,
+        ...tagArgs,
+        ...versionArgs,
+      ]
+    )
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,
@@ -182,6 +207,7 @@ export function addChamfer({
   secondLength,
   angle,
   tag,
+  version,
   nodeToEdit,
   wasmInstance,
 }: {
@@ -192,6 +218,7 @@ export function addChamfer({
   secondLength?: KclCommandValue
   angle?: KclCommandValue
   tag?: string
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
   wasmInstance: ModuleType
 }):
@@ -251,6 +278,9 @@ export function addChamfer({
   if (angle && 'variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
   }
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
 
   // 3. Create chamfer calls for each body
   const pathToNodes: PathToNode[] = []
@@ -264,14 +294,22 @@ export function addChamfer({
     const tagArgs = tag
       ? [createLabeledArg('tag', createTagDeclarator(tag))]
       : []
+    const versionArgs = version
+      ? [createLabeledArg('version', valueOrVariable(version))]
+      : []
 
-    const call = createCallExpressionStdLibKw('chamfer', data.solidsExpr, [
-      createLabeledArg('tags', data.tagsExpr),
-      createLabeledArg('length', valueOrVariable(length)),
-      ...secondLengthArgs,
-      ...angleArgs,
-      ...tagArgs,
-    ])
+    const call = createCallExpressionStdLibKw(
+      modelingStdLibCommandName('Chamfer'),
+      data.solidsExpr,
+      [
+        createLabeledArg('tags', data.tagsExpr),
+        createLabeledArg('length', valueOrVariable(length)),
+        ...secondLengthArgs,
+        ...angleArgs,
+        ...tagArgs,
+        ...versionArgs,
+      ]
+    )
 
     const pathToNode = setCallInAst({
       ast: modifiedAst,

@@ -3,9 +3,9 @@ import type {
   ApiObject,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import type RustContext from '@src/lib/rustContext'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
+import type RustContext from '@src/lib/rustContext'
 import { distance2d } from '@src/lib/utils2d'
 import {
   getArcPoints,

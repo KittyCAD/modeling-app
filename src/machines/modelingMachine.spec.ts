@@ -1,39 +1,46 @@
-/** Engine-using integration tests of modelingMachine.
- * For engineless unit tests, see modelingMachine.test.ts */
-import { assertParse, recast, type CallExpressionKw } from '@src/lang/wasm'
-import type { SceneGraphDelta } from '@rust/kcl-lib/bindings/FrontendApi'
-import { err } from '@src/lib/trap'
-import toast from 'react-hot-toast'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { KclManager } from '@src/lang/KclManager'
+import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
-  createLiteral,
   createIdentifier,
+  createLiteral,
   createVariableDeclaration,
 } from '@src/lang/create'
-import { getNodeFromPath } from '@src/lang/queryAst'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import { modelingMachine } from '@src/machines/modelingMachine'
-import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
-import { vi } from 'vitest'
-import { getConstraintInfoKw } from '@src/lang/std/sketch'
-import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
-import { dummyInitSketchGraphDelta } from '@src/machines/modelingSharedContext'
-import { generateModelingMachineDefaultContext } from '@src/machines/modelingSharedContext'
+import { getNodeFromPath } from '@src/lang/queryAst'
+import { getConstraintInfoKw } from '@src/lang/std/sketch'
 import {
   removeSingleConstraint,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
+/** Engine-using integration tests of modelingMachine. */
+import {
+  type Artifact,
+  type ArtifactGraph,
+  type CallExpressionKw,
+  assertParse,
+  recast,
+} from '@src/lang/wasm'
+import type { MachineManager } from '@src/lib/MachineManager'
+import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import { modelingMachine } from '@src/machines/modelingMachine'
+import {
+  dummyInitSketchGraphDelta,
+  generateModelingMachineDefaultContext,
+  modelingMachineInitialInternalContext,
+} from '@src/machines/modelingSharedContext'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import {
   buildTheWorldAndConnectToEngine,
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
-import type { ConnectionManager } from '@src/network/connectionManager'
-import type RustContext from '@src/lib/rustContext'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { KclManager } from '@src/lang/KclManager'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { MachineManager } from '@src/lib/MachineManager'
+import toast from 'react-hot-toast'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
+import { vi } from 'vitest'
+import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!
@@ -43,6 +50,12 @@ let rustContextInThisFile: RustContext = null!
 let commandBarActorInThisFile: CommandBarActorType = null!
 let machineManagerInThisFile: MachineManager = null!
 
+const TESTS_WITHOUT_ENGINE_WORLD = [
+  'routes a cursor inside a sketch block segment to sketch solve edit',
+  'shows default planes again when canceling sketch plane selection on a blank scene',
+  'hides default planes when canceling sketch plane selection with geometry present',
+]
+
 /**
  * Every it test could build the world and connect to the engine but this is too resource intensive and will
  * spam engine connections.
@@ -50,6 +63,10 @@ let machineManagerInThisFile: MachineManager = null!
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeEach(async () => {
+  const currentTestName = expect.getState().currentTestName ?? ''
+  if (TESTS_WITHOUT_ENGINE_WORLD.some((name) => currentTestName.includes(name)))
+    return
+
   if (instanceInThisFile) {
     return
   }
@@ -71,7 +88,7 @@ beforeEach(async () => {
 })
 
 afterAll(() => {
-  engineCommandManagerInThisFile.tearDown()
+  engineCommandManagerInThisFile?.tearDown()
 })
 
 describe('modelingMachine.test.ts', () => {
@@ -102,9 +119,7 @@ describe('modelingMachine.test.ts', () => {
     SetAngleLengthModal: vi.fn(),
   }))
 
-  const toastErrorSpy = vi
-    .spyOn(toast, 'error')
-    .mockImplementation(() => '' as any)
+  const toastErrorSpy = vi.spyOn(toast, 'error').mockImplementation(() => '')
 
   // Add this function before the test cases
   // Utility function to wait for a condition to be met
@@ -1510,6 +1525,210 @@ sketch001 = sketch(on = YZ) {
           'Unable to enter sketch while KCL has parse errors.'
         )
       })
+
+      it('routes a cursor inside a sketch block segment to sketch solve edit', async () => {
+        const pathToNode = [['body', '']] as any
+        const sketchBlockCodeRef = {
+          range: [0, 100, 0] as [number, number, number],
+          pathToNode,
+          nodePath: { steps: [] },
+        } as any
+        const segmentCodeRef = {
+          range: [35, 85, 0] as [number, number, number],
+          pathToNode,
+          nodePath: { steps: [] },
+        } as any
+        const sketchBlock: Extract<Artifact, { type: 'sketchBlock' }> = {
+          type: 'sketchBlock',
+          id: 'sketch-block-1',
+          codeRef: sketchBlockCodeRef,
+          planeId: 'plane-1',
+          sketchId: 7,
+        }
+        const path: Artifact = {
+          type: 'path',
+          subType: 'sketch',
+          id: 'path-1',
+          codeRef: sketchBlockCodeRef,
+          planeId: 'plane-1',
+          segIds: ['segment-1'],
+          trajectorySweepId: null,
+          consumed: false,
+          sketchBlockId: sketchBlock.id,
+        }
+        const segment: Artifact = {
+          type: 'segment',
+          id: 'segment-1',
+          pathId: path.id,
+          edgeIds: [],
+          commonSurfaceIds: [],
+          codeRef: segmentCodeRef,
+        }
+        const artifactGraph: ArtifactGraph = new Map()
+        artifactGraph.set(sketchBlock.id, sketchBlock)
+        artifactGraph.set(path.id, path)
+        artifactGraph.set(segment.id, segment)
+
+        const context = {
+          ...modelingMachineInitialInternalContext,
+          selectionRanges: {
+            graphSelections: [
+              {
+                codeRef: {
+                  range: [45, 45, 0],
+                  pathToNode,
+                },
+              },
+            ],
+            otherSelections: [],
+          },
+          kclManager: {
+            artifactGraph,
+            hidePlanes: vi.fn(),
+            showPlanes: vi.fn(),
+            sceneInfra: {
+              animate: vi.fn(),
+              resetMouseListeners: vi.fn(),
+              camControls: {
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {},
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        } as any
+
+        let receivedInput: any
+        let actorStarted = false
+        const machine = modelingMachine.provide({
+          actors: {
+            'animate-to-existing-sketch-solve': fromPromise(
+              async ({ input }) => {
+                receivedInput = input
+                actorStarted = true
+                return await new Promise<any>(() => {})
+              }
+            ),
+          },
+        })
+
+        const actor = createActor(machine, { input: context }).start()
+
+        actor.send({ type: 'Enter sketch' })
+
+        await waitForCondition(() => actorStarted)
+
+        expect(actor.getSnapshot().value).toBe(
+          'animating to existing sketch solve'
+        )
+        expect(receivedInput).toEqual(
+          expect.objectContaining({
+            artifactId: sketchBlock.id,
+          })
+        )
+
+        actor.stop()
+      })
+
+      const createSketchPlaneSelectionContext = ({
+        artifactGraph = new Map(),
+      }: {
+        artifactGraph?: Map<unknown, unknown>
+      } = {}) =>
+        ({
+          ...modelingMachineInitialInternalContext,
+          kclManager: {
+            artifactGraph,
+            hasErrors: vi.fn(() => false),
+            hidePlanes: vi.fn(),
+            setCopilotEnabled: vi.fn(),
+            setSelectionFilter: vi.fn(),
+            setSelectionFilterToDefault: vi.fn(),
+            showPlanes: vi.fn(),
+            sceneInfra: {
+              animate: vi.fn(),
+              stop: vi.fn(),
+              resetMouseListeners: vi.fn(),
+              camControls: {
+                enablePan: true,
+                enableRotate: true,
+                syncDirection: 'engineToClient',
+              },
+            },
+          },
+          rustContext: {},
+          engineCommandManager: {},
+          wasmInstance: {},
+          commandBarActor: {},
+          machineManager: {},
+        }) as any
+
+      it('shows default planes again when canceling sketch plane selection on a blank scene', async () => {
+        const context = createSketchPlaneSelectionContext()
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        await waitForCondition(
+          () => actor.getSnapshot().value === 'Sketch no face'
+        )
+
+        actor.send({ type: 'Cancel' })
+
+        await waitForCondition(() => {
+          return (
+            JSON.stringify(actor.getSnapshot().value) ===
+            JSON.stringify({ idle: 'showPlanes' })
+          )
+        })
+
+        expect(context.kclManager.hidePlanes).toHaveBeenCalled()
+        expect(context.kclManager.showPlanes).toHaveBeenCalledTimes(2)
+
+        actor.stop()
+      })
+
+      it('hides default planes when canceling sketch plane selection with geometry present', async () => {
+        const context = {
+          ...createSketchPlaneSelectionContext({
+            artifactGraph: new Map([['artifact-id', {}]]),
+          }),
+        }
+
+        const actor = createActor(modelingMachine, { input: context }).start()
+
+        actor.send({
+          type: 'Enter sketch',
+          data: { forceNewSketch: true },
+        })
+
+        await waitForCondition(
+          () => actor.getSnapshot().value === 'Sketch no face'
+        )
+
+        actor.send({ type: 'Cancel' })
+
+        await waitForCondition(() => {
+          return (
+            JSON.stringify(actor.getSnapshot().value) ===
+            JSON.stringify({ idle: 'hidePlanes' })
+          )
+        })
+
+        expect(context.kclManager.hidePlanes).toHaveBeenCalled()
+        expect(context.kclManager.showPlanes).toHaveBeenCalledTimes(1)
+
+        actor.stop()
+      })
     })
 
     it('restores camera orbit controls when sketch exit errors', async () => {
@@ -1550,8 +1769,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })
@@ -1626,8 +1844,7 @@ sketch001 = sketch(on = YZ) {
               origin: [0, 0, 0],
             } as any,
             sketchSolveId: 1,
-            initialSceneGraphDelta:
-              dummyInitSketchGraphDelta as SceneGraphDelta,
+            initialSceneGraphDelta: dummyInitSketchGraphDelta,
           })),
         },
       })

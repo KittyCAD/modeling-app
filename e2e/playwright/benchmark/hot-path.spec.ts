@@ -24,7 +24,7 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
     // Open an empty project
     await page.setBodyDimensions({ width: 1500, height: 1000 })
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Default layout
     await toolbar.openPane(DefaultLayoutPaneID.FeatureTree)
@@ -59,7 +59,7 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
 
     await test.step('Exit sketch, expect feature tree update', async () => {
       await toolbar.exitSketchBtn.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('circle(')
       await expect(
         await toolbar.getFeatureTreeOperation('sketch001', 0)
@@ -114,7 +114,7 @@ test.describe('Hot path', { tag: '@desktop' }, () => {
     })
 
     await test.step('Expect extrude in feature tree and code', async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await editor.expectEditor.toContain('extrude(')
       await expect(
         await toolbar.getFeatureTreeOperation('extrude001', 0)

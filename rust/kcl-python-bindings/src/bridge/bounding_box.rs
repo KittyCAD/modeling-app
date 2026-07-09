@@ -5,7 +5,7 @@ use pyo3::pymethods;
 
 /// Resulting bounding-box data from a `BoundingBox` modeling command.
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 #[derive(Debug, Clone, Copy)]
 pub struct BoundingBoxResponse {
     center: super::Point3d,

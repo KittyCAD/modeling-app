@@ -13,8 +13,8 @@ description: Lints face_api_fillet_chamfer_tags_and_edge_refs.kcl
     },
     "description": "fillet uses 'tags'; prefer edges",
     "pos": [
-      483,
-      557,
+      435,
+      509,
       0
     ],
     "overridden": false,
@@ -30,8 +30,8 @@ description: Lints face_api_fillet_chamfer_tags_and_edge_refs.kcl
     },
     "description": "chamfer uses 'tags'; prefer edges",
     "pos": [
-      806,
-      881,
+      758,
+      833,
       0
     ],
     "overridden": false,

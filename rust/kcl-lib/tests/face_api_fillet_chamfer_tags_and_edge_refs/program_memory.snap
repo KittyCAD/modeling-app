@@ -68,10 +68,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 315,
-            "end": 318,
+            "commentStart": 267,
+            "end": 270,
             "moduleId": 0,
-            "start": 315,
+            "start": 267,
             "type": "TagDeclarator",
             "value": "e1"
           },
@@ -103,16 +103,22 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 466,
-            "end": 476,
+            "commentStart": 418,
+            "end": 428,
             "moduleId": 0,
-            "start": 466,
+            "start": 418,
             "type": "TagDeclarator",
             "value": "capEnd001"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd001": {
+          "type": "TagIdentifier",
+          "value": "capEnd001"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -128,10 +134,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
               0.0
             ],
             "tag": {
-              "commentStart": 315,
-              "end": 318,
+              "commentStart": 267,
+              "end": 270,
               "moduleId": 0,
-              "start": 315,
+              "start": 267,
               "type": "TagDeclarator",
               "value": "e1"
             },
@@ -273,10 +279,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 636,
-            "end": 639,
+            "commentStart": 588,
+            "end": 591,
             "moduleId": 0,
-            "start": 636,
+            "start": 588,
             "type": "TagDeclarator",
             "value": "e2"
           },
@@ -308,16 +314,22 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
           "id": "[uuid]",
           "sourceRange": [],
           "tag": {
-            "commentStart": 789,
-            "end": 799,
+            "commentStart": 741,
+            "end": 751,
             "moduleId": 0,
-            "start": 789,
+            "start": 741,
             "type": "TagDeclarator",
             "value": "capEnd002"
           },
           "type": "extrudePlane"
         }
       ],
+      "faces": {
+        "capEnd002": {
+          "type": "TagIdentifier",
+          "value": "capEnd002"
+        }
+      },
       "sketch": {
         "creatorType": "sketch",
         "type": "Sketch",
@@ -333,10 +345,10 @@ description: Variables in memory after executing face_api_fillet_chamfer_tags_an
               0.0
             ],
             "tag": {
-              "commentStart": 636,
-              "end": 639,
+              "commentStart": 588,
+              "end": 591,
               "moduleId": 0,
-              "start": 636,
+              "start": 588,
               "type": "TagDeclarator",
               "value": "e2"
             },

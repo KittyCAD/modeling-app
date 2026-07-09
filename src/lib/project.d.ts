@@ -1,3 +1,5 @@
+import type { CloudSyncProjectMetadata } from '@src/lib/cloudSync'
+
 /**
  * The permissions of a file.
  */
@@ -24,6 +26,7 @@ export type FileMetadata = {
  * Information about a file or directory.
  */
 export type FileEntry = {
+  metadata?: FileMetadata | null
   /**
    * Absolute path
    * /home/kevin/Documents/zoo-design-studio-projects/level1/main.kcl
@@ -40,7 +43,7 @@ export type FileEntry = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
 }
 
 /**
@@ -50,6 +53,20 @@ export type Project = {
   metadata: FileMetadata | null
   kcl_file_count: number
   directory_count: number
+  /**
+   * Human-facing project title from project.toml.
+   * This may differ from the local project directory name.
+   */
+  title?: string
+  /**
+   * Cloud project id when this local project is bound to a remote project.
+   */
+  cloudProjectId?: string
+  /**
+   * Cloud sync conflict metadata when this local project needs manual
+   * resolution against a remote version.
+   */
+  cloudConflict?: CloudSyncProjectMetadata['conflict']
   /**
    * Absolute path most likely to main.kcl within the project
    */
@@ -67,6 +84,6 @@ export type Project = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
   readWriteAccess: boolean
 }

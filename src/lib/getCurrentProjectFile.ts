@@ -1,18 +1,18 @@
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import type { Stats } from 'fs'
 import * as path from 'path'
 import {
   importFileExtensions,
   relevantFileExtensions,
 } from '@src/lang/wasmUtils'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import * as fs from 'fs/promises'
 
 import { changeKclVersion } from '@src/lang/wasm'
 import { DEFAULT_KCL_VERSION, PROJECT_ENTRYPOINT } from '@src/lib/constants'
-import { getInVariableCase } from '@src/lib/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { isExtensionAnImportExtension } from '@src/lib/paths'
 import { err } from '@src/lib/trap'
+import { getInVariableCase } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 /// Get the current project file from the path.
 /// This is used for double-clicking on a file in the file explorer,

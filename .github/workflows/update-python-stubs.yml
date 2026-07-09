@@ -12,17 +12,17 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build-and-stub:
-    runs-on: namespace-profile-ubuntu-2-cores
+    runs-on: namespace-profile-ubuntu-8-cores
     defaults:
       run:
         shell: bash -eux {0}
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7.0.0
         with:
           submodules: recursive
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v6.3.0
         with:
           python-version: "3.x"
       - name: Install toolchain + maturin

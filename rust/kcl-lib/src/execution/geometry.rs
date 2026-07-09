@@ -4,14 +4,15 @@ use std::ops::AddAssign;
 use std::ops::Mul;
 use std::ops::Sub;
 use std::ops::SubAssign;
+use std::sync::Arc;
 
 use anyhow::Result;
 use indexmap::IndexMap;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kittycad_modeling_cmds::ModelingCmd;
 use kittycad_modeling_cmds::each_cmd as mcmd;
 use kittycad_modeling_cmds::length_unit::LengthUnit;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds::{self as kcmc};
 use parse_display::Display;
@@ -34,9 +35,11 @@ use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::normalize_to_solver_distance_unit;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::adjust_length;
 use crate::front::ArcCtor;
 use crate::front::CircleCtor;
+use crate::front::ControlPointSplineCtor;
 use crate::front::Freedom;
 use crate::front::LineCtor;
 use crate::front::Number;
@@ -52,6 +55,7 @@ use crate::std::args::TyF64;
 use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::sketch::FaceTag;
 use crate::std::sketch::PlaneData;
+use crate::util::MathExt;
 
 type Point3D = kcmc::shared::Point3d<f64>;
 
@@ -115,6 +119,14 @@ impl GeometryWithImportedGeometry {
                 let id = i.id(ctx).await?;
                 Ok(id)
             }
+        }
+    }
+
+    pub fn into_solid(self) -> Option<Solid> {
+        match self {
+            GeometryWithImportedGeometry::Sketch(_) => None,
+            GeometryWithImportedGeometry::Solid(solid) => Some(solid),
+            GeometryWithImportedGeometry::ImportedGeometry(_) => None,
         }
     }
 }
@@ -187,7 +199,7 @@ impl ImportedGeometry {
     }
 }
 
-/// Data for a solid, sketch, or an imported geometry.
+/// Data for geometry that can be hidden.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
 #[serde(tag = "type", rename_all = "camelCase")]
@@ -195,6 +207,7 @@ impl ImportedGeometry {
 pub enum HideableGeometry {
     ImportedGeometry(Box<ImportedGeometry>),
     SolidSet(Vec<Solid>),
+    PlaneSet(Vec<Plane>),
     SketchSet(Vec<Sketch>),
     HelixSet(Vec<Helix>),
     GdtAnnotationSet(Vec<GdtAnnotation>),
@@ -204,6 +217,21 @@ impl From<HideableGeometry> for crate::execution::KclValue {
     fn from(value: HideableGeometry) -> Self {
         match value {
             HideableGeometry::ImportedGeometry(s) => crate::execution::KclValue::ImportedGeometry(*s),
+            HideableGeometry::PlaneSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    crate::execution::KclValue::Plane { value: Box::new(s) }
+                } else {
+                    crate::execution::KclValue::HomArray {
+                        value: s
+                            .into_iter()
+                            .map(|s| crate::execution::KclValue::Plane { value: Box::new(s) })
+                            .collect(),
+                        ty: crate::execution::types::RuntimeType::plane(),
+                    }
+                }
+            }
             HideableGeometry::SolidSet(mut s) => {
                 if s.len() == 1
                     && let Some(s) = s.pop()
@@ -276,6 +304,7 @@ impl HideableGeometry {
 
                 Ok(vec![id])
             }
+            HideableGeometry::PlaneSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::GdtAnnotationSet(s) => Ok(s.iter().map(|s| s.id).collect()),
             HideableGeometry::SketchSet(s) => Ok(s.iter().map(|s| s.id).collect()),
@@ -380,15 +409,48 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
     }
 }
 
-impl SolidOrImportedGeometry {
+/// Something that you can change the color of.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
+pub enum HasAppearance {
+    ImportedGeometry(Box<ImportedGeometry>),
+    SolidSet(Vec<Solid>),
+    Plane(Box<Plane>),
+}
+
+impl From<HasAppearance> for KclValue {
+    fn from(value: HasAppearance) -> Self {
+        match value {
+            HasAppearance::Plane(p) => KclValue::Plane { value: p },
+            HasAppearance::ImportedGeometry(s) => KclValue::ImportedGeometry(*s),
+            HasAppearance::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    KclValue::Solid { value: Box::new(s) }
+                } else {
+                    KclValue::HomArray {
+                        value: s.into_iter().map(|s| KclValue::Solid { value: Box::new(s) }).collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl HasAppearance {
     pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
         match self {
-            SolidOrImportedGeometry::ImportedGeometry(s) => {
+            HasAppearance::Plane(p) => Ok(vec![p.id]),
+            HasAppearance::ImportedGeometry(s) => {
                 let id = s.id(ctx).await?;
 
                 Ok(vec![id])
             }
-            SolidOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HasAppearance::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
         }
     }
 }
@@ -778,6 +840,8 @@ pub struct FaceParentSolid {
     pub solid_id: Uuid,
     /// ID of the sketch which created this solid, if any.
     pub creator_sketch_id: Option<Uuid>,
+    /// Has the creator sketch been closed? This is only relevant if `creator_sketch_id` is Some, and we cannot infer the closed status otherwise.
+    pub creator_sketch_is_closed: Option<ProfileClosed>,
     /// Pending edge cut IDs that may need to be flushed before referencing the face.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cut_ids: Vec<Uuid>,
@@ -997,8 +1061,14 @@ impl SketchSurface {
 pub enum Extrudable {
     /// Sketch.
     Sketch(Box<Sketch>),
+    /// Tagged Face.
+    FaceTag(FaceTag),
     /// Face.
-    Face(FaceTag),
+    Face(Box<Face>),
+    /// Tagged Edge.
+    EdgeTag(Box<TagIdentifier>),
+    /// Edge.
+    Edge(Uuid),
 }
 
 impl Extrudable {
@@ -1011,25 +1081,41 @@ impl Extrudable {
     ) -> Result<uuid::Uuid, KclError> {
         match self {
             Extrudable::Sketch(sketch) => Ok(sketch.id),
-            Extrudable::Face(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::FaceTag(face_tag) => face_tag.get_face_id_from_tag(exec_state, args, must_be_planar).await,
+            Extrudable::Face(face) => Ok(face.id),
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.get_cur_info() {
+                Some(info) => Ok(info.id),
+                None => Err(KclError::new_type(KclErrorDetails::new(
+                    "Could not find a valid id to extrude".to_owned(),
+                    vec![args.source_range],
+                ))),
+            },
+            Extrudable::Edge(edge) => Ok(*edge),
         }
     }
 
     pub fn as_sketch(&self) -> Option<Sketch> {
         match self {
             Extrudable::Sketch(sketch) => Some((**sketch).clone()),
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face) => match face.geometry() {
                 Some(Geometry::Sketch(sketch)) => Some(sketch),
                 Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
                 None => None,
             },
+            Extrudable::Face(_) => None,
+            Extrudable::EdgeTag(tag_identifier) => match tag_identifier.geometry() {
+                Some(Geometry::Sketch(sketch)) => Some(sketch),
+                Some(Geometry::Solid(solid)) => solid.sketch().cloned(),
+                None => None,
+            },
+            Extrudable::Edge(_) => None,
         }
     }
 
     pub fn is_closed(&self) -> ProfileClosed {
         match self {
             Extrudable::Sketch(sketch) => sketch.is_closed,
-            Extrudable::Face(face_tag) => match face_tag.geometry() {
+            Extrudable::FaceTag(face_tag) => match face_tag.geometry() {
                 Some(Geometry::Sketch(sketch)) => sketch.is_closed,
                 Some(Geometry::Solid(solid)) => solid
                     .sketch()
@@ -1037,6 +1123,19 @@ impl Extrudable {
                     .unwrap_or(ProfileClosed::Maybe),
                 _ => ProfileClosed::Maybe,
             },
+            Extrudable::Face(face) => match face.parent_solid.creator_sketch_is_closed {
+                Some(is_closed) => is_closed,
+                None => ProfileClosed::Maybe,
+            },
+            Extrudable::EdgeTag(edge_tag) => match edge_tag.geometry() {
+                Some(Geometry::Sketch(sketch)) => sketch.is_closed,
+                Some(Geometry::Solid(solid)) => solid
+                    .sketch()
+                    .map(|sketch| sketch.is_closed)
+                    .unwrap_or(ProfileClosed::Maybe),
+                _ => ProfileClosed::Maybe,
+            },
+            Extrudable::Edge(_) => ProfileClosed::Maybe,
         }
     }
 }
@@ -1166,6 +1265,10 @@ pub struct Solid {
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
+    /// Tag identifiers for the faces of this body, declared via tag arguments
+    /// (e.g. `tag`, `tagStart`, `tagEnd`) on the call that created it.
+    #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
+    pub faces: IndexMap<String, TagIdentifier>,
     /// How this solid was created.
     #[serde(rename = "sketch")]
     pub creator: SolidCreator,
@@ -1176,6 +1279,10 @@ pub struct Solid {
     /// Chamfers or fillets on this solid.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub edge_cuts: Vec<EdgeCut>,
+    /// Batch-end fillet/chamfer command ids that do not have concrete edge ids.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub pending_edge_cut_ids: Vec<uuid::Uuid>,
     /// The units of the solid.
     pub units: UnitLength,
     /// Is this a sectional solid?
@@ -1196,6 +1303,15 @@ pub struct CreatorFace {
     pub sketch: Sketch,
 }
 
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+pub struct CreatorEdge {
+    /// The edge id that served as the base.
+    pub edge_id: uuid::Uuid,
+    /// The solid id that owned the edge.
+    pub body_id: uuid::Uuid,
+}
+
 /// How a solid was created.
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export)]
@@ -1205,6 +1321,8 @@ pub enum SolidCreator {
     Sketch(Sketch),
     /// Created by extruding or modifying a face.
     Face(CreatorFace),
+    /// Created by extruding or modifying an edge.
+    Edge(CreatorEdge),
     /// Created procedurally without a sketch.
     Procedural,
 }
@@ -1214,6 +1332,7 @@ impl Solid {
         match &self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
@@ -1222,6 +1341,7 @@ impl Solid {
         match &mut self.creator {
             SolidCreator::Sketch(sketch) => Some(sketch),
             SolidCreator::Face(CreatorFace { sketch, .. }) => Some(sketch),
+            SolidCreator::Edge(_) => None,
             SolidCreator::Procedural => None,
         }
     }
@@ -1235,7 +1355,10 @@ impl Solid {
     }
 
     pub(crate) fn get_all_edge_cut_ids(&self) -> impl Iterator<Item = uuid::Uuid> + '_ {
-        self.edge_cuts.iter().map(|foc| foc.id())
+        self.edge_cuts
+            .iter()
+            .map(|foc| foc.id())
+            .chain(self.pending_edge_cut_ids.iter().copied())
     }
 }
 
@@ -1244,6 +1367,7 @@ impl From<&Solid> for FaceParentSolid {
         Self {
             solid_id: solid.id,
             creator_sketch_id: solid.sketch_id(),
+            creator_sketch_is_closed: solid.sketch().map(|sketch| sketch.is_closed),
             edge_cut_ids: solid.get_all_edge_cut_ids().collect(),
         }
     }
@@ -1333,11 +1457,11 @@ impl Point2d {
     }
 
     pub fn into_x(self) -> TyF64 {
-        TyF64::new(self.x, self.units.into())
+        TyF64::new(self.x, NumericType::length(self.units))
     }
 
     pub fn into_y(self) -> TyF64 {
-        TyF64::new(self.y, self.units.into())
+        TyF64::new(self.y, NumericType::length(self.units))
     }
 
     pub fn ignore_units(self) -> [f64; 2] {
@@ -1380,6 +1504,19 @@ impl Point3d {
             y: self.z * other.x - self.x * other.z,
             z: self.x * other.y - self.y * other.x,
             units: None,
+        }
+    }
+
+    /// Normalize `-0.0` to `0.0` for cleaner serialized axis data.
+    pub fn canonicalize_signed_zero(&mut self) {
+        if self.x == 0.0 {
+            self.x = 0.0;
+        }
+        if self.y == 0.0 {
+            self.y = 0.0;
+        }
+        if self.z == 0.0 {
+            self.z = 0.0;
         }
     }
 
@@ -1540,12 +1677,12 @@ pub struct BasePath {
 
 impl BasePath {
     pub fn get_to(&self) -> [TyF64; 2] {
-        let ty: NumericType = self.units.into();
+        let ty = NumericType::length(self.units);
         [TyF64::new(self.to[0], ty), TyF64::new(self.to[1], ty)]
     }
 
     pub fn get_from(&self) -> [TyF64; 2] {
-        let ty: NumericType = self.units.into();
+        let ty = NumericType::length(self.units);
         [TyF64::new(self.from[0], ty), TyF64::new(self.from[1], ty)]
     }
 }
@@ -1766,28 +1903,28 @@ impl Path {
     /// Where does this path segment start?
     pub fn get_from(&self) -> [TyF64; 2] {
         let p = &self.get_base().from;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// Where does this path segment end?
     pub fn get_to(&self) -> [TyF64; 2] {
         let p = &self.get_base().to;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         [TyF64::new(p[0], ty), TyF64::new(p[1], ty)]
     }
 
     /// The path segment start point and its type.
     pub fn start_point_components(&self) -> ([f64; 2], NumericType) {
         let p = &self.get_base().from;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         (*p, ty)
     }
 
     /// The path segment end point and its type.
     pub fn end_point_components(&self) -> ([f64; 2], NumericType) {
         let p = &self.get_base().to;
-        let ty: NumericType = self.get_base().units.into();
+        let ty = NumericType::length(self.get_base().units);
         (*p, ty)
     }
 
@@ -1849,7 +1986,7 @@ impl Path {
                 None
             }
         };
-        n.map(|n| TyF64::new(n, self.get_base().units.into()))
+        n.map(|n| TyF64::new(n, NumericType::length(self.get_base().units)))
     }
 
     pub fn get_base_mut(&mut self) -> &mut BasePath {
@@ -1939,8 +2076,8 @@ fn linear_distance(
     [x0, y0]: &[f64; 2],
     [x1, y1]: &[f64; 2]
 ) -> f64 {
-    let y_sq = (y1 - y0).powi(2);
-    let x_sq = (x1 - x0).powi(2);
+    let y_sq = (y1 - y0).squared();
+    let x_sq = (x1 - x0).squared();
     (y_sq + x_sq).sqrt()
 }
 
@@ -2082,6 +2219,8 @@ pub struct SketchVar {
     pub id: SketchVarId,
     pub initial_value: f64,
     pub ty: NumericType,
+    /// Used for solver feedback to source.
+    pub node_path: Option<NodePath>,
     #[serde(skip)]
     pub meta: Vec<Metadata>,
 }
@@ -2203,6 +2342,14 @@ pub enum UnsolvedSegmentKind {
         center_object_id: ObjectId,
         construction: bool,
     },
+    ControlPointSpline {
+        controls: Vec<UnsolvedPoint2dExpr>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        degree: u32,
+        construction: bool,
+    },
 }
 
 impl UnsolvedSegmentKind {
@@ -2214,6 +2361,7 @@ impl UnsolvedSegmentKind {
             Self::Line { .. } => "a Line",
             Self::Arc { .. } => "an Arc",
             Self::Circle { .. } => "a Circle",
+            Self::ControlPointSpline { .. } => "a Control Point Spline",
         }
     }
 }
@@ -2230,7 +2378,8 @@ pub struct Segment {
     /// The engine ID of the sketch that this is a part of.
     pub sketch_id: Uuid,
     #[serde(skip)]
-    pub sketch: Option<Sketch>,
+    #[ts(skip)]
+    pub sketch: Option<Arc<Sketch>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub tag: Option<TagIdentifier>,
     #[serde(skip)]
@@ -2246,6 +2395,7 @@ impl Segment {
             SegmentKind::Line { construction, .. } => *construction,
             SegmentKind::Arc { construction, .. } => *construction,
             SegmentKind::Circle { construction, .. } => *construction,
+            SegmentKind::ControlPointSpline { construction, .. } => *construction,
         }
     }
 }
@@ -2298,6 +2448,16 @@ pub enum SegmentKind {
         start_freedom: Option<Freedom>,
         #[serde(skip_serializing_if = "Option::is_none")]
         center_freedom: Option<Freedom>,
+        construction: bool,
+    },
+    ControlPointSpline {
+        controls: Vec<[TyF64; 2]>,
+        ctor: Box<ControlPointSplineCtor>,
+        control_object_ids: Vec<ObjectId>,
+        control_polygon_edge_object_ids: Vec<ObjectId>,
+        #[serde(skip_serializing_if = "Vec::is_empty")]
+        control_freedoms: Vec<Option<Freedom>>,
+        degree: u32,
         construction: bool,
     },
 }

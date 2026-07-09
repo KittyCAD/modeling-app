@@ -1,7 +1,7 @@
 use std::f64::consts::TAU;
 
 use indexmap::IndexSet;
-use kittycad_modeling_cmds::units::UnitLength;
+use kcl_api::UnitLength;
 
 use crate::execution::types::adjust_length;
 use crate::front::Horizontal;
@@ -15,8 +15,9 @@ use crate::frontend::sketch::ConstraintSegment;
 use crate::frontend::sketch::Segment;
 use crate::frontend::sketch::SegmentCtor;
 use crate::pretty::NumericSuffix;
+use crate::util::MathExt;
 
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 mod tests;
 
 // Epsilon constants for geometric calculations
@@ -182,6 +183,7 @@ pub struct ConstraintToMigrate {
 
 /// Semantic trim plan produced by analysis/planning before lowering to frontend operations.
 #[derive(Debug, Clone)]
+#[allow(clippy::large_enum_variant)]
 pub enum TrimPlan {
     DeleteSegment {
         segment_id: ObjectId,
@@ -194,6 +196,11 @@ pub enum TrimPlan {
         intersecting_endpoint_point_id: Option<ObjectId>,
         constraint_ids_to_delete: Vec<ObjectId>,
         additional_edited_segment_ids: Vec<ObjectId>,
+    },
+    TailCutControlPointSpline {
+        segment_id: ObjectId,
+        ctor: SegmentCtor,
+        constraint_ids_to_delete: Vec<ObjectId>,
     },
     ReplaceCircleWithArc {
         circle_id: ObjectId,
@@ -213,6 +220,14 @@ pub enum TrimPlan {
         right_side_coincident_data: CoincidentData,
         constraints_to_migrate: Vec<ConstraintToMigrate>,
         constraints_to_delete: Vec<ObjectId>,
+    },
+    SplitControlPointSpline {
+        segment_id: ObjectId,
+        left_ctor: SegmentCtor,
+        right_ctor: SegmentCtor,
+        left_side: Box<TrimTermination>,
+        right_side: Box<TrimTermination>,
+        constraint_ids_to_delete: Vec<ObjectId>,
     },
 }
 
@@ -244,6 +259,22 @@ fn lower_trim_plan(plan: &TrimPlan) -> Vec<TrimOperation> {
                     intersecting_endpoint_point_id: *intersecting_endpoint_point_id,
                 },
             ];
+            if !constraint_ids_to_delete.is_empty() {
+                ops.push(TrimOperation::DeleteConstraints {
+                    constraint_ids: constraint_ids_to_delete.clone(),
+                });
+            }
+            ops
+        }
+        TrimPlan::TailCutControlPointSpline {
+            segment_id,
+            ctor,
+            constraint_ids_to_delete,
+        } => {
+            let mut ops = vec![TrimOperation::EditControlPointSpline {
+                segment_id: *segment_id,
+                ctor: ctor.clone(),
+            }];
             if !constraint_ids_to_delete.is_empty() {
                 ops.push(TrimOperation::DeleteConstraints {
                     constraint_ids: constraint_ids_to_delete.clone(),
@@ -287,6 +318,21 @@ fn lower_trim_plan(plan: &TrimPlan) -> Vec<TrimOperation> {
             constraints_to_migrate: constraints_to_migrate.clone(),
             constraints_to_delete: constraints_to_delete.clone(),
         }],
+        TrimPlan::SplitControlPointSpline {
+            segment_id,
+            left_ctor,
+            right_ctor,
+            left_side,
+            right_side,
+            constraint_ids_to_delete,
+        } => vec![TrimOperation::SplitControlPointSpline {
+            segment_id: *segment_id,
+            left_ctor: left_ctor.clone(),
+            right_ctor: right_ctor.clone(),
+            left_side: left_side.clone(),
+            right_side: right_side.clone(),
+            constraint_ids_to_delete: constraint_ids_to_delete.clone(),
+        }],
     }
 }
 
@@ -295,8 +341,10 @@ fn trim_plan_modifies_geometry(plan: &TrimPlan) -> bool {
         plan,
         TrimPlan::DeleteSegment { .. }
             | TrimPlan::TailCut { .. }
+            | TrimPlan::TailCutControlPointSpline { .. }
             | TrimPlan::ReplaceCircleWithArc { .. }
             | TrimPlan::SplitSegment { .. }
+            | TrimPlan::SplitControlPointSpline { .. }
     )
 }
 
@@ -392,7 +440,7 @@ fn rewrite_constraint_with_map(
                 .collect(),
         })),
         Constraint::Midpoint(midpoint) => Some(Constraint::Midpoint(crate::frontend::sketch::Midpoint {
-            point: rewrite_object_id(midpoint.point, rewrite_map),
+            point: rewrite_constraint_segment(midpoint.point, rewrite_map),
             segment: rewrite_object_id(midpoint.segment, rewrite_map),
         })),
         Constraint::Tangent(tangent) => Some(Constraint::Tangent(crate::frontend::sketch::Tangent {
@@ -557,6 +605,10 @@ pub enum TrimOperation {
         endpoint_changed: EndpointChanged,
         additional_edited_segment_ids: Vec<ObjectId>,
     },
+    EditControlPointSpline {
+        segment_id: ObjectId,
+        ctor: SegmentCtor,
+    },
     AddCoincidentConstraint {
         segment_id: ObjectId,
         endpoint_changed: EndpointChanged,
@@ -574,6 +626,14 @@ pub enum TrimOperation {
         right_side_coincident_data: CoincidentData,
         constraints_to_migrate: Vec<ConstraintToMigrate>,
         constraints_to_delete: Vec<ObjectId>,
+    },
+    SplitControlPointSpline {
+        segment_id: ObjectId,
+        left_ctor: SegmentCtor,
+        right_ctor: SegmentCtor,
+        left_side: Box<TrimTermination>,
+        right_side: Box<TrimTermination>,
+        constraint_ids_to_delete: Vec<ObjectId>,
     },
     ReplaceCircleWithArc {
         circle_id: ObjectId,
@@ -1452,6 +1512,7 @@ pub fn get_position_coords_from_circle(
 enum CurveKind {
     Line,
     Circular,
+    Spline,
 }
 
 /// Internal curve domain used by trim.
@@ -1462,7 +1523,13 @@ enum CurveDomain {
 }
 
 /// Internal normalized curve representation loaded from a scene segment.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone)]
+struct SampledCurvePoint {
+    parameter: f64,
+    point: Coords2d,
+}
+
+#[derive(Debug, Clone)]
 struct CurveHandle {
     segment_id: ObjectId,
     kind: CurveKind,
@@ -1471,10 +1538,11 @@ struct CurveHandle {
     end: Coords2d,
     center: Option<Coords2d>,
     radius: Option<f64>,
+    sampled_points: Option<Vec<SampledCurvePoint>>,
 }
 
 impl CurveHandle {
-    fn project_for_trim(self, point: Coords2d) -> Result<f64, String> {
+    fn project_for_trim(&self, point: Coords2d) -> Result<f64, String> {
         match (self.kind, self.domain) {
             (CurveKind::Line, CurveDomain::Open) => Ok(project_point_onto_segment(point, self.start, self.end)),
             (CurveKind::Circular, CurveDomain::Open) => {
@@ -1493,16 +1561,226 @@ impl CurveHandle {
                 "Invalid curve state: line {} cannot be closed",
                 self.segment_id.0
             )),
+            (CurveKind::Spline, CurveDomain::Open) => project_point_onto_sampled_curve(
+                self.sampled_points.as_deref().ok_or_else(|| {
+                    format!(
+                        "Curve {} missing sampled points for spline projection",
+                        self.segment_id.0
+                    )
+                })?,
+                point,
+            ),
+            (CurveKind::Spline, CurveDomain::Closed) => Err(format!(
+                "Invalid curve state: spline {} cannot be closed",
+                self.segment_id.0
+            )),
         }
     }
 }
 
+const CONTROL_POINT_SPLINE_TRIM_SAMPLES_PER_SPAN: usize = 32;
+
+fn build_open_uniform_knot_vector(control_count: usize, degree: usize) -> Vec<f64> {
+    let span_count = control_count.saturating_sub(degree);
+    let mut knots = vec![0.0; degree + 1];
+    if span_count > 1 {
+        for value in 1..span_count {
+            knots.push(value as f64);
+        }
+    }
+    knots.extend(std::iter::repeat_n(span_count as f64, degree + 1));
+    knots
+}
+
+fn find_knot_span(parameter: f64, degree: usize, knots: &[f64], control_count: usize) -> usize {
+    let n = control_count - 1;
+    if parameter >= knots[n + 1] {
+        return n;
+    }
+    if parameter <= knots[degree] {
+        return degree;
+    }
+
+    let mut low = degree;
+    let mut high = n + 1;
+    let mut mid = (low + high) / 2;
+    while parameter < knots[mid] || parameter >= knots[mid + 1] {
+        if parameter < knots[mid] {
+            high = mid;
+        } else {
+            low = mid;
+        }
+        mid = (low + high) / 2;
+    }
+    mid
+}
+
+fn de_boor_point(parameter: f64, degree: usize, knots: &[f64], controls: &[Coords2d]) -> Coords2d {
+    let span = find_knot_span(parameter, degree, knots, controls.len());
+    let mut points = (0..=degree).map(|j| controls[span - degree + j]).collect::<Vec<_>>();
+
+    for r in 1..=degree {
+        for j in (r..=degree).rev() {
+            let knot_index = span - degree + j;
+            let denominator = knots[knot_index + degree + 1 - r] - knots[knot_index];
+            let alpha = if denominator.abs() <= f64::EPSILON {
+                0.0
+            } else {
+                (parameter - knots[knot_index]) / denominator
+            };
+            points[j] = Coords2d {
+                x: (1.0 - alpha) * points[j - 1].x + alpha * points[j].x,
+                y: (1.0 - alpha) * points[j - 1].y + alpha * points[j].y,
+            };
+        }
+    }
+
+    points[degree]
+}
+
+fn sample_control_point_spline_for_trim(controls: &[Coords2d], degree: usize) -> Vec<SampledCurvePoint> {
+    let knots = build_open_uniform_knot_vector(controls.len(), degree);
+    let span_count = controls.len().saturating_sub(degree);
+    let mut samples = Vec::with_capacity(span_count * CONTROL_POINT_SPLINE_TRIM_SAMPLES_PER_SPAN + 1);
+    samples.push(SampledCurvePoint {
+        parameter: 0.0,
+        point: controls[0],
+    });
+
+    for span_index in 0..span_count {
+        let start = span_index as f64;
+        let end = (span_index + 1) as f64;
+        let is_last_span = span_index + 1 == span_count;
+        let max_step = if is_last_span {
+            CONTROL_POINT_SPLINE_TRIM_SAMPLES_PER_SPAN
+        } else {
+            CONTROL_POINT_SPLINE_TRIM_SAMPLES_PER_SPAN - 1
+        };
+
+        for step in 1..=max_step {
+            let t = step as f64 / CONTROL_POINT_SPLINE_TRIM_SAMPLES_PER_SPAN as f64;
+            let parameter = if is_last_span && step == CONTROL_POINT_SPLINE_TRIM_SAMPLES_PER_SPAN {
+                end
+            } else {
+                start + t * (end - start)
+            };
+            samples.push(SampledCurvePoint {
+                parameter,
+                point: de_boor_point(parameter, degree, &knots, controls),
+            });
+        }
+    }
+
+    samples
+}
+
+fn project_point_onto_sampled_curve(samples: &[SampledCurvePoint], point: Coords2d) -> Result<f64, String> {
+    if samples.len() < 2 {
+        return Err("Need at least two sampled points to project onto spline".to_string());
+    }
+
+    let mut best_parameter = samples[0].parameter;
+    let mut best_distance_sq = f64::INFINITY;
+    for window in samples.windows(2) {
+        let start = window[0].point;
+        let end = window[1].point;
+        let dx = end.x - start.x;
+        let dy = end.y - start.y;
+        let segment_length_sq = dx * dx + dy * dy;
+        let local_t = if segment_length_sq <= f64::EPSILON {
+            0.0
+        } else {
+            (((point.x - start.x) * dx + (point.y - start.y) * dy) / segment_length_sq).clamp(0.0, 1.0)
+        };
+        let projected = Coords2d {
+            x: start.x + local_t * dx,
+            y: start.y + local_t * dy,
+        };
+        let distance_sq = (point.x - projected.x).powi(2) + (point.y - projected.y).powi(2);
+        if distance_sq < best_distance_sq {
+            best_distance_sq = distance_sq;
+            best_parameter = window[0].parameter + local_t * (window[1].parameter - window[0].parameter);
+        }
+    }
+
+    Ok(best_parameter)
+}
+
 /// Load a normalized curve handle from a segment object.
+fn is_control_point_spline_owned_helper_line(segment_obj: &Object, objects: &[Object]) -> bool {
+    let ObjectKind::Segment { segment } = &segment_obj.kind else {
+        return false;
+    };
+    let Segment::Line(line) = segment else {
+        return false;
+    };
+    let Some(owner_id) = line.owner else {
+        return false;
+    };
+    objects.iter().find(|obj| obj.id == owner_id).is_some_and(|owner_obj| {
+        matches!(
+            &owner_obj.kind,
+            ObjectKind::Segment {
+                segment: Segment::ControlPointSpline(_)
+            }
+        )
+    })
+}
+
+fn get_control_point_spline_controls(
+    segment_obj: &Object,
+    objects: &[Object],
+    default_unit: UnitLength,
+) -> Result<Vec<(ObjectId, Coords2d)>, String> {
+    let ObjectKind::Segment {
+        segment: Segment::ControlPointSpline(spline),
+    } = &segment_obj.kind
+    else {
+        return Err(format!("Segment {} is not a control point spline", segment_obj.id.0));
+    };
+
+    spline
+        .controls
+        .iter()
+        .map(|control_id| {
+            let point_obj = objects.iter().find(|obj| obj.id == *control_id).ok_or_else(|| {
+                format!(
+                    "Control point {} not found for spline {}",
+                    control_id.0, segment_obj.id.0
+                )
+            })?;
+            let ObjectKind::Segment {
+                segment: Segment::Point(point),
+            } = &point_obj.kind
+            else {
+                return Err(format!(
+                    "Control point {} for spline {} is not a point",
+                    control_id.0, segment_obj.id.0
+                ));
+            };
+            Ok((
+                *control_id,
+                Coords2d {
+                    x: number_to_unit(&point.position.x, default_unit),
+                    y: number_to_unit(&point.position.y, default_unit),
+                },
+            ))
+        })
+        .collect()
+}
+
 fn load_curve_handle(
     segment_obj: &Object,
     objects: &[Object],
     default_unit: UnitLength,
 ) -> Result<CurveHandle, String> {
+    if is_control_point_spline_owned_helper_line(segment_obj, objects) {
+        return Err(format!(
+            "Control point spline helper line {} cannot be used as a trim curve",
+            segment_obj.id.0
+        ));
+    }
+
     let ObjectKind::Segment { segment } = &segment_obj.kind else {
         return Err("Object is not a segment".to_owned());
     };
@@ -1521,6 +1799,7 @@ fn load_curve_handle(
                 end,
                 center: None,
                 radius: None,
+                sampled_points: None,
             })
         }
         Segment::Arc(_) => {
@@ -1540,6 +1819,7 @@ fn load_curve_handle(
                 end,
                 center: Some(center),
                 radius: Some(radius),
+                sampled_points: None,
             })
         }
         Segment::Circle(_) => {
@@ -1558,20 +1838,46 @@ fn load_curve_handle(
                 end: start,
                 center: Some(center),
                 radius: Some(radius),
+                sampled_points: None,
             })
         }
         Segment::Point(_) => Err(format!(
             "Point segment {} cannot be used as trim curve",
             segment_obj.id.0
         )),
+        Segment::ControlPointSpline(spline) => {
+            let controls = get_control_point_spline_controls(segment_obj, objects, default_unit)?;
+            let sampled_points = sample_control_point_spline_for_trim(
+                &controls.iter().map(|(_, point)| *point).collect::<Vec<_>>(),
+                spline.degree as usize,
+            );
+            let start = controls
+                .first()
+                .map(|(_, point)| *point)
+                .ok_or_else(|| format!("Spline {} has no control points", segment_obj.id.0))?;
+            let end = controls
+                .last()
+                .map(|(_, point)| *point)
+                .ok_or_else(|| format!("Spline {} has no control points", segment_obj.id.0))?;
+            Ok(CurveHandle {
+                segment_id: segment_obj.id,
+                kind: CurveKind::Spline,
+                domain: CurveDomain::Open,
+                start,
+                end,
+                center: None,
+                radius: None,
+                sampled_points: Some(sampled_points),
+            })
+        }
     }
 }
 
-fn project_point_onto_curve(curve: CurveHandle, point: Coords2d) -> Result<f64, String> {
+fn project_point_onto_curve(curve: &CurveHandle, point: Coords2d) -> Result<f64, String> {
     curve.project_for_trim(point)
 }
 
-fn curve_contains_point(curve: CurveHandle, point: Coords2d, epsilon: f64) -> bool {
+fn curve_contains_point(curve: &CurveHandle, point: Coords2d, epsilon: f64) -> bool {
     match (curve.kind, curve.domain) {
         (CurveKind::Line, CurveDomain::Open) => {
             let t = project_point_onto_segment(point, curve.start, curve.end);
@@ -1581,17 +1887,49 @@ fn curve_contains_point(curve: CurveHandle, point: Coords2d, epsilon: f64) -> bo
             .center
             .is_some_and(|center| is_point_on_arc(point, center, curve.start, curve.end, epsilon)),
         (CurveKind::Circular, CurveDomain::Closed) => curve.center.is_some_and(|center| {
-            let radius = curve
-                .radius
-                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            let radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - center.x).squared() + (curve.start.y - center.y).squared()).sqrt()
+            });
             is_point_on_circle(point, center, radius, epsilon)
         }),
         (CurveKind::Line, CurveDomain::Closed) => false,
+        (CurveKind::Spline, CurveDomain::Open) => {
+            project_point_onto_sampled_curve(curve.sampled_points.as_deref().unwrap_or(&[]), point)
+                .ok()
+                .and_then(|parameter| {
+                    curve.sampled_points.as_ref().map(|samples| {
+                        let nearest = samples
+                            .windows(2)
+                            .map(|window| {
+                                let start = window[0].point;
+                                let end = window[1].point;
+                                let dx = end.x - start.x;
+                                let dy = end.y - start.y;
+                                let segment_length_sq = dx * dx + dy * dy;
+                                let local_t = if segment_length_sq <= f64::EPSILON {
+                                    0.0
+                                } else {
+                                    ((parameter - window[0].parameter) / (window[1].parameter - window[0].parameter))
+                                        .clamp(0.0, 1.0)
+                                };
+                                let projected = Coords2d {
+                                    x: start.x + local_t * dx,
+                                    y: start.y + local_t * dy,
+                                };
+                                ((point.x - projected.x).powi(2) + (point.y - projected.y).powi(2)).sqrt()
+                            })
+                            .fold(f64::INFINITY, libm::fmin);
+                        nearest <= epsilon
+                    })
+                })
+                .unwrap_or(false)
+        }
+        (CurveKind::Spline, CurveDomain::Closed) => false,
     }
 }
 
 fn curve_line_segment_intersections(
-    curve: CurveHandle,
+    curve: &CurveHandle,
     line_start: Coords2d,
     line_end: Coords2d,
     epsilon: f64,
@@ -1616,16 +1954,32 @@ fn curve_line_segment_intersections(
             let Some(center) = curve.center else {
                 return Vec::new();
             };
-            let radius = curve
-                .radius
-                .unwrap_or_else(|| ((curve.start.x - center.x).powi(2) + (curve.start.y - center.y).powi(2)).sqrt());
+            let radius = curve.radius.unwrap_or_else(|| {
+                ((curve.start.x - center.x).squared() + (curve.start.y - center.y).squared()).sqrt()
+            });
             line_circle_intersections(line_start, line_end, center, radius, epsilon)
         }
         (CurveKind::Line, CurveDomain::Closed) => Vec::new(),
+        (CurveKind::Spline, CurveDomain::Open) => {
+            let Some(samples) = curve.sampled_points.as_ref() else {
+                return Vec::new();
+            };
+            let mut intersections = Vec::new();
+            for window in samples.windows(2) {
+                if let Some(intersection) =
+                    line_segment_intersection(line_start, line_end, window[0].point, window[1].point, epsilon)
+                {
+                    let t = project_point_onto_segment(intersection, line_start, line_end);
+                    intersections.push((t, intersection));
+                }
+            }
+            intersections
+        }
+        (CurveKind::Spline, CurveDomain::Closed) => Vec::new(),
     }
 }
 
-fn curve_polyline_intersections(curve: CurveHandle, polyline: &[Coords2d], epsilon: f64) -> Vec<(Coords2d, usize)> {
+fn curve_polyline_intersections(curve: &CurveHandle, polyline: &[Coords2d], epsilon: f64) -> Vec<(Coords2d, usize)> {
     let mut intersections = Vec::new();
 
     for i in 0..polyline.len().saturating_sub(1) {
@@ -1639,7 +1993,7 @@ fn curve_polyline_intersections(curve: CurveHandle, polyline: &[Coords2d], epsil
     intersections
 }
 
-fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f64) -> Vec<Coords2d> {
+fn curve_curve_intersections(curve: &CurveHandle, other: &CurveHandle, epsilon: f64) -> Vec<Coords2d> {
     match (curve.kind, curve.domain, other.kind, other.domain) {
         (CurveKind::Line, CurveDomain::Open, CurveKind::Line, CurveDomain::Open) => {
             line_segment_intersection(curve.start, curve.end, other.start, other.end, epsilon)
@@ -1660,7 +2014,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             line_circle_intersections(curve.start, curve.end, other_center, other_radius, epsilon)
                 .into_iter()
@@ -1695,7 +2049,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             circle_arc_intersections(
                 other_center,
@@ -1711,7 +2065,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             line_circle_intersections(other.start, other.end, curve_center, curve_radius, epsilon)
                 .into_iter()
@@ -1723,7 +2077,7 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             circle_arc_intersections(
                 curve_center,
@@ -1739,15 +2093,71 @@ fn curve_curve_intersections(curve: CurveHandle, other: CurveHandle, epsilon: f6
                 return Vec::new();
             };
             let curve_radius = curve.radius.unwrap_or_else(|| {
-                ((curve.start.x - curve_center.x).powi(2) + (curve.start.y - curve_center.y).powi(2)).sqrt()
+                ((curve.start.x - curve_center.x).squared() + (curve.start.y - curve_center.y).squared()).sqrt()
             });
             let other_radius = other.radius.unwrap_or_else(|| {
-                ((other.start.x - other_center.x).powi(2) + (other.start.y - other_center.y).powi(2)).sqrt()
+                ((other.start.x - other_center.x).squared() + (other.start.y - other_center.y).squared()).sqrt()
             });
             circle_circle_intersections(curve_center, curve_radius, other_center, other_radius, epsilon)
         }
+        (CurveKind::Spline, CurveDomain::Open, _, _) => sampled_curve_curve_intersections(curve, other, epsilon),
+        (_, _, CurveKind::Spline, CurveDomain::Open) => sampled_curve_curve_intersections(other, curve, epsilon),
         _ => Vec::new(),
     }
+}
+
+fn sampled_curve_curve_intersections(sampled_curve: &CurveHandle, other: &CurveHandle, epsilon: f64) -> Vec<Coords2d> {
+    let Some(samples) = sampled_curve.sampled_points.as_ref() else {
+        return Vec::new();
+    };
+    let mut intersections = Vec::new();
+
+    for window in samples.windows(2) {
+        let start = window[0].point;
+        let end = window[1].point;
+        match (other.kind, other.domain) {
+            (CurveKind::Line, CurveDomain::Open) => {
+                if let Some(intersection) = line_segment_intersection(start, end, other.start, other.end, epsilon) {
+                    intersections.push(intersection);
+                }
+            }
+            (CurveKind::Circular, CurveDomain::Open) => {
+                if let Some(center) = other.center
+                    && let Some(intersection) =
+                        line_arc_intersection(start, end, center, other.start, other.end, epsilon)
+                {
+                    intersections.push(intersection);
+                }
+            }
+            (CurveKind::Circular, CurveDomain::Closed) => {
+                if let Some(center) = other.center {
+                    let radius = other.radius.unwrap_or_else(|| {
+                        ((other.start.x - center.x).powi(2) + (other.start.y - center.y).powi(2)).sqrt()
+                    });
+                    intersections.extend(
+                        line_circle_intersections(start, end, center, radius, epsilon)
+                            .into_iter()
+                            .map(|(_, point)| point),
+                    );
+                }
+            }
+            (CurveKind::Spline, CurveDomain::Open) => {
+                let Some(other_samples) = other.sampled_points.as_ref() else {
+                    continue;
+                };
+                for other_window in other_samples.windows(2) {
+                    if let Some(intersection) =
+                        line_segment_intersection(start, end, other_window[0].point, other_window[1].point, epsilon)
+                    {
+                        intersections.push(intersection);
+                    }
+                }
+            }
+            _ => {}
+        }
+    }
+
+    intersections
 }
 
 fn segment_endpoint_points(
@@ -1761,6 +2171,9 @@ fn segment_endpoint_points(
 
     match segment {
         Segment::Line(line) => {
+            if is_control_point_spline_owned_helper_line(segment_obj, objects) {
+                return Vec::new();
+            }
             let mut points = Vec::new();
             if let Some(start) = get_position_coords_for_line(segment_obj, LineEndpoint::Start, objects, default_unit) {
                 points.push((line.start, start));
@@ -1777,6 +2190,22 @@ fn segment_endpoint_points(
             }
             if let Some(end) = get_position_coords_from_arc(segment_obj, ArcPoint::End, objects, default_unit) {
                 points.push((arc.end, end));
+            }
+            points
+        }
+        Segment::ControlPointSpline(spline) => {
+            let mut points = Vec::new();
+            if let Ok(controls) = get_control_point_spline_controls(segment_obj, objects, default_unit) {
+                if let Some((control_id, point)) = controls.first() {
+                    points.push((*control_id, *point));
+                }
+                if let Some((control_id, point)) = controls.last()
+                    && Some(*control_id) != points.first().map(|(id, _)| *id)
+                {
+                    points.push((*control_id, *point));
+                }
+            } else if !spline.controls.is_empty() {
+                return Vec::new();
             }
             points
         }
@@ -1829,7 +2258,7 @@ pub fn get_next_trim_spawn(
 
         // Check this polyline segment against all scene segments
         for curve in &scene_curves {
-            let intersections = curve_line_segment_intersections(*curve, p1, p2, EPSILON_POINT_ON_SEGMENT);
+            let intersections = curve_line_segment_intersections(curve, p1, p2, EPSILON_POINT_ON_SEGMENT);
             if let Some((_, intersection)) = intersections.first() {
                 return TrimItem::Spawn {
                     trim_spawn_seg_id: curve.segment_id,
@@ -1927,7 +2356,7 @@ pub fn get_trim_spawn_terminations(
     // trimSpawnCoords is a polyline, so we check each segment
     // We need to find ALL intersections and use a consistent one to avoid
     // different results for different trim lines in the same area
-    let all_intersections = curve_polyline_intersections(trim_curve, trim_spawn_coords, EPSILON_POINT_ON_SEGMENT);
+    let all_intersections = curve_polyline_intersections(&trim_curve, trim_spawn_coords, EPSILON_POINT_ON_SEGMENT);
 
     // Use the intersection that's closest to the middle of the polyline
     // This ensures consistent results regardless of which segment intersects first
@@ -1956,12 +2385,12 @@ pub fn get_trim_spawn_terminations(
     };
 
     // Project intersection point onto segment to get parametric position
-    let intersection_t = project_point_onto_curve(trim_curve, intersection_point)?;
+    let intersection_t = project_point_onto_curve(&trim_curve, intersection_point)?;
 
     // Find terminations on both sides
     let left_termination = find_termination_in_direction(
         trim_spawn_seg,
-        trim_curve,
+        &trim_curve,
         intersection_t,
         TrimDirection::Left,
         objects,
@@ -1970,7 +2399,7 @@ pub fn get_trim_spawn_terminations(
 
     let right_termination = find_termination_in_direction(
         trim_spawn_seg,
-        trim_curve,
+        &trim_curve,
         intersection_t,
         TrimDirection::Right,
         objects,
@@ -2037,7 +2466,7 @@ pub fn get_trim_spawn_terminations(
 /// If no candidates are found in a direction, defaults to "segEndPoint".
 fn find_termination_in_direction(
     trim_spawn_seg: &Object,
-    trim_curve: CurveHandle,
+    trim_curve: &CurveHandle,
     intersection_t: f64,
     direction: TrimDirection,
     objects: &[Object],
@@ -2105,6 +2534,28 @@ fn find_termination_in_direction(
         Segment::Circle(_) => {
             // Circles have no endpoints for trim termination purposes.
         }
+        Segment::ControlPointSpline(spline) => {
+            let end_t = trim_curve
+                .sampled_points
+                .as_ref()
+                .and_then(|samples| samples.last())
+                .map(|sample| sample.parameter)
+                .unwrap_or_else(|| spline.controls.len().saturating_sub(1) as f64);
+            candidates.push(Candidate {
+                t: 0.0,
+                point: trim_curve.start,
+                candidate_type: CandidateType::Endpoint,
+                segment_id: None,
+                point_id: spline.controls.first().copied(),
+            });
+            candidates.push(Candidate {
+                t: end_t,
+                point: trim_curve.end,
+                candidate_type: CandidateType::Endpoint,
+                segment_id: None,
+                point_id: spline.controls.last().copied(),
+            });
+        }
         _ => {}
     }
 
@@ -2119,7 +2570,7 @@ fn find_termination_in_direction(
         }
 
         if let Ok(other_curve) = load_curve_handle(other_seg, objects, default_unit) {
-            for intersection in curve_curve_intersections(trim_curve, other_curve, EPSILON_POINT_ON_SEGMENT) {
+            for intersection in curve_curve_intersections(trim_curve, &other_curve, EPSILON_POINT_ON_SEGMENT) {
                 let Ok(t) = project_point_onto_curve(trim_curve, intersection) else {
                     continue;
                 };
@@ -2253,8 +2704,8 @@ fn find_termination_in_direction(
             let is_other_seg_endpoint = segment_endpoint_points(intersecting_seg, objects, default_unit)
                 .into_iter()
                 .any(|(_, endpoint)| {
-                    let dist_to_endpoint = ((closest_candidate.point.x - endpoint.x).powi(2)
-                        + (closest_candidate.point.y - endpoint.y).powi(2))
+                    let dist_to_endpoint = ((closest_candidate.point.x - endpoint.x).squared()
+                        + (closest_candidate.point.y - endpoint.y).squared())
                     .sqrt();
                     dist_to_endpoint < endpoint_epsilon
                 });
@@ -2536,7 +2987,7 @@ where
 
                 // Keep processing the same trim polyline segment after geometry-changing ops.
                 // This allows a single stroke to trim multiple intersected segments.
-                let geometry_was_modified = trim_plan_modifies_geometry(&plan);
+                let mut geometry_was_modified = false;
 
                 // Execute operations via callback
                 match execute_operations(strategy, current_scene_graph_delta.clone()).await {
@@ -2544,6 +2995,7 @@ where
                         last_result = Some((source_delta, scene_graph_delta.clone()));
                         invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                         current_scene_graph_delta = scene_graph_delta;
+                        geometry_was_modified = trim_plan_modifies_geometry(&plan);
                     }
                     Err(e) => {
                         crate::logln!("Error executing trim operations: {}", e);
@@ -2572,7 +3024,7 @@ where
 }
 
 /// Result of executing trim flow
-#[cfg(all(feature = "artifact-graph", test))]
+#[cfg(test)]
 #[derive(Debug, Clone)]
 pub struct TrimFlowResult {
     pub kcl_code: String,
@@ -2594,7 +3046,7 @@ pub struct TrimFlowResult {
 ///
 /// Note: This function is only available for non-WASM builds (tests) and uses
 /// a mock executor context so tests can run without an engine token.
-#[cfg(all(not(target_arch = "wasm32"), feature = "artifact-graph", test))]
+#[cfg(all(not(target_arch = "wasm32"), test))]
 pub(crate) async fn execute_trim_flow(
     kcl_code: &str,
     trim_points: &[Coords2d],
@@ -2629,12 +3081,9 @@ pub(crate) async fn execute_trim_flow(
             .map_err(|e| format!("Failed to execute program: {}", e.error.message()))?;
 
         let exec_outcome = frontend.update_state_after_exec(exec_outcome, false);
-        #[allow(unused_mut)] // mut is needed when artifact-graph feature is enabled
         let mut initial_scene_graph = frontend.scene_graph.clone();
 
         // If scene graph is empty, try to get objects from exec_outcome.scene_objects
-        // (this is only available when artifact-graph feature is enabled)
-        #[cfg(feature = "artifact-graph")]
         if initial_scene_graph.objects.is_empty() && !exec_outcome.scene_objects.is_empty() {
             initial_scene_graph.objects = exec_outcome.scene_objects.clone();
         }
@@ -2692,6 +3141,13 @@ pub(crate) async fn execute_trim_flow(
     mock_ctx.close().await;
 
     result
+}
+
+fn normalize_scene_graph_delta_for_internal_trim(
+    frontend: &crate::frontend::FrontendState,
+    scene_graph_delta: &mut crate::frontend::api::SceneGraphDelta,
+) {
+    scene_graph_delta.new_graph = frontend.scene_graph().clone();
 }
 
 /// Execute the trim loop with a context struct that provides access to FrontendState.
@@ -2803,7 +3259,8 @@ pub async fn execute_trim_loop_with_context(
                             )
                             .await
                             {
-                                Ok((source_delta, scene_graph_delta)) => {
+                                Ok((source_delta, mut scene_graph_delta)) => {
+                                    normalize_scene_graph_delta_for_internal_trim(frontend, &mut scene_graph_delta);
                                     invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                                     last_result = Some((source_delta, scene_graph_delta.clone()));
                                     current_scene_graph_delta = scene_graph_delta;
@@ -2865,7 +3322,7 @@ pub async fn execute_trim_loop_with_context(
 
                 // Keep processing the same trim polyline segment after geometry-changing ops.
                 // This allows a single stroke to trim multiple intersected segments.
-                let geometry_was_modified = trim_plan_modifies_geometry(&plan);
+                let mut geometry_was_modified = false;
 
                 // Execute operations
                 match execute_trim_operations_simple(
@@ -2878,10 +3335,12 @@ pub async fn execute_trim_loop_with_context(
                 )
                 .await
                 {
-                    Ok((source_delta, scene_graph_delta)) => {
+                    Ok((source_delta, mut scene_graph_delta)) => {
+                        normalize_scene_graph_delta_for_internal_trim(frontend, &mut scene_graph_delta);
                         invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                         last_result = Some((source_delta, scene_graph_delta.clone()));
                         current_scene_graph_delta = scene_graph_delta;
+                        geometry_was_modified = trim_plan_modifies_geometry(&plan);
                     }
                     Err(e) => {
                         crate::logln!("Error executing trim operations: {}", e);
@@ -2968,6 +3427,164 @@ pub async fn execute_trim_loop_with_context(
 /// - Coincident constraints on either side need to be migrated to the correct side
 /// - Angle based constraints (parallel, perpendicular, horizontal, vertical), need to be applied to both sides of the trim
 /// - If the segment getting split is an arc, and there's a constraints applied to an arc's center, this should be applied to both arcs after they are split.
+fn segment_ctor_units(ctor: &SegmentCtor) -> NumericSuffix {
+    match ctor {
+        SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
+            crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
+            _ => NumericSuffix::Mm,
+        },
+        SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
+            crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
+            _ => NumericSuffix::Mm,
+        },
+        SegmentCtor::Circle(circle_ctor) => match &circle_ctor.start.x {
+            crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
+            _ => NumericSuffix::Mm,
+        },
+        SegmentCtor::ControlPointSpline(spline_ctor) => spline_ctor
+            .points
+            .first()
+            .and_then(|point| match &point.x {
+                crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => Some(v.units),
+                _ => None,
+            })
+            .unwrap_or(NumericSuffix::Mm),
+        SegmentCtor::Point(point_ctor) => match &point_ctor.position.x {
+            crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
+            _ => NumericSuffix::Mm,
+        },
+    }
+}
+
+fn coords_to_expr_point(
+    coords: Coords2d,
+    default_unit: UnitLength,
+    units: NumericSuffix,
+) -> crate::frontend::sketch::Point2d<crate::frontend::api::Expr> {
+    crate::frontend::sketch::Point2d {
+        x: crate::frontend::api::Expr::Var(unit_to_number(coords.x, default_unit, units)),
+        y: crate::frontend::api::Expr::Var(unit_to_number(coords.y, default_unit, units)),
+    }
+}
+
+fn resample_control_point_spline_interval(
+    controls: &[Coords2d],
+    degree: usize,
+    start_parameter: f64,
+    end_parameter: f64,
+    control_count: usize,
+) -> Vec<Coords2d> {
+    let knots = build_open_uniform_knot_vector(controls.len(), degree);
+    (0..control_count)
+        .map(|index| {
+            let ratio = if control_count <= 1 {
+                0.0
+            } else {
+                index as f64 / (control_count - 1) as f64
+            };
+            let parameter = start_parameter + ratio * (end_parameter - start_parameter);
+            de_boor_point(parameter, degree, &knots, controls)
+        })
+        .collect()
+}
+
+fn build_trimmed_control_point_spline_ctor(
+    trim_spawn_segment: &Object,
+    objects: &[Object],
+    default_unit: UnitLength,
+    start_parameter: f64,
+    end_parameter: f64,
+) -> Result<SegmentCtor, String> {
+    let ObjectKind::Segment {
+        segment: Segment::ControlPointSpline(spline),
+    } = &trim_spawn_segment.kind
+    else {
+        return Err("Trim spawn segment is not a control point spline".to_string());
+    };
+    let SegmentCtor::ControlPointSpline(spline_ctor) = &spline.ctor else {
+        return Err("Control point spline segment is missing a control point spline ctor".to_string());
+    };
+    let controls = get_control_point_spline_controls(trim_spawn_segment, objects, default_unit)?
+        .into_iter()
+        .map(|(_, point)| point)
+        .collect::<Vec<_>>();
+    let units = segment_ctor_units(&spline.ctor);
+    let resampled = resample_control_point_spline_interval(
+        &controls,
+        spline.degree as usize,
+        start_parameter,
+        end_parameter,
+        spline.controls.len(),
+    );
+    Ok(SegmentCtor::ControlPointSpline(
+        crate::frontend::sketch::ControlPointSplineCtor {
+            points: resampled
+                .into_iter()
+                .map(|coords| coords_to_expr_point(coords, default_unit, units))
+                .collect(),
+            construction: spline_ctor.construction,
+        },
+    ))
+}
+
+fn spline_constraint_ids_to_delete(
+    spline: &crate::frontend::sketch::ControlPointSpline,
+    trimmed_endpoint_id: Option<ObjectId>,
+    objects: &[Object],
+) -> Vec<ObjectId> {
+    let internal_control_ids: std::collections::HashSet<ObjectId> = spline
+        .controls
+        .iter()
+        .copied()
+        .skip(1)
+        .take(spline.controls.len().saturating_sub(2))
+        .collect();
+    let spline_control_ids: std::collections::HashSet<ObjectId> = spline.controls.iter().copied().collect();
+    let mut deletions = IndexSet::new();
+
+    for obj in objects {
+        let ObjectKind::Constraint { constraint } = &obj.kind else {
+            continue;
+        };
+        match constraint {
+            Constraint::Coincident(coincident) => {
+                let ids: Vec<ObjectId> = coincident.segment_ids().collect();
+                if ids.iter().any(|id| internal_control_ids.contains(id))
+                    || trimmed_endpoint_id.is_some_and(|endpoint_id| ids.contains(&endpoint_id))
+                {
+                    deletions.insert(obj.id);
+                }
+            }
+            Constraint::Distance(distance)
+            | Constraint::HorizontalDistance(distance)
+            | Constraint::VerticalDistance(distance)
+                if distance.point_ids().any(|id| spline_control_ids.contains(&id)) =>
+            {
+                deletions.insert(obj.id);
+            }
+            Constraint::Horizontal(Horizontal::Points { points })
+            | Constraint::Vertical(Vertical::Points { points })
+                if points.iter().any(
+                    |point| matches!(point, ConstraintSegment::Segment(id) if spline_control_ids.contains(id)),
+                ) =>
+            {
+                deletions.insert(obj.id);
+            }
+            Constraint::Fixed(fixed)
+                if fixed
+                    .points
+                    .iter()
+                    .any(|fixed_point| spline_control_ids.contains(&fixed_point.point)) =>
+            {
+                deletions.insert(obj.id);
+            }
+            _ => {}
+        }
+    }
+
+    deletions.into_iter().collect()
+}
+
 pub(crate) fn build_trim_plan(
     trim_spawn_id: ObjectId,
     trim_spawn_coords: Coords2d,
@@ -3007,27 +3624,14 @@ pub(crate) fn build_trim_plan(
         Segment::Line(line) => ("Line", &line.ctor),
         Segment::Arc(arc) => ("Arc", &arc.ctor),
         Segment::Circle(circle) => ("Circle", &circle.ctor),
+        Segment::ControlPointSpline(spline) => ("ControlPointSpline", &spline.ctor),
         _ => {
-            return Err("Trim spawn segment is not a Line, Arc, or Circle".to_string());
+            return Err("Trim spawn segment is not a Line, Arc, Circle, or Control Point Spline".to_string());
         }
     };
 
-    // Extract units from the existing ctor's start point
-    let units = match ctor {
-        SegmentCtor::Line(line_ctor) => match &line_ctor.start.x {
-            crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
-            _ => NumericSuffix::Mm,
-        },
-        SegmentCtor::Arc(arc_ctor) => match &arc_ctor.start.x {
-            crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
-            _ => NumericSuffix::Mm,
-        },
-        SegmentCtor::Circle(circle_ctor) => match &circle_ctor.start.x {
-            crate::frontend::api::Expr::Var(v) | crate::frontend::api::Expr::Number(v) => v.units,
-            _ => NumericSuffix::Mm,
-        },
-        _ => NumericSuffix::Mm,
-    };
+    // Extract units from the existing ctor's first point.
+    let units = segment_ctor_units(ctor);
 
     // Helper to find distance constraints that reference a segment (via owned points)
     let find_distance_constraints_for_segment = |segment_id: ObjectId| -> Vec<ObjectId> {
@@ -3112,6 +3716,14 @@ pub(crate) fn build_trim_plan(
                         trim_endpoint_ids.push(arc.start);
                         trim_endpoint_ids.push(arc.end);
                     }
+                    Segment::ControlPointSpline(spline) => {
+                        if let Some(start) = spline.controls.first() {
+                            trim_endpoint_ids.push(*start);
+                        }
+                        if let Some(end) = spline.controls.last() {
+                            trim_endpoint_ids.push(*end);
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -3139,6 +3751,14 @@ pub(crate) fn build_trim_plan(
                     Segment::Arc(arc) => {
                         intersecting_endpoint_ids.push(arc.start);
                         intersecting_endpoint_ids.push(arc.end);
+                    }
+                    Segment::ControlPointSpline(spline) => {
+                        if let Some(start) = spline.controls.first() {
+                            intersecting_endpoint_ids.push(*start);
+                        }
+                        if let Some(end) = spline.controls.last() {
+                            intersecting_endpoint_ids.push(*end);
+                        }
                     }
                     _ => {}
                 }
@@ -3369,8 +3989,8 @@ pub(crate) fn build_trim_plan(
         {
             let endpoint_is_at_intersection = get_point_coords_from_native(objects, point_id, default_unit)
                 .is_some_and(|point_coords| {
-                    ((point_coords.x - intersection_coords.x).powi(2)
-                        + (point_coords.y - intersection_coords.y).powi(2))
+                    ((point_coords.x - intersection_coords.x).squared()
+                        + (point_coords.y - intersection_coords.y).squared())
                     .sqrt()
                         <= EPSILON_POINT_ON_SEGMENT * 1000.0
                 });
@@ -3401,6 +4021,13 @@ pub(crate) fn build_trim_plan(
                         Some(arc.start)
                     } else {
                         Some(arc.end)
+                    }
+                }
+                Segment::ControlPointSpline(spline) => {
+                    if endpoint_to_change == EndpointChanged::Start {
+                        spline.controls.first().copied()
+                    } else {
+                        spline.controls.last().copied()
                     }
                 }
                 _ => None,
@@ -3453,6 +4080,42 @@ pub(crate) fn build_trim_plan(
         } else {
             Vec::new()
         };
+
+        if let Segment::ControlPointSpline(spline) = segment {
+            let trim_curve = load_curve_handle(trim_spawn_segment, objects, default_unit)?;
+            let intersection_parameter = project_point_onto_curve(&trim_curve, intersection_coords)?;
+            let end_parameter = trim_curve
+                .sampled_points
+                .as_ref()
+                .and_then(|samples| samples.last())
+                .map(|sample| sample.parameter)
+                .unwrap_or_else(|| spline.controls.len().saturating_sub(1) as f64);
+            let (keep_start_parameter, keep_end_parameter) = if endpoint_to_change == EndpointChanged::End {
+                (0.0, intersection_parameter)
+            } else {
+                (intersection_parameter, end_parameter)
+            };
+            let new_ctor = build_trimmed_control_point_spline_ctor(
+                trim_spawn_segment,
+                objects,
+                default_unit,
+                keep_start_parameter,
+                keep_end_parameter,
+            )?;
+
+            let mut all_constraint_ids_to_delete = spline_constraint_ids_to_delete(spline, endpoint_point_id, objects);
+            all_constraint_ids_to_delete.extend(coincident_end_constraint_to_delete_ids);
+            all_constraint_ids_to_delete.extend(point_axis_constraint_ids_to_delete);
+            all_constraint_ids_to_delete.extend(find_distance_constraints_for_segment(trim_spawn_id));
+            all_constraint_ids_to_delete.sort_unstable();
+            all_constraint_ids_to_delete.dedup();
+
+            return Ok(TrimPlan::TailCutControlPointSpline {
+                segment_id: trim_spawn_id,
+                ctor: new_ctor,
+                constraint_ids_to_delete: all_constraint_ids_to_delete,
+            });
+        }
 
         // Edit the segment - create new ctor with updated endpoint
         let new_ctor = match ctor {
@@ -3731,6 +4394,96 @@ pub(crate) fn build_trim_plan(
         } else {
             find_existing_point_segment_coincident(trim_spawn_id, right_intersecting_seg_id)
         };
+
+        if let Segment::ControlPointSpline(spline) = segment {
+            let trim_curve = load_curve_handle(trim_spawn_segment, objects, default_unit)?;
+            let end_parameter = trim_curve
+                .sampled_points
+                .as_ref()
+                .and_then(|samples| samples.last())
+                .map(|sample| sample.parameter)
+                .unwrap_or_else(|| spline.controls.len().saturating_sub(1) as f64);
+            let left_trim_coords = match left_side {
+                TrimTermination::SegEndPoint {
+                    trim_termination_coords,
+                }
+                | TrimTermination::Intersection {
+                    trim_termination_coords,
+                    ..
+                }
+                | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                    trim_termination_coords,
+                    ..
+                } => *trim_termination_coords,
+            };
+            let right_trim_coords = match right_side {
+                TrimTermination::SegEndPoint {
+                    trim_termination_coords,
+                }
+                | TrimTermination::Intersection {
+                    trim_termination_coords,
+                    ..
+                }
+                | TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                    trim_termination_coords,
+                    ..
+                } => *trim_termination_coords,
+            };
+            let left_trim_parameter = project_point_onto_curve(&trim_curve, left_trim_coords)?;
+            let right_trim_parameter = project_point_onto_curve(&trim_curve, right_trim_coords)?;
+
+            if (right_trim_parameter - left_trim_parameter).abs() < EPSILON_POINT_ON_SEGMENT {
+                return Err("Split trim on spline collapsed to the same parameter on both sides".to_string());
+            }
+
+            let left_ctor = build_trimmed_control_point_spline_ctor(
+                trim_spawn_segment,
+                objects,
+                default_unit,
+                0.0,
+                left_trim_parameter,
+            )?;
+            let right_ctor = build_trimmed_control_point_spline_ctor(
+                trim_spawn_segment,
+                objects,
+                default_unit,
+                right_trim_parameter,
+                end_parameter,
+            )?;
+
+            let mut constraint_ids_to_delete =
+                spline_constraint_ids_to_delete(spline, spline.controls.last().copied(), objects);
+            for obj in objects {
+                let ObjectKind::Constraint { constraint } = &obj.kind else {
+                    continue;
+                };
+                match constraint {
+                    Constraint::Coincident(coincident)
+                        if spline
+                            .controls
+                            .last()
+                            .is_some_and(|end_id| coincident.contains_segment(*end_id)) =>
+                    {
+                        constraint_ids_to_delete.push(obj.id);
+                    }
+                    Constraint::Tangent(tangent) if tangent.input.contains(&trim_spawn_id) => {
+                        constraint_ids_to_delete.push(obj.id);
+                    }
+                    _ => {}
+                }
+            }
+            constraint_ids_to_delete.sort_unstable();
+            constraint_ids_to_delete.dedup();
+
+            return Ok(TrimPlan::SplitControlPointSpline {
+                segment_id: trim_spawn_id,
+                left_ctor,
+                right_ctor,
+                left_side: Box::new(left_side.clone()),
+                right_side: Box::new(right_side.clone()),
+                constraint_ids_to_delete,
+            });
+        }
 
         // Find the endpoints of the segment being split using native types
         let (original_start_point_id, original_end_point_id) = match segment {
@@ -4226,8 +4979,13 @@ pub(crate) fn build_trim_plan(
             };
 
             let references_trimmed_segment = midpoint.segment == trim_spawn_id;
-            let references_trimmed_endpoint = original_start_point_id.is_some_and(|id| midpoint.point == id)
-                || original_end_point_id.is_some_and(|id| midpoint.point == id);
+            let references_trimmed_endpoint = match midpoint.point {
+                ConstraintSegment::Segment(point_id) => {
+                    original_start_point_id.is_some_and(|id| point_id == id)
+                        || original_end_point_id.is_some_and(|id| point_id == id)
+                }
+                ConstraintSegment::Origin(_) => false,
+            };
 
             if references_trimmed_segment || references_trimmed_endpoint {
                 constraints_to_delete_set.insert(obj.id);
@@ -4580,6 +5338,17 @@ pub(crate) async fn execute_trim_operations_simple(
                         .map_err(|e| format!("Failed to edit segment: {}", e.error.message()))
                 }
             }
+            TrimOperation::EditControlPointSpline { segment_id, ctor } => {
+                let segment_to_edit = ExistingSegmentCtor {
+                    id: *segment_id,
+                    ctor: ctor.clone(),
+                };
+
+                frontend
+                    .edit_segments(ctx, version, sketch_id, vec![segment_to_edit])
+                    .await
+                    .map_err(|e| format!("Failed to edit control point spline: {}", e.error.message()))
+            }
             TrimOperation::AddCoincidentConstraint {
                 segment_id,
                 endpoint_changed,
@@ -4609,6 +5378,21 @@ pub(crate) async fn execute_trim_operations_simple(
                                 arc.start
                             } else {
                                 arc.end
+                            }
+                        }
+                        crate::frontend::sketch::Segment::ControlPointSpline(spline) => {
+                            if *endpoint_changed == EndpointChanged::Start {
+                                spline
+                                    .controls
+                                    .first()
+                                    .copied()
+                                    .ok_or_else(|| "Edited spline has no start control point".to_string())?
+                            } else {
+                                spline
+                                    .controls
+                                    .last()
+                                    .copied()
+                                    .ok_or_else(|| "Edited spline has no end control point".to_string())?
                             }
                         }
                         _ => {
@@ -5471,10 +6255,267 @@ pub(crate) async fn execute_trim_operations_simple(
                 }
                 batch_result
             }
+            TrimOperation::SplitControlPointSpline {
+                segment_id,
+                left_ctor,
+                right_ctor,
+                left_side,
+                right_side,
+                constraint_ids_to_delete,
+            } => {
+                let original_segment = current_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .find(|obj| obj.id == *segment_id)
+                    .ok_or_else(|| format!("Failed to find original control point spline {}", segment_id.0))?;
+
+                let (_original_start_id, original_end_id) = match &original_segment.kind {
+                    crate::frontend::api::ObjectKind::Segment {
+                        segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+                    } => (
+                        spline
+                            .controls
+                            .first()
+                            .copied()
+                            .ok_or_else(|| format!("Spline {} has no start control point", segment_id.0))?,
+                        spline
+                            .controls
+                            .last()
+                            .copied()
+                            .ok_or_else(|| format!("Spline {} has no end control point", segment_id.0))?,
+                    ),
+                    _ => return Err("Original segment is not a control point spline".to_string()),
+                };
+
+                let (_add_source_delta, add_scene_graph_delta) = frontend
+                    .add_segment(ctx, version, sketch_id, right_ctor.clone(), None)
+                    .await
+                    .map_err(|e| format!("Failed to add split spline segment: {}", e.error.message()))?;
+                invalidates_ids = invalidates_ids || add_scene_graph_delta.invalidates_ids;
+
+                let new_right_segment_id = *add_scene_graph_delta
+                    .new_objects
+                    .iter()
+                    .find(|&&id| {
+                        add_scene_graph_delta
+                            .new_graph
+                            .objects
+                            .iter()
+                            .find(|obj| obj.id == id)
+                            .is_some_and(|obj| {
+                                matches!(
+                                    obj.kind,
+                                    crate::frontend::api::ObjectKind::Segment {
+                                        segment: crate::frontend::sketch::Segment::ControlPointSpline(_)
+                                    }
+                                )
+                            })
+                    })
+                    .ok_or_else(|| "Failed to find newly created split spline segment".to_string())?;
+
+                let new_right_segment = add_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .find(|obj| obj.id == new_right_segment_id)
+                    .ok_or_else(|| format!("New split spline {} not found", new_right_segment_id.0))?;
+                let (new_right_start_id, new_right_end_id) = match &new_right_segment.kind {
+                    crate::frontend::api::ObjectKind::Segment {
+                        segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+                    } => (
+                        spline.controls.first().copied().ok_or_else(|| {
+                            format!("New split spline {} has no start control point", new_right_segment_id.0)
+                        })?,
+                        spline.controls.last().copied().ok_or_else(|| {
+                            format!("New split spline {} has no end control point", new_right_segment_id.0)
+                        })?,
+                    ),
+                    _ => return Err("New split segment is not a control point spline".to_string()),
+                };
+
+                let (_edit_source_delta, edit_scene_graph_delta) = frontend
+                    .edit_segments(
+                        ctx,
+                        version,
+                        sketch_id,
+                        vec![ExistingSegmentCtor {
+                            id: *segment_id,
+                            ctor: left_ctor.clone(),
+                        }],
+                    )
+                    .await
+                    .map_err(|e| format!("Failed to edit original split spline: {}", e.error.message()))?;
+                invalidates_ids = invalidates_ids || edit_scene_graph_delta.invalidates_ids;
+
+                let edited_left_segment = edit_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .find(|obj| obj.id == *segment_id)
+                    .ok_or_else(|| format!("Edited split spline {} not found", segment_id.0))?;
+                let edited_left_end_id = match &edited_left_segment.kind {
+                    crate::frontend::api::ObjectKind::Segment {
+                        segment: crate::frontend::sketch::Segment::ControlPointSpline(spline),
+                    } => spline
+                        .controls
+                        .last()
+                        .copied()
+                        .ok_or_else(|| format!("Edited split spline {} has no end control point", segment_id.0))?,
+                    _ => return Err("Edited split segment is not a control point spline".to_string()),
+                };
+
+                let constraint_segments_for =
+                    |endpoint_id: ObjectId,
+                     term: &TrimTermination|
+                     -> Result<Vec<crate::frontend::sketch::ConstraintSegment>, String> {
+                        match term {
+                            TrimTermination::Intersection {
+                                intersecting_seg_id, ..
+                            } => Ok(vec![endpoint_id.into(), (*intersecting_seg_id).into()]),
+                            TrimTermination::TrimSpawnSegmentCoincidentWithAnotherSegmentPoint {
+                                other_segment_point_id,
+                                ..
+                            } => Ok(vec![endpoint_id.into(), (*other_segment_point_id).into()]),
+                            TrimTermination::SegEndPoint { .. } => {
+                                Err("Split spline termination cannot be a segment endpoint".to_string())
+                            }
+                        }
+                    };
+
+                let (_left_source_delta, left_scene_graph_delta) = frontend
+                    .add_constraint(
+                        ctx,
+                        version,
+                        sketch_id,
+                        Constraint::Coincident(crate::frontend::sketch::Coincident {
+                            segments: constraint_segments_for(edited_left_end_id, left_side)?,
+                        }),
+                    )
+                    .await
+                    .map_err(|e| format!("Failed to add left split spline coincident: {}", e.error.message()))?;
+                invalidates_ids = invalidates_ids || left_scene_graph_delta.invalidates_ids;
+
+                let (_right_source_delta, right_scene_graph_delta) = frontend
+                    .add_constraint(
+                        ctx,
+                        version,
+                        sketch_id,
+                        Constraint::Coincident(crate::frontend::sketch::Coincident {
+                            segments: constraint_segments_for(new_right_start_id, right_side)?,
+                        }),
+                    )
+                    .await
+                    .map_err(|e| format!("Failed to add right split spline coincident: {}", e.error.message()))?;
+                invalidates_ids = invalidates_ids || right_scene_graph_delta.invalidates_ids;
+
+                let original_end_owner_ids: std::collections::HashSet<ObjectId> = current_scene_graph_delta
+                    .new_graph
+                    .objects
+                    .iter()
+                    .filter_map(|obj| match &obj.kind {
+                        crate::frontend::api::ObjectKind::Constraint {
+                            constraint: Constraint::Coincident(coincident),
+                        } if coincident.contains_segment(original_end_id) => coincident.segment_ids().find_map(|id| {
+                            if id == original_end_id {
+                                None
+                            } else {
+                                current_scene_graph_delta
+                                    .new_graph
+                                    .objects
+                                    .iter()
+                                    .find(|candidate| candidate.id == id)
+                                    .and_then(|candidate| match &candidate.kind {
+                                        crate::frontend::api::ObjectKind::Segment {
+                                            segment: crate::frontend::sketch::Segment::Point(point),
+                                        } => point.owner,
+                                        _ => Some(id),
+                                    })
+                            }
+                        }),
+                        _ => None,
+                    })
+                    .collect();
+
+                for obj in &current_scene_graph_delta.new_graph.objects {
+                    let crate::frontend::api::ObjectKind::Constraint { constraint } = &obj.kind else {
+                        continue;
+                    };
+                    if !constraint_ids_to_delete.contains(&obj.id) {
+                        continue;
+                    }
+
+                    match constraint {
+                        Constraint::Coincident(coincident) if coincident.contains_segment(original_end_id) => {
+                            let migrated_segments = coincident
+                                .segments
+                                .iter()
+                                .map(|segment| match segment {
+                                    crate::frontend::sketch::ConstraintSegment::Segment(id)
+                                        if *id == original_end_id =>
+                                    {
+                                        crate::frontend::sketch::ConstraintSegment::Segment(new_right_end_id)
+                                    }
+                                    _ => *segment,
+                                })
+                                .collect::<Vec<_>>();
+                            let (_source_delta, migrated_scene_graph_delta) = frontend
+                                .add_constraint(
+                                    ctx,
+                                    version,
+                                    sketch_id,
+                                    Constraint::Coincident(crate::frontend::sketch::Coincident {
+                                        segments: migrated_segments,
+                                    }),
+                                )
+                                .await
+                                .map_err(|e| {
+                                    format!("Failed to migrate split spline coincident: {}", e.error.message())
+                                })?;
+                            invalidates_ids = invalidates_ids || migrated_scene_graph_delta.invalidates_ids;
+                        }
+                        Constraint::Tangent(tangent) if tangent.input.contains(segment_id) => {
+                            let other_ids = tangent
+                                .input
+                                .iter()
+                                .copied()
+                                .filter(|id| *id != *segment_id)
+                                .collect::<Vec<_>>();
+                            if other_ids.iter().any(|id| original_end_owner_ids.contains(id)) {
+                                let (_source_delta, migrated_scene_graph_delta) = frontend
+                                    .add_constraint(
+                                        ctx,
+                                        version,
+                                        sketch_id,
+                                        Constraint::Tangent(crate::frontend::sketch::Tangent {
+                                            input: tangent
+                                                .input
+                                                .iter()
+                                                .map(|id| if *id == *segment_id { new_right_segment_id } else { *id })
+                                                .collect(),
+                                        }),
+                                    )
+                                    .await
+                                    .map_err(|e| {
+                                        format!("Failed to migrate split spline tangent: {}", e.error.message())
+                                    })?;
+                                invalidates_ids = invalidates_ids || migrated_scene_graph_delta.invalidates_ids;
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+
+                frontend
+                    .delete_objects(ctx, version, sketch_id, constraint_ids_to_delete.clone(), Vec::new())
+                    .await
+                    .map_err(|e| format!("Failed to delete split spline constraints: {}", e.error.message()))
+            }
         };
 
         match operation_result {
-            Ok((source_delta, scene_graph_delta)) => {
+            Ok((source_delta, mut scene_graph_delta)) => {
+                normalize_scene_graph_delta_for_internal_trim(frontend, &mut scene_graph_delta);
                 // Track invalidates_ids from each operation result
                 invalidates_ids = invalidates_ids || scene_graph_delta.invalidates_ids;
                 last_result = Some((source_delta, scene_graph_delta.clone()));

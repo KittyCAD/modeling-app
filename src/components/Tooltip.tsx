@@ -1,7 +1,7 @@
 // We do use all the classes in this file currently, but we
 // index into them with styles[position], which CSS Modules doesn't pick up.
 
-import { useRef, useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import styles from './Tooltip.module.css'
 
 type TopOrBottom = 'top' | 'bottom'

@@ -15,6 +15,7 @@ import {
   type PathToNode,
   type VariableDeclarator,
   changeDefaultUnits,
+  getAllOperations,
   isPathToNode,
   pathToNodeFromRustNodePath,
   recast,
@@ -28,7 +29,6 @@ import {
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { copyFileShareLink } from '@src/lib/links'
 import type { Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
@@ -42,18 +42,15 @@ interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
   // special props for a single command
   specialPropsForInsertCommand: {
-    providedOptions: CommandArgumentOption<string>[]
+    providedOptions: ReadonlyArray<CommandArgumentOption<string>>
   }
   kclManager: KclManager
   systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
-  authToken: string
   settings: {
     defaultUnit: UnitLength
   }
-  isRestrictedToOrg?: boolean
-  password?: string
   project?: Project
 }
 
@@ -297,23 +294,6 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
       },
     },
     {
-      name: 'share-file-link',
-      displayName: 'Share part via Zoo link',
-      description: 'Create a link that contains a copy of the current file.',
-      groupId: 'code',
-      needsReview: false,
-      icon: 'link',
-      onSubmit: (input) => {
-        copyFileShareLink({
-          token: commandProps.authToken,
-          code: commandProps.kclManager.code,
-          name: commandProps.projectData.project?.name || '',
-          isRestrictedToOrg: input?.event.data.isRestrictedToOrg ?? false,
-          password: input?.event.data.password,
-        }).catch(reportRejection)
-      },
-    },
-    {
       name: 'parameter.create',
       displayName: 'Create parameter',
       description: 'Add a named constant to use in geometry',
@@ -402,17 +382,14 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           },
           required: true,
           options() {
-            return commandProps.kclManager.execState.operations.flatMap(
-              (op) => {
-                if (op.type !== 'VariableDeclaration') return []
-                if (op.value.type !== 'Number') return []
-                const value = pathToNodeFromRustNodePath(op.nodePath).slice(
-                  0,
-                  -1
-                )
-                return { name: op.name, value }
-              }
-            )
+            return getAllOperations(
+              commandProps.kclManager.execState.operations
+            ).flatMap((op) => {
+              if (op.type !== 'VariableDeclaration') return []
+              if (op.value.type !== 'Number') return []
+              const value = pathToNodeFromRustNodePath(op.nodePath).slice(0, -1)
+              return { name: op.name, value }
+            })
           },
         },
         value: {

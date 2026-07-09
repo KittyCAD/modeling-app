@@ -704,24 +704,12 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "boolean_union",
-        "solid_ids": [
-          "[uuid]",
-          "[uuid]"
-        ],
-        "separate_bodies": false,
-        "tolerance": 0.0000001
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "boolean_subtract",
         "target_ids": [
           "[uuid]"
         ],
         "tool_ids": [
+          "[uuid]",
           "[uuid]"
         ],
         "separate_bodies": false,
@@ -1080,15 +1068,6 @@ description: Artifact commands surgical-drill-guide.kcl
           "[uuid]",
           "[uuid]"
         ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
       }
     },
     {
@@ -1521,16 +1500,19 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]",
           "[uuid]"
         ],
-        "radius": 1.0,
+        "cut_type": {
+          "fillet": {
+            "radius": 1.0,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": [
           "[uuid]"
@@ -1906,15 +1888,6 @@ description: Artifact commands surgical-drill-guide.kcl
           "[uuid]",
           "[uuid]"
         ]
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
       }
     },
     {
@@ -2347,16 +2320,19 @@ description: Artifact commands surgical-drill-guide.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_fillet_edge",
+        "type": "solid3d_cut_edges",
         "object_id": "[uuid]",
-        "edge_id": null,
         "edge_ids": [
           "[uuid]",
           "[uuid]"
         ],
-        "radius": 1.0,
+        "cut_type": {
+          "fillet": {
+            "radius": 1.0,
+            "second_length": null
+          }
+        },
         "tolerance": 0.0000001,
-        "cut_type": "fillet",
         "strategy": "automatic",
         "extra_face_ids": [
           "[uuid]"

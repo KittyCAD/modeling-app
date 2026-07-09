@@ -65,7 +65,7 @@ import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
-import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
+import { isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -77,6 +77,9 @@ type ExecuteCommandEvent = CommandBarMachineEvent & {
 }
 type ExecuteCommandEventPayload = ExecuteCommandEvent['data']
 type PrepareToEditFailurePayload = { reason: string }
+type ProfileGdtFunction = NonNullable<
+  ModelingCommandSchema['GDT Profile']['profileFunction']
+>
 type PrepareToEditCallback = (
   props: Omit<EnterEditFlowProps, 'commandBarSend'>
 ) =>
@@ -98,13 +101,29 @@ interface StdLibCallInfo {
   supportsTransform?: boolean
 }
 
+function getProfileFunctionFromOperationName(
+  operationName: string
+): ProfileGdtFunction | undefined {
+  switch (operationName) {
+    case 'gdt::profile':
+      return 'profile'
+    case 'gdt::profileLine':
+      return 'profileLine'
+    case 'gdt::profileSurface':
+      return 'profileSurface'
+    default:
+      return undefined
+  }
+}
+
 // Helper functions for argument extraction
 async function extractKclArgument(
   code: string,
   operation: StdLibCallOp,
   argName: string,
   rustContext: RustContext,
-  isArray?: boolean
+  isArray?: boolean,
+  allowStringArrays?: boolean
 ): Promise<KclCommandValue | { error: string }> {
   const arg = operation.labeledArgs?.[argName]
   if (!arg?.sourceRange) {
@@ -114,7 +133,7 @@ async function extractKclArgument(
   const result = await stringToKclExpression(
     code.slice(...arg.sourceRange.map((r) => toUtf16(r, code))),
     rustContext,
-    { allowArrays: isArray }
+    { allowArrays: isArray, allowStringArrays }
   )
 
   if (err(result) || 'errors' in result) {
@@ -246,21 +265,60 @@ function extractStringArgument(
     : undefined
 }
 
-function extractStringArrayArgument(
+function extractRequiredStringArgument(
   code: string,
   operation: StdLibCallOp,
   argName: string
-): string | undefined {
-  const raw = extractStringArgument(code, operation, argName)
-  if (!raw) return undefined
+): string | { error: string } {
+  const arg = operation.labeledArgs?.[argName]
+  if (!arg?.sourceRange) {
+    return { error: `Missing or invalid ${argName} argument` }
+  }
 
-  return raw
-    .replace(/^\s*\[/, '')
-    .replace(/\]\s*$/, '')
-    .split(',')
-    .map((value) => stripQuotes(value.trim()))
-    .filter(Boolean)
-    .join(', ')
+  const value = code.slice(...arg.sourceRange.map((r) => toUtf16(r, code)))
+  if (!value) {
+    return { error: `Couldn't retrieve ${argName} argument` }
+  }
+
+  return value
+}
+
+async function extractOptionalKclArrayArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string,
+  rustContext: RustContext
+): Promise<KclCommandValue | undefined | { error: string }> {
+  return extractOptionalKclArgument(
+    code,
+    operation,
+    argName,
+    rustContext,
+    true,
+    true
+  )
+}
+
+async function extractOptionalKclArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string,
+  rustContext: RustContext,
+  isArray?: boolean,
+  allowStringArrays?: boolean
+): Promise<KclCommandValue | undefined | { error: string }> {
+  if (!operation.labeledArgs?.[argName]?.sourceRange) {
+    return undefined
+  }
+
+  return extractKclArgument(
+    code,
+    operation,
+    argName,
+    rustContext,
+    isArray,
+    allowStringArrays
+  )
 }
 
 /**
@@ -407,6 +465,25 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     tagEnd = retrieveTagDeclaratorFromOpArg(operation.labeledArgs.tagEnd, code)
   }
 
+  // draftAngle argument from a string to a KCL expression
+  let draftAngle: KclCommandValue | undefined
+  if (
+    'draftAngle' in operation.labeledArgs &&
+    operation.labeledArgs.draftAngle
+  ) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.draftAngle.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve draftAngle argument" }
+    }
+
+    draftAngle = result
+  }
+
   // twistAngle argument from a string to a KCL expression
   let twistAngle: KclCommandValue | undefined
   if (
@@ -499,6 +576,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     bidirectionalLength,
     tagStart,
     tagEnd,
+    draftAngle,
     twistAngle,
     twistAngleStep,
     twistCenter,
@@ -597,6 +675,17 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     baseCurveIndex = result
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   // tagStart and tagEnd arguments
   let tagStart: string | undefined
   let tagEnd: string | undefined
@@ -626,6 +715,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     vDegree,
     bezApproximateRational,
     baseCurveIndex,
+    tolerance,
     tagStart,
     tagEnd,
     bodyType,
@@ -682,6 +772,23 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   if ('error' in radius) return { reason: radius.error }
 
   const tag = extractStringArgument(code, operation, 'tag')
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+  const versionResult = await extractKclArgument(
+    code,
+    operation,
+    'version',
+    rustContext
+  )
+  const version = 'error' in versionResult ? undefined : versionResult
 
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
@@ -689,7 +796,9 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
     selection,
     radius,
+    tolerance,
     tag,
+    version,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -745,9 +854,10 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'secondLength', rustContext),
     extractKclArgument(code, operation, 'angle', rustContext),
+    extractKclArgument(code, operation, 'version', rustContext),
   ])
 
-  const [secondLength, angle] = optionalArgs.map((arg) =>
+  const [secondLength, angle, version] = optionalArgs.map((arg) =>
     'error' in arg ? undefined : arg
   )
 
@@ -762,6 +872,7 @@ const prepareToEditChamfer: PrepareToEditCallback = async ({
     secondLength,
     angle,
     tag,
+    version,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1127,7 +1238,9 @@ const prepareToEditSketchSolve: PrepareToEditCallback = async ({
   operation,
   artifact,
 }) => {
-  if (operation.type !== 'SketchSolve') {
+  if (
+    !(operation.type === 'GroupBegin' && operation.group.type === 'SketchBlock')
+  ) {
     return { reason: 'Wrong operation type' }
   }
 
@@ -1244,6 +1357,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
   operation,
   code,
   artifactGraph,
+  rustContext,
 }) => {
   const baseCommand = {
     name: 'Sweep',
@@ -1291,6 +1405,43 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
+  let translateProfileToPath: boolean | undefined
+  if (
+    'translateProfileToPath' in operation.labeledArgs &&
+    operation.labeledArgs.translateProfileToPath
+  ) {
+    translateProfileToPath =
+      code.slice(
+        ...operation.labeledArgs.translateProfileToPath.sourceRange.map(
+          boundToUtf16
+        )
+      ) === 'true'
+  }
+
+  let orientProfilePerpendicular: boolean | undefined
+  if (
+    'orientProfilePerpendicular' in operation.labeledArgs &&
+    operation.labeledArgs.orientProfilePerpendicular
+  ) {
+    orientProfilePerpendicular =
+      code.slice(
+        ...operation.labeledArgs.orientProfilePerpendicular.sourceRange.map(
+          boundToUtf16
+        )
+      ) === 'true'
+  }
+
   let relativeTo: SweepRelativeTo | undefined
   if (
     'relativeTo' in operation.labeledArgs &&
@@ -1329,6 +1480,20 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     bodyType = res
   }
 
+  let version: KclCommandValue | undefined
+  if ('version' in operation.labeledArgs && operation.labeledArgs.version) {
+    const result = await stringToKclExpression(
+      code.slice(
+        ...operation.labeledArgs.version.sourceRange.map(boundToUtf16)
+      ),
+      rustContext
+    )
+    if (err(result) || 'errors' in result) {
+      return { reason: "Couldn't retrieve version argument" }
+    }
+    version = result
+  }
+
   // 3. Assemble the default argument values for the command,
   // with `nodeToEdit` set, which will let the actor know
   // to edit the node that corresponds to the StdLibCall.
@@ -1336,10 +1501,14 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     sketches,
     path,
     sectional,
+    tolerance,
     relativeTo,
+    translateProfileToPath,
+    orientProfilePerpendicular,
     tagStart,
     tagEnd,
     bodyType,
+    version,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -1547,6 +1716,17 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: 'Error in angle argument retrieval' }
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   // symmetric argument from a string to boolean
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
@@ -1607,6 +1787,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
+    tolerance,
     symmetric,
     bidirectionalAngle,
     tagStart,
@@ -1670,15 +1851,11 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
 
   // 3. Convert the axis argument from a string to a string value
   // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisArg = operation.labeledArgs?.['axis']
-  if (!axisArg || !axisArg.sourceRange) {
-    return { reason: 'Missing or invalid axis argument' }
+  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
+  if (typeof axisResult !== 'string') {
+    return { reason: axisResult.error }
   }
-
-  const axisString = code.slice(...axisArg.sourceRange.map(boundToUtf16))
-  if (!axisString) {
-    return { reason: "Couldn't retrieve axis argument" }
-  }
+  const axisString = axisResult
 
   // 4. Convert the center argument from a string to a KCL expression
   const centerArg = operation.labeledArgs?.['center']
@@ -1818,17 +1995,11 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
 
   // 4. Convert the axis argument from a string to a string value
   // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisArg = operation.labeledArgs?.['axis']
-  if (!axisArg || !axisArg.sourceRange) {
-    return { reason: 'Missing or invalid axis argument' }
+  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
+  if (typeof axisResult !== 'string') {
+    return { reason: axisResult.error }
   }
-
-  const axisString = code.slice(
-    ...axisArg.sourceRange.map((r) => toUtf16(r, code))
-  )
-  if (!axisString) {
-    return { reason: "Couldn't retrieve axis argument" }
-  }
+  const axisString = axisResult
 
   // 5. Convert the useOriginal argument from a string to a boolean
   const useOriginalArg = operation.labeledArgs?.['useOriginal']
@@ -1905,12 +2076,12 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1921,8 +2092,235 @@ const prepareToEditGdtFlatness: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtStraightness: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Straightness',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Straightness'] = {
+    objects: { graphSelections, otherSelections: [] },
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtCircularity: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Circularity',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Circularity'] = {
+    objects: { graphSelections, otherSelections: [] },
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtCylindricity: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Cylindricity',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Cylindricity'] = {
+    objects: { graphSelections, otherSelections: [] },
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -1967,12 +2365,12 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [framePosition, leaderScale, fontSize] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -1982,8 +2380,7 @@ const prepareToEditGdtDatum: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2043,27 +2440,22 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  let datums: ModelingCommandSchema['GDT Position']['datums']
-  if (operation.labeledArgs?.['datums']?.sourceRange) {
-    const datumsResult = await extractKclArgument(
-      code,
-      operation,
-      'datums',
-      rustContext,
-      true
-    )
-    if ('error' in datumsResult) {
-      return { reason: datumsResult.error }
-    }
-    datums = datumsResult
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
   }
 
   const argDefaultValues: ModelingCommandSchema['GDT Position'] = {
@@ -2074,8 +2466,7 @@ const prepareToEditGdtPosition: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2100,11 +2491,31 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
   }
 
   const edgesArg = operation.labeledArgs?.['edges']
-  if (!edgesArg || !edgesArg.sourceRange) {
-    return { reason: 'Missing or invalid edges argument' }
+  const facesArg = operation.labeledArgs?.['faces']
+  if (edgesArg && facesArg) {
+    return { reason: 'Profile operation has both edges and faces arguments' }
+  }
+  if (!edgesArg && !facesArg) {
+    return { reason: 'Missing or invalid profile target argument' }
   }
 
-  const edges = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  let objects: Selections
+  if (edgesArg) {
+    if (!edgesArg.sourceRange) {
+      return { reason: 'Missing or invalid edges argument' }
+    }
+    objects = retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+  } else {
+    if (!facesArg?.sourceRange) {
+      return { reason: 'Missing or invalid faces argument' }
+    }
+    const graphSelections = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in graphSelections) {
+      return { reason: graphSelections.error }
+    }
+    objects = { graphSelections, otherSelections: [] }
+  }
+
   const tolerance = await extractKclArgument(
     code,
     operation,
@@ -2119,26 +2530,34 @@ const prepareToEditGdtProfile: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Profile'] = {
-    edges,
+    objects,
+    profileFunction: getProfileFunctionFromOperationName(operation.name),
     datums,
     tolerance,
     precision,
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2212,12 +2631,12 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -2228,8 +2647,7 @@ const prepareToEditGdtDistance: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2289,15 +2707,23 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Perpendicularity'] = {
     objects: { graphSelections, otherSelections: [] },
@@ -2307,8 +2733,360 @@ const prepareToEditGdtPerpendicularity: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtAngularity: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Angularity',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
+
+  const argDefaultValues: ModelingCommandSchema['GDT Angularity'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtConcentricity: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Concentricity',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const datums = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true,
+    true
+  )
+  if ('error' in datums) {
+    return { reason: datums.error }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Concentricity'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtSymmetry: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Symmetry',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const datums = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true,
+    true
+  )
+  if ('error' in datums) {
+    return { reason: datums.error }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Symmetry'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtRunout: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  artifactGraph,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Runout',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const graphSelections: Selections['graphSelections'] = []
+  const facesArg = operation.labeledArgs?.['faces']
+  if (facesArg?.sourceRange) {
+    const faces = extractFaceSelections(artifactGraph, facesArg)
+    if ('error' in faces) {
+      return { reason: faces.error }
+    }
+    graphSelections.push(...faces)
+  }
+
+  const edgesArg = operation.labeledArgs?.['edges']
+  if (edgesArg?.sourceRange) {
+    graphSelections.push(
+      ...retrieveEdgeSelectionsFromOpArgs(edgesArg, artifactGraph)
+        .graphSelections
+    )
+  }
+
+  if (graphSelections.length === 0) {
+    return { reason: 'Missing or invalid faces or edges argument' }
+  }
+
+  const datums = await extractKclArgument(
+    code,
+    operation,
+    'datums',
+    rustContext,
+    true,
+    true
+  )
+  if ('error' in datums) {
+    return { reason: datums.error }
+  }
+
+  const tolerance = await extractKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if ('error' in tolerance) {
+    return { reason: tolerance.error }
+  }
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'precision', rustContext),
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'leaderScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Runout'] = {
+    objects: { graphSelections, otherSelections: [] },
+    datums,
+    tolerance,
+    precision,
+    framePosition,
+    framePlane,
+    leaderScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2368,15 +3146,23 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
     extractKclArgument(code, operation, 'precision', rustContext),
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [precision, framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [precision, framePosition, leaderScale, fontSize] = optionalArgs.map(
+    (arg) => ('error' in arg ? undefined : arg)
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
-  const datums = extractStringArrayArgument(code, operation, 'datums')
+  const datums = await extractOptionalKclArrayArgument(
+    code,
+    operation,
+    'datums',
+    rustContext
+  )
+  if (datums && 'error' in datums) {
+    return { reason: datums.error }
+  }
 
   const argDefaultValues: ModelingCommandSchema['GDT Parallelism'] = {
     objects: { graphSelections, otherSelections: [] },
@@ -2386,8 +3172,7 @@ const prepareToEditGdtParallelism: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2442,12 +3227,12 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
   const optionalArgs = await Promise.all([
     extractKclArgument(code, operation, 'framePosition', rustContext, true),
     extractKclArgument(code, operation, 'leaderScale', rustContext),
-    extractKclArgument(code, operation, 'fontPointSize', rustContext),
-    extractKclArgument(code, operation, 'fontScale', rustContext),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
   ])
 
-  const [framePosition, leaderScale, fontPointSize, fontScale] =
-    optionalArgs.map((arg) => ('error' in arg ? undefined : arg))
+  const [framePosition, leaderScale, fontSize] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
 
   const framePlane = extractStringArgument(code, operation, 'framePlane')
 
@@ -2457,8 +3242,50 @@ const prepareToEditGdtAnnotation: PrepareToEditCallback = async ({
     framePosition,
     framePlane,
     leaderScale,
-    fontPointSize,
-    fontScale,
+    fontSize,
+    nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
+  }
+
+  return {
+    ...baseCommand,
+    argDefaultValues,
+  }
+}
+
+const prepareToEditGdtNote: PrepareToEditCallback = async ({
+  operation,
+  rustContext,
+  code,
+}) => {
+  const baseCommand = {
+    name: 'GDT Note',
+    groupId: 'modeling',
+  }
+  if (operation.type !== 'StdLibCall') {
+    return { reason: 'Wrong operation type' }
+  }
+
+  const noteRaw = extractStringArgument(code, operation, 'note')
+  if (!noteRaw) {
+    return { reason: 'Missing or invalid note argument' }
+  }
+  const note = stripQuotes(noteRaw)
+
+  const optionalArgs = await Promise.all([
+    extractKclArgument(code, operation, 'framePosition', rustContext, true),
+    extractKclArgument(code, operation, 'fontSize', rustContext),
+  ])
+  const [framePosition, fontSize] = optionalArgs.map((arg) =>
+    'error' in arg ? undefined : arg
+  )
+
+  const framePlane = extractStringArgument(code, operation, 'framePlane')
+
+  const argDefaultValues: ModelingCommandSchema['GDT Note'] = {
+    note,
+    framePosition,
+    framePlane,
+    fontSize,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
 
@@ -2599,6 +3426,21 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'gdtFlatness',
     prepareToEdit: prepareToEditGdtFlatness,
   },
+  'gdt::straightness': {
+    label: 'Straightness',
+    icon: 'gdtStraightness',
+    prepareToEdit: prepareToEditGdtStraightness,
+  },
+  'gdt::circularity': {
+    label: 'Circularity',
+    icon: 'gdtCircularity',
+    prepareToEdit: prepareToEditGdtCircularity,
+  },
+  'gdt::cylindricity': {
+    label: 'Cylindricity',
+    icon: 'gdtCylindricity',
+    prepareToEdit: prepareToEditGdtCylindricity,
+  },
   'gdt::position': {
     label: 'Position',
     icon: 'gdtPosition',
@@ -2608,6 +3450,26 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Perpendicularity',
     icon: 'perpendicular',
     prepareToEdit: prepareToEditGdtPerpendicularity,
+  },
+  'gdt::angularity': {
+    label: 'Angularity',
+    icon: 'angle',
+    prepareToEdit: prepareToEditGdtAngularity,
+  },
+  'gdt::concentricity': {
+    label: 'Concentricity',
+    icon: 'gdtConcentricity',
+    prepareToEdit: prepareToEditGdtConcentricity,
+  },
+  'gdt::symmetry': {
+    label: 'Symmetry',
+    icon: 'gdtSymmetry',
+    prepareToEdit: prepareToEditGdtSymmetry,
+  },
+  'gdt::runout': {
+    label: 'Runout',
+    icon: 'gdtRunout',
+    prepareToEdit: prepareToEditGdtRunout,
   },
   'gdt::parallelism': {
     label: 'Parallelism',
@@ -2619,6 +3481,11 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'text',
     prepareToEdit: prepareToEditGdtAnnotation,
   },
+  'gdt::note': {
+    label: 'Note',
+    icon: 'note',
+    prepareToEdit: prepareToEditGdtNote,
+  },
   'gdt::distance': {
     label: 'Distance',
     icon: 'dimension',
@@ -2626,6 +3493,16 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
   },
   'gdt::profile': {
     label: 'Profile',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileLine': {
+    label: 'Profile Line',
+    icon: 'gdtProfile',
+    prepareToEdit: prepareToEditGdtProfile,
+  },
+  'gdt::profileSurface': {
+    label: 'Profile Surface',
     icon: 'gdtProfile',
     prepareToEdit: prepareToEditGdtProfile,
   },
@@ -2730,6 +3607,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     label: 'Mirror 2D',
     icon: 'mirror',
   },
+  mirror3d: {
+    label: 'Mirror',
+    icon: 'mirror3d',
+  },
   region: {
     label: 'Region',
     // TODO: add a region icon
@@ -2768,6 +3649,10 @@ export const stdLibMap: Record<string, StdLibCallInfo> = {
     icon: 'deleteFace',
     supportsAppearance: true,
     supportsTransform: true,
+  },
+  delete: {
+    label: 'Delete',
+    icon: 'trash',
   },
   angle: {
     label: 'Angle Constraint',
@@ -2945,14 +3830,14 @@ export function getOperationLabel(op: Operation): string {
     case 'GroupBegin':
       if (op.group.type === 'FunctionCall') {
         return op.group.name ?? 'anonymous'
-      } else if (op.group.type === 'ModuleInstance') {
-        return op.group.name
+      } else if (op.group.type === 'SketchBlock') {
+        return 'Sketch'
       } else {
         const _exhaustiveCheck: never = op.group
         return '' // unreachable
       }
-    case 'SketchSolve':
-      return 'Solve Sketch'
+    case 'ModuleInstance':
+      return op.name
     case 'GroupEnd':
       return 'Group end'
     default:
@@ -2961,135 +3846,11 @@ export function getOperationLabel(op: Operation): string {
   }
 }
 
-export type NestedOpList = (Operation | Operation[])[]
-
-export function getSketchBlockOperationKey(op: Operation): string | null {
-  if (!('nodePath' in op)) {
-    return null
-  }
-  // TODO: This probably misses the sketch block if it's empty.
-  const sketchBlockIndex = op.nodePath.steps.findIndex(
-    (step) => step.type === 'SketchBlockBody'
-  )
-  if (sketchBlockIndex >= 0) {
-    return JSON.stringify(op.nodePath.steps.slice(0, sketchBlockIndex))
-  }
-
-  if (op.type === 'SketchSolve') {
-    return JSON.stringify(op.nodePath.steps)
-  }
-
-  return null
-}
-
-export function isSketchBlockOperationGroup(items: Operation[]): boolean {
-  if (items.length === 0) {
-    return false
-  }
-  const firstKey = getSketchBlockOperationKey(items[0])
-  if (!firstKey) {
-    return false
-  }
-  return items.every((item) => getSketchBlockOperationKey(item) === firstKey)
-}
-
-/**
- * Given an operations list, group streaks of provided types
- * into arrays if they are of a given minimum length
- */
-export function groupOperationTypeStreaks(
-  opList: Operation[],
-  typesToGroup: Operation['type'][],
-  minLength = 5
-): NestedOpList {
-  const result: NestedOpList = []
-
-  let currentType: Operation['type'] | null = null
-  let currentStreak: Operation[] = []
-
-  const flushStreak = () => {
-    if (currentStreak.length === 0) return
-    const shouldGroup =
-      currentType !== null &&
-      typesToGroup.includes(currentType) &&
-      currentStreak.length >= minLength
-    if (shouldGroup) {
-      result.push([...currentStreak])
-    } else {
-      for (const op of currentStreak) result.push(op)
-    }
-    currentStreak = []
-    currentType = null
-  }
-
-  for (const op of opList) {
-    if (currentType === null) {
-      currentType = op.type
-      currentStreak.push(op)
-      continue
-    }
-    if (op.type === currentType) {
-      currentStreak.push(op)
-    } else {
-      // Type changed; flush the previous streak and start anew
-      flushStreak()
-      currentType = op.type
-      currentStreak.push(op)
-    }
-  }
-
-  // Flush any remaining streak
-  flushStreak()
-
-  return result
-}
-
-/**
- * Given a list that may already contain grouped operation streaks, group
- * contiguous operations that belong to the same sketch block.
- */
-export function groupSketchBlockOperations(opList: NestedOpList): NestedOpList {
-  const result: NestedOpList = []
-  let currentSketchKey: string | null = null
-  let currentSketchOps: Operation[] = []
-
-  const flushSketchOps = () => {
-    if (currentSketchOps.length === 0) {
-      return
-    }
-    result.push([...currentSketchOps])
-    currentSketchOps = []
-    currentSketchKey = null
-  }
-
-  for (const item of opList) {
-    if (isArray(item)) {
-      flushSketchOps()
-      result.push(item)
-      continue
-    }
-
-    const sketchKey = getSketchBlockOperationKey(item)
-    if (!sketchKey) {
-      flushSketchOps()
-      result.push(item)
-      continue
-    }
-
-    if (currentSketchKey === null || currentSketchKey === sketchKey) {
-      currentSketchKey = sketchKey
-      currentSketchOps.push(item)
-      continue
-    }
-
-    flushSketchOps()
-    currentSketchKey = sketchKey
-    currentSketchOps.push(item)
-  }
-
-  flushSketchOps()
-  return result
-}
+export {
+  filterOperations,
+  groupNestedOperations,
+  groupOperationTypeStreaks,
+} from '@src/lib/operationGrouping'
 
 /**
  * Return a more human-readable operation type label
@@ -3115,15 +3876,15 @@ export function getOperationIcon(op: Operation): CustomIconName {
     case 'VariableDeclaration':
       return 'make-variable'
     case 'GroupBegin':
-      if (op.group.type === 'ModuleInstance') {
-        return 'import' // TODO: Use insert icon.
-      }
       if (op.group.type === 'FunctionCall') {
         return 'function'
       }
+      if (op.group.type === 'SketchBlock') {
+        return 'sketch'
+      }
       return 'make-variable'
-    case 'SketchSolve':
-      return 'sketch'
+    case 'ModuleInstance':
+      return 'import' // TODO: Use insert icon.
     case 'GroupEnd':
       return 'questionMark'
     default:
@@ -3178,9 +3939,9 @@ export function getOperationVariableName(
 
   if (
     op.type !== 'StdLibCall' &&
-    op.type !== 'SketchSolve' &&
+    !(op.type === 'GroupBegin' && op.group.type === 'SketchBlock') &&
     !(op.type === 'GroupBegin' && op.group.type === 'FunctionCall') &&
-    !(op.type === 'GroupBegin' && op.group.type === 'ModuleInstance')
+    op.type !== 'ModuleInstance'
   ) {
     return undefined
   }
@@ -3193,7 +3954,7 @@ export function getOperationVariableName(
   const pathToNode = pathToNodeFromRustNodePath(op.nodePath)
 
   // If this is a module instance, the variable name is the import alias.
-  if (op.type === 'GroupBegin' && op.group.type === 'ModuleInstance') {
+  if (op.type === 'ModuleInstance') {
     const statement = getNodeFromPath<ImportStatement>(
       program,
       pathToNode,
@@ -3214,96 +3975,6 @@ export function getOperationVariableName(
 
   // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
   return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
-}
-
-/**
- * Apply all filters to a list of operations.
- */
-export function filterOperations(operations: Operation[]): Operation[] {
-  return operationFilters.reduce((ops, filterFn) => filterFn(ops), operations)
-}
-
-/**
- * The filters to apply to a list of operations
- * for use in the feature tree UI
- */
-const operationFilters = [
-  isNotUserFunctionWithNoOperations,
-  isNotInsideGroup,
-  isNotGroupEnd,
-  isNotHideOperation,
-]
-
-/**
- * A filter to exclude everything that occurs inside a GroupBegin and its
- * corresponding GroupEnd from a list of operations. This works even when there
- * are nested function calls and module instances.
- */
-function isNotInsideGroup(operations: Operation[]): Operation[] {
-  const ops: Operation[] = []
-  let depth = 0
-  for (const op of operations) {
-    if (depth === 0) {
-      ops.push(op)
-    }
-    if (op.type === 'GroupBegin') {
-      depth++
-    }
-    if (op.type === 'GroupEnd') {
-      depth--
-      console.assert(
-        depth >= 0,
-        'Unbalanced GroupBegin and GroupEnd; too many ends'
-      )
-    }
-  }
-  // Depth could be non-zero here if there was an error in execution.
-  return ops
-}
-
-/**
- * A filter to exclude GroupBegin operations and their corresponding GroupEnd
- * that don't have any operations inside them from a list of operations, if it's
- * a function call.
- */
-function isNotUserFunctionWithNoOperations(
-  operations: Operation[]
-): Operation[] {
-  return operations.filter((op, index) => {
-    if (
-      op.type === 'GroupBegin' &&
-      op.group.type === 'FunctionCall' &&
-      // If this is a "begin" at the end of the array, it's preserved.
-      index < operations.length - 1 &&
-      operations[index + 1].type === 'GroupEnd'
-    )
-      return false
-    const previousOp = index > 0 ? operations[index - 1] : undefined
-    if (
-      op.type === 'GroupEnd' &&
-      // If this is an "end" at the beginning of the array, it's preserved.
-      previousOp !== undefined &&
-      previousOp.type === 'GroupBegin' &&
-      previousOp.group.type === 'FunctionCall'
-    )
-      return false
-
-    return true
-  })
-}
-
-/**
- * A filter to exclude GroupEnd operations from a list of operations.
- */
-function isNotGroupEnd(ops: Operation[]): Operation[] {
-  return ops.filter((op) => op.type !== 'GroupEnd')
-}
-
-/**
- * A filter to exclude `hide()` operations from a list of operations.
- */
-function isNotHideOperation(ops: Operation[]): Operation[] {
-  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
 }
 
 /**
@@ -3348,15 +4019,19 @@ export async function enterEditFlow({
   }
 
   // Begin StdLibCall processing
-  if (operation.type !== 'StdLibCall' && operation.type !== 'SketchSolve') {
+  let stdLibInfo: StdLibCallInfo | undefined
+  if (operation.type === 'StdLibCall') {
+    stdLibInfo = stdLibMap[operation.name]
+  } else if (
+    operation.type === 'GroupBegin' &&
+    operation.group.type === 'SketchBlock'
+  ) {
+    stdLibInfo = stdLibMap.sketchSolve
+  } else {
     return new Error(
       'Feature tree editing not yet supported for user-defined functions or modules. Please edit in the code editor.'
     )
   }
-  const stdLibInfo =
-    operation.type === 'SketchSolve'
-      ? stdLibMap.sketchSolve
-      : stdLibMap[operation.name]
 
   if (stdLibInfo && stdLibInfo.prepareToEdit) {
     if (typeof stdLibInfo.prepareToEdit === 'function') {
@@ -3462,6 +4137,18 @@ async function prepareToEditTranslate({
     z = result
   }
 
+  const xyzResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'xyz',
+    rustContext,
+    true
+  )
+  if (xyzResult && 'error' in xyzResult) {
+    return { reason: xyzResult.error }
+  }
+  const xyz = xyzResult
+
   if (operation.labeledArgs.global) {
     global =
       code.slice(
@@ -3478,6 +4165,7 @@ async function prepareToEditTranslate({
     y,
     z,
     global,
+    xyz,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -3645,6 +4333,19 @@ async function prepareToEditRotate({
     yaw = result
   }
 
+  const axis = extractStringArgument(code, operation, 'axis')
+
+  const angleResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'angle',
+    rustContext
+  )
+  if (angleResult && 'error' in angleResult) {
+    return { reason: angleResult.error }
+  }
+  const angle = angleResult
+
   if (operation.labeledArgs.global) {
     global =
       code.slice(
@@ -3660,6 +4361,8 @@ async function prepareToEditRotate({
     roll,
     pitch,
     yaw,
+    axis,
+    angle,
     global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
@@ -3858,6 +4561,18 @@ export function onHide(props: {
     type: 'Hide',
     data: {
       objects: selection,
+    },
+  })
+}
+
+export function onDelete(props: {
+  modelingActor: ActorRefFrom<typeof modelingMachine>
+  objects: Selections
+}) {
+  props.modelingActor.send({
+    type: 'Delete',
+    data: {
+      objects: props.objects,
     },
   })
 }

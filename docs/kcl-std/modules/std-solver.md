@@ -50,6 +50,7 @@ functions, because those are what actually constrain the solved result.
 * [`solver::arc`](/docs/kcl-std/functions/std-solver-arc)
 * [`solver::circle`](/docs/kcl-std/functions/std-solver-circle)
 * [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)
+* [`solver::controlPointSpline`](/docs/kcl-std/functions/std-solver-controlPointSpline)
 * [`solver::diameter`](/docs/kcl-std/functions/std-solver-diameter)
 * [`solver::distance`](/docs/kcl-std/functions/std-solver-distance)
 * [`solver::equalLength`](/docs/kcl-std/functions/std-solver-equalLength)

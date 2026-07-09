@@ -1,6 +1,6 @@
+import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 import type { Locator, Page } from '@playwright/test'
 import { expect } from '@playwright/test'
-import { closeOnboardingModalIfPresent } from '@e2e/playwright/test-utils'
 
 interface ProjectCardState {
   title: string

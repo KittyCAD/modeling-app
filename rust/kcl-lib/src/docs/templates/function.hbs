@@ -31,7 +31,7 @@ layout: manual
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 {{#each args}}
-| `{{name}}` | `{{type_}}` | {{#if deprecated_since}}**Deprecated as of KCL {{deprecated_since}}.** {{/if}}{{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
+| `{{name}}` | `{{type_}}` | {{#if deprecated}}**Deprecated.** {{/if}}{{#if deprecated_since}}**Deprecated as of KCL {{deprecated_since}}.** {{/if}}{{#if experimental}}**Experimental.** {{/if}}{{{firstLine description}}} | {{#if required}}Yes{{else}}No{{/if}} |
 {{/each}}
 {{/if}}
 

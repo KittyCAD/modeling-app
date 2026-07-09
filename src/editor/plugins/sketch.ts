@@ -1,18 +1,18 @@
 import { invertedEffects } from '@codemirror/commands'
 import {
   Compartment,
-  Transaction,
   type Extension,
   type StateEffect,
+  Transaction,
 } from '@codemirror/state'
-import {
-  updateSceneGraphFromDelta,
-  updateSketchSceneGraphEffect,
-} from '@src/machines/sketchSolve/sketchSolveImpl'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { sketchCheckpointHistoryEffect } from '@src/editor/plugins/sketchCheckpoints'
 import { selectionDispatchedBySketchSolveAnnotation } from '@src/editor/plugins/sketchSelection'
 import { topLevelRange } from '@src/lang/util'
+import {
+  updateSceneGraphFromDelta,
+  updateSketchSceneGraphEffect,
+} from '@src/machines/sketchSolve/sketchSolveImpl'
 import { EditorView } from 'codemirror'
 
 export const sketchSceneGraphCompartment = new Compartment()

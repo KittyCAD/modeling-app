@@ -3,11 +3,12 @@
 use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
-use kcl_lib::EngineManager;
 use kcl_lib::ExecOutcome;
+use kcl_lib::ExecutionCallbacks;
 use kcl_lib::KclError;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::MockConfig;
+use kcl_lib::OperationCallbackArgs;
 use kcl_lib::Program;
 use kcl_lib::ProjectManager;
 use kcl_lib::front::FrontendState;
@@ -18,11 +19,37 @@ use wasm_bindgen::prelude::*;
 pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
 
 #[wasm_bindgen]
+extern "C" {
+    #[derive(Debug, Clone)]
+    pub type JsExecutionCallbacks;
+
+    #[wasm_bindgen(method, js_name = onOperation)]
+    fn on_operation(this: &JsExecutionCallbacks, args: JsValue);
+}
+
+impl ExecutionCallbacks for JsExecutionCallbacks {
+    fn on_operation(&self, args: OperationCallbackArgs) {
+        let js_args = match JsValue::from_serde(&args) {
+            Ok(value) => value,
+            Err(err) => {
+                web_sys::console::error_1(&JsValue::from_str(&format!(
+                    "Failed to serialize operation callback args: {err}"
+                )));
+                return;
+            }
+        };
+
+        self.on_operation(js_args);
+    }
+}
+
+#[wasm_bindgen]
 pub struct Context {
-    engine: Arc<Box<dyn EngineManager>>,
+    engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
     response_context: Arc<kcl_lib::wasm_engine::ResponseContext>,
-    fs: Arc<FileManager>,
-    mock_engine: Arc<Box<dyn EngineManager>>,
+    fs: kcl_lib::FileSystemHandle,
+    mock_engine: Arc<kcl_lib::wasm_engine::EngineConnection>,
+    execution_callbacks: Option<JsExecutionCallbacks>,
     pub(crate) project_manager: ProjectManager,
     pub(crate) frontend: Arc<tokio::sync::RwLock<FrontendState>>,
 }
@@ -33,6 +60,7 @@ impl Context {
     pub fn new(
         engine_manager: kcl_lib::wasm_engine::EngineCommandManager,
         fs_manager: kcl_lib::wasm_engine::FileSystemManager,
+        execution_callbacks: Option<JsExecutionCallbacks>,
     ) -> Result<Self, JsValue> {
         console_error_panic_hook::set_once();
         // Initialize the thread pool for rayon. For some reason, this wasn't
@@ -45,18 +73,30 @@ impl Context {
 
         let response_context = Arc::new(kcl_lib::wasm_engine::ResponseContext::new());
         Ok(Self {
-            engine: Arc::new(Box::new(
-                kcl_lib::wasm_engine::EngineConnection::new(engine_manager, response_context.clone())
-                    .map_err(|e| format!("{:?}", e))?,
+            engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_wasm_transport(
+                engine_manager,
+                response_context.clone(),
             )),
-            fs: Arc::new(FileManager::new(fs_manager)),
-            mock_engine: Arc::new(Box::new(
-                kcl_lib::mock_engine::EngineConnection::new().map_err(|e| format!("{:?}", e))?,
-            )),
+            fs: kcl_lib::new_file_system_handle(FileManager::new(fs_manager)),
+            mock_engine: Arc::new(kcl_lib::wasm_engine::EngineConnection::new_mock()),
+            execution_callbacks,
             response_context,
             project_manager: ProjectManager,
             frontend: Arc::new(tokio::sync::RwLock::new(FrontendState::new())),
         })
+    }
+
+    #[wasm_bindgen(js_name = cloneWithExecuteCallbacks)]
+    pub fn clone_with_execute_callbacks(&self, execution_callbacks: JsExecutionCallbacks) -> Self {
+        Self {
+            engine: self.engine.clone(),
+            response_context: self.response_context.clone(),
+            fs: self.fs.clone(),
+            mock_engine: self.mock_engine.clone(),
+            execution_callbacks: Some(execution_callbacks),
+            project_manager: self.project_manager.clone(),
+            frontend: self.frontend.clone(),
+        }
     }
 
     pub(crate) fn create_executor_ctx(
@@ -71,19 +111,17 @@ impl Context {
             settings.with_current_file(kcl_lib::TypedPath::from(&path_src));
         }
 
-        if is_mock {
-            return Ok(kcl_lib::ExecutorContext::new_mock(
-                self.mock_engine.clone(),
-                self.fs.clone(),
-                settings,
-            ));
-        }
+        let mut ctx = if is_mock {
+            kcl_lib::ExecutorContext::new_mock(self.mock_engine.clone(), self.fs.clone(), settings)
+        } else {
+            kcl_lib::ExecutorContext::new_with_engine_and_fs(self.engine.clone(), self.fs.clone(), settings)
+        };
 
-        Ok(kcl_lib::ExecutorContext::new_with_engine_and_fs(
-            self.engine.clone(),
-            self.fs.clone(),
-            settings,
-        ))
+        ctx.execution_callbacks = self
+            .execution_callbacks
+            .clone()
+            .map(|callbacks| Arc::new(callbacks) as Arc<dyn ExecutionCallbacks>);
+        Ok(ctx)
     }
 
     /// Execute a program.

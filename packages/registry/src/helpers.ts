@@ -5,21 +5,21 @@ import {
 } from '@preact/signals-core'
 import { CombineMutationError, ServiceResolutionError } from './errors'
 import type { Registry } from './registry'
+import { defineService } from './service'
 import { Slot } from './types'
 import type {
+  MaybeSignal,
+  Precedence,
+  RegistryItem,
   RegistryItemDefinition,
   RegistryItemFactory,
   RegistryItemKey,
-  RegistryItem,
-  MaybeSignal,
-  Precedence,
   RuntimeRegistryItemDefinition,
   Service,
   ServiceContribution,
   ValueSpec,
   ValueSpecContribution,
 } from './types'
-import { defineService } from './service'
 import { appendValueSpec } from './valueSpec'
 
 export const precedenceRank: Record<Precedence, number> = {

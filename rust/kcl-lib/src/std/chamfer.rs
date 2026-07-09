@@ -4,9 +4,10 @@ use anyhow::Result;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
+use kcmc::shared::Angle;
 use kcmc::shared::CutStrategy;
 use kcmc::shared::CutTypeV2;
-use kittycad_modeling_cmds::shared::Angle;
+use kcmc::shared::EdgeCutVersion;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::args::TyF64;
@@ -37,7 +38,18 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let angle = args.get_kw_arg_opt("angle", &RuntimeType::angle(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
-    // TODO: custom profiles not ready yet
+    let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let edge_cut_version: EdgeCutVersion = edge_cut_number
+        .map(|num| {
+            num.try_into().map_err(|()| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("{} is not a version of the Zoo edge cut algorithm", num),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?
+        .unwrap_or_default();
 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
 
@@ -47,12 +59,13 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
     let edge_inputs = super::fillet::parse_tagged_edge_inputs(
-        solid.id,
         edge_refs,
         tags,
+        Some(solid.as_ref()),
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to chamfer edges",
+        "You must provide either 'tags' or 'edges' to chamfer edges, not both",
     )
     .await?;
 
@@ -65,6 +78,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 second_length,
                 angle,
                 csg_algorithm,
+                edge_cut_version,
                 tag,
                 exec_state,
                 args,
@@ -82,6 +96,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 None,
                 tag,
                 csg_algorithm,
+                edge_cut_version,
                 exec_state,
                 args,
             )
@@ -90,6 +105,7 @@ pub async fn chamfer(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
         }
     }
 }
+
 #[allow(clippy::too_many_arguments)]
 async fn inner_chamfer(
     solid: Box<Solid>,
@@ -100,6 +116,7 @@ async fn inner_chamfer(
     custom_profile: Option<Sketch>,
     tag: Option<TagNode>,
     csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -162,37 +179,6 @@ async fn inner_chamfer(
     };
 
     let mut solid = solid.clone();
-    #[cfg(feature = "artifact-graph")]
-    {
-        let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
-        for edge_ref in &tags {
-            let edge_id = match edge_ref {
-                EdgeReference::Uuid(u) => *u,
-                EdgeReference::Tag(t) => args.get_tag_engine_info(exec_state, t)?.id,
-            };
-            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
-                && let [a, b] = face_ids.as_slice()
-            {
-                let tag_identifier = match edge_ref {
-                    EdgeReference::Tag(t) => t.value.clone(),
-                    EdgeReference::Uuid(_) => String::new(),
-                };
-                if !tag_identifier.is_empty() {
-                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                        tag_identifier,
-                        edge_id,
-                        face_ids: [*a, *b],
-                    });
-                }
-            }
-        }
-        if !tag_entries.is_empty() {
-            exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
-                call_source_range: args.source_range,
-                tags: tag_entries,
-            });
-        }
-    }
     for edge_tag in tags {
         let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
         for edge_id in edge_ids {
@@ -207,8 +193,10 @@ async fn inner_chamfer(
                             .extra_face_ids(vec![])
                             .strategy(strategy)
                             .object_id(solid.id)
-                            .tolerance(LengthUnit(DEFAULT_TOLERANCE)) // We can let the user set this in the future.
+                            // We can let the user set this in the future.
+                            .tolerance(LengthUnit(DEFAULT_TOLERANCE))
                             .cut_type(cut_type)
+                            .version(edge_cut_version)
                             .build(),
                     ),
                 )
@@ -237,7 +225,7 @@ async fn inner_chamfer(
     Ok(solid)
 }
 
-#[allow(clippy::too_many_arguments)]
+#[expect(clippy::too_many_arguments)]
 async fn inner_chamfer_with_engine_refs(
     solid: Box<Solid>,
     length: TyF64,
@@ -245,6 +233,7 @@ async fn inner_chamfer_with_engine_refs(
     second_length: Option<TyF64>,
     angle: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
     tag: Option<TagNode>,
     exec_state: &mut ExecState,
     args: Args,
@@ -298,17 +287,22 @@ async fn inner_chamfer_with_engine_refs(
     exec_state
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
-                object_id: solid.id,
-                edges_references: edge_references,
-                cut_type,
-                tolerance: LengthUnit(DEFAULT_TOLERANCE),
-                strategy,
-                extra_face_ids,
-                use_legacy: csg_algorithm.is_legacy(),
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dCutEdgeReferences::builder()
+                    .object_id(solid.id)
+                    .edges_references(edge_references)
+                    .cut_type(cut_type)
+                    .tolerance(LengthUnit(DEFAULT_TOLERANCE))
+                    .strategy(strategy)
+                    .extra_face_ids(extra_face_ids)
+                    .use_legacy(csg_algorithm.is_legacy())
+                    .version(edge_cut_version)
+                    .build(),
+            ),
         )
         .await?;
+
+    solid.pending_edge_cut_ids.push(id);
 
     if let Some(ref tag) = tag {
         solid.value.push(ExtrudeSurface::Chamfer(ChamferSurface {

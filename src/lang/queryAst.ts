@@ -11,6 +11,7 @@ import {
 import type { ToolTip } from '@src/lang/toolTips'
 import { splitPathAtLastIndex } from '@src/lang/modifyAst'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
+import { sourceRangeContains } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
   getArtifactOfTypes,
@@ -51,8 +52,8 @@ import type { KclSettingsAnnotation } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
 import {
-  deg2Rad,
   isParallel as areVectorsParallel,
+  deg2Rad,
   subVec,
 } from '@src/lib/utils2d'
 
@@ -382,7 +383,9 @@ export function findAllPreviousVariablesPath(
     if (item.type !== 'VariableDeclaration' || item.end > startRange) return
     const varName = item.declaration.id.name
     const varValue = memVars[varName]
-    if (!varValue || typeof varValue?.value !== type) return
+    if (!varValue || !('value' in varValue) || typeof varValue.value !== type) {
+      return
+    }
     variables.push({
       key: varName,
       value: varValue.value,
@@ -848,7 +851,7 @@ export function hasSketchPipeBeenExtruded(
 /** File must contain at least one sketch that has not been extruded already */
 export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
   const theMap: any = {}
-  traverse(ast as any, {
+  traverse(ast, {
     enter(node) {
       if (
         node.type === 'VariableDeclarator' &&
@@ -915,7 +918,7 @@ export function doesSceneHaveSweepableSketch(ast: Node<Program>, count = 1) {
 
 export function doesSceneHaveExtrudedSketch(ast: Node<Program>) {
   const theMap: any = {}
-  traverse(ast as any, {
+  traverse(ast, {
     enter(node) {
       if (
         node.type === 'VariableDeclarator' &&
@@ -1179,7 +1182,7 @@ export function getVariableExprsFromSelection(
       wasmInstance
     )
     if (patternCopyExpr) {
-      const key = splitOutputExprKey(patternCopyExpr)
+      const key = outputExprKey(patternCopyExpr)
       if (pushedNames[key]) {
         continue
       }
@@ -1188,18 +1191,35 @@ export function getVariableExprsFromSelection(
       continue
     }
 
-    const splitOutputExpr = getSplitOutputExprFromSelection(
+    const compositeSolidOutputExpr = getCompositeSolidOutputExprFromSelection(
       s,
       ast,
       wasmInstance,
       artifactTypeFilter
     )
-    if (splitOutputExpr) {
-      const key = splitOutputExprKey(splitOutputExpr)
+    if (compositeSolidOutputExpr) {
+      const key = outputExprKey(compositeSolidOutputExpr)
       if (pushedNames[key]) {
         continue
       }
-      exprs.push(splitOutputExpr)
+      exprs.push(compositeSolidOutputExpr)
+      pushedNames[key] = true
+      continue
+    }
+
+    const sweepOutputExpr = getSweepOutputExprFromSelection(
+      s,
+      artifactGraph,
+      ast,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (sweepOutputExpr) {
+      const key = outputExprKey(sweepOutputExpr)
+      if (pushedNames[key]) {
+        continue
+      }
+      exprs.push(sweepOutputExpr)
       pushedNames[key] = true
       continue
     }
@@ -1392,7 +1412,83 @@ function getPatternCopyExprFromSelection(
   return null
 }
 
-function getSplitOutputExprFromSelection(
+function getSweepOutputExprFromSelection(
+  selection: Selection,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
+): Expr | null {
+  const selectionArtifact = selection.artifact
+  let artifact: (Artifact & { type: 'sweep' }) | undefined
+  if (selectionArtifact?.type === 'sweep') {
+    artifact = selectionArtifact
+  } else if (selectionArtifact?.type === 'path' && selectionArtifact.sweepId) {
+    const maybeSweep = artifactGraph.get(selectionArtifact.sweepId)
+    if (maybeSweep?.type === 'sweep') {
+      artifact = maybeSweep
+    }
+  }
+
+  if (!artifact) {
+    return null
+  }
+
+  if (
+    nodeToEdit &&
+    [
+      getNodePathFromSourceRange(ast, artifact.codeRef.range),
+      artifact.codeRef.pathToNode,
+    ].some(
+      (pathToNode) =>
+        stringifyPathToNode(pathToNode) === stringifyPathToNode(nodeToEdit)
+    )
+  ) {
+    return null
+  }
+
+  const siblingSweeps = [...artifactGraph.values()].filter(
+    (candidate): candidate is Artifact & { type: 'sweep' } =>
+      candidate.type === 'sweep' &&
+      sourceRangeContains(candidate.codeRef.range, artifact.codeRef.range) &&
+      sourceRangeContains(artifact.codeRef.range, candidate.codeRef.range)
+  )
+  if (siblingSweeps.length <= 1) {
+    return null
+  }
+
+  const outputIndex = siblingSweeps.findIndex(
+    (sibling) => sibling.id === artifact.id
+  )
+  if (outputIndex < 0) {
+    return null
+  }
+
+  const pathCandidates = [
+    getNodePathFromSourceRange(ast, artifact.codeRef.range),
+    artifact.codeRef.pathToNode,
+    selection.codeRef.pathToNode,
+  ]
+
+  for (const pathToNode of pathCandidates) {
+    const sweepVariableName = getVariableNameFromNodePath(
+      pathToNode,
+      ast,
+      wasmInstance
+    )
+    if (sweepVariableName) {
+      return createMemberExpression(
+        sweepVariableName,
+        createLiteral(outputIndex, wasmInstance),
+        true
+      )
+    }
+  }
+
+  return null
+}
+
+function getCompositeSolidOutputExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType,
@@ -1404,7 +1500,6 @@ function getSplitOutputExprFromSelection(
   const artifact = selection.artifact
   if (
     artifact?.type !== 'compositeSolid' ||
-    artifact.subType !== 'split' ||
     artifact.outputIndex === null ||
     artifact.outputIndex === undefined
   ) {
@@ -1428,7 +1523,7 @@ function getSplitOutputExprFromSelection(
   )
 }
 
-function splitOutputExprKey(expr: Expr): string {
+function outputExprKey(expr: Expr): string {
   if (
     expr.type === 'MemberExpression' &&
     expr.object.type === 'Name' &&
@@ -1583,7 +1678,7 @@ export function retrieveSelectionsFromOpArg(
     return error
   }
 
-  return { graphSelections, otherSelections: [] } as Selections
+  return { graphSelections, otherSelections: [] }
 }
 
 export function findOperationArtifact(
@@ -1601,6 +1696,32 @@ export function findOperationArtifact(
         a.codeRef.range.every((v, i) => v === operation.sourceRange[i])
     )
   return artifact
+}
+
+export function findOperationForArtifact(input: {
+  artifact: Artifact | undefined
+  operations: Operation[]
+}): Operation | undefined {
+  if (!input.artifact || !('codeRef' in input.artifact)) {
+    return undefined
+  }
+  const { artifact } = input
+
+  return input.operations.find((operation) => {
+    if (!('sourceRange' in operation)) {
+      return false
+    }
+    return (
+      sourceRangeContains(operation.sourceRange, artifact.codeRef.range) ||
+      (operation.type === 'StdLibCall' &&
+        operation.stdlibEntrySourceRange !== undefined &&
+        operation.stdlibEntrySourceRange !== null &&
+        sourceRangeContains(
+          operation.stdlibEntrySourceRange,
+          artifact.codeRef.range
+        ))
+    )
+  })
 }
 
 export function findOperationPlaneArtifact(
@@ -2104,6 +2225,160 @@ export function getSketchSegmentName(
   }
 
   return null
+}
+
+export function getSketchSegmentNameFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  segmentArtifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  options: { fallbackToFirstSegment?: boolean } = {}
+): string | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (!sweepInput) {
+    return null
+  }
+
+  let selectedSegment: Extract<Artifact, { type: 'segment' }> | null = null
+  if (segmentArtifact.type === 'segment') {
+    selectedSegment = segmentArtifact
+  } else if (segmentArtifact.type === 'sweepEdge') {
+    const segment = getArtifactOfTypes(
+      { key: segmentArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (!err(segment) && segment.type === 'segment') {
+      selectedSegment = segment
+    }
+  } else if (segmentArtifact.type === 'wall') {
+    const segment = getArtifactOfTypes(
+      { key: segmentArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (!err(segment) && segment.type === 'segment') {
+      selectedSegment = segment
+    }
+  }
+
+  if (
+    sweepInput.type === 'MemberExpression' &&
+    sweepInput.property.type === 'Name'
+  ) {
+    return sweepInput.property.name.name
+  }
+
+  if (sweepInput.type !== 'ArrayExpression') {
+    return null
+  }
+
+  if (selectedSegment) {
+    const pathArtifact = getArtifactOfTypes(
+      { key: sourceSurfaceArtifact.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (!err(pathArtifact) && pathArtifact.type === 'path') {
+      const matchingSegmentIndex = pathArtifact.segIds.findIndex(
+        (segmentId) =>
+          segmentId === selectedSegment.originalSegId ||
+          segmentId === selectedSegment.id
+      )
+
+      if (matchingSegmentIndex !== -1) {
+        const matchingSegmentExpr = sweepInput.elements[matchingSegmentIndex]
+        if (
+          matchingSegmentExpr?.type === 'MemberExpression' &&
+          matchingSegmentExpr.property.type === 'Name'
+        ) {
+          return matchingSegmentExpr.property.name.name
+        }
+      }
+    }
+  }
+
+  if (options.fallbackToFirstSegment === false) {
+    return null
+  }
+
+  const firstSweepSegment = sweepInput.elements.find(
+    (element) =>
+      element.type === 'MemberExpression' && element.property.type === 'Name'
+  )
+  if (
+    firstSweepSegment?.type === 'MemberExpression' &&
+    firstSweepSegment.property.type === 'Name'
+  ) {
+    return firstSweepSegment.property.name.name
+  }
+
+  return null
+}
+
+export function getRegionSketchTagExprFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  segmentArtifact: Artifact,
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<CallExpressionKw>(
+    ast,
+    sourceSurfaceArtifact.codeRef.pathToNode,
+    wasmInstance,
+    ['CallExpressionKw']
+  )
+  if (
+    err(sourceSurfaceNode) ||
+    sourceSurfaceNode.node.type !== 'CallExpressionKw'
+  ) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceNode.node.unlabeled
+  if (!sweepInput || sweepInput.type !== 'Name') {
+    return null
+  }
+
+  const segmentId =
+    segmentArtifact.type === 'segment'
+      ? segmentArtifact.id
+      : segmentArtifact.type === 'sweepEdge'
+        ? segmentArtifact.segId
+        : segmentArtifact.type === 'wall'
+          ? segmentArtifact.segId
+          : null
+  if (!segmentId) {
+    return null
+  }
+
+  return getRegionTagExprFromSegmentId(
+    ast,
+    segmentId,
+    artifactGraph,
+    wasmInstance,
+    sweepInput.name.name
+  )
 }
 
 /**

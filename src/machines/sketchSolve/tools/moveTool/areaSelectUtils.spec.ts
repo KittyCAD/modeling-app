@@ -1,16 +1,16 @@
-import { describe, it, expect } from 'vitest'
-import { Group, Vector2, Vector3, OrthographicCamera } from 'three'
 import {
-  project3DToScreen,
   calculateBoxBounds,
-  isIntersectionSelectionMode,
-  calculateSelectionBoxProperties,
-  calculateLabelPositioning,
   calculateCornerLineStyles,
+  calculateLabelPositioning,
   calculateLabelStyles,
+  calculateSelectionBoxProperties,
   doesLineSegmentIntersectBox,
+  isIntersectionSelectionMode,
+  project3DToScreen,
   transformToLocalSpace,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import { Group, OrthographicCamera, Vector2, Vector3 } from 'three'
+import { describe, expect, it } from 'vitest'
 
 describe('project3DToScreen', () => {
   it('should project 3D world coordinates to 2D screen coordinates', () => {

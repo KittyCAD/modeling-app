@@ -1,8 +1,8 @@
+import fsZds from '@src/lib/fs-zds'
 import { getEXTNoPeriod, isExtensionAnImportExtension } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { isArray } from '@src/lib/utils'
 import type { SystemIOContext } from '@src/machines/systemIO/utils'
-import fsZds from '@src/lib/fs-zds'
 
 export function getAllSubDirectoriesAtProjectRoot(
   context: SystemIOContext,

@@ -7,9 +7,8 @@
  */
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
-import type RustContext from '@src/lib/rustContext'
-import { executeAstMock } from '@src/lang/executeAstMock'
 import type { KclManager } from '@src/lang/KclManager'
+import { executeAstMock } from '@src/lang/langHelpers'
 import type { PathToNode, Program } from '@src/lang/wasm'
 import type { ExecutionType } from '@src/lib/constants'
 import {
@@ -17,8 +16,9 @@ import {
   EXECUTION_TYPE_NONE,
   EXECUTION_TYPE_REAL,
 } from '@src/lib/constants'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type RustContext from '@src/lib/rustContext'
 import { err, reject } from '@src/lib/trap'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export async function mockExecAstAndReportErrors(
   ast: Node<Program>,

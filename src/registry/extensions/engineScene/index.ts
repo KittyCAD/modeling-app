@@ -4,16 +4,72 @@ import {
   provide,
 } from '@kittycad/registry'
 import { computed } from '@preact/signals-core'
-import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
+import type { Command } from '@src/lib/commandTypes'
+import { provideCommand } from '@src/registry/contracts/commands'
+import {
+  type EngineSceneExtensionContext,
+  defineEngineSceneStreamClassName,
+  defineEngineSceneViewExtension,
+  engineSceneStreamClassNamesValueSpec,
+  engineSceneViewExtensionsValueSpec,
+} from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
+import {
+  type KeymapItem,
+  MODE_MODELING_KEYMAP_SCOPE,
+  provideKeymapItem,
+} from '@src/registry/contracts/keymap'
 import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { Suspense, createElement, lazy } from 'react'
-import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
-import { ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID } from './constants'
+import executionIndicator from './executionIndicator'
+import { measurementToolService } from './measurementToolService'
+import {
+  EngineSceneGizmoViewExtension,
+  EngineSceneToolbarViewExtension,
+  SketchBackgroundOpacityViewExtension,
+  SketchConstraintsToggleViewExtension,
+} from './viewExtensionControls'
+
+const ENGINE_SCENE_COMMAND_GROUP_ID = 'engineScene'
+const ENGINE_SCENE_KEYMAP_SOURCE = 'Engine scene'
+
+export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
+  openMeasureTool: 'zds.engineScene.openMeasureTool',
+} as const)
+
+const openMeasureToolCommand: Command = {
+  id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
+  name: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
+  groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
+  displayName: 'Open measure tool',
+  description: 'Open the measurement panel for the current modeling selection.',
+  icon: 'ruler',
+  needsReview: false,
+  onSubmit: () => {
+    measurementToolService.open()
+    return true
+  },
+}
+
+const openMeasureToolKeymapItem: KeymapItem = {
+  id: 'engine-scene.measure.open',
+  title: 'Open measure tool',
+  source: ENGINE_SCENE_KEYMAP_SOURCE,
+  scopes: [MODE_MODELING_KEYMAP_SCOPE],
+  keystrokes: ['shift+m'],
+  command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
+}
+
+// Registry extension entrypoints are imported eagerly while App is still
+// initializing. These status bar components can reach boot.ts, so keep them
+// behind lazy imports to avoid an App <-> boot cycle.
+const SelectionFilterControls = lazy(async () => {
+  const { SelectionFilterControls } = await import('./SelectionFilterControls')
+  return { default: SelectionFilterControls }
+})
 
 const UnitsMenu = lazy(async () => {
   const { UnitsMenu } = await import('@src/components/UnitsMenu')
@@ -27,6 +83,25 @@ const ExperimentalFeaturesMenu = lazy(async () => {
   return { default: ExperimentalFeaturesMenu }
 })
 
+const SelectionStatusBarItem = lazy(async () => {
+  const { SelectionStatusBarItem } = await import(
+    '@src/components/SelectionStatusBarItem'
+  )
+  return { default: SelectionStatusBarItem }
+})
+
+const SelectionReferencesPopover = lazy(async () => {
+  const { SelectionReferencesPopover } = await import(
+    '@src/components/SelectionReferencesPopover'
+  )
+  return { default: SelectionReferencesPopover }
+})
+
+const MeasurementStatusBarItem = lazy(async () => {
+  const { MeasurementStatusBarItem } = await import('./MeasurementTool')
+  return { default: MeasurementStatusBarItem }
+})
+
 const EngineSceneUnitsMenu = () =>
   createElement(Suspense, { fallback: null }, createElement(UnitsMenu))
 
@@ -37,27 +112,120 @@ const EngineSceneExperimentalFeaturesMenu = () =>
     createElement(ExperimentalFeaturesMenu)
   )
 
+const EngineSceneSelectionStatusBarItem = ({ label }: { label: string }) =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(SelectionStatusBarItem, {
+      label,
+      popoverSections: [
+        {
+          id: 'selection-references',
+          component: SelectionReferencesPopover,
+        },
+      ],
+    })
+  )
+
+const EngineSceneSelectionFilterControls = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(SelectionFilterControls)
+  )
+
+const isSketchSolveMode = (context: EngineSceneExtensionContext) =>
+  context.modelingState.matches('sketchSolveMode')
+
+const defaultStreamClassName = defineEngineSceneStreamClassName({
+  id: 'engine-scene.stream-default',
+  order: 0,
+  className: 'absolute inset-x-[-4px] inset-y-[-4px] z-0',
+})
+
+const toolbarViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.toolbar',
+  zone: 'top',
+  order: 0,
+  Component: EngineSceneToolbarViewExtension,
+  wrapperClassName: 'w-full min-w-0 flex justify-center',
+})
+
+const sketchBackgroundOpacityViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.sketch-background-opacity',
+  zone: 'bottom-left',
+  order: 0,
+  Component: SketchBackgroundOpacityViewExtension,
+  shouldRegister: isSketchSolveMode,
+})
+
+const sketchConstraintsToggleViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.sketch-constraints-toggle',
+  zone: 'bottom-left',
+  order: 10,
+  Component: SketchConstraintsToggleViewExtension,
+  shouldRegister: isSketchSolveMode,
+})
+
+const gizmoViewExtension = defineEngineSceneViewExtension({
+  id: 'engine-scene.gizmo',
+  zone: 'bottom-right',
+  order: 0,
+  Component: EngineSceneGizmoViewExtension,
+})
+
+const EngineSceneMeasurementStatusBarItem = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(MeasurementStatusBarItem)
+  )
+
 /**
  * Engine scene extension.
  *
  * Future home for the whole engine scene layout and modeling state machine
- * behavior. For now it contributes the execution spinner status item and the
- * setting that controls whether users see it.
+ * behavior. For now it contributes always-on local status bar items owned by
+ * the scene and the default view chrome rendered around the engine stream.
  */
 const engineSceneExtension = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
-  const selectionStatusBarItem = computed(() =>
+  const selectionStatusBarItem = computed(() => {
+    const selectionStatusLabel = executionService.value?.selectionStatusLabel
+    return nullableStatusBarItem(
+      selectionStatusLabel
+        ? {
+            id: 'selection',
+            component: () =>
+              createElement(EngineSceneSelectionStatusBarItem, {
+                label: selectionStatusLabel.value,
+              }),
+            order: 10,
+            scopes: ['file'],
+          }
+        : null
+    )
+  })
+  const measurementStatusBarItem = computed(() =>
     nullableStatusBarItem(
       executionService.value
         ? {
-            id: 'selection',
-            'data-testid': 'selection-status',
-            element: 'text' as const,
-            label: executionService.value.selectionStatusLabel.value,
-            order: 10,
-            toolTip: {
-              children: 'Currently selected geometry',
-            },
+            id: 'measure',
+            component: EngineSceneMeasurementStatusBarItem,
+            order: 9,
+            scopes: ['file'],
+          }
+        : null
+    )
+  )
+  const selectionFilterStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'selection-filter',
+            component: EngineSceneSelectionFilterControls,
+            order: 11,
+            scopes: ['file'],
           }
         : null
     )
@@ -69,6 +237,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'experimental-features',
             component: EngineSceneExperimentalFeaturesMenu,
             order: 30,
+            scopes: ['file'],
           }
         : null
     )
@@ -80,34 +249,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'units',
             component: EngineSceneUnitsMenu,
             order: 20,
+            scopes: ['file'],
           }
         : null
-    )
-  )
-  const executionStatusBarItem = computed(() =>
-    nullableStatusBarItem(
-      (() => {
-        const service = executionService.value
-
-        return service?.isExecuting.value
-          ? {
-              id: ENGINE_SCENE_EXECUTION_STATUS_BAR_ITEM_ID,
-              'data-testid': 'engine-executing-status',
-              element: 'text' as const,
-              icon: 'loading' as const,
-              label: 'Engine executing',
-              hideLabel: true,
-              order: 0,
-              toolTip: {
-                children: createElement(EngineExecutionStatusTooltip, {
-                  executionElapsedMs: service.executionElapsedMs,
-                  getPendingCommandCount: () =>
-                    executionService.value?.getPendingCommandCount() ?? 0,
-                }),
-              },
-            }
-          : null
-      })()
     )
   )
 
@@ -115,35 +259,41 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
-        provide(settingsValueSpec, {
-          modeling: {
-            showExecutingSpinner: defineBooleanExtensionSetting({
-              defaultValue: false,
-              title: 'Show executing spinner',
-              description:
-                'Whether to show a status bar spinner while the engine is processing commands.',
-              commandConfig: {
-                inputType: 'boolean',
-              },
-              userToml: {
-                sectionKey: 'modeling',
-                tomlKey: 'show_executing_spinner',
-              },
-              projectToml: {
-                sectionKey: 'modeling',
-                tomlKey: 'show_executing_spinner',
-              },
-            }),
-          },
-        }),
+        provideCommand(openMeasureToolCommand),
+        provideKeymapItem(openMeasureToolKeymapItem),
+        provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
+        provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),
         provide(statusBarLocalItemsValueSpec, unitsStatusBarItem),
         provide(
           statusBarLocalItemsValueSpec,
           experimentalFeaturesStatusBarItem
         ),
-        provide(statusBarLocalItemsValueSpec, executionStatusBarItem),
+        provide(engineSceneStreamClassNamesValueSpec, defaultStreamClassName, {
+          key: defaultStreamClassName.id,
+        }),
+        provide(engineSceneViewExtensionsValueSpec, toolbarViewExtension, {
+          key: toolbarViewExtension.id,
+        }),
+        provide(
+          engineSceneViewExtensionsValueSpec,
+          sketchBackgroundOpacityViewExtension,
+          {
+            key: sketchBackgroundOpacityViewExtension.id,
+          }
+        ),
+        provide(
+          engineSceneViewExtensionsValueSpec,
+          sketchConstraintsToggleViewExtension,
+          {
+            key: sketchConstraintsToggleViewExtension.id,
+          }
+        ),
+        provide(engineSceneViewExtensionsValueSpec, gizmoViewExtension, {
+          key: gizmoViewExtension.id,
+        }),
       ],
+      uses: [executionIndicator],
     }),
   }
 }, 'engine-scene-extension')

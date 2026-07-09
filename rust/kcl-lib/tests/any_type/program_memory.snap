@@ -22,12 +22,10 @@ description: Variables in memory after executing any_type.kcl
     ]
   },
   "id": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "len": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "len0": {
     "type": "Number",
@@ -55,7 +53,6 @@ description: Variables in memory after executing any_type.kcl
     }
   },
   "singleton": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   }
 }

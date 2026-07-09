@@ -2,13 +2,13 @@ import { join } from 'path'
 import { uuidv4 } from '@src/lib/utils'
 import fsp from 'fs/promises'
 
+import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import {
   TEST_COLORS,
   executorInputPath,
   getUtils,
 } from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
-import type { Fixtures } from '@e2e/playwright/fixtures/fixtureSetup'
 import type { Page } from '@playwright/test'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
 
@@ -52,6 +52,28 @@ profile002 = startProfile(sketch002, at = [-1.0, 0])
 
   const element = page.locator('[data-overlay-index="1"]')
   await expect(element).toHaveAttribute('data-overlay-visible', 'true')
+}
+
+/** Press arrow down until the given label is selected. */
+async function selectCompletionOption(page: Page, label: string) {
+  const labels = page.locator('.cm-tooltip-autocomplete .cm-completionLabel')
+  const target = labels.filter({ hasText: new RegExp(`^${label}$`) })
+  await expect(target).toBeVisible()
+
+  const optionCount = await labels.count()
+  const selectedLabel = page.locator(
+    '.cm-tooltip-autocomplete li[aria-selected="true"] .cm-completionLabel'
+  )
+
+  for (let i = 0; i < optionCount; i++) {
+    if ((await selectedLabel.textContent()) === label) {
+      return
+    }
+
+    await page.keyboard.press('ArrowDown')
+  }
+
+  throw new Error(`Could not select autocomplete option "${label}"`)
 }
 
 test.describe('Editor tests', { tag: '@desktop' }, () => {
@@ -163,7 +185,7 @@ sketch001 = startSketchOn(XY)
     await page.setBodyDimensions({ width: 1000, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.codeLocator.click()
     await page.keyboard.type(`sketch001 = startSketchOn(XY)
@@ -675,15 +697,23 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
     await page.keyboard.press(',')
 
     // Wait for the signature help to show
-    await expect(page.locator('.cm-signature-tooltip')).toBeVisible()
+    const signatureTooltip = page.locator('.cm-signature-tooltip')
+    await expect(signatureTooltip).toBeVisible()
 
     // Make sure the parameters are correct
-    await expect(page.locator('.cm-signature-tooltip')).toContainText(
-      'sketches:'
-    )
+    await expect(signatureTooltip).toContainText('sketches:')
+
+    // Long signatures should wrap inside the tooltip instead of overflowing.
+    await expect
+      .poll(async () => {
+        return await signatureTooltip.evaluate(
+          (tooltip) => tooltip.scrollWidth <= tooltip.clientWidth + 1
+        )
+      })
+      .toBe(true)
 
     // Make sure the tooltip goes away after a timeout.
-    await expect(page.locator('.cm-signature-tooltip')).not.toBeVisible({
+    await expect(signatureTooltip).not.toBeVisible({
       timeout: 15_000,
     })
   })
@@ -929,8 +959,6 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
       await page.waitForTimeout(100)
       await page.keyboard.press('Enter') // accepting the auto complete, not a new line
 
-      await page.keyboard.press('Tab')
-      await page.waitForTimeout(100)
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -943,9 +971,7 @@ a1 = startSketchOn(offsetPlane(XY, offset = 10))
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down then enter to accept xLine
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
+      await selectCompletionOption(page, 'xLine')
       await page.keyboard.press('Enter')
       // finish line with comment
       await page.keyboard.type('5')
@@ -990,7 +1016,6 @@ sketch001 = startSketchOn(XZ)
       // Make sure just hitting tab will take the only one left
       await expect(page.locator('.cm-completionLabel')).toHaveCount(1)
       await page.waitForTimeout(500)
-      await page.keyboard.press('ArrowDown')
       await page.keyboard.press('Tab')
       await page.waitForTimeout(500)
       await page.keyboard.type('XZ')
@@ -1001,8 +1026,7 @@ sketch001 = startSketchOn(XZ)
       await expect(page.locator('.cm-completionLabel')).toBeVisible()
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab') // accepting the auto complete, not a new line
-
-      await page.keyboard.press('Tab')
+      await page.waitForTimeout(100)
       await page.keyboard.type('12')
       await page.waitForTimeout(100)
       await page.keyboard.press('Tab')
@@ -1015,9 +1039,7 @@ sketch001 = startSketchOn(XZ)
 
       await expect(page.locator('.cm-tooltip-autocomplete')).toBeVisible()
       await page.waitForTimeout(100)
-      // press arrow down then tab to accept xLine
-      await page.keyboard.press('ArrowDown')
-      await page.keyboard.press('ArrowDown')
+      await selectCompletionOption(page, 'xLine')
       // finish line with comment
       await page.keyboard.press('Tab')
       await page.waitForTimeout(100)
@@ -1064,7 +1086,7 @@ sketch001 = startSketchOn(XZ)
     await page.setBodyDimensions({ width: 1200, height: 500 })
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
     await expect(toolbar.startSketchBtn).not.toBeDisabled()
 
     await page.waitForTimeout(100)
@@ -1115,7 +1137,7 @@ sketch001 = startSketchOn(XZ)
       commandName: 'Extrude',
     })
     await cmdBar.progressCmdBar()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // expect the code to have changed
     await expect(page.locator('.cm-content')).toHaveText(
@@ -1157,7 +1179,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     }, ogCode)
 
     await homePage.goToModelingScene()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     let prevContent = await editor.getCurrentCode()
     await toolbar.editSketch()
@@ -1239,14 +1261,14 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     await test.step(`Open the empty file`, async () => {
       await projectLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
     await test.step(`Write the import function line`, async () => {
       await u.codeLocator.fill(`import 'cube.obj'\ncube`)
       await page.waitForTimeout(800)
     })
     await test.step(`Verify that we see no errors`, async () => {
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(errorIndicators).toHaveCount(0)
     })
   })
@@ -1264,7 +1286,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
     // wait until scene is ready to be interacted with
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await toolbar.startSketchBtn.click()
 
@@ -1379,7 +1401,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
 
       // wait until scene is ready to be interacted with
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step('Test toolbar button correct selection', async () => {
@@ -1424,7 +1446,7 @@ profile001 = startProfile(sketch001, at = [0, 0])
     // Wait for connection, this is especially important for this test, because safeParse is invoked when
     // connection is established which would interfere with the test if it happened during later steps.
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Code with no error
     await u.codeLocator.fill(`x = 7`)

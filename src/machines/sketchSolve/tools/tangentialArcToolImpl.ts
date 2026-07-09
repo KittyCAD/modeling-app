@@ -40,8 +40,8 @@ import { findClosestApiObjects } from '@src/machines/sketchSolve/interaction/int
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
-  applyConstraintsForSnapTarget,
   type SnapTarget,
+  applyConstraintsForSnapTarget,
 } from '@src/machines/sketchSolve/snapping'
 import {
   clearToolSnappingState,
@@ -557,7 +557,10 @@ export function animateArcEndPointListener({ self, context }: ToolActionArgs) {
               },
             },
           ],
-          settings
+          settings,
+          false,
+          [],
+          false
         )
 
         const sendData: SketchSolveMachineEvent = {

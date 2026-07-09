@@ -1,21 +1,21 @@
 import type { useAppState } from '@src/AppState'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { KclManager } from '@src/lang/KclManager'
+import { useSingletons } from '@src/lib/boot'
+import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import type RustContext from '@src/lib/rustContext'
 import {
   getSettingsFromActorContext,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
-import { getDimensions } from '@src/network/utils'
-import { useRef } from 'react'
-import { NUMBER_OF_ENGINE_RETRIES } from '@src/lib/constants'
-import toast from 'react-hot-toast'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
-import type { KclManager } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
+import { getDimensions } from '@src/network/utils'
+import { useRef } from 'react'
+import toast from 'react-hot-toast'
 
 /**
  * Helper function, do not call this directly. Use tryConnecting instead.

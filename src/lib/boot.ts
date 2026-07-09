@@ -1,16 +1,16 @@
 import { App } from '@src/lib/app'
-import React from 'react'
-import { isPlaywright } from '@src/lib/isPlaywright'
 import {
+  StorageName,
   moduleFsViaModuleImport,
   moduleFsViaWindow,
-  StorageName,
 } from '@src/lib/fs-zds'
+import { isPlaywright } from '@src/lib/isPlaywright'
+import React from 'react'
 
 // Earliest as possible point to configure the fs layer.
 // In the future we can have the user switch between them at run-time, but
 // for now, there is no intention.
-let fsModulePromise
+let fsModulePromise: Promise<void>
 if (window.electron) {
   fsModulePromise = moduleFsViaModuleImport({
     type: StorageName.ElectronFS,

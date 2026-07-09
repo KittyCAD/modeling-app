@@ -10,9 +10,11 @@ use crate::execution::KclValue;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::RuntimeType;
 use crate::std::args::Args;
 use crate::std::args::TyF64;
+use crate::util::MathExt;
 
 /// Compute the remainder after dividing `num` by `div`.
 /// If `num` is negative, the result will be too.
@@ -185,7 +187,7 @@ pub async fn pow(exec_state: &mut ExecState, args: Args) -> Result<KclValue, Kcl
             annotations::WARN_INVALID_MATH,
         );
     }
-    let result = input.n.powf(exp.n);
+    let result = libm::pow(input.n, exp.n);
 
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(result, exec_state.current_default_units())))
 }
@@ -328,7 +330,7 @@ pub async fn leg_length(exec_state: &mut ExecState, args: Args) -> Result<KclVal
     let hypotenuse: TyF64 = args.get_kw_arg("hypotenuse", &RuntimeType::length(), exec_state)?;
     let leg: TyF64 = args.get_kw_arg("leg", &RuntimeType::length(), exec_state)?;
     let (hypotenuse, leg, ty) = NumericType::combine_eq_coerce(hypotenuse, leg, Some((exec_state, args.source_range)));
-    let result = (hypotenuse.powi(2) - libm::fmin(hypotenuse.abs(), leg.abs()).powi(2)).sqrt();
+    let result = (hypotenuse.squared() - libm::fmin(hypotenuse.abs(), leg.abs()).squared()).sqrt();
     Ok(KclValue::from_number_with_type(result, ty, vec![args.into()]))
 }
 

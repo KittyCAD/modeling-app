@@ -6,13 +6,16 @@ import type { CompilationIssue } from '@rust/kcl-lib/bindings/CompilationIssue'
 import type { DefaultPlanes } from '@rust/kcl-lib/bindings/DefaultPlanes'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 
 import type { BacktraceItem } from '@rust/kcl-lib/bindings/BacktraceItem'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 import { sourceRangeContains } from '@src/lang/sourceRange'
 import { isTopLevelModule } from '@src/lang/util'
-import type { ArtifactGraph, VariableMap } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  OperationsByModule,
+  VariableMap,
+} from '@src/lang/wasm'
 
 type ExtractKind<T> = T extends { kind: infer K } ? K : never
 export class KCLError extends Error {
@@ -22,7 +25,7 @@ export class KCLError extends Error {
   kclBacktrace: BacktraceItem[]
   nonFatal: CompilationIssue[]
   variables: VariableMap
-  operations: Operation[]
+  operations: OperationsByModule
   artifactGraph: ArtifactGraph
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
@@ -34,7 +37,7 @@ export class KCLError extends Error {
     kclBacktrace: BacktraceItem[],
     nonFatal: CompilationIssue[],
     variables: VariableMap,
-    operations: Operation[],
+    operations: OperationsByModule,
     artifactGraph: ArtifactGraph,
     filenames: { [x: number]: ModulePath | undefined },
     defaultPlanes: DefaultPlanes | null

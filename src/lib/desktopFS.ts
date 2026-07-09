@@ -1,12 +1,12 @@
-import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import { FILE_EXT, INDEX_IDENTIFIER, MAX_PADDING } from '@src/lib/constants'
-import type { FileEntry } from '@src/lib/project'
+import fsZds from '@src/lib/fs-zds'
 import {
   getEXTNoPeriod,
   getEXTWithPeriod,
   isExtensionARelevantExtension,
 } from '@src/lib/paths'
+import type { FileEntry } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export const isHidden = (fileOrDir: FileEntry) =>
@@ -137,10 +137,12 @@ export async function getNextFileName({
   entryName,
   baseDir,
   wasmInstance,
+  preserveUnknownExtension = false,
 }: {
   entryName: string
   baseDir: string
   wasmInstance: ModuleType
+  preserveUnknownExtension?: boolean
 }) {
   // Check if the file is relevantFile by not using the period
   const extensionNoPeriod = getEXTNoPeriod(entryName)
@@ -151,9 +153,10 @@ export async function getNextFileName({
 
   // Do the following business logic with the period in the extension
   let extension = getEXTWithPeriod(entryName)
-  if (!isRelevantFile || !extension) {
+  if (!preserveUnknownExtension && (!isRelevantFile || !extension)) {
     extension = FILE_EXT
   }
+  extension ??= ''
 
   // Remove any existing index from the name before adding a new one
   let createdName = entryName.replace(extension, '') + extension

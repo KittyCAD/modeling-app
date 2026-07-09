@@ -30,7 +30,7 @@ description: Variables in memory after executing sketch_block_on_negative_plane.
       "zAxis": {
         "x": 0.0,
         "y": 0.0,
-        "z": 1.0,
+        "z": -1.0,
         "units": null
       }
     }

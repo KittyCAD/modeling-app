@@ -1,9 +1,12 @@
 import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
+import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
+import { useApp } from '@src/lib/boot'
+import { ensureCloudProjectLocallySynced } from '@src/lib/cloudSync'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -11,29 +14,27 @@ import {
   CMD_NAME_QUERY_PARAM,
   CODE_QUERY_PARAM,
   CREATE_FILE_URL_PARAM,
-  DEFAULT_FILE_NAME,
   FILE_NAME_QUERY_PARAM,
   POOL_QUERY_PARAM,
   PROJECT_ENTRYPOINT,
   PROJECT_ID_QUERY_PARAM,
 } from '@src/lib/constants'
-import { isDesktop } from '@src/lib/isDesktop'
-import type { FileLinkParams } from '@src/lib/links'
+import { getUniqueProjectName } from '@src/lib/desktopFS'
 import {
   downloadProjectById,
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
-import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
+import { isDesktop } from '@src/lib/isDesktop'
+import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
-import { useApp } from '@src/lib/boot'
-import type { KclManager } from '@src/lang/KclManager'
 import { err } from '@src/lib/trap'
+import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import {
   SystemIOMachineEvents,
+  SystemIOMachineStates,
   waitForIdleState,
 } from '@src/machines/systemIO/utils'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -55,6 +56,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
   const { auth, commands } = app
   const authState = auth.useAuthState()
   const [searchParams, setSearchParams] = useSearchParams()
+  const navigate = useNavigate()
   const hasAskToOpen = !isDesktop() && searchParams.has(ASK_TO_OPEN_QUERY_PARAM)
   // Let hasAskToOpen be handled by the OpenInDesktopAppHandler component first to avoid racing with it,
   // only deal with other params after user decided to open in desktop or web.
@@ -116,8 +118,29 @@ export function useQueryParamEffects(kclManager: KclManager) {
     }
 
     void (async () => {
+      // File navigation removes the project-id param while preserving the new
+      // file route. Calling setSearchParams here can re-navigate from the
+      // original query-param route and reopen the project default file.
       await waitForIdleState({ systemIOActor: app.systemIOActor })
       if (cancelled) {
+        return
+      }
+
+      const localCloudProject = await ensureCloudProjectLocallySynced(
+        projectId
+      ).catch(() => undefined)
+      if (cancelled) {
+        return
+      }
+      if (localCloudProject) {
+        app.systemIOActor.send({
+          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+        })
+        void navigate(
+          `${PATHS.FILE}/${safeEncodeForRouterPaths(
+            localCloudProject.projectPath
+          )}`
+        )
         return
       }
 
@@ -171,9 +194,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
       })
 
       await waitForIdleState({ systemIOActor: app.systemIOActor })
-      if (!cancelled) {
-        clearProjectIdSearchParam()
-      }
     })().catch((error) => {
       if (cancelled) {
         return
@@ -267,12 +287,17 @@ export function useQueryParamEffects(kclManager: KclManager) {
     const rawCommandData = buildGenericCommandArgs(searchParams)
     if (!rawCommandData) return
     const commandData = rawCommandData
+    let shouldCreateDefaultWebProject = false
 
     // Web-only: prefill command data to automatically add to the demo project
     if (!isDesktop() && commandData.name === 'add-kcl-file-to-project') {
-      if (commandData.argDefaultValues?.projectName === 'browser') {
-        const currentProjectName =
-          app.settings.actor.getSnapshot().context.currentProject?.name
+      const currentProjectName =
+        app.settings.actor.getSnapshot().context.currentProject?.name
+      const requestedBrowserProject =
+        commandData.argDefaultValues?.projectName === 'browser' ||
+        commandData.argDefaultValues?.projectName === DEFAULT_WEB_PROJECT_NAME
+      if (requestedBrowserProject) {
+        shouldCreateDefaultWebProject = !currentProjectName
         commandData.argDefaultValues.projectName =
           currentProjectName ?? DEFAULT_WEB_PROJECT_NAME
       }
@@ -305,16 +330,41 @@ export function useQueryParamEffects(kclManager: KclManager) {
       const systemIO = app.systemIOActor
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
         (folders ?? []).some((f) => f.name === projectFolderName)
+      let hasRequestedProjectCreate = false
+      const sendOrCreateProject = (
+        snapshot: ReturnType<typeof systemIO.getSnapshot>
+      ) => {
+        if (foldersIncludeProject(snapshot.context.folders)) {
+          sendCommand()
+          return true
+        }
 
-      if (foldersIncludeProject(systemIO.getSnapshot().context.folders)) {
-        sendCommand()
+        if (
+          shouldCreateDefaultWebProject &&
+          !hasRequestedProjectCreate &&
+          projectFolderName === DEFAULT_WEB_PROJECT_NAME &&
+          snapshot.matches(SystemIOMachineStates.idle) &&
+          snapshot.context.folders !== undefined
+        ) {
+          hasRequestedProjectCreate = true
+          systemIO.send({
+            type: SystemIOMachineEvents.createProject,
+            data: {
+              requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
+            },
+          })
+        }
+
+        return false
+      }
+
+      if (sendOrCreateProject(systemIO.getSnapshot())) {
         return
       }
 
       const subscription = systemIO.subscribe((snapshot) => {
-        if (foldersIncludeProject(snapshot.context.folders)) {
+        if (sendOrCreateProject(snapshot)) {
           subscription.unsubscribe()
-          sendCommand()
         }
       })
       return () => subscription.unsubscribe()
@@ -353,14 +403,9 @@ function buildCreateFileCommandArgs(
   searchParams: URLSearchParams,
   webProjectName?: string
 ) {
-  const params: Omit<FileLinkParams, 'isRestrictedToOrg'> = {
-    code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
-    name: searchParams.get('name') ?? DEFAULT_FILE_NAME,
-  }
-
   const argDefaultValues: CreateFileSchemaMethodOptional = {
     name: PROJECT_ENTRYPOINT,
-    code: params.code || '',
+    code: base64ToString(decodeURIComponent(searchParams.get('code') ?? '')),
     method: isDesktop() ? undefined : 'existingProject',
   }
   if (!isDesktop()) {

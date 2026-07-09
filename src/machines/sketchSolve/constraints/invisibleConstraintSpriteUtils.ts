@@ -7,23 +7,25 @@ import { getAngleDiff } from '@src/lib/utils'
 import { lerp2d } from '@src/lib/utils2d'
 import { Vector3 } from 'three'
 
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 import {
   axisConstraintIncludesOrigin,
-  getAxisConstraintLineId,
   coincidentContainsSegment,
-  getAxisConstraintPointIds,
-  getCoincidentSegmentIds,
-  getCoincidentCluster,
   getArcPoints,
+  getAxisConstraintLineId,
+  getAxisConstraintPointIds,
+  getCoincidentCluster,
+  getCoincidentSegmentIds,
   getLinePoints,
   isArcLikeSegment,
   isArcSegment,
   isConstraint,
+  isConstraintSegmentId,
+  isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
   pointToVec3,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 export type InvisibleConstraint = Extract<
   ApiConstraint,
@@ -53,9 +55,18 @@ export type ConstraintHoverPopup = {
 }
 
 export function isInvisibleConstraintObject(
-  obj: ApiObject | undefined | null
+  obj: ApiObject | undefined | null,
+  objects?: ApiObject[]
 ): obj is InvisibleConstraintObject {
   if (!obj || !isConstraint(obj)) {
+    return false
+  }
+
+  if (
+    obj.kind.constraint.type === 'Coincident' &&
+    objects &&
+    isInternalControlPointSplineCoincident(obj.kind.constraint, objects)
+  ) {
     return false
   }
 
@@ -160,7 +171,7 @@ export function findInvisibleConstraintsForSegment(
     return objects
       .filter(
         (constraint): constraint is InvisibleConstraintObject =>
-          isInvisibleConstraintObject(constraint) &&
+          isInvisibleConstraintObject(constraint, objects) &&
           isConstrainingPointCluster(constraint, coincidentPointIds)
       )
       .map((constraint) => constraint.id)
@@ -169,7 +180,7 @@ export function findInvisibleConstraintsForSegment(
   return objects
     .filter(
       (constraint): constraint is InvisibleConstraintObject =>
-        isInvisibleConstraintObject(constraint) &&
+        isInvisibleConstraintObject(constraint, objects) &&
         isConstrainingSegment(constraint, segment, objects)
     )
     .map((constraint) => constraint.id)
@@ -219,7 +230,7 @@ export function findSegmentsForInvisibleConstraint(
         return [
           constraint.kind.constraint.point,
           constraint.kind.constraint.segment,
-        ]
+        ].filter(isConstraintSegmentId)
       case 'EqualRadius':
       case 'Tangent':
         return constraint.kind.constraint.input
@@ -279,6 +290,45 @@ function getCoincidentHighlightedSegmentIds(
   })
 
   return [...coincidentSegmentIds, ...ownerSegmentIds]
+}
+
+function isInternalControlPointSplineCoincident(
+  constraint: Extract<InvisibleConstraint, { type: 'Coincident' }>,
+  objects: ApiObject[]
+): boolean {
+  const ownerSplineIds = getCoincidentSegmentIds(constraint)
+    .map((segmentId) => getOwningControlPointSplineId(segmentId, objects))
+    .filter((ownerId): ownerId is number => ownerId !== null)
+
+  return (
+    ownerSplineIds.length === getCoincidentSegmentIds(constraint).length &&
+    new Set(ownerSplineIds).size === 1
+  )
+}
+
+function getOwningControlPointSplineId(
+  segmentId: number,
+  objects: ApiObject[]
+): number | null {
+  const segment = objects[segmentId]
+  if (!segment || segment.kind.type !== 'Segment') {
+    return null
+  }
+
+  if (isControlPointSplineSegment(segment)) {
+    return segment.id
+  }
+
+  if (!isPointSegment(segment) && !isLineSegment(segment)) {
+    return null
+  }
+
+  const ownerId = segment.kind.segment.owner
+  if (ownerId == null) {
+    return null
+  }
+
+  return isControlPointSplineSegment(objects[ownerId]) ? ownerId : null
 }
 
 // Returns if the given non-visual constraint is constraining the given segment.
@@ -359,7 +409,10 @@ function isConstrainingPointCluster(
         pointIds.includes(id)
       )
     case 'Midpoint':
-      return pointIds.includes(constraint.kind.constraint.point)
+      return (
+        isConstraintSegmentId(constraint.kind.constraint.point) &&
+        pointIds.includes(constraint.kind.constraint.point)
+      )
     default:
       return false
   }

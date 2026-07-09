@@ -1,8 +1,8 @@
-import { renderHook } from '@testing-library/react'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
-import { expect, vi, describe, test } from 'vitest'
 import { EngineConnectionEvents } from '@src/network/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnOfflineToExitSketchMode', () => {
   describe('on mounted', () => {

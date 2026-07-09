@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
-import { testLayoutConfig } from '@src/lib/layout/configs/test'
+import { useApp } from '@src/lib/boot'
 import { LayoutRootNode } from '@src/lib/layout/components'
+import { testLayoutConfig } from '@src/lib/layout/configs/test'
 import { testAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import type { Layout, LayoutWithMetadata } from '@src/lib/layout/types'
-import { useApp } from '@src/lib/boot'
+import { useEffect, useState } from 'react'
 
 function getTestLayout(settingsLayout: LayoutWithMetadata | undefined): Layout {
   return structuredClone(settingsLayout?.layout ?? testLayoutConfig)

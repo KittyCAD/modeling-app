@@ -1,15 +1,15 @@
-import type {
-  Layout,
-  Action,
-  SplitLayout,
-  PaneLayout,
-  SimpleLayout,
-} from '@src/lib/layout/types'
-import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
-import { parseLayoutInner, parseAction } from '@src/lib/layout/parse'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { testLayoutConfig } from '@src/lib/layout/configs/test'
-import { expect, describe, it } from 'vitest'
+import { parseAction, parseLayoutInner } from '@src/lib/layout/parse'
+import type {
+  Action,
+  Layout,
+  PaneLayout,
+  SimpleLayout,
+  SplitLayout,
+} from '@src/lib/layout/types'
+import { ActionType, AreaType, LayoutType } from '@src/lib/layout/types'
+import { describe, expect, it } from 'vitest'
 
 const validSimpleLayout = {
   type: LayoutType.Simple,

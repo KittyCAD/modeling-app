@@ -1,8 +1,8 @@
-import { renderHook } from '@testing-library/react'
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
-import { expect, vi, describe, test } from 'vitest'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnPeerConnectionClose', () => {
   describe('on mounted', () => {

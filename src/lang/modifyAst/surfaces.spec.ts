@@ -1,19 +1,19 @@
-import { recast, type Artifact } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
+import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { type Artifact, recast } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import {
   createSelectionFromArtifacts,
   createSelectionFromPathArtifact,
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
-import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import type { KclManager } from '@src/lang/KclManager'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!

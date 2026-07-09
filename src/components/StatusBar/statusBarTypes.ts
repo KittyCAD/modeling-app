@@ -6,6 +6,7 @@ export type StatusBarItemType = {
   id: string
   'data-testid'?: string
   order?: number
+  scopes?: readonly string[]
 } & (
   | ({
       label: string

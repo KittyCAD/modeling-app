@@ -1,16 +1,17 @@
-import type { ForwardedRef } from 'react'
-import { forwardRef, useMemo } from 'react'
-import toast from 'react-hot-toast'
-import { useLocation, useNavigate } from 'react-router-dom'
-import { Fragment } from 'react/jsx-runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { SettingsFieldInput } from '@src/components/Settings/SettingsFieldInput'
 import { SettingsSection } from '@src/components/Settings/SettingsSection'
+import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import { useApp, useSingletons } from '@src/lib/boot'
 import { getSettingsFolderPaths } from '@src/lib/desktopFS'
 import { isDesktop } from '@src/lib/isDesktop'
 import { onboardingStartPath } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
+import {
+  canRevealInFileExplorer,
+  revealInFileExplorer,
+} from '@src/lib/revealInFileExplorer'
 import type { Setting } from '@src/lib/settings/initialSettings'
 import type {
   SetEventTypes,
@@ -21,12 +22,15 @@ import {
   shouldHideSetting,
   shouldShowSettingInput,
 } from '@src/lib/settings/settingsUtils'
-import { useApp, useSingletons } from '@src/lib/boot'
 import { reportRejection } from '@src/lib/trap'
 import { capitaliseFC, toSync } from '@src/lib/utils'
 import { acceptOnboarding } from '@src/routes/Onboarding/utils'
 import { APP_VERSION, getReleaseUrl } from '@src/routes/utils'
-import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
+import type { ForwardedRef } from 'react'
+import { forwardRef, useMemo } from 'react'
+import toast from 'react-hot-toast'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Fragment } from 'react/jsx-runtime'
 
 interface AllSettingsFieldsProps {
   searchParamTab: SettingsLevel
@@ -173,7 +177,7 @@ export const AllSettingsFields = forwardRef(
                   `}
           >
             <div className="flex flex-col items-start gap-4">
-              {isDesktop() && (
+              {canRevealInFileExplorer() && (
                 <ActionButton
                   Element="button"
                   onClick={toSync(async () => {
@@ -182,7 +186,7 @@ export const AllSettingsFields = forwardRef(
                     if (!finalPath) {
                       return new Error('finalPath undefined')
                     }
-                    window.electron?.showInFolder(finalPath)
+                    revealInFileExplorer(finalPath)
                   }, reportRejection)}
                   iconStart={{
                     icon: 'folder',

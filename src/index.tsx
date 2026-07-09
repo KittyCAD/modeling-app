@@ -1,23 +1,23 @@
 import { AppStreamProvider } from '@src/AppState'
+import { Router } from '@src/Router'
 import ReactDOM from 'react-dom/client'
 import toast, { Toaster } from 'react-hot-toast'
 import { HotkeysProvider } from 'react-hotkeys-hook'
 import ModalContainer from 'react-modal-promise'
-import { Router } from '@src/Router'
 import '@src/index.css'
+import type { App } from '@src/lib/app'
 import {
   clearAutoUpdateDownloadProgress,
-  setAutoUpdateReady,
   setAutoUpdateDownloadProgress,
+  setAutoUpdateReady,
 } from '@src/lib/autoUpdate'
+import { AppContext, app } from '@src/lib/boot'
 import { createApplicationCommands } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { initializeWindowExceptionHandler } from '@src/lib/exceptions'
+import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
 import { markOnce } from '@src/lib/performance'
-import type { App } from '@src/lib/app'
 import { reportRejection } from '@src/lib/trap'
 import reportWebVitals from '@src/reportWebVitals'
-import monkeyPatchForBrowserTranslation from '@src/lib/monkeyPatchBrowserTranslate'
-import { app, AppContext } from '@src/lib/boot'
 
 // Here's the entry-point for the whole app 🚀
 launchApp(app)

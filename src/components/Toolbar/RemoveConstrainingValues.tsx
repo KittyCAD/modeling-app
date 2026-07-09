@@ -1,20 +1,20 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
+import type { KclManager } from '@src/lang/KclManager'
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
-import type { PathToNodeMap } from '@src/lang/util'
 import {
   getRemoveConstraintsTransforms,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { PathToNodeMap } from '@src/lang/util'
 import { topLevelRange } from '@src/lang/util'
 import type { Expr, PathToNode, Program } from '@src/lang/wasm'
-import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
-import type { KclManager } from '@src/lang/KclManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export function removeConstrainingValuesInfo(
   pathToNodes: Array<PathToNode>,

@@ -34,8 +34,11 @@ description: Operations executed sketch_block_basic_fixed_constraints.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
       "nodePath": {
         "steps": [
           {
@@ -51,6 +54,9 @@ description: Operations executed sketch_block_basic_fixed_constraints.kcl
         ]
       },
       "sourceRange": []
+    },
+    {
+      "type": "GroupEnd"
     }
   ],
   "std::math": [

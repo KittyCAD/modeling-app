@@ -1,27 +1,27 @@
 import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DISTANCE_CONSTRAINT_BODY } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import { getAngleDiff } from '@src/lib/utils'
+import { getPolarAngle2d } from '@src/lib/utils2d'
+import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 import type { ConstraintResources } from '@src/machines/sketchSolve/constraints/ConstraintResources'
 import {
+  createDimensionLine,
+  updateDimensionLine,
+} from '@src/machines/sketchSolve/constraints/DimensionLine'
+import {
+  type DiameterConstraint,
+  type RadiusConstraint,
   isArcLikeSegment,
   isArcSegment,
   isDiameterConstraint,
   isPointSegment,
   isRadiusConstraint,
   pointToVec3,
-  type DiameterConstraint,
-  type RadiusConstraint,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { type Group, Vector3 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry'
-import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
-import {
-  createDimensionLine,
-  updateDimensionLine,
-} from '@src/machines/sketchSolve/constraints/DimensionLine'
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import { getAngleDiff } from '@src/lib/utils'
-import { getPolarAngle2d } from '@src/lib/utils2d'
 
 const EXTENSION_ARC_ROLE = 'radius-constraint-extension-arc'
 

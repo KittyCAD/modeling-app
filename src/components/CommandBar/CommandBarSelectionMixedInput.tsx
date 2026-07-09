@@ -1,22 +1,23 @@
 import { useSelector } from '@xstate/react'
 import { use, useEffect, useMemo, useRef, useState } from 'react'
 
+import type { KclManager } from '@src/lang/KclManager'
+import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type { CommandArgument } from '@src/lib/commandTypes'
+import {
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
 import {
   canSubmitSelectionArg,
   getSelectionCountByType,
   getSelectionTypeDisplayText,
   handleSelectionBatch,
 } from '@src/lib/selections'
-import { useApp } from '@src/lib/boot'
-import { coerceSelectionsToBody } from '@src/lang/std/artifactGraph'
 import { err } from '@src/lib/trap'
 import type { Selections } from '@src/machines/modelingSharedTypes'
-import {
-  setSelectionFilter,
-  setSelectionFilterToDefault,
-} from '@src/lib/selectionFilterUtils'
-import type { KclManager } from '@src/lang/KclManager'
 
 const selectionSelector = (snapshot: any) => snapshot?.context.selectionRanges
 
@@ -226,7 +227,7 @@ export default function CommandBarSelectionMixedInput({
     isMixedSelection && arg.selectionSource?.allowSceneSelection
 
   return (
-    <form id="arg-form" onSubmit={handleSubmit}>
+    <form {...noAutofillFormProps} id="arg-form" onSubmit={handleSubmit}>
       <label
         className={
           'relative flex flex-col mx-4 my-4 ' +
@@ -261,6 +262,7 @@ export default function CommandBarSelectionMixedInput({
           {arg.name}
         </span>
         <input
+          {...noAutofillInputProps}
           id="selection"
           name="selection"
           ref={inputRef}

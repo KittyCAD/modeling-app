@@ -18,13 +18,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build-wasm:
+    uses: ./.github/workflows/build-wasm.yml
+
   prepare-files:
+    needs: [build-wasm]
     runs-on: namespace-profile-ubuntu-8-cores
     outputs:
       version: ${{ steps.export_version.outputs.version }}
       notes: ${{ steps.export_notes.outputs.notes }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -33,67 +37,10 @@ jobs:
 
       - run: npm install
 
-      - id: filter
-        name: Check for Rust changes
-        uses: dorny/paths-filter@v4
+      - uses: actions/download-artifact@v8
         with:
-          filters: |
-            rust:
-              - 'rust/**'
-
-      - name: Download Wasm Cache
-        id: download-wasm
-        if: ${{ github.event_name == 'pull_request' && steps.filter.outputs.rust == 'false' }}
-        uses: dawidd6/action-download-artifact@v21
-        continue-on-error: true
-        with:
-          github_token: ${{secrets.GITHUB_TOKEN}}
-          name: wasm-bundle
-          workflow: build-wasm.yml
-          branch: main
+          name: prepared-wasm
           path: rust/kcl-wasm-lib/pkg
-
-      - name: Build Wasm condition
-        id: wasm
-        env:
-          DOWNLOAD_OUTCOME: ${{ steps.download-wasm.outcome }}
-          EVENT_NAME: ${{ github.event_name }}
-          RUST_CHANGES: ${{ steps.filter.outputs.rust }}
-        run: |
-          # Build Wasm with pushes to main, Rust changes, or cache misses
-          if [[ "${EVENT_NAME}" == 'push' || "${RUST_CHANGES}" == 'true' || "${DOWNLOAD_OUTCOME}" == 'failure' ]]; then
-            echo "should-build-wasm=true" >> $GITHUB_OUTPUT
-          else
-            echo "should-build-wasm=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Use correct Rust toolchain
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        shell: bash
-        run: |
-          [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
-
-      - name: Install rust
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: actions-rust-lang/setup-rust-toolchain@v1
-        with:
-          cache: false # Configured below.
-          rustflags: '' # Use .cargo/config.toml
-
-      - uses: taiki-e/install-action@c30ba1cbe2face7f695d394a2c95af204d417b29
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        with:
-          tool: wasm-pack
-
-      - name: Rust Cache
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: rust
-
-      - name: Run build:wasm
-        if: ${{ steps.wasm.outputs.should-build-wasm == 'true' }}
-        run: "npm run build:wasm"
 
       - name: Set staging version, product name, release notes, and icons
         if: ${{ env.IS_STAGING == 'true' }}
@@ -168,12 +115,17 @@ jobs:
     env:
       VERSION_NO_V: ${{ needs.prepare-files.outputs.version }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - uses: actions/download-artifact@v8
         with:
           name: prepared-files
           path: prepared-files
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
 
       - name: Copy prepared files
         run: |
@@ -186,6 +138,14 @@ jobs:
           cp prepared-files/release-notes.md release-notes.md
           cp prepared-files/assets/icon.ico assets/icon.ico
           cp prepared-files/assets/icon.png assets/icon.png
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - name: Sync node version and setup cache
         uses: actions/setup-node@v6.4.0
@@ -270,7 +230,7 @@ jobs:
       VERSION: ${{ format('v{0}', needs.prepare-files.outputs.version) }}
     needs: [prepare-files, build-apps]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - uses: actions/download-artifact@v8
         with:

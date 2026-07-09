@@ -4,7 +4,7 @@ import { addHide } from '@src/lang/modifyAst/transforms'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import type { Artifact } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { assertParse, recast } from '@src/lang/wasm'
+import { assertParse, getAllOperations, recast } from '@src/lang/wasm'
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
@@ -173,7 +173,7 @@ hidden001 = hide(pattern001[1])`
 
     expect(execState.issues).toEqual([])
     expect(
-      execState.operations.some(
+      getAllOperations(execState.operations).some(
         (op) => op.type === 'StdLibCall' && op.name === 'hide'
       )
     ).toBe(true)

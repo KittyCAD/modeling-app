@@ -10,7 +10,7 @@ Constrain a point to lie at the midpoint of a line segment or circular arc.
 ```kcl
 solver::midpoint(
   @input: Segment,
-  point: Segment,
+  point: Segment | Point2d,
 )
 ```
 
@@ -21,7 +21,7 @@ solver::midpoint(
 | Name | Type | Description | Required |
 |----------|------|-------------|----------|
 | `input` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The line or circular arc whose midpoint is constrained. | Yes |
-| `point` | [`Segment`](/docs/kcl-std/types/std-types-Segment) | The point to place at the midpoint. | Yes |
+| `point` | [`Segment`](/docs/kcl-std/types/std-types-Segment) or [`Point2d`](/docs/kcl-std/types/std-types-Point2d) | The point to place at the midpoint. May be a sketch point or `ORIGIN`. | Yes |
 
 
 ### Examples

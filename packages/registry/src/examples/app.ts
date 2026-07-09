@@ -1,12 +1,7 @@
 import { type ReadonlySignal, computed, signal } from '@preact/signals-core'
 import {
-  appendValueSpec,
-  defineValueSpec,
-  mergeObjectsValueSpec,
-} from '../valueSpec'
-import {
-  createSlotToggleController,
   createPlugin,
+  createSlotToggleController,
   defineRegistryItem,
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
@@ -15,7 +10,12 @@ import {
 } from '../helpers'
 import { Registry } from '../registry'
 import { defineService } from '../service'
-import { Slot, type RegistryItem } from '../types'
+import { type RegistryItem, Slot } from '../types'
+import {
+  appendValueSpec,
+  defineValueSpec,
+  mergeObjectsValueSpec,
+} from '../valueSpec'
 
 /**
  * This file is intentionally more tutorial-like than the rest of the package.

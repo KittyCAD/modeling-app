@@ -1,24 +1,34 @@
-import Fuse from 'fuse.js'
-import { useEffect, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-
+import { useSignalEffect } from '@preact/signals-react'
 import { CustomIcon } from '@src/components/CustomIcon'
-import type { Project } from '@src/lib/project'
+import { noAutofillInputProps } from '@src/lib/autofill'
+import { projectSearchFocusRequest } from '@src/lib/searchFocusRequests'
+import Fuse from 'fuse.js'
+import { useMemo, useRef, useState } from 'react'
 
-export function useProjectSearch(projects: Project[] | undefined) {
+type SearchableProject = {
+  name?: string
+  title?: string
+}
+
+export function useProjectSearch<T extends SearchableProject>(
+  projects: T[] | undefined
+) {
   const [query, setQuery] = useState('')
-  const [searchResults, setSearchResults] = useState(projects)
-
-  const fuse = new Fuse(projects ?? [], {
-    keys: [{ name: 'name', weight: 0.7 }],
-    includeScore: true,
-  })
-
-  useEffect(() => {
+  const fuse = useMemo(
+    () =>
+      new Fuse(projects ?? [], {
+        keys: [
+          { name: 'title', weight: 0.8 },
+          { name: 'name', weight: 0.2 },
+        ],
+        includeScore: true,
+      }),
+    [projects]
+  )
+  const searchResults = useMemo(() => {
     const results = fuse.search(query).map((result) => result.item)
-    setSearchResults(query.length > 0 ? results : (projects ?? []))
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [query, projects])
+    return query.length > 0 ? results : (projects ?? [])
+  }, [fuse, projects, query])
 
   return {
     searchResults,
@@ -29,26 +39,21 @@ export function useProjectSearch(projects: Project[] | undefined) {
 
 export function ProjectSearchBar({
   setQuery,
+  keybinding,
 }: {
   setQuery: (query: string) => void
+  keybinding?: string
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
-  useHotkeys(
-    'Ctrl+.',
-    (event) => {
-      event.preventDefault()
-      inputRef.current?.focus()
-    },
-    { enableOnFormTags: true }
-  )
-  useHotkeys(
-    'mod+f',
-    (event) => {
-      event.preventDefault()
-      inputRef.current?.focus()
-    },
-    { enableOnFormTags: true }
-  )
+  const lastHandledFocusRequest = useRef(projectSearchFocusRequest.value)
+  useSignalEffect(() => {
+    const request = projectSearchFocusRequest.value
+    if (request === lastHandledFocusRequest.current) {
+      return
+    }
+    lastHandledFocusRequest.current = request
+    inputRef.current?.focus()
+  })
 
   return (
     <div className="relative group">
@@ -58,14 +63,13 @@ export function ProjectSearchBar({
           className="w-5 h-5 rounded-sm bg-primary/10 dark:bg-transparent text-primary dark:text-chalkboard-10 group-focus-within:bg-primary group-focus-within:text-chalkboard-10"
         />
         <input
+          {...noAutofillInputProps}
           ref={inputRef}
           onChange={(event) => setQuery(event.target.value)}
           className="w-full text-sm bg-transparent focus:outline-none selection:bg-primary/20 dark:selection:bg-primary/40 dark:focus:outline-none"
-          placeholder="Search projects (Ctrl+.)"
-          autoCapitalize="off"
-          autoComplete="off"
-          autoCorrect="off"
-          spellCheck="false"
+          placeholder={
+            keybinding ? `Search projects (${keybinding})` : 'Search projects'
+          }
         />
       </div>
     </div>

@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 
 import type { ArtifactGraph } from '@src/lang/wasm'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
 import { constructMultiFileIterationRequestWithPromptHelpers } from '@src/lib/promptToEdit'
 import type { FileMeta } from '@src/lib/types'
@@ -55,5 +55,39 @@ describe('constructMultiFileIterationRequestWithPromptHelpers', () => {
       file: 'newFile.kcl',
       prompt: 'This is the active file',
     })
+  })
+
+  it('returns a forward-slash activeFile for nested files', () => {
+    // activeFile is sent as `active_file` to the ML/Zookeeper service, which
+    // matches it against the posix-keyed project files; on Windows the relative
+    // path is joined with backslashes, so it must be normalized.
+    const currentFileEntry: FileEntry = {
+      path: '/projects/zoo-project/parts/bracket.kcl',
+      name: 'bracket.kcl',
+      children: null,
+    }
+    const projectFiles: FileMeta[] = [
+      {
+        type: 'kcl',
+        relPath: 'parts/bracket.kcl',
+        absPath: '/projects/zoo-project/parts/bracket.kcl',
+        fileContents: 'bracket = 1\n',
+        execStateFileNamesIndex: 0,
+      },
+    ]
+
+    const request = constructMultiFileIterationRequestWithPromptHelpers({
+      prompt: 'change the bracket',
+      selections: null,
+      projectFiles,
+      applicationProjectDirectory: '/projects',
+      artifactGraph: {} as ArtifactGraph,
+      projectName: 'zoo-project',
+      currentFile: { entry: currentFileEntry, content: 'bracket = 1\n' },
+      kclVersion: '1.0.0',
+    })
+
+    expect(request.activeFile).toBe('parts/bracket.kcl')
+    expect(request.activeFile).not.toContain('\\')
   })
 })

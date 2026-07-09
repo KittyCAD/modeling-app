@@ -5,6 +5,21 @@ description: Operations executed car-wheel-assembly.kcl
 {
   "public/kcl-samples/car-wheel-assembly/brake-rotor.kcl": [
     {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "VariableDeclaration",
       "name": "bellOuterFaceOffset",
       "value": {
@@ -104,6 +119,28 @@ description: Operations executed car-wheel-assembly.kcl
           {
             "type": "ProgramBodyItem",
             "index": 4
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 5
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -1745,23 +1782,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 5
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -1822,6 +1843,28 @@ description: Operations executed car-wheel-assembly.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 50
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 8
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -2088,23 +2131,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 50,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 8
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -2641,6 +2668,28 @@ description: Operations executed car-wheel-assembly.kcl
           {
             "type": "ProgramBodyItem",
             "index": 12
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 58
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 13
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -3549,23 +3598,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 58,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 13
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -4158,6 +4191,28 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 84
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
       "type": "StdLibCall",
       "name": "circle",
       "unlabeledArg": null,
@@ -4518,23 +4573,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 84,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -4755,6 +4794,43 @@ description: Operations executed car-wheel-assembly.kcl
     }
   ],
   "public/kcl-samples/car-wheel-assembly/car-tire.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "line",
@@ -7322,23 +7398,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -7696,6 +7756,43 @@ description: Operations executed car-wheel-assembly.kcl
     }
   ],
   "public/kcl-samples/car-wheel-assembly/car-wheel.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "line",
@@ -8483,23 +8580,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -8702,6 +8783,28 @@ description: Operations executed car-wheel-assembly.kcl
           {
             "type": "ProgramBodyItem",
             "index": 5
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 27
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 6
           },
           {
             "type": "VariableDeclarationDeclaration"
@@ -9971,23 +10074,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 27,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 6
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -10208,6 +10295,28 @@ description: Operations executed car-wheel-assembly.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 68
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 10
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -13358,23 +13467,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 68,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 10
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -13519,6 +13612,28 @@ description: Operations executed car-wheel-assembly.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 166
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 14
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -14494,23 +14609,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 166,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 14
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -14712,6 +14811,28 @@ description: Operations executed car-wheel-assembly.kcl
           },
           {
             "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 198
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 18
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
           }
         ]
       },
@@ -16445,23 +16566,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 198,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 18
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -16867,6 +16972,43 @@ description: Operations executed car-wheel-assembly.kcl
     }
   ],
   "public/kcl-samples/car-wheel-assembly/lug-nut.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 2
+          },
+          {
+            "type": "VariableDeclarationDeclaration"
+          },
+          {
+            "type": "VariableDeclarationInit"
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "line",
@@ -17680,23 +17822,7 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "SketchSolve",
-      "sketchId": 1,
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 2
-          },
-          {
-            "type": "VariableDeclarationDeclaration"
-          },
-          {
-            "type": "VariableDeclarationInit"
-          }
-        ]
-      },
-      "sourceRange": []
+      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",
@@ -17912,12 +18038,10 @@ description: Operations executed car-wheel-assembly.kcl
   ],
   "public/kcl-samples/car-wheel-assembly/main.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "parameters.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "parameters",
+      "moduleId": 0,
+      "glob": true,
       "nodePath": {
         "steps": [
           {
@@ -17929,15 +18053,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "brake-rotor.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "brakeRotor",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -17949,15 +18067,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "car-tire.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "carTire",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -17969,15 +18081,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "car-wheel.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "carWheel",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -17989,15 +18095,9 @@ description: Operations executed car-wheel-assembly.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "lug-nut.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "lugNut",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -18007,9 +18107,6 @@ description: Operations executed car-wheel-assembly.kcl
         ]
       },
       "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
     },
     {
       "type": "StdLibCall",

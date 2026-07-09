@@ -221,7 +221,7 @@ test.describe('Testing segment overlays', { tag: '@desktop' }, () => {
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // wait for execution done
 
@@ -353,7 +353,7 @@ profile001 = startProfile(sketch001, at = [15, 15])
 
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await toolbar.waitForFeatureTreeToBeBuilt()
     await toolbar.editSketch(0)
@@ -440,7 +440,7 @@ profile003 = startProfile(sketch001, at = [64.39, 35.16])
 
     await homePage.goToModelingScene()
     await scene.connectionEstablished()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     // Click on the line before the arc to enter edit mode
     await page.getByText('line(end = [60.69, 23.02])').click()

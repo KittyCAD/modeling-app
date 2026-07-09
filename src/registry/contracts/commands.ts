@@ -15,7 +15,7 @@ export type CommandSystemService = {
 }
 
 export const commandKey = (command: Command) =>
-  `${command.groupId}:${String(command.name)}`
+  command.id ?? `${command.groupId}:${String(command.name)}`
 
 export const commandsContract = defineContract({
   commandSystemService: defineService<CommandSystemService>('command-system'),

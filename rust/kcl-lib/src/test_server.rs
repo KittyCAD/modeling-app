@@ -143,11 +143,11 @@ async fn do_execute(
     let mut exec_state = ExecState::new(ctx);
     let result = ctx.run(&program, &mut exec_state).await;
     let responses = if result.is_err() {
-        #[cfg(all(feature = "artifact-graph", feature = "snapshot-engine-responses"))]
+        #[cfg(feature = "snapshot-engine-responses")]
         {
             Some(exec_state.take_root_module_responses())
         }
-        #[cfg(not(all(feature = "artifact-graph", feature = "snapshot-engine-responses")))]
+        #[cfg(not(feature = "snapshot-engine-responses"))]
         None
     } else {
         None
@@ -206,6 +206,9 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
         project_directory: None,
         current_file: None,
         fixed_size_grid: true,
+        skip_artifact_graph: false,
+        heartbeats: None,
+        default_backface_color: Some("#00D5FF".to_owned()),
     };
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));

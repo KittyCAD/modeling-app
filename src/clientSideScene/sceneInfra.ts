@@ -28,20 +28,20 @@ import {
   Y_AXIS,
 } from '@src/clientSideScene/sceneUtils'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
-import type { Coords2d } from '@src/lang/util'
 import { vec2WithinDistance } from '@src/lang/std/sketch'
-import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
+import type { Coords2d } from '@src/lang/util'
 import { type BaseUnit } from '@src/lib/settings/settingsTypes'
 import { Signal as LegacySignal } from '@src/lib/signal'
 import { Themes } from '@src/lib/theme'
 import { baseUnitToMm, getAngle, getLength } from '@src/lib/utils'
+import type { Axis, NonCodeSelection } from '@src/machines/modelingSharedTypes'
 import type {
   MouseState,
   SegmentOverlayPayload,
 } from '@src/machines/modelingSharedTypes'
 
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type SendType = ReturnType<typeof useModelingContext>['send']
 
@@ -211,7 +211,7 @@ export class SceneInfra {
     })
   }
 
-  modelingSend: SendType = (() => {}) as any
+  modelingSend: SendType = () => {}
 
   setSend(send: SendType) {
     this.modelingSend = send
@@ -793,6 +793,10 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
+    if (event.button !== 0) {
+      return
+    }
+
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
@@ -842,6 +846,10 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
+    if (mouseEvent.button !== 0) {
+      return
+    }
+
     const wasmInstance = await this.wasmInstancePromise
     this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()

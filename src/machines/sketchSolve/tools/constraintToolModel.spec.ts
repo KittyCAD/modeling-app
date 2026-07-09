@@ -74,7 +74,7 @@ describe('constraintToolModel', () => {
     ])
   })
 
-  it('recognizes midpoint selections in either point-line order', () => {
+  it('recognizes midpoint selections in point/origin and line/arc order', () => {
     const point = createPointApiObject({ id: 1 })
     const lineStart = createPointApiObject({ id: 2 })
     const lineEnd = createPointApiObject({ id: 3 })
@@ -113,6 +113,38 @@ describe('constraintToolModel', () => {
     )
     expect(arcPoint.status).toBe('complete')
     expect(arcPoint.bestMatch?.mode.id).toBe('arc-point')
+
+    const originLine = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 10],
+      objects
+    )
+    expect(originLine.status).toBe('complete')
+    expect(originLine.bestMatch?.mode.id).toBe('origin-line')
+
+    const lineOrigin = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [10, ORIGIN_TARGET],
+      objects
+    )
+    expect(lineOrigin.status).toBe('complete')
+    expect(lineOrigin.bestMatch?.mode.id).toBe('line-origin')
+
+    const originArc = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [ORIGIN_TARGET, 11],
+      objects
+    )
+    expect(originArc.status).toBe('complete')
+    expect(originArc.bestMatch?.mode.id).toBe('origin-arc')
+
+    const arcOrigin = getConstraintToolSelectionMatches(
+      'midpointConstraintTool',
+      [11, ORIGIN_TARGET],
+      objects
+    )
+    expect(arcOrigin.status).toBe('complete')
+    expect(arcOrigin.bestMatch?.mode.id).toBe('arc-origin')
   })
 
   it('classifies sketch solve selections into reusable kinds', () => {
@@ -145,7 +177,7 @@ describe('constraintToolModel', () => {
     )
   })
 
-  it('recognizes horizontal selections for both line and point-pair modes', () => {
+  it('recognizes horizontal and vertical selections for line and point-pair modes', () => {
     const point = createPointApiObject({ id: 1 })
     const secondPoint = createPointApiObject({ id: 2 })
     const line = createLineApiObject({ id: 3, start: 1, end: 2 })
@@ -176,8 +208,17 @@ describe('constraintToolModel', () => {
     )
     expect(pointPair.status).toBe('complete')
     expect(pointPair.bestMatch?.mode.id).toBe('point-pair')
-    expect(pointPair.bestMatch?.mode.resultingConstraintType).toBe(
-      'VerticalDistance'
+    expect(pointPair.bestMatch?.mode.resultingConstraintType).toBe('Horizontal')
+
+    const verticalPointPair = getConstraintToolSelectionMatches(
+      'verticalConstraintTool',
+      [1, ORIGIN_TARGET],
+      objects
+    )
+    expect(verticalPointPair.status).toBe('complete')
+    expect(verticalPointPair.bestMatch?.mode.id).toBe('point-pair')
+    expect(verticalPointPair.bestMatch?.mode.resultingConstraintType).toBe(
+      'Vertical'
     )
   })
 

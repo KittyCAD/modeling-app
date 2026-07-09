@@ -1,22 +1,43 @@
 import { Dialog, Transition } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { Fragment, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 
+import { pluginsValueSpec } from '@kittycad/registry'
 import { CustomIcon } from '@src/components/CustomIcon'
+import { PluginsList } from '@src/components/PluginList'
 import { AllKeybindingsFields } from '@src/components/Settings/AllKeybindingsFields'
 import { AllSettingsFields } from '@src/components/Settings/AllSettingsFields'
-import { KeybindingsSectionsList } from '@src/components/Settings/KeybindingsSectionsList'
 import { SettingsSearchBar } from '@src/components/Settings/SettingsSearchBar'
 import { SettingsSectionsList } from '@src/components/Settings/SettingsSectionsList'
 import { SettingsTabs } from '@src/components/Settings/SettingsTabs'
+import { useApp } from '@src/lib/boot'
 import { PATHS } from '@src/lib/paths'
 import type { SettingsLevel } from '@src/lib/settings/settingsTypes'
-import { PluginsList } from '@src/components/PluginList'
-import { useApp } from '@src/lib/boot'
-import { pluginsValueSpec } from '@kittycad/registry'
+import { platform } from '@src/lib/utils'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+
+type SettingsTab = SettingsLevel | 'keybindings' | 'plugins'
+
+function isSettingsTab(tab: string | null): tab is SettingsTab {
+  return (
+    tab === 'user' ||
+    tab === 'project' ||
+    tab === 'keybindings' ||
+    tab === 'plugins'
+  )
+}
 
 export const Settings = () => {
+  useSignals()
   const app = useApp()
+  const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const close = () => {
@@ -28,11 +49,37 @@ export const Settings = () => {
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
-  const searchParamTab =
-    (searchParams.get('tab') as SettingsLevel | 'keybindings' | 'plugins') ??
-    (isFileSettings ? 'project' : 'user')
+  const defaultTab: SettingsLevel = isFileSettings ? 'project' : 'user'
+  const requestedTab = searchParams.get('tab')
+  const requestedSettingsTab = isSettingsTab(requestedTab)
+    ? requestedTab
+    : defaultTab
+  const searchParamTab = requestedSettingsTab
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const settingsSearchKeybinding = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          APP_COMMAND_IDS.search.focusSettings,
+          ['settings-open'],
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : undefined,
+    platform()
+  )
+
+  useEffect(() => {
+    if (!keymap) {
+      return
+    }
+
+    keymap.applyScope('settings-open')
+
+    return () => {
+      keymap.removeScope('settings-open')
+    }
+  }, [keymap])
 
   // Scroll to the hash on load if it exists
   useEffect(() => {
@@ -40,7 +87,8 @@ export const Settings = () => {
     if (location.hash) {
       setTimeout(() => {
         // GOTCHA: Next tick required, you can instantly navigate to a path and this code will find a null element and not scroll into view.
-        const element = document.getElementById(location.hash.slice(1))
+        const elementID = decodeURIComponent(location.hash.slice(1))
+        const element = document.getElementById(elementID)
         if (element) {
           element.scrollIntoView({ block: 'center', behavior: 'smooth' })
           ;(
@@ -82,13 +130,14 @@ export const Settings = () => {
         >
           <Dialog.Panel
             data-testid="settings-dialog-panel"
-            className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 max-w-3xl w-full max-h-[66vh] shadow-lg flex flex-col gap-8"
+            className="rounded relative mx-auto bg-chalkboard-10 dark:bg-chalkboard-100 border dark:border-chalkboard-70 w-[90vw] h-[80vh] max-h-[calc(100vh-2rem)] shadow-lg flex flex-col gap-8"
           >
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
-                <SettingsSearchBar />
+                <SettingsSearchBar keybinding={settingsSearchKeybinding} />
                 <button
+                  type="button"
                   onClick={close}
                   className="p-0 m-0 focus:ring-0 focus:outline-none border-none hover:bg-destroy-10 focus:bg-destroy-10 dark:hover:bg-destroy-80/50 dark:focus:bg-destroy-80/50"
                   data-testid="settings-close-button"
@@ -105,7 +154,10 @@ export const Settings = () => {
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
               style={{
-                gridTemplateColumns: 'auto 1fr',
+                gridTemplateColumns:
+                  searchParamTab === 'user' || searchParamTab === 'project'
+                    ? 'auto 1fr'
+                    : '1fr',
                 gridTemplateRows: '1fr',
               }}
             >
@@ -122,17 +174,14 @@ export const Settings = () => {
                   />
                 </>
               ) : searchParamTab === 'keybindings' ? (
-                <>
-                  <KeybindingsSectionsList scrollRef={scrollRef} />
-                  <AllKeybindingsFields ref={scrollRef} />
-                </>
-              ) : (
+                <AllKeybindingsFields ref={scrollRef} />
+              ) : searchParamTab === 'plugins' ? (
                 <PluginsList
                   ref={scrollRef}
                   registry={app.registry}
                   plugins={app.registry.signal(pluginsValueSpec).value}
                 />
-              )}
+              ) : null}
             </div>
           </Dialog.Panel>
         </Transition.Child>

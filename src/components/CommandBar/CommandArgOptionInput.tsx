@@ -4,11 +4,12 @@ import Fuse from 'fuse.js'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AnyStateMachine, StateFrom } from 'xstate'
 
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import { useApp } from '@src/lib/boot'
 import type {
   CommandArgument,
   CommandArgumentOption,
 } from '@src/lib/commandTypes'
-import { useApp } from '@src/lib/boot'
 
 const contextSelector = (snapshot: StateFrom<AnyStateMachine> | undefined) =>
   snapshot?.context
@@ -119,6 +120,7 @@ function CommandArgOptionInput({
 
   return (
     <form
+      {...noAutofillFormProps}
       id="arg-form"
       onSubmit={handleSubmit}
       ref={formRef}
@@ -144,6 +146,7 @@ function CommandArgOptionInput({
             {argName}
           </label>
           <Combobox.Input
+            {...noAutofillInputProps}
             id="option-input"
             data-testid="cmd-bar-arg-value"
             ref={inputRef}
@@ -171,10 +174,6 @@ function CommandArgOptionInput({
               argName ||
               'Select an option'
             }
-            autoCapitalize="off"
-            autoComplete="off"
-            autoCorrect="off"
-            spellCheck="false"
             autoFocus
           />
         </div>

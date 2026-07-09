@@ -1,6 +1,6 @@
 import env from '@src/env'
-import fsZds from '@src/lib/fs-zds'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import type { App } from '@src/lib/app'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
@@ -8,27 +8,28 @@ import {
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
+import { exportProjectZip } from '@src/lib/exportProjectZip'
+import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
+import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
 import {
-  getStringAfterLastSeparator,
   getEXTNoPeriod,
+  getStringAfterLastSeparator,
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type { RequestedKCLFile } from '@src/machines/systemIO/utils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import toast from 'react-hot-toast'
 import type { ActorRefFrom } from 'xstate'
-import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import type { App } from '@src/lib/app'
 
 function onSubmitKCLSampleCreation({
   sample,
@@ -218,6 +219,7 @@ export function createApplicationCommands({
                 entryName: fileNameWithExtension,
                 baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
                 wasmInstance,
+                preserveUnknownExtension: true,
               })
                 .then(({ path }) => {
                   return fsZds.writeFile(path, fileData)
@@ -358,6 +360,10 @@ export function createApplicationCommands({
           {
             name: `Import ${relevantFileExtensions(wasmInstance).map((f) => ` .${f}`)}`,
             extensions: relevantFileExtensions(wasmInstance),
+          },
+          {
+            name: 'All files',
+            extensions: ['*'],
           },
         ],
       },
@@ -621,8 +627,30 @@ export function createApplicationCommands({
     },
   }
 
+  const exportProjectZipCommand: Command = {
+    name: 'export-project-zip',
+    displayName: 'Download project files',
+    description: 'Download every file in the current project as a ZIP archive.',
+    needsReview: false,
+    icon: 'download',
+    groupId: 'application',
+    onSubmit: async () => {
+      const project = app.project?.projectIORefSignal.value
+      const executingEditor = app.project?.executingEditor.value
+      const wasmInstance = await app.wasmPromise
+
+      await exportProjectZip({
+        project,
+        currentFilePath: app.project?.executingPath,
+        currentFileContents: executingEditor?.code,
+        wasmInstance,
+      })
+    },
+  }
+
   return [
     addKCLFileToProject,
+    ...(!isDesktop() ? [exportProjectZipCommand] : []),
     ...(isDesktop() ? [checkForUpdatesCommand] : []),
     resetLayoutCommand,
     setLayoutCommand,

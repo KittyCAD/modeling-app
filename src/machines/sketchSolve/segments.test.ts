@@ -1,16 +1,16 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
-import {
-  DARK_CONSTRAINED_COLOR,
-  deriveSegmentFreedom,
-  getSegmentColor,
-  getPointSegmentScale,
-  getSegmentLineWidth,
-  LIGHT_CONSTRAINED_COLOR,
-} from '@src/machines/sketchSolve/segmentsUtils'
 import type { ApiObject, Freedom } from '@rust/kcl-lib/bindings/FrontendApi'
 import { SKETCH_SELECTION_COLOR } from '@src/lib/constants'
 import { Themes } from '@src/lib/theme'
+import {
+  DARK_CONSTRAINED_COLOR,
+  LIGHT_CONSTRAINED_COLOR,
+  deriveSegmentFreedom,
+  getPointSegmentScale,
+  getSegmentColor,
+  getSegmentLineWidth,
+} from '@src/machines/sketchSolve/segmentsUtils'
 
 // Helper to create a point object
 function createPointObject(id: number, freedom: Freedom): ApiObject {
@@ -139,6 +139,37 @@ function createCircleSegmentObject(
             x: { type: 'Var', value: 0, units: 'Mm' },
             y: { type: 'Var', value: 0, units: 'Mm' },
           },
+          construction: false,
+        },
+        ctor_applicable: false,
+        construction: false,
+      },
+    },
+    label: '',
+    comments: '',
+    artifact_id: '0',
+    source: { type: 'Simple', range: [0, 0, 0], node_path: null },
+  }
+}
+
+function createControlPointSplineSegmentObject(
+  id: number,
+  controlIds: number[]
+): ApiObject {
+  return {
+    id,
+    kind: {
+      type: 'Segment',
+      segment: {
+        type: 'ControlPointSpline',
+        controls: controlIds,
+        degree: Math.min(3, Math.max(1, controlIds.length - 1)),
+        ctor: {
+          type: 'ControlPointSpline',
+          points: controlIds.map(() => ({
+            x: { type: 'Var', value: 0, units: 'Mm' },
+            y: { type: 'Var', value: 0, units: 'Mm' },
+          })),
           construction: false,
         },
         ctor_applicable: false,
@@ -425,6 +456,28 @@ describe('deriveSegmentFreedom', () => {
       const objects = [centerPoint, startPoint, circle]
 
       expect(deriveSegmentFreedom(circle, objects)).toBe('Conflict')
+    })
+  })
+
+  describe('ControlPointSpline segments', () => {
+    it('should return Fixed when all control points are Fixed', () => {
+      const p1 = createPointObject(1, 'Fixed')
+      const p2 = createPointObject(2, 'Fixed')
+      const p3 = createPointObject(3, 'Fixed')
+      const spline = createControlPointSplineSegmentObject(4, [1, 2, 3])
+      const objects = [p1, p2, p3, spline]
+
+      expect(deriveSegmentFreedom(spline, objects)).toBe('Fixed')
+    })
+
+    it('should return Free when any control point is Free', () => {
+      const p1 = createPointObject(1, 'Fixed')
+      const p2 = createPointObject(2, 'Free')
+      const p3 = createPointObject(3, 'Fixed')
+      const spline = createControlPointSplineSegmentObject(4, [1, 2, 3])
+      const objects = [p1, p2, p3, spline]
+
+      expect(deriveSegmentFreedom(spline, objects)).toBe('Free')
     })
   })
 })

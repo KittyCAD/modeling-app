@@ -73,27 +73,27 @@ import {
   SEGMENT_LENGTH_LABEL_TEXT,
 } from '@src/clientSideScene/sceneUtils'
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
+import type { KclManager } from '@src/lang/KclManager'
 import { ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
-import type { Coords2d } from '@src/lang/util'
 import type { SegmentInputs } from '@src/lang/std/stdTypes'
+import type { Coords2d } from '@src/lang/util'
 import type { PathToNode } from '@src/lang/wasm'
 import { getTangentialArcToInfo } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { Themes } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
 import { err } from '@src/lib/trap'
 import { isClockwise, normaliseAngle, roundOff } from '@src/lib/utils'
 import { getTangentPointFromPreviousArc } from '@src/lib/utils2d'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   SegmentOverlay,
   SegmentOverlayPayload,
   SegmentOverlays,
 } from '@src/machines/modelingSharedTypes'
 import toast from 'react-hot-toast'
-import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { ActorRefFrom } from 'xstate'
-import type { KclManager } from '@src/lang/KclManager'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 const ANGLE_INDICATOR_RADIUS = 30 // in px
 interface CreateSegmentArgs {

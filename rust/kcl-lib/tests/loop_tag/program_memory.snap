@@ -13,8 +13,7 @@ description: Variables in memory after executing loop_tag.kcl
     }
   },
   "calculatePoint": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   },
   "closedSketch": {
     "type": "Sketch",

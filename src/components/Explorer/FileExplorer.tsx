@@ -1,21 +1,22 @@
 import { ContextMenu, ContextMenuItem } from '@src/components/ContextMenu'
 import { CustomIcon } from '@src/components/CustomIcon'
 import {
+  type FileExplorerDropData,
   type FileExplorerEntry,
   type FileExplorerRender,
   type FileExplorerRow,
   type FileExplorerRowContextMenuProps,
-  type FileExplorerDropData,
+  isExternalFileDrag,
   isRowFake,
   shouldDroppedEntryBeMoved,
-  isExternalFileDrag,
 } from '@src/components/Explorer/utils'
-import { DeleteConfirmationDialog } from '@src/components/ProjectCard/DeleteProjectDialog'
+import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
+import { noAutofillFormProps, noAutofillInputProps } from '@src/lib/autofill'
+import fsZds from '@src/lib/fs-zds'
 import type { MaybePressOrBlur, SubmitByPressOrBlur } from '@src/lib/types'
 import { uuidv4 } from '@src/lib/utils'
-import type { Dispatch } from 'react'
+import type { ProjectExplorerRowContextMenuItem } from '@src/registry/contracts/projectExplorer'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import fsZds from '@src/lib/fs-zds'
 
 export const StatusDot = () => {
   return <span className="text-primary hue-rotate-90">•</span>
@@ -66,18 +67,26 @@ export const FileExplorer = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isDeleting,
   isCopying,
+  isInteractionDisabled,
   isExternalDragOver,
   highlightedEntry,
+  rowContextMenuItems = [],
+  onDeleteEnd,
   onExternalDragOverRow,
 }: {
   rowsToRender: FileExplorerRow[]
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isDeleting: boolean
   isCopying: boolean
+  isInteractionDisabled: boolean
   isExternalDragOver?: boolean
   highlightedEntry?: FileExplorerEntry | null
+  rowContextMenuItems?: readonly ProjectExplorerRowContextMenuItem[]
+  onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   return (
@@ -102,9 +111,13 @@ export const FileExplorer = ({
             selectedRow={selectedRow}
             contextMenuRow={contextMenuRow}
             isRenaming={isRenaming}
+            isDeleting={isDeleting}
             isCopying={isCopying}
+            isInteractionDisabled={isInteractionDisabled}
             isExternalDragHighlighted={isHighlighted}
             isExternalDragOver={isExternalDragOver}
+            rowContextMenuItems={rowContextMenuItems}
+            onDeleteEnd={onDeleteEnd}
             onExternalDragOverRow={onExternalDragOverRow}
           />
         )
@@ -118,6 +131,7 @@ export const FileExplorer = ({
  */
 function FileExplorerRowContextMenu({
   itemRef,
+  row,
   onRename,
   onDelete,
   onCopy,
@@ -125,7 +139,31 @@ function FileExplorerRowContextMenu({
   callback,
   onPaste,
   isCopying,
+  rowContextMenuItems,
 }: FileExplorerRowContextMenuProps) {
+  const extensionItems = rowContextMenuItems.flatMap((item) => {
+    const context = { row }
+    if (item.isVisible && !item.isVisible(context)) {
+      return []
+    }
+
+    const disabled =
+      typeof item.disabled === 'function'
+        ? item.disabled(context)
+        : item.disabled
+
+    return [
+      <ContextMenuItem
+        key={item.id}
+        data-testid={item.dataTestId}
+        disabled={disabled}
+        onClick={() => item.onSelect(context)}
+      >
+        {item.label}
+      </ContextMenuItem>,
+    ]
+  })
+
   return (
     <ContextMenu
       menuTargetElement={itemRef}
@@ -153,6 +191,7 @@ function FileExplorerRowContextMenu({
         >
           Open in new window
         </ContextMenuItem>,
+        ...extensionItems,
       ]}
     />
   )
@@ -193,16 +232,15 @@ function RenameForm({
   }
   const formattedPlaceHolder = isRowFake(row) ? '' : row.name
   return (
-    <form onKeyUp={handleRenameSubmit}>
+    <form {...noAutofillFormProps} onKeyUp={handleRenameSubmit}>
       <label>
         <span className="sr-only">Rename file</span>
         <input
+          {...noAutofillInputProps}
           data-testid="file-rename-field"
           ref={inputRef}
           type="text"
           autoFocus
-          autoCapitalize="off"
-          autoCorrect="off"
           placeholder={formattedPlaceHolder}
           className="p-1 overflow-hidden whitespace-nowrap text-ellipsis py-1 bg-transparent outline outline-primary -outline-offset-4 text-chalkboard-100 placeholder:text-chalkboard-70 dark:text-chalkboard-10 dark:placeholder:text-chalkboard-50 focus:ring-0"
           onKeyDown={handleKeyDown}
@@ -218,18 +256,18 @@ function RenameForm({
 
 function DeleteFileTreeItemDialog({
   row,
-  setIsOpen,
+  onDismiss,
 }: {
   row: FileExplorerRender
-  setIsOpen: Dispatch<React.SetStateAction<boolean>>
+  onDismiss: () => void
 }) {
   return (
     <DeleteConfirmationDialog
       title={`Delete ${row.isFolder ? 'folder' : 'file'}`}
-      onDismiss={() => setIsOpen(false)}
+      onDismiss={onDismiss}
       onConfirm={() => {
         row.onDelete()
-        setIsOpen(false)
+        onDismiss()
       }}
     >
       <p className="my-4">
@@ -253,18 +291,26 @@ export const FileExplorerRowElement = ({
   selectedRow,
   contextMenuRow,
   isRenaming,
+  isDeleting,
   isCopying,
+  isInteractionDisabled,
   isExternalDragHighlighted,
   isExternalDragOver,
+  rowContextMenuItems,
+  onDeleteEnd,
   onExternalDragOverRow,
 }: {
   row: FileExplorerRender
   selectedRow: FileExplorerEntry | null
   contextMenuRow: FileExplorerEntry | null
   isRenaming: boolean
+  isDeleting: boolean
   isCopying: boolean
+  isInteractionDisabled: boolean
   isExternalDragHighlighted?: boolean
   isExternalDragOver?: boolean
+  rowContextMenuItems: readonly ProjectExplorerRowContextMenuItem[]
+  onDeleteEnd: () => void
   onExternalDragOverRow?: (entry: FileExplorerEntry | null) => void
 }) => {
   const dragPreviewId = `drag-preview-${row.name}`
@@ -327,6 +373,7 @@ export const FileExplorerRowElement = ({
   const isIndexActive = row.domIndex === row.activeIndex
   const isContextMenuRow = contextMenuRow?.key === row.key
   const isMyRowRenaming = isContextMenuRow && isRenaming
+  const isMyRowDeleting = isContextMenuRow && isDeleting
   const [isConfirmingDelete, setIsConfirmingDelete] = useState<boolean>(false)
 
   const outlineCSS =
@@ -338,6 +385,13 @@ export const FileExplorerRowElement = ({
   const externalHighlightCSS = isExternalDragHighlighted
     ? 'ring-2 ring-inset ring-blue-500 bg-blue-500/10'
     : ''
+  const interactionCSS = isInteractionDisabled
+    ? 'cursor-wait opacity-70'
+    : 'cursor-pointer hover:outline hover:outline-1 hover:bg-gray-300/50'
+  const handleDeleteDismiss = useCallback(() => {
+    setIsConfirmingDelete(false)
+    onDeleteEnd()
+  }, [onDeleteEnd])
 
   // Complaining about role="treeitem" focus but it is reimplemented aria labels
   /* eslint-disable */
@@ -346,10 +400,11 @@ export const FileExplorerRowElement = ({
       ref={rowElementRef}
       role="treeitem"
       data-testid="file-tree-item"
-      className={`h-5 flex flex-row items-center text-xs cursor-pointer -outline-offset-1 ${outlineCSS} hover:outline hover:outline-1 hover:bg-gray-300/50 ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
+      className={`h-5 flex flex-row items-center text-xs -outline-offset-1 ${outlineCSS} ${interactionCSS} ${isSelected ? 'bg-primary/10' : ''} ${externalHighlightCSS} transition-all duration-100`}
       data-index={row.domIndex}
       data-last-element={row.domIndex === row.domLength - 1}
       data-parity={row.domIndex % 2 === 0}
+      aria-disabled={isInteractionDisabled}
       aria-setsize={row.setSize}
       aria-posinset={row.positionInSet}
       aria-label={row.name}
@@ -357,18 +412,27 @@ export const FileExplorerRowElement = ({
       aria-level={row.level + 1}
       aria-expanded={row.isFolder && row.isOpen}
       onClick={() => {
+        if (isInteractionDisabled) {
+          return
+        }
         row.onClick(row.domIndex)
       }}
       onDoubleClick={
         row.onDoubleClick
           ? (event) => {
+              if (isInteractionDisabled) {
+                return
+              }
               event.preventDefault()
               row.onDoubleClick?.(row.domIndex)
             }
           : undefined
       }
-      draggable="true"
+      draggable={!isInteractionDisabled}
       onDragOver={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -388,6 +452,9 @@ export const FileExplorerRowElement = ({
         }
       }}
       onDragLeave={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -402,6 +469,10 @@ export const FileExplorerRowElement = ({
         }
       }}
       onDragStart={(event) => {
+        if (isInteractionDisabled) {
+          event.preventDefault()
+          return
+        }
         event.dataTransfer.effectAllowed = 'move'
         event.dataTransfer.setData(
           'json',
@@ -421,6 +492,9 @@ export const FileExplorerRowElement = ({
         removeDragPreviewElem()
       }}
       onDrop={(event) => {
+        if (isInteractionDisabled) {
+          return
+        }
         event.preventDefault()
 
         if (isExternalFileDrag(event)) {
@@ -470,31 +544,35 @@ export const FileExplorerRowElement = ({
       )}
       <div className="ml-auto">{row.status}</div>
       <div style={{ width: '0.25rem' }}></div>
-      {isConfirmingDelete && (
-        <DeleteFileTreeItemDialog row={row} setIsOpen={setIsConfirmingDelete} />
+      {(isConfirmingDelete || isMyRowDeleting) && (
+        <DeleteFileTreeItemDialog row={row} onDismiss={handleDeleteDismiss} />
       )}
-      <FileExplorerRowContextMenu
-        itemRef={rowElementRef}
-        onRename={() => {
-          row.onRenameStart()
-        }}
-        onDelete={() => {
-          setIsConfirmingDelete(true)
-        }}
-        onOpenInNewWindow={() => {
-          row.onOpenInNewWindow()
-        }}
-        onCopy={() => {
-          row.onCopy()
-        }}
-        callback={() => {
-          row.onContextMenuOpen(row.domIndex)
-        }}
-        onPaste={() => {
-          row.onPaste()
-        }}
-        isCopying={isCopying}
-      />
+      {!isInteractionDisabled && (
+        <FileExplorerRowContextMenu
+          itemRef={rowElementRef}
+          row={row}
+          onRename={() => {
+            row.onRenameStart()
+          }}
+          onDelete={() => {
+            setIsConfirmingDelete(true)
+          }}
+          onOpenInNewWindow={() => {
+            row.onOpenInNewWindow()
+          }}
+          onCopy={() => {
+            row.onCopy()
+          }}
+          callback={() => {
+            row.onContextMenuOpen(row.domIndex)
+          }}
+          onPaste={() => {
+            row.onPaste()
+          }}
+          isCopying={isCopying}
+          rowContextMenuItems={rowContextMenuItems}
+        />
+      )}
     </div>
   )
 }

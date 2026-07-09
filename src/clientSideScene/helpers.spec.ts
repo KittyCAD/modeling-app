@@ -1,7 +1,7 @@
 import { Quaternion } from 'three'
 
 import { isQuaternionVertical } from '@src/clientSideScene/helpers'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('isQuaternionVertical', () => {
   it('should identify vertical quaternions', () => {

@@ -36,32 +36,9 @@ description: Operations executed assembly_non_default_units.kcl
   ],
   "rust/kcl-lib/tests/assembly_non_default_units/input.kcl": [
     {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "other2.kcl",
-        "moduleId": 0
-      },
-      "nodePath": {
-        "steps": [
-          {
-            "type": "ProgramBodyItem",
-            "index": 1
-          }
-        ]
-      },
-      "sourceRange": []
-    },
-    {
-      "type": "GroupEnd"
-    },
-    {
-      "type": "GroupBegin",
-      "group": {
-        "type": "ModuleInstance",
-        "name": "other1.kcl",
-        "moduleId": 0
-      },
+      "type": "ModuleInstance",
+      "name": "other1",
+      "moduleId": 0,
       "nodePath": {
         "steps": [
           {
@@ -73,10 +50,35 @@ description: Operations executed assembly_non_default_units.kcl
       "sourceRange": []
     },
     {
-      "type": "GroupEnd"
+      "type": "ModuleInstance",
+      "name": "other2",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 1
+          }
+        ]
+      },
+      "sourceRange": []
     }
   ],
   "rust/kcl-lib/tests/assembly_non_default_units/other1.kcl": [
+    {
+      "type": "ModuleInstance",
+      "name": "globals",
+      "moduleId": 0,
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          }
+        ]
+      },
+      "sourceRange": []
+    },
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

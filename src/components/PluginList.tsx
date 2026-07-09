@@ -1,12 +1,18 @@
-import type { ForwardedRef } from 'react'
-import { forwardRef } from 'react'
 import type {
-  Registry,
   PluginRecord,
+  Registry,
   SlotToggleController,
 } from '@kittycad/registry'
-import { useApp } from '@src/lib/boot'
 import { Toggle } from '@src/components/Toggle/Toggle'
+import { useApp } from '@src/lib/boot'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import type { DynamicBooleanSetEvent } from '@src/lib/settings/settingsTypes'
+import {
+  type ZdsPluginActivationSetting,
+  zdsPluginActivationSettingsValueSpec,
+} from '@src/registry/createZdsPlugin'
+import type { ForwardedRef } from 'react'
+import { forwardRef } from 'react'
 
 type PluginsListProps = {
   plugins: readonly PluginRecord[]
@@ -15,6 +21,15 @@ type PluginsListProps = {
 
 export const PluginsList = forwardRef(
   (props: PluginsListProps, scrollRef: ForwardedRef<HTMLDivElement>) => {
+    const app = useApp()
+    const hasCloudSyncFeature = app.userFeatures.useHas(
+      OPFS_CLOUD_FEATURE_FLAG,
+      false
+    )
+    const visiblePlugins = props.plugins.filter(
+      (plugin) => plugin.id !== 'cloud-sync' || hasCloudSyncFeature
+    )
+
     // This is how we will get the interaction map from the context
     // in the future whene franknoirot/editable-hotkeys is merged.
     // const { state } = useInteractionMapContext()
@@ -22,11 +37,14 @@ export const PluginsList = forwardRef(
     return (
       <div className="relative overflow-y-auto pb-16">
         <div ref={scrollRef} className="flex flex-col gap-12">
-          {props.plugins.map((plugin) => (
+          {visiblePlugins.map((plugin) => (
             <PluginItem
               key={plugin.id}
               plugin={plugin}
               resolvedService={props.registry.get(plugin.service)}
+              activationSetting={props.registry
+                .get(zdsPluginActivationSettingsValueSpec)
+                .find((setting) => setting.pluginId === plugin.id)}
             />
           ))}
         </div>
@@ -38,8 +56,17 @@ export const PluginsList = forwardRef(
 function PluginItem({
   plugin,
   resolvedService,
-}: { plugin: PluginRecord; resolvedService: SlotToggleController }) {
+  activationSetting,
+}: {
+  plugin: PluginRecord
+  resolvedService: SlotToggleController
+  activationSetting?: ZdsPluginActivationSetting
+}) {
   const app = useApp()
+  const setting = activationSetting ?? {
+    category: 'plugins',
+    settingName: plugin.id,
+  }
 
   return (
     <div className="my-2">
@@ -50,13 +77,15 @@ function PluginItem({
           checked={resolvedService.active.value || false}
           onChange={() => {
             const nextActive = !resolvedService.active.value
-            app.settings.actor.send({
-              type: `set.plugins.${plugin.id}`,
+            const event: DynamicBooleanSetEvent = {
+              type: `set.${setting.category}.${setting.settingName}`,
               data: {
                 level: 'user',
                 value: nextActive,
               },
-            })
+            }
+
+            app.settings.actor.send(event)
           }}
           className="flex-none"
         />

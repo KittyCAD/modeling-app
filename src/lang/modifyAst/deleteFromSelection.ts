@@ -26,7 +26,7 @@ import {
 import type {
   ArtifactGraph,
   CallExpressionKw,
-  KclValue,
+  KclValueView,
   PathToNode,
   PipeExpression,
   Program,
@@ -154,23 +154,37 @@ export async function deleteFromSelection(
   }
 
   // Below is all AST-based deletion logic
-  const varDec = getNodeFromPath<VariableDeclarator>(
+  const varDec = getNodeFromPath<VariableDeclarator | CallExpressionKw>(
     ast,
     selection?.codeRef?.pathToNode,
     wasmInstance,
     'VariableDeclarator'
   )
   if (err(varDec)) return varDec
+  const varDecNode =
+    varDec.node.type === 'VariableDeclarator' ? varDec.node : null
+  const varDecNodeInit = varDecNode?.init ?? null
+  const selectedCallExpression =
+    varDecNodeInit?.type === 'CallExpressionKw'
+      ? varDecNodeInit
+      : varDec.node.type === 'CallExpressionKw'
+        ? varDec.node
+        : null
+  const selectedCallName = selectedCallExpression?.callee.name.name ?? null
+  const isSweepLikePathSelection =
+    selection.artifact?.type === 'path' &&
+    selectedCallName !== null &&
+    ['extrude', 'revolve', 'sweep', 'loft', 'blend'].includes(selectedCallName)
 
   if (
     selection.artifact?.type === 'pattern' &&
-    varDec.node.init.type === 'PipeExpression'
+    varDecNodeInit?.type === 'PipeExpression'
   ) {
     const pipeBodyIndex = selection.codeRef.pathToNode.findIndex(
       ([key, kind]) => key === 'body' && kind === 'PipeExpression'
     )
     const pipeItemIndex = selection.codeRef.pathToNode[pipeBodyIndex + 1]?.[0]
-    if (typeof pipeItemIndex === 'number' && varDec.node.init.body.length > 1) {
+    if (typeof pipeItemIndex === 'number' && varDecNodeInit.body.length > 1) {
       const varDecClone = getNodeFromPath<VariableDeclarator>(
         astClone,
         selection.codeRef.pathToNode,
@@ -188,11 +202,11 @@ export async function deleteFromSelection(
   if (
     ((selection?.artifact?.type === 'wall' ||
       selection?.artifact?.type === 'cap') &&
-      varDec.node.init.type === 'PipeExpression') ||
+      varDecNodeInit?.type === 'PipeExpression') ||
     selection.artifact?.type === 'sweep' ||
     selection.artifact?.type === 'plane' ||
     (selection.artifact?.type === 'path' &&
-      selection.artifact.subType === 'region') ||
+      (selection.artifact.subType === 'region' || isSweepLikePathSelection)) ||
     selection.artifact?.type === 'compositeSolid' ||
     selection.artifact?.type === 'pattern' ||
     selection.artifact?.type === 'helix' ||
@@ -211,7 +225,8 @@ export async function deleteFromSelection(
       selection.artifact.type !== 'path' &&
       selection.artifact.type !== 'planeOfFace'
     ) {
-      const varDecName = varDec.node.id.name
+      if (!varDecNode) return new Error('Could not find sketch variable')
+      const varDecName = varDecNode.id.name
       traverse(astClone, {
         enter: (node, path) => {
           if (node.type === 'VariableDeclaration') {
@@ -244,8 +259,8 @@ export async function deleteFromSelection(
       if (!pathToNode) return new Error('Could not find extrude variable')
     } else {
       pathToNode = selection.codeRef.pathToNode
-      if (varDec.node.type === 'VariableDeclarator') {
-        extrudeNameToDelete = varDec.node.id.name
+      if (varDecNode) {
+        extrudeNameToDelete = varDecNode.id.name
       } else if (varDec.node.type === 'CallExpressionKw') {
         const callExp = getNodeFromPath<CallExpressionKw>(
           astClone,
@@ -268,7 +283,7 @@ export async function deleteFromSelection(
           const pathsDependingOnExtrude: {
             [id: string]: {
               path: PathToNode
-              variable: KclValue
+              variable: KclValueView
             }
           } = {}
           const roundLiteral = (x: number) =>
@@ -445,8 +460,8 @@ export async function deleteFromSelection(
     return astClone
   } else if (selection.artifact?.type === 'edgeCut') {
     return deleteEdgeTreatment(astClone, selection, wasmInstance)
-  } else if (varDec.node.init.type === 'PipeExpression') {
-    const pipeBody = varDec.node.init.body
+  } else if (varDecNodeInit?.type === 'PipeExpression') {
+    const pipeBody = varDecNodeInit.body
     const doNotDeleteProfileIfItHasBeenExtruded = !(
       selection?.artifact?.type === 'segment' && selection?.artifact?.surfaceId
     )
@@ -463,10 +478,8 @@ export async function deleteFromSelection(
     }
   } else if (
     // single expression profiles or clone
-    varDec.node.init.type === 'CallExpressionKw' &&
-    ['circleThreePoint', 'circle', 'clone'].includes(
-      varDec.node.init.callee.name.name
-    )
+    varDecNodeInit?.type === 'CallExpressionKw' &&
+    ['circleThreePoint', 'circle', 'clone'].includes(selectedCallName ?? '')
   ) {
     const varDecIndex = varDec.shallowPath[1][0] as number
     astClone.body.splice(varDecIndex, 1)

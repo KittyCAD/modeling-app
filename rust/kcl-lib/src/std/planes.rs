@@ -1,11 +1,11 @@
 //! Standard library plane helpers.
 
+use kcl_api::UnitLength;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
 use kcmc::shared::Color;
 use kittycad_modeling_cmds::ok_response::OkModelingCmdResponse;
-use kittycad_modeling_cmds::units::UnitLength;
 use kittycad_modeling_cmds::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
@@ -13,6 +13,7 @@ use super::args::TyF64;
 use super::sketch::PlaneData;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::ArtifactId;
 use crate::execution::ExecState;
 use crate::execution::KclValue;
 use crate::execution::Metadata;
@@ -21,6 +22,7 @@ use crate::execution::Plane;
 use crate::execution::PlaneInfo;
 use crate::execution::PlaneKind;
 use crate::execution::types::RuntimeType;
+use crate::front::SourceRef;
 use crate::std::Args;
 use crate::std::faces::FaceSpecifier;
 
@@ -165,21 +167,15 @@ pub(crate) async fn inner_plane_of(
     let plane_info = plane_info.make_right_handed();
 
     let plane_object_id = exec_state.next_object_id();
-    #[cfg(feature = "artifact-graph")]
-    {
-        use crate::execution::ArtifactId;
-        use crate::front::SourceRef;
-
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::new(plane_id),
-            source: SourceRef::new(args.source_range, args.node_path.clone()),
-        };
-        exec_state.add_scene_object(plane_object, args.source_range);
-    }
+    let plane_object = crate::front::Object {
+        id: plane_object_id,
+        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: ArtifactId::new(plane_id),
+        source: SourceRef::new(args.source_range, args.node_path.clone()),
+    };
+    exec_state.add_scene_object(plane_object, args.source_range);
 
     Ok(Plane {
         artifact_id: plane_id.into(),
@@ -237,20 +233,15 @@ async fn make_offset_plane_in_engine(
     args: &Args,
 ) -> Result<(), KclError> {
     let plane_object_id = exec_state.next_object_id();
-    #[cfg(feature = "artifact-graph")]
-    {
-        use crate::front::SourceRef;
-
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: plane.artifact_id,
-            source: SourceRef::new(args.source_range, args.node_path.clone()),
-        };
-        exec_state.add_scene_object(plane_object, args.source_range);
-    }
+    let plane_object = crate::front::Object {
+        id: plane_object_id,
+        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: plane.artifact_id,
+        source: SourceRef::new(args.source_range, args.node_path.clone()),
+    };
+    exec_state.add_scene_object(plane_object, args.source_range);
 
     // Create new default planes.
     let default_size = 100.0;

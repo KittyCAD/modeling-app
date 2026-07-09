@@ -25,11 +25,11 @@ import {
   updateExtraSegments,
 } from '@src/lib/selections'
 
-import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
-import type { KclManager } from '@src/lang/KclManager'
-import type RustContext from '@src/lib/rustContext'
 import type { SceneEntities } from '@src/clientSideScene/sceneEntities'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { KclManager } from '@src/lang/KclManager'
+import { getPathsFromArtifact } from '@src/lang/std/artifactGraph'
+import type RustContext from '@src/lib/rustContext'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export async function deleteSegmentsOrProfiles({

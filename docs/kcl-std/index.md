@@ -28,19 +28,29 @@ layout: manual
   * [`reduce`](/docs/kcl-std/functions/std-array-reduce)
   * [`slice`](/docs/kcl-std/functions/std-array-slice)
 * [**std::gdt**](/docs/kcl-std/modules/std-gdt)
+  * [`gdt::angularity`](/docs/kcl-std/functions/std-gdt-angularity)
   * [`gdt::annotation`](/docs/kcl-std/functions/std-gdt-annotation)
+  * [`gdt::circularity`](/docs/kcl-std/functions/std-gdt-circularity)
+  * [`gdt::concentricity`](/docs/kcl-std/functions/std-gdt-concentricity)
+  * [`gdt::cylindricity`](/docs/kcl-std/functions/std-gdt-cylindricity)
   * [`gdt::datum`](/docs/kcl-std/functions/std-gdt-datum)
   * [`gdt::distance`](/docs/kcl-std/functions/std-gdt-distance)
   * [`gdt::flatness`](/docs/kcl-std/functions/std-gdt-flatness)
+  * [`gdt::note`](/docs/kcl-std/functions/std-gdt-note)
   * [`gdt::parallelism`](/docs/kcl-std/functions/std-gdt-parallelism)
   * [`gdt::perpendicularity`](/docs/kcl-std/functions/std-gdt-perpendicularity)
   * [`gdt::position`](/docs/kcl-std/functions/std-gdt-position)
   * [`gdt::profile`](/docs/kcl-std/functions/std-gdt-profile)
-* [**std::gear**](/docs/kcl-std/modules/std-gear)
-  * [`gear::helical`](/docs/kcl-std/functions/std-gear-helical)
-  * [`gear::herringbone`](/docs/kcl-std/functions/std-gear-herringbone)
-  * [`gear::ring`](/docs/kcl-std/functions/std-gear-ring)
-  * [`gear::spur`](/docs/kcl-std/functions/std-gear-spur)
+  * [`gdt::profileLine`](/docs/kcl-std/functions/std-gdt-profileLine)
+  * [`gdt::profileSurface`](/docs/kcl-std/functions/std-gdt-profileSurface)
+  * [`gdt::runout`](/docs/kcl-std/functions/std-gdt-runout)
+  * [`gdt::straightness`](/docs/kcl-std/functions/std-gdt-straightness)
+  * [`gdt::symmetry`](/docs/kcl-std/functions/std-gdt-symmetry)
+* [**std::gear**](/docs/kcl-std/modules/std-gear) Experimental
+  * [`gear::helical`](/docs/kcl-std/functions/std-gear-helical) Experimental
+  * [`gear::herringbone`](/docs/kcl-std/functions/std-gear-herringbone) Experimental
+  * [`gear::ring`](/docs/kcl-std/functions/std-gear-ring) Experimental
+  * [`gear::spur`](/docs/kcl-std/functions/std-gear-spur) Experimental
 * [**std::hole**](/docs/kcl-std/modules/std-hole)
   * [`hole::blind`](/docs/kcl-std/functions/std-hole-blind)
   * [`hole::counterbore`](/docs/kcl-std/functions/std-hole-counterbore)
@@ -77,8 +87,8 @@ layout: manual
   * [`sin`](/docs/kcl-std/functions/std-math-sin)
   * [`sqrt`](/docs/kcl-std/functions/std-math-sqrt)
   * [`tan`](/docs/kcl-std/functions/std-math-tan)
-* [**std::runtime**](/docs/kcl-std/modules/std-runtime)
-  * [`exit`](/docs/kcl-std/functions/std-runtime-exit)
+* [**std::runtime**](/docs/kcl-std/modules/std-runtime) Experimental
+  * [`exit`](/docs/kcl-std/functions/std-runtime-exit) Experimental
 * [**std::sketch**](/docs/kcl-std/modules/std-sketch)
   * [`angledLine`](/docs/kcl-std/functions/std-sketch-angledLine)
   * [`angledLineThatIntersects`](/docs/kcl-std/functions/std-sketch-angledLineThatIntersects)
@@ -87,9 +97,9 @@ layout: manual
   * [`circle`](/docs/kcl-std/functions/std-sketch-circle)
   * [`circleThreePoint`](/docs/kcl-std/functions/std-sketch-circleThreePoint)
   * [`close`](/docs/kcl-std/functions/std-sketch-close)
-  * [`conic`](/docs/kcl-std/functions/std-sketch-conic)
-  * [`ellipse`](/docs/kcl-std/functions/std-sketch-ellipse)
-  * [`elliptic`](/docs/kcl-std/functions/std-sketch-elliptic)
+  * [`conic`](/docs/kcl-std/functions/std-sketch-conic) Experimental
+  * [`ellipse`](/docs/kcl-std/functions/std-sketch-ellipse) Experimental
+  * [`elliptic`](/docs/kcl-std/functions/std-sketch-elliptic) Experimental
   * [`ellipticPoint`](/docs/kcl-std/functions/std-sketch-ellipticPoint)
   * [`extrude`](/docs/kcl-std/functions/std-sketch-extrude)
   * [`faceOf`](/docs/kcl-std/functions/std-sketch-faceOf)
@@ -98,14 +108,14 @@ layout: manual
   * [`getNextAdjacentEdge`](/docs/kcl-std/functions/std-sketch-getNextAdjacentEdge)
   * [`getOppositeEdge`](/docs/kcl-std/functions/std-sketch-getOppositeEdge)
   * [`getPreviousAdjacentEdge`](/docs/kcl-std/functions/std-sketch-getPreviousAdjacentEdge)
-  * [`hyperbolic`](/docs/kcl-std/functions/std-sketch-hyperbolic)
+  * [`hyperbolic`](/docs/kcl-std/functions/std-sketch-hyperbolic) Experimental
   * [`hyperbolicPoint`](/docs/kcl-std/functions/std-sketch-hyperbolicPoint)
   * [`involuteCircular`](/docs/kcl-std/functions/std-sketch-involuteCircular)
   * [`lastSegX`](/docs/kcl-std/functions/std-sketch-lastSegX)
   * [`lastSegY`](/docs/kcl-std/functions/std-sketch-lastSegY)
   * [`line`](/docs/kcl-std/functions/std-sketch-line)
   * [`loft`](/docs/kcl-std/functions/std-sketch-loft)
-  * [`parabolic`](/docs/kcl-std/functions/std-sketch-parabolic)
+  * [`parabolic`](/docs/kcl-std/functions/std-sketch-parabolic) Experimental
   * [`parabolicPoint`](/docs/kcl-std/functions/std-sketch-parabolicPoint)
   * [`patternCircular2d`](/docs/kcl-std/functions/std-sketch-patternCircular2d)
   * [`patternLinear2d`](/docs/kcl-std/functions/std-sketch-patternLinear2d)
@@ -158,6 +168,7 @@ layout: manual
   * [`solver::arc`](/docs/kcl-std/functions/std-solver-arc)
   * [`solver::circle`](/docs/kcl-std/functions/std-solver-circle)
   * [`solver::coincident`](/docs/kcl-std/functions/std-solver-coincident)
+  * [`solver::controlPointSpline`](/docs/kcl-std/functions/std-solver-controlPointSpline) Experimental
   * [`solver::diameter`](/docs/kcl-std/functions/std-solver-diameter)
   * [`solver::distance`](/docs/kcl-std/functions/std-solver-distance)
   * [`solver::equalLength`](/docs/kcl-std/functions/std-solver-equalLength)
@@ -176,6 +187,7 @@ layout: manual
   * [`solver::vertical`](/docs/kcl-std/functions/std-solver-vertical)
   * [`solver::verticalDistance`](/docs/kcl-std/functions/std-solver-verticalDistance)
 * [**std::transform**](/docs/kcl-std/modules/std-transform)
+  * [`delete`](/docs/kcl-std/functions/std-transform-delete) Experimental
   * [`hide`](/docs/kcl-std/functions/std-transform-hide)
   * [`mirror2d`](/docs/kcl-std/functions/std-transform-mirror2d)
   * [`mirror3d`](/docs/kcl-std/functions/std-transform-mirror3d)
@@ -243,7 +255,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`any`](/docs/kcl-std/types/std-types-any)
   * [`bool`](/docs/kcl-std/types/std-types-bool)
   * [`fn`](/docs/kcl-std/types/std-types-fn)
-  * [`none`](/docs/kcl-std/types/std-types-none)
+  * [`none`](/docs/kcl-std/types/std-types-none) Experimental
   * [`number`](/docs/kcl-std/types/std-types-number)
   * [`string`](/docs/kcl-std/types/std-types-string)
 * [**std::types**](/docs/kcl-std/modules/std-types)
@@ -257,7 +269,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`Plane`](/docs/kcl-std/types/std-types-Plane)
   * [`Point2d`](/docs/kcl-std/types/std-types-Point2d)
   * [`Point3d`](/docs/kcl-std/types/std-types-Point3d)
-  * [`Segment`](/docs/kcl-std/types/std-types-Segment)
+  * [`Segment`](/docs/kcl-std/types/std-types-Segment) Experimental
   * [`Sketch`](/docs/kcl-std/types/std-types-Sketch)
   * [`Solid`](/docs/kcl-std/types/std-types-Solid)
   * [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge)

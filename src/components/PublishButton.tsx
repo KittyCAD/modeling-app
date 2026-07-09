@@ -1,7 +1,7 @@
 import { Popover } from '@headlessui/react'
+import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { PublishDialog } from '@src/components/PublishDialog'
-import { useSignals } from '@preact/signals-react/runtime'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 import {
@@ -11,11 +11,17 @@ import {
 } from '@src/lib/share'
 import { err } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { keymapService } from '@src/registry/contracts/keymap'
 import {
-  memo,
+  MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  markdownEditorService,
+} from '@src/registry/contracts/markdownEditor'
+import {
   type ComponentProps,
+  memo,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 
@@ -35,7 +41,6 @@ export const PublishButton = memo(function PublishButton({
         <PublishPopoverContent
           app={app}
           project={project}
-          close={() => popover.close()}
           open={popover.open}
         />
       )}
@@ -46,12 +51,10 @@ export const PublishButton = memo(function PublishButton({
 function PublishPopoverContent({
   app,
   project,
-  close,
   open,
 }: {
   app: App
   project: Project | undefined
-  close: () => void
   open: boolean
 }) {
   useSignals()
@@ -72,6 +75,18 @@ function PublishPopoverContent({
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
   const buttonDisabled = kclEmpty || hasKclErrors
+  const keymap = app.registry.optional(keymapService)
+  const markdownEditor = app.registry.optional(markdownEditorService)
+  const markdownEditorKeymap = useMemo(
+    () =>
+      keymap && markdownEditor
+        ? {
+            focusScope: keymap.focusScope(MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE),
+            registerActions: markdownEditor.registerActiveEditor,
+          }
+        : undefined,
+    [keymap, markdownEditor]
+  )
 
   const fetchPublicationDetails = useCallback(async () => {
     if (!token || !project) {
@@ -157,7 +172,6 @@ function PublishPopoverContent({
       </Popover.Button>
       {open && (
         <PublishDialog
-          onClose={close}
           onSubmit={handlePublish}
           initialTitle={''}
           publishDisabled={isCheckingUser || publishRequiresUsername}
@@ -165,6 +179,7 @@ function PublishPopoverContent({
           accountUrl={accountUrl}
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}
+          markdownEditorKeymap={markdownEditorKeymap}
         />
       )}
     </>

@@ -2,15 +2,15 @@ import { Popover } from '@headlessui/react'
 import { use, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { changeDefaultUnits } from '@src/lang/wasm'
-import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
-import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
-import { useSingletons } from '@src/lib/boot'
-import { err } from '@src/lib/trap'
-import { OrthographicCamera } from 'three'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { changeDefaultUnits } from '@src/lang/wasm'
+import { useSingletons } from '@src/lib/boot'
+import { DEFAULT_DEFAULT_LENGTH_UNIT } from '@src/lib/constants'
+import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
+import { err } from '@src/lib/trap'
+import { OrthographicCamera } from 'three'
 
 export function UnitsMenu() {
   const { kclManager } = useSingletons()

@@ -55,8 +55,30 @@ Imported symbols can be renamed for convenience or to avoid name collisions.
 import increment as inc, decrement as dec from "util.kcl"
 ```
 
+## Subdirectories
+
 You can import files from the current directory or from subdirectories, but if importing from a
-subdirectory you can only import `main.kcl`.
+subdirectory you can only import `main.kcl`. This allows you to make functions
+that are public to the directory, but not exposed to the parent directory. This
+is useful when building abstractions.
+
+But what if you want to have something defined in a non-main file in a
+subdirectory and export it to the parent directory?
+
+You can re-export items that are imported by using `export import`.
+
+```no-run
+// part/public.kcl
+export size = 5mm
+
+// part/main.kcl
+export import size from "public.kcl"
+
+// main.kcl
+import size from "part/main.kcl"
+```
+
+Anything that can be imported can be re-exported in this way.
 
 ---
 

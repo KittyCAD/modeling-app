@@ -1,23 +1,25 @@
 import { memo, use, useCallback, useMemo, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
 
+import { useSignals } from '@preact/signals-react/runtime'
 import { useAppState } from '@src/AppState'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionButtonDropdown } from '@src/components/ActionButtonDropdown'
 import { ActionButtonRecentDropdown } from '@src/components/ActionButtonRecentDropdown'
+import { LegacySketchModeBanner } from '@src/components/Announcements'
 import { CustomIcon } from '@src/components/CustomIcon'
-import { LegacySketchModeBanner } from '@src/components/SketchSolveAnnouncements'
 import Tooltip from '@src/components/Tooltip'
+import { useModelingContext } from '@src/hooks/useModelingContext'
+import { useNetworkContext } from '@src/hooks/useNetworkContext'
+import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
+import usePlatform from '@src/hooks/usePlatform'
+import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
+import { isCursorInSketchCommandRange } from '@src/lang/util'
 import {
   getUnrenderedChangesDisabledReason,
   shouldDisableModelingForUnrenderedChanges,
 } from '@src/lib/automaticRendering'
-import { useModelingContext } from '@src/hooks/useModelingContext'
-import { useNetworkContext } from '@src/hooks/useNetworkContext'
-import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { isCursorInFunctionDefinition } from '@src/lang/queryAst'
-import { isCursorInSketchCommandRange } from '@src/lang/util'
-import { filterEscHotkey } from '@src/lib/hotkeyWrapper'
+import { useApp, useSingletons } from '@src/lib/boot'
+import { type HotkeySequence, hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import type {
@@ -29,33 +31,32 @@ import type {
 } from '@src/lib/toolbar'
 import {
   getDefaultRecentToolbarItemIds,
-  recordRecentToolbarItemId,
   getToolbarDropdownDisplay,
-  promoteRecentToolbarItemId,
-  resolveRecentToolbarItems,
   isSketchToolbarTransitioning,
   isToolbarItemResolvedDropdown,
   modelingMachineStateToToolbarModeName,
+  promoteRecentToolbarItemId,
+  recordRecentToolbarItemId,
+  resolveRecentToolbarItems,
+  toolbarModeNameToKeymapScope,
   useToolbarConfig,
 } from '@src/lib/toolbar'
-import {
-  collectToolbarHotkeyActions,
-  getToolbarEventHotkey,
-  normalizeToolbarHotkey,
-} from '@src/lib/toolbarHotkeys'
-import { EngineConnectionStateType } from '@src/network/utils'
+import { reportRejection } from '@src/lib/trap'
+import { type Platform, isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { useSignals } from '@preact/signals-react/runtime'
-import { useApp, useSingletons } from '@src/lib/boot'
-import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
 import { getSymmetricToolSelectionStep } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import type { sketchSolveMachine } from '@src/machines/sketchSolve/sketchSolveDiagram'
+import { EngineConnectionStateType } from '@src/network/utils'
+import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+} from '@src/registry/contracts/keymap'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 import { useSelector } from '@xstate/react'
 import type { SnapshotFrom } from 'xstate'
-import { isArray, type Platform } from '@src/lib/utils'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
-import usePlatform from '@src/hooks/usePlatform'
-import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { reportRejection } from '@src/lib/trap'
 
 type ToolbarProps = {
   isExecuting: boolean
@@ -74,15 +75,14 @@ const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
 
 const Toolbar_ = memo(
   (props: ToolbarProps) => {
+    useSignals()
     const app = useApp()
-    const { commands } = app
+    const keymap = app.registry.get(keymapService)
+    const keymapTree = keymap.keymap.value
     const { kclManager } = useSingletons()
     const platform = usePlatform()
     const executionService = app.registry.signal(executingEditorService).value
-    const unrenderedExecuteHotkeyLabel = hotkeyDisplay(
-      UNRENDERED_EXECUTE_HOTKEY,
-      platform
-    )
+    const keymapScopes = app.registry.signal(keymapScopesValueSpec).value
     const toolbarConfig = useToolbarConfig()
     const wasmInstance = use(kclManager.wasmInstancePromise)
     const iconClassName =
@@ -125,6 +125,18 @@ const Toolbar_ = memo(
     // Based on the state of the modeling machine determine what toolbar should be rendered
     const toolbarConfigurationName = modelingMachineStateToToolbarModeName(
       props.state
+    )
+    const currentToolbarKeymapScopes = [
+      toolbarModeNameToKeymapScope[toolbarConfigurationName],
+    ]
+    const unrenderedExecuteHotkeyLabel = keymapKeystrokesDisplay(
+      findKeymapItemForCommand(
+        keymapTree,
+        APP_COMMAND_IDS.editor.render,
+        currentToolbarKeymapScopes,
+        keymapScopes
+      )?.keystrokes ?? [UNRENDERED_EXECUTE_HOTKEY],
+      platform
     )
     const disableSketchToolbar =
       isSketchToolbarTransitioning(props.state) &&
@@ -198,8 +210,6 @@ const Toolbar_ = memo(
       [
         props.state,
         props.send,
-        // eslint-disable-next-line @typescript-eslint/unbound-method
-        commands.send,
         sketchPathId,
 
         kclManager.editorView.hasFocus,
@@ -291,19 +301,30 @@ const Toolbar_ = memo(
           isActive: itemIsActive,
         }
 
+        const title =
+          typeof maybeIconConfig.title === 'string'
+            ? maybeIconConfig.title
+            : maybeIconConfig.title(itemCallbackProps)
+        const tooltipTitle =
+          maybeIconConfig.tooltipTitle === undefined
+            ? undefined
+            : typeof maybeIconConfig.tooltipTitle === 'string'
+              ? maybeIconConfig.tooltipTitle
+              : maybeIconConfig.tooltipTitle(itemCallbackProps)
+        const iconColor =
+          typeof maybeIconConfig.iconColor === 'function'
+            ? maybeIconConfig.iconColor(itemCallbackProps)
+            : maybeIconConfig.iconColor
+
         return {
           ...maybeIconConfig,
-          title:
-            typeof maybeIconConfig.title === 'string'
-              ? maybeIconConfig.title
-              : maybeIconConfig.title(itemCallbackProps),
+          title,
+          tooltipTitle,
+          iconColor,
           description: maybeIconConfig.description,
           links: maybeIconConfig.links || [],
           isActive: itemIsActive,
-          hotkey:
-            typeof maybeIconConfig.hotkey === 'string'
-              ? maybeIconConfig.hotkey
-              : maybeIconConfig.hotkey?.(props.state),
+          hotkey: getToolbarItemHotkey(maybeIconConfig.command),
           disabled: isDisabled,
           disabledReason:
             props.disableModelingForUnrenderedChanges && isDisabled
@@ -311,11 +332,23 @@ const Toolbar_ = memo(
               : typeof maybeIconConfig.disabledReason === 'function'
                 ? maybeIconConfig.disabledReason(props.state)
                 : maybeIconConfig.disabledReason,
-          disableHotkey: maybeIconConfig.disableHotkey?.(props.state),
           status: maybeIconConfig.status,
           // Store the item-specific callback props for use in onClick handlers
           callbackProps: itemCallbackProps,
         }
+      }
+      function getToolbarItemHotkey(command: string | undefined) {
+        if (!command) {
+          return undefined
+        }
+
+        const item = findKeymapItemForCommand(
+          keymapTree,
+          command,
+          currentToolbarKeymapScopes,
+          keymapScopes
+        )
+        return item?.keystrokes.length ? [...item.keystrokes] : undefined
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
     }, [
@@ -326,6 +359,7 @@ const Toolbar_ = memo(
       wasmInstance,
       showNonVisualConstraints,
       sketchSolveSelectedIdsKey,
+      keymapTree,
     ])
 
     // To remember the last selected item in a standard ActionButtonDropdown
@@ -384,43 +418,6 @@ const Toolbar_ = memo(
       []
     )
 
-    const hotkeyActions = useMemo(
-      () => collectToolbarHotkeyActions(currentModeItems),
-      [currentModeItems]
-    )
-    const hotkeyActionMap = useMemo(() => {
-      const actionMap = new Map<string, (typeof hotkeyActions)[number]>()
-
-      for (const action of hotkeyActions) {
-        const normalizedHotkey = normalizeToolbarHotkey(action.hotkey)
-        if (actionMap.has(normalizedHotkey)) continue
-        actionMap.set(normalizedHotkey, action)
-      }
-
-      return actionMap
-    }, [hotkeyActions])
-    const handledHotkeyEventsRef = useRef(new WeakSet<KeyboardEvent>())
-
-    useHotkeys(
-      hotkeyActions.map((action) => action.hotkey),
-      (keyboardEvent) => {
-        if (handledHotkeyEventsRef.current.has(keyboardEvent)) {
-          return
-        }
-
-        handledHotkeyEventsRef.current.add(keyboardEvent)
-
-        const semanticHotkey = getToolbarEventHotkey(keyboardEvent)
-        if (!semanticHotkey) {
-          return
-        }
-
-        hotkeyActionMap.get(semanticHotkey)?.onTrigger()
-      },
-      { enabled: hotkeyActions.length > 0 },
-      [hotkeyActionMap]
-    )
-
     return (
       <menu
         aria-disabled={disableSketchToolbar}
@@ -462,6 +459,7 @@ const Toolbar_ = memo(
                     key={maybeIconConfig.id}
                     name={maybeIconConfig.id}
                     dropdownTooltipText="More constraints"
+                    platform={platform}
                     className={
                       (maybeIconConfig.array[0]?.alwaysDark
                         ? 'dark bg-chalkboard-90 '
@@ -494,8 +492,7 @@ const Toolbar_ = memo(
                         !['available', 'experimental'].includes(
                           itemConfig.status
                         ) ||
-                        itemConfig.disabled === true ||
-                        itemConfig.disableHotkey === true,
+                        itemConfig.disabled === true,
                       status: itemConfig.status,
                     }))}
                   >
@@ -569,7 +566,9 @@ const Toolbar_ = memo(
                           ) : (
                             <ToolbarItemTooltipShortContent
                               status={itemConfig.status}
-                              title={itemConfig.title}
+                              title={
+                                itemConfig.tooltipTitle ?? itemConfig.title
+                              }
                               hotkey={itemConfig.hotkey}
                               platform={platform}
                             />
@@ -624,8 +623,7 @@ const Toolbar_ = memo(
                       !['available', 'experimental'].includes(
                         itemConfig.status
                       ) ||
-                      itemConfig.disabled === true ||
-                      itemConfig.disableHotkey === true,
+                      itemConfig.disabled === true,
                     status: itemConfig.status,
                   }))}
                 >
@@ -687,7 +685,9 @@ const Toolbar_ = memo(
                         ) : (
                           <ToolbarItemTooltipShortContent
                             status={selectedIcon.status}
-                            title={selectedIcon.title}
+                            title={
+                              selectedIcon.tooltipTitle ?? selectedIcon.title
+                            }
                             hotkey={selectedIcon.hotkey}
                             platform={platform}
                           />
@@ -765,7 +765,7 @@ const Toolbar_ = memo(
                   ) : (
                     <ToolbarItemTooltipShortContent
                       status={itemConfig.status}
-                      title={itemConfig.title}
+                      title={itemConfig.tooltipTitle ?? itemConfig.title}
                       hotkey={itemConfig.hotkey}
                       platform={platform}
                     />
@@ -879,32 +879,38 @@ const ToolbarItemTooltipShortContent = ({
 }: {
   status: string
   title: string
-  hotkey?: string | string[]
+  hotkey?: HotkeySequence
   platform: Platform
-}) => (
-  <div
-    className={`text-sm flex flex-col ${
-      !['available', 'experimental'].includes(status)
-        ? 'text-chalkboard-70 dark:text-chalkboard-40'
-        : ''
-    }`}
-  >
-    {status === 'experimental' && (
-      <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
-        <CustomIcon name="beaker" className="w-4 h-4" />
-        <span>Experimental</span>
-      </div>
-    )}
-    <div className={`flex gap-4 ${status === 'experimental' ? 'pt-1' : 'p-0'}`}>
-      {title}
-      {hotkey && (
-        <kbd className="inline-block ml-2 flex-none hotkey">
-          {hotkeyDisplay(filterEscHotkey(hotkey)[0], platform)}
-        </kbd>
+}) => {
+  const hotkeyLabel = hotkeyDisplay(hotkey, platform)
+
+  return (
+    <div
+      className={`text-sm flex flex-col ${
+        !['available', 'experimental'].includes(status)
+          ? 'text-chalkboard-70 dark:text-chalkboard-40'
+          : ''
+      }`}
+    >
+      {status === 'experimental' && (
+        <div className="text-xs flex justify-center item-center gap-1 pb-1 border-b border-chalkboard-50">
+          <CustomIcon name="beaker" className="w-4 h-4" />
+          <span>Experimental</span>
+        </div>
       )}
+      <div
+        className={`flex gap-4 ${status === 'experimental' ? 'pt-1' : 'p-0'}`}
+      >
+        {title}
+        {hotkeyLabel && (
+          <kbd className="inline-block ml-2 flex-none hotkey">
+            {hotkeyLabel}
+          </kbd>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 const ToolbarItemTooltipRichContent = memo(
   ({
@@ -919,6 +925,8 @@ const ToolbarItemTooltipRichContent = memo(
     const shouldBeEnabled = ['available', 'experimental'].includes(
       itemConfig.status
     )
+    const hotkeyLabel = hotkeyDisplay(itemConfig.hotkey, platform)
+
     return (
       <>
         {itemConfig.status === 'experimental' && (
@@ -942,12 +950,10 @@ const ToolbarItemTooltipRichContent = memo(
                 : ''
             }`}
           >
-            {itemConfig.title}
+            {itemConfig.tooltipTitle ?? itemConfig.title}
           </div>
-          {shouldBeEnabled && itemConfig.hotkey ? (
-            <kbd className="flex-none hotkey">
-              {hotkeyDisplay(filterEscHotkey(itemConfig.hotkey)[0], platform)}
-            </kbd>
+          {shouldBeEnabled && hotkeyLabel ? (
+            <kbd className="flex-none hotkey">{hotkeyLabel}</kbd>
           ) : itemConfig.status === 'kcl-only' ? (
             <>
               <span className="text-wrap font-sans flex-0 text-chalkboard-70 dark:text-chalkboard-40">

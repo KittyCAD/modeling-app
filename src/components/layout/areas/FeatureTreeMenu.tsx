@@ -2,10 +2,10 @@ import { Menu } from '@headlessui/react'
 
 import { useApp } from '@src/lib/boot'
 
-import styles from './KclEditorMenu.module.css'
-import { isDesktop } from '@src/lib/isDesktop'
 import Tooltip from '@src/components/Tooltip'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { isDesktop } from '@src/lib/isDesktop'
+import styles from './KclEditorMenu.module.css'
 
 export const FeatureTreeMenu = () => {
   const { commands } = useApp()

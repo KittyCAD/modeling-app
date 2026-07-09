@@ -23,17 +23,11 @@ test.describe(
       clickCoords: { x: number; y: number }
     ) => {
       const u = await getUtils(page)
-      // await page.addInitScript(() => {
-      //   localStorage.setItem('persistCode', '@settings(defaultLengthUnit = in)')
-      // })
       await page.setBodyDimensions({ width: 1200, height: 500 })
 
       await homePage.goToModelingScene()
-      // await scene.settled(cmdBar)
       const XYPlaneRed: [number, number, number] = [46, 36, 34]
       await scene.expectPixelColor(XYPlaneRed, { x: 700, y: 300 }, 15)
-
-      await u.openDebugPanel()
 
       const coord =
         plane === '-XY' || plane === '-YZ' || plane === 'XZ' ? -100 : 100
@@ -183,16 +177,12 @@ yzPlane = offsetPlane(YZ, offset = 0.05)
       const planeRef = `${prefix}${planeName}Plane`
 
       await test.step(`Sketch on the ${plane} plane using custom camera commands to orient`, async () => {
-        await u.openDebugPanel()
-
         await u.clearCommandLogs()
         await toolbar.startSketchBtn.click()
 
         await u.sendCustomCmd(camCommand)
         await page.waitForTimeout(100)
         await u.sendCustomCmd(updateCamCommand)
-
-        await u.closeDebugPanel()
 
         // TODO: can we remove these feature tree checks? They seem out of place.
         await toolbar.openFeatureTreePane()

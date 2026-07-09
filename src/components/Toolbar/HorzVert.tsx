@@ -2,16 +2,16 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { toolTips } from '@src/lang/langHelpers'
 import { getNodeFromPath } from '@src/lang/queryAst'
-import type { PathToNodeMap } from '@src/lang/util'
 import {
   getTransformInfos,
   transformAstSketchLines,
 } from '@src/lang/std/sketchcombos'
 import type { TransformInfo } from '@src/lang/std/stdTypes'
+import type { PathToNodeMap } from '@src/lang/util'
 import type { Expr, Program, VariableMap } from '@src/lang/wasm'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 
 export function horzVertInfo(
   selectionRanges: Selections,

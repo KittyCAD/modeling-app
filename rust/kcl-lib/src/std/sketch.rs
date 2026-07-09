@@ -5,7 +5,7 @@ use std::f64;
 
 use anyhow::Result;
 use indexmap::IndexMap;
-use itertools::Itertools;
+use kcl_api::UnitLength;
 use kcl_error::SourceRange;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
@@ -17,7 +17,6 @@ use kcmc::websocket::ModelingCmdReq;
 use kittycad_modeling_cmds as kcmc;
 use kittycad_modeling_cmds::shared::PathSegment;
 use kittycad_modeling_cmds::shared::RegionVersion;
-use kittycad_modeling_cmds::units::UnitLength;
 use parse_display::Display;
 use parse_display::FromStr;
 use serde::Deserialize;
@@ -32,12 +31,9 @@ use crate::NodePath;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::PlaneKind;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::Artifact;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::ArtifactId;
 use crate::execution::BasePath;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::CodeRef;
 use crate::execution::ExecState;
 use crate::execution::GeoMeta;
@@ -58,16 +54,16 @@ use crate::execution::SegmentKind;
 use crate::execution::Sketch;
 use crate::execution::SketchSurface;
 use crate::execution::Solid;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::StartSketchOnFace;
-#[cfg(feature = "artifact-graph")]
 use crate::execution::StartSketchOnPlane;
 use crate::execution::TagIdentifier;
 use crate::execution::annotations;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::NumericType;
+use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::front::SourceRef;
 use crate::parsing::ast::types::TagNode;
 use crate::std::CircularDirection;
 use crate::std::EQUAL_POINTS_DIST_EPSILON;
@@ -87,6 +83,7 @@ use crate::std::utils::intersection_with_parallel_line;
 use crate::std::utils::point_to_len_unit;
 use crate::std::utils::point_to_mm;
 use crate::std::utils::untyped_point_to_mm;
+use crate::util::MathExt;
 
 /// A tag for a face.
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, ts_rs::TS)]
@@ -761,7 +758,7 @@ async fn inner_angled_line_to_x(
     let y_to = from.y + y_component;
 
     let new_sketch = straight_line_with_new_id(
-        StraightLineParams::absolute([x_to, TyF64::new(y_to, from.units.into())], sketch, tag),
+        StraightLineParams::absolute([x_to, TyF64::new(y_to, NumericType::length(from.units))], sketch, tag),
         exec_state,
         &args.ctx,
         args.source_range,
@@ -835,7 +832,7 @@ async fn inner_angled_line_to_y(
     let x_to = from.x + x_component;
 
     let new_sketch = straight_line_with_new_id(
-        StraightLineParams::absolute([TyF64::new(x_to, from.units.into()), y_to], sketch, tag),
+        StraightLineParams::absolute([TyF64::new(x_to, NumericType::length(from.units)), y_to], sketch, tag),
         exec_state,
         &args.ctx,
         args.source_range,
@@ -886,8 +883,8 @@ pub async fn inner_angled_line_that_intersects(
         from.ignore_units(),
     );
     let to = [
-        TyF64::new(to[0], from.units.into()),
-        TyF64::new(to[1], from.units.into()),
+        TyF64::new(to[0], NumericType::length(from.units)),
+        TyF64::new(to[1], NumericType::length(from.units)),
     ];
 
     straight_line_with_new_id(
@@ -1008,15 +1005,12 @@ async fn inner_start_sketch_on(
                 Ok(SketchSurface::Plane(plane))
             } else {
                 // Create artifact used only by the UI, not the engine.
-                #[cfg(feature = "artifact-graph")]
-                {
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
-                        id: ArtifactId::from(id),
-                        plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                    id: ArtifactId::from(id),
+                    plane_id: plane.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Plane(plane))
             }
@@ -1096,30 +1090,24 @@ async fn inner_start_sketch_on(
                 let plane = make_sketch_plane_from_orientation(plane_data, exec_state, args).await?;
 
                 // Create artifact used only by the UI, not the engine.
-                #[cfg(feature = "artifact-graph")]
-                {
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
-                        id: ArtifactId::from(id),
-                        plane_id: plane.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnPlane(StartSketchOnPlane {
+                    id: ArtifactId::from(id),
+                    plane_id: plane.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Plane(plane))
             } else {
                 let face = make_face(solid, tag, exec_state, args).await?;
 
-                #[cfg(feature = "artifact-graph")]
-                {
-                    // Create artifact used only by the UI, not the engine.
-                    let id = exec_state.next_uuid();
-                    exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
-                        id: ArtifactId::from(id),
-                        face_id: face.artifact_id,
-                        code_ref: CodeRef::placeholder(args.source_range),
-                    }));
-                }
+                // Create artifact used only by the UI, not the engine.
+                let id = exec_state.next_uuid();
+                exec_state.add_artifact(Artifact::StartSketchOnFace(StartSketchOnFace {
+                    id: ArtifactId::from(id),
+                    face_id: face.artifact_id,
+                    code_ref: CodeRef::placeholder(args.source_range),
+                }));
 
                 Ok(SketchSurface::Face(face))
             }
@@ -1167,12 +1155,9 @@ pub async fn ensure_sketch_plane_in_engine(
     if plane.is_initialized() {
         return Ok(());
     }
-    #[cfg(feature = "artifact-graph")]
-    {
-        if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
-            plane.object_id = Some(existing_object_id);
-            return Ok(());
-        }
+    if let Some(existing_object_id) = exec_state.scene_object_id_by_artifact_id(ArtifactId::new(plane.id)) {
+        plane.object_id = Some(existing_object_id);
+        return Ok(());
     }
 
     // Regenerate the plane's UUID using the current module's IdGenerator so
@@ -1214,22 +1199,15 @@ pub async fn ensure_sketch_plane_in_engine(
         )
         .await?;
     let plane_object_id = exec_state.next_object_id();
-    #[cfg(not(feature = "artifact-graph"))]
-    let _ = node_path;
-    #[cfg(feature = "artifact-graph")]
-    {
-        use crate::front::SourceRef;
-
-        let plane_object = crate::front::Object {
-            id: plane_object_id,
-            kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
-            label: Default::default(),
-            comments: Default::default(),
-            artifact_id: ArtifactId::new(plane.id),
-            source: SourceRef::new(source_range, node_path.clone()),
-        };
-        exec_state.add_scene_object(plane_object, source_range);
-    }
+    let plane_object = crate::front::Object {
+        id: plane_object_id,
+        kind: crate::front::ObjectKind::Plane(crate::front::Plane::Object(plane_object_id)),
+        label: Default::default(),
+        comments: Default::default(),
+        artifact_id: ArtifactId::new(plane.id),
+        source: SourceRef::new(source_range, node_path.clone()),
+    };
+    exec_state.add_scene_object(plane_object, source_range);
     plane.object_id = Some(plane_object_id);
 
     Ok(())
@@ -1394,7 +1372,7 @@ pub(crate) async fn create_sketch(
 /// Returns the X component of the sketch profile start point.
 pub async fn profile_start_x(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
-    let ty = sketch.units.into();
+    let ty = NumericType::length(sketch.units);
     let x = inner_profile_start_x(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
@@ -1406,7 +1384,7 @@ pub(crate) fn inner_profile_start_x(profile: Sketch) -> Result<f64, KclError> {
 /// Returns the Y component of the sketch profile start point.
 pub async fn profile_start_y(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
-    let ty = sketch.units.into();
+    let ty = NumericType::length(sketch.units);
     let x = inner_profile_start_y(sketch)?;
     Ok(args.make_user_val_from_f64_with_type(TyF64::new(x, ty)))
 }
@@ -1418,7 +1396,7 @@ pub(crate) fn inner_profile_start_y(profile: Sketch) -> Result<f64, KclError> {
 /// Returns the sketch profile start point.
 pub async fn profile_start(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
     let sketch: Sketch = args.get_unlabeled_kw_arg("profile", &RuntimeType::sketch(), exec_state)?;
-    let ty = sketch.units.into();
+    let ty = NumericType::length(sketch.units);
     let point = inner_profile_start(sketch)?;
     Ok(KclValue::from_point2d(point, ty, args.into()))
 }
@@ -1470,7 +1448,7 @@ pub(crate) async fn inner_close(
 
     let mut new_sketch = sketch;
 
-    let distance = ((from.x - to[0]).powi(2) + (from.y - to[1]).powi(2)).sqrt();
+    let distance = ((from.x - to[0]).squared() + (from.y - to[1]).squared()).sqrt();
     if distance > super::EQUAL_POINTS_DIST_EPSILON {
         // These will NOT be the same point in the engine, and an additional segment will be created.
         let current_path = Path::ToPoint {
@@ -2213,7 +2191,7 @@ pub async fn elliptic_point(exec_state: &mut ExecState, args: Args) -> Result<Kc
 
     let elliptic_point = inner_elliptic_point(x, y, major_radius, minor_radius, &args).await?;
 
-    args.make_kcl_val_from_point(elliptic_point, exec_state.length_unit().into())
+    args.make_kcl_val_from_point(elliptic_point, NumericType::length(exec_state.length_unit()))
 }
 
 async fn inner_elliptic_point(
@@ -2239,7 +2217,7 @@ async fn inner_elliptic_point(
         } else {
             Ok((
                 x.n,
-                minor_radius * (1.0 - x.n.powf(2.0) / major_radius.powf(2.0)).sqrt(),
+                minor_radius * (1.0 - x.n.squared() / major_radius.squared()).sqrt(),
             )
                 .into())
         }
@@ -2256,7 +2234,7 @@ async fn inner_elliptic_point(
             })
         } else {
             Ok((
-                major_radius * (1.0 - y.n.powf(2.0) / minor_radius.powf(2.0)).sqrt(),
+                major_radius * (1.0 - y.n.squared() / minor_radius.squared()).sqrt(),
                 y.n,
             )
                 .into())
@@ -2409,7 +2387,7 @@ pub async fn hyperbolic_point(exec_state: &mut ExecState, args: Args) -> Result<
 
     let hyperbolic_point = inner_hyperbolic_point(x, y, semi_major, semi_minor, &args).await?;
 
-    args.make_kcl_val_from_point(hyperbolic_point, exec_state.length_unit().into())
+    args.make_kcl_val_from_point(hyperbolic_point, NumericType::length(exec_state.length_unit()))
 }
 
 async fn inner_hyperbolic_point(
@@ -2433,10 +2411,10 @@ async fn inner_hyperbolic_point(
                 ),
             })
         } else {
-            Ok((x.n, semi_minor * (x.n.powf(2.0) / semi_major.powf(2.0) - 1.0).sqrt()).into())
+            Ok((x.n, semi_minor * (x.n.squared() / semi_major.squared() - 1.0).sqrt()).into())
         }
     } else if let Some(y) = y {
-        Ok((semi_major * (y.n.powf(2.0) / semi_minor.powf(2.0) + 1.0).sqrt(), y.n).into())
+        Ok((semi_major * (y.n.squared() / semi_minor.squared() + 1.0).sqrt(), y.n).into())
     } else {
         Err(KclError::Type {
             details: KclErrorDetails::new(
@@ -2479,7 +2457,7 @@ pub async fn hyperbolic(exec_state: &mut ExecState, args: Args) -> Result<KclVal
 
 /// Calculate the tangent of a hyperbolic given a point on the curve
 fn hyperbolic_tangent(point: Point2d, semi_major: f64, semi_minor: f64) -> [f64; 2] {
-    (point.y * semi_major.powf(2.0), point.x * semi_minor.powf(2.0)).into()
+    (point.y * semi_major.squared(), point.x * semi_minor.squared()).into()
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -2581,7 +2559,7 @@ pub async fn parabolic_point(exec_state: &mut ExecState, args: Args) -> Result<K
 
     let parabolic_point = inner_parabolic_point(x, y, &coefficients, &args).await?;
 
-    args.make_kcl_val_from_point(parabolic_point, exec_state.length_unit().into())
+    args.make_kcl_val_from_point(parabolic_point, NumericType::length(exec_state.length_unit()))
 }
 
 async fn inner_parabolic_point(
@@ -2594,9 +2572,9 @@ async fn inner_parabolic_point(
     let b = coefficients[1].n;
     let c = coefficients[2].n;
     if let Some(x) = x {
-        Ok((x.n, a * x.n.powf(2.0) + b * x.n + c).into())
+        Ok((x.n, a * x.n.squared() + b * x.n + c).into())
     } else if let Some(y) = y {
-        let det = (b.powf(2.0) - 4.0 * a * (c - y.n)).sqrt();
+        let det = (b.squared() - 4.0 * a * (c - y.n)).sqrt();
         Ok(((-b + det) / (2.0 * a), y.n).into())
     } else {
         Err(KclError::Type {
@@ -2728,9 +2706,9 @@ pub(crate) async fn inner_parabolic(
             + interior[0] * (from.y - end_point.y)
             + from.x * (end_point.y - interior[1]))
             / denom;
-        let b = (end_point.x.powf(2.0) * (from.y - interior[1])
-            + interior[0].powf(2.0) * (end_point.y - from.y)
-            + from.x.powf(2.0) * (interior[1] - end_point.y))
+        let b = (end_point.x.squared() * (from.y - interior[1])
+            + interior[0].squared() * (end_point.y - from.y)
+            + from.x.squared() * (interior[1] - end_point.y))
             / denom;
         let c = (interior[0] * end_point.x * (interior[0] - end_point.x) * from.y
             + end_point.x * from.x * (end_point.x - from.x) * interior[1]
@@ -2968,7 +2946,7 @@ impl SketchOrSegment {
     fn sketch(&self) -> Result<&Sketch, KclError> {
         match self {
             SketchOrSegment::Sketch(sketch) => Ok(sketch),
-            SketchOrSegment::Segment(segment) => segment.sketch.as_ref().ok_or_else(|| {
+            SketchOrSegment::Segment(segment) => segment.sketch.as_deref().ok_or_else(|| {
                 KclError::new_semantic(KclErrorDetails::new(
                     "Segment should have an associated sketch".to_owned(),
                     vec![],
@@ -3134,7 +3112,7 @@ async fn inner_region(
         SketchOrSegment::Sketch(sketch) => sketch,
         SketchOrSegment::Segment(segment) => {
             if let Some(sketch) = segment.sketch {
-                sketch
+                sketch.as_ref().clone()
             } else {
                 Sketch {
                     id: region_id,
@@ -3182,32 +3160,6 @@ async fn inner_region(
                     new_path.set_id(*region_id);
                     new_paths.push(new_path);
                 }
-            }
-        }
-
-        // After mirror2d, sketch.paths still has the original (pre-mirror)
-        // segment IDs. The region_mapping values are mirrored entity edge
-        // IDs which don't match, so the remapping above produces no paths.
-        // Fall back to creating paths from the region_mapping keys directly.
-        if new_paths.is_empty() && !region_mapping.is_empty() {
-            // Sort because the input order is undefined. We need to be
-            // deterministic.
-            for region_edge_id in region_mapping.keys().sorted_unstable() {
-                // We don't know what the actual values are. We just need
-                // something so that `do_post_extrude()` has the correct segment
-                // IDs.
-                new_paths.push(Path::ToPoint {
-                    base: BasePath {
-                        from: [0.0, 0.0],
-                        to: [0.0, 0.0],
-                        units,
-                        tag: None,
-                        geo_meta: GeoMeta {
-                            id: *region_edge_id,
-                            metadata: args.source_range.into(),
-                        },
-                    },
-                });
             }
         }
 

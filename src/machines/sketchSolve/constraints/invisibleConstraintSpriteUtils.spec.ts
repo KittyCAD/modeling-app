@@ -4,22 +4,23 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { describe, expect, it } from 'vitest'
 
+import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 import {
+  type InvisibleConstraintObject,
   findInvisibleConstraintClusterIds,
   findInvisibleConstraintsForSegment,
   findSegmentsForInvisibleConstraint,
-  getInvisibleConstraintSegmentHoverColor,
   getInvisibleConstraintAnchor,
-  isInvisibleConstraintSegmentSecondaryHovered,
+  getInvisibleConstraintSegmentHoverColor,
   isInvisibleConstraintObject,
-  type InvisibleConstraintObject,
+  isInvisibleConstraintSegmentSecondaryHovered,
 } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
 import {
   createArcApiObject,
+  createControlPointSplineApiObject,
   createLineApiObject,
   createPointApiObject,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { SKETCH_HIGHLIGHT_SECONDARY_COLOR } from '@src/lib/constants'
 
 function createObjectsArray(objects: ApiObject[]) {
   const array: ApiObject[] = []
@@ -191,6 +192,32 @@ describe('invisibleConstraintSpriteUtils', () => {
     expect(anchor?.y).toBeCloseTo(1)
     expect(anchor?.z).toBeCloseTo(0)
     expect(findInvisibleConstraintsForSegment(arc, objects)).toEqual([20])
+  })
+
+  it('handles midpoint constraints that use ORIGIN as the constrained point', () => {
+    const lineStart = createPointApiObject({ id: 1, x: -5, y: 0 })
+    const lineEnd = createPointApiObject({ id: 2, x: 5, y: 0 })
+    const line = createLineApiObject({ id: 10, start: 1, end: 2 })
+    const midpoint = createConstraintApiObject(20, {
+      type: 'Midpoint',
+      point: 'ORIGIN',
+      segment: 10,
+    })
+    const objects = createObjectsArray([lineStart, lineEnd, line, midpoint])
+
+    expect(
+      getInvisibleConstraintAnchor(
+        midpoint as InvisibleConstraintObject,
+        objects
+      )?.toArray()
+    ).toEqual([0, 0, 0])
+    expect(
+      findSegmentsForInvisibleConstraint(
+        midpoint as InvisibleConstraintObject,
+        objects
+      )
+    ).toEqual([10])
+    expect(findInvisibleConstraintsForSegment(line, objects)).toEqual([20])
   })
 
   it('finds the invisible constraints related to a hovered line', () => {
@@ -620,5 +647,71 @@ describe('invisibleConstraintSpriteUtils', () => {
 
     expect(segmentIds).toEqual(expect.arrayContaining([1, 10, 11]))
     expect(segmentIds).toHaveLength(3)
+  })
+
+  it('hides coincident badges for internal same-spline control polygon constraints', () => {
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const pointA = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const pointB = createPointApiObject({ id: 2, x: 10, y: 0, owner: 10 })
+    const pointC = createPointApiObject({ id: 3, x: 20, y: 0, owner: 10 })
+    const edge = createLineApiObject({ id: 11, start: 1, end: 2, owner: 10 })
+    const coincident = createConstraintApiObject(20, {
+      type: 'Coincident',
+      segments: [2, 11],
+    })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      spline,
+      edge,
+      coincident,
+    ])
+
+    expect(
+      isInvisibleConstraintObject(
+        coincident as InvisibleConstraintObject,
+        objects
+      )
+    ).toBe(false)
+    expect(findInvisibleConstraintsForSegment(pointB, objects)).toEqual([])
+  })
+
+  it('keeps coincident badges when a spline control point is constrained to outside geometry', () => {
+    const spline = createControlPointSplineApiObject({
+      id: 10,
+      controls: [1, 2, 3],
+    })
+    const pointA = createPointApiObject({ id: 1, x: 0, y: 0, owner: 10 })
+    const pointB = createPointApiObject({ id: 2, x: 10, y: 0, owner: 10 })
+    const pointC = createPointApiObject({ id: 3, x: 20, y: 0, owner: 10 })
+    const lineStart = createPointApiObject({ id: 4, x: 10, y: 0 })
+    const lineEnd = createPointApiObject({ id: 5, x: 10, y: 20 })
+    const line = createLineApiObject({ id: 11, start: 4, end: 5 })
+    const coincident = createConstraintApiObject(20, {
+      type: 'Coincident',
+      segments: [2, 11],
+    })
+    const objects = createObjectsArray([
+      pointA,
+      pointB,
+      pointC,
+      lineStart,
+      lineEnd,
+      spline,
+      line,
+      coincident,
+    ])
+
+    expect(
+      isInvisibleConstraintObject(
+        coincident as InvisibleConstraintObject,
+        objects
+      )
+    ).toBe(true)
+    expect(findInvisibleConstraintsForSegment(pointB, objects)).toEqual([20])
   })
 })

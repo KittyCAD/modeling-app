@@ -2,19 +2,22 @@ import type { OpKclValue, Operation } from '@rust/kcl-lib/bindings/Operation'
 import { defaultNodePath } from '@src/lang/wasm'
 import type { Artifact, ArtifactGraph, SourceRange } from '@src/lang/wasm'
 import {
-  resolveFeatureTreeVisibility,
   type FeatureTreeVisibilityState,
+  resolveFeatureTreeVisibility,
 } from '@src/lib/featureTree'
 import { describe, expect, it } from 'vitest'
 
-function range(start: number, end: number): SourceRange {
-  return [start, end, 0]
+function range(start: number, end: number, moduleId = 0): SourceRange {
+  return [start, end, moduleId]
 }
 
 function sketchSolveOperation(sourceRange: SourceRange): Operation {
   return {
-    type: 'SketchSolve',
-    sketchId: 1,
+    type: 'GroupBegin',
+    group: {
+      type: 'SketchBlock',
+      sketchId: 1,
+    },
     nodePath: defaultNodePath(),
     sourceRange,
   }

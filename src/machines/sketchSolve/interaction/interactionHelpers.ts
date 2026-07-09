@@ -1,19 +1,22 @@
-import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { DISTANCE_CONSTRAINT_LABEL } from '@src/clientSideScene/sceneConstants'
+import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { Coords2d } from '@src/lang/util'
-import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import { getAngleDiff, isArray } from '@src/lib/utils'
+import { distance2d, dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import {
   getArcPoints,
+  getControlPointSplinePoints,
   getLinePoints,
-  isConstraint,
   isArcLikeSegment,
+  isConstraint,
+  isControlPointSplineSegment,
   isLineSegment,
   isPointSegment,
+  sampleControlPointSplinePoints,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { isInvisibleConstraintObject } from '@src/machines/sketchSolve/constraints/invisibleConstraintSpriteUtils'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { Group, Vector3 } from 'three'
 import { Line2 } from 'three/examples/jsm/lines/Line2'
 
@@ -410,6 +413,38 @@ export function findClosestApiObjects(
       return
     }
 
+    if (isControlPointSplineSegment(apiObject)) {
+      const controlPoints = getControlPointSplinePoints(apiObject, objects)
+      if (controlPoints) {
+        const sampledPoints = sampleControlPointSplinePoints(
+          controlPoints,
+          Math.max(
+            1,
+            Math.min(apiObject.kind.segment.degree, controlPoints.length - 1)
+          )
+        )
+        let closestDistance = Number.POSITIVE_INFINITY
+
+        for (let index = 0; index < sampledPoints.length - 1; index++) {
+          closestDistance = Math.min(
+            closestDistance,
+            getClosestPointOnLineSegment(mousePosition, [
+              sampledPoints[index],
+              sampledPoints[index + 1],
+            ]).distance
+          )
+        }
+
+        if (closestDistance <= hoverDistance) {
+          candidates.push({
+            distance: closestDistance,
+            apiObject,
+          })
+        }
+      }
+      return
+    }
+
     if (isConstraint(apiObject)) {
       const constraintGroup = sceneInfra.scene.getObjectByName(
         String(apiObject.id)
@@ -469,6 +504,10 @@ function getApiObjectSelectionPriority(apiObject: ApiObject) {
     // Points take precedence over lines, this is to prefer selecting the point when hovering near the end of a line.
     // (We could also only take precedence if the point is owned by a line..)
     return 1
+  }
+
+  if (isControlPointSplineSegment(apiObject)) {
+    return 3
   }
 
   return 2

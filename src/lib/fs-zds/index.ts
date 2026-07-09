@@ -1,7 +1,7 @@
-import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
-import noopfs, { type NoopFSOptions } from '@src/lib/fs-zds/noopfs'
 import electronfs, { type ElectronFSOptions } from '@src/lib/fs-zds/electronfs'
+import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodefs, { type NodeFSOptions } from '@src/lib/fs-zds/nodefs'
+import noopfs, { type NoopFSOptions } from '@src/lib/fs-zds/noopfs'
 import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
 
 declare global {
@@ -62,7 +62,7 @@ export const moduleFsViaObject = async (
 }
 
 export const moduleFsViaWindow = async (backing: StorageBacking) => {
-  window['fsZds'] = STORAGE_IMPL[backing.type]
+  window.fsZds = STORAGE_IMPL[backing.type]
 }
 
 export const moduleFsViaModuleImport = async (backing: StorageBacking) => {

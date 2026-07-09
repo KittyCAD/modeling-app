@@ -113,37 +113,37 @@ export fn mirror2d(
 /// ```
 /// // Simple mirror3d example, showing mirroring across named axes.
 /// @settings(kclVersion = 2.0)
-/// 
+///
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
 ///   arc1 = arc(start = [var -4.69mm, var -3.99mm], end = [var -6.48mm, var 0mm], center = [var -5.13mm, var -1.79mm])
 ///   horizontal([arc1.end, ORIGIN])
 /// }
-/// 
+///
 /// hidden001 = hide(sketch001)
 /// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// mySolid = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-/// 
+///
 /// mySolid2 = mirror3d([mySolid], across = YZ)
 /// mirror3d([mySolid, mySolid2], across = XY)
 /// ```
 /// ```
 /// // Similar mirror example, but showing mirroring across an arbitrary plane.
 /// @settings(kclVersion = 2.0)
-/// 
+///
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
 ///   arc1 = arc(start = [var -4.69mm, var -3.99mm], end = [var -6.48mm, var 0mm], center = [var -5.13mm, var -1.79mm])
 ///   horizontal([arc1.end, ORIGIN])
 /// }
-/// 
+///
 /// hidden001 = hide(sketch001)
 /// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// shape1 = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-/// 
-/// 
+///
+///
 /// customPlane = {
 ///   origin = { x = 0, y = 1, z = 0},
 ///   xAxis = { x = 1, y = 1, z = 0 },
@@ -154,25 +154,25 @@ export fn mirror2d(
 /// ```
 /// // Example of mirroring across segments.
 /// @settings(kclVersion = 2.0)
-/// 
+///
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
 ///   arc1 = arc(start = [var -4.69mm, var -3.99mm], end = [var -6.48mm, var 0mm], center = [var -5.13mm, var -1.79mm])
 ///   horizontal([arc1.end, ORIGIN])
 ///   axisLine = line(start = [var -6.01mm, var 3.21mm], end = [var 1.85mm, var -3.13mm])
 /// }
-/// 
+///
 /// hidden001 = hide(sketch001)
 /// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// shape1 = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-/// 
+///
 /// shape2 = mirror3d([shape1], across = sketch001.axisLine)
 /// ```
 /// ```
 /// // Mirror geometry across the edge of some other geometry.
 /// @settings(kclVersion = 2.0)
-/// 
+///
 /// // Sketch the solid to mirror.
 /// sketch001 = sketch(on = XY) {
 ///   line3 = line(start = [var -4.59mm, var -5.11mm], end = [var -5mm, var 3.51mm])
@@ -180,11 +180,11 @@ export fn mirror2d(
 ///   horizontal([arc1.end, ORIGIN])
 ///   axisLine = line(start = [var -6.01mm, var 3.21mm], end = [var 1.85mm, var -3.13mm])
 /// }
-/// 
+///
 /// region001 = region(point = [-4.7462511mm, -1.7722965mm], sketch = sketch001)
 /// shape1 = extrude(region001, length = 1)
 ///   |> translate(z = 1)
-/// 
+///
 /// // Sketch the solid which will be mirrored across.
 /// sketch002 = sketch(on = XY) {
 ///   line1 = line(start = [var -1.43mm, var 1.01mm], end = [var 1.85mm, var 1.01mm])
@@ -203,7 +203,7 @@ export fn mirror2d(
 /// hidden002 = hide(sketch002)
 /// region002 = region(point = [0.21mm, 1.0075mm], sketch = sketch002)
 /// extrude001 = extrude(region002, length = 1)
-/// 
+///
 /// // Do the mirroring, across an edge of some solid.
 /// shape2 = mirror3d([shape1], across = getOppositeEdge(extrude001.sketch.tags.line1))
 /// ```
@@ -249,9 +249,9 @@ export fn mirror3d(
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         )              
+///         )
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath)
 ///     |> translate(
 ///         x = 1.0,
 ///         y = 1.0,
@@ -395,7 +395,7 @@ export fn translate(
   @(includeInSnippet = true)
   z?: number(Length) = 0,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
+  global?: bool = false,
   /// If given, interpret this point as 3 distances, along each of [X, Y, Z] and translate by each of them.
   xyz?: [number(Length); 3]
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
@@ -455,9 +455,9 @@ export fn translate(
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         )              
+///         )
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath)
 ///     |> rotate(
 ///         roll = 10,
 ///         pitch =  10,
@@ -488,9 +488,9 @@ export fn translate(
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         )              
+///         )
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath)
 ///     |> rotate(
 ///         roll = 10,
 ///     )
@@ -519,9 +519,9 @@ export fn translate(
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         )              
+///         )
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath)
 ///     |> rotate(
 ///     axis =  Z,
 ///     angle = 90deg,
@@ -563,9 +563,9 @@ export fn translate(
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         )              
+///         )
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath)
 ///     |> rotate(
 ///     axis =  [0, 0, 1.0],
 ///     angle = 90deg,
@@ -642,7 +642,7 @@ export fn rotate(
   /// The angle to rotate. Must be used with `axis`. Must be between -360deg and 360deg.
   angle?: number(Angle),
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
+  global?: bool = false,
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
 
 /// Scale a solid or a sketch.
@@ -683,9 +683,9 @@ export fn rotate(
 ///     |> circle(
 ///         center = [0, 0],
 ///         radius = 2,
-///         )              
+///         )
 ///     |> subtract2d(tool = pipeHole)
-///     |> sweep(path = sweepPath)   
+///     |> sweep(path = sweepPath)
 ///     |> scale(
 ///     z = 2.5,
 ///     )
@@ -737,7 +737,7 @@ export fn rotate(
 /// button1 = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 1.53)
 ///   |> extrude(length = 1)
-/// 
+///
 /// // Duplicate it, but use `scale` to make it smaller.
 /// button2 = startSketchOn(XY)
 ///   |> circle(center = [0, 0], radius = 1.53)
@@ -761,14 +761,14 @@ export fn scale(
   @(includeInSnippet = true)
   z?: number(Count) = 1,
   /// If true, the transform is applied in global space. The origin of the model will move. By default, the transform is applied in local sketch axis, therefore the origin will not move.
-  global?: bool = false,  
+  global?: bool = false,
   /// If given, scale the solid by this much.
   /// Equivalent to setting `x`, `y` and `z` all to this number.
   /// Incompatible with `x`, `y` or `z`.
   factor?: number(Count),
 ): [Solid; 1+] | [Sketch; 1+] | ImportedGeometry {}
 
-/// Hide solids, sketches, helices, or imported objects.
+/// Hide solids, planes, sketches, helices, or imported objects.
 ///
 /// Hidden objects remain in the model and can still be referenced by later operations.
 /// Hiding can be useful to see hard-to-reach vantages, or clarify overlapping geometry
@@ -801,11 +801,11 @@ export fn scale(
 /// hide(helix001)
 /// ```
 /// ```kcl,legacySketch
-/// @settings(experimentalFeatures = allow, defaultLengthUnit = in)
-/// 
+/// @settings(defaultLengthUnit = in)
+///
 /// // Example of hiding GDT annotations
 /// width = 5
-/// 
+///
 /// startSketchOn(XY)
 ///   |> startProfile(at = [0, 0])
 ///   |> line(end = [width, 0], tag = $side1)
@@ -814,18 +814,68 @@ export fn scale(
 ///   |> line(end = [0, -width], tag = $side4)
 ///   |> close()
 ///   |> extrude(length = 5, tagStart = $bottom, tagEnd = $top)
-/// 
+///
 /// label = gdt::datum(
 ///   face = side2,
 ///   name = "A",
 ///   framePosition = [5, 0],
 ///   framePlane = XZ,
 /// )
-/// 
+///
 /// hide(label)
 /// ```
 @(impl = std_rust, feature_tree = true)
 export fn hide(
   /// The object or objects to hide.
+  @objects: [Solid; 1+] | [Plane; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],
+): [Solid; 1+] | [Plane; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] {}
+
+/// Deletes something from the scene. Once it's deleted, you can't use it anymore.
+/// This means deleting something twice is an error, as is hiding something after you delete it.
+/// ```kcl,sketchSolve
+/// // Basic example, showing deleting something.
+/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+///
+/// // Make a cylinder
+/// sketch001 = sketch(on = XY) {
+///   circle1 = circle(start = [var -2mm, var 1mm], center = [var -1mm, var 0.5mm])
+/// }
+/// cylinder = extrude(region(sketch = sketch001, point = sketch001.circle1.center), length = 5)
+/// // Delete it
+/// delete(cylinder)
+/// ```
+/// ```kcl,legacySketch
+/// // Example showing how to delete bodies after splitting them.
+/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+///
+/// // Make a cylinder.
+/// sketch001 = startSketchOn(XY)
+/// profile001 = circle(
+///   sketch001,
+///   center = [0, 0],
+///   radius = 4.09,
+///   tag = $seg01,
+/// )
+/// cylinder = extrude(profile001, length = 5)
+///
+/// // Make a wedge that splits the cylinder down the middle.
+/// sketch002 = startSketchOn(XY)
+/// profile002 = startProfile(sketch002, at = [0, -4.75])
+///   |> angledLine(angle = 0deg, length = 2, tag = $a)
+///   |> angledLine(angle = segAng(a) + 90deg, length = 9.5)
+///   |> angledLine(angle = segAng(a), length = -segLen(a))
+///   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+///   |> close()
+/// wedge = extrude(profile002, length = 15, symmetric = true)
+///
+/// // Split the cylinder down the wedge.
+/// result = split([cylinder], tools = [wedge])
+///
+/// // Delete the left and right split parts.
+/// delete([result[2], result[0]])
+/// ```
+@(impl = std_rust, feature_tree = true, experimental = true)
+export fn delete(
+  /// The object or objects to delete.
   @objects: [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+],
-): [Solid; 1+] | [Sketch; 1+] | [Helix; 1+] | ImportedGeometry | [GdtAnnotation; 1+] {}
+) {}

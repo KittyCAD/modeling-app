@@ -299,11 +299,15 @@ impl DocData {
     }
 
     pub fn is_experimental(&self) -> bool {
+        self.properties().experimental
+    }
+
+    pub fn properties(&self) -> &Properties {
         match self {
-            DocData::Fn(f) => f.properties.experimental,
-            DocData::Const(c) => c.properties.experimental,
-            DocData::Ty(t) => t.properties.experimental,
-            DocData::Mod(d) => d.properties.experimental,
+            DocData::Fn(f) => &f.properties,
+            DocData::Const(c) => &c.properties,
+            DocData::Ty(t) => &t.properties,
+            DocData::Mod(d) => &d.properties,
         }
     }
 
@@ -859,6 +863,8 @@ pub struct ExampleProperties {
 pub struct ArgData {
     /// The name of the argument.
     pub name: String,
+    /// Whether this argument is experimental.
+    pub experimental: bool,
     /// The type of the argument.
     pub ty: Option<String>,
     /// If the argument is required.
@@ -870,6 +876,8 @@ pub struct ArgData {
     pub docs: Option<String>,
     /// If given, LSP should use these as completion items.
     pub snippet_array: Option<Vec<String>>,
+    /// Whether this argument is deprecated regardless of the KCL version.
+    pub deprecated: bool,
     /// Constraint on the KCL version at or after which this argument is deprecated.
     pub deprecated_since: Option<VersionConstraint>,
 }
@@ -901,6 +909,7 @@ impl ArgData {
         let mut result = ArgData {
             snippet_array: Default::default(),
             name: arg.identifier.name.clone(),
+            experimental: arg.experimental,
             ty: arg.param_type.as_ref().map(|t| t.to_string()),
             docs: None,
             override_in_snippet: None,
@@ -909,6 +918,7 @@ impl ArgData {
             } else {
                 ArgKind::Special
             },
+            deprecated: arg.deprecated,
             deprecated_since: arg.deprecated_since.clone(),
         };
 

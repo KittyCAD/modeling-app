@@ -1,4 +1,5 @@
 import type { KclManager } from '@src/lang/KclManager'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type {
   Command,
   CommandArgument,
@@ -7,13 +8,13 @@ import type {
 } from '@src/lib/commandTypes'
 import { getCommandArgumentKclValuesOnly } from '@src/lib/commandUtils'
 import { isDesktop } from '@src/lib/isDesktop'
-import type { MachineManager } from '@src/lib/MachineManager'
 import { err } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { UserFeaturesService } from '@src/machines/userFeaturesMachine'
 import toast from 'react-hot-toast'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
 import type { ActorRefFrom } from 'xstate'
-import { reportRejection } from '@src/lib/trap'
 
 export type CommandBarActorType = ActorRefFrom<typeof commandBarMachine>
 
@@ -64,6 +65,7 @@ export type CommandBarContext = CommandBarInput & {
   reviewValidationError?: string
   machineManager: MachineManager
   kclManager?: KclManager
+  userFeatures?: UserFeaturesService
 }
 
 export type CommandBarMachineEvent =
@@ -99,6 +101,7 @@ export type CommandBarMachineEvent =
       type: 'Remove commands'
       data: { commands: Command[] }
     }
+  | { type: 'Set userFeatures'; data: UserFeaturesService }
   | { type: 'Submit argument'; data: { [x: string]: unknown } }
   | {
       type: 'xstate.done.actor.validateSingleArgument'
@@ -121,10 +124,6 @@ export type CommandBarMachineEvent =
         name: string
         groupId: string
         argDefaultValues?: { [x: string]: unknown }
-
-        // I'm sorry but the way we did share URL called for this.
-        isRestrictedToOrg?: boolean
-        password?: string
       }
     }
   | {
@@ -155,6 +154,12 @@ export const commandBarMachine = setup({
     'Set kclManager': assign({
       kclManager: ({ event }) => {
         assertEvent(event, 'Set kclManager')
+        return event.data
+      },
+    }),
+    'Set userFeatures': assign({
+      userFeatures: ({ event }) => {
+        assertEvent(event, 'Set userFeatures')
         return event.data
       },
     }),
@@ -321,22 +326,27 @@ export const commandBarMachine = setup({
         if (
           event.type !== 'Select command' &&
           event.type !== 'Find and select command'
-        )
+        ) {
           return {}
+        }
         const command =
           'data' in event && 'command' in event.data
             ? event.data.command
             : context.selectedCommand
-        if (!command?.args) return {}
-        const args: { [x: string]: unknown } = {}
+        const args: { [x: string]: unknown } = {
+          ...(event.data.argDefaultValues ?? {}),
+        }
+        if (!command?.args) {
+          return args
+        }
         for (const [argName, arg] of Object.entries(command.args)) {
+          if (argName in args) {
+            continue
+          }
           args[argName] =
-            event.data.argDefaultValues &&
-            argName in event.data.argDefaultValues
-              ? event.data.argDefaultValues[argName]
-              : (arg.skip || arg.prepopulate) && 'defaultValue' in arg
-                ? arg.defaultValue
-                : undefined
+            (arg.skip || arg.prepopulate) && 'defaultValue' in arg
+              ? arg.defaultValue
+              : undefined
         }
         return args
       },
@@ -748,6 +758,13 @@ export const commandBarMachine = setup({
     },
   },
   on: {
+    'Set kclManager': {
+      actions: 'Set kclManager',
+    },
+    'Set userFeatures': {
+      actions: 'Set userFeatures',
+    },
+
     Close: {
       target: '.Closed',
       actions: 'Clear selected command',

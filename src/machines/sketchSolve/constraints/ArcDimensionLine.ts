@@ -10,16 +10,16 @@ import {
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import type { Coords2d } from '@src/lang/util'
 import { getResolvedTheme } from '@src/lib/theme'
+import { dot2d, polar2d, subVec } from '@src/lib/utils2d'
+import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 import {
   CONSTRAINT_COLOR,
-  updateLabelHitObjects,
   updateLabel,
+  updateLabelHitObjects,
 } from '@src/machines/sketchSolve/constraints/DimensionLine'
 import { isSpriteLabel } from '@src/machines/sketchSolve/constraints/constraintUtils'
-import { dot2d, polar2d, subVec } from '@src/lib/utils2d'
 import type { Group, Mesh } from 'three'
 import type { Line2 } from 'three/examples/jsm/lines/Line2'
-import { createArcPositions } from '@src/machines/sketchSolve/arcPositions'
 
 export const ANGLE_CONSTRAINT_ARC_BODY_ROLE = 'angle-constraint-arc-body'
 export const ANGLE_CONSTRAINT_GUIDE_BODY_ROLE = 'angle-constraint-guide-body'

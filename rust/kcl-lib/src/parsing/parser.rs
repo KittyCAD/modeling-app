@@ -39,6 +39,7 @@ use crate::TypedPath;
 use crate::errors::CompilationIssue;
 use crate::errors::Severity;
 use crate::errors::Tag;
+use crate::execution::annotations::DEPRECATED;
 use crate::execution::annotations::DEPRECATED_SINCE;
 use crate::execution::annotations::EXPERIMENTAL;
 use crate::execution::annotations::VersionConstraint;
@@ -99,7 +100,6 @@ use crate::parsing::ast::types::UnaryOperator;
 use crate::parsing::ast::types::VariableDeclaration;
 use crate::parsing::ast::types::VariableDeclarator;
 use crate::parsing::ast::types::VariableKind;
-#[cfg(feature = "artifact-graph")]
 use crate::parsing::ast::types::fill_node_paths;
 use crate::parsing::math::BinaryExpressionToken;
 use crate::parsing::token::RESERVED_SKETCH_BLOCK_WORDS;
@@ -123,6 +123,8 @@ const MAX_NESTING_DEPTH: u16 = 512;
 /// space.
 const MAX_RECURSIVE_PARSER_DEPTH: u16 = 128;
 const MAX_NESTING_DEPTH_MESSAGE: &str = "Exceeded the maximum nesting limit while parsing this file. Try defining intermediate variables instead of deeply nesting expressions.";
+const ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK: &str =
+    "The left-hand side of the = cannot have a value assigned to it. Maybe you meant to use ==?";
 
 const KEYWORD_EXPECTING_IDENTIFIER: &str = "Expected an identifier, but found a reserved keyword.";
 
@@ -145,7 +147,6 @@ pub fn run_parser(i: TokenSlice) -> super::ParseResult {
             None
         }
     };
-    #[cfg(feature = "artifact-graph")]
     let ast = {
         let mut ast = ast;
         if let Some(ast) = &mut ast {
@@ -3266,6 +3267,16 @@ fn expression_stmt(i: &mut TokenSlice) -> ModalResult<Node<ExpressionStatement>>
             "an expression (i.e. a value, or an algorithm for calculating one), e.g. 'x + y' or '3' or 'width * 2'",
         ))
         .parse_next(i)?;
+    if ParseContext::is_in_sketch_block() {
+        let checkpoint = i.checkpoint();
+        let _ = opt(whitespace).parse_next(i);
+        if let Ok(eq) = equals(i) {
+            return Err(ErrMode::Cut(
+                CompilationIssue::fatal(eq.as_source_range(), ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK).into(),
+            ));
+        }
+        i.reset(&checkpoint);
+    }
     let start = val.start();
     let end = val.end();
     let module_id = val.module_id();
@@ -3752,12 +3763,18 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                     identifier.pre_comments = comments.inner;
                 }
                 let mut experimental = false;
+                let mut deprecated = false;
                 let mut deprecated_since = None;
                 if let Some(attr) = attr {
                     if let Some(property) = attr.property(EXPERIMENTAL)
                         && let Some(value) = property.value.literal_bool()
                     {
                         experimental = value;
+                    }
+                    if let Some(property) = attr.property(DEPRECATED)
+                        && let Some(value) = property.value.literal_bool()
+                    {
+                        deprecated = value;
                     }
                     if let Some(property) = attr.property(DEPRECATED_SINCE) {
                         if let Some(s) = property.value.literal_str()
@@ -3773,11 +3790,18 @@ fn parameters(i: &mut TokenSlice) -> ModalResult<Vec<Parameter>> {
                             ));
                         }
                     }
+                    if deprecated && deprecated_since.is_some() {
+                        ParseContext::err(CompilationIssue::fatal(
+                            SourceRange::from(&attr),
+                            format!("A parameter cannot set both `{DEPRECATED}` and `{DEPRECATED_SINCE}`; only one may be specified"),
+                        ));
+                    }
                     identifier.outer_attrs.push(attr);
                 }
 
                 Ok(Parameter {
                     experimental,
+                    deprecated,
                     deprecated_since,
                     identifier,
                     param_type: type_,
@@ -5532,6 +5556,32 @@ height = [obj["a"] -1, 0]"#;
     }
 
     #[test]
+    fn test_param_deprecated_annotation() {
+        crate::parsing::top_level_parse(
+            r#"fn foo(
+  @(deprecated = true)
+  x?: number,
+) {
+  return x
+}"#,
+        )
+        .unwrap();
+    }
+
+    #[test]
+    fn test_param_deprecated_and_deprecated_since_conflict() {
+        assert_err_contains(
+            r#"fn foo(
+  @(deprecated = true, deprecated_since = "2.0")
+  x?: number,
+) {
+  return x
+}"#,
+            "cannot set both `deprecated` and `deprecated_since`",
+        );
+    }
+
+    #[test]
     fn test_anon_fn_no_fn() {
         assert_err_contains("foo(42, (x) { return x + 1 })", "Anonymous function requires `fn`");
     }
@@ -5652,6 +5702,7 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    deprecated: false,
                     deprecated_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
@@ -5667,6 +5718,7 @@ e
             (
                 vec![Parameter {
                     experimental: Default::default(),
+                    deprecated: false,
                     deprecated_since: None,
                     identifier: Node::no_src(Identifier {
                         name: "a".to_owned(),
@@ -5683,6 +5735,7 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
@@ -5695,6 +5748,7 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
@@ -5712,6 +5766,7 @@ e
                 vec![
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "a".to_owned(),
@@ -5724,6 +5779,7 @@ e
                     },
                     Parameter {
                         experimental: Default::default(),
+                        deprecated: false,
                         deprecated_since: None,
                         identifier: Node::no_src(Identifier {
                             name: "b".to_owned(),
@@ -6536,6 +6592,27 @@ bar = 1
             .expect("Found an error, but there was no cause. Add a cause.");
         assert_eq!(cause.message, "Missing comma between arguments, try adding a comma in",);
         assert_eq!(cause.source_range.start() - 1, expected_src_start);
+    }
+
+    #[test]
+    fn test_sensible_error_when_operation_undefined_in_sketch_block() {
+        let program_source = "sketch(on = XY) {
+  line001 = line(start = [var 0mm, var 0mm], end = [var 0mm, var 1mm])
+  distance([line001.start, line001.end]) = 5mm
+}";
+        let expected_src_start = program_source.find("= 5mm").unwrap();
+        let tokens = crate::parsing::token::lex(program_source, ModuleId::default()).unwrap();
+        ParseContext::init();
+        let err = program
+            .parse(tokens.as_slice())
+            .expect_err("Program succeeded, but it should have failed");
+        let cause = err
+            .inner()
+            .cause
+            .as_ref()
+            .expect("Found an error, but there was no cause. Add a cause.");
+        assert_eq!(cause.source_range.start(), expected_src_start);
+        assert_eq!(cause.message, ERR_INVALID_ASSIGNMENT_IN_SKETCH_BLOCK,);
     }
 
     #[test]

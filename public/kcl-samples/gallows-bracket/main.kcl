@@ -212,12 +212,8 @@ verticalEndMiterRegion = region(segments = [
   verticalEndMiterSketch.verticalEndRightEdge
 ])
 verticalEndMiterTool = extrude(verticalEndMiterRegion, length = -(ironWidth + csgFriendlyOffset * 2))
-  |> translate(
-       x = 0,
-       y = 0,
-       z = csgFriendlyOffset,
-       global = true,
-     )
+  |> scale(x = -1)
+  |> flipSurface()
 hide(verticalEndMiterSketch)
 
 verticalMitered = subtract(verticalBlank, tools = verticalEndMiterTool, legacyMethod = true)
@@ -411,12 +407,8 @@ horizontalStartMiterRegion = region(segments = [
   horizontalStartMiterSketch.horizontalStartRightEdge
 ])
 horizontalStartMiterTool = extrude(horizontalStartMiterRegion, length = -(ironWidth + csgFriendlyOffset * 2))
-  |> translate(
-       x = 0,
-       y = 0,
-       z = csgFriendlyOffset,
-       global = true,
-     )
+  |> scale(x = -1)
+  |> flipSurface()
 hide(horizontalStartMiterSketch)
 
 horizontalMitered = subtract(horizontalBlank, tools = horizontalStartMiterTool, legacyMethod = true)

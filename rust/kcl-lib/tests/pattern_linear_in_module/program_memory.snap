@@ -4,7 +4,6 @@ description: Variables in memory after executing pattern_linear_in_module.kcl
 ---
 {
   "thing": {
-    "type": "Function",
-    "value": null
+    "type": "Function"
   }
 }

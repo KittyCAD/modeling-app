@@ -3,45 +3,43 @@ import type {
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
-import type { NumericSuffix } from '@rust/kcl-lib/bindings/NumericSuffix'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { SKETCH_SOLVE_GROUP } from '@src/clientSideScene/sceneUtils'
 import type { KclManager } from '@src/lang/KclManager'
-import { baseUnitToNumericSuffix } from '@src/lang/wasm'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray, isRecord } from '@src/lib/utils'
 import { distance2d } from '@src/lib/utils2d'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
   findClosestApiObjects,
   getSketchHoverDistance,
 } from '@src/machines/sketchSolve/interaction/interactionHelpers'
+import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   ORIGIN_TARGET,
   type SketchSolveSelectionId,
 } from '@src/machines/sketchSolve/sketchSolveSelection'
-import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import {
-  getConstraintToolPreparedApply,
-  resolveConstraintToolSelectionAction,
-  normalizeConstraintToolSelection,
-  resolveConstraintToolClickAction,
   type ConstraintToolPreparedApply,
   type ConstraintToolSelectionAction,
+  getConstraintToolPreparedApply,
+  normalizeConstraintToolSelection,
+  resolveConstraintToolClickAction,
+  resolveConstraintToolSelectionAction,
 } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import { type ConstraintToolName } from '@src/machines/sketchSolve/tools/constraintToolModel'
-import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import {
+  type SelectionBoxVisualState,
   findContainedSegments,
   findIntersectingSegments,
   isIntersectionSelectionMode,
   project3DToScreen,
   removeSelectionBox,
-  type SelectionBoxVisualState,
   updateSelectionBox,
 } from '@src/machines/sketchSolve/tools/moveTool/areaSelectUtils'
+import type { BaseToolEvent } from '@src/machines/sketchSolve/tools/sharedToolTypes'
 import { Group, Vector2 } from 'three'
 import type { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 import { assertEvent, assign, fromPromise, setup } from 'xstate'
@@ -76,12 +74,6 @@ type ConstraintToolApplyResult = {
   kclSource: SourceDelta
   sceneGraphDelta: SceneGraphDelta
   checkpointId?: number | null
-}
-
-function getDefaultLengthUnit(kclManager: KclManager): NumericSuffix {
-  return baseUnitToNumericSuffix(
-    kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-  )
 }
 
 type ParentSketchSolveEvent =
@@ -574,20 +566,17 @@ function getPreparedApplyFromClick({
   currentSelectionIds,
   clickedSelectionId,
   objects,
-  defaultLengthUnit,
 }: {
   toolName: ConstraintToolName
   currentSelectionIds: SketchSolveSelectionId[]
   clickedSelectionId: SketchSolveSelectionId | null
   objects: ApiObject[]
-  defaultLengthUnit: NumericSuffix
 }) {
   return resolveConstraintToolClickAction(
     toolName,
     currentSelectionIds,
     clickedSelectionId,
-    objects,
-    { defaultLengthUnit }
+    objects
   )
 }
 
@@ -596,20 +585,17 @@ function getSelectionActionFromCandidates({
   currentSelectionIds,
   candidateSelectionIds,
   objects,
-  defaultLengthUnit,
 }: {
   toolName: ConstraintToolName
   currentSelectionIds: SketchSolveSelectionId[]
   candidateSelectionIds: SketchSolveSelectionId[]
   objects: ApiObject[]
-  defaultLengthUnit: NumericSuffix
 }) {
   return resolveConstraintToolSelectionAction(
     toolName,
     currentSelectionIds,
     candidateSelectionIds,
-    objects,
-    { defaultLengthUnit }
+    objects
   )
 }
 
@@ -729,10 +715,7 @@ export function createConstraintToolMachine({
           getConstraintToolPreparedApply(
             context.toolName,
             normalized.selectionIds,
-            event.objects,
-            {
-              defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
-            }
+            event.objects
           ) !== null
         )
       },
@@ -744,7 +727,6 @@ export function createConstraintToolMachine({
             currentSelectionIds: event.currentSelectionIds,
             clickedSelectionId: event.clickedSelectionId,
             objects: event.objects,
-            defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
           }).type === 'apply'
         )
       },
@@ -787,7 +769,6 @@ export function createConstraintToolMachine({
           currentSelectionIds: event.currentSelectionIds,
           clickedSelectionId: event.clickedSelectionId,
           objects: event.objects,
-          defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
         })
 
         if (clickAction.type === 'clear') {
@@ -812,10 +793,7 @@ export function createConstraintToolMachine({
               getConstraintToolPreparedApply(
                 context.toolName,
                 normalized.selectionIds,
-                event.objects,
-                {
-                  defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
-                }
+                event.objects
               ) ?? undefined,
           }
         }
@@ -828,7 +806,6 @@ export function createConstraintToolMachine({
             currentSelectionIds: event.currentSelectionIds,
             clickedSelectionId: event.clickedSelectionId,
             objects: event.objects,
-            defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
           })
 
           return {
@@ -851,7 +828,6 @@ export function createConstraintToolMachine({
           currentSelectionIds: event.currentSelectionIds,
           candidateSelectionIds: event.candidateSelectionIds,
           objects: event.objects,
-          defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
         })
         const previewSelectionIds = getPreviewSelectionIds(selectionAction)
         const previewIds = previewSelectionIds
@@ -876,7 +852,6 @@ export function createConstraintToolMachine({
           currentSelectionIds: event.currentSelectionIds,
           candidateSelectionIds: event.candidateSelectionIds,
           objects: event.objects,
-          defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
         })
 
         sendDuringAreaSelectionToParent(self, [])
@@ -898,7 +873,6 @@ export function createConstraintToolMachine({
             currentSelectionIds: event.currentSelectionIds,
             candidateSelectionIds: event.candidateSelectionIds,
             objects: event.objects,
-            defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
           })
 
           return {
@@ -1050,7 +1024,6 @@ export function createConstraintToolMachine({
                     currentSelectionIds: event.currentSelectionIds,
                     candidateSelectionIds: event.candidateSelectionIds,
                     objects: event.objects,
-                    defaultLengthUnit: getDefaultLengthUnit(context.kclManager),
                   }).type === 'apply'
                 )
               },

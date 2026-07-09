@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::ExecutorContext;
 use crate::ExecutorSettings;
-use crate::engine::conn_mock::EngineConnection;
+use crate::engine::engine_manager::EngineManager;
 use crate::execution::ContextType;
 use crate::execution::MockConfig;
 use crate::front::Freedom;
@@ -13,11 +13,12 @@ async fn run_with_freedom_analysis(kcl: &str) -> Vec<(ObjectId, Freedom)> {
     let program = crate::Program::parse_no_errs(kcl).unwrap();
 
     let exec_ctxt = ExecutorContext {
-        engine: Arc::new(Box::new(EngineConnection::new().unwrap())),
+        engine: Arc::new(EngineManager::new_mock()),
         engine_batch: crate::engine::EngineBatchContext::default(),
-        fs: Arc::new(crate::fs::FileManager::new()),
+        fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
         settings: ExecutorSettings::default(),
         context_type: ContextType::Mock,
+        execution_callbacks: Default::default(),
     };
 
     let mock_config = MockConfig {

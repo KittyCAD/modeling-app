@@ -1,14 +1,13 @@
+import { projectSkeletonCreate } from '@src/lang/project'
+import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import type { LoaderFunction } from 'react-router-dom'
-import fsZds from '@src/lib/fs-zds'
-import { redirect } from 'react-router-dom'
-import { waitFor } from 'xstate'
-import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import { getProjectInfo, getInitialDefaultDir } from '@src/lib/desktop'
+import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
+import fsZds from '@src/lib/fs-zds'
 import {
   PATHS,
   getParentAbsolutePath,
@@ -16,15 +15,20 @@ import {
   getRouterSearchFromRequestUrl,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
+import {
+  loadHomeProjects,
+  webHomeRouteEnabled,
+} from '@src/lib/routeLoaderUtils'
 import { loadAndValidateSettings } from '@src/lib/settings/settingsUtils'
-import type { App } from '@src/lib/app'
 import type {
   FileLoaderData,
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import { projectSkeletonCreate } from '@src/lang/project'
+import type { LoaderFunction } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
+import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -32,14 +36,10 @@ export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
  * The base loader is used to reroute `/` root path requests,
  * to the home route on desktop, and to a constrained single project view on web.
  *
- * Once we get cloud storage or another solution we'll introduce the home, multi-project view on web.
+ * The OPFS cloud feature flag enables the home, multi-project view on web.
  */
 export const baseLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async ({ request }) => {
     const url = new URL(request.url)
     const routerSearch = getRouterSearchFromRequestUrl(
@@ -55,6 +55,10 @@ export const baseLoader =
     // Let another part of the system handle the "open with web/desktop"...
     if (url.searchParams.has('ask-open-desktop')) {
       return
+    }
+
+    if (await webHomeRouteEnabled(app)) {
+      return redirect(PATHS.HOME + routerSearch)
     }
 
     // Web, make a default project and redirect to it.
@@ -86,18 +90,13 @@ export const baseLoader =
         wasmInstance
       )
 
-      const fileURLPath =
-        PATHS.FILE + '/' + encodeURIComponent(requestedProjectName)
+      const fileURLPath = `${PATHS.FILE}/${encodeURIComponent(requestedProjectName)}`
       return redirect(fileURLPath + routerSearch)
     }
   }
 
 export const fileLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
+  ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
     const {
       settings: { actor: settingsActor },
@@ -119,7 +118,7 @@ export const fileLoader =
 
     const wasmInstance = await kclManager.wasmInstancePromise
 
-    let settings = await loadAndValidateSettings(
+    const settings = await loadAndValidateSettings(
       wasmInstance,
       heuristicProjectFilePath
     )
@@ -217,6 +216,12 @@ export const fileLoader =
         : undefined
     )
 
+    const requestedFileName =
+      app.systemIOActor.getSnapshot().context.requestedFileName
+    if (requestedFileName.project === projectName) {
+      requestedFileName.onProjectLoaderComplete?.()
+    }
+
     const appProjectDir = settings.settings.app.projectDirectory.current
     const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
       ? appProjectDir
@@ -248,23 +253,12 @@ export const fileLoader =
 
 // Should also clear currently loaded projects in SystemIO. They may be stale.
 export const homeLoader =
-  ({
-    app,
-  }: {
-    app: App
-  }): LoaderFunction =>
-  async ({ request }): Promise<HomeLoaderData | Response> => {
-    // If on web, bump out to root, which will redirect to a project.
-    if (!window.electron) {
+  ({ app }: { app: App }): LoaderFunction =>
+  async (): Promise<HomeLoaderData | Response> => {
+    // If on unflagged web, bump out to root, which will redirect to a project.
+    if (!window.electron && !(await webHomeRouteEnabled(app))) {
       return redirect(PATHS.INDEX)
     }
 
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
-    app.closeProject()
-    app.settings.actor.send({
-      type: 'clear.project',
-    })
-    return {}
+    return loadHomeProjects(app)
   }

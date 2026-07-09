@@ -50,14 +50,30 @@ pub type StdFn =
         Args,
     ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<KclValueControlFlow, KclError>> + Send + '_>>;
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) enum ConsumedSolidArgCheck {
+    #[default]
+    Error,
+    WarnDeprecated,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StdFnProps {
     pub name: String,
+    pub(crate) consumed_solid_arg_check: ConsumedSolidArgCheck,
 }
 
 impl StdFnProps {
     pub(crate) fn default(name: &str) -> Self {
-        Self { name: name.to_owned() }
+        Self {
+            name: name.to_owned(),
+            consumed_solid_arg_check: Default::default(),
+        }
+    }
+
+    pub(crate) fn warn_deprecated_on_consumed_solid_args(mut self) -> Self {
+        self.consumed_solid_arg_check = ConsumedSolidArgCheck::WarnDeprecated;
+        self
     }
 }
 
@@ -71,6 +87,34 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::flatness(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::flatness"),
         ),
+        ("gdt", "straightness") => (
+            |e, a| Box::pin(crate::std::gdt::straightness(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::straightness"),
+        ),
+        ("gdt", "circularity") => (
+            |e, a| Box::pin(crate::std::gdt::circularity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::circularity"),
+        ),
+        ("gdt", "cylindricity") => (
+            |e, a| Box::pin(crate::std::gdt::cylindricity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::cylindricity"),
+        ),
+        ("gdt", "concentricity") => (
+            |e, a| Box::pin(crate::std::gdt::concentricity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::concentricity"),
+        ),
+        ("gdt", "symmetry") => (
+            |e, a| Box::pin(crate::std::gdt::symmetry(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::symmetry"),
+        ),
+        ("gdt", "runout") => (
+            |e, a| Box::pin(crate::std::gdt::runout(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::runout"),
+        ),
+        ("gdt", "angularity") => (
+            |e, a| Box::pin(crate::std::gdt::angularity(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::angularity"),
+        ),
         ("gdt", "perpendicularity") => (
             |e, a| Box::pin(crate::std::gdt::perpendicularity(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::perpendicularity"),
@@ -83,6 +127,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::gdt::annotation(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::annotation"),
         ),
+        ("gdt", "note") => (
+            |e, a| Box::pin(crate::std::gdt::note(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::note"),
+        ),
         ("gdt", "distance") => (
             |e, a| Box::pin(crate::std::gdt::distance(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::distance"),
@@ -90,6 +138,14 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("gdt", "profile") => (
             |e, a| Box::pin(crate::std::gdt::profile(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::gdt::profile"),
+        ),
+        ("gdt", "profileLine") => (
+            |e, a| Box::pin(crate::std::gdt::profile_line(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::profileLine"),
+        ),
+        ("gdt", "profileSurface") => (
+            |e, a| Box::pin(crate::std::gdt::profile_surface(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::gdt::profileSurface"),
         ),
         ("gdt", "position") => (
             |e, a| Box::pin(crate::std::gdt::position(e, a).map(|r| r.map(KclValue::continue_))),
@@ -222,7 +278,11 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("transform", "hide") => (
             |e, a| Box::pin(crate::std::transform::hide(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::transform::hide"),
+            StdFnProps::default("std::transform::hide").warn_deprecated_on_consumed_solid_args(),
+        ),
+        ("transform", "delete") => (
+            |e, a| Box::pin(crate::std::transform::delete(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::transform::delete"),
         ),
         ("prelude", "offsetPlane") => (
             |e, a| Box::pin(crate::std::planes::offset_plane(e, a).map(|r| r.map(KclValue::continue_))),
@@ -318,7 +378,7 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ),
         ("array", "flatten") => (
             |e, a| Box::pin(crate::std::array::flatten(e, a).map(|r| r.map(KclValue::continue_))),
-            StdFnProps::default("std::array::flatten"),
+            StdFnProps::default("std::array::flatten").warn_deprecated_on_consumed_solid_args(),
         ),
         ("prelude", "clone") => (
             |e, a| Box::pin(crate::std::clone::clone(e, a).map(|r| r.map(KclValue::continue_))),
@@ -555,6 +615,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("solver", "circle") => (
             |e, a| Box::pin(crate::std::constraints::circle(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solver::circle"),
+        ),
+        ("solver", "controlPointSpline") => (
+            |e, a| Box::pin(crate::std::constraints::control_point_spline(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::solver::controlPointSpline"),
         ),
         ("solver", "coincident") => (
             |e, a| Box::pin(crate::std::constraints::coincident(e, a).map(|r| r.map(KclValue::continue_))),

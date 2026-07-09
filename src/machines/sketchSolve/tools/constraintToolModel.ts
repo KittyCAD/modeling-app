@@ -177,6 +177,18 @@ export const constraintToolConfigs = {
         areaSelectionPolicy: 'consume-minimal',
       },
       {
+        id: 'origin-line',
+        resultingConstraintType: 'Midpoint',
+        slots: [['origin'], ['line']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'line-origin',
+        resultingConstraintType: 'Midpoint',
+        slots: [['line'], ['origin']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
         id: 'point-arc',
         resultingConstraintType: 'Midpoint',
         slots: [['point'], ['arc']],
@@ -186,6 +198,18 @@ export const constraintToolConfigs = {
         id: 'arc-point',
         resultingConstraintType: 'Midpoint',
         slots: [['arc'], ['point']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'origin-arc',
+        resultingConstraintType: 'Midpoint',
+        slots: [['origin'], ['arc']],
+        areaSelectionPolicy: 'consume-minimal',
+      },
+      {
+        id: 'arc-origin',
+        resultingConstraintType: 'Midpoint',
+        slots: [['arc'], ['origin']],
         areaSelectionPolicy: 'consume-minimal',
       },
     ],
@@ -308,7 +332,7 @@ export const constraintToolConfigs = {
       },
       {
         id: 'point-pair',
-        resultingConstraintType: 'VerticalDistance',
+        resultingConstraintType: 'Horizontal',
         slots: [['pointLike'], ['pointLike']],
         areaSelectionPolicy: 'consume-minimal',
       },
@@ -327,7 +351,7 @@ export const constraintToolConfigs = {
       },
       {
         id: 'point-pair',
-        resultingConstraintType: 'HorizontalDistance',
+        resultingConstraintType: 'Vertical',
         slots: [['pointLike'], ['pointLike']],
         areaSelectionPolicy: 'consume-minimal',
       },

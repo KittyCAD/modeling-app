@@ -3,6 +3,26 @@
 use super::*;
 
 #[test]
+fn gdt_annotation_artifacts_get_node_paths() {
+    let code = r#"gdt::annotation(annotation = "NOTE", faces = [], edges = [])"#;
+    let ast = crate::parsing::parse_str(code, ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+    let source_range = SourceRange::new(0, code.len(), ModuleId::default());
+    let mut artifact = Artifact::GdtAnnotation(GdtAnnotationArtifact {
+        id: ArtifactId::new(Uuid::new_v4()),
+        code_ref: CodeRef::placeholder(source_range),
+    });
+
+    fill_in_node_paths(&mut artifact, &programs, 0, &AHashMap::default());
+
+    let Artifact::GdtAnnotation(annotation) = artifact else {
+        panic!("Expected GD&T annotation artifact");
+    };
+    assert_eq!(annotation.code_ref.range, source_range);
+    assert!(!annotation.code_ref.node_path.is_empty());
+}
+
+#[test]
 fn entity_clone_remaps_sweep_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let source_path_id = ArtifactId::new(Uuid::new_v4());
@@ -30,12 +50,12 @@ fn entity_clone_remaps_sweep_ids() {
             pattern_ids: Vec::new(),
         }),
     );
-    let mut clone_id_map = FnvHashMap::default();
+    let mut clone_id_map = AHashMap::default();
     clone_id_map.insert(source_path_id, cloned_path_id);
     clone_id_map.insert(source_surface_id, cloned_surface_id);
     clone_id_map.insert(source_edge_id, cloned_edge_id);
     clone_id_map.insert(source_trajectory_id, cloned_trajectory_id);
-    let mut entity_clone_id_maps = FnvHashMap::default();
+    let mut entity_clone_id_maps = AHashMap::default();
     entity_clone_id_maps.insert(cmd_id, clone_id_map);
 
     let command = ModelingCmd::from(
@@ -54,13 +74,13 @@ fn entity_clone_remaps_sweep_ids() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &entity_clone_id_maps,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
@@ -121,7 +141,7 @@ fn entity_clone_remaps_path_ids() {
             outer_path_id: Some(source_outer_path_id),
         }),
     );
-    let mut clone_id_map = FnvHashMap::default();
+    let mut clone_id_map = AHashMap::default();
     clone_id_map.insert(source_seg_id, cloned_seg_id);
     clone_id_map.insert(source_sweep_id, cloned_sweep_id);
     clone_id_map.insert(source_trajectory_sweep_id, cloned_trajectory_sweep_id);
@@ -130,7 +150,7 @@ fn entity_clone_remaps_path_ids() {
     clone_id_map.insert(source_origin_path_id, cloned_origin_path_id);
     clone_id_map.insert(source_inner_path_id, cloned_inner_path_id);
     clone_id_map.insert(source_outer_path_id, cloned_outer_path_id);
-    let mut entity_clone_id_maps = FnvHashMap::default();
+    let mut entity_clone_id_maps = AHashMap::default();
     entity_clone_id_maps.insert(cmd_id, clone_id_map);
 
     let command = ModelingCmd::from(
@@ -149,13 +169,13 @@ fn entity_clone_remaps_path_ids() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &entity_clone_id_maps,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
@@ -203,11 +223,11 @@ fn entity_clone_remaps_composite_solid_ids() {
             pattern_ids: Vec::new(),
         }),
     );
-    let mut clone_id_map = FnvHashMap::default();
+    let mut clone_id_map = AHashMap::default();
     clone_id_map.insert(source_solid_id, cloned_solid_id);
     clone_id_map.insert(source_tool_id, cloned_tool_id);
     clone_id_map.insert(source_parent_composite_id, cloned_parent_composite_id);
-    let mut entity_clone_id_maps = FnvHashMap::default();
+    let mut entity_clone_id_maps = AHashMap::default();
     entity_clone_id_maps.insert(cmd_id, clone_id_map);
 
     let command = ModelingCmd::from(
@@ -226,13 +246,13 @@ fn entity_clone_remaps_composite_solid_ids() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &entity_clone_id_maps,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
@@ -292,13 +312,13 @@ fn entity_clone_does_not_preserve_unmapped_pattern_links() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
@@ -384,12 +404,12 @@ fn entity_clone_clones_mapped_child_artifacts() {
         }),
     );
 
-    let mut clone_id_map = FnvHashMap::default();
+    let mut clone_id_map = AHashMap::default();
     clone_id_map.insert(source_path_id, cloned_path_id);
     clone_id_map.insert(source_seg_id, cloned_seg_id);
     clone_id_map.insert(source_sweep_id, cloned_sweep_id);
     clone_id_map.insert(source_wall_id, cloned_wall_id);
-    let mut entity_clone_id_maps = FnvHashMap::default();
+    let mut entity_clone_id_maps = AHashMap::default();
     entity_clone_id_maps.insert(cmd_id, clone_id_map);
 
     let command = ModelingCmd::from(
@@ -408,13 +428,13 @@ fn entity_clone_clones_mapped_child_artifacts() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &entity_clone_id_maps,
-        &FnvHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
@@ -492,7 +512,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
         },
     ];
 
-    let mut responses = FnvHashMap::default();
+    let mut responses = AHashMap::default();
     let old_children_response: kcmc::output::EntityGetAllChildUuids =
         serde_json::from_value(serde_json::json!({ "entity_ids": [old_child_a, old_child_b] })).unwrap();
     let new_children_response: kcmc::output::EntityGetAllChildUuids =
@@ -603,13 +623,13 @@ fn surface_blend_creates_blend_sweep_artifact() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
@@ -675,13 +695,13 @@ fn create_region_creates_region_path_sub_type() {
     let updated = artifacts_to_update(
         &artifacts,
         &artifact_command,
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 
@@ -921,7 +941,7 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
         ]
     }))
     .expect("valid mirror response");
-    let mut responses = FnvHashMap::default();
+    let mut responses = AHashMap::default();
     responses.insert(cmd_id, OkModelingCmdResponse::EntityMirrorAcross(mirror_response));
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -930,12 +950,12 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
         &artifacts,
         &artifact_command,
         &responses,
-        &FnvHashMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
         &programs,
         0,
         &IndexMap::default(),
-        &FnvHashMap::default(),
+        &AHashMap::default(),
     )
     .unwrap();
 

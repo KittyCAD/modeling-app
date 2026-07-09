@@ -9,24 +9,27 @@ import {
   createName,
   createTagDeclarator,
 } from '@src/lang/create'
+import { toUtf16 } from '@src/lang/errors'
 import {
+  createPoint2dExpression,
   createVariableExpressionsArray,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
-  createPoint2dExpression,
 } from '@src/lang/modifyAst'
 import {
-  modifyAstWithTagsForSelection,
-  mutateAstWithTagForSketchSegment,
-} from '@src/lang/modifyAst/tagManagement'
+  getFacesExprsFromSelection,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
+import { getAxisExpression } from '@src/lang/modifyAst/geometry'
+import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
   valueOrVariable,
 } from '@src/lang/queryAst'
-import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   getArtifactOfTypes,
   getSweepEdgeCodeRef,
@@ -39,34 +42,22 @@ import type {
   PathToNode,
   Program,
 } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
-  type KclPreludeExtrudeMethod,
-  type KclPreludeBodyType,
   KCL_PRELUDE_BODY_TYPE_SOLID,
   KCL_PRELUDE_BODY_TYPE_SURFACE,
+  type KclPreludeBodyType,
+  type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
+import { isEngineRegionSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import {
-  getFacesExprsFromSelection,
-  isFaceArtifact,
-} from '@src/lang/modifyAst/faces'
-import {
-  getEdgeTagCall,
-  retrieveEdgeSelectionsFromSingleEdgeRef,
-  getPrimitiveEdgeSelections,
-  groupSelectionsByBodyAndAddTags,
-  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
-} from '@src/lang/modifyAst/edges'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { toUtf16 } from '@src/lang/errors'
-import { isEngineRegionSelection } from '@src/lib/selections'
-import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 
 export function addExtrude({
   ast,
@@ -79,6 +70,7 @@ export function addExtrude({
   bidirectionalLength,
   tagStart,
   tagEnd,
+  draftAngle,
   twistAngle,
   twistAngleStep,
   twistCenter,
@@ -97,6 +89,7 @@ export function addExtrude({
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
+  draftAngle?: KclCommandValue
   twistAngle?: KclCommandValue
   twistAngleStep?: KclCommandValue
   twistCenter?: KclCommandValue
@@ -210,6 +203,9 @@ export function addExtrude({
   const tagEndExpr = tagEnd
     ? [createLabeledArg('tagEnd', createTagDeclarator(tagEnd))]
     : []
+  const draftAngleExpr = draftAngle
+    ? [createLabeledArg('draftAngle', valueOrVariable(draftAngle))]
+    : []
   const twistAngleExpr = twistAngle
     ? [createLabeledArg('twistAngle', valueOrVariable(twistAngle))]
     : []
@@ -237,20 +233,25 @@ export function addExtrude({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('extrude', sketchesExpr, [
-    ...lengthExpr,
-    ...toExpr,
-    ...symmetricExpr,
-    ...bidirectionalLengthExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...twistAngleExpr,
-    ...twistAngleStepExpr,
-    ...twistCenterExpr,
-    ...methodExpr,
-    ...hideSeamsExpr,
-    ...bodyTypeExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Extrude'),
+    sketchesExpr,
+    [
+      ...lengthExpr,
+      ...toExpr,
+      ...symmetricExpr,
+      ...bidirectionalLengthExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...draftAngleExpr,
+      ...twistAngleExpr,
+      ...twistAngleStepExpr,
+      ...twistCenterExpr,
+      ...methodExpr,
+      ...hideSeamsExpr,
+      ...bodyTypeExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if (length && 'variableName' in length && length.variableName) {
@@ -266,6 +267,9 @@ export function addExtrude({
       modifiedAst,
       mNodeToEdit
     )
+  }
+  if (draftAngle && 'variableName' in draftAngle && draftAngle.variableName) {
+    insertVariableAndOffsetPathToNode(draftAngle, modifiedAst, mNodeToEdit)
   }
   if (twistAngle && 'variableName' in twistAngle && twistAngle.variableName) {
     insertVariableAndOffsetPathToNode(twistAngle, modifiedAst, mNodeToEdit)
@@ -320,10 +324,14 @@ export function addSweep({
   path,
   wasmInstance,
   sectional,
+  tolerance,
   relativeTo,
+  translateProfileToPath,
+  orientProfilePerpendicular,
   tagStart,
   tagEnd,
   bodyType,
+  version,
   nodeToEdit,
 }: {
   ast: Node<Program>
@@ -332,10 +340,14 @@ export function addSweep({
   path: Selections
   wasmInstance: ModuleType
   sectional?: boolean
+  tolerance?: KclCommandValue
   relativeTo?: SweepRelativeTo
+  translateProfileToPath?: boolean
+  orientProfilePerpendicular?: boolean
   tagStart?: string
   tagEnd?: string
   bodyType?: KclPreludeBodyType
+  version?: KclCommandValue
   nodeToEdit?: PathToNode
 }):
   | {
@@ -346,18 +358,43 @@ export function addSweep({
   // 1. Clone the ast and nodeToEdit so we can freely edit them
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
+  const isEditing = Boolean(mNodeToEdit)
 
   // 2. Prepare unlabeled and labeled arguments
-  // Map the sketches selection into a list of kcl expressions to be passed as unlabelled argument
-  const vars = getVariableExprsFromSelection(
+  // Map the face and sketch selections into a list of kcl expressions to be passed as unlabelled argument
+  const vars: {
+    exprs: Expr[]
+    pathIfPipe?: PathToNode
+  } = { exprs: [] }
+  const res = getFacesExprsFromSelection(
+    modifiedAst,
     sketches,
     artifactGraph,
-    modifiedAst,
-    wasmInstance,
-    mNodeToEdit
+    wasmInstance
   )
-  if (err(vars)) {
-    return vars
+  if (err(res)) return res
+  modifiedAst = res.modifiedAst
+  vars.exprs.push(...res.exprs)
+
+  const nonFaceSelections: Selections = {
+    graphSelections: sketches.graphSelections.filter(
+      (selection) => !isFaceArtifact(selection.artifact)
+    ),
+    otherSelections: sketches.otherSelections,
+  }
+  if (nonFaceSelections.graphSelections.length > 0) {
+    const res = getVariableExprsFromSelection(
+      nonFaceSelections,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      mNodeToEdit
+    )
+    if (err(res)) {
+      return res
+    }
+    vars.pathIfPipe = res.pathIfPipe
+    vars.exprs.push(...res.exprs)
   }
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
@@ -403,9 +440,50 @@ export function addSweep({
     sectional !== undefined
       ? [createLabeledArg('sectional', createLiteral(sectional, wasmInstance))]
       : []
-  const relativeToExpr = relativeTo
-    ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
+  const toleranceExpr = tolerance
+    ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
     : []
+  // `relativeTo` is legacy for new sweep calls; only preserve or update it when
+  // editing existing code that already depends on that argument.
+  const relativeToExpr =
+    relativeTo && isEditing
+      ? [createLabeledArg('relativeTo', createName([SWEEP_MODULE], relativeTo))]
+      : []
+  // New sweep calls should explicitly use the current recommended behavior:
+  // version = 2, translateProfileToPath = false, and orientProfilePerpendicular = false.
+  // When editing, omit missing args so old sweep code is not silently upgraded.
+  const translateProfileToPathExpr =
+    translateProfileToPath !== undefined
+      ? [
+          createLabeledArg(
+            'translateProfileToPath',
+            createLiteral(translateProfileToPath, wasmInstance)
+          ),
+        ]
+      : isEditing
+        ? []
+        : [
+            createLabeledArg(
+              'translateProfileToPath',
+              createLiteral(false, wasmInstance)
+            ),
+          ]
+  const orientProfilePerpendicularExpr =
+    orientProfilePerpendicular !== undefined
+      ? [
+          createLabeledArg(
+            'orientProfilePerpendicular',
+            createLiteral(orientProfilePerpendicular, wasmInstance)
+          ),
+        ]
+      : isEditing
+        ? []
+        : [
+            createLabeledArg(
+              'orientProfilePerpendicular',
+              createLiteral(false, wasmInstance)
+            ),
+          ]
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
@@ -415,16 +493,36 @@ export function addSweep({
   const bodyTypeExpr = bodyType
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
+  const versionExpr = version
+    ? [createLabeledArg('version', valueOrVariable(version))]
+    : isEditing
+      ? []
+      : [createLabeledArg('version', createLiteral(2, wasmInstance))]
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('sweep', sketchesExpr, [
-    createLabeledArg('path', pathExpr),
-    ...sectionalExpr,
-    ...relativeToExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...bodyTypeExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Sweep'),
+    sketchesExpr,
+    [
+      createLabeledArg('path', pathExpr),
+      ...sectionalExpr,
+      ...toleranceExpr,
+      ...relativeToExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...bodyTypeExpr,
+      ...versionExpr,
+      ...translateProfileToPathExpr,
+      ...orientProfilePerpendicularExpr,
+    ]
+  )
+
+  if (version && 'variableName' in version && version.variableName) {
+    insertVariableAndOffsetPathToNode(version, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
+  }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -454,6 +552,7 @@ export function addLoft({
   vDegree,
   bezApproximateRational,
   baseCurveIndex,
+  tolerance,
   tagStart,
   tagEnd,
   bodyType,
@@ -466,6 +565,7 @@ export function addLoft({
   vDegree?: KclCommandValue
   bezApproximateRational?: boolean
   baseCurveIndex?: KclCommandValue
+  tolerance?: KclCommandValue
   tagStart?: string
   tagEnd?: string
   bodyType?: KclPreludeBodyType
@@ -530,6 +630,9 @@ export function addLoft({
   const baseCurveIndexExpr = baseCurveIndex
     ? [createLabeledArg('baseCurveIndex', valueOrVariable(baseCurveIndex))]
     : []
+  const toleranceExpr = tolerance
+    ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+    : []
   const tagStartExpr = tagStart
     ? [createLabeledArg('tagStart', createTagDeclarator(tagStart))]
     : []
@@ -541,14 +644,19 @@ export function addLoft({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('loft', sketchesExpr, [
-    ...vDegreeExpr,
-    ...bezApproximateRationalExpr,
-    ...baseCurveIndexExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...bodyTypeExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Loft'),
+    sketchesExpr,
+    [
+      ...vDegreeExpr,
+      ...bezApproximateRationalExpr,
+      ...baseCurveIndexExpr,
+      ...toleranceExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...bodyTypeExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if (vDegree && 'variableName' in vDegree && vDegree.variableName) {
@@ -560,6 +668,9 @@ export function addLoft({
     baseCurveIndex.variableName
   ) {
     insertVariableAndOffsetPathToNode(baseCurveIndex, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
 
   // 3. If edit, we assign the new function call declaration to the existing node,
@@ -590,6 +701,7 @@ export function addRevolve({
   wasmInstance,
   axis,
   edge,
+  tolerance,
   symmetric,
   bidirectionalAngle,
   tagStart,
@@ -604,6 +716,7 @@ export function addRevolve({
   wasmInstance: ModuleType
   axis?: string
   edge?: Selections
+  tolerance?: KclCommandValue
   symmetric?: boolean
   bidirectionalAngle?: KclCommandValue
   tagStart?: string
@@ -671,6 +784,9 @@ export function addRevolve({
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
+  const toleranceExpr = tolerance
+    ? [createLabeledArg('tolerance', valueOrVariable(tolerance))]
+    : []
   const bidirectionalAngleExpr = bidirectionalAngle
     ? [
         createLabeledArg(
@@ -690,19 +806,27 @@ export function addRevolve({
     : []
 
   const sketchesExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('revolve', sketchesExpr, [
-    createLabeledArg('angle', valueOrVariable(angle)),
-    createLabeledArg('axis', getAxisResult.generatedAxis),
-    ...symmetricExpr,
-    ...bidirectionalAngleExpr,
-    ...tagStartExpr,
-    ...tagEndExpr,
-    ...bodyTypeExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Revolve'),
+    sketchesExpr,
+    [
+      createLabeledArg('angle', valueOrVariable(angle)),
+      createLabeledArg('axis', getAxisResult.generatedAxis),
+      ...toleranceExpr,
+      ...symmetricExpr,
+      ...bidirectionalAngleExpr,
+      ...tagStartExpr,
+      ...tagEndExpr,
+      ...bodyTypeExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in angle && angle.variableName) {
     insertVariableAndOffsetPathToNode(angle, modifiedAst, mNodeToEdit)
+  }
+  if (tolerance && 'variableName' in tolerance && tolerance.variableName) {
+    insertVariableAndOffsetPathToNode(tolerance, modifiedAst, mNodeToEdit)
   }
 
   if (
@@ -846,90 +970,6 @@ function getSketchNamesFromHideArg(
   return []
 }
 
-export function getAxisExpression(
-  axis: string | undefined,
-  edge: Selections | undefined,
-  ast: Node<Program>,
-  wasmInstance: ModuleType,
-  artifactGraph?: ArtifactGraph,
-  nodeToEdit?: PathToNode
-) {
-  let modifiedAst = structuredClone(ast)
-  if (axis) {
-    return { generatedAxis: createLocalName(axis), modifiedAst }
-  } else if (edge && artifactGraph) {
-    // Direct segment case (sketch solve)
-    const segmentAxisExpr = getVariableExprsFromSelection(
-      edge,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      nodeToEdit
-    )
-    if (!err(segmentAxisExpr) && segmentAxisExpr.exprs[0]) {
-      const directAxisExpr = segmentAxisExpr.exprs[0]
-      if (directAxisExpr.type === 'MemberExpression') {
-        return { generatedAxis: directAxisExpr, modifiedAst }
-      }
-    }
-
-    // Direct segment case (old sketch)
-    const pathToAxisSelection = getNodePathFromSourceRange(
-      modifiedAst,
-      edge.graphSelections[0]?.codeRef.range
-    )
-    const tagResult = mutateAstWithTagForSketchSegment(
-      modifiedAst,
-      pathToAxisSelection,
-      wasmInstance
-    )
-    if (!err(tagResult)) {
-      modifiedAst = tagResult.modifiedAst
-      const { tag } = tagResult
-      const axisSelection = edge?.graphSelections[0]?.artifact
-      if (!axisSelection) {
-        return new Error('Generated axis selection is missing.')
-      }
-
-      const generatedAxis = getEdgeTagCall(tag, axisSelection)
-      return { generatedAxis, modifiedAst }
-    }
-
-    // Sweep edge case (both sketch v1 and sketch solve)
-    const bodyData = groupSelectionsByBodyAndAddTags(
-      edge,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      nodeToEdit
-    )
-    if (err(bodyData)) return bodyData
-    let bodies = bodyData.bodies
-    modifiedAst = bodyData.modifiedAst
-
-    const primitiveEdgeSelections = getPrimitiveEdgeSelections(edge)
-    if (primitiveEdgeSelections.length > 0) {
-      const primitiveEdgeResult =
-        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
-          primitiveEdgeSelections,
-          bodies,
-          modifiedAst,
-          artifactGraph,
-          wasmInstance,
-        })
-      if (err(primitiveEdgeResult)) return primitiveEdgeResult
-      bodies = primitiveEdgeResult.bodies
-    }
-    if (bodies.size !== 1) {
-      return new Error('No edges found in the selection')
-    }
-    const expr = bodies.values().toArray()[0].tagsExpr
-    return { generatedAxis: expr, modifiedAst }
-  } else {
-    return new Error('Must provide either an axis or an edge selection')
-  }
-}
-
 // Sort of an inverse from getAxisExpression
 export function retrieveAxisOrEdgeSelectionsFromOpArg(
   opArg: OpArg,
@@ -977,30 +1017,20 @@ export function retrieveAxisOrEdgeSelectionsFromOpArg(
     }
   }
   if (axisValue.type === 'Object') {
+    // default axis casee
+    axisOrEdge = 'Axis'
     const direction = axisValue.value['direction']
-    if (direction && direction.type === 'Array') {
-      axisOrEdge = 'Axis'
-      if (nonZero(direction.value[0])) {
-        axis = 'X'
-      } else if (nonZero(direction.value[1])) {
-        axis = 'Y'
-      } else if (nonZero(direction.value[2])) {
-        axis = 'Z'
-      } else {
-        return new Error('Bad direction vector for axis')
-      }
-    } else if ('sideFaces' in axisValue.value) {
-      axisOrEdge = 'Edge'
-      const edgeSelection = retrieveEdgeSelectionsFromSingleEdgeRef(
-        opArg,
-        artifactGraph
-      )
-      if (err(edgeSelection)) {
-        return new Error("Couldn't retrieve edge selection from axis")
-      }
-      edge = edgeSelection
-    } else {
+    if (!direction || direction.type !== 'Array') {
       return new Error('No direction vector for axis')
+    }
+    if (nonZero(direction.value[0])) {
+      axis = 'X'
+    } else if (nonZero(direction.value[1])) {
+      axis = 'Y'
+    } else if (nonZero(direction.value[2])) {
+      axis = 'Z'
+    } else {
+      return new Error('Bad direction vector for axis')
     }
   } else if (axisValue.type === 'TagIdentifier' && axisValue.artifact_id) {
     // segment case

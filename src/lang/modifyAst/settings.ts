@@ -1,7 +1,7 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
+import { type Program, changeExperimentalFeatures, parse } from '@src/lang/wasm'
 import { err } from '@src/lib/trap'
-import { changeExperimentalFeatures, parse, type Program } from '@src/lang/wasm'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 export function setExperimentalFeatures(

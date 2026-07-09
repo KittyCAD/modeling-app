@@ -1,7 +1,7 @@
-import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { FILE_EXT } from '@src/lib/constants'
-import * as nodeFsP from 'fs/promises'
+import type { PromisifiedZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { DefaultLayoutPaneID } from '@src/lib/layout/configs/default'
+import * as nodeFsP from 'fs/promises'
 
 import {
   createProject,
@@ -53,7 +53,7 @@ test.describe('integrations tests', { tag: ['@desktop'] }, () => {
       })
       await homePage.openProject('test-sample')
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await toolbar.editSketch()
@@ -115,7 +115,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       'utf-8'
     )
     await pasteCodeInEditor(kclCube)
-    await scene.settled(cmdBar)
+    await scene.settled()
     await renameFile(fromFile, toFile)
     await goToHomePageFromModeling()
     await homePage.openProject(projectName)
@@ -189,7 +189,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
       })
 
       await homePage.openProject(projectName)
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await openFilePanel()
       await selectFile(secondFile)
@@ -197,7 +197,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
 
     await test.step(`Attempt to rename ${secondFile} to ${mainFile}`, async () => {
       await renameFile(secondFile, mainFile)
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Postcondition: ${mainFile} still has the original content`, async () => {
@@ -226,7 +226,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     { tag: ['@macos', '@windows'] },
     async ({ page, homePage, scene, toolbar, cmdBar }) => {
       await homePage.createAndGoToProject('project-000')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await toolbar.openPane(DefaultLayoutPaneID.Files)
       const { createNewFolder } = await getUtils(page, test)
 
@@ -287,7 +287,7 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     page.on('console', console.log)
 
     await homePage.createAndGoToProject('project-000')
-    await scene.settled(cmdBar)
+    await scene.settled()
     await panesOpen(['files', 'code'])
 
     // Create a small file
@@ -375,7 +375,7 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     await test.step('Open project and file pane', async () => {
       await expect(projectLink).toBeVisible()
       await projectLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await expect(projectMenuButton).toBeVisible()
       await expect(projectMenuButton).toContainText('main.kcl')
@@ -516,7 +516,7 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     await test.step('Open project and file pane', async () => {
       await expect(projectLink).toBeVisible()
       await projectLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await expect(projectMenuButton).toBeVisible()
       await expect(projectMenuButton).toContainText('main.kcl')
@@ -627,7 +627,7 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     await test.step('Open project and file pane', async () => {
       await expect(projectLink).toBeVisible()
       await projectLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await expect(projectMenuButton).toBeVisible()
       await expect(projectMenuButton).toContainText('main.kcl')
@@ -723,7 +723,7 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
     await test.step('Open project and navigate into folder', async () => {
       await expect(projectLink).toBeVisible()
       await projectLink.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       await expect(projectMenuButton).toBeVisible()
       await expect(projectMenuButton).toContainText('main.kcl')
@@ -805,7 +805,7 @@ test.describe(
 
         await test.step('Open project and navigate to fileToDelete.kcl', async () => {
           await projectCard.click()
-          await scene.settled(cmdBar)
+          await scene.settled()
 
           await u.openFilePanel()
 
@@ -880,7 +880,7 @@ test.describe(
 
       await test.step('Open project and open project pane', async () => {
         await projectCard.click()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await expect(projectMenuButton).toContainText('main.kcl')
         await u.closeKclCodePanel()
         await u.openFilePanel()
@@ -952,7 +952,7 @@ test.describe(
 
       await test.step('Open project and navigate into folderToDelete', async () => {
         await projectCard.click()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await expect(projectMenuButton).toContainText('main.kcl')
         await u.closeKclCodePanel()
         await u.openFilePanel()
@@ -1028,7 +1028,7 @@ test(
 
     await test.step('Open project and navigate into folderToDelete', async () => {
       await projectCard.click()
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(projectMenuButton).toContainText('main.kcl')
       await u.closeKclCodePanel()
       await u.openFilePanel()
@@ -1087,7 +1087,7 @@ test.describe('Drag and drop moves are undoable', { tag: ['@desktop'] }, () => {
     const targetFolder = u.locatorFolder('target')
 
     await homePage.openProject('Drag File Project')
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.openFilePanel()
 
@@ -1152,7 +1152,7 @@ test.describe('Drag and drop moves are undoable', { tag: ['@desktop'] }, () => {
     const movedFile = u.locatorFile('inside.kcl')
 
     await homePage.openProject('Drag Folder Project')
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await u.openFilePanel()
 
@@ -1217,7 +1217,7 @@ test.describe(
 
       await test.step('Open project and make a change to the file', async () => {
         await projectCard.click()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         // Get the text in the code locator.
         const originalText = await u.codeLocator.innerText()
@@ -1237,7 +1237,7 @@ test.describe(
         await u.openFilePanel()
 
         await otherFile.click()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         await u.openKclCodePanel()
         await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
@@ -1287,7 +1287,7 @@ test.describe(
       const badContent = 'this shit'
       await test.step('Open project and make a change to the file', async () => {
         await projectCard.click()
-        await scene.settled(cmdBar)
+        await scene.settled()
 
         // Get the text in the code locator.
         const originalText = await u.codeLocator.innerText()
@@ -1335,7 +1335,7 @@ test.describe(
         await u.openFilePanel()
 
         await otherFile.click()
-        await scene.settled(cmdBar)
+        await scene.settled()
         await u.openKclCodePanel()
         await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
         await expect(u.codeLocator).not.toContainText(badContent)

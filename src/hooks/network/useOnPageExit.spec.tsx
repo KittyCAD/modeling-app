@@ -1,7 +1,7 @@
-import { renderHook } from '@testing-library/react'
 import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
-import { expect, vi, describe, test } from 'vitest'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import { renderHook } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 // Helper function to create callbacks used for spying
 const createCallback = () => {

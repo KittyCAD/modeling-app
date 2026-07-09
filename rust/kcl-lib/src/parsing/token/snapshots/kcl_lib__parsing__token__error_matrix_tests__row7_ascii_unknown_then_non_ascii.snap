@@ -1,0 +1,7 @@
+---
+source: kcl-lib/src/parsing/token/error_matrix_tests.rs
+expression: "characterize_old(\"~ \\u{4E9E}\")"
+---
+source: "~ 亞"
+lex:   Err [lexical] "found unknown token '~'" @ [SourceRange([0, 1, 0])]
+parse: Err [lexical] "found unknown token '~'" @ [SourceRange([0, 1, 0])]

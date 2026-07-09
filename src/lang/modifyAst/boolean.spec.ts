@@ -1,18 +1,18 @@
-import { recast } from '@src/lang/wasm'
-import { err } from '@src/lib/trap'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { KclManager } from '@src/lang/KclManager'
 import { addSplit, addSubtract } from '@src/lang/modifyAst/boolean'
+import { recast } from '@src/lang/wasm'
+import type RustContext from '@src/lib/rustContext'
 import {
+  createSelectionFromArtifacts,
   enginelessExecutor,
   getAstAndArtifactGraph,
-  createSelectionFromArtifacts,
 } from '@src/lib/testHelpers'
-import type RustContext from '@src/lib/rustContext'
+import { err } from '@src/lib/trap'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
-import { afterAll, expect, beforeEach, describe, it } from 'vitest'
-import type { KclManager } from '@src/lang/KclManager'
+import { afterAll, beforeEach, describe, expect, it } from 'vitest'
 
 let instanceInThisFile: ModuleType = null!
 let kclManagerInThisFile: KclManager = null!
@@ -160,7 +160,7 @@ extrude001 = extrude([profile001, profile002], length = 1)
 sketch003 = startSketchOn(XZ)
 profile003 = circle(sketch003, center = [0.2, 0.2], radius = 0.1)
 extrude003 = extrude(profile003, length = -1)`
-      const expectedNewLine = `solid001 = subtract(extrude003, tools = extrude001)`
+      const expectedNewLine = `solid001 = subtract(extrude003, tools = [extrude001[0], extrude001[1]])`
       const solidIds = [2]
       const toolIds = [0, 1]
       const newCode = await runAddSubtractTest(

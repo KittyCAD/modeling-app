@@ -15,6 +15,23 @@
   {
     "file": "main.kcl",
     "categories": [
+      "Medical"
+    ],
+    "pathFromProjectDirectoryToFirstFile": "artificial-heart/main.kcl",
+    "multipleFiles": true,
+    "title": "Artificial Heart",
+    "description": "A model of a permanent electromagnetic blood pump",
+    "files": [
+      "housing.kcl",
+      "impeller.kcl",
+      "main.kcl",
+      "plumbing.kcl",
+      "stator.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "categories": [
       "Computer Hardware"
     ],
     "pathFromProjectDirectoryToFirstFile": "axial-fan/main.kcl",
@@ -269,34 +286,6 @@
   {
     "file": "main.kcl",
     "categories": [
-      "Aerospace"
-    ],
-    "pathFromProjectDirectoryToFirstFile": "contra-rotor/main.kcl",
-    "multipleFiles": true,
-    "title": "Contra-Rotor Assembly",
-    "description": "A contra-rotor is a geared mechanism that drives two coaxial propellers in opposite directions, magnifying thrust while cancelling angular momentum.",
-    "files": [
-      "contra-assembly.kcl",
-      "contra-propeller-assembly.kcl",
-      "contra-propeller-blades.kcl",
-      "contra-propeller-hub.kcl",
-      "contra-shaft.kcl",
-      "helical.kcl",
-      "main.kcl",
-      "primary-assembly.kcl",
-      "primary-propeller-assembly.kcl",
-      "primary-propeller-blades.kcl",
-      "primary-propeller-hub.kcl",
-      "primary-propeller-nose-cone.kcl",
-      "primary-shaft.kcl",
-      "secondary-assembly.kcl",
-      "secondary-shaft.kcl",
-      "tertiary.kcl"
-    ]
-  },
-  {
-    "file": "main.kcl",
-    "categories": [
       "Manufacturing",
       "Construction"
     ],
@@ -543,6 +532,16 @@
     "multipleFiles": false,
     "title": "Gas Impeller",
     "description": "The rotating component in a turbomachine (compressor, blower, or turbocharger) that adds energy to a gas by spinning it at speed",
+    "files": [
+      "main.kcl"
+    ]
+  },
+  {
+    "file": "main.kcl",
+    "pathFromProjectDirectoryToFirstFile": "gdt-tutorial/main.kcl",
+    "multipleFiles": false,
+    "title": "GD&T Basics in Zoo Design Studio",
+    "description": "A simple sample project demonstrating how to use GD&T in Zoo Design Studio. This project keeps the geometry and annotations intentionally minimal so users can quickly understand what GD&T is, how it works in the app, and how to start applying it to their own designs. Future updates may add more examples while keeping the project beginner-friendly.",
     "files": [
       "main.kcl"
     ]

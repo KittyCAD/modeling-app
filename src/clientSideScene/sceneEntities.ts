@@ -152,12 +152,10 @@ import {
   updateRectangleSketch,
 } from '@src/lib/rectangleTool'
 import type RustContext from '@src/lib/rustContext'
-import type { Selections } from '@src/machines/modelingSharedTypes'
-import type {
-  DefaultPlane,
-  ExtrudeFacePlane,
-  OffsetPlane,
-} from '@src/machines/modelingSharedTypes'
+import {
+  type getEventForSegmentSelection as getEventForSegmentSelectionFn,
+  type updateExtraSegments as updateExtraSegmentsFn,
+} from '@src/lib/selections'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { getThemeColorForThreeJs } from '@src/lib/theme'
@@ -169,6 +167,13 @@ import {
   normalizeVec,
   subVec,
 } from '@src/lib/utils2d'
+import type { CommandBarActorType } from '@src/machines/commandBarMachine'
+import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  DefaultPlane,
+  ExtrudeFacePlane,
+  OffsetPlane,
+} from '@src/machines/modelingSharedTypes'
 import type {
   SegmentOverlayPayload,
   SketchDetails,
@@ -176,14 +181,9 @@ import type {
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
-import type { CommandBarActorType } from '@src/machines/commandBarMachine'
-import {
-  type updateExtraSegments as updateExtraSegmentsFn,
-  type getEventForSegmentSelection as getEventForSegmentSelectionFn,
-} from '@src/lib/selections'
 
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import type { ConnectionManager } from '@src/network/connectionManager'
 
 type DraftSegment = 'line' | 'tangentialArc'
 
@@ -2130,7 +2130,7 @@ export class SceneEntities {
         radius,
         ccw: true,
       },
-      fnName: 'arc' as ToolTip,
+      fnName: 'arc',
       pathToNode: sketchEntryNodePath,
       wasmInstance,
     })

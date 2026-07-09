@@ -2111,7 +2111,7 @@ async fn kcl_test_better_type_names() {
     };
     assert_eq!(
         err,
-        "The `appearance` function expected the input argument to be one or more Solids or ImportedGeometry but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`"
+        "The `appearance` function expected the input argument to be one or more Solids or ImportedGeometry or Plane but it's actually of type Sketch. You can convert a sketch (2D) into a Solid (3D) by calling a function like `extrude` or `revolve`"
     );
 }
 
@@ -2135,4 +2135,15 @@ async fn kcl_test_gear_with_units() {
     let code = kcl_input!("gear_units");
 
     let (_, _, _files) = execute_and_export_step(code, None).await.unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
+async fn kcl_test_deleting_twice_is_an_error() {
+    let code = kcl_input!("double_delete");
+    let result = execute_and_snapshot(code, None).await;
+
+    let _error_msg = match result.err() {
+        Some(ExecError::Kcl(error)) => error.error.message().to_owned(),
+        _ => panic!(),
+    };
 }

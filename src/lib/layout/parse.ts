@@ -1,3 +1,4 @@
+import { isCustomIconName } from '@src/components/CustomIcon'
 import type {
   Action,
   ActionTypeId,
@@ -12,9 +13,8 @@ import type {
   SplitLayout,
 } from '@src/lib/layout/types'
 import { LayoutType } from '@src/lib/layout/types'
-import { isArray } from '@src/lib/utils'
 import { isErr } from '@src/lib/trap'
-import { isCustomIconName } from '@src/components/CustomIcon'
+import { isArray } from '@src/lib/utils'
 
 export function parseLayoutFromJsonString(
   layoutString: string,

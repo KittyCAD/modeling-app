@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import {
   createArcApiObject,
   createCircleApiObject,
@@ -7,7 +7,7 @@ import {
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
-import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
+import { describe, expect, it, vi } from 'vitest'
 
 describe('constraintToolbarAction', () => {
   it('applies immediately for an already-valid selection and does not equip the tool', async () => {
@@ -30,7 +30,6 @@ describe('constraintToolbarAction', () => {
       toolName: 'horizontalConstraintTool',
       selectedIds: [10],
       objects,
-      defaultLengthUnit: 'Mm',
       rustContext,
       sketchId: 0,
       settings: {},
@@ -65,7 +64,6 @@ describe('constraintToolbarAction', () => {
       toolName: 'horizontalConstraintTool',
       selectedIds: [1],
       objects,
-      defaultLengthUnit: 'Mm',
       rustContext,
       sketchId: 0,
       settings: {},
@@ -111,7 +109,6 @@ describe('constraintToolbarAction', () => {
       toolName: 'symmetricConstraintTool',
       selectedIds: [10, 12, 11],
       objects,
-      defaultLengthUnit: 'Mm',
       rustContext,
       sketchId: 0,
       settings: {},

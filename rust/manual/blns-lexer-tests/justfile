@@ -1,0 +1,33 @@
+default:
+    @just --justfile "{{justfile()}}" --list
+
+blns path="" timeout="30s" progress_every="100":
+    @if [ -z "{{path}}" ]; then \
+        printf '%s\n' \
+            "BLNS lexer runner needs a path to blns.json." \
+            "" \
+            "Get the corpus from:" \
+            "  https://github.com/minimaxir/big-list-of-naughty-strings" \
+            "" \
+            "Run:" \
+            "  just --justfile manual/blns-lexer-tests/justfile blns /path/to/blns.json" \
+            "" \
+            "Or use the environment-variable recipe:" \
+            "  KCL_BLNS_JSON=/path/to/blns.json just --justfile manual/blns-lexer-tests/justfile blns-env"; \
+        exit 1; \
+    fi
+    @cargo run --quiet --manifest-path "{{justfile_directory()}}/Cargo.toml" -- "{{path}}" --timeout "{{timeout}}" --progress-every "{{progress_every}}"
+
+blns-env timeout="30s" progress_every="100":
+    @if [ -z "${KCL_BLNS_JSON:-}" ]; then \
+        printf '%s\n' \
+            "BLNS lexer runner needs KCL_BLNS_JSON to point at blns.json." \
+            "" \
+            "Get the corpus from:" \
+            "  https://github.com/minimaxir/big-list-of-naughty-strings" \
+            "" \
+            "Run:" \
+            "  KCL_BLNS_JSON=/path/to/blns.json just --justfile manual/blns-lexer-tests/justfile blns-env"; \
+        exit 1; \
+    fi
+    @cargo run --quiet --manifest-path "{{justfile_directory()}}/Cargo.toml" -- --timeout "{{timeout}}" --progress-every "{{progress_every}}"

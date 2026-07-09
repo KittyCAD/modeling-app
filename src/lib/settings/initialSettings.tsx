@@ -1,9 +1,9 @@
-import { useRef } from 'react'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
-import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
+import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
+import { useRef } from 'react'
 
 import { NIL as uuidNIL } from 'uuid'
 
@@ -300,6 +300,13 @@ function createCoreSettings() {
         validate: (_v) => true,
         hideOnLevel: 'user',
       }),
+      showAllFiles: new Setting<boolean>({
+        defaultValue: false,
+        hideOnLevel: 'project',
+        description:
+          'Show all project files in the file pane, including dotfiles and configuration files.',
+        validate: (v) => typeof v === 'boolean',
+      }),
     },
     /**
      * App-owned debug settings.
@@ -486,7 +493,7 @@ function createCoreSettings() {
       useSketchSolveMode: new Setting<boolean>({
         hideOnLevel: 'project',
         hideOnPlatform: 'both',
-        defaultValue: true, // checking the feature flag happens in `settingsUtils.ts`
+        defaultValue: true,
         description:
           'Default to the solver-based sketch mode for all new projects.',
         validate: (v) => typeof v === 'boolean',

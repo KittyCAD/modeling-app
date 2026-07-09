@@ -70,8 +70,8 @@ description: Result of parsing face_api_fillet_chamfer_tags_and_edge_refs.kcl
         "kind": "const",
         "moduleId": 0,
         "preComments": [
-          "// Simulation test: fillet and chamfer with both tags and edgeRefs (merge behavior).",
-          "// Verifies that when both are provided, edges from tags and edgeRefs are all applied.",
+          "// Simulation test: fillet and chamfer with both tags and edgeRefs.",
+          "// Verifies that when both are provided, it's an error.",
           "",
           ""
         ],

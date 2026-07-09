@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+
+[package]
+name = "kcl-blns-lexer-tests"
+version = "0.0.0"
+edition = "2024"
+publish = false
+license = "MIT"
+
+[dependencies]
+kcl-syntax = { path = "../../kcl-syntax" }
+serde_json = "1"

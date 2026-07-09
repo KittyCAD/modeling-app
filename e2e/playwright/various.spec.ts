@@ -1,4 +1,8 @@
-import { doExport, getUtils } from '@e2e/playwright/test-utils'
+import {
+  doExport,
+  expectKeybindingsSettingsVisible,
+  getUtils,
+} from '@e2e/playwright/test-utils'
 import { expect, test } from '@e2e/playwright/zoo-test'
 
 test('Units menu', { tag: '@desktop' }, async ({ page, homePage }) => {
@@ -159,9 +163,7 @@ test(
 
     // Verify the URL and that you can see a list of shortcuts
     await expect.poll(() => page.url()).toContain('?tab=keybindings')
-    await expect(
-      page.getByRole('heading', { name: 'Enter Sketch Mode' })
-    ).toBeAttached()
+    await expectKeybindingsSettingsVisible(page)
   }
 )
 
@@ -251,7 +253,7 @@ test(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).toBeVisible()
     // Exit sketch
-    await page.keyboard.press('Meta+Escape')
+    await page.keyboard.press('Shift+Escape')
     await expect(
       page.getByRole('button', { name: 'Exit Sketch' })
     ).not.toBeVisible()

@@ -1,6 +1,6 @@
 import {
-  type ReadonlySignal,
   type Signal as PreactSignal,
+  type ReadonlySignal,
   computed,
   signal,
 } from '@preact/signals-core'
@@ -19,19 +19,19 @@ import {
   unwrapMaybeSignal,
 } from './helpers'
 import type {
-  DebugValueSpecItem,
   DebugServiceItem,
+  DebugValueSpecItem,
+  Precedence,
+  RegistryItem,
   RegistryItemContext,
   RegistryItemFactory,
   RegistryItemKey,
-  RegistryItem,
-  Precedence,
   RuntimeRegistryItemHandle,
   Service,
   ServiceReader,
+  Slot,
   ValueSpec,
   ValueSpecReader,
-  Slot,
 } from './types'
 import { SlotInstance } from './types'
 

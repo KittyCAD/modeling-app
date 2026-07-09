@@ -19,8 +19,8 @@ jobs:
     name: generate-website-docs
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/create-github-app-token@v3
+      - uses: actions/checkout@v7.0.0
+      - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
           # required
@@ -28,7 +28,7 @@ jobs:
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
       # Checkout the docs repo since we will want to update the files there.
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
         with:
           repository: 'kittycad/documentation'
           path: 'documentation'

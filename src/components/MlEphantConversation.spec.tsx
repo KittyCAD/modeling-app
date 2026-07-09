@@ -1,5 +1,18 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
-import { expect, vi, describe, test, beforeEach, afterEach } from 'vitest'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
+
+const bootMockState = vi.hoisted<{
+  registry: Registry | undefined
+}>(() => ({
+  registry: undefined,
+}))
 
 // Mock modules that access localStorage at import time
 vi.mock('@src/routes/utils', () => ({
@@ -16,6 +29,9 @@ vi.mock('@src/lib/desktop', () => ({
 
 // Mock useSingletons which requires heavy initialization
 vi.mock('@src/lib/boot', () => ({
+  useApp: () => {
+    return { registry: bootMockState.registry }
+  },
   useSingletons: () => ({
     kclManager: {
       astSignal: { value: null },
@@ -23,14 +39,62 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
+vi.mock('@src/lib/screenshot', async (importOriginal) => {
+  const original = await importOriginal<typeof ScreenshotModule>()
+
+  return {
+    ...original,
+    takeViewportScreenshot: vi.fn(),
+  }
+})
+
+import { Registry } from '@kittycad/registry'
+import { useSignals } from '@preact/signals-react/runtime'
+import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import { takeViewportScreenshot } from '@src/lib/screenshot'
+import type * as ScreenshotModule from '@src/lib/screenshot'
+import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
-import { withSiteBaseURL } from '@src/lib/withBaseURL'
-import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
+import {
+  type EngineSceneExtensionContext,
+  engineSceneRuntimeExtensionsSlot,
+  engineSceneStreamLayersValueSpec,
+} from '@src/registry/contracts/engineScene'
+import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
+
+const configureTestRegistry = () => {
+  const registry = new Registry()
+  registry.configure([engineSceneRuntimeExtensionsSlot.of()])
+  bootMockState.registry = registry
+  return registry
+}
+
+const testEngineSceneContext = {
+  modelingState: { matches: () => false },
+  modelingSend: vi.fn(),
+  sketchSolveStreamDimming: 0.8,
+  setSketchSolveStreamDimming: vi.fn(),
+} as unknown as EngineSceneExtensionContext
+
+const TestEngineSceneStreamLayers = () => {
+  useSignals()
+  const registry = bootMockState.registry as Registry
+  const layers = registry.signal(engineSceneStreamLayersValueSpec).value
+
+  return (
+    <>
+      {layers.map((layer) => {
+        const Component = layer.Component
+        return <Component key={layer.id} {...testEngineSceneContext} />
+      })}
+    </>
+  )
+}
 
 const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   {
@@ -38,17 +102,20 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
     label: 'Standard',
     description: 'Faster reasoning.',
     icon: 'stopwatch',
+    disabled: false,
   },
   {
     id: 'deep',
     label: 'Deep',
     description: 'More thorough reasoning.',
     icon: 'brain',
+    disabled: false,
   },
 ]
 
 describe('MlEphantConversation', () => {
   beforeEach(() => {
+    configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
   })
 
@@ -175,6 +242,50 @@ describe('MlEphantConversation', () => {
     rendersRequestBubbleThenDisplayResponse('standard')
   })
 
+  test('shows an attachments loading indicator while attachment processing is in progress', () => {
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        isLoadingAttachments={true}
+        conversation={{
+          exchanges: [
+            {
+              request: {
+                type: 'user',
+                content: 'Use these files',
+                additional_files: [
+                  {
+                    name: 'front-view.png',
+                    mimetype: 'image/png',
+                    data: [],
+                  },
+                ],
+              },
+              responses: [],
+              deltasAggregated: '',
+            },
+          ],
+        }}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        contexts={[]}
+        disabled={false}
+        hasPromptCompleted={false}
+        isProcessing={true}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(
+      screen.getByText('Progressively loading attachments into context...')
+    ).toBeInTheDocument()
+  })
+
   test('omits mode while server mode metadata is unavailable', () => {
     const handleProcess = vi.fn()
     render(
@@ -256,6 +367,96 @@ describe('MlEphantConversation', () => {
     expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
   })
 
+  test('keeps disabled mode options visible but unelectable with upgrade copy', () => {
+    const handleProcess = vi.fn()
+    const modeOptions: MlCopilotModeOption[] = [
+      { ...SERVER_MODE_OPTIONS[0], disabled: true },
+      SERVER_MODE_OPTIONS[1],
+    ]
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="deep"
+        modeOptions={modeOptions}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    fireEvent.click(screen.getByTestId('ml-copilot-efforts-button'))
+
+    const disabledMode = screen.getByTestId('ml-copilot-effort-button-standard')
+    expect(disabledMode).toBeDisabled()
+    expect(disabledMode).toHaveTextContent('Upgrade your plan to use this mode')
+
+    fireEvent.click(disabledMode)
+
+    expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+      'Deep'
+    )
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
+  })
+
+  test('falls back to an enabled mode when the initial mode is disabled', async () => {
+    const handleProcess = vi.fn()
+    const modeOptions: MlCopilotModeOption[] = [
+      { ...SERVER_MODE_OPTIONS[0], disabled: true },
+      SERVER_MODE_OPTIONS[1],
+    ]
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={{ exchanges: [] }}
+        onProcess={handleProcess}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        initialMlCopilotMode="standard"
+        modeOptions={modeOptions}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    await waitFor(() => {
+      expect(screen.getByTestId('ml-copilot-efforts-button')).toHaveTextContent(
+        'Deep'
+      )
+    })
+
+    fireEvent.change(screen.getByTestId('ml-ephant-conversation-input'), {
+      target: { value: 'Generate a cube' },
+    })
+    fireEvent.click(screen.getByTestId('ml-ephant-conversation-input-button'))
+
+    expect(handleProcess).toHaveBeenCalledWith('Generate a cube', 'deep', [])
+  })
+
   test('does not render unknown response types', () => {
     const unknownResponseText = 'this should never be visible'
 
@@ -305,6 +506,134 @@ describe('MlEphantConversation', () => {
     expect(
       screen.getByTestId('ml-response-chat-bubble-thinking')
     ).toBeInTheDocument()
+  })
+
+  test.each([
+    'Manual edits detected since the last Zookeeper state.',
+    'Transient model streaming error; retrying.',
+  ])(
+    'keeps reasoning expanded for non-terminal info notices: %s',
+    async (infoText) => {
+      const conversation: Conversation = {
+        exchanges: [
+          {
+            request: {
+              type: 'user',
+              content: 'Render a bracket',
+            },
+            responses: [
+              {
+                reasoning: {
+                  type: 'text',
+                  content: 'Checking the model stream...',
+                },
+              },
+              {
+                info: {
+                  text: infoText,
+                },
+              },
+            ],
+            deltasAggregated: '',
+          },
+        ],
+      }
+
+      render(
+        <MlEphantConversation
+          isLoading={false}
+          conversation={conversation}
+          onProcess={vi.fn()}
+          onClickClearChat={() => {}}
+          onReconnect={() => {}}
+          onCancel={() => {}}
+          needsReconnect={false}
+          disabled={false}
+          hasPromptCompleted={false}
+          contexts={[]}
+          isProcessing={true}
+          queue={[]}
+          onRemoveFromQueue={() => {}}
+          onSteer={() => {}}
+        />
+      )
+
+      expect(
+        screen.getByTestId('ml-response-info-chat-bubble')
+      ).toHaveTextContent(infoText)
+      expect(
+        screen.getByTestId('ml-response-chat-bubble-thinking')
+      ).toBeInTheDocument()
+
+      await waitFor(() => {
+        expect(
+          screen.getByTestId('ml-response-thinking-view')
+        ).toBeInTheDocument()
+      })
+      expect(screen.getByText('Collapse')).toBeInTheDocument()
+      expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
+    }
+  )
+
+  test('hides the immediate thought when end_of_stream is followed by another response', () => {
+    const finalResponse = 'Rendered.'
+
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Render a bracket',
+          },
+          responses: [
+            {
+              reasoning: {
+                type: 'text',
+                content: 'Starting render...',
+              },
+            },
+            {
+              end_of_stream: {
+                whole_response: finalResponse,
+                started_at: '2026-05-18T12:00:00.000Z',
+                completed_at: '2026-05-18T12:01:00.000Z',
+              },
+            },
+            {
+              reasoning: {
+                type: 'text',
+                content: 'Checking Constraints...',
+              },
+            },
+          ],
+          deltasAggregated: finalResponse,
+        },
+      ],
+    }
+
+    render(
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={false}
+        disabled={false}
+        hasPromptCompleted={true}
+        contexts={[]}
+        isProcessing={false}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    expect(screen.queryByTestId('thinking-immediate')).not.toBeInTheDocument()
+    expect(screen.getByTestId('ml-response-chat-bubble')).toHaveTextContent(
+      finalResponse
+    )
   })
 
   test('renders user message additional files as attachments under the prompt', () => {
@@ -695,27 +1024,33 @@ describe('MlEphantConversation', () => {
 
     const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
       return render(
-        <MlEphantConversation
-          isLoading={false}
-          conversation={{ exchanges: [] }}
-          onProcess={handleProcess}
-          onClickClearChat={() => {}}
-          onReconnect={() => {}}
-          onCancel={() => {}}
-          needsReconnect={false}
-          disabled={disabled}
-          hasPromptCompleted={true}
-          contexts={[]}
-          isProcessing={false}
-          queue={[]}
-          onRemoveFromQueue={() => {}}
-          onSteer={() => {}}
-        />
+        <>
+          <MlEphantConversation
+            isLoading={false}
+            conversation={{ exchanges: [] }}
+            onProcess={handleProcess}
+            onClickClearChat={() => {}}
+            onReconnect={() => {}}
+            onCancel={() => {}}
+            needsReconnect={false}
+            disabled={disabled}
+            hasPromptCompleted={true}
+            contexts={[]}
+            isProcessing={false}
+            queue={[]}
+            onRemoveFromQueue={() => {}}
+            onSteer={() => {}}
+          />
+          <TestEngineSceneStreamLayers />
+        </>
       )
     }
 
     beforeEach(() => {
       vi.clearAllMocks()
+      vi.mocked(takeViewportScreenshot).mockReturnValue(
+        'data:image/png;base64,aGVsbG8='
+      )
     })
 
     afterEach(() => {
@@ -727,6 +1062,114 @@ describe('MlEphantConversation', () => {
       expect(
         screen.getByTestId('ml-ephant-attachments-button')
       ).toBeInTheDocument()
+    })
+
+    test('displays screenshot annotation button', () => {
+      renderConversation()
+      const zoodleButton = screen.getByTestId(
+        'ml-ephant-annotate-screenshot-button'
+      )
+      expect(zoodleButton).toBeInTheDocument()
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
+      expect(screen.getByText('Zoodle')).toBeInTheDocument()
+    })
+
+    test('marks screenshot annotation button active and cancels on second click', () => {
+      renderConversation()
+
+      const zoodleButton = screen.getByTestId(
+        'ml-ephant-annotate-screenshot-button'
+      )
+
+      fireEvent.click(zoodleButton)
+
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'true')
+      expect(
+        screen.getByTestId('viewport-annotation-overlay')
+      ).toBeInTheDocument()
+
+      fireEvent.click(zoodleButton)
+
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
+      expect(
+        screen.queryByTestId('viewport-annotation-overlay')
+      ).not.toBeInTheDocument()
+    })
+
+    test('adds annotated viewport screenshot as an attachment', async () => {
+      const OriginalImage = globalThis.Image
+      class MockImage {
+        onload: (() => void) | null = null
+        onerror: (() => void) | null = null
+        complete = true
+        naturalWidth = 16
+        naturalHeight = 16
+        width = 16
+        height = 16
+
+        set src(_value: string) {
+          queueMicrotask(() => this.onload?.())
+        }
+      }
+
+      const drawImageSpy = vi
+        .spyOn(CanvasRenderingContext2D.prototype, 'drawImage')
+        .mockImplementation(() => {})
+      globalThis.Image = MockImage as typeof Image
+      try {
+        renderConversation()
+
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-annotate-screenshot-button')
+        )
+
+        expect(
+          screen.getByTestId('viewport-annotation-overlay')
+        ).toBeInTheDocument()
+        expect(
+          screen.getByTestId('viewport-annotation-tool-drawOrange')
+        ).toHaveAttribute('aria-pressed', 'true')
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-slider')
+        ).toHaveValue(String(ZOODLE_BRUSH_SIZE_DEFAULT_PX))
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-dot')
+        ).toHaveStyle({
+          width: `${ZOODLE_BRUSH_SIZE_DEFAULT_PX}px`,
+          height: `${ZOODLE_BRUSH_SIZE_DEFAULT_PX}px`,
+        })
+
+        fireEvent.change(
+          screen.getByTestId('viewport-annotation-brush-size-slider'),
+          {
+            target: { value: '6' },
+          }
+        )
+
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-slider')
+        ).toHaveValue('6')
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-dot')
+        ).toHaveStyle({ width: '6px', height: '6px' })
+
+        fireEvent.click(screen.getByTestId('viewport-annotation-tool-erase'))
+
+        expect(
+          screen.getByTestId('viewport-annotation-tool-erase')
+        ).toHaveAttribute('aria-pressed', 'true')
+
+        const sendButton = screen.getByTestId('viewport-annotation-send-button')
+        await waitFor(() => expect(sendButton).not.toBeDisabled())
+        fireEvent.click(sendButton)
+
+        expect(
+          await screen.findByText('annotated-viewport-screenshot.png')
+        ).toBeInTheDocument()
+      } finally {
+        drawImageSpy.mockRestore()
+        globalThis.Image = OriginalImage
+      }
     })
 
     test('shows attached files when files are added via drag and drop', async () => {

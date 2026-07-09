@@ -5,8 +5,8 @@ use indexmap::IndexMap;
 use kcmc::ModelingCmd;
 use kcmc::each_cmd as mcmd;
 use kcmc::length_unit::LengthUnit;
-use kcmc::shared::CutType;
 use kcmc::shared::CutTypeV2;
+use kcmc::shared::EdgeCutVersion;
 use kittycad_modeling_cmds as kcmc;
 use serde::Deserialize;
 use serde::Serialize;
@@ -88,7 +88,7 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
     Ok(())
 }
 
-/// Convert tags (edge tag refs) to engine EdgeReference list by resolving each to edge ID then face IDs.
+/// Convert tags (edge tag refs) to engine EdgeSpecifier list by resolving each to edge ID then face IDs.
 /// Used when both `tags` and `edges` are provided to fillet/chamfer.
 pub(super) async fn tags_to_engine_edge_references(
     solid_id: uuid::Uuid,
@@ -100,8 +100,7 @@ pub(super) async fn tags_to_engine_edge_references(
     for edge_ref in tags {
         let edge_id = edge_ref.get_engine_id(exec_state, args)?;
         let face_ids = super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await?;
-        let engine_ref = kcmc::shared::EdgeSpecifier::builder().side_faces(face_ids).build();
-        refs.push(engine_ref);
+        refs.push(kcmc::shared::EdgeSpecifier::builder().side_faces(face_ids).build());
     }
     Ok(refs)
 }
@@ -112,24 +111,30 @@ pub(super) enum TaggedEdgeInputs {
 }
 
 pub(super) async fn parse_tagged_edge_inputs(
-    solid_id: uuid::Uuid,
     edge_refs: Option<Vec<KclValue>>,
     tags_with_source: Option<Vec<(EdgeReference, SourceRange)>>,
+    solid: Option<&Solid>,
     exec_state: &mut ExecState,
     args: &Args,
     missing_args_message: &str,
+    both_args_message: &str,
 ) -> Result<TaggedEdgeInputs, KclError> {
     match (edge_refs, tags_with_source) {
         (Some(edge_refs), Some(tags_with_source)) => {
             validate_unique(&tags_with_source)?;
+            let Some(solid) = solid else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    both_args_message.to_owned(),
+                    vec![args.source_range],
+                )));
+            };
             let tags: Vec<EdgeReference> = tags_with_source.into_iter().map(|item| item.0).collect();
             #[cfg(feature = "artifact-graph")]
             {
-                let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
+                let mut tag_entries = Vec::new();
                 for edge_ref in &tags {
                     if let Ok(edge_id) = edge_ref.get_engine_id(exec_state, args)
-                        && let Ok(face_ids) =
-                            super::edge::get_face_ids_for_edge(exec_state, solid_id, edge_id, args).await
+                        && let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, args).await
                         && let [a, b] = face_ids.as_slice()
                     {
                         let tag_identifier = match edge_ref {
@@ -152,14 +157,13 @@ pub(super) async fn parse_tagged_edge_inputs(
                     });
                 }
             }
-            let tags_as_refs = tags_to_engine_edge_references(solid_id, tags, exec_state, args).await?;
-            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, args).await?;
-            let mut all_refs = tags_as_refs;
-            all_refs.extend(edge_refs_parsed);
+            let mut all_refs = tags_to_engine_edge_references(solid.id, tags, exec_state, args).await?;
+            all_refs.extend(super::edge::parse_edge_refs_to_references(edge_refs, Some(solid), exec_state, args).await?);
             Ok(TaggedEdgeInputs::EngineRefs(all_refs))
         }
         (Some(edge_refs), None) => {
-            let edge_refs_parsed = super::edge::parse_edge_refs_to_references(edge_refs, exec_state, args).await?;
+            let edge_refs_parsed =
+                super::edge::parse_edge_refs_to_references(edge_refs, solid, exec_state, args).await?;
             Ok(TaggedEdgeInputs::EngineRefs(edge_refs_parsed))
         }
         (None, Some(tags_with_source)) => {
@@ -182,6 +186,18 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tag = args.get_kw_arg_opt("tag", &RuntimeType::tag_decl(), exec_state)?;
     let legacy_csg: Option<bool> = args.get_kw_arg_opt("legacyMethod", &RuntimeType::bool(), exec_state)?;
     let csg_algorithm = CsgAlgorithm::legacy(legacy_csg.unwrap_or_default());
+    let edge_cut_number: Option<u32> = args.get_kw_arg_opt("version", &RuntimeType::count(), exec_state)?;
+    let edge_cut_version: EdgeCutVersion = edge_cut_number
+        .map(|num| {
+            num.try_into().map_err(|()| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    format!("{} is not a version of the Zoo edge cut algorithm", num),
+                    vec![args.source_range],
+                ))
+            })
+        })
+        .transpose()?
+        .unwrap_or_default();
 
     // Edge specifiers are object-shaped payloads, so there is no narrow RuntimeType for them yet.
     // Keep this broad at the boundary and validate the shape in parse_tagged_edge_inputs.
@@ -189,12 +205,13 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
     let tags = args.kw_arg_edge_array_and_source_opt("tags")?;
 
     let edge_inputs = parse_tagged_edge_inputs(
-        solid.id,
         edge_refs,
         tags,
+        Some(solid.as_ref()),
         exec_state,
         &args,
         "You must provide either 'tags' or 'edges' to fillet edges",
+        "You must provide either 'tags' or 'edges' to fillet edges, not both",
     )
     .await?;
 
@@ -204,13 +221,25 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
                 radius,
                 tolerance,
                 csg_algorithm,
+                edge_cut_version,
                 tag,
             };
             let value = inner_fillet_with_engine_refs(solid, edge_refs, params, exec_state, args).await?;
             Ok(KclValue::Solid { value })
         }
         TaggedEdgeInputs::Tags(tags) => {
-            let value = inner_fillet(solid, radius, tags, tolerance, csg_algorithm, tag, exec_state, args).await?;
+            let value = inner_fillet(
+                solid,
+                radius,
+                tags,
+                tolerance,
+                csg_algorithm,
+                tag,
+                edge_cut_version,
+                exec_state,
+                args,
+            )
+            .await?;
             Ok(KclValue::Solid { value })
         }
     }
@@ -224,6 +253,7 @@ async fn inner_fillet(
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
+    edge_cut_version: EdgeCutVersion,
     exec_state: &mut ExecState,
     args: Args,
 ) -> Result<Box<Solid>, KclError> {
@@ -245,40 +275,16 @@ async fn inner_fillet(
     }
 
     let mut solid = solid.clone();
-    let mut edge_ids = Vec::new();
-    #[cfg(feature = "artifact-graph")]
-    let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
-    for edge_ref in &tags {
-        let ids = edge_ref.get_all_engine_ids(exec_state, &args)?;
-        edge_ids.extend(ids.iter().copied());
-        #[cfg(feature = "artifact-graph")]
-        {
-            let tag_identifier = match edge_ref {
-                EdgeReference::Tag(t) => t.value.clone(),
-                EdgeReference::Uuid(_) => String::new(),
-            };
-            if !tag_identifier.is_empty() {
-                for edge_id in ids {
-                    if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
-                        && let [a, b] = face_ids.as_slice()
-                    {
-                        tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                            tag_identifier: tag_identifier.clone(),
-                            edge_id,
-                            face_ids: [*a, *b],
-                        });
-                    }
-                }
+    let edge_ids = tags
+        .into_iter()
+        .map(|edge_tag| edge_tag.get_all_engine_ids(exec_state, &args))
+        .try_fold(Vec::new(), |mut acc, item| match item {
+            Ok(ids) => {
+                acc.extend(ids);
+                Ok(acc)
             }
-        }
-    }
-    #[cfg(feature = "artifact-graph")]
-    if !tag_entries.is_empty() {
-        exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
-            call_source_range: args.source_range,
-            tags: tag_entries,
-        });
-    }
+            Err(e) => Err(e),
+        })?;
 
     let id = exec_state.next_uuid();
     let mut extra_face_ids = Vec::new();
@@ -290,17 +296,20 @@ async fn inner_fillet(
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
             ModelingCmd::from(
-                mcmd::Solid3dFilletEdge::builder()
+                mcmd::Solid3dCutEdges::builder()
                     .use_legacy(csg_algorithm.is_legacy())
                     .edge_ids(edge_ids.clone())
                     .extra_face_ids(extra_face_ids)
                     .strategy(Default::default())
                     .object_id(solid.id)
-                    .radius(LengthUnit(radius.to_mm()))
+                    .version(edge_cut_version)
                     .tolerance(LengthUnit(
                         tolerance.as_ref().map(|t| t.to_mm()).unwrap_or(DEFAULT_TOLERANCE_MM),
                     ))
-                    .cut_type(CutType::Fillet)
+                    .cut_type(CutTypeV2::Fillet {
+                        radius: LengthUnit(radius.to_mm()),
+                        second_length: None,
+                    })
                     .build(),
             ),
         )
@@ -332,6 +341,7 @@ struct FilletEdgeRefParams {
     radius: TyF64,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
+    edge_cut_version: EdgeCutVersion,
     tag: Option<TagNode>,
 }
 
@@ -370,26 +380,31 @@ async fn inner_fillet_with_engine_refs(
     exec_state
         .batch_end_cmd(
             ModelingCmdMeta::from_args_id(exec_state, &args, id),
-            ModelingCmd::from(mcmd::Solid3dCutEdgeReferences {
-                object_id: solid.id,
-                edges_references: edge_references.clone(),
-                cut_type: CutTypeV2::Fillet {
-                    radius: LengthUnit(params.radius.to_mm()),
-                    second_length: None,
-                },
-                tolerance: LengthUnit(
-                    params
-                        .tolerance
-                        .as_ref()
-                        .map(|t| t.to_mm())
-                        .unwrap_or(DEFAULT_TOLERANCE_MM),
-                ),
-                strategy: Default::default(),
-                extra_face_ids,
-                use_legacy: params.csg_algorithm.is_legacy(),
-            }),
+            ModelingCmd::from(
+                mcmd::Solid3dCutEdgeReferences::builder()
+                    .object_id(solid.id)
+                    .edges_references(edge_references.clone())
+                    .cut_type(CutTypeV2::Fillet {
+                        radius: LengthUnit(params.radius.to_mm()),
+                        second_length: None,
+                    })
+                    .tolerance(LengthUnit(
+                        params
+                            .tolerance
+                            .as_ref()
+                            .map(|t| t.to_mm())
+                            .unwrap_or(DEFAULT_TOLERANCE_MM),
+                    ))
+                    .strategy(Default::default())
+                    .extra_face_ids(extra_face_ids)
+                    .use_legacy(params.csg_algorithm.is_legacy())
+                    .version(params.edge_cut_version)
+                    .build(),
+            ),
         )
         .await?;
+
+    solid.pending_edge_cut_ids.push(id);
 
     if let Some(ref tag) = params.tag {
         solid.value.push(ExtrudeSurface::Fillet(FilletSurface {

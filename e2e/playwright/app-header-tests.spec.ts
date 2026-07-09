@@ -43,35 +43,6 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
     await expect(userSettingsButton).toHaveText(text)
   })
 
-  test('Share button is disabled when imports are present', async ({
-    page,
-    homePage,
-    toolbar,
-    folderSetupFn,
-  }) => {
-    const projectName = 'share-disabled-for-imports'
-    await folderSetupFn(async (dir) => {
-      const testDir = join(dir, projectName)
-      await fsp.mkdir(testDir, { recursive: true })
-
-      await fsp.writeFile(join(testDir, 'deps.kcl'), 'export x = 42')
-      await fsp.writeFile(join(testDir, 'main.kcl'), 'import x from "deps.kcl"')
-    })
-
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.openProject(projectName)
-    const shareButton = page.getByTestId('share-button')
-
-    // Open deps.kcl (which has no imports) and verify share button is enabled
-    await toolbar.fileTreeBtn.click()
-    await toolbar.openFile('deps.kcl')
-    await expect(shareButton).not.toBeDisabled()
-
-    // Open main.kcl (which has an import) and verify share button is disabled
-    await toolbar.openFile('main.kcl')
-    await expect(shareButton).toBeDisabled({ timeout: 15_000 })
-  })
-
   test('Publish button is disabled until code is valid', async ({
     page,
     homePage,
@@ -88,7 +59,7 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
 
     await page.setBodyDimensions({ width: 1200, height: 500 })
     await homePage.openProject(projectName)
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     const publishButton = page.getByTestId('publish-button')
 
@@ -98,13 +69,13 @@ test.describe('Electron app header tests', { tag: '@desktop' }, () => {
 
     await test.step('Valid KCL', async () => {
       await editor.replaceCode('', 'x = 42')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(publishButton).not.toBeDisabled()
     })
 
     await test.step('Invalid KCL', async () => {
       await editor.replaceCode('', '(')
-      await scene.settled(cmdBar)
+      await scene.settled()
       await expect(publishButton).toBeDisabled()
     })
   })

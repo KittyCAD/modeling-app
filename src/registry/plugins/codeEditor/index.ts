@@ -1,23 +1,52 @@
 import { defineRegistryItem, provide } from '@kittycad/registry'
-import { createElement } from 'react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useSelector } from '@xstate/react'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
 import usePlatform from '@src/hooks/usePlatform'
-import useHotkeyWrapper from '@src/lib/hotkeyWrapper'
+import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import { hotkeyDisplay } from '@src/lib/hotkeys'
+import { reportRejection } from '@src/lib/trap'
 import type { AppHeaderItemProps } from '@src/registry/contracts/appHeader'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
-import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { reportRejection } from '@src/lib/trap'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import toast from 'react-hot-toast'
-import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
+import {
+  type KeymapDocument,
+  MODE_MODELING_KEYMAP_SCOPE,
+  MODE_SKETCHING_KEYMAP_SCOPE,
+  MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+  MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+  findKeymapItemForCommand,
+  keymapKeystrokesDisplay,
+  keymapScopesValueSpec,
+  keymapService,
+  keymapValueSpec,
+} from '@src/registry/contracts/keymap'
+import { settingsValueSpec } from '@src/registry/contracts/settings'
+import { createZdsPlugin } from '@src/registry/createZdsPlugin'
+import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
+import { useSelector } from '@xstate/react'
+import { createElement } from 'react'
 
 const RENDER_HOTKEY = 'mod+s'
+const CODE_EDITOR_KEYMAP_SOURCE = 'code-editor'
+
+const codeEditorKeymap: KeymapDocument = {
+  source: CODE_EDITOR_KEYMAP_SOURCE,
+  bindings: [
+    {
+      id: 'code-editor.render',
+      title: 'Render code',
+      scopes: [
+        MODE_MODELING_KEYMAP_SCOPE,
+        MODE_SKETCHING_KEYMAP_SCOPE,
+        MODE_SKETCH_NO_FACE_KEYMAP_SCOPE,
+        MODE_SKETCH_SOLVE_KEYMAP_SCOPE,
+      ],
+      keystrokes: [RENDER_HOTKEY],
+      command: APP_COMMAND_IDS.editor.render,
+    },
+  ],
+}
 
 function RenderHeaderItem({ app }: AppHeaderItemProps) {
   useSignals()
@@ -29,27 +58,17 @@ function RenderHeaderItem({ app }: AppHeaderItemProps) {
   const executionService = app.registry.signal(executingEditorService).value
   const hasEditsSinceLastExecution =
     executionService?.hasEditsSinceLastExecution.value ?? false
-  const renderHotkeyLabel = hotkeyDisplay(RENDER_HOTKEY, platform)
-
-  useHotkeyWrapper(
-    [RENDER_HOTKEY],
-    () => {
-      if (
-        !automaticallyRenderEnabled &&
-        hasEditsSinceLastExecution &&
-        executionService
-      ) {
-        executionService.executeCode().catch(reportRejection)
-        return
-      }
-
-      toast.success('Your work is auto-saved in real-time.')
-    },
-    app.singletons.kclManager,
-    {
-      enabled: !!currentProject,
-      registerToCodeMirror: !!currentProject,
-    }
+  const keymap = app.registry.optional(keymapService)
+  const renderHotkeyLabel = keymapKeystrokesDisplay(
+    keymap
+      ? findKeymapItemForCommand(
+          keymap.keymap.value,
+          APP_COMMAND_IDS.editor.render,
+          keymap.getCurrentScopes(),
+          app.registry.signal(keymapScopesValueSpec).value
+        )?.keystrokes
+      : [RENDER_HOTKEY],
+    platform
   )
 
   if (!currentProject || automaticallyRenderEnabled || !executionService) {
@@ -127,6 +146,9 @@ const codeEditorSettingsItem = defineRegistryItem({
 
 const renderHeaderItem = defineRegistryItem({
   provides: [
+    provide(keymapValueSpec, codeEditorKeymap, {
+      key: codeEditorKeymap.source,
+    }),
     provide(appHeaderItemsValueSpec, {
       id: 'code-editor.render',
       order: 5,

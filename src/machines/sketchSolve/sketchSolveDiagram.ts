@@ -22,12 +22,15 @@ import {
   buildCircularSizeDimensionConstraintInput,
   isArcSegment,
   isCircleSegment,
+  isControlPointSplineSegment,
   isLineSegment,
+  isOwnedLineSegment,
   isPointSegment,
 } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   CHILD_TOOL_DONE_EVENT,
+  ORIGIN_TARGET,
   type SketchSolveContext,
   type SketchSolveMachineEvent,
   type SolveActionArgs,
@@ -42,7 +45,6 @@ import {
   getObjectSelectionIds,
   initializeInitialSceneGraph,
   initializeIntersectionPlane,
-  ORIGIN_TARGET,
   refreshSelectionStyling,
   refreshSketchSolveScale,
   sendToActorIfActive,
@@ -51,18 +53,18 @@ import {
   tearDownSketchSolve,
   updateHoveredId,
   updateSelectedCodeHighlight,
-  updateSelectedIdsFromCodeSelection,
   updateSelectedIds,
+  updateSelectedIdsFromCodeSelection,
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
-import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { getConstraintToolPreparedApply } from '@src/machines/sketchSolve/tools/constraintToolHelpers'
 import {
-  constraintToolNames,
   type ConstraintToolName,
+  constraintToolNames,
 } from '@src/machines/sketchSolve/tools/constraintToolModel'
 import { applyOrEquipConstraintToolFromToolbar } from '@src/machines/sketchSolve/tools/constraintToolbarAction'
 import { setUpOnDragAndSelectionClickCallbacks } from '@src/machines/sketchSolve/tools/moveTool/moveTool'
+import type { ConstraintSegment } from '@src/machines/sketchSolve/types'
 import { assertEvent, assign, createMachine, sendParent, setup } from 'xstate'
 
 const DEFAULT_DISTANCE_FALLBACK = 5
@@ -354,16 +356,7 @@ function getPreparedApplyForConstraintTool(
   const objects =
     context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || []
 
-  return getConstraintToolPreparedApply(
-    toolName,
-    context.selectedIds,
-    objects,
-    {
-      defaultLengthUnit: baseUnitToNumericSuffix(
-        context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-      ),
-    }
-  )
+  return getConstraintToolPreparedApply(toolName, context.selectedIds, objects)
 }
 
 function isConstraintToolName(
@@ -426,9 +419,6 @@ export const sketchSolveMachine = setup({
           selectedIds: context.selectedIds,
           objects:
             context.sketchExecOutcome?.sceneGraphDelta.new_graph.objects || [],
-          defaultLengthUnit: baseUnitToNumericSuffix(
-            context.kclManager.fileSettings.defaultLengthUnit ?? 'mm'
-          ),
           rustContext: context.rustContext,
           sketchId: context.sketchId,
           settings: jsAppSettings(context.kclManager.systemDeps.settings),
@@ -826,8 +816,13 @@ export const sketchSolveMachine = setup({
               if (
                 obj.kind.segment.type !== 'Line' &&
                 obj.kind.segment.type !== 'Arc' &&
-                obj.kind.segment.type !== 'Circle'
+                obj.kind.segment.type !== 'Circle' &&
+                obj.kind.segment.type !== 'ControlPointSpline'
               ) {
+                continue
+              }
+
+              if (isOwnedLineSegment(obj)) {
                 continue
               }
 
@@ -837,7 +832,10 @@ export const sketchSolveMachine = setup({
               }
 
               const currentConstruction =
-                isLineSegment(obj) || isArcSegment(obj) || isCircleSegment(obj)
+                isLineSegment(obj) ||
+                isArcSegment(obj) ||
+                isCircleSegment(obj) ||
+                isControlPointSplineSegment(obj)
                   ? obj.kind.segment.construction
                   : false
 
@@ -867,6 +865,14 @@ export const sketchSolveMachine = setup({
                     construction: newConstruction,
                   },
                 })
+              } else if (baseCtor.type === 'ControlPointSpline') {
+                segmentsToEdit.push({
+                  id,
+                  ctor: {
+                    ...baseCtor,
+                    construction: newConstruction,
+                  },
+                })
               }
             }
 
@@ -880,7 +886,8 @@ export const sketchSolveMachine = setup({
                 context.sketchId,
                 segmentsToEdit,
                 jsAppSettings(context.kclManager.systemDeps.settings),
-                true
+                true,
+                []
               )
               .catch((err) => {
                 console.error('failed to toggle construction geometry', err)
@@ -1101,6 +1108,10 @@ export const sketchSolveMachine = setup({
 
     'exiting with cleanup': {
       on: {
+        exit: {
+          description:
+            'Ignore repeated exit requests while teardown is already in progress.',
+        },
         'delete draft entities': {
           description: `We override the default "delete draft entities" action with a no-op here because the async invoke above is already performing that cleanup.`,
         },

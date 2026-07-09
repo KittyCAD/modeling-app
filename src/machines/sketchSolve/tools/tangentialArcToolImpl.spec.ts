@@ -1,9 +1,12 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
+import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
+import { SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE } from '@src/machines/sketchSolve/snappingPreviewSprite'
 import {
-  createMockSceneInfra,
-  createMockRustContext,
-  createMockKclManager,
   createArcApiObject,
   createLineApiObject,
+  createMockKclManager,
+  createMockRustContext,
+  createMockSceneInfra,
   createPointApiObject,
   createSceneGraphDelta,
 } from '@src/machines/sketchSolve/tools/sketchToolTestUtils'
@@ -14,11 +17,8 @@ import {
   resolveTangentInfoFromClick,
   resolveTangentialArcEndpoints,
 } from '@src/machines/sketchSolve/tools/tangentialArcToolImpl'
-import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
-import { describe, expect, it, vi } from 'vitest'
-import { isPointSegment } from '@src/machines/sketchSolve/constraints/constraintUtils'
 import { Group, Mesh, Sprite } from 'three'
-import { SKETCH_SOLVE_SNAPPING_PREVIEW_SPRITE } from '@src/machines/sketchSolve/snappingPreviewSprite'
+import { describe, expect, it, vi } from 'vitest'
 
 function createSketchApiObject({ id }: { id: number }): ApiObject {
   return {

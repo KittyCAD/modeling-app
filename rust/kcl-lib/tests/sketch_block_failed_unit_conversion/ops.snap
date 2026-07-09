@@ -3,6 +3,27 @@ source: kcl-lib/src/simulation_tests.rs
 description: Operations executed sketch_block_failed_unit_conversion.kcl
 ---
 {
+  "rust/kcl-lib/tests/sketch_block_failed_unit_conversion/input.kcl": [
+    {
+      "type": "GroupBegin",
+      "group": {
+        "type": "SketchBlock",
+        "sketchId": 1
+      },
+      "nodePath": {
+        "steps": [
+          {
+            "type": "ProgramBodyItem",
+            "index": 0
+          },
+          {
+            "type": "ExpressionStatementExpr"
+          }
+        ]
+      },
+      "sourceRange": []
+    }
+  ],
   "std::math": [
     {
       "type": "VariableDeclaration",

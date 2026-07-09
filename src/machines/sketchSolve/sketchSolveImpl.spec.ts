@@ -1,5 +1,7 @@
+import type { ApiObject } from '@rust/kcl-lib/bindings/FrontendApi'
 import { topLevelRange } from '@src/lang/util'
 import {
+  buildSegmentCtorFromObject,
   sendToActorIfActive,
   updateHoveredId,
   updateSelectedCodeHighlight,
@@ -8,6 +10,7 @@ import {
   updateSketchOutcome,
 } from '@src/machines/sketchSolve/sketchSolveImpl'
 import {
+  createControlPointSplineApiObject,
   createLineApiObject,
   createPointApiObject,
   createSceneGraphDelta,
@@ -51,6 +54,39 @@ describe('updateSelectedIds', () => {
     } as any)
 
     expect(result.selectedIds).toEqual([10])
+  })
+})
+
+describe('buildSegmentCtorFromObject', () => {
+  test('builds a control point spline ctor from linked control points', () => {
+    const p1 = createPointApiObject({ id: 1, x: 0, y: 0 })
+    const p2 = createPointApiObject({ id: 2, x: 10, y: 20 })
+    const p3 = createPointApiObject({ id: 3, x: 20, y: 0 })
+    const spline = createControlPointSplineApiObject({
+      id: 4,
+      controls: [1, 2, 3],
+    })
+    const objects = createSceneGraphDelta([p1, p2, p3, spline]).new_graph
+      .objects
+
+    expect(buildSegmentCtorFromObject(spline, objects)).toEqual({
+      type: 'ControlPointSpline',
+      points: [
+        {
+          x: { type: 'Var', value: 0, units: 'Mm' },
+          y: { type: 'Var', value: 0, units: 'Mm' },
+        },
+        {
+          x: { type: 'Var', value: 10, units: 'Mm' },
+          y: { type: 'Var', value: 20, units: 'Mm' },
+        },
+        {
+          x: { type: 'Var', value: 20, units: 'Mm' },
+          y: { type: 'Var', value: 0, units: 'Mm' },
+        },
+      ],
+      construction: false,
+    })
   })
 })
 
@@ -131,7 +167,11 @@ describe('updateSelectedCodeHighlight', () => {
           from,
           to,
           empty,
-        }: { from: number; to: number; empty: boolean }) => ({
+        }: {
+          from: number
+          to: number
+          empty: boolean
+        }) => ({
           from,
           to,
           empty,
@@ -258,6 +298,51 @@ describe('updateHoveredId', () => {
     expect(setHighlightRange).toHaveBeenCalledWith([
       [10, 20, 0],
       [30, 40, 0],
+    ])
+  })
+
+  test('uses named wall source ranges for hovered walls', () => {
+    const setHighlightRange = vi.fn()
+    const wall: ApiObject = {
+      id: 2,
+      kind: {
+        type: 'Wall',
+        id: 2,
+        source: {
+          solid: { range: [10, 20, 0], nodePath: null },
+          sweep: { range: [10, 20, 0], nodePath: null },
+          path: { range: [30, 40, 0], nodePath: null },
+          segment: { range: [50, 60, 0], nodePath: null },
+        },
+      },
+      label: '',
+      comments: '',
+      artifact_id: '0',
+      source: {
+        type: 'BackTrace',
+        ranges: [[[100, 110, 0], null]],
+      },
+    }
+
+    updateHoveredId({
+      context: {
+        sketchExecOutcome: {
+          sceneGraphDelta: createSceneGraphDelta([wall]),
+        },
+        kclManager: {
+          setHighlightRange,
+        },
+      },
+      event: {
+        type: 'update hovered id',
+        data: { hoveredId: 2 },
+      },
+    } as unknown as Parameters<typeof updateHoveredId>[0])
+
+    expect(setHighlightRange).toHaveBeenCalledWith([
+      [10, 20, 0],
+      [30, 40, 0],
+      [50, 60, 0],
     ])
   })
 

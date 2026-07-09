@@ -11,7 +11,7 @@ pub mod sketch_constraints;
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass(eq)]
+#[pyclass(eq, from_py_object)]
 pub struct Point3d {
     #[pyo3(get, set)]
     pub x: f32,
@@ -34,7 +34,7 @@ impl Point3d {
 
 #[derive(Serialize, Deserialize, PartialEq, Debug, Clone, Copy)]
 #[pyo3_stub_gen::derive::gen_stub_pyclass]
-#[pyclass]
+#[pyclass(from_py_object)]
 pub struct CameraLookAt {
     pub vantage: Point3d,
     pub center: Point3d,

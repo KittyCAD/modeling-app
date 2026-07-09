@@ -5,10 +5,10 @@ import {
   isRowFake,
   shouldDroppedEntryBeMoved,
 } from '@src/components/Explorer/utils'
-import { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
+import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
-import { beforeAll, expect, describe, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({

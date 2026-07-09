@@ -164,7 +164,7 @@ export default class Client extends jsrpc.JSONRPCServerAndClient {
         },
         capabilities: client_capabilities,
         rootUri: null,
-      } as LSP.InitializeParams
+      }
     )
 
     this.serverCapabilities = capabilities

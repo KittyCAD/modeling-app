@@ -1,5 +1,5 @@
-use fnv::FnvHashMap;
-use fnv::FnvHashSet;
+use ahash::AHashMap;
+use ahash::AHashSet;
 use lazy_static::lazy_static;
 use winnow::LocatingSlice;
 use winnow::Stateful;
@@ -27,8 +27,8 @@ use crate::parsing::token::Token;
 use crate::parsing::token::TokenType;
 
 lazy_static! {
-    pub(crate) static ref RESERVED_WORDS: FnvHashMap<&'static str, TokenType> = {
-        let mut set = FnvHashMap::default();
+    pub(crate) static ref RESERVED_WORDS: AHashMap<&'static str, TokenType> = {
+        let mut set = AHashMap::default();
         set.insert("if", TokenType::Keyword);
         set.insert("else", TokenType::Keyword);
         set.insert("for", TokenType::Keyword);
@@ -62,8 +62,8 @@ lazy_static! {
         set
     };
     /// These names are reserved only in sketch blocks.
-    pub(crate) static ref RESERVED_SKETCH_BLOCK_WORDS: FnvHashSet<&'static str> = {
-        let mut set = FnvHashSet::default();
+    pub(crate) static ref RESERVED_SKETCH_BLOCK_WORDS: AHashSet<&'static str> = {
+        let mut set = AHashSet::default();
         set.insert("construction");
         set.insert("dependencies");
         set.insert("exports");

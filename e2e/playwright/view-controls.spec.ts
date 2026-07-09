@@ -8,43 +8,43 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
   const cases = [
     {
       testDescription: 'top view',
-      clickPosition: { x: 951, y: 402 },
+      gizmoClickPosition: { x: 40, y: 18 },
       expectedCameraPosition: { x: 800, y: -152, z: 4886.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'bottom view',
-      clickPosition: { x: 951, y: 449 },
+      gizmoClickPosition: { x: 40, y: 65 },
       expectedCameraPosition: { x: 800, y: -152, z: -4834.02 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'right view',
-      clickPosition: { x: 929, y: 435 },
+      gizmoClickPosition: { x: 18, y: 51 },
       expectedCameraPosition: { x: 5660.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'left view',
-      clickPosition: { x: 974, y: 417 },
+      gizmoClickPosition: { x: 63, y: 33 },
       expectedCameraPosition: { x: -4060.02, y: -152, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'back view',
-      clickPosition: { x: 967, y: 441 },
+      gizmoClickPosition: { x: 56, y: 57 },
       expectedCameraPosition: { x: 800, y: 4708.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
     {
       testDescription: 'front view',
-      clickPosition: { x: 931, y: 411 },
+      gizmoClickPosition: { x: 20, y: 27 },
       expectedCameraPosition: { x: 800, y: -5012.02, z: 26 },
       expectedCameraTarget: { x: 800, y: -152, z: 26 },
     },
   ] as const
   for (const {
-    clickPosition,
+    gizmoClickPosition,
     expectedCameraPosition,
     expectedCameraTarget,
     testDescription,
@@ -94,9 +94,11 @@ test.describe('Testing Gizmo', { tag: '@desktop' }, () => {
       await u.waitForCmdReceive('default_camera_get_settings')
 
       await u.clearCommandLogs()
-      await page.mouse.move(clickPosition.x, clickPosition.y)
+      const gizmo = page.locator('[aria-label*=gizmo]')
+      await expect(gizmo).toBeVisible()
+      await gizmo.hover({ position: gizmoClickPosition })
       await page.waitForTimeout(100)
-      await page.mouse.click(clickPosition.x, clickPosition.y)
+      await gizmo.click({ position: gizmoClickPosition })
       await page.mouse.move(0, 0)
 
       // We use different camera commands for top/bottom cf. all others.
@@ -281,7 +283,7 @@ test.describe(`Testing gizmo, fixture-based`, { tag: '@desktop' }, () => {
 
     await homePage.goToModelingScene()
     await editor.closePane()
-    await scene.settled(cmdBar)
+    await scene.settled()
 
     await test.step(`Setup`, async () => {
       await scene.expectState({

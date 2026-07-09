@@ -1,9 +1,9 @@
 import {
   withAPIBaseURL,
-  withSiteBaseURL,
   withKittycadWebSocketURL,
+  withSiteBaseURL,
 } from '@src/lib/withBaseURL'
-import { expect, describe, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 describe('withBaseURL', () => {
   /**

@@ -12,8 +12,8 @@
         -0
       ],
       "max": [
-        0.12700000405311584,
-        0.12700000405311584,
+        0.004999999888241291,
+        0.004999999888241291,
         -0
       ]
     },
@@ -31,13 +31,13 @@
       "componentType": 5126,
       "type": "VEC3",
       "min": [
-        0.12700000405311584,
+        0.004999999888241291,
         0,
-        -0.12700000405311584
+        -0.004999999888241291
       ],
       "max": [
-        0.12700000405311584,
-        0.12700000405311584,
+        0.004999999888241291,
+        0.004999999888241291,
         -0
       ]
     },
@@ -57,12 +57,12 @@
       "min": [
         0,
         0,
-        -0.12700000405311584
+        -0.004999999888241291
       ],
       "max": [
-        0.12700000405311584,
-        0.12700000405311584,
-        -0.12700000405311584
+        0.004999999888241291,
+        0.004999999888241291,
+        -0.004999999888241291
       ]
     },
     {
@@ -81,11 +81,11 @@
       "min": [
         0,
         0,
-        -0.12700000405311584
+        -0.004999999888241291
       ],
       "max": [
         0,
-        0.12700000405311584,
+        0.004999999888241291,
         -0
       ]
     },
@@ -105,10 +105,10 @@
       "min": [
         0,
         0,
-        -0.12700000405311584
+        -0.004999999888241291
       ],
       "max": [
-        0.12700000405311584,
+        0.004999999888241291,
         0,
         -0
       ]
@@ -128,12 +128,12 @@
       "type": "VEC3",
       "min": [
         0,
-        0.12700000405311584,
-        -0.12700000405311584
+        0.004999999888241291,
+        -0.004999999888241291
       ],
       "max": [
-        0.12700000405311584,
-        0.12700000405311584,
+        0.004999999888241291,
+        0.004999999888241291,
         -0
       ]
     },
@@ -152,7 +152,7 @@
   "buffers": [
     {
       "byteLength": 864,
-      "uri": "data:application/octet-stream;base64,AAAAAEoMAj4AAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/SgwCPkoMAj4AAACAAAAAAAAAAAAAAIA/SgwCPkoMAj4AAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/SgwCPgAAAAAAAACAAAAAAAAAAAAAAIA/SgwCPkoMAj4AAACAAACAPwAAAAAAAAAASgwCPgAAAAAAAACAAACAPwAAAAAAAAAASgwCPkoMAj5KDAK+AACAPwAAAAAAAAAASgwCPkoMAj5KDAK+AACAPwAAAAAAAAAASgwCPgAAAAAAAACAAACAPwAAAAAAAAAASgwCPgAAAABKDAK+AACAPwAAAAAAAAAASgwCPkoMAj5KDAK+AAAAAAAAAAAAAIC/SgwCPgAAAABKDAK+AAAAAAAAAAAAAIC/AAAAAEoMAj5KDAK+AAAAAAAAAAAAAIC/AAAAAEoMAj5KDAK+AAAAAAAAAAAAAIC/SgwCPgAAAABKDAK+AAAAAAAAAAAAAIC/AAAAAAAAAABKDAK+AAAAAAAAAAAAAIC/AAAAAEoMAj5KDAK+AACAvwAAAAAAAAAAAAAAAAAAAABKDAK+AACAvwAAAAAAAAAAAAAAAEoMAj4AAACAAACAvwAAAAAAAAAAAAAAAEoMAj4AAACAAACAvwAAAAAAAAAAAAAAAAAAAABKDAK+AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAAAAAABKDAK+AAAAgAAAgL8AAACASgwCPgAAAABKDAK+AAAAgAAAgL8AAACAAAAAAAAAAAAAAACAAAAAgAAAgL8AAACASgwCPgAAAABKDAK+AAAAgAAAgL8AAACASgwCPgAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAEoMAj5KDAK+AAAAAAAAgD8AAAAAAAAAAEoMAj4AAACAAAAAAAAAgD8AAAAASgwCPkoMAj5KDAK+AAAAAAAAgD8AAAAASgwCPkoMAj5KDAK+AAAAAAAAgD8AAAAAAAAAAEoMAj4AAACAAAAAAAAAgD8AAAAASgwCPkoMAj4AAACAAAAAAAAAgD8AAAAA"
+      "uri": "data:application/octet-stream;base64,AAAAAArXozsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/CtejOwrXozsAAACAAAAAAAAAAAAAAIA/CtejOwrXozsAAACAAAAAAAAAAAAAAIA/AAAAAAAAAAAAAACAAAAAAAAAAAAAAIA/CtejOwAAAAAAAACAAAAAAAAAAAAAAIA/CtejOwrXozsAAACAAACAPwAAAAAAAAAACtejOwAAAAAAAACAAACAPwAAAAAAAAAACtejOwrXozsK16O7AACAPwAAAAAAAAAACtejOwrXozsK16O7AACAPwAAAAAAAAAACtejOwAAAAAAAACAAACAPwAAAAAAAAAACtejOwAAAAAK16O7AACAPwAAAAAAAAAACtejOwrXozsK16O7AAAAAAAAAAAAAIC/CtejOwAAAAAK16O7AAAAAAAAAAAAAIC/AAAAAArXozsK16O7AAAAAAAAAAAAAIC/AAAAAArXozsK16O7AAAAAAAAAAAAAIC/CtejOwAAAAAK16O7AAAAAAAAAAAAAIC/AAAAAAAAAAAK16O7AAAAAAAAAAAAAIC/AAAAAArXozsK16O7AACAvwAAAAAAAAAAAAAAAAAAAAAK16O7AACAvwAAAAAAAAAAAAAAAArXozsAAACAAACAvwAAAAAAAAAAAAAAAArXozsAAACAAACAvwAAAAAAAAAAAAAAAAAAAAAK16O7AACAvwAAAAAAAAAAAAAAAAAAAAAAAACAAACAvwAAAAAAAAAAAAAAAAAAAAAK16O7AAAAgAAAgL8AAACACtejOwAAAAAK16O7AAAAgAAAgL8AAACAAAAAAAAAAAAAAACAAAAAgAAAgL8AAACACtejOwAAAAAK16O7AAAAgAAAgL8AAACACtejOwAAAAAAAACAAAAAgAAAgL8AAACAAAAAAAAAAAAAAACAAAAAgAAAgL8AAACAAAAAAArXozsK16O7AAAAAAAAgD8AAAAAAAAAAArXozsAAACAAAAAAAAAgD8AAAAACtejOwrXozsK16O7AAAAAAAAgD8AAAAACtejOwrXozsK16O7AAAAAAAAgD8AAAAAAAAAAArXozsAAACAAAAAAAAAgD8AAAAACtejOwrXozsAAACAAAAAAAAAgD8AAAAA"
     }
   ],
   "bufferViews": [
@@ -454,7 +454,7 @@
           "end": 1,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -466,7 +466,7 @@
           "end": 2,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -478,7 +478,7 @@
           "end": 2,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -490,7 +490,7 @@
           "end": 3,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -502,7 +502,7 @@
           "end": 4,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -514,7 +514,7 @@
           "end": 5,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -526,7 +526,7 @@
           "end": 5,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -538,7 +538,7 @@
           "end": 6,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -550,7 +550,7 @@
           "end": 7,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -562,7 +562,7 @@
           "end": 7,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -574,7 +574,7 @@
           "end": 0,
           "t": [
             0,
-            0.127
+            0.005
           ]
         },
         {
@@ -586,7 +586,7 @@
           "end": 3,
           "t": [
             0,
-            0.127
+            0.005
           ]
         }
       ],
@@ -597,39 +597,39 @@
           -0
         ],
         [
-          0.127,
+          0.005,
           0,
           -0
         ],
         [
-          0.127,
-          0.127,
+          0.005,
+          0.005,
           -0
         ],
         [
           0,
-          0.127,
+          0.005,
           -0
         ],
         [
-          0.127,
+          0.005,
           0,
-          -0.127
+          -0.005
         ],
         [
-          0.127,
-          0.127,
-          -0.127
-        ],
-        [
-          0,
-          0,
-          -0.127
+          0.005,
+          0.005,
+          -0.005
         ],
         [
           0,
-          0.127,
-          -0.127
+          0,
+          -0.005
+        ],
+        [
+          0,
+          0.005,
+          -0.005
         ]
       ],
       "surfaces": [
@@ -647,8 +647,8 @@
               0
             ],
             "origin": [
-              0.0635,
-              0.0635,
+              0.0025,
+              0.0025,
               -0
             ]
           }
@@ -667,9 +667,9 @@
               1
             ],
             "origin": [
-              0.127,
-              0.0635,
-              -0.0635
+              0.005,
+              0.0025,
+              -0.0025
             ]
           }
         },
@@ -687,9 +687,9 @@
               0
             ],
             "origin": [
-              0.0635,
-              0.0635,
-              -0.127
+              0.0025,
+              0.0025,
+              -0.005
             ]
           }
         },
@@ -708,8 +708,8 @@
             ],
             "origin": [
               0,
-              0.0635,
-              -0.0635
+              0.0025,
+              -0.0025
             ]
           }
         },
@@ -748,7 +748,7 @@
             ],
             "origin": [
               0,
-              0.127,
+              0.005,
               -0
             ]
           }
@@ -774,7 +774,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.127,
+              0.005,
               0,
               -0
             ],
@@ -790,7 +790,7 @@
           "line": {
             "origin": [
               0,
-              0.127,
+              0.005,
               -0
             ],
             "direction": [
@@ -819,7 +819,7 @@
           "type": "line",
           "line": {
             "origin": [
-              0.127,
+              0.005,
               0,
               -0
             ],
@@ -834,9 +834,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.127,
+              0.005,
               0,
-              -0.127
+              -0.005
             ],
             "direction": [
               0,
@@ -849,8 +849,8 @@
           "type": "line",
           "line": {
             "origin": [
-              0.127,
-              0.127,
+              0.005,
+              0.005,
               -0
             ],
             "direction": [
@@ -864,9 +864,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.127,
+              0.005,
               0,
-              -0.127
+              -0.005
             ],
             "direction": [
               -1,
@@ -881,7 +881,7 @@
             "origin": [
               0,
               0,
-              -0.127
+              -0.005
             ],
             "direction": [
               0,
@@ -894,9 +894,9 @@
           "type": "line",
           "line": {
             "origin": [
-              0.127,
-              0.127,
-              -0.127
+              0.005,
+              0.005,
+              -0.005
             ],
             "direction": [
               -1,
@@ -911,7 +911,7 @@
             "origin": [
               0,
               0,
-              -0.127
+              -0.005
             ],
             "direction": [
               0,
@@ -925,8 +925,8 @@
           "line": {
             "origin": [
               0,
-              0.127,
-              -0.127
+              0.005,
+              -0.005
             ],
             "direction": [
               0,

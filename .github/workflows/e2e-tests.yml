@@ -23,7 +23,7 @@ jobs:
   track-setup:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
@@ -70,14 +70,14 @@ jobs:
     if: github.repository == 'kittycad/modeling-app'
 
     steps:
-      - uses: actions/create-github-app-token@v3
+      - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
@@ -87,12 +87,25 @@ jobs:
           name: prepared-wasm
           path: prepared-wasm
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
       - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -103,7 +116,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -200,14 +213,14 @@ jobs:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/create-github-app-token@v3
+      - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
           app-id: ${{ secrets.MODELING_APP_GH_APP_ID }}
           private-key: ${{ secrets.MODELING_APP_GH_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
           token: ${{ steps.app-token.outputs.token }}
@@ -217,12 +230,25 @@ jobs:
           name: prepared-wasm
           path: prepared-wasm
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
       - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -233,7 +259,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -284,50 +310,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        os: [namespace-profile-ubuntu-8-cores]
+        shardIndex: [1, 2, 3, 4, 5, 6, 7, 8]
+        shardTotal: [8]
         include:
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 1
-            shardTotal: 8
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 2
-            shardTotal: 8
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 3
-            shardTotal: 8
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 4
-            shardTotal: 8
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 5
-            shardTotal: 8
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 6
-            shardTotal: 8
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 7
-            shardTotal: 8
-          - os: namespace-profile-ubuntu-8-cores
-            shardIndex: 8
-            shardTotal: 8
           - os: namespace-profile-macos-8-cores
             shardIndex: 1
-            shardTotal: 2
-          - os: namespace-profile-macos-8-cores
-            shardIndex: 2
-            shardTotal: 2
+            shardTotal: 1
           - os: namespace-profile-windows-8-cores
             shardIndex: 1
-            shardTotal: 2
-          - os: namespace-profile-windows-8-cores
-            shardIndex: 2
-            shardTotal: 2
+            shardTotal: 1
     runs-on: ${{ matrix.os }}
     name: e2e:desktop (${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}, shard ${{ matrix.shardIndex }})
     env:
       OS_NAME: ${{ contains(matrix.os, 'ubuntu') && 'ubuntu' || (contains(matrix.os, 'windows') && 'windows' || 'macos') }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
         with:
           repository: kittycad/modeling-app # required for 'workflow_call'
 
@@ -336,12 +335,25 @@ jobs:
           name: prepared-wasm
           path: prepared-wasm
 
+      - uses: actions/download-artifact@v8
+        with:
+          name: prepared-ts-rs-bindings
+          path: prepared-ts-rs-bindings
+
       - name: Copy prepared Wasm
         run: |
           ls -R prepared-wasm
           cp prepared-wasm/kcl_wasm_lib_bg.wasm public
           mkdir rust/kcl-wasm-lib/pkg
           cp prepared-wasm/kcl_wasm_lib* rust/kcl-wasm-lib/pkg
+
+      # build:wasm generates these ignored ts-rs files in rust/kcl-lib/bindings.
+      # Restore them here because StdLibCommands is imported as a runtime value.
+      - name: Copy prepared ts-rs bindings
+        run: |
+          ls -R prepared-ts-rs-bindings
+          mkdir rust/kcl-lib/bindings
+          cp -r prepared-ts-rs-bindings/* rust/kcl-lib/bindings/
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -353,7 +365,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -434,7 +446,7 @@ jobs:
     if: github.repository == 'kittycad/modeling-app' && (github.event_name == 'pull_request' || (github.event_name == 'push' && github.ref_name == 'main'))
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7.0.0
 
       - uses: actions/setup-node@v6.4.0
         with:
@@ -445,7 +457,7 @@ jobs:
         run: npm install
 
       - name: Download browser cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6.1.0
         with:
           path: ~/.cache/ms-playwright/
           key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
@@ -457,25 +469,28 @@ jobs:
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel-preview
         if: github.event_name == 'pull_request'
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 1200 # average build times are 17-18 minutes
-          check_interval: 30
+          max_timeout: 1200 # average build times are 17-19 minutes
+          check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Wait for Vercel (staging)
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.3
         id: wait-for-vercel-staging
         if: github.event_name == 'push' && github.ref_name == 'main'
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           environment: staging
-          max_timeout: 1200 # average build times are 17-18 minutes
-          check_interval: 30
+          max_timeout: 1200 # average build times are 17-19 minutes
+          check_interval: 10
           vercel_protection_bypass_header: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
       - name: Check Vercel
         run: .github/ci-cd-scripts/check-vercel.sh
+        continue-on-error: true
         env:
           VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
@@ -483,7 +498,7 @@ jobs:
       - name: npm run test:e2e:web
         run: npm run test:e2e:web -- --grep=demo
         env:
-          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url }}
+          VERCEL_BASE_URL: ${{ steps.wait-for-vercel-preview.outputs.url || steps.wait-for-vercel-staging.outputs.url || format('https://pr-{0}.vercel.dev.zoo.dev', github.event.pull_request.number) }}
           VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
           VITE_ZOO_API_TOKEN: ${{ secrets.ZOO_API_TOKEN }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}

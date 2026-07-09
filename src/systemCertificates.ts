@@ -17,7 +17,7 @@ const patchCreateSecureContextWithSystemCerts = (
   systemCerts: readonly string[]
 ) => {
   const originalCreateSecureContext = tls.createSecureContext
-  tls.createSecureContext = ((options?: tls.SecureContextOptions) => {
+  tls.createSecureContext = (options?: tls.SecureContextOptions) => {
     const context = originalCreateSecureContext(options)
     if (!options?.ca) {
       const contextWithCa = context as {
@@ -31,7 +31,7 @@ const patchCreateSecureContextWithSystemCerts = (
       }
     }
     return context
-  }) as typeof tls.createSecureContext
+  }
 }
 
 export const configureSystemCertificates = (

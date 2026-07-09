@@ -10,7 +10,13 @@ import { contextBridge, ipcRenderer } from 'electron'
 
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import { getAllowedExternalURL } from '@src/lib/externalUrls'
 import type { WebContentSendPayload } from '@src/menu/channels'
+import {
+  PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
+  type PluginIpcChannel,
+  isPluginIpcChannel,
+} from '@src/registry/pluginIpc'
 
 const typeSafeIpcRendererOn = (
   channel: Channel,
@@ -21,10 +27,32 @@ const resizeWindow = (width: number, height: number) =>
   ipcRenderer.invoke('app.resizeWindow', [width, height])
 const open = (args: any) => ipcRenderer.invoke('dialog.showOpenDialog', args)
 const save = (args: any) => ipcRenderer.invoke('dialog.showSaveDialog', args)
-const openExternal = (url: any) => ipcRenderer.invoke('shell.openExternal', url)
+export const openExternal = (url: unknown) => {
+  const allowedURL = getAllowedExternalURL(url)
+  if (allowedURL instanceof Error) {
+    return Promise.reject(allowedURL)
+  }
+
+  return ipcRenderer.invoke('shell.openExternal', allowedURL)
+}
 const openInNewWindow = (url: any) => ipcRenderer.invoke('openInNewWindow', url)
 const showInFolder = (path: string) =>
   ipcRenderer.invoke('shell.showItemInFolder', path)
+const pluginIpc = {
+  invoke: <T>(channel: PluginIpcChannel, payload?: unknown): Promise<T> => {
+    if (!isPluginIpcChannel(channel)) {
+      return Promise.reject(
+        new Error('Plugin IPC channels must start with plugin:')
+      )
+    }
+    if (channel === PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL) {
+      return Promise.reject(new Error('Plugin IPC channel is reserved.'))
+    }
+    return ipcRenderer.invoke(channel, payload)
+  },
+  syncActivePlugins: (pluginIds: readonly string[]): Promise<void> =>
+    ipcRenderer.invoke(PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL, pluginIds),
+}
 const startDeviceFlow = (host: string): Promise<DeviceFlowAuthorization> =>
   ipcRenderer.invoke('startDeviceFlow', host)
 const loginWithDeviceFlow = (): Promise<string> =>
@@ -309,6 +337,7 @@ contextBridge.exposeInMainWorld('electron', {
   openExternal,
   openInNewWindow,
   showInFolder,
+  pluginIpc,
   getPath,
   packageJson,
   arch: process.arch,

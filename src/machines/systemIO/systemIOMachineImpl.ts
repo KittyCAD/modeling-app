@@ -1,6 +1,12 @@
-import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { newKclFile } from '@src/lang/project'
 import {
+  cloudSyncStatus,
+  getCloudSyncProjectMetadataIndex,
+  getCloudSyncProjectModifiedTime,
+} from '@src/lib/cloudSync'
+import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
+import {
+  canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
   getAppSettingsFilePath,
@@ -8,11 +14,8 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-  canReadWriteDirectory,
-  statIsDirectory,
+  writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
-import { newKclFile } from '@src/lang/project'
-import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
   doesProjectNameNeedInterpolated,
   getNextFileName,
@@ -20,12 +23,17 @@ import {
   getUniqueProjectName,
   interpolateProjectNameWithIndex,
 } from '@src/lib/desktopFS'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { sanitizeProjectName } from '@src/lib/projectName'
+import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import type {
@@ -38,15 +46,137 @@ import {
   NO_PROJECT_DIRECTORY,
   SystemIOMachineActors,
   SystemIOMachineEvents,
+  collectProjectFiles,
   jsonToMlConversations,
   mlConversationsToJson,
-  collectProjectFiles,
   normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
-import { err, isErr } from '@src/lib/trap'
 
 const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
+
+async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
+  if (!projectDirectoryPath) {
+    return []
+  }
+
+  try {
+    return await fsZds.readdir(projectDirectoryPath)
+  } catch (error) {
+    if (error === 'ENOENT') {
+      return []
+    }
+    return Promise.reject(error)
+  }
+}
+
+function isPathNotFoundError(error: unknown) {
+  return (
+    error === 'ENOENT' ||
+    (typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'ENOENT')
+  )
+}
+
+async function pathExists(targetPath: string) {
+  try {
+    await fsZds.stat(targetPath)
+    return true
+  } catch (error) {
+    if (isPathNotFoundError(error)) {
+      return false
+    }
+    return Promise.reject(error)
+  }
+}
+
+async function moveRecursivePath({
+  src,
+  target,
+}: {
+  src: string
+  target: string
+}) {
+  const statRes = await fsZds.stat(src)
+  const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
+  const targetAlreadyExists = await pathExists(target)
+
+  if (!targetAlreadyExists) {
+    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
+    try {
+      await fsZds.rename(src, target)
+      return
+    } catch {
+      // Fall back to copy/remove for cases like cross-device moves.
+    }
+  }
+
+  if (isDirectory) {
+    await fsZds.mkdir(target, { recursive: true })
+  } else {
+    await fsZds.mkdir(fsZds.dirname(target), { recursive: true })
+  }
+  await fsZds.cp(src, target, { recursive: true })
+  await fsZds.rm(src, { recursive: true })
+}
+
+async function getUniqueProjectNameForCreate({
+  context,
+  requestedProjectName,
+  projectDirectoryPath,
+}: {
+  context: SystemIOContext
+  requestedProjectName: string
+  projectDirectoryPath?: string
+}) {
+  const knownProjectNames = new Set<string>()
+  for (const folder of context.folders ?? []) {
+    knownProjectNames.add(folder.name)
+  }
+  for (const entryName of await getProjectDirectoryEntryNames(
+    projectDirectoryPath
+  )) {
+    knownProjectNames.add(entryName)
+  }
+
+  const existingEntries: FileEntry[] = Array.from(
+    knownProjectNames,
+    (name) => ({
+      name,
+      path: projectDirectoryPath
+        ? fsZds.join(projectDirectoryPath, name)
+        : name,
+      children: [],
+    })
+  )
+  return getUniqueProjectName(requestedProjectName, existingEntries)
+}
+
+export function shouldSendProjectFolderReadProgress(
+  folders: SystemIOContext['folders']
+) {
+  return !folders?.length
+}
+
+type ProjectDirectoryEntry = {
+  name: string
+  path: string
+  modified: number
+}
+
+export function sortProjectDirectoryEntriesByModifiedDesc(
+  entries: ProjectDirectoryEntry[]
+) {
+  return entries.toSorted(
+    (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
+  )
+}
+
+function normalizeProjectPathForCloudMetadata(projectPath: string) {
+  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+}
 
 const prepareBulkProjectWrite = async ({
   context,
@@ -290,38 +420,116 @@ const sharedBulkDeleteWorkflow = async ({
   return totalDeleted
 }
 
+export function getCloudProjectFolderRenameName({
+  title,
+  currentName,
+  folders,
+}: {
+  title: string
+  currentName: string
+  folders: Project[]
+}) {
+  const baseName = sanitizeProjectName(title, currentName)
+  const existingNames = new Set(
+    folders
+      .filter((folder) => folder.name !== currentName)
+      .map((folder) => folder.name.toLowerCase())
+  )
+  if (!existingNames.has(baseName.toLowerCase())) {
+    return baseName
+  }
+
+  let index = 2
+  let candidate = `${baseName}-${index}`
+  while (existingNames.has(candidate.toLowerCase())) {
+    index += 1
+    candidate = `${baseName}-${index}`
+  }
+
+  return candidate
+}
+
 export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
-      async ({ input: context }: { input: SystemIOContext }) => {
-        const projects = []
+      async ({ input: context, signal }) => {
+        const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
+        const projects: Project[] = []
         const projectDirectoryPath = context.projectDirectoryPath
+        const canSendProgress = shouldSendProjectFolderReadProgress(
+          context.folders
+        )
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        await mkdirOrNOOP(projectDirectoryPath)
-        // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries = await fsZds.readdir(projectDirectoryPath)
-        const { value: canReadWriteProjectDirectory } =
-          await canReadWriteDirectory(projectDirectoryPath)
+        const sendFoldersProgress = (folders: Project[]) => {
+          if (signal.aborted) {
+            return
+          }
+          context.app.systemIOActor.send({
+            type: SystemIOMachineEvents.setFolders,
+            data: { folders },
+          })
+        }
 
-        for (let entry of entries) {
-          // Skip directories that start with a dot
+        await mkdirOrNOOP(projectDirectoryPath)
+        const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
+          ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
+          : new Map()
+        // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
+        const entries: ProjectDirectoryEntry[] = []
+        for (const entry of await fsZds.readdir(projectDirectoryPath)) {
           if (entry.startsWith('.')) {
             continue
           }
-          const projectPath = fsZds.join(projectDirectoryPath, entry)
 
-          // if it's not a directory ignore.
-          // Gotcha: statIsDirectory will work even if you do not have read write permissions on the project path
-          const isDirectory = await statIsDirectory(projectPath)
-          if (!isDirectory) {
+          const projectPath = fsZds.join(projectDirectoryPath, entry)
+          let stat: Awaited<ReturnType<typeof fsZds.stat>>
+          try {
+            stat = await fsZds.stat(projectPath)
+          } catch {
             continue
           }
+          if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
+            continue
+          }
+
+          entries.push({
+            name: entry,
+            path: projectPath,
+            modified:
+              getCloudSyncProjectModifiedTime(
+                cloudProjectMetadataByPath.get(
+                  normalizeProjectPathForCloudMetadata(projectPath)
+                ),
+                stat.mtimeMs
+              ) ?? stat.mtimeMs,
+          })
+        }
+        const { value: canReadWriteProjectDirectory } =
+          await canReadWriteDirectory(projectDirectoryPath)
+
+        for (const entry of sortProjectDirectoryEntriesByModifiedDesc(
+          entries
+        )) {
+          if (signal.aborted) {
+            return projects
+          }
           const project: Project = await getProjectInfo(
-            projectPath,
+            entry.path,
             await context.wasmInstancePromise
           )
+          const cloudMetadata = cloudProjectMetadataByPath.get(
+            normalizeProjectPathForCloudMetadata(entry.path)
+          )
+          project.cloudProjectId ??= cloudMetadata?.remoteProjectId
+          project.cloudConflict = cloudMetadata?.conflict
+          if (project.metadata) {
+            project.metadata.modified = getCloudSyncProjectModifiedTime(
+              cloudMetadata,
+              project.metadata.modified
+            )
+          }
           if (
             project.kcl_file_count === 0 &&
             project.readWriteAccess &&
@@ -330,7 +538,14 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             continue
           }
           projects.push(project)
+          if (
+            canSendProgress &&
+            projects.length % PROJECT_FOLDER_PROGRESS_CHUNK_SIZE === 0
+          ) {
+            sendFoldersProgress([...projects])
+          }
         }
+        sendFoldersProgress(projects)
         return projects
       }
     ),
@@ -340,16 +555,24 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
-        const folders = input.context.folders
-        if (!folders) {
-          return Promise.reject(new Error('no folders'))
-        }
-
         const requestedProjectName = input.requestedProjectName
-        const uniqueName = getUniqueProjectName(requestedProjectName, folders)
+        const projectDirectoryPath =
+          input.context.projectDirectoryPath &&
+          input.context.projectDirectoryPath !== NO_PROJECT_DIRECTORY
+            ? input.context.projectDirectoryPath
+            : undefined
+        const uniqueName = await getUniqueProjectNameForCreate({
+          context: input.context,
+          requestedProjectName,
+          projectDirectoryPath,
+        })
         await createNewProjectDirectory(
           uniqueName,
-          await input.context.wasmInstancePromise
+          await input.context.wasmInstancePromise,
+          undefined,
+          undefined,
+          undefined,
+          projectDirectoryPath
         )
         return {
           message: `Successfully created "${uniqueName}"`,
@@ -375,6 +598,42 @@ export const systemIOMachineImpl = systemIOMachine.provide({
 
         const requestedProjectName = input.requestedProjectName
         const projectName = input.projectName
+        const project = folders.find((p) => p.name === projectName)
+        const existingDisplayName = project
+          ? getProjectDisplayName(project)
+          : projectName
+        if (project?.cloudProjectId) {
+          const currentProjectPath = fsZds.join(
+            input.context.projectDirectoryPath,
+            projectName
+          )
+          await writeProjectTitleToProjectToml(
+            currentProjectPath,
+            requestedProjectName
+          )
+
+          const newProjectName = getCloudProjectFolderRenameName({
+            title: requestedProjectName,
+            currentName: projectName,
+            folders,
+          })
+          let renamedProjectName = projectName
+          if (newProjectName !== projectName) {
+            await renameProjectDirectory(currentProjectPath, newProjectName)
+              .then(() => {
+                renamedProjectName = newProjectName
+              })
+              .catch(() => undefined)
+          }
+
+          return {
+            message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectName}"`,
+            oldName: projectName,
+            newName: renamedProjectName,
+            redirect: input.redirect,
+          }
+        }
+
         let newProjectName: string = requestedProjectName
         if (doesProjectNameNeedInterpolated(requestedProjectName)) {
           const nextIndex = getNextProjectIndex(requestedProjectName, folders)
@@ -397,7 +656,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         )
 
         return {
-          message: `Successfully renamed "${projectName}" to "${newProjectName}"`,
+          message: `Successfully renamed "${existingDisplayName}" to "${newProjectName}"`,
           oldName: projectName,
           newName: newProjectName,
           redirect: input.redirect,
@@ -614,31 +873,66 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             override?: boolean
             requestedFileNameWithExtension: string
             requestedSubRoute?: string
+            onFileSystemError?: () => void
+            onFileSystemSuccess?: () => void
+            onSuccess?: () => void
           }
         }) => {
-          const wasmInstance = await input.context.wasmInstancePromise
-          const message = await sharedBulkCreateWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-              override: input.override,
-            },
-          })
-          // We won't delete until everything's created / updated first.
-          const totalDeleted = await sharedBulkDeleteWorkflow({
-            input: {
-              ...input,
-              wasmInstance,
-            },
-          })
+          try {
+            const wasmInstance = await input.context.wasmInstancePromise
+            const message = await sharedBulkCreateWorkflow({
+              input: {
+                ...input,
+                wasmInstance,
+                override: input.override,
+              },
+            })
+            // We won't delete until everything's created / updated first.
+            const totalDeleted = await sharedBulkDeleteWorkflow({
+              input: {
+                ...input,
+                wasmInstance,
+              },
+            })
 
-          message.message += `, ${totalDeleted} deleted`
+            message.message += `, ${totalDeleted} deleted`
+            input.onFileSystemSuccess?.()
 
-          return {
-            ...message,
-            projectName: input.requestedProjectName,
-            fileName: input.requestedFileNameWithExtension || '',
-            subRoute: input.requestedSubRoute || '',
+            const project = input.context.app.project
+            const requestedRelativePath = normalizeKCLFileDeletePath(
+              input.requestedFileNameWithExtension
+            )
+            const deletesRequestedFile = (input.filesToDelete ?? []).some(
+              (file) =>
+                normalizeKCLFileDeletePath(file.requestedFileName) ===
+                requestedRelativePath
+            )
+            const requestedAbsolutePath = project
+              ? fsZds.join(project.path, input.requestedFileNameWithExtension)
+              : ''
+            const shouldNavigate =
+              !project ||
+              project.name !== input.requestedProjectName ||
+              project.executingPath !== requestedAbsolutePath ||
+              deletesRequestedFile
+
+            if (!shouldNavigate) {
+              input.onSuccess?.()
+            }
+
+            return {
+              ...message,
+              projectName: input.requestedProjectName,
+              fileName: input.requestedFileNameWithExtension || '',
+              subRoute: input.requestedSubRoute || '',
+              shouldNavigate,
+              ...(shouldNavigate && input.onSuccess
+                ? { onProjectLoaderComplete: input.onSuccess }
+                : {}),
+            }
+          } catch (error: unknown) {
+            input.onFileSystemError?.()
+            return Promise.reject(error)
           }
         }
       ),
@@ -927,32 +1221,19 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string
         }
       }) => {
-        try {
-          // TODO: this force deletion behavior assumes this move is only
-          // really used in our archive/restore workflow. We should make
-          // dedicated archive/restore code paths for that if we need cases
-          // where we want to check with the user before going through with forcing.
-          const statRes = await fsZds.stat(input.src)
-          const isDirectory = Boolean(statRes.mode & fsZdsConstants.S_IFDIR)
-
-          if (isDirectory) {
-            await fsZds.mkdir(input.target, { recursive: true })
-            await fsZds.cp(input.src, input.target, { recursive: true })
-          } else {
-            const targetWithoutBasename = fsZds.dirname(input.target)
-            await fsZds.mkdir(targetWithoutBasename, { recursive: true })
-            await fsZds.cp(input.src, input.target, {
-              recursive: true,
-            })
-          }
-          await fsZds.rm(input.src, { recursive: true })
-        } catch (e: unknown) {
-          console.log(e)
-        }
+        // TODO: this force deletion behavior assumes this move is only
+        // really used in our archive/restore workflow. We should make
+        // dedicated archive/restore code paths for that if we need cases
+        // where we want to check with the user before going through with forcing.
+        await moveRecursivePath({
+          src: input.src,
+          target: input.target,
+        })
         return {
           message: input.successMessage || 'Moved successfully',
           requestedAbsolutePath: '',
           requestedProjectName: input.requestedProjectName || '',
+          target: input.target,
         }
       }
     ),

@@ -1,4 +1,5 @@
 //! Test-only helpers for rendering the artifact graph as Mermaid diagrams.
+use std::collections::BTreeMap;
 use std::fmt::Write;
 
 use super::*;
@@ -7,7 +8,7 @@ type NodeId = u32;
 
 type Edges = IndexMap<(NodeId, NodeId), EdgeInfo>;
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct EdgeInfo {
     direction: EdgeDirection,
     flow: EdgeFlow,
@@ -117,6 +118,7 @@ impl Artifact {
             Artifact::EdgeCut(a) => vec![a.consumed_edge_id],
             Artifact::EdgeCutEdge(a) => vec![a.edge_cut_id],
             Artifact::Helix(a) => a.axis_id.map(|id| vec![id]).unwrap_or_default(),
+            Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => vec![a.source_id],
         }
     }
@@ -258,6 +260,7 @@ impl Artifact {
                 }
                 ids
             }
+            Artifact::GdtAnnotation(_) => Vec::new(),
             Artifact::Pattern(a) => {
                 // Note: Don't include source_id since it's the parent.
                 let mut ids = a.copy_ids.clone();
@@ -277,7 +280,7 @@ impl ArtifactGraph {
         output.push_str("flowchart LR\n");
 
         let mut next_id = 1_u32;
-        let mut stable_id_map = FnvHashMap::default();
+        let mut stable_id_map = AHashMap::default();
 
         for id in self.map.keys() {
             stable_id_map.insert(*id, next_id);
@@ -299,7 +302,7 @@ impl ArtifactGraph {
     fn flowchart_nodes<W: Write>(
         &self,
         output: &mut W,
-        stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
         prefix: &str,
     ) -> std::fmt::Result {
         // Artifact ID of the path is the key.  The value is a list of
@@ -340,6 +343,7 @@ impl ArtifactGraph {
                 | Artifact::EdgeCut(_)
                 | Artifact::EdgeCutEdge(_)
                 | Artifact::Helix(_)
+                | Artifact::GdtAnnotation(_)
                 | Artifact::Pattern(_) => false,
             };
             if !grouped {
@@ -538,6 +542,14 @@ impl ArtifactGraph {
                 )?;
                 node_path_display(output, prefix, None, &helix.code_ref)?;
             }
+            Artifact::GdtAnnotation(annotation) => {
+                writeln!(
+                    output,
+                    "{prefix}{id}[\"GdtAnnotation<br>{:?}\"]",
+                    code_ref_display(&annotation.code_ref)
+                )?;
+                node_path_display(output, prefix, None, &annotation.code_ref)?;
+            }
             Artifact::Pattern(pattern) => {
                 writeln!(
                     output,
@@ -554,10 +566,71 @@ impl ArtifactGraph {
         Ok(())
     }
 
+    fn flowchart_duplicate_segment_key(artifact: &Artifact) -> Option<String> {
+        fn code_ref_key(code_ref: &CodeRef) -> String {
+            let range = code_ref.range;
+            format!("{}:{}:{}", range.module_id().as_usize(), range.start(), range.end())
+        }
+
+        match artifact {
+            Artifact::Segment(segment) => Some(format!("Segment:{}", code_ref_key(&segment.code_ref))),
+            _ => None,
+        }
+    }
+
+    fn flowchart_basic_sort_key(artifact: &Artifact) -> String {
+        fn code_ref_key(code_ref: &CodeRef) -> String {
+            let range = code_ref.range;
+            format!("{}:{}:{}", range.module_id().as_usize(), range.start(), range.end())
+        }
+
+        match artifact {
+            Artifact::CompositeSolid(composite_solid) => {
+                format!(
+                    "CompositeSolid:{:?}:{}",
+                    composite_solid.sub_type,
+                    code_ref_key(&composite_solid.code_ref)
+                )
+            }
+            Artifact::Plane(plane) => format!("Plane:{}", code_ref_key(&plane.code_ref)),
+            Artifact::Path(path) => format!("Path:{:?}:{}", path.sub_type, code_ref_key(&path.code_ref)),
+            Artifact::Segment(segment) => format!("Segment:{}", code_ref_key(&segment.code_ref)),
+            Artifact::Solid2d(_) => "Solid2d".to_owned(),
+            Artifact::PrimitiveFace(face) => format!("PrimitiveFace:{}", code_ref_key(&face.code_ref)),
+            Artifact::PrimitiveEdge(edge) => format!("PrimitiveEdge:{}", code_ref_key(&edge.code_ref)),
+            Artifact::StartSketchOnFace(StartSketchOnFace { code_ref, .. }) => {
+                format!("StartSketchOnFace:{}", code_ref_key(code_ref))
+            }
+            Artifact::StartSketchOnPlane(StartSketchOnPlane { code_ref, .. }) => {
+                format!("StartSketchOnPlane:{}", code_ref_key(code_ref))
+            }
+            Artifact::SketchBlock(SketchBlock { code_ref, .. }) => format!("SketchBlock:{}", code_ref_key(code_ref)),
+            Artifact::SketchBlockConstraint(constraint) => {
+                format!(
+                    "SketchBlockConstraint:{:?}:{}",
+                    constraint.constraint_type,
+                    code_ref_key(&constraint.code_ref)
+                )
+            }
+            Artifact::PlaneOfFace(PlaneOfFace { code_ref, .. }) => format!("PlaneOfFace:{}", code_ref_key(code_ref)),
+            Artifact::Sweep(sweep) => format!("Sweep:{:?}:{}", sweep.sub_type, code_ref_key(&sweep.code_ref)),
+            Artifact::Wall(_) => "Wall".to_owned(),
+            Artifact::Cap(cap) => format!("Cap:{:?}", cap.sub_type),
+            Artifact::SweepEdge(sweep_edge) => format!("SweepEdge:{:?}", sweep_edge.sub_type),
+            Artifact::EdgeCut(edge_cut) => {
+                format!("EdgeCut:{:?}:{}", edge_cut.sub_type, code_ref_key(&edge_cut.code_ref))
+            }
+            Artifact::EdgeCutEdge(_) => "EdgeCutEdge".to_owned(),
+            Artifact::Helix(helix) => format!("Helix:{}", code_ref_key(&helix.code_ref)),
+            Artifact::GdtAnnotation(annotation) => format!("GdtAnnotation:{}", code_ref_key(&annotation.code_ref)),
+            Artifact::Pattern(pattern) => format!("Pattern:{:?}:{}", pattern.sub_type, code_ref_key(&pattern.code_ref)),
+        }
+    }
+
     fn flowchart_edges<W: Write>(
         &self,
         output: &mut W,
-        stable_id_map: &FnvHashMap<ArtifactId, NodeId>,
+        stable_id_map: &AHashMap<ArtifactId, NodeId>,
         prefix: &str,
     ) -> Result<(), std::fmt::Error> {
         // Mermaid will display two edges in either direction, even using
@@ -619,8 +692,180 @@ impl ArtifactGraph {
             }
         }
 
-        // Output the edges.
-        edges.par_sort_by(|ak, _, bk, _| if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) });
+        let mut edges = edges.into_iter().collect::<Vec<_>>();
+
+        let reverse_stable_id_map = stable_id_map
+            .iter()
+            .map(|(artifact_id, node_id)| (*node_id, *artifact_id))
+            .collect::<AHashMap<_, _>>();
+        let node_key = |node_id: NodeId| {
+            reverse_stable_id_map
+                .get(&node_id)
+                .and_then(|artifact_id| self.map.get(artifact_id))
+                .and_then(Self::flowchart_duplicate_segment_key)
+                .unwrap_or_else(|| format!("Node:{node_id}"))
+        };
+        let signature_node_key = |node_id: NodeId| {
+            reverse_stable_id_map
+                .get(&node_id)
+                .and_then(|artifact_id| self.map.get(artifact_id))
+                .map(Self::flowchart_basic_sort_key)
+                .unwrap_or_else(|| format!("Node:{node_id}"))
+        };
+        let neighborhood_node_key = |node_id: NodeId, edges: &[((NodeId, NodeId), EdgeInfo)]| {
+            let mut neighbors = edges
+                .iter()
+                .filter_map(|((source_id, target_id), edge)| {
+                    if *source_id == node_id {
+                        Some(format!(
+                            "out:{}|{:?}|{:?}|{:?}",
+                            signature_node_key(*target_id),
+                            edge.direction,
+                            edge.flow,
+                            edge.kind
+                        ))
+                    } else if *target_id == node_id {
+                        Some(format!(
+                            "in:{}|{:?}|{:?}|{:?}",
+                            signature_node_key(*source_id),
+                            edge.direction,
+                            edge.flow,
+                            edge.kind
+                        ))
+                    } else {
+                        None
+                    }
+                })
+                .collect::<Vec<_>>();
+            neighbors.sort();
+            format!("{}|neighbors={}", signature_node_key(node_id), neighbors.join(","))
+        };
+
+        let mut duplicate_nodes = BTreeMap::<String, Vec<NodeId>>::new();
+        let mut reverse_stable_node_ids = reverse_stable_id_map.keys().copied().collect::<Vec<_>>();
+        reverse_stable_node_ids.sort_unstable();
+        for node_id in reverse_stable_node_ids {
+            duplicate_nodes.entry(node_key(node_id)).or_default().push(node_id);
+        }
+        for node_ids in duplicate_nodes.values_mut() {
+            node_ids.sort_unstable();
+        }
+        let mut source_remap = AHashMap::<NodeId, NodeId>::default();
+        for node_ids in duplicate_nodes.values() {
+            if node_ids.len() < 2 {
+                continue;
+            }
+
+            // The duplicate segment nodes are visually indistinguishable, but
+            // their outgoing adjacency sets are still meaningful. Sort those
+            // adjacency signatures and assign them back to the lowest Mermaid
+            // node IDs so equivalent engine output produces the same text
+            // without globally reordering the graph.
+            let mut signatures = node_ids
+                .iter()
+                .map(|source_id| {
+                    let mut semantic_edge_signature = edges
+                        .iter()
+                        .filter_map(|((edge_source_id, target_id), edge)| {
+                            if edge_source_id != source_id {
+                                return None;
+                            }
+                            Some(format!(
+                                "{}|{:?}|{:?}|{:?}",
+                                neighborhood_node_key(*target_id, &edges),
+                                edge.direction,
+                                edge.flow,
+                                edge.kind
+                            ))
+                        })
+                        .collect::<Vec<_>>();
+                    semantic_edge_signature.sort();
+
+                    // Some generated region segments have the same source
+                    // range and the same semantic edge neighborhood. In that
+                    // rare tie, use the existing Mermaid target IDs as a
+                    // stable local tie-breaker rather than changing the whole
+                    // graph order.
+                    let mut target_id_edge_signature = edges
+                        .iter()
+                        .filter_map(|((edge_source_id, target_id), edge)| {
+                            if edge_source_id != source_id {
+                                return None;
+                            }
+                            Some(format!(
+                                "{}|{:?}|{:?}|{:?}",
+                                target_id, edge.direction, edge.flow, edge.kind
+                            ))
+                        })
+                        .collect::<Vec<_>>();
+                    target_id_edge_signature.sort();
+
+                    (
+                        *source_id,
+                        semantic_edge_signature.join(","),
+                        target_id_edge_signature.join(","),
+                    )
+                })
+                .collect::<Vec<_>>();
+            signatures.sort_by(|a, b| a.1.cmp(&b.1).then(a.2.cmp(&b.2)).then(a.0.cmp(&b.0)));
+
+            for (canonical_source_id, (source_id, _, _)) in node_ids.iter().copied().zip(signatures) {
+                source_remap.insert(source_id, canonical_source_id);
+            }
+        }
+        for ((source_id, _), _) in &mut edges {
+            if let Some(canonical_source_id) = source_remap.get(source_id) {
+                *source_id = *canonical_source_id;
+            }
+        }
+
+        // Region creation emits several segment artifacts with the same source
+        // range. When engine topology returns those symmetric segments in a
+        // different order, the Mermaid graph is semantically unchanged but a
+        // directed edge can flip between duplicate segment node IDs. Normalize
+        // only that duplicate-segment case and leave node ordering alone.
+        let mut edge_groups = BTreeMap::<String, Vec<usize>>::new();
+        for (index, ((source_id, target_id), edge)) in edges.iter().enumerate() {
+            edge_groups
+                .entry(format!(
+                    "{}|{}|{:?}|{:?}|{:?}",
+                    node_key(*source_id),
+                    node_key(*target_id),
+                    edge.direction,
+                    edge.flow,
+                    edge.kind
+                ))
+                .or_default()
+                .push(index);
+        }
+        for group in edge_groups.values() {
+            if group.len() == 1 {
+                continue;
+            }
+
+            let mut source_ids = group.iter().map(|index| edges[*index].0.0).collect::<Vec<_>>();
+            let mut target_ids = group.iter().map(|index| edges[*index].0.1).collect::<Vec<_>>();
+            source_ids.sort_unstable();
+            source_ids.dedup();
+            target_ids.sort_unstable();
+            target_ids.dedup();
+
+            if source_ids.len() != group.len() || target_ids.len() != group.len() {
+                continue;
+            }
+
+            let mut group = group.clone();
+            group.sort_by_key(|index| edges[*index].0.0);
+            for (index, (source_id, target_id)) in group.into_iter().zip(source_ids.into_iter().zip(target_ids)) {
+                edges[index].0 = (source_id, target_id);
+            }
+        }
+
+        edges.sort_by(|a, b| {
+            let ak = a.0;
+            let bk = b.0;
+            if ak.0 == bk.0 { ak.1.cmp(&bk.1) } else { ak.0.cmp(&bk.0) }
+        });
         for ((source_id, target_id), edge) in edges {
             let extra = match edge.kind {
                 // Extra length.  This is needed to make the graph layout more

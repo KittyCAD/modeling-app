@@ -210,12 +210,7 @@ extrude001 = extrude(sketch001, length = 50)
     // Listen for all console events and push the message text to an array
     page.on('console', (message) => messages.push(message.text()))
     await homePage.goToModelingScene()
-    // await u.waitForPageLoad()
     await scene.connectionEstablished()
-
-    // wait for execution done
-    // await u.openDebugPanel()
-    // await u.expectCmdLog('[data-message-type="execution-done"]')
 
     const forbiddenMessages = ['cannot serialize tagged newtype variant']
     forbiddenMessages.forEach((forbiddenMessage) => {
@@ -329,7 +324,7 @@ extrude002 = extrude(profile002, length = 150)`
       await toolbar.closePane(DefaultLayoutPaneID.Code)
 
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // expect pixel color to be background color
       const offModelBefore = await scene.convertPagePositionToStream(
@@ -352,7 +347,7 @@ extrude002 = extrude(profile002, length = 150)`
       await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
 
       await page.setBodyDimensions({ width: 1000, height: 500 })
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       const offModelAfter = await scene.convertPagePositionToStream(
         0.9,
@@ -390,7 +385,7 @@ extrude002 = extrude(profile002, length = 150)`
       await homePage.goToModelingScene()
 
       await scene.connectionEstablished()
-      await scene.settled(cmdBar)
+      await scene.settled()
 
       // export the model
       const exportButton = page.getByTestId('export-pane-button')
@@ -430,12 +425,11 @@ extrude002 = extrude(profile002, length = 150)`
       await page.locator('.cm-content').fill(bracket)
       await page.keyboard.press('End')
       await page.keyboard.press('Enter')
-
-      await scene.settled(cmdBar)
-
-      // Now try exporting
+      await scene.settled()
+      await page.waitForTimeout(5_000) // delay for re-execution
 
       // Click the export button
+      await expect(exportButton).toBeEnabled()
       await exportButton.click()
 
       // Click the stl.
@@ -720,7 +714,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       )
     })
     await homePage.openProject('test-sample')
-    await scene.settled(cmdBar)
+    await scene.settled()
     await expect(toolbar.startSketchBtn).toBeEnabled({ timeout: 20_000 })
     const operationButton = await toolbar.getFeatureTreeOperation('plane002', 0)
 
@@ -729,7 +723,7 @@ plane002 = offsetPlane(XZ, offset = -2 * x)`
       await editor.closePane()
       await operationButton.first().click({ button: 'left' })
       await page.keyboard.press('Delete')
-      await scene.settled(cmdBar)
+      await scene.settled()
     })
 
     await test.step(`Open the code pane, don't crash`, async () => {
@@ -850,7 +844,7 @@ s2 = startSketchOn(XY)
     })
 
     await homePage.openProject('test')
-    await scene.settled(cmdBar)
+    await scene.settled()
     await toolbar.waitForFeatureTreeToBeBuilt()
     await toolbar.editSketch(1)
     await page.waitForTimeout(1000) // Just hang out for a second

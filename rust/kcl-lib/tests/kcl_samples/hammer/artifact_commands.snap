@@ -1331,37 +1331,13 @@ description: Artifact commands hammer.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "boolean_union",
-        "solid_ids": [
-          "[uuid]",
-          "[uuid]"
-        ],
-        "separate_bodies": false,
-        "tolerance": 0.0000001
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "boolean_union",
-        "solid_ids": [
-          "[uuid]",
-          "[uuid]"
-        ],
-        "separate_bodies": false,
-        "tolerance": 0.0000001
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "boolean_subtract",
         "target_ids": [
           "[uuid]"
         ],
         "tool_ids": [
+          "[uuid]",
+          "[uuid]",
           "[uuid]"
         ],
         "separate_bodies": false,

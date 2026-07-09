@@ -20,7 +20,7 @@ export function AutoUpdateDownloadStatus({
 
   return (
     <div
-      className="relative flex items-center gap-1.5 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 whitespace-nowrap"
+      className="relative flex items-center gap-2 px-2 py-1 text-xs text-chalkboard-80 dark:text-chalkboard-30 whitespace-nowrap"
       data-testid="auto-update-download-status"
       title={`Downloading update: ${transferredMb} MB / ${totalMb} MB`}
     >

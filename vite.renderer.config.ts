@@ -2,11 +2,16 @@
 import { lezer } from '@lezer/generator/rollup'
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import topLevelAwait from 'vite-plugin-top-level-await'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
-import { indexHtmlCsp, pluginExposeRenderer } from './vite.base.config'
+import {
+  createCustomLogger,
+  indexHtmlCsp,
+  isIgnoredWatchPath,
+  pluginExposeRenderer,
+} from './vite.base.config'
 
 // https://vitejs.dev/config
 export default defineConfig((env) => {
@@ -15,14 +20,40 @@ export default defineConfig((env) => {
   const name = forgeConfigSelf?.name ?? 'main_window'
 
   return {
+    customLogger: createCustomLogger(),
     root,
     mode,
     base: './',
+    server: {
+      watch: {
+        ignored: isIgnoredWatchPath,
+      },
+    },
     build: {
       outDir: `.vite/renderer/${name}`,
+      target: 'es2022',
     },
-    // Needed for electron-forge (in npm run tron:start)
-    optimizeDeps: { esbuildOptions: { target: 'es2022' } },
+    // Three 0.184 uses class static blocks that esbuild can minify into
+    // anonymous class expressions which crash during startup.
+    esbuild: {
+      supported: {
+        'class-static-blocks': false,
+      },
+    },
+    // Needed for electron-forge (in npm run tron:start). Keeping the
+    // renderer-only deps explicit avoids a cold-start optimizer reload while
+    // Electron is already showing the window.
+    optimizeDeps: {
+      include: [
+        '@lezer/lr',
+        'node:path',
+        'path',
+        'vite-plugin-node-polyfills/shims/buffer',
+        'vite-plugin-node-polyfills/shims/global',
+        'vite-plugin-node-polyfills/shims/process',
+      ],
+      esbuildOptions: { target: 'es2022' },
+    },
     plugins: [
       nodePolyfills({
         include: ['path'],

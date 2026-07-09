@@ -1,0 +1,61 @@
+{
+  "name": "@kittycad/ui-components",
+  "version": "0.1.0",
+  "description": "Component library workspace for Zoo Design Studio.",
+  "type": "module",
+  "repository": "https://github.com/KittyCAD/modeling-app",
+  "author": "Zoo Engineering Team",
+  "license": "MIT",
+  "private": true,
+  "sideEffects": ["**/*.css"],
+  "files": ["dist"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "npm run build:types && vite build",
+    "build:types": "tsc -p tsconfig.build.json",
+    "storybook": "storybook dev -p 6006 --config-dir .storybook",
+    "build-storybook": "storybook build --config-dir .storybook",
+    "test": "vitest run",
+    "test:unit": "vitest run --project unit",
+    "test:component": "vitest run --project component"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "dependencies": {
+    "@kittycad/lib": "^4.2.9",
+    "@tiptap/core": "^3.27.2",
+    "@tiptap/extension-link": "^3.27.2",
+    "@tiptap/markdown": "^3.27.2",
+    "@tiptap/react": "^3.27.2",
+    "@tiptap/starter-kit": "^3.27.2"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.4.6",
+    "@storybook/addon-docs": "^10.4.6",
+    "@storybook/react-vite": "^10.4.6",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
+    "happy-dom": "^20.9.0",
+    "msw": "^2.14.6",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "storybook": "^10.4.6",
+    "typescript": "^6.0.3",
+    "vite": "^8.0.16",
+    "vitest": "^4.1.9"
+  }
+}
