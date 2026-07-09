@@ -685,11 +685,15 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
       return [...remoteProjectEntries, ...localOnlyConflictEntries]
     })
 
+    // Defer because `effect` runs immediately, and service reads are blocked
+    // while the registry graph is still being built.
     queueMicrotask(() => {
       if (disposed) {
         return
       }
 
+      // Keep Home conflict badges in sync with cloud sync metadata, even
+      // before System IO rereads local project folders.
       disposeEffect = effect(() => {
         const service = cloudSync.value
         const status = cloudSyncStatus.value
