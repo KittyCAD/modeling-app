@@ -556,13 +556,6 @@ async fn inner_extrude(
                         .build(),
                 )
             }
-            (None, None, None, None, Some(_), None) if is_edge => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Extruding an edge with the `to` parameter isn't supported yet. Use an explicit length instead."
-                        .to_owned(),
-                    vec![args.source_range],
-                )));
-            }
             (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
