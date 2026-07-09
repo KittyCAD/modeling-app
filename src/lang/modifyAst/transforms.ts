@@ -29,6 +29,7 @@ import type {
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
+import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -616,12 +617,19 @@ export function addMirror3D({
     return vars
   }
 
-  const isEdgeSelection = across.graphSelections.some(
-    (selection) =>
-      selection.artifact?.type === 'segment' ||
-      selection.artifact?.type === 'sweepEdge' ||
-      selection.artifact?.type === 'edgeCutEdge'
-  )
+  const isEdgeSelection =
+    across.graphSelections.some(
+      (selection) =>
+        selection.artifact?.type === 'segment' ||
+        selection.artifact?.type === 'sweepEdge' ||
+        selection.artifact?.type === 'primitiveEdge' ||
+        selection.artifact?.type === 'edgeCutEdge'
+    ) ||
+    across.otherSelections.some(
+      (selection) =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge'
+    )
   let acrossArg: Expr
   if (isEdgeSelection) {
     const result = getAxisExpression(

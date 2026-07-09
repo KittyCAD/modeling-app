@@ -36,6 +36,7 @@ import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
   EngineRegionSelection,
+  NonCodeSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -269,6 +270,112 @@ profile001 = startProfile(sketch001, at = [0, 0])
 extrude001 = extrude(profile001, length = 2)
 extrude002 = extrude(seg01, length = 3)`)
       await runNewAstAndCountSweeps(res.modifiedAst, rustContextInThisFile, 2)
+    })
+
+    it('should add an extrude call using an engine primitive face profile', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 1,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveFace],
+      }
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${code}
+face001 = faceId(extrude001, index = 1)
+extrude002 = extrude(face001, length = 2)`)
+      await runNewAstAndCountSweeps(
+        result.modifiedAst,
+        rustContextInThisFile,
+        2
+      )
+    })
+
+    it('should add an extrude call using an engine primitive edge profile', async () => {
+      const code = `sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [0, 0])
+  |> xLine(length = 10)
+  |> yLine(length = 10)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
+  |> close()
+extrude001 = extrude(profile001, length = 1)`
+      const { ast, artifactGraph } = await getAstAndSketchSelections(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const sketches: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+      const length = await getKclCommandValue(
+        '2',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${code}
+edge001 = edgeId(extrude001, index = 2)
+extrude002 = extrude(edge001, length = 2)`)
+      await runNewAstAndCountSweeps(
+        result.modifiedAst,
+        rustContextInThisFile,
+        2
+      )
     })
 
     it('should add a basic multi-profile extrude call', async () => {

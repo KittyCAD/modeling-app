@@ -29,7 +29,10 @@ import {
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { Selections } from '@src/machines/modelingSharedTypes'
+import type {
+  NonCodeSelection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { buildTheWorldAndConnectToEngine } from '@src/unitTestUtils'
 import { afterAll, beforeEach, describe, expect, it } from 'vitest'
@@ -186,6 +189,51 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain(
         'gdt::flatness(faces = [capEnd001], tolerance = 0.1mm)'
       )
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a flatness annotation using engine primitive face indices', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 1,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const faces: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveFace],
+      }
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addFlatnessGdt({
+        ast,
+        artifactGraph,
+        faces,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain(`${box}
+face001 = faceId(extrude002, index = 1)
+gdt::flatness(faces = [face001], tolerance = 0.1mm)`)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
@@ -676,6 +724,93 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       expect(newCode).toContain('faces = [')
       expect(newCode).toContain('edges = [')
       expect(newCode).toContain('tolerance = 0.1mm')
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add straightness using engine primitive edge indices', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveEdge: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 2,
+        primitiveType: 'edge',
+        type: 'enginePrimitive',
+      }
+      const objects: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveEdge],
+      }
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain(`${box}
+edge001 = edgeId(extrude002, index = 2)
+gdt::straightness(edges = [edge001], tolerance = 0.1mm)`)
+
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add straightness using an existing primitive edge variable', async () => {
+      const code = `${box}
+edge001 = edgeId(extrude002, index = 2)`
+      const { artifactGraph, ast } = await executeCode(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const primitiveEdge = [...artifactGraph.values()].find(
+        (artifact) => artifact.type === 'primitiveEdge'
+      )
+      if (!primitiveEdge || primitiveEdge.type !== 'primitiveEdge') {
+        throw new Error('Expected primitiveEdge artifact')
+      }
+      const objects = createSelectionFromArtifacts(
+        [primitiveEdge],
+        artifactGraph
+      )
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+
+      const result = addStraightnessGdt({
+        ast,
+        artifactGraph,
+        objects,
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+
+      expect(newCode).toContain(`${code}
+gdt::straightness(edges = [edge001], tolerance = 0.1mm)`)
 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })

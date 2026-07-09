@@ -13,9 +13,17 @@ import {
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
-import { isFaceArtifact } from '@src/lang/modifyAst/faces'
+import {
+  getEnginePrimitiveFaceSelectionsFromSelection,
+  insertFacePrimitiveVariablesForSelection,
+  isFaceArtifact,
+} from '@src/lang/modifyAst/faces'
+import {
+  getPrimitiveEdgeSelections,
+  insertPrimitiveEdgeVariablesForSelection,
+} from '@src/lang/modifyAst/edges'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
-import { traverse } from '@src/lang/queryAst'
+import { getVariableExprsFromSelection, traverse } from '@src/lang/queryAst'
 import { valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
 import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
@@ -28,7 +36,239 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 function isProfileEdgeArtifact(
   artifact: Selections['graphSelections'][number]['artifact']
 ): boolean {
-  return artifact?.type === 'segment' || artifact?.type === 'sweepEdge'
+  return (
+    artifact?.type === 'segment' ||
+    artifact?.type === 'sweepEdge' ||
+    artifact?.type === 'primitiveEdge'
+  )
+}
+
+function getGraphFaceExprs({
+  modifiedAst,
+  faceSelections,
+  artifactGraph,
+  wasmInstance,
+}: {
+  modifiedAst: Node<Program>
+  faceSelections: Selections['graphSelections']
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
+  const exprs: Expr[] = []
+  let nextAst = modifiedAst
+
+  for (const faceSelection of faceSelections) {
+    const tagResult = modifyAstWithTagsForSelection(
+      nextAst,
+      faceSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tag for face selection', tagResult)
+      continue
+    }
+
+    nextAst = tagResult.modifiedAst
+    exprs.push(tagResult.exprs[0])
+  }
+
+  return { modifiedAst: nextAst, exprs }
+}
+
+function getGraphEdgeExprs({
+  modifiedAst,
+  edgeSelections,
+  artifactGraph,
+  wasmInstance,
+}: {
+  modifiedAst: Node<Program>
+  edgeSelections: Selections['graphSelections']
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+}): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
+  const exprs: Expr[] = []
+  let nextAst = modifiedAst
+
+  for (const edgeSelection of edgeSelections) {
+    if (edgeSelection.artifact?.type === 'primitiveEdge') {
+      const primitiveEdgeExprs = getVariableExprsFromSelection(
+        { graphSelections: [edgeSelection], otherSelections: [] },
+        artifactGraph,
+        nextAst,
+        wasmInstance
+      )
+      if (err(primitiveEdgeExprs)) {
+        console.warn(
+          'Failed to resolve primitive edge selection',
+          primitiveEdgeExprs
+        )
+        continue
+      }
+      if (primitiveEdgeExprs.exprs[0]) {
+        exprs.push(primitiveEdgeExprs.exprs[0])
+      }
+      continue
+    }
+
+    const tagResult = modifyAstWithTagsForSelection(
+      nextAst,
+      edgeSelection,
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      console.warn('Failed to add tags for edge selection', tagResult)
+      continue
+    }
+
+    nextAst = tagResult.modifiedAst
+    if (tagResult.exprs.length < 2) {
+      console.warn('Edge selection did not resolve to enough faces', tagResult)
+      continue
+    }
+
+    exprs.push(
+      createCallExpressionStdLibKw('getCommonEdge', null, [
+        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
+      ])
+    )
+  }
+
+  return { modifiedAst: nextAst, exprs }
+}
+
+function getEnginePrimitiveFaceExprs({
+  selections,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selections: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | Expr[] {
+  const result = insertFacePrimitiveVariablesForSelection({
+    selection: selections,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    pathToNode: nodeToEdit,
+  })
+  if (err(result)) return result
+  return result.faceExprs
+}
+
+function getEnginePrimitiveEdgeExprs({
+  selections,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selections: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | Expr[] {
+  const result = insertPrimitiveEdgeVariablesForSelection({
+    selection: selections,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit,
+  })
+  if (err(result)) return result
+
+  return result.edgeExprs
+}
+
+function getGdtSelectionExprs({
+  modifiedAst,
+  selections,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+  includeFaces = true,
+  includeEdges = true,
+}: {
+  modifiedAst: Node<Program>
+  selections: Selections
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+  includeFaces?: boolean
+  includeEdges?: boolean
+}):
+  | Error
+  | {
+      modifiedAst: Node<Program>
+      uniqueFaceExprs: Expr[]
+      uniqueEdgeExprs: Expr[]
+    } {
+  let nextAst = modifiedAst
+  let faceExprs: Expr[] = []
+  let edgeExprs: Expr[] = []
+
+  if (includeFaces) {
+    const faceSelections = selections.graphSelections.filter((selection) =>
+      isFaceArtifact(selection.artifact)
+    )
+    const graphFaces = getGraphFaceExprs({
+      modifiedAst: nextAst,
+      faceSelections,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(graphFaces)) return graphFaces
+    nextAst = graphFaces.modifiedAst
+    faceExprs = faceExprs.concat(graphFaces.exprs)
+
+    const primitiveFaces = getEnginePrimitiveFaceExprs({
+      selections,
+      modifiedAst: nextAst,
+      artifactGraph,
+      wasmInstance,
+      nodeToEdit,
+    })
+    if (err(primitiveFaces)) return primitiveFaces
+    faceExprs = faceExprs.concat(primitiveFaces)
+  }
+
+  if (includeEdges) {
+    const edgeSelections = selections.graphSelections.filter((selection) =>
+      isProfileEdgeArtifact(selection.artifact)
+    )
+    const graphEdges = getGraphEdgeExprs({
+      modifiedAst: nextAst,
+      edgeSelections,
+      artifactGraph,
+      wasmInstance,
+    })
+    if (err(graphEdges)) return graphEdges
+    nextAst = graphEdges.modifiedAst
+    edgeExprs = edgeExprs.concat(graphEdges.exprs)
+
+    const primitiveEdges = getEnginePrimitiveEdgeExprs({
+      selections,
+      modifiedAst: nextAst,
+      artifactGraph,
+      wasmInstance,
+      nodeToEdit,
+    })
+    if (err(primitiveEdges)) return primitiveEdges
+    edgeExprs = edgeExprs.concat(primitiveEdges)
+  }
+
+  return {
+    modifiedAst: nextAst,
+    uniqueFaceExprs: deduplicateFaceExprs(faceExprs),
+    uniqueEdgeExprs: deduplicateFaceExprs(edgeExprs),
+  }
 }
 
 function modelingStdLibCallWithModulePath(
@@ -89,51 +329,22 @@ export function addFlatnessGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // Filter to only include face selections
-  const faceSelections = faces.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: faces,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+    includeEdges: false,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const uniqueFacesExprs = selectionExprs.uniqueFaceExprs
 
-  if (faceSelections.length === 0) {
-    return new Error(
-      'No valid face selections found. Please select faces (caps, walls, or edge cuts).'
-    )
-  }
-
-  // Get face expressions from the selection
-  // GDT annotations require tags for unambiguous face references (no body context)
-  // We use modifyAstWithTagsForSelection directly to make the tagging explicit
-  const facesExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    // Update the AST with the tagged version
-    modifiedAst = tagResult.modifiedAst
-
-    // Create expression from the first tag (faces have one tag)
-    facesExprs.push(tagResult.exprs[0])
-  }
-
-  if (facesExprs.length === 0) {
+  if (uniqueFacesExprs.length === 0) {
     return new Error(
       'No valid face expressions could be generated from selection'
     )
-  }
-
-  // Deduplicate face expressions based on their string representation
-  const uniqueFacesExprs = deduplicateFaceExprs(facesExprs)
-
-  if (uniqueFacesExprs.length === 0) {
-    return new Error('No unique faces found after deduplication')
   }
 
   // Insert variables for tolerance and precision parameters
@@ -253,62 +464,16 @@ export function addStraightnessGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -435,62 +600,16 @@ export function addCircularityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -617,62 +736,16 @@ export function addCylindricityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -796,62 +869,16 @@ export function addPositionGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -994,8 +1021,13 @@ export function addProfileGdt({
     )
   }
 
+  const enginePrimitiveFaceSelections =
+    getEnginePrimitiveFaceSelectionsFromSelection(selections)
+  const enginePrimitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
+  const supportedEnginePrimitiveCount =
+    enginePrimitiveFaceSelections.length + enginePrimitiveEdgeSelections.length
   const unsupportedSelections =
-    selections.otherSelections.length > 0 ||
+    selections.otherSelections.length !== supportedEnginePrimitiveCount ||
     selections.graphSelections.some(
       (selection) =>
         !isProfileEdgeArtifact(selection.artifact) &&
@@ -1005,75 +1037,44 @@ export function addProfileGdt({
     return new Error('Profile supports face selections or sketch/sweep edges.')
   }
 
-  const faceSelections = selections.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = selections.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
+  const hasFaceSelection =
+    enginePrimitiveFaceSelections.length > 0 ||
+    selections.graphSelections.some((selection) =>
+      isFaceArtifact(selection.artifact)
+    )
+  const hasEdgeSelection =
+    enginePrimitiveEdgeSelections.length > 0 ||
+    selections.graphSelections.some((selection) =>
+      isProfileEdgeArtifact(selection.artifact)
+    )
 
-  if (faceSelections.length > 0 && edgeSelections.length > 0) {
+  if (hasFaceSelection && hasEdgeSelection) {
     return new Error(
       'Profile requires either faces or edges, not both. Select faces for profileSurface or edges for profileLine.'
     )
   }
 
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
+  if (!hasFaceSelection && !hasEdgeSelection) {
     return new Error('No valid selections found. Please select faces or edges.')
   }
 
-  if (profileFunction === 'profileLine' && faceSelections.length > 0) {
+  if (profileFunction === 'profileLine' && hasFaceSelection) {
     return new Error('profileLine requires edge selections.')
   }
-  if (profileFunction === 'profileSurface' && edgeSelections.length > 0) {
+  if (profileFunction === 'profileSurface' && hasEdgeSelection) {
     return new Error('profileSurface requires face selections.')
   }
 
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -1218,51 +1219,35 @@ export function addDistanceGdt({
     )
   }
 
-  const targetSelections = selections.graphSelections.filter(
-    (selection) =>
-      isFaceArtifact(selection.artifact) ||
-      isProfileEdgeArtifact(selection.artifact)
-  )
-  if (targetSelections.length === 0) {
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+
+  if (
+    selectionExprs.uniqueFaceExprs.length === 0 &&
+    selectionExprs.uniqueEdgeExprs.length === 0
+  ) {
     return new Error(
       'No valid selections found. Select one edge, or exactly two faces or edges.'
     )
   }
 
-  const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = []
-  for (const selection of targetSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      selection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for distance selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-
-    if (isFaceArtifact(selection.artifact)) {
-      targets.push({ kind: 'face', expr: tagResult.exprs[0] })
-    } else {
-      if (tagResult.exprs.length < 2) {
-        console.warn(
-          'Edge selection did not resolve to enough faces',
-          tagResult
-        )
-        continue
-      }
-
-      targets.push({
-        kind: 'edge',
-        expr: createCallExpressionStdLibKw('getCommonEdge', null, [
-          createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-        ]),
-      })
-    }
-  }
+  const targets: Array<{ kind: 'face' | 'edge'; expr: Expr }> = [
+    ...selectionExprs.uniqueFaceExprs.map((expr) => ({
+      kind: 'face' as const,
+      expr,
+    })),
+    ...selectionExprs.uniqueEdgeExprs.map((expr) => ({
+      kind: 'edge' as const,
+      expr,
+    })),
+  ]
 
   if (targets.length === 0) {
     return new Error('No valid distance targets could be generated')
@@ -1389,62 +1374,16 @@ export function addPerpendicularityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -1575,62 +1514,16 @@ export function addAngularityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -1761,62 +1654,16 @@ export function addConcentricityGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -1943,62 +1790,16 @@ export function addSymmetryGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -2125,62 +1926,16 @@ export function addRunoutGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -2307,62 +2062,16 @@ export function addParallelismGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -2489,62 +2198,16 @@ export function addAnnotationGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  const faceSelections = objects.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-  const edgeSelections = objects.graphSelections.filter((selection) =>
-    isProfileEdgeArtifact(selection.artifact)
-  )
-
-  if (faceSelections.length === 0 && edgeSelections.length === 0) {
-    return new Error('No valid selections found. Please select faces or edges.')
-  }
-
-  const faceExprs: Expr[] = []
-  for (const faceSelection of faceSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      faceSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tag for face selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    faceExprs.push(tagResult.exprs[0])
-  }
-
-  const edgeExprs: Expr[] = []
-  for (const edgeSelection of edgeSelections) {
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      edgeSelection,
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      console.warn('Failed to add tags for edge selection', tagResult)
-      continue
-    }
-
-    modifiedAst = tagResult.modifiedAst
-    if (tagResult.exprs.length < 2) {
-      console.warn('Edge selection did not resolve to enough faces', tagResult)
-      continue
-    }
-
-    edgeExprs.push(
-      createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(tagResult.exprs)),
-      ])
-    )
-  }
-
-  const uniqueFaceExprs = deduplicateFaceExprs(faceExprs)
-  const uniqueEdgeExprs = deduplicateFaceExprs(edgeExprs)
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: objects,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const { uniqueFaceExprs, uniqueEdgeExprs } = selectionExprs
   if (uniqueFaceExprs.length === 0 && uniqueEdgeExprs.length === 0) {
     return new Error('No valid face or edge expressions could be generated')
   }
@@ -2739,11 +2402,6 @@ export function addDatumGdt({
   let modifiedAst = structuredClone(ast)
   const mNodeToEdit = structuredClone(nodeToEdit)
 
-  // Filter to only include face selections
-  const faceSelections = faces.graphSelections.filter((selection) =>
-    isFaceArtifact(selection.artifact)
-  )
-
   // Validate datum name is a single character
   if (name.length !== 1) {
     return new Error('Datum name must be a single character')
@@ -2754,34 +2412,29 @@ export function addDatumGdt({
     return new Error('Datum name cannot contain double quotes')
   }
 
+  const selectionExprs = getGdtSelectionExprs({
+    modifiedAst,
+    selections: faces,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+    includeEdges: false,
+  })
+  if (err(selectionExprs)) return selectionExprs
+  modifiedAst = selectionExprs.modifiedAst
+  const faceExprs = selectionExprs.uniqueFaceExprs
+
   // Datum requires exactly one face
-  if (faceSelections.length === 0) {
+  if (faceExprs.length === 0) {
     return new Error('No face selected for datum annotation')
   }
-  if (faceSelections.length > 1) {
+  if (faceExprs.length > 1) {
     return new Error(
       'Datum annotation requires exactly one face, but multiple faces were selected'
     )
   }
 
-  const faceSelection = faceSelections[0]
-
-  // Get face expression with tag
-  const tagResult = modifyAstWithTagsForSelection(
-    modifiedAst,
-    faceSelection,
-    artifactGraph,
-    wasmInstance
-  )
-  if (err(tagResult)) {
-    return tagResult
-  }
-
-  // Update the AST with the tagged version
-  modifiedAst = tagResult.modifiedAst
-
-  // Create expression from the first tag
-  const faceExpr = tagResult.exprs[0]
+  const faceExpr = faceExprs[0]
 
   // Process common GDT style parameters
   const styleResult = processGdtStyleParameters({

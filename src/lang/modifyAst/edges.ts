@@ -102,21 +102,16 @@ export function addFillet({
   let bodies = bodyData.bodies
   modifiedAst = bodyData.modifiedAst
 
-  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selection)
-  if (primitiveEdgeSelections.length > 0) {
-    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
-      {
-        primitiveEdgeSelections,
-        bodies,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-        nodeToEdit: mNodeToEdit,
-      }
-    )
-    if (err(primitiveEdgeResult)) return primitiveEdgeResult
-    bodies = primitiveEdgeResult.bodies
-  }
+  const primitiveEdgeResult = insertPrimitiveEdgeVariablesForSelection({
+    selection,
+    bodies,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(primitiveEdgeResult)) return primitiveEdgeResult
+  bodies = primitiveEdgeResult.bodies
   if (bodies.size === 0) {
     return new Error('No edges found in the selection')
   }
@@ -217,21 +212,16 @@ export function addChamfer({
   let bodies = bodyData.bodies
   modifiedAst = bodyData.modifiedAst
 
-  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selection)
-  if (primitiveEdgeSelections.length > 0) {
-    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
-      {
-        primitiveEdgeSelections,
-        bodies,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-        nodeToEdit: mNodeToEdit,
-      }
-    )
-    if (err(primitiveEdgeResult)) return primitiveEdgeResult
-    bodies = primitiveEdgeResult.bodies
-  }
+  const primitiveEdgeResult = insertPrimitiveEdgeVariablesForSelection({
+    selection,
+    bodies,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(primitiveEdgeResult)) return primitiveEdgeResult
+  bodies = primitiveEdgeResult.bodies
   if (bodies.size === 0) {
     return new Error('No edges found in the selection')
   }
@@ -355,7 +345,7 @@ export function addBlend({
 }
 
 type EdgeSelectionForExpr = Selection | EnginePrimitiveSelection
-type BodySelectionData = {
+export type BodySelectionData = {
   solidsExpr: Expr | null
   tagsExpr: Expr
   pathIfPipe?: PathToNode
@@ -421,6 +411,61 @@ function buildEdgeExpr(
 
   const graphEdgeSelection = edgeSelection as Selection
   const edgeArtifact = graphEdgeSelection.artifact
+  if (edgeArtifact?.type === 'primitiveEdge') {
+    const edgeVars = getVariableExprsFromSelection(
+      { graphSelections: [graphEdgeSelection], otherSelections: [] },
+      artifactGraph,
+      ast,
+      wasmInstance
+    )
+    if (err(edgeVars)) return edgeVars
+    const primitiveEdgeExpr = edgeVars.exprs[0]
+    if (!primitiveEdgeExpr) {
+      return new Error(
+        'Blend primitive edge selections could not generate an edge identifier.'
+      )
+    }
+
+    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+      edgeArtifact.solidId,
+      artifactGraph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid'],
+        codeRefLookup: 'first',
+        lookUpPatternCopies: true,
+      }
+    )
+    if (!bodySelection) {
+      return new Error('Could not resolve the source surface for blend edge.')
+    }
+
+    const bodyVars = getVariableExprsFromSelection(
+      { graphSelections: [bodySelection], otherSelections: [] },
+      artifactGraph,
+      ast,
+      wasmInstance,
+      undefined,
+      {
+        lastChildLookup: true,
+        artifactTypeFilter: ['compositeSolid', 'sweep'],
+      }
+    )
+    if (err(bodyVars)) return bodyVars
+    const sourceSurfaceExpr = createVariableExpressionsArray(bodyVars.exprs)
+    if (!sourceSurfaceExpr) {
+      return new Error('Could not resolve the source surface for blend edge.')
+    }
+
+    return {
+      modifiedAst: ast,
+      edgeExpr: createCallExpressionStdLibKw(
+        'getBoundedEdge',
+        sourceSurfaceExpr,
+        [createLabeledArg('edge', primitiveEdgeExpr)]
+      ),
+    }
+  }
+
   if (
     !edgeArtifact ||
     (edgeArtifact.type !== 'sweepEdge' && edgeArtifact.type !== 'segment')
@@ -541,6 +586,43 @@ export function getPrimitiveEdgeSelections(
   )
 }
 
+export function getExprsFromTagsExpr(expr: Expr): Expr[] {
+  return expr.type === 'ArrayExpression' ? expr.elements : [expr]
+}
+
+export function insertPrimitiveEdgeVariablesForSelection({
+  selection,
+  bodies = new Map(),
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selection: Selections
+  bodies?: Map<string, BodySelectionData>
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { bodies: Map<string, BodySelectionData>; edgeExprs: Expr[] } {
+  const result = insertPrimitiveEdgeVariablesAndOffsetPathToNode({
+    primitiveEdgeSelections: getPrimitiveEdgeSelections(selection),
+    bodies,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit,
+  })
+  if (err(result)) return result
+
+  return {
+    bodies: result.bodies,
+    edgeExprs: [...result.bodies.values()].flatMap((body) =>
+      getExprsFromTagsExpr(body.tagsExpr)
+    ),
+  }
+}
+
 // Utility functions
 
 /**
@@ -583,15 +665,12 @@ export function groupSelectionsByBodyAndAddTags(
 
     let bodySelectionForSolids: Selection | undefined
     if (bodySelections.graphSelections.length > 0) {
-      const sweep = getSweepArtifactFromSelection(
+      const bodySelection = getBodySelectionForEdgeSelection(
         bodySelections.graphSelections[0],
         artifactGraph
       )
-      if (err(sweep)) return sweep
-      bodySelectionForSolids = {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
+      if (err(bodySelection)) return bodySelection
+      bodySelectionForSolids = bodySelection
     }
 
     // Build solids expression
@@ -649,13 +728,13 @@ function groupSelectionsByBody(
   const bodyToSelections = new Map<string, Selection[]>()
 
   for (const selection of selections.graphSelections) {
-    const sweepArtifact = getSweepArtifactFromSelection(
+    const bodySelection = getBodySelectionForEdgeSelection(
       selection,
       artifactGraph
     )
-    if (err(sweepArtifact)) return sweepArtifact
+    if (err(bodySelection)) return bodySelection
 
-    const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
+    const bodyKey = JSON.stringify(bodySelection.codeRef.pathToNode)
     if (bodyToSelections.has(bodyKey)) {
       bodyToSelections.get(bodyKey)?.push(selection)
     } else {
@@ -672,6 +751,35 @@ function groupSelectionsByBody(
   }
 
   return result
+}
+
+function getBodySelectionForEdgeSelection(
+  selection: Selection,
+  artifactGraph: ArtifactGraph
+): Selection | Error {
+  if (selection.artifact?.type === 'primitiveEdge') {
+    const bodySelection = getBodySelectionFromPrimitiveParentEntityId(
+      selection.artifact.solidId,
+      artifactGraph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid'],
+        codeRefLookup: 'first',
+        lookUpPatternCopies: true,
+      }
+    )
+    if (!bodySelection) {
+      return new Error('No solid artifact found for primitive edge')
+    }
+
+    return bodySelection
+  }
+
+  const sweep = getSweepArtifactFromSelection(selection, artifactGraph)
+  if (err(sweep)) return sweep
+  return {
+    artifact: sweep as Artifact,
+    codeRef: sweep.codeRef,
+  }
 }
 
 export function buildSolidsAndTagsExprs(
@@ -746,8 +854,21 @@ function getTagsExprsFromSelection(
         edge.codeRef.pathToNode,
         wasmInstance
       )
-      if (err(variable)) continue
-      tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
+      if (!err(variable)) {
+        tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
+        continue
+      }
+
+      const primitiveEdgeExprs = getVariableExprsFromSelection(
+        { graphSelections: [edge], otherSelections: [] },
+        artifactGraph,
+        modifiedAst,
+        wasmInstance
+      )
+      if (!err(primitiveEdgeExprs) && primitiveEdgeExprs.exprs[0]) {
+        tagsExprs.push(primitiveEdgeExprs.exprs[0])
+      }
+      continue
     }
 
     const result = modifyAstWithTagsForSelection(
@@ -977,7 +1098,10 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
 
   // Step 2. Create an array of variable references to bodies
   const updatedBodies = new Map(bodies)
-  let insertIndex = modifiedAst.body.length
+  let insertIndex =
+    nodeToEdit && typeof nodeToEdit[1]?.[0] === 'number'
+      ? nodeToEdit[1][0]
+      : modifiedAst.body.length
   for (const [bodyKey, primitiveData] of primitiveSelectionsByBody.entries()) {
     let bodyData = updatedBodies.get(bodyKey)
     let tagsExprs: Expr[] = []
@@ -1042,7 +1166,8 @@ export function insertPrimitiveEdgeVariablesAndOffsetPathToNode({
           variableIdentifierAst,
           insertIndex,
         },
-        modifiedAst
+        modifiedAst,
+        nodeToEdit
       )
       insertIndex++
       tagsExprs.push(variableIdentifierAst)

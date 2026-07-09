@@ -104,8 +104,24 @@ export function addShell({
     return result
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
+  let { solidsExprs, facesExprs } = result
+  const { pathIfPipe } = result
   modifiedAst = result.modifiedAst
+  const primitiveFaces = insertFacePrimitiveVariablesForSelection({
+    selection: faces,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    pathToNode: mNodeToEdit,
+  })
+  if (err(primitiveFaces)) return primitiveFaces
+  solidsExprs = deduplicateFaceExprs(
+    solidsExprs.concat(primitiveFaces.solidsExprs)
+  )
+  facesExprs.push(...primitiveFaces.faceExprs)
+
+  const solidsExpr = createVariableExpressionsArray(solidsExprs)
+  const facesExpr = createVariableExpressionsArray(facesExprs)
   if (!facesExpr) {
     return new Error("Couldn't retrieve face from selection")
   }
@@ -185,19 +201,17 @@ export function addDeleteFace({
   let { solidsExprs, facesExprs } = result
   modifiedAst = result.modifiedAst
 
-  const enginePrimitives = getEnginePrimitiveFaceSelectionsFromSelection(faces)
-  if (enginePrimitives.length > 0) {
-    const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
-      enginePrimitives,
-      modifiedAst,
-      artifactGraph,
-      wasmInstance,
-    })
-    if (err(result)) return result
-    solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
-
-    facesExprs.push(...result.faceExprs)
-  }
+  const primitiveFaces = insertFacePrimitiveVariablesForSelection({
+    selection: faces,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+  })
+  if (err(primitiveFaces)) return primitiveFaces
+  solidsExprs = deduplicateFaceExprs(
+    solidsExprs.concat(primitiveFaces.solidsExprs)
+  )
+  facesExprs.push(...primitiveFaces.faceExprs)
 
   const solidsExpr = createVariableExpressionsArray(solidsExprs)
   const facesExpr = createVariableExpressionsArray(facesExprs)
@@ -298,8 +312,24 @@ export function addHole({
     return result
   }
 
-  const { solidsExpr, facesExpr, pathIfPipe } = result
+  let { solidsExprs, facesExprs } = result
+  const { pathIfPipe } = result
   modifiedAst = result.modifiedAst
+  const primitiveFaces = insertFacePrimitiveVariablesForSelection({
+    selection: face,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    pathToNode: mNodeToEdit,
+  })
+  if (err(primitiveFaces)) return primitiveFaces
+  solidsExprs = deduplicateFaceExprs(
+    solidsExprs.concat(primitiveFaces.solidsExprs)
+  )
+  facesExprs.push(...primitiveFaces.faceExprs)
+
+  const solidsExpr = createVariableExpressionsArray(solidsExprs)
+  const facesExpr = createVariableExpressionsArray(facesExprs)
   if (!facesExpr) {
     return new Error("Couldn't retrieve face from selection")
   }
@@ -883,20 +913,20 @@ export function getPlaneExprFromSelection({
     let { solidsExprs, facesExprs } = result
     modifiedAst = result.modifiedAst
 
-    if (enginePrimitives.length > 0) {
-      const result = insertFacePrimitiveVariablesAndOffsetPathToNode({
-        enginePrimitives,
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-        pathToNode: nodeToEdit,
-      })
-      if (err(result)) {
-        return result
-      }
-      solidsExprs = deduplicateFaceExprs(solidsExprs.concat(result.solidsExprs))
-      facesExprs.push(...result.faceExprs)
+    const primitiveFaces = insertFacePrimitiveVariablesForSelection({
+      selection: plane,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+      pathToNode: nodeToEdit,
+    })
+    if (err(primitiveFaces)) {
+      return primitiveFaces
     }
+    solidsExprs = deduplicateFaceExprs(
+      solidsExprs.concat(primitiveFaces.solidsExprs)
+    )
+    facesExprs.push(...primitiveFaces.faceExprs)
 
     const solidsExpr = createVariableExpressionsArray(solidsExprs)
     const facesExpr = createVariableExpressionsArray(facesExprs)
@@ -1295,7 +1325,7 @@ export function buildSolidsAndFacesExprs(
 // Adds all the faceId calls needed in the AST so we can refer to them,
 // keeps track of their names as faces,
 // and gathers the corresponding solid expressions.
-function insertFacePrimitiveVariablesAndOffsetPathToNode({
+export function insertFacePrimitiveVariablesAndOffsetPathToNode({
   enginePrimitives,
   modifiedAst,
   artifactGraph,
@@ -1342,7 +1372,7 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
     )
     if (!bodySelection) {
       return new Error(
-        'Delete Face could not resolve a parent solid for a selected primitive face.'
+        'Could not resolve a parent solid for a selected primitive face.'
       )
     }
 
@@ -1372,9 +1402,7 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
         'Could not resolve selected primitive face bodies in code.'
       )
     }
-    if (solidExprs.length === 0) {
-      solidExprs.push(solidExpr)
-    }
+    solidExprs.push(solidExpr)
 
     // Step 2. Create the faceId call and keep track of the new variable name
     const faceExpr = createCallExpressionStdLibKw(
@@ -1412,10 +1440,34 @@ function insertFacePrimitiveVariablesAndOffsetPathToNode({
     faceExprs.push(variableIdentifierAst)
   }
 
-  return { solidsExprs: solidExprs, faceExprs }
+  return { solidsExprs: deduplicateFaceExprs(solidExprs), faceExprs }
 }
 
-function getEnginePrimitiveFaceSelectionsFromSelection(selection: Selections) {
+export function insertFacePrimitiveVariablesForSelection({
+  selection,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  pathToNode,
+}: {
+  selection: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  pathToNode?: PathToNode
+}): Error | { solidsExprs: Expr[]; faceExprs: Expr[] } {
+  return insertFacePrimitiveVariablesAndOffsetPathToNode({
+    enginePrimitives: getEnginePrimitiveFaceSelectionsFromSelection(selection),
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    pathToNode,
+  })
+}
+
+export function getEnginePrimitiveFaceSelectionsFromSelection(
+  selection: Selections
+) {
   return selection.otherSelections.filter(
     (s): s is EnginePrimitiveSelection =>
       isEnginePrimitiveSelection(s) && s.primitiveType === 'face'

@@ -401,18 +401,19 @@ export function getSweepArtifactFromSelection(
     if (err(_artifact)) return _artifact
     sweepArtifact = _artifact
   } else if (selection.artifact?.type === 'primitiveEdge') {
-    console.log({ selection, artifactGraph })
-    const path = getArtifactOfTypes(
-      { key: selection.artifact.solidId, types: ['path'] },
-      artifactGraph
-    )
-    if (err(path)) return path
-    const _artifact = getArtifactOfTypes(
-      { key: path.sweepId!, types: ['sweep'] },
-      artifactGraph
-    )
-    if (err(_artifact)) return _artifact
-    sweepArtifact = _artifact
+    const solid = artifactGraph.get(selection.artifact.solidId)
+    if (solid?.type === 'sweep') {
+      sweepArtifact = solid
+    } else if (solid?.type === 'path' && solid.sweepId) {
+      const _artifact = getArtifactOfTypes(
+        { key: solid.sweepId, types: ['sweep'] },
+        artifactGraph
+      )
+      if (err(_artifact)) return _artifact
+      sweepArtifact = _artifact
+    } else {
+      return new Error('Primitive edge does not belong to a sweep')
+    }
   } else if (selection.artifact?.type === 'edgeCut') {
     // Handle edgeCut by getting its consumed edge (segment or sweepEdge)
     const segOrEdge = getArtifactOfTypes(

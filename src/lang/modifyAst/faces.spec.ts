@@ -212,6 +212,49 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    it('should add a shell call using engine primitive face indices', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 1,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const faces: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveFace],
+      }
+      const thickness = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addShell({
+        ast,
+        artifactGraph,
+        faces,
+        thickness,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${box}
+face001 = faceId(extrude001, index = 1)
+shell001 = shell(extrude001, faces = face001, thickness = 1)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a shell call on variable-less extrude', async () => {
       // Note: this was code from https://github.com/KittyCAD/modeling-app/issues/7640
       const code = `sketch001 = startSketchOn(XY)
@@ -963,6 +1006,70 @@ surface003 = deleteFace(loft002, faces = capStart001)`)
       expect(newCode).toBe(`${cylinderWithEndTag}
 ${simpleHole}
 `)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
+    it('should add a simple hole call using engine primitive face indices', async () => {
+      const { artifactGraph, ast } = await getAstAndArtifactGraph(
+        box,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const sweep = [...artifactGraph.values()].find((a) => a.type === 'sweep')
+      expect(sweep).toBeDefined()
+
+      const primitiveFace: NonCodeSelection = {
+        entityId: 'irrelevant-for-this-test',
+        parentEntityId: sweep?.id,
+        primitiveIndex: 1,
+        primitiveType: 'face',
+        type: 'enginePrimitive',
+      }
+      const face: Selections = {
+        graphSelections: [],
+        otherSelections: [primitiveFace],
+      }
+      const cutAt = (await stringToKclExpression(
+        '[0, 0]',
+        rustContextInThisFile,
+        { allowArrays: true }
+      )) as KclCommandValue
+      const depth = (await stringToKclExpression(
+        '5',
+        rustContextInThisFile
+      )) as KclCommandValue
+      const diameter = (await stringToKclExpression(
+        '1',
+        rustContextInThisFile
+      )) as KclCommandValue
+
+      const result = addHole({
+        ast,
+        artifactGraph,
+        face,
+        cutAt,
+        holeBody: 'blind',
+        blindDepth: depth,
+        blindDiameter: diameter,
+        holeType: 'simple',
+        holeBottom: 'flat',
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) {
+        throw result
+      }
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toContain(`${box}
+face001 = faceId(extrude001, index = 1)
+hole001 = hole::hole(
+  extrude001,
+  face = face001,
+  cutAt = [0, 0],
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = 5, diameter = 1),
+  holeType = hole::simple(),
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 

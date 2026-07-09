@@ -12,9 +12,8 @@ import {
 } from '@src/lang/modifyAst'
 import {
   getEdgeTagCall,
-  getPrimitiveEdgeSelections,
   groupSelectionsByBodyAndAddTags,
-  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
+  insertPrimitiveEdgeVariablesForSelection,
 } from '@src/lang/modifyAst/edges'
 import { mutateAstWithTagForSketchSegment } from '@src/lang/modifyAst/tagManagement'
 import {
@@ -234,19 +233,16 @@ export function getAxisExpression(
     let bodies = bodyData.bodies
     modifiedAst = bodyData.modifiedAst
 
-    const primitiveEdgeSelections = getPrimitiveEdgeSelections(edge)
-    if (primitiveEdgeSelections.length > 0) {
-      const primitiveEdgeResult =
-        insertPrimitiveEdgeVariablesAndOffsetPathToNode({
-          primitiveEdgeSelections,
-          bodies,
-          modifiedAst,
-          artifactGraph,
-          wasmInstance,
-        })
-      if (err(primitiveEdgeResult)) return primitiveEdgeResult
-      bodies = primitiveEdgeResult.bodies
-    }
+    const primitiveEdgeResult = insertPrimitiveEdgeVariablesForSelection({
+      selection: edge,
+      bodies,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+      nodeToEdit,
+    })
+    if (err(primitiveEdgeResult)) return primitiveEdgeResult
+    bodies = primitiveEdgeResult.bodies
     if (bodies.size !== 1) {
       return new Error('No edges found in the selection')
     }

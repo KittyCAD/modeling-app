@@ -13,12 +13,16 @@ import { toUtf16 } from '@src/lang/errors'
 import {
   createPoint2dExpression,
   createVariableExpressionsArray,
+  deduplicateFaceExprs,
   insertRegionVariablesAndOffsetPathToNode,
   insertVariableAndOffsetPathToNode,
   setCallInAst,
 } from '@src/lang/modifyAst'
+import { insertPrimitiveEdgeVariablesForSelection } from '@src/lang/modifyAst/edges'
 import {
+  getEnginePrimitiveFaceSelectionsFromSelection,
   getFacesExprsFromSelection,
+  insertFacePrimitiveVariablesForSelection,
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
 import { getAxisExpression } from '@src/lang/modifyAst/geometry'
@@ -123,6 +127,26 @@ export function addExtrude({
   modifiedAst = res.modifiedAst
   vars.exprs.push(...res.exprs)
 
+  const primitiveFaceExprs = insertEnginePrimitiveFaceProfileExprs({
+    selections: sketches,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(primitiveFaceExprs)) return primitiveFaceExprs
+  vars.exprs.push(...primitiveFaceExprs)
+
+  const primitiveEdgeExprs = insertEnginePrimitiveEdgeProfileExprs({
+    selections: sketches,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(primitiveEdgeExprs)) return primitiveEdgeExprs
+  vars.exprs.push(...primitiveEdgeExprs)
+
   const nonFaceSelections: Selections = {
     graphSelections: sketches.graphSelections.filter(
       (selection) => !isFaceArtifact(selection.artifact)
@@ -172,18 +196,38 @@ export function addExtrude({
   // Special handling for 'to' arg
   let toExpr: LabeledArg[] = []
   if (to) {
-    if (to.graphSelections.length !== 1) {
+    const enginePrimitiveFaces =
+      getEnginePrimitiveFaceSelectionsFromSelection(to)
+    if (to.graphSelections.length + enginePrimitiveFaces.length !== 1) {
       return new Error('Extrude "to" argument must have exactly one selection.')
     }
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      to.graphSelections[0],
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) return tagResult
-    modifiedAst = tagResult.modifiedAst
-    toExpr = [createLabeledArg('to', tagResult.exprs[0])]
+
+    if (to.graphSelections.length === 1) {
+      const tagResult = modifyAstWithTagsForSelection(
+        modifiedAst,
+        to.graphSelections[0],
+        artifactGraph,
+        wasmInstance
+      )
+      if (err(tagResult)) return tagResult
+      modifiedAst = tagResult.modifiedAst
+      toExpr = [createLabeledArg('to', tagResult.exprs[0])]
+    } else {
+      const primitiveToExprs = insertEnginePrimitiveFaceProfileExprs({
+        selections: to,
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+        nodeToEdit: mNodeToEdit,
+      })
+      if (err(primitiveToExprs)) return primitiveToExprs
+      if (primitiveToExprs.length !== 1) {
+        return new Error(
+          'Extrude "to" argument could not resolve the primitive face selection.'
+        )
+      }
+      toExpr = [createLabeledArg('to', primitiveToExprs[0])]
+    }
   }
   const symmetricExpr =
     symmetric !== undefined
@@ -375,6 +419,16 @@ export function addSweep({
   if (err(res)) return res
   modifiedAst = res.modifiedAst
   vars.exprs.push(...res.exprs)
+
+  const primitiveFaceExprs = insertEnginePrimitiveFaceProfileExprs({
+    selections: sketches,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(primitiveFaceExprs)) return primitiveFaceExprs
+  vars.exprs.push(...primitiveFaceExprs)
 
   const nonFaceSelections: Selections = {
     graphSelections: sketches.graphSelections.filter(
@@ -862,6 +916,56 @@ export function addRevolve({
 }
 
 // Utilities
+
+function insertEnginePrimitiveFaceProfileExprs({
+  selections,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selections: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | Expr[] {
+  const result = insertFacePrimitiveVariablesForSelection({
+    selection: selections,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    pathToNode: nodeToEdit,
+  })
+  if (err(result)) return result
+
+  return deduplicateFaceExprs(result.faceExprs)
+}
+
+function insertEnginePrimitiveEdgeProfileExprs({
+  selections,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selections: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | Expr[] {
+  const result = insertPrimitiveEdgeVariablesForSelection({
+    selection: selections,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit,
+  })
+  if (err(result)) return result
+
+  return result.edgeExprs
+}
 
 function addHideCallsForRegionSketches({
   engineRegions,
