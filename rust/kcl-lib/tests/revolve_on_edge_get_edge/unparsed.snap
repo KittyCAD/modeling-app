@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Result of unparsing error_revolve_on_edge_get_edge.kcl
+description: Result of unparsing revolve_on_edge_get_edge.kcl
 ---
 box = startSketchOn(XY)
   |> startProfile(at = [0, 0])
