@@ -961,23 +961,25 @@ impl ExecState {
     /// Call this before sending modeling commands for execution.
     pub(crate) async fn begin_execution(&mut self, ctx: &ExecutorContext, enable_render: bool) -> Result<(), KclError> {
         let cmd_id = self.next_uuid();
-        self.send_modeling_cmd(
-            ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id),
-            ModelingCmd::from(BeginExecution::builder().enable_render(enable_render).build()),
-        )
-        .await
-        .map(|_| ())
+        let cmd = ModelingCmd::from(BeginExecution::builder().enable_render(enable_render).build());
+        let meta = ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id);
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, cmd_id, meta.source_range, &cmd)
+            .await
+            .map(|_| ())
     }
 
     /// Call this after sending modeling commands for execution.
     pub(crate) async fn end_execution(&mut self, ctx: &ExecutorContext) -> Result<(), KclError> {
         let cmd_id = self.next_uuid();
-        self.send_modeling_cmd(
-            ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id),
-            ModelingCmd::from(EndExecution::default()),
-        )
-        .await
-        .map(|_| ())
+        let cmd = ModelingCmd::from(EndExecution::default());
+        let meta = ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id);
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, cmd_id, meta.source_range, &cmd)
+            .await
+            .map(|_| ())
     }
 }
 
