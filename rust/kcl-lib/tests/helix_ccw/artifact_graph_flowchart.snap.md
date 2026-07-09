@@ -1,41 +1,41 @@
 ```mermaid
 flowchart LR
-  subgraph path4 [Path]
-    4["Path<br>[33, 69, 0]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[33, 69, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    6["Segment<br>[33, 69, 0]"]
+    3["Segment<br>[33, 69, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    7[Solid2d]
+    4[Solid2d]
   end
-  5["Plane<br>[10, 27, 0]"]
+  1["Plane<br>[10, 27, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  8["Sweep Extrusion<br>[75, 95, 0]<br>Consumed: false"]
+  5["Sweep Extrusion<br>[75, 95, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-  11[Wall]
+  6[Wall]
     %% face_code_ref=Missing NodePath
-  2["Cap Start"]
+  7["Cap Start"]
     %% face_code_ref=Missing NodePath
-  1["Cap End"]
+  8["Cap End"]
     %% face_code_ref=Missing NodePath
-  10["SweepEdge Opposite"]
-  9["SweepEdge Adjacent"]
-  3["Helix<br>[101, 195, 0]: Consumed: false"]
+  9["SweepEdge Opposite"]
+  10["SweepEdge Adjacent"]
+  11["Helix<br>[101, 195, 0]: Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-  8 --- 1
-  10 <--x 1
-  6 <--x 2
-  8 --- 2
-  4 x--> 3
-  5 --- 4
-  4 --- 6
-  4 --- 7
-  4 ---- 8
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 ---- 5
+  2 <--x 11
+  3 --- 6
+  3 x--> 7
+  3 --- 9
+  3 --- 10
+  5 --- 6
+  5 --- 7
+  5 --- 8
+  5 --- 9
+  5 --- 10
   6 --- 9
   6 --- 10
-  6 --- 11
-  8 --- 9
-  8 --- 10
-  8 --- 11
-  11 --- 9
-  11 --- 10
+  9 <--x 8
 ```

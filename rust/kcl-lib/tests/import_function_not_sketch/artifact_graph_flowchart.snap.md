@@ -1,7 +1,7 @@
 ```mermaid
 flowchart LR
-  subgraph path1 [Path]
-    1["Path<br>[75, 101, 1]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[75, 101, 1]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
     3["Segment<br>[107, 125, 1]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
@@ -21,45 +21,45 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 9 }]
     11[Solid2d]
   end
-  2["Plane<br>[52, 69, 1]"]
+  1["Plane<br>[52, 69, 1]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   12["Sweep Revolve<br>[302, 319, 1]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 10 }]
-  21[Wall]
+  13[Wall]
     %% face_code_ref=Missing NodePath
-  22[Wall]
+  14[Wall]
     %% face_code_ref=Missing NodePath
-  23[Wall]
+  15[Wall]
     %% face_code_ref=Missing NodePath
-  24[Wall]
+  16[Wall]
     %% face_code_ref=Missing NodePath
-  25[Wall]
+  17[Wall]
     %% face_code_ref=Missing NodePath
-  26[Wall]
+  18[Wall]
     %% face_code_ref=Missing NodePath
-  27[Wall]
+  19[Wall]
     %% face_code_ref=Missing NodePath
-  28[Wall]
+  20[Wall]
     %% face_code_ref=Missing NodePath
-  13["SweepEdge Adjacent"]
-  14["SweepEdge Adjacent"]
-  15["SweepEdge Adjacent"]
-  16["SweepEdge Adjacent"]
-  17["SweepEdge Adjacent"]
-  18["SweepEdge Adjacent"]
-  19["SweepEdge Adjacent"]
-  20["SweepEdge Adjacent"]
-  2 --- 1
-  1 --- 3
-  1 --- 4
-  1 --- 5
-  1 --- 6
-  1 --- 7
-  1 --- 8
-  1 --- 9
-  1 --- 10
-  1 --- 11
-  1 ---- 12
+  21["SweepEdge Adjacent"]
+  22["SweepEdge Adjacent"]
+  23["SweepEdge Adjacent"]
+  24["SweepEdge Adjacent"]
+  25["SweepEdge Adjacent"]
+  26["SweepEdge Adjacent"]
+  27["SweepEdge Adjacent"]
+  28["SweepEdge Adjacent"]
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 --- 8
+  2 --- 9
+  2 --- 10
+  2 --- 11
+  2 ---- 12
   12 <--x 3
   3 --- 13
   3 --- 21
@@ -100,20 +100,20 @@ flowchart LR
   12 --- 26
   12 --- 27
   12 --- 28
-  21 --- 13
-  13 x--> 21
-  22 --- 14
-  14 x--> 22
-  23 --- 15
-  15 x--> 23
-  24 --- 16
-  16 x--> 24
-  25 --- 17
-  17 x--> 25
-  26 --- 18
-  18 x--> 26
-  27 --- 19
-  19 x--> 27
-  28 --- 20
-  20 x--> 28
+  13 --- 21
+  28 <--x 13
+  21 <--x 14
+  14 --- 22
+  22 <--x 15
+  15 --- 23
+  23 <--x 16
+  16 --- 24
+  24 <--x 17
+  17 --- 25
+  25 <--x 18
+  18 --- 26
+  26 <--x 19
+  19 --- 27
+  27 <--x 20
+  20 --- 28
 ```

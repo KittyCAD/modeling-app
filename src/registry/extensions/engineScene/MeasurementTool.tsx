@@ -26,19 +26,19 @@ import {
 import { createPortal } from 'react-dom'
 import toast from 'react-hot-toast'
 import {
-  type MeasurementTarget,
   getDefaultDistanceModeForTarget,
   getDistanceMeasurementLabel,
   getDistanceModeLabel,
   getMeasurementTarget,
   isUnsupportedDistanceMode,
+  type MeasurementTarget,
   unsupportedFaceSurfaceAreaMessage,
   unsupportedTopologyDistanceMessage,
 } from './measurementCapabilities'
 import { measurementToolService } from './measurementToolService'
 import {
+  convertLengthFromMm,
   type DistanceMode,
-  type MeasurementEntity,
   distanceModes,
   formatDistance,
   formatPoint3d,
@@ -46,6 +46,7 @@ import {
   getDistanceTypeForMode,
   getMeasurementEntities,
   getVolumeUnit,
+  type MeasurementEntity,
 } from './measurementUtils'
 
 type MeasurementStatus = 'idle' | 'measuring'
@@ -55,6 +56,7 @@ type MeasurementResult =
       type: 'distance'
       min: number
       max: number
+      unit: UnitLength
       entityIdsKey: string
       mode: DistanceMode
     }
@@ -227,13 +229,26 @@ function MeasurementSelectionSummary({
 function resultMatchesSelection(
   result: MeasurementResult,
   entityIdsKey: string,
-  distanceMode: DistanceMode
+  distanceMode: DistanceMode,
+  unit: UnitLength
 ): boolean {
   if (result.entityIdsKey !== entityIdsKey) {
     return false
   }
 
-  return result.type !== 'distance' || result.mode === distanceMode
+  if (result.type === 'distance') {
+    return result.mode === distanceMode && result.unit === unit
+  }
+
+  if (result.type === 'edgeLength') {
+    return result.unit === unit
+  }
+
+  return (
+    result.centerOfMassUnit === unit &&
+    result.surfaceAreaUnit === getAreaUnit(unit) &&
+    result.volumeUnit === getVolumeUnit(unit)
+  )
 }
 
 async function requestMeasurement({
@@ -286,8 +301,9 @@ async function requestMeasurement({
 
     return {
       type: 'distance',
-      min: data.min_distance,
-      max: data.max_distance,
+      min: convertLengthFromMm(data.min_distance, unit),
+      max: convertLengthFromMm(data.max_distance, unit),
+      unit,
       entityIdsKey: selectedEntityIdsKey,
       mode: distanceMode,
     }
@@ -317,7 +333,7 @@ async function requestMeasurement({
 
     return {
       type: 'edgeLength',
-      length: data.length,
+      length: convertLengthFromMm(data.length, unit),
       entityIdsKey: selectedEntityIdsKey,
       unit,
     }
@@ -395,16 +411,13 @@ async function requestMeasurement({
   }
 }
 
-function getMeasurementResultSummary(
-  result: MeasurementResult,
-  unit: UnitLength
-): string {
+function getMeasurementResultSummary(result: MeasurementResult): string {
   if (result.type === 'distance') {
     const hasDistanceRange = Math.abs(result.max - result.min) > 1e-9
     const value = hasDistanceRange
       ? `${formatDistance(result.min)}-${formatDistance(result.max)}`
       : formatDistance(result.min)
-    return `${getDistanceMeasurementLabel(result.mode)}: ${value} ${unit}`
+    return `${getDistanceMeasurementLabel(result.mode)}: ${value} ${result.unit}`
   }
 
   if (result.type === 'edgeLength') {
@@ -414,20 +427,17 @@ function getMeasurementResultSummary(
   return `${formatDistance(result.volume)} ${result.volumeUnit}`
 }
 
-function getMeasurementResultText(
-  result: MeasurementResult,
-  unit: UnitLength
-): string {
+function getMeasurementResultText(result: MeasurementResult): string {
   if (result.type === 'distance') {
     const label = getDistanceMeasurementLabel(result.mode)
     const hasDistanceRange = Math.abs(result.max - result.min) > 1e-9
     if (!hasDistanceRange) {
-      return `${label}: ${formatDistance(result.min)} ${unit}`
+      return `${label}: ${formatDistance(result.min)} ${result.unit}`
     }
 
     return [
-      `${label} min: ${formatDistance(result.min)} ${unit}`,
-      `${label} max: ${formatDistance(result.max)} ${unit}`,
+      `${label} min: ${formatDistance(result.min)} ${result.unit}`,
+      `${label} max: ${formatDistance(result.max)} ${result.unit}`,
     ].join('\n')
   }
 
@@ -574,7 +584,8 @@ export function MeasurementTool() {
   }
 
   const matchingResult =
-    result && resultMatchesSelection(result, selectedEntityIdsKey, distanceMode)
+    result &&
+    resultMatchesSelection(result, selectedEntityIdsKey, distanceMode, unit)
       ? result
       : null
   const hasDistanceRange =
@@ -635,7 +646,7 @@ export function MeasurementTool() {
 
       {matchingResult?.type === 'distance' && (
         <CopyTextButton
-          textToCopy={getMeasurementResultText(matchingResult, unit)}
+          textToCopy={getMeasurementResultText(matchingResult)}
           title="Copy measurement"
           onCopySuccess={showMeasurementCopySuccess}
           onCopyError={showMeasurementCopyError}
@@ -648,13 +659,13 @@ export function MeasurementTool() {
                 : getDistanceMeasurementLabel(matchingResult.mode)
             }
             value={matchingResult.min}
-            unit={unit}
+            unit={matchingResult.unit}
           />
           {hasDistanceRange && (
             <MeasurementValue
               label={`${getDistanceModeLabel(matchingResult.mode)} max`}
               value={matchingResult.max}
-              unit={unit}
+              unit={matchingResult.unit}
             />
           )}
         </CopyTextButton>
@@ -662,7 +673,7 @@ export function MeasurementTool() {
 
       {matchingResult?.type === 'edgeLength' && (
         <CopyTextButton
-          textToCopy={getMeasurementResultText(matchingResult, unit)}
+          textToCopy={getMeasurementResultText(matchingResult)}
           title="Copy measurement"
           onCopySuccess={showMeasurementCopySuccess}
           onCopyError={showMeasurementCopyError}
@@ -678,7 +689,7 @@ export function MeasurementTool() {
 
       {matchingResult?.type === 'bodyDetails' && (
         <CopyTextButton
-          textToCopy={getMeasurementResultText(matchingResult, unit)}
+          textToCopy={getMeasurementResultText(matchingResult)}
           title="Copy measurement"
           onCopySuccess={showMeasurementCopySuccess}
           onCopyError={showMeasurementCopyError}
@@ -815,12 +826,13 @@ export function MeasurementStatusBarItem() {
     resultMatchesSelection(
       result,
       selectedEntityIdsKey,
-      defaultStatusDistanceMode
+      defaultStatusDistanceMode,
+      unit
     )
       ? result
       : null
   const summary = matchingResult
-    ? getMeasurementResultSummary(matchingResult, unit)
+    ? getMeasurementResultSummary(matchingResult)
     : null
   const isOpen = measurementToolService.isOpen.value
   const streamContainerRef = useMemo<RefObject<HTMLElement | null>>(
