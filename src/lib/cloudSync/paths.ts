@@ -18,7 +18,7 @@ export function normalizeRelativePath(relativePath: string) {
     .replace(/^(?:\.\/)+/g, '')
 }
 
-export function getOpfsCloudProjectRoot(
+export function getCloudSyncProjectRoot(
   targetPath: string
 ): string | undefined {
   const normalized = normalizePathForSync(targetPath)
@@ -38,7 +38,7 @@ export function isProjectRootPath(targetPath: string, projectRoot: string) {
   return normalizePathForSync(targetPath) === normalizePathForSync(projectRoot)
 }
 
-export function isOpfsCloudProjectDirectoryPath(targetPath: string) {
+export function isCloudSyncProjectDirectoryPath(targetPath: string) {
   const normalized = normalizePathForSync(targetPath)
   return normalized.endsWith(`/${PROJECT_FOLDER}`)
 }

@@ -35,7 +35,6 @@ export const PublishButton = memo(function PublishButton({
         <PublishPopoverContent
           app={app}
           project={project}
-          close={() => popover.close()}
           open={popover.open}
         />
       )}
@@ -46,12 +45,10 @@ export const PublishButton = memo(function PublishButton({
 function PublishPopoverContent({
   app,
   project,
-  close,
   open,
 }: {
   app: App
   project: Project | undefined
-  close: () => void
   open: boolean
 }) {
   useSignals()
@@ -157,7 +154,6 @@ function PublishPopoverContent({
       </Popover.Button>
       {open && (
         <PublishDialog
-          onClose={close}
           onSubmit={handlePublish}
           initialTitle={''}
           publishDisabled={isCheckingUser || publishRequiresUsername}

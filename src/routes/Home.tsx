@@ -17,7 +17,7 @@ import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import ProjectCard from '@src/components/ProjectCard/ProjectCard'
+import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,
@@ -40,11 +40,8 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import {
-  opfsCloudSyncStatus,
-  setOpfsCloudSyncProjectScope,
-} from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import {
@@ -163,7 +160,7 @@ const Home = () => {
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
   useEffect(() => {
-    setOpfsCloudSyncProjectScope(undefined)
+    setCloudSyncProjectScope(undefined)
   }, [])
 
   useEffect(() => {
@@ -221,7 +218,7 @@ const Home = () => {
     let lastHandledSyncedAt: string | undefined
 
     const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
-      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
+      const syncedAt = cloudSyncStatus.value.lastSyncedAt
       if (!syncedAt || syncedAt === lastHandledSyncedAt) {
         return
       }
@@ -690,7 +687,7 @@ function ProjectGrid({
           {searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {sortedSearchResults.map((project) => (
-                <ProjectCard
+                <AppProjectCard
                   key={project.name}
                   project={project}
                   projectStatus={
