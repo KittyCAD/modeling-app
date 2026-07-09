@@ -17,7 +17,7 @@ tests_dir = os.path.join(kcl_dir, "tests")
 lego_file = os.path.join(kcl_dir, "e2e", "executor", "inputs", "lego.kcl")
 
 engine_error_file = os.path.join(
-    tests_dir, "error_revolve_on_edge_get_edge", "input.kcl"
+    tests_dir, "error_inside_fn_also_has_source_range_of_call_site_recursive", "input.kcl"
 )
 cube_step_file = os.path.join(
     os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "files", "cube.step"
