@@ -163,6 +163,7 @@ export interface MlEphantExtraInputsProps {
   onCaptureScreenshot: () => void
   onAnnotateScreenshot: () => void
   attachmentsDisabled?: boolean
+  isZoodleActive?: boolean
   modeOptions?: MlCopilotModeOption[]
 }
 
@@ -216,8 +217,13 @@ export const MlEphantExtraInputs = (props: MlEphantExtraInputsProps) => {
           type="button"
           data-testid="ml-ephant-annotate-screenshot-button"
           onClick={props.onAnnotateScreenshot}
-          disabled={props.attachmentsDisabled}
-          className="h-7 w-7 bg-default flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60"
+          disabled={props.attachmentsDisabled && !props.isZoodleActive}
+          aria-pressed={props.isZoodleActive ?? false}
+          className={`h-7 w-7 flex items-center justify-center rounded-sm m-0 p-0 flex-none disabled:opacity-60 ${
+            props.isZoodleActive
+              ? 'bg-ml-green text-chalkboard-100 hover:bg-ml-green'
+              : 'bg-default'
+          }`}
           aria-label="Zoodle"
         >
           <CustomIcon name="sketch" className="w-5 h-5" />
@@ -278,14 +284,10 @@ export const MlEphantConversationInput = (
   const lastModeScopeKey = useRef(props.modeScopeKey)
   const [attachments, setAttachments] = useState<File[]>([])
   const [isDraggingOver, setIsDraggingOver] = useState(false)
-  const zoodleRuntimeExtensionActive = useRef(false)
+  const [isZoodleActive, setIsZoodleActive] = useState(false)
 
   const stopZoodleRuntimeExtension = useCallback(() => {
-    if (!zoodleRuntimeExtensionActive.current) {
-      return
-    }
-
-    zoodleRuntimeExtensionActive.current = false
+    setIsZoodleActive(false)
     deactivateZoodleRuntimeExtension(registry)
   }, [registry])
 
@@ -409,11 +411,16 @@ export const MlEphantConversationInput = (
   }
 
   const onAnnotateScreenshot = () => {
+    if (isZoodleActive) {
+      stopZoodleRuntimeExtension()
+      return
+    }
+
     if (props.disabled) return
     try {
       const dataUrl = takeViewportScreenshot()
       if (!dataUrl) return
-      zoodleRuntimeExtensionActive.current = true
+      setIsZoodleActive(true)
       activateZoodleRuntimeExtension(registry, {
         imageDataUrl: dataUrl,
         onCancel: stopZoodleRuntimeExtension,
@@ -426,6 +433,7 @@ export const MlEphantConversationInput = (
         },
       })
     } catch (e) {
+      setIsZoodleActive(false)
       console.error('Failed to capture viewport screenshot for annotation', e)
     }
   }
@@ -577,6 +585,7 @@ export const MlEphantConversationInput = (
             onCaptureScreenshot={onCaptureScreenshot}
             onAnnotateScreenshot={onAnnotateScreenshot}
             attachmentsDisabled={props.disabled}
+            isZoodleActive={isZoodleActive}
             modeOptions={props.modeOptions}
           />
           <div className="flex flex-none flex-row gap-1">
