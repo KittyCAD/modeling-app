@@ -1,91 +1,91 @@
 ```mermaid
 flowchart LR
-  subgraph path3 [Path]
-    3["Path<br>[43, 87, 0]<br>Consumed: true"]
+  subgraph path8 [Path]
+    8["Path<br>[43, 87, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-    8["Segment<br>[93, 118, 0]"]
+    9["Segment<br>[93, 118, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    5["Segment<br>[124, 148, 0]"]
+    10["Segment<br>[124, 148, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    6["Segment<br>[154, 174, 0]"]
+    11["Segment<br>[154, 174, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    7["Segment<br>[180, 236, 0]"]
+    12["Segment<br>[180, 236, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   end
-  4["Plane<br>[12, 29, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  9["Sweep Extrusion<br>[291, 322, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  20[Wall]
-    %% face_code_ref=Missing NodePath
-  19[Wall]
-    %% face_code_ref=Missing NodePath
-  18[Wall]
-    %% face_code_ref=Missing NodePath
-  21[Wall]
+  1["Cap End"]
     %% face_code_ref=Missing NodePath
   2["Cap Start"]
     %% face_code_ref=Missing NodePath
-  1["Cap End"]
+  3[Wall]
     %% face_code_ref=Missing NodePath
-  16["SweepEdge Opposite"]
-  12["SweepEdge Adjacent"]
-  15["SweepEdge Opposite"]
-  11["SweepEdge Adjacent"]
-  14["SweepEdge Opposite"]
-  10["SweepEdge Adjacent"]
-  17["SweepEdge Opposite"]
-  13["SweepEdge Adjacent"]
-  9 --- 1
-  14 <--x 1
-  15 <--x 1
-  16 <--x 1
-  17 <--x 1
-  5 <--x 2
-  6 <--x 2
-  7 <--x 2
-  8 <--x 2
-  9 --- 2
-  4 --- 3
-  3 --- 5
-  3 --- 6
-  3 --- 7
-  3 --- 8
-  3 ---- 9
-  5 --- 10
-  5 --- 14
-  5 --- 18
-  6 --- 11
-  6 --- 15
-  6 --- 19
-  7 --- 12
-  7 --- 16
-  7 --- 20
-  8 --- 13
-  8 --- 17
-  8 --- 21
-  9 --- 10
-  9 --- 11
-  9 --- 12
-  9 --- 13
-  9 --- 14
-  9 --- 15
-  9 --- 16
+  4[Wall]
+    %% face_code_ref=Missing NodePath
+  5[Wall]
+    %% face_code_ref=Missing NodePath
+  6[Wall]
+    %% face_code_ref=Missing NodePath
+  7["Plane<br>[12, 29, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  13["Sweep Extrusion<br>[291, 322, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  14["SweepEdge Adjacent"]
+  15["SweepEdge Adjacent"]
+  16["SweepEdge Adjacent"]
+  17["SweepEdge Adjacent"]
+  18["SweepEdge Opposite"]
+  19["SweepEdge Opposite"]
+  20["SweepEdge Opposite"]
+  21["SweepEdge Opposite"]
+  13 --- 1
+  18 <--x 1
+  19 <--x 1
+  20 <--x 1
+  21 <--x 1
+  9 <--x 2
+  10 <--x 2
+  11 <--x 2
+  12 <--x 2
+  13 --- 2
+  10 --- 3
+  13 --- 3
+  3 --- 14
+  14 <--x 3
+  3 --- 18
+  11 --- 4
+  13 --- 4
+  4 --- 15
+  15 <--x 4
+  4 --- 19
+  12 --- 5
+  13 --- 5
+  5 --- 16
+  16 <--x 5
+  5 --- 20
+  9 --- 6
+  13 --- 6
+  6 --- 17
+  17 <--x 6
+  6 --- 21
+  7 --- 8
+  8 --- 9
+  8 --- 10
+  8 --- 11
+  8 --- 12
+  8 ---- 13
   9 --- 17
-  9 --- 18
-  9 --- 19
-  9 --- 20
   9 --- 21
-  18 --- 10
-  10 x--> 18
-  19 --- 11
-  11 x--> 19
-  20 --- 12
-  12 x--> 20
-  21 --- 13
-  13 x--> 21
-  18 --- 14
-  19 --- 15
-  20 --- 16
-  21 --- 17
+  10 --- 14
+  10 --- 18
+  11 --- 15
+  11 --- 19
+  12 --- 16
+  12 --- 20
+  13 --- 14
+  13 --- 15
+  13 --- 16
+  13 --- 17
+  13 --- 18
+  13 --- 19
+  13 --- 20
+  13 --- 21
 ```

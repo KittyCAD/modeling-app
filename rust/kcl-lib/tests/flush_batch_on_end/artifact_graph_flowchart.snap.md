@@ -1,64 +1,64 @@
 ```mermaid
 flowchart LR
-  subgraph path3 [Path]
-    3["Path<br>[278, 370, 0]<br>Consumed: true"]
+  subgraph path6 [Path]
+    6["Path<br>[278, 370, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[278, 370, 0]"]
+    7["Segment<br>[278, 370, 0]"]
       %% [ProgramBodyItem { index: 4 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    8[Solid2d]
+    11[Solid2d]
   end
-  subgraph path4 [Path]
-    4["Path<br>[433, 525, 0]<br>Consumed: true"]
+  subgraph path8 [Path]
+    8["Path<br>[433, 525, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    7["Segment<br>[433, 525, 0]"]
+    9["Segment<br>[433, 525, 0]"]
       %% [ProgramBodyItem { index: 5 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    9[Solid2d]
+    12[Solid2d]
   end
+  1["Cap End"]
+    %% face_code_ref=Missing NodePath
+  2["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  3[Wall]
+    %% face_code_ref=Missing NodePath
+  4[Wall]
+    %% face_code_ref=Missing NodePath
   5["Plane<br>[197, 214, 0]"]
     %% [ProgramBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   10["Sweep Extrusion<br>[702, 739, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 7 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  15[Wall]
-    %% face_code_ref=Missing NodePath
-  16[Wall]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  13["SweepEdge Opposite"]
-  11["SweepEdge Adjacent"]
-  14["SweepEdge Opposite"]
-  12["SweepEdge Adjacent"]
+  13["SweepEdge Adjacent"]
+  14["SweepEdge Adjacent"]
+  15["SweepEdge Opposite"]
+  16["SweepEdge Opposite"]
   10 --- 1
-  13 <--x 1
-  14 <--x 1
-  6 <--x 2
+  15 <--x 1
+  16 <--x 1
   7 <--x 2
+  9 <--x 2
   10 --- 2
-  4 --- 3
-  5 --- 3
-  3 --- 6
-  3 --- 8
-  3 ---- 10
-  5 --- 4
-  4 --- 7
-  4 --- 9
-  4 x---> 10
+  7 --- 3
+  10 --- 3
+  3 --- 13
+  3 --- 15
+  9 --- 4
+  10 --- 4
+  4 --- 14
+  4 --- 16
+  5 --- 6
+  5 --- 8
+  6 --- 7
+  8 --- 6
+  6 ---- 10
   6 --- 11
-  6 --- 13
-  6 --- 15
-  7 --- 12
-  7 --- 14
-  7 --- 16
-  10 --- 11
-  10 --- 12
+  7 --- 13
+  7 --- 15
+  8 --- 9
+  8 x---> 10
+  8 --- 12
+  9 --- 14
+  9 --- 16
   10 --- 13
   10 --- 14
   10 --- 15
   10 --- 16
-  15 --- 11
-  16 --- 12
-  15 --- 13
-  16 --- 14
 ```

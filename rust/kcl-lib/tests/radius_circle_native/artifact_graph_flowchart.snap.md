@@ -3,50 +3,50 @@ flowchart LR
   subgraph path4 [Path]
     4["Path<br>[288, 380, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[312, 359, 0]"]
+    7["Segment<br>[312, 359, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  subgraph path3 [Path]
-    3["Path Region<br>[398, 436, 0]<br>Consumed: true"]
+  subgraph path10 [Path]
+    10["Path Region<br>[398, 436, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
-    7["Segment<br>[398, 436, 0]"]
+    11["Segment<br>[398, 436, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, CallKwUnlabeledArg]
   end
-  5["Plane<br>[288, 380, 0]"]
-    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  10["Sweep Extrusion<br>[390, 449, 0]<br>Consumed: false"]
-    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  13[Wall]
+  1["Cap End"]
     %% face_code_ref=Missing NodePath
   2["Cap Start"]
     %% face_code_ref=Missing NodePath
-  1["Cap End"]
+  3[Wall]
     %% face_code_ref=Missing NodePath
-  12["SweepEdge Opposite"]
-  11["SweepEdge Adjacent"]
-  8["SketchBlock<br>[288, 380, 0]"]
+  5["Plane<br>[288, 380, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  9["SketchBlockConstraint Radius<br>[362, 378, 0]"]
+  6["SketchBlock<br>[288, 380, 0]"]
+    %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  8["SketchBlockConstraint Radius<br>[362, 378, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, ExpressionStatementExpr]
-  10 --- 1
-  12 <--x 1
-  7 <--x 2
-  10 --- 2
-  4 x--> 3
-  5 x--> 3
-  3 <--x 7
-  3 ---- 10
+  9["Sweep Extrusion<br>[390, 449, 0]<br>Consumed: false"]
+    %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
+  12["SweepEdge Adjacent"]
+  13["SweepEdge Opposite"]
+  9 --- 1
+  13 <--x 1
+  9 --- 2
+  11 <--x 2
+  9 --- 3
+  11 --- 3
+  3 --- 12
+  3 --- 13
   5 --- 4
-  4 --- 6
-  8 --- 4
-  5 <--x 8
-  6 <--x 7
-  7 --- 11
-  7 --- 12
-  7 --- 13
-  10 --- 11
-  10 --- 12
-  10 --- 13
-  13 --- 11
-  13 --- 12
+  6 --- 4
+  4 --- 7
+  4 <--x 10
+  5 <--x 6
+  5 <--x 10
+  7 <--x 11
+  10 ---- 9
+  9 --- 12
+  9 --- 13
+  10 <--x 11
+  11 --- 12
+  11 --- 13
 ```

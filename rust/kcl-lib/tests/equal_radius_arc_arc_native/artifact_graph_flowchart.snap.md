@@ -5,12 +5,12 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
     4["Segment<br>[69, 156, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    3["Segment<br>[163, 251, 0]"]
+    5["Segment<br>[163, 251, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
   2["Plane<br>[45, 447, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-  5["SketchBlock<br>[45, 447, 0]"]
+  3["SketchBlock<br>[45, 447, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   6["SketchBlockConstraint Coincident<br>[255, 284, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 2 }, ExpressionStatementExpr]
@@ -23,8 +23,8 @@ flowchart LR
   10["SketchBlockConstraint EqualRadius<br>[426, 445, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, SketchBlockBody, SketchBlockBodyItem { index: 8 }, ExpressionStatementExpr]
   2 --- 1
-  1 --- 3
+  3 --- 1
   1 --- 4
-  5 --- 1
-  2 <--x 5
+  1 --- 5
+  2 <--x 3
 ```
