@@ -644,6 +644,45 @@ const fromDataToComponent = (
         )
       }
 
+      case 'created_project_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Created}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+            setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
+          />
+        )
+      }
+
+      case 'updated_project_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Updated}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+            setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
+          />
+        )
+      }
+
+      case 'deleted_project_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Deleted}
+            filename={thought.reasoning.file_name}
+            code={undefined}
+            setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
+          />
+        )
+      }
+
       default:
         const _ex: never = type
     }
