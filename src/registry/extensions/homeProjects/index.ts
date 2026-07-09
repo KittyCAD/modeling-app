@@ -10,23 +10,46 @@ import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
-import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
+import {
+  getHomeProjectDisplayName,
+  homeProjectEntryFromProject,
+} from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectActionsService,
+  type HomeProjectEntry,
   type HomeProjectEntryContribution,
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import toast from 'react-hot-toast'
 
 function localHomeProjectEntriesFromProjects(
   projects: readonly Project[] | undefined
 ): HomeProjectEntryContribution[] {
   return projects?.map(homeProjectEntryFromProject) ?? []
+}
+
+function homeProjectDisplayNameExists({
+  entries,
+  requestedName,
+  projectId,
+}: {
+  entries: readonly HomeProjectEntry[] | undefined
+  requestedName: string
+  projectId: string
+}) {
+  return Boolean(
+    entries?.some(
+      (project) =>
+        project.id !== projectId &&
+        getHomeProjectDisplayName(project) === requestedName
+    )
+  )
 }
 
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
@@ -77,9 +100,24 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return
       }
 
+      if (
+        homeProjectDisplayNameExists({
+          entries: ctx.valueSpecs.get(homeProjectEntriesValueSpec),
+          requestedName,
+          projectId: project.id,
+        })
+      ) {
+        const message = `Project with name "${requestedName}" already exists`
+        toast.error(message)
+        return Promise.reject(new Error(message))
+      }
+
       await writeProjectTitleToProjectToml(
         project.localProjectPath,
         requestedName
+      )
+      toast.success(
+        `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
       )
       systemIO.value?.actor.send({
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
