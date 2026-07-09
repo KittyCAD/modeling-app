@@ -14,8 +14,10 @@ import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import { loadWasm } from '@src/unitTestUtils'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const mockProject: Project = {
@@ -169,15 +171,28 @@ async function waitForHistoryIdle(kclManager: KclManager) {
   throw new Error('History operation did not settle')
 }
 
+function createAppForTest(
+  provided: Parameters<typeof App.fromProvided>[0] = {}
+) {
+  return App.fromProvided({
+    ...provided,
+    registryOverrides: [
+      ...(provided.registryOverrides ?? []),
+      createTestWasmRegistryItem(),
+    ],
+  })
+}
+
 describe('project system', () => {
-  it('uses the registry user-features service by default', () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+  it('uses registry runtime dependencies by default', () => {
+    const app = createAppForTest()
 
     try {
       const registryUserFeatures = app.registry.get(userFeaturesService)
+      const registryMachineManager = app.registry.get(machineManagerService)
 
+      expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
+      expect(app.machineManager).toBe(registryMachineManager.manager)
       expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
     } finally {
       disposeApp(app)
@@ -193,9 +208,7 @@ describe('project system', () => {
         syncActivePlugins,
       },
     } as unknown as typeof window.electron
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
@@ -257,8 +270,7 @@ describe('project system', () => {
 
   it('selects the create project command from the app command system', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
+    const app = createAppForTest({
       userFeatures,
     })
 
@@ -313,9 +325,7 @@ describe('project system', () => {
   })
 
   it('loads the code editor automatically render plugin setting enabled by default', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
@@ -351,9 +361,7 @@ describe('project system', () => {
   })
 
   it('reloads settings without dropping extension-backed plugin settings', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
@@ -376,9 +384,7 @@ describe('project system', () => {
   })
 
   it('syncs a declared plugin activation setting after reload', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
@@ -425,9 +431,7 @@ describe('project system', () => {
     const projectPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const createdPath = fsZds.join(projectPath, 'created.kcl')
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await writeText(mainPath, 'main = true\n')
@@ -497,9 +501,7 @@ describe('project system', () => {
     File.ioImplementations.read = () => Promise.resolve('')
     File.ioImplementations.write = () => Promise.resolve()
 
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       const project = await app.openProject(mockProject)

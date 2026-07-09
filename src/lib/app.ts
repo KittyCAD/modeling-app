@@ -14,7 +14,6 @@ import {
   type PreparedZookeeperPatchFileReplay,
 } from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
-import { initialiseWasm } from '@src/lang/wasmUtils'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -37,7 +36,7 @@ import {
   setLayoutSaveHandler,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import { MachineManager } from '@src/lib/MachineManager'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -85,9 +84,10 @@ import {
   type UserFeaturesRegistryService,
   userFeaturesService,
 } from '@src/registry/contracts/userFeatures'
-import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import {
+  appRegistryOverridesSlot,
   appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
@@ -103,6 +103,10 @@ import { createActor } from 'xstate'
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
+
+type AppRegistryOptions = {
+  registryOverrides?: readonly RegistryItem[]
+}
 
 function zookeeperReplayChangesProjectFileSet(
   replayFiles: readonly PreparedZookeeperPatchFileReplay[]
@@ -128,29 +132,6 @@ function getZookeeperReplayFallbackFilePath(
 
 function isPlaywrightRuntime() {
   return typeof window !== 'undefined' && isPlaywright()
-}
-
-function createAppRegistryItems({
-  wasmPromise,
-  machineManager,
-}: {
-  wasmPromise: Promise<ModuleType>
-  machineManager: MachineManager
-}): RegistryItem[] {
-  return [
-    defineRegistryItem({
-      id: 'app.wasm-promise',
-      provides: [provideWasmPromise(wasmPromise)],
-    }),
-    defineRegistryItem({
-      id: 'app.machine-manager',
-      providesServices: [provideService(machineManagerService, machineManager)],
-    }),
-    appCommandsSlot.of(),
-    appRegistryServicesSlot.of(),
-    engineSceneRuntimeExtensionsSlot.of(),
-    ...coreRegistryItems,
-  ]
 }
 
 // We set some of our singletons on the window for debugging and E2E tests
@@ -313,7 +294,9 @@ export class App implements AppSubsystems {
    * The default app subsystems during normal runtime.
    * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
    */
-  static getDefaultSystems(wasmPromise = initialiseWasm()) {
+  static getDefaultSystems({
+    registryOverrides = [],
+  }: AppRegistryOptions = {}) {
     const authActor = createActor(authMachine).start()
     const auth: AppAuthSystem = {
       actor: authActor,
@@ -324,17 +307,19 @@ export class App implements AppSubsystems {
       useUser: () => useSelector(authActor, (state) => state.context.user),
     }
 
-    const machineManager = window.electron
-      ? new MachineManager({
-          getMachineApiIp: window.electron.getMachineApiIp,
-          listMachines: window.electron.listMachines,
-        })
-      : new MachineManager() // Instantiate with no-op functions
-
     const appRegistry = new Registry()
-    appRegistry.configure(
-      createAppRegistryItems({ wasmPromise, machineManager })
-    )
+    appRegistry.configure([
+      appRegistryOverridesSlot.of(...registryOverrides),
+      appCommandsSlot.of(),
+      appRegistryServicesSlot.of(),
+      engineSceneRuntimeExtensionsSlot.of(),
+      ...coreRegistryItems,
+    ])
+    const wasmPromise = appRegistry.get(wasmPromiseValueSpec)
+    if (!wasmPromise) {
+      throw new Error('Missing WASM promise registry value.')
+    }
+    const machineManager = appRegistry.get(machineManagerService).manager
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
@@ -499,10 +484,12 @@ export class App implements AppSubsystems {
    * Useful for testing, spying, or mocking subsystems (such as WASM in unit tests).
    */
   static fromProvided(
-    provided: Partial<ReturnType<typeof App.getDefaultSystems>>
+    provided: Partial<ReturnType<typeof App.getDefaultSystems>> &
+      AppRegistryOptions = {}
   ) {
-    const defaults = App.getDefaultSystems(provided.wasmPromise)
-    const combined = Object.assign(defaults, provided)
+    const { registryOverrides, ...subsystems } = provided
+    const defaults = App.getDefaultSystems({ registryOverrides })
+    const combined = Object.assign(defaults, subsystems)
     return new App(combined)
   }
 
