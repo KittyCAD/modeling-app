@@ -3582,8 +3582,8 @@ mod error_inside_fn_also_has_source_range_of_call_site_recursive {
         super::execute(TEST_NAME, true).await
     }
 }
-mod error_revolve_on_edge_get_edge {
-    const TEST_NAME: &str = "error_revolve_on_edge_get_edge";
+mod revolve_on_edge_get_edge {
+    const TEST_NAME: &str = "revolve_on_edge_get_edge";
 
     /// Test parsing KCL.
     #[test]
