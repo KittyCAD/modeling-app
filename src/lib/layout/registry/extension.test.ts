@@ -60,10 +60,30 @@ function createRuntimeService() {
 
 function createUserFeaturesService(): UserFeaturesRegistryService {
   const context = signal({ featureIds: new Set<UserFeature>() })
-  return {
-    context,
-    has: (_featureFlagId, defaultValue) => defaultValue,
+  const snapshot = {
+    context: context.value,
+    matches: () => true,
   }
+  const state = signal(snapshot)
+  const ready = signal(true)
+  const actor = {
+    getSnapshot: () => snapshot,
+    subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
+    stop: vi.fn(),
+  }
+
+  return {
+    actor,
+    send: vi.fn(),
+    state,
+    context,
+    contextSignal: context,
+    ready,
+    has: (_featureFlagId: UserFeature, defaultValue: boolean) => defaultValue,
+    useContext: () => context.value,
+    useHas: (_featureFlagId: UserFeature, defaultValue: boolean) =>
+      defaultValue,
+  } as unknown as UserFeaturesRegistryService
 }
 
 describe('layout extension', () => {
@@ -103,7 +123,6 @@ describe('layout extension', () => {
     expect(layout.get()).toEqual(playwrightLayoutConfig)
     expect(layout.signal.value).toEqual(playwrightLayoutConfig)
     expect(layout).toMatchObject({
-      applyContribution: expect.any(Function),
       applyContributions: expect.any(Function),
     })
   })

@@ -4,26 +4,15 @@ import {
   defineValueSpec,
   mergeObjectsValueSpec,
 } from '@kittycad/registry'
-import type { ReadonlySignal } from '@preact/signals-core'
 import type {
   ActionLibrary,
   AreaLibrary,
-  Layout,
   LayoutContribution,
   LayoutService,
 } from '@src/lib/layout/types'
 
-export type LayoutRegistryService = {
-  signal: ReadonlySignal<Layout>
-  get: () => Layout
-  set: (layout: Layout) => void
-  reset: () => void
-  applyContribution: LayoutService['applyContribution']
-  applyContributions: LayoutService['applyContributions']
-}
-
 export const layoutContract = defineContract({
-  layoutService: defineService<LayoutRegistryService>('layout.service'),
+  layoutService: defineService<LayoutService>('layout.service'),
   layoutAreaLibraryValueSpec: mergeObjectsValueSpec<AreaLibrary>(
     'layout.areaLibrary',
     {}

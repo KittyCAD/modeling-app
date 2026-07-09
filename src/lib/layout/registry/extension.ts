@@ -7,9 +7,9 @@ import {
 import { computed, effect, signal } from '@preact/signals-core'
 import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import { createLayoutService } from '@src/lib/layout/service'
-import type { Layout } from '@src/lib/layout/types'
+import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
+  applyLayoutContribution,
   createLayoutWithMetadata,
   defaultLayout,
   loadLayout,
@@ -18,7 +18,6 @@ import {
   setLayoutSaveHandler,
 } from '@src/lib/layout/utils'
 import {
-  type LayoutRegistryService,
   layoutContributionsValueSpec,
   layoutService,
 } from '@src/lib/layout/registry/contract'
@@ -33,7 +32,7 @@ const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 
 export const layoutExtension = defineRegistryItemFactory((ctx) => {
-  let layout: LayoutRegistryService | undefined
+  let layout: LayoutService | undefined
   let disposeLayout: (() => void) | undefined
 
   const ensureLayout = () => {
@@ -53,7 +52,6 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       ? playwrightLayoutConfig
       : defaultLayout
     const layoutSignal = signal<Layout>(runtimeDefaultLayout)
-    const baseLayoutService = createLayoutService(layoutSignal)
     let hasHydratedLayout = false
     let lastBodiesPaneFeatureEnabled: boolean | undefined
 
@@ -68,8 +66,33 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         structuredClone(runtimeDefaultLayout),
         !usePlaywrightLayout && isBodiesPaneFeatureEnabled()
       )
+    const applyContributions: LayoutService['applyContributions'] = (
+      contributions
+    ) => {
+      const rootLayout = structuredClone(layoutSignal.peek())
+      const results = contributions.map((contribution) =>
+        applyLayoutContribution({ rootLayout, contribution })
+      )
+
+      if (results.some((result) => result.applied)) {
+        layoutSignal.value = rootLayout
+      }
+
+      return results
+    }
+    const coreLayoutService: LayoutService = {
+      signal: layoutSignal,
+      get: () => layoutSignal.value,
+      set: (nextLayout) => {
+        layoutSignal.value = structuredClone(nextLayout)
+      },
+      reset: () => {
+        layoutSignal.value = getRuntimeDefaultLayout()
+      },
+      applyContributions,
+    }
     const applyRegistryLayoutContributions = () =>
-      baseLayoutService.applyContributions(
+      coreLayoutService.applyContributions(
         ctx.valueSpecs.get(layoutContributionsValueSpec)
       )
     const syncBodiesPaneFeatureLayout = () => {
@@ -149,24 +172,14 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         layoutContributionsValueSpec
       ).value
       if (hasHydratedLayout) {
-        baseLayoutService.applyContributions(contributions)
+        coreLayoutService.applyContributions(contributions)
       }
     })
     const saveEffectUnsubscribeFn = effect(() =>
       saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
     )
 
-    layout = {
-      ...baseLayoutService,
-      signal: layoutSignal,
-      get: () => layoutSignal.value,
-      set: (nextLayout) => {
-        layoutSignal.value = structuredClone(nextLayout)
-      },
-      reset: () => {
-        layoutSignal.value = getRuntimeDefaultLayout()
-      },
-    }
+    layout = coreLayoutService
     disposeLayout = () => {
       settingsSubscription.unsubscribe()
       stopUserFeaturesEffect()
@@ -177,13 +190,11 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     return layout
   }
 
-  const serviceImpl: LayoutRegistryService = {
+  const serviceImpl: LayoutService = {
     signal: computed(() => ensureLayout().signal.value),
     get: () => ensureLayout().get(),
     set: (layout) => ensureLayout().set(layout),
     reset: () => ensureLayout().reset(),
-    applyContribution: (contribution) =>
-      ensureLayout().applyContribution(contribution),
     applyContributions: (contributions) =>
       ensureLayout().applyContributions(contributions),
   }

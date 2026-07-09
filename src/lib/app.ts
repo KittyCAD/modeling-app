@@ -18,10 +18,8 @@ import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsComman
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import {
-  type LayoutRegistryService,
-  layoutService,
-} from '@src/lib/layout/registry/contract'
+import { layoutService } from '@src/lib/layout/registry/contract'
+import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
@@ -147,7 +145,7 @@ export type AppBillingSystem = {
 
 export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
-export type AppLayoutSystem = LayoutRegistryService
+export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
