@@ -742,8 +742,10 @@ impl ArtifactGraph {
         };
 
         let mut duplicate_nodes = BTreeMap::<String, Vec<NodeId>>::new();
-        for node_id in reverse_stable_id_map.keys() {
-            duplicate_nodes.entry(node_key(*node_id)).or_default().push(*node_id);
+        let mut reverse_stable_node_ids = reverse_stable_id_map.keys().copied().collect::<Vec<_>>();
+        reverse_stable_node_ids.sort_unstable();
+        for node_id in reverse_stable_node_ids {
+            duplicate_nodes.entry(node_key(node_id)).or_default().push(node_id);
         }
         for node_ids in duplicate_nodes.values_mut() {
             node_ids.sort_unstable();
