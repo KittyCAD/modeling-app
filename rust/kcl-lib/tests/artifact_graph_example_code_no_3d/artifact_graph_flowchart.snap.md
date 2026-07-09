@@ -13,21 +13,21 @@ flowchart LR
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
     7["Segment<br>[431, 438, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-    13[Solid2d]
+    8[Solid2d]
   end
-  subgraph path9 [Path]
-    9["Path<br>[475, 504, 0]<br>Consumed: false"]
+  subgraph path10 [Path]
+    10["Path<br>[475, 504, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    10["Segment<br>[510, 535, 0]"]
+    11["Segment<br>[510, 535, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    11["Segment<br>[541, 576, 0]"]
+    12["Segment<br>[541, 576, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    12["Segment<br>[582, 623, 0]"]
+    13["Segment<br>[582, 623, 0]"]
       %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
   end
   1["Plane<br>[12, 29, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  8["Plane<br>[451, 469, 0]"]
+  9["Plane<br>[451, 469, 0]"]
     %% [ProgramBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
   1 --- 2
   2 --- 3
@@ -35,9 +35,9 @@ flowchart LR
   2 --- 5
   2 --- 6
   2 --- 7
-  2 --- 13
-  8 --- 9
+  2 --- 8
   9 --- 10
-  9 --- 11
-  9 --- 12
+  10 --- 11
+  10 --- 12
+  10 --- 13
 ```

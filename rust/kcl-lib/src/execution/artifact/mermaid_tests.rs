@@ -726,6 +726,11 @@ impl ArtifactGraph {
                 continue;
             }
 
+            // The duplicate segment nodes are visually indistinguishable, but
+            // their outgoing adjacency sets are still meaningful. Sort those
+            // adjacency signatures and assign them back to the lowest Mermaid
+            // node IDs so equivalent engine output produces the same text
+            // without globally reordering the graph.
             let mut signatures = node_ids
                 .iter()
                 .map(|source_id| {

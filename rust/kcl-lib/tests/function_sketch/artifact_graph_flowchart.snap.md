@@ -1,93 +1,93 @@
 ```mermaid
 flowchart LR
-  subgraph path8 [Path]
-    8["Path<br>[53, 78, 0]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[53, 78, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    9["Segment<br>[86, 104, 0]"]
+    3["Segment<br>[86, 104, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    10["Segment<br>[112, 130, 0]"]
+    4["Segment<br>[112, 130, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    11["Segment<br>[138, 157, 0]"]
+    5["Segment<br>[138, 157, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    12["Segment<br>[165, 173, 0]"]
+    6["Segment<br>[165, 173, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    14[Solid2d]
+    7[Solid2d]
   end
-  1["Cap End"]
-    %% face_code_ref=Missing NodePath
-  2["Cap Start"]
-    %% face_code_ref=Missing NodePath
-  3[Wall]
-    %% face_code_ref=Missing NodePath
-  4[Wall]
-    %% face_code_ref=Missing NodePath
-  5[Wall]
-    %% face_code_ref=Missing NodePath
-  6[Wall]
-    %% face_code_ref=Missing NodePath
-  7["Plane<br>[28, 45, 0]"]
+  1["Plane<br>[28, 45, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  13["Sweep Extrusion<br>[181, 200, 0]<br>Consumed: false"]
+  8["Sweep Extrusion<br>[181, 200, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, FunctionExpressionBody, FunctionExpressionBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
-  15["SweepEdge Adjacent"]
+  9[Wall]
+    %% face_code_ref=Missing NodePath
+  10[Wall]
+    %% face_code_ref=Missing NodePath
+  11[Wall]
+    %% face_code_ref=Missing NodePath
+  12[Wall]
+    %% face_code_ref=Missing NodePath
+  13["Cap Start"]
+    %% face_code_ref=Missing NodePath
+  14["Cap End"]
+    %% face_code_ref=Missing NodePath
+  15["SweepEdge Opposite"]
   16["SweepEdge Adjacent"]
-  17["SweepEdge Adjacent"]
+  17["SweepEdge Opposite"]
   18["SweepEdge Adjacent"]
   19["SweepEdge Opposite"]
-  20["SweepEdge Opposite"]
+  20["SweepEdge Adjacent"]
   21["SweepEdge Opposite"]
-  22["SweepEdge Opposite"]
-  13 --- 1
-  19 <--x 1
-  20 <--x 1
-  21 <--x 1
-  22 <--x 1
-  9 <--x 2
-  10 <--x 2
-  11 <--x 2
-  12 <--x 2
-  13 --- 2
-  10 --- 3
-  13 --- 3
-  3 --- 15
-  15 <--x 3
-  3 --- 19
-  11 --- 4
-  13 --- 4
-  4 --- 16
-  16 <--x 4
+  22["SweepEdge Adjacent"]
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 ---- 8
+  3 --- 12
+  3 x--> 13
+  3 --- 21
+  3 --- 22
+  4 --- 11
+  4 x--> 13
+  4 --- 19
   4 --- 20
-  12 --- 5
-  13 --- 5
+  5 --- 10
+  5 x--> 13
   5 --- 17
-  17 <--x 5
-  5 --- 21
-  9 --- 6
-  13 --- 6
-  6 --- 18
-  18 <--x 6
-  6 --- 22
-  7 --- 8
+  5 --- 18
+  6 --- 9
+  6 x--> 13
+  6 --- 15
+  6 --- 16
   8 --- 9
   8 --- 10
   8 --- 11
   8 --- 12
-  8 ---- 13
+  8 --- 13
   8 --- 14
-  9 --- 18
-  9 --- 22
-  10 --- 15
-  10 --- 19
-  11 --- 16
+  8 --- 15
+  8 --- 16
+  8 --- 17
+  8 --- 18
+  8 --- 19
+  8 --- 20
+  8 --- 21
+  8 --- 22
+  9 --- 15
+  9 --- 16
+  18 <--x 9
+  10 --- 17
+  10 --- 18
+  20 <--x 10
+  11 --- 19
   11 --- 20
-  12 --- 17
+  22 <--x 11
+  16 <--x 12
   12 --- 21
-  13 --- 15
-  13 --- 16
-  13 --- 17
-  13 --- 18
-  13 --- 19
-  13 --- 20
-  13 --- 21
-  13 --- 22
+  12 --- 22
+  15 <--x 14
+  17 <--x 14
+  19 <--x 14
+  21 <--x 14
 ```

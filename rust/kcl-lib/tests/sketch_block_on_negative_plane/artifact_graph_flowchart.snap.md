@@ -1,20 +1,20 @@
 ```mermaid
 flowchart LR
-  subgraph path1 [Path]
-    1["Path<br>[0, 584, 0]<br>Consumed: false"]
+  subgraph path2 [Path]
+    2["Path<br>[0, 584, 0]<br>Consumed: false"]
       %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
-    4["Segment<br>[41, 93, 0]"]
+    3["Segment<br>[41, 93, 0]"]
       %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    5["Segment<br>[104, 160, 0]"]
+    4["Segment<br>[104, 160, 0]"]
       %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 1 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    6["Segment<br>[171, 227, 0]"]
+    5["Segment<br>[171, 227, 0]"]
       %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 2 }, VariableDeclarationDeclaration, VariableDeclarationInit]
-    7["Segment<br>[238, 290, 0]"]
+    6["Segment<br>[238, 290, 0]"]
       %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 3 }, VariableDeclarationDeclaration, VariableDeclarationInit]
   end
-  2["Plane<br>[0, 584, 0]"]
+  1["Plane<br>[0, 584, 0]"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
-  3["SketchBlock<br>[0, 584, 0]"]
+  7["SketchBlock<br>[0, 584, 0]"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr]
   8["SketchBlockConstraint Horizontal<br>[293, 310, 0]"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 4 }, ExpressionStatementExpr]
@@ -36,11 +36,11 @@ flowchart LR
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 12 }, ExpressionStatementExpr]
   17["SketchBlockConstraint LinesEqualLength<br>[555, 582, 0]"]
     %% [ProgramBodyItem { index: 0 }, ExpressionStatementExpr, SketchBlockBody, SketchBlockBodyItem { index: 13 }, ExpressionStatementExpr]
-  2 --- 1
-  3 --- 1
-  1 --- 4
-  1 --- 5
-  1 --- 6
-  1 --- 7
-  2 <--x 3
+  1 --- 2
+  1 <--x 7
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  7 --- 2
 ```

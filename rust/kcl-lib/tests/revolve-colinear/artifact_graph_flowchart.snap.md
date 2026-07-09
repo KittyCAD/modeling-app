@@ -1,52 +1,52 @@
 ```mermaid
 flowchart LR
-  subgraph path5 [Path]
-    5["Path<br>[29, 54, 0]<br>Consumed: true"]
+  subgraph path2 [Path]
+    2["Path<br>[29, 54, 0]<br>Consumed: true"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 1 }]
-    6["Segment<br>[60, 77, 0]"]
+    3["Segment<br>[60, 77, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 2 }]
-    7["Segment<br>[83, 100, 0]"]
+    4["Segment<br>[83, 100, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 3 }]
-    8["Segment<br>[106, 124, 0]"]
+    5["Segment<br>[106, 124, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 4 }]
-    9["Segment<br>[130, 137, 0]"]
+    6["Segment<br>[130, 137, 0]"]
       %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 5 }]
-    11[Solid2d]
+    7[Solid2d]
   end
-  1[Wall]
-    %% face_code_ref=Missing NodePath
-  2[Wall]
-    %% face_code_ref=Missing NodePath
-  3[Wall]
-    %% face_code_ref=Missing NodePath
-  4["Plane<br>[6, 23, 0]"]
+  1["Plane<br>[6, 23, 0]"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 0 }]
-  10["Sweep Revolve<br>[143, 160, 0]<br>Consumed: false"]
+  8["Sweep Revolve<br>[143, 160, 0]<br>Consumed: false"]
     %% [ProgramBodyItem { index: 0 }, VariableDeclarationDeclaration, VariableDeclarationInit, PipeBodyItem { index: 6 }]
+  9[Wall]
+    %% face_code_ref=Missing NodePath
+  10[Wall]
+    %% face_code_ref=Missing NodePath
+  11[Wall]
+    %% face_code_ref=Missing NodePath
   12["SweepEdge Adjacent"]
   13["SweepEdge Adjacent"]
-  8 --- 1
-  10 --- 1
-  1 --- 12
-  12 <--x 1
-  9 --- 2
-  10 --- 2
-  13 <--x 2
-  7 --- 3
-  10 --- 3
-  3 --- 13
-  4 --- 5
-  5 --- 6
-  5 --- 7
-  5 --- 8
-  5 --- 9
-  5 ---- 10
-  5 --- 11
-  10 <--x 7
-  7 --- 13
-  10 <--x 8
+  1 --- 2
+  2 --- 3
+  2 --- 4
+  2 --- 5
+  2 --- 6
+  2 --- 7
+  2 ---- 8
+  8 <--x 4
+  4 --- 9
+  4 --- 12
+  8 <--x 5
+  5 --- 10
+  5 --- 13
+  8 <--x 6
+  6 --- 11
+  8 --- 9
+  8 --- 10
+  8 --- 11
   8 --- 12
-  10 <--x 9
-  10 --- 12
+  8 --- 13
+  9 --- 12
+  12 <--x 10
   10 --- 13
+  13 <--x 11
 ```
