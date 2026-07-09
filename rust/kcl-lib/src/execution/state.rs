@@ -8,6 +8,9 @@ use indexmap::IndexMap;
 pub use kcl_api::KclVersion;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+use kittycad_modeling_cmds::BeginExecution;
+use kittycad_modeling_cmds::EndExecution;
+use kittycad_modeling_cmds::ModelingCmd;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -35,6 +38,7 @@ use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
 use crate::execution::KclValueView;
+use crate::execution::ModelingCmdMeta;
 use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
@@ -1360,6 +1364,28 @@ impl ExecState {
         self.global.artifacts.graph = artifact_graph;
 
         Ok(())
+    }
+
+    /// Call this before sending modeling commands for execution.
+    pub(crate) async fn begin_execution(&mut self, ctx: &ExecutorContext, enable_render: bool) -> Result<(), KclError> {
+        let cmd_id = self.next_uuid();
+        self.send_modeling_cmd(
+            ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id),
+            ModelingCmd::from(BeginExecution::builder().enable_render(enable_render).build()),
+        )
+        .await
+        .map(|_| ())
+    }
+
+    /// Call this after sending modeling commands for execution.
+    pub(crate) async fn end_execution(&mut self, ctx: &ExecutorContext) -> Result<(), KclError> {
+        let cmd_id = self.next_uuid();
+        self.send_modeling_cmd(
+            ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id),
+            ModelingCmd::from(EndExecution::default()),
+        )
+        .await
+        .map(|_| ())
     }
 
     /// The KCL version governing version-conditional runtime behavior.
