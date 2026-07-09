@@ -1,0 +1,21 @@
+// FIllet is too large and produces an engine error
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -2.5mm, var 0mm], end = [var 2.50mm, var 0mm])
+  line2 = line(start = [var 2.50mm, var 0mm], end = [var 2.50mm, var 2.5mm])
+  line3 = line(start = [var 2.50mm, var 2.5mm], end = [var -2.5mm, var 2.5mm])
+  line4 = line(start = [var -2.5mm, var 2.5mm], end = [var -2.5mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  horizontal([line1.start, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [0mm, 0.0025mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [region001.tags.line1, capEnd001]), radius = 5)
