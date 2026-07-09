@@ -31,7 +31,5 @@
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.1.9"
   },
-  "files": [
-    "dist/"
-  ]
+  "files": ["dist/"]
 }

@@ -4,11 +4,9 @@ const Module = require('node:module')
 const path = require('node:path')
 
 const originalResolveFilename = Module._resolveFilename
-const classicTypeScript = require.resolve(
-  'typescript-classic/node_modules/typescript'
-)
+const classicTypeScript = require.resolve('typescript-classic')
 const classicTypeScriptRoot = path.dirname(
-  require.resolve('typescript-classic/node_modules/typescript/package.json')
+  require.resolve('typescript-classic/package.json')
 )
 
 Module._resolveFilename = function resolveTypeScriptClassic(
