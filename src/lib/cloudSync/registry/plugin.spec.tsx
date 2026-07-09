@@ -11,10 +11,11 @@ import { afterEach, describe, expect, test, vi } from 'vitest'
 import { createActor, createMachine } from 'xstate'
 
 import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
-import { cloudSyncStatus } from '@src/lib/cloudSync'
+import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
 import { cloudSyncPlugin } from '@src/lib/cloudSync/registry/plugin'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
 
@@ -127,6 +128,7 @@ afterEach(() => {
     state: 'disabled',
     pendingCount: 0,
   }
+  cloudSyncRemoteProjects.value = []
   vi.restoreAllMocks()
 })
 
@@ -188,6 +190,73 @@ describe('cloud sync project menu item', () => {
       ).toHaveTextContent('Stop syncing...')
     } finally {
       dispose()
+    }
+  })
+})
+
+describe('cloud sync home project entries', () => {
+  test('marks merged home entries as conflicted from cloud sync metadata', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'conflict',
+      pendingCount: 0,
+      lastFailureAt: new Date(now).toISOString(),
+    }
+    cloudSyncRemoteProjects.value = [
+      {
+        id: 'remote-123',
+        title: 'Remote title',
+        revision: 'remote-rev-2',
+        updated_at: '2026-06-02T20:00:00.000Z',
+      },
+    ]
+    const cloudSync = createCloudSyncService()
+    vi.mocked(cloudSync.getProjectMetadataIndex).mockResolvedValue(
+      new Map([
+        [
+          '/some/path/local-project',
+          {
+            schemaVersion: 1,
+            localProjectPath: '/some/path/local-project',
+            projectName: 'Local project',
+            remoteProjectId: 'remote-123',
+            remoteRevision: 'remote-rev-1',
+            hasPendingChanges: true,
+            conflict: {
+              conflictProjectPath: '/some/path/local-project (cloud conflict)',
+              remoteRevision: 'remote-rev-2',
+              createdAt: new Date(now).toISOString(),
+            },
+          },
+        ],
+      ])
+    )
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+
+    try {
+      await waitFor(() =>
+        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+          expect.objectContaining({
+            source: 'remote',
+            status: 'conflicted',
+            name: 'Local project',
+            title: 'Local project',
+            remoteProjectId: 'remote-123',
+            localProjectPath: '/some/path/local-project',
+            conflict: expect.objectContaining({
+              conflictProjectPath: '/some/path/local-project (cloud conflict)',
+            }),
+          }),
+        ])
+      )
+    } finally {
+      registry[Symbol.dispose]()
     }
   })
 })

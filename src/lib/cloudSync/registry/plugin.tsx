@@ -5,7 +5,7 @@ import {
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
-import { computed, signal } from '@preact/signals-core'
+import { computed, effect, signal } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionIcon } from '@src/components/ActionIcon'
 import { ActionButton } from '@src/components/ActionButton'
@@ -19,6 +19,7 @@ import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/Status
 import Tooltip from '@src/components/Tooltip'
 import {
   type CloudSyncProjectMetadata,
+  type CloudSyncProjectMetadataIndexEntry,
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
@@ -591,37 +592,154 @@ const cloudSyncProjectMenuItem = defineRegistryItemFactory((ctx) => {
   }
 }, 'cloud-sync.project-menu-item')
 
-const cloudSyncRemoteHomeProjectEntries = computed<
-  HomeProjectEntryContribution[]
->(() => {
-  if (!cloudSyncStatus.value.enabled) {
-    return []
-  }
+function getCloudSyncHomeProjectModifiedTime(
+  project: { updated_at?: string },
+  metadata?: CloudSyncProjectMetadataIndexEntry
+) {
+  const modified = metadata?.remoteUpdatedAt
+    ? Date.parse(metadata.remoteUpdatedAt)
+    : project.updated_at
+      ? Date.parse(project.updated_at)
+      : NaN
 
-  return cloudSyncRemoteProjects.value.map((project) => {
-    const modified = project.updated_at ? Date.parse(project.updated_at) : NaN
-    const name = project.title || project.id
+  return Number.isNaN(modified) ? undefined : modified
+}
+
+function homeProjectEntryConflictFields(
+  metadata: CloudSyncProjectMetadataIndexEntry | undefined
+): Pick<
+  HomeProjectEntryContribution,
+  'conflict' | 'localProjectPath' | 'status'
+> {
+  return metadata?.conflict
+    ? {
+        status: 'conflicted',
+        conflict: metadata.conflict,
+        localProjectPath: metadata.localProjectPath,
+      }
+    : { status: 'cloud-only' }
+}
+
+const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
+  (ctx) => {
+    const cloudSync = ctx.services.signal(cloudSyncService)
+    const conflictMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
+    let disposed = false
+    let disposeEffect: (() => void) | undefined
+    let loadId = 0
+
+    const cloudSyncHomeProjectEntries = computed<
+      HomeProjectEntryContribution[]
+    >(() => {
+      if (!cloudSyncStatus.value.enabled) {
+        return []
+      }
+
+      const conflictMetadataByRemoteProjectId = new Map(
+        conflictMetadata.value.flatMap((metadata) =>
+          metadata.remoteProjectId
+            ? ([[metadata.remoteProjectId, metadata]] as const)
+            : []
+        )
+      )
+      const remoteProjectIds = new Set(
+        cloudSyncRemoteProjects.value.map((project) => project.id)
+      )
+      const remoteProjectEntries = cloudSyncRemoteProjects.value.map(
+        (project) => {
+          const metadata = conflictMetadataByRemoteProjectId.get(project.id)
+          const name = metadata?.projectName || project.title || project.id
+
+          return {
+            source: 'remote',
+            ...homeProjectEntryConflictFields(metadata),
+            name,
+            title: metadata?.projectName || project.title,
+            remoteProjectId: project.id,
+            modified: getCloudSyncHomeProjectModifiedTime(project, metadata),
+            readWriteAccess: true,
+          } satisfies HomeProjectEntryContribution
+        }
+      )
+      const localOnlyConflictEntries = conflictMetadata.value
+        .filter(
+          (metadata) =>
+            !metadata.remoteProjectId ||
+            !remoteProjectIds.has(metadata.remoteProjectId)
+        )
+        .map(
+          (metadata) =>
+            ({
+              source: 'remote',
+              status: 'conflicted',
+              name: metadata.projectName,
+              title: metadata.projectName,
+              localProjectPath: metadata.localProjectPath,
+              remoteProjectId: metadata.remoteProjectId,
+              modified: getCloudSyncHomeProjectModifiedTime({}, metadata),
+              readWriteAccess: true,
+              conflict: metadata.conflict,
+            }) satisfies HomeProjectEntryContribution
+        )
+
+      return [...remoteProjectEntries, ...localOnlyConflictEntries]
+    })
+
+    queueMicrotask(() => {
+      if (disposed) {
+        return
+      }
+
+      disposeEffect = effect(() => {
+        const service = cloudSync.value
+        const status = cloudSyncStatus.value
+        const nextLoadId = ++loadId
+
+        if (!service || !status.enabled) {
+          conflictMetadata.value = []
+          return
+        }
+
+        service
+          .getProjectMetadataIndex()
+          .then((metadataIndex) => {
+            if (disposed || nextLoadId !== loadId) {
+              return
+            }
+
+            conflictMetadata.value = Array.from(metadataIndex.values()).filter(
+              (metadata) =>
+                Boolean(metadata.conflict) &&
+                !metadata.tombstone &&
+                !metadata.syncExcluded
+            )
+          })
+          .catch((error: unknown) => {
+            if (!disposed && nextLoadId === loadId) {
+              conflictMetadata.value = []
+            }
+            reportRejection(error)
+          })
+      })
+    })
 
     return {
-      source: 'remote',
-      status: 'cloud-only',
-      name,
-      title: project.title,
-      remoteProjectId: project.id,
-      modified: Number.isNaN(modified) ? undefined : modified,
-      readWriteAccess: true,
+      item: defineRuntimeRegistryItem({
+        id: 'cloud-sync.remote-home-project-entries',
+        provides: [
+          provide(homeProjectEntriesValueSpec, cloudSyncHomeProjectEntries, {
+            key: 'cloud-sync.remote-home-project-entries',
+          }),
+        ],
+        dispose: () => {
+          disposed = true
+          disposeEffect?.()
+        },
+      }),
     }
-  })
-})
-
-const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItem({
-  id: 'cloud-sync.remote-home-project-entries',
-  provides: [
-    provide(homeProjectEntriesValueSpec, cloudSyncRemoteHomeProjectEntries, {
-      key: 'cloud-sync.remote-home-project-entries',
-    }),
-  ],
-})
+  },
+  'cloud-sync.remote-home-project-entries'
+)
 
 export const cloudSyncPlugin = createZdsPlugin({
   id: 'cloud-sync',

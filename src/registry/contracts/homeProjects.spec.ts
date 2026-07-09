@@ -86,4 +86,48 @@ describe('coalesceHomeProjectEntries', () => {
       }),
     ])
   })
+
+  test('preserves remote conflict metadata when the local project snapshot is stale', () => {
+    expect(
+      coalesceHomeProjectEntries([
+        {
+          source: 'remote',
+          status: 'conflicted',
+          name: 'remote-name',
+          title: 'Remote title',
+          remoteProjectId: 'remote-123',
+          localProjectPath: '/projects/local-name',
+          conflict: {
+            conflictProjectPath: '/projects/local-name (cloud conflict)',
+          },
+          modified: 20,
+          readWriteAccess: true,
+        },
+        {
+          source: 'local',
+          status: 'synced',
+          name: 'local-name',
+          title: 'Local title',
+          localProjectPath: '/projects/local-name',
+          localProjectName: 'local-name',
+          remoteProjectId: 'remote-123',
+          modified: 10,
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        id: 'remote:remote-123',
+        source: 'merged',
+        status: 'conflicted',
+        name: 'local-name',
+        title: 'Local title',
+        localProjectPath: '/projects/local-name',
+        remoteProjectId: 'remote-123',
+        conflict: {
+          conflictProjectPath: '/projects/local-name (cloud conflict)',
+        },
+      }),
+    ])
+  })
 })

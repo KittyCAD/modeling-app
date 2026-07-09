@@ -102,6 +102,8 @@ function mergeHomeProjectEntries(
     return local
   }
 
+  const conflict = local.conflict ?? remote.conflict
+
   return {
     ...remote,
     ...local,
@@ -109,11 +111,12 @@ function mergeHomeProjectEntries(
       ? `remote:${local.remoteProjectId}`
       : local.id || remote.id,
     source: 'merged',
-    status: local.conflict
+    status: conflict
       ? 'conflicted'
       : remote.status === 'syncing'
         ? 'syncing'
         : 'synced',
+    conflict,
     modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
     thumbnail: local.thumbnail ?? remote.thumbnail,
     readWriteAccess: local.readWriteAccess,
