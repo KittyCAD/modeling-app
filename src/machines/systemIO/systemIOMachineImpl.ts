@@ -411,8 +411,14 @@ const sharedBulkDeleteWorkflow = async ({
 
   let totalDeleted = 0
   for (const file of filesToDelete) {
-    if (file.type === 'other') continue
-    await fsZds.rm(file.absPath)
+    // 'kcl' files carry an absolute path; 'other' files (e.g. Markdown) only
+    // carry a project-relative path, so reconstruct the absolute path from the
+    // project root. Both kinds are deletable when explicitly requested.
+    const absPath =
+      file.type === 'kcl'
+        ? file.absPath
+        : fsZds.join(project.path, file.relPath)
+    await fsZds.rm(absPath)
     totalDeleted += 1
   }
 

@@ -3265,13 +3265,10 @@ impl FrontendState {
             "No AST produced after editing",
         )?;
 
-        // TODO: sketch-api: make sure to only set this if there are no errors.
-        self.program = new_program.clone();
-
         // Truncate after the sketch block for mock execution.
         let is_delete = edit_kind.is_delete();
         let truncated_program = {
-            let mut truncated_program = new_program;
+            let mut truncated_program = new_program.clone();
             only_sketch_block(
                 &mut truncated_program.ast,
                 &sketch_block_ref,
@@ -3291,6 +3288,9 @@ impl FrontendState {
             ..Default::default()
         };
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
+
+        // Only now, after execution has succeeded, update self.program.
+        self.program = new_program;
 
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
@@ -7280,6 +7280,44 @@ sketch(on = XY) {
             assert!(!message.contains("KclErrorDetails"));
             assert!(!message.contains("source_range"));
         }
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_failed_edit_constraint_does_not_update_program() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([line1.start, line1.end]) == 10
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let original_source = program.original_file_contents.clone();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
+
+        frontend
+            .edit_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                "unknownDistance".to_owned(),
+            )
+            .await
+            .expect_err("expected invalid constraint value to fail execution");
+
+        assert_eq!(frontend.program.original_file_contents, original_source);
+        assert!(!frontend.program.original_file_contents.contains("unknownDistance"));
 
         mock_ctx.close().await;
     }
