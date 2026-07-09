@@ -144,7 +144,7 @@ export function coalesceHomeProjectEntries(
   const buckets = new Map<
     string,
     {
-      local?: HomeProjectEntry
+      locals: HomeProjectEntry[]
       remote?: HomeProjectEntry
     }
   >()
@@ -152,10 +152,10 @@ export function coalesceHomeProjectEntries(
   for (const contribution of contributions) {
     const key = contributionBucketKey(contribution)
     const entry = entryFromContribution(contribution)
-    const bucket = buckets.get(key) ?? {}
+    const bucket = buckets.get(key) ?? { locals: [] }
 
     if (contribution.source === 'local') {
-      bucket.local = entry
+      bucket.locals.push(entry)
     } else {
       bucket.remote = entry
     }
@@ -163,9 +163,33 @@ export function coalesceHomeProjectEntries(
     buckets.set(key, bucket)
   }
 
-  return Array.from(buckets.values()).flatMap(({ local, remote }) => {
-    const entry = mergeHomeProjectEntries(local, remote)
-    return entry ? [entry] : []
+  return Array.from(buckets.values()).flatMap(({ locals, remote }) => {
+    if (locals.length === 0) {
+      return remote ? [remote] : []
+    }
+    if (!remote) {
+      return locals
+    }
+    if (locals.length === 1) {
+      const entry = mergeHomeProjectEntries(locals[0], remote)
+      return entry ? [entry] : []
+    }
+
+    const matchingLocal = remote.localProjectPath
+      ? locals.find(
+          (local) => local.localProjectPath === remote.localProjectPath
+        )
+      : undefined
+
+    if (!matchingLocal) {
+      return locals
+    }
+
+    const entry = mergeHomeProjectEntries(matchingLocal, remote)
+    return [
+      ...(entry ? [entry] : []),
+      ...locals.filter((local) => local !== matchingLocal),
+    ]
   })
 }
 

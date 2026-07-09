@@ -153,4 +153,55 @@ describe('coalesceHomeProjectEntries', () => {
       }),
     ])
   })
+
+  test('does not collapse duplicate local projects with the same cloud project id', () => {
+    expect(
+      coalesceHomeProjectEntries([
+        {
+          source: 'remote',
+          status: 'cloud-only',
+          name: 'remote-name',
+          title: 'Remote title',
+          remoteProjectId: 'remote-123',
+          modified: 20,
+          readWriteAccess: true,
+        },
+        {
+          source: 'local',
+          status: 'synced',
+          name: 'old-local-name',
+          title: 'Old local title',
+          localProjectPath: '/projects/old-local-name',
+          localProjectName: 'old-local-name',
+          remoteProjectId: 'remote-123',
+          modified: 10,
+          readWriteAccess: true,
+        },
+        {
+          source: 'local',
+          status: 'synced',
+          name: 'new-local-name',
+          title: 'New local title',
+          localProjectPath: '/projects/new-local-name',
+          localProjectName: 'new-local-name',
+          remoteProjectId: 'remote-123',
+          modified: 30,
+          readWriteAccess: true,
+        },
+      ])
+    ).toEqual([
+      expect.objectContaining({
+        id: 'local:/projects/old-local-name',
+        source: 'local',
+        name: 'old-local-name',
+        remoteProjectId: 'remote-123',
+      }),
+      expect.objectContaining({
+        id: 'local:/projects/new-local-name',
+        source: 'local',
+        name: 'new-local-name',
+        remoteProjectId: 'remote-123',
+      }),
+    ])
+  })
 })

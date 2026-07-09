@@ -9,6 +9,7 @@ import { effect, signal } from '@preact/signals-core'
 import { getProjectInfo } from '@src/lib/desktop'
 import { homeProjectEntryFromProject } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -34,15 +35,18 @@ function sendSystemIOEventAndWaitForMutationRefresh({
   actor,
   event,
   mutationState,
+  isRefreshComplete,
 }: {
   actor: AnyActorRef
   event: Parameters<AnyActorRef['send']>[0]
   mutationState:
     | SystemIOMachineStates.renamingProject
     | SystemIOMachineStates.deletingProject
+  isRefreshComplete?: (snapshot: SystemIOMutationSnapshot) => boolean
 }) {
   return new Promise<void>((resolve) => {
     let sawMutationState = false
+    let sawRefreshState = false
     let settled = false
     let subscription: { unsubscribe: () => void } | undefined
 
@@ -56,25 +60,56 @@ function sendSystemIOEventAndWaitForMutationRefresh({
       resolve()
     }
     const timeout = setTimeout(finish, 5000)
-    subscription = actor.subscribe((snapshot) => {
+    const mutationRefreshComplete = (snapshot: SystemIOMutationSnapshot) =>
+      snapshot.matches(SystemIOMachineStates.idle) &&
+      (!isRefreshComplete || !sawRefreshState || isRefreshComplete(snapshot))
+
+    subscription = actor.subscribe((snapshot: SystemIOMutationSnapshot) => {
       if (snapshot.matches(mutationState)) {
         sawMutationState = true
       }
-      if (sawMutationState && snapshot.matches(SystemIOMachineStates.idle)) {
+      if (snapshot.matches(SystemIOMachineStates.readingFolders)) {
+        sawRefreshState = true
+      }
+      if (sawMutationState && mutationRefreshComplete(snapshot)) {
         finish()
       }
     })
 
     actor.send(event)
 
-    const snapshot = actor.getSnapshot()
+    const snapshot = actor.getSnapshot() as SystemIOMutationSnapshot
     if (snapshot.matches(mutationState)) {
       sawMutationState = true
     }
-    if (!sawMutationState && snapshot.matches(SystemIOMachineStates.idle)) {
+    if (snapshot.matches(SystemIOMachineStates.readingFolders)) {
+      sawRefreshState = true
+    }
+    if (
+      (!sawMutationState && snapshot.matches(SystemIOMachineStates.idle)) ||
+      (sawMutationState && mutationRefreshComplete(snapshot))
+    ) {
       finish()
     }
   })
+}
+
+type SystemIOMutationSnapshot = {
+  matches: (state: SystemIOMachineStates) => boolean
+  context?: {
+    folders?: Project[]
+  }
+}
+
+function refreshedFoldersIncludeProjectDisplayName(
+  snapshot: SystemIOMutationSnapshot,
+  requestedName: string
+) {
+  return Boolean(
+    snapshot.context?.folders?.some(
+      (folder) => getProjectDisplayName(folder) === requestedName
+    )
+  )
 }
 
 const homeProjectActions = defineRegistryItemFactory((ctx) => {
@@ -133,6 +168,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       await sendSystemIOEventAndWaitForMutationRefresh({
         actor,
         mutationState: SystemIOMachineStates.renamingProject,
+        isRefreshComplete: (snapshot) =>
+          refreshedFoldersIncludeProjectDisplayName(snapshot, requestedName),
         event: {
           type: SystemIOMachineEvents.renameProject,
           data: {
