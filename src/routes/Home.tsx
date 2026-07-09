@@ -31,6 +31,7 @@ import {
 import { useApp, useSingletons } from '@src/lib/boot'
 import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
@@ -99,8 +100,15 @@ type ReadWriteProjectState = {
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   useSignals()
-  const { auth, billing, commands, settings, systemIOActor, registry } =
-    useApp()
+  const {
+    auth,
+    billing,
+    commands,
+    settings,
+    systemIOActor,
+    registry,
+    userFeatures,
+  } = useApp()
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
@@ -133,6 +141,10 @@ const Home = () => {
   const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
   const homeProjectActions = registry.get(homeProjectActionsService)
+  const hasCloudSyncFeature = userFeatures.useHas(
+    OPFS_CLOUD_FEATURE_FLAG,
+    false
+  )
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } =
     useProjectSearch(homeProjectEntries)
@@ -496,6 +508,7 @@ const Home = () => {
           sort={sort}
           projectStatuses={projectStatuses}
           projectActions={homeProjectActions}
+          showCloudSyncUi={hasCloudSyncFeature}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -641,6 +654,7 @@ interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
   sort: string
   projectStatuses: Map<string, ProjectStatus>
   projectActions: HomeProjectActionsService
+  showCloudSyncUi: boolean
 }
 
 function ProjectGrid({
@@ -651,6 +665,7 @@ function ProjectGrid({
   sort,
   projectStatuses,
   projectActions,
+  showCloudSyncUi,
   ...rest
 }: ProjectGridProps) {
   const state = useSystemIOState()
@@ -680,6 +695,7 @@ function ProjectGrid({
                       ? projectStatuses.get(project.remoteProjectId)
                       : undefined
                   }
+                  showCloudSyncUi={showCloudSyncUi}
                 />
               ))}
             </ul>

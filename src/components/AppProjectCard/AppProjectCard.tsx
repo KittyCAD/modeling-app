@@ -26,6 +26,7 @@ type AppProjectCardProps = HTMLAttributes<HTMLLIElement> & {
   project: HomeProjectEntry
   projectActions: HomeProjectActionsService
   projectStatus?: ProjectStatus
+  showCloudSyncUi?: boolean
 }
 
 const homeProjectStatusBadgeLabels: Record<HomeProjectEntry['status'], string> =
@@ -115,6 +116,7 @@ function AppProjectCard({
   project,
   projectActions,
   projectStatus,
+  showCloudSyncUi = true,
   ...props
 }: AppProjectCardProps) {
   const navigate = useNavigate()
@@ -124,7 +126,9 @@ function AppProjectCard({
   const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const hasChangesRequested =
     projectStatus?.publicationStatus === 'changes_requested'
-  const hasCloudConflict = Boolean(project.conflict && project.localProjectPath)
+  const hasCloudConflict = Boolean(
+    showCloudSyncUi && project.conflict && project.localProjectPath
+  )
   const imageUrl = useProjectThumbnailUrl(project.thumbnail)
   /** "Optimistic" in that it updates before any remote/cloud sync completes, and may be rolled back on failure to sync. */
   const [optimisticProjectName, setOptimisticProjectName] = useState<{
@@ -213,7 +217,7 @@ function AppProjectCard({
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
       : ''
   const statusBadgeLabel =
-    project.source === 'both'
+    !showCloudSyncUi || project.source === 'both'
       ? undefined
       : homeProjectStatusBadgeLabels[project.status]
 

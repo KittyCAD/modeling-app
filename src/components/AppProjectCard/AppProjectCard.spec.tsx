@@ -60,13 +60,19 @@ function createProjectActions({
 function renderProjectCard({
   project = cloudProject,
   projectActions = createProjectActions(),
+  showCloudSyncUi,
 }: {
   project?: HomeProjectEntry
   projectActions?: HomeProjectActionsService
+  showCloudSyncUi?: boolean
 } = {}) {
   render(
     <BrowserRouter>
-      <AppProjectCard project={project} projectActions={projectActions} />
+      <AppProjectCard
+        project={project}
+        projectActions={projectActions}
+        showCloudSyncUi={showCloudSyncUi}
+      />
     </BrowserRouter>
   )
 
@@ -175,6 +181,24 @@ describe('ProjectCard', () => {
     })
 
     expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+  })
+
+  test('hides cloud sync project chips when cloud sync UI is disabled', () => {
+    renderProjectCard({
+      showCloudSyncUi: false,
+      project: {
+        ...cloudProject,
+        status: 'conflicted',
+        conflict: {
+          conflictProjectPath: '/projects/old-cloud-title conflict',
+          createdAt: new Date(now).toISOString(),
+          remoteRevision: 'revision-123',
+        },
+      },
+    })
+
+    expect(screen.queryByTestId('project-status-badge')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('cloud-conflict-badge')).not.toBeInTheDocument()
   })
 
   test('keeps local thumbnail object URLs stable when the project object changes', async () => {
