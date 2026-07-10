@@ -20,7 +20,7 @@ const HelpMenuDivider = () => (
 )
 
 export function HelpMenu() {
-  const { settings, systemIOActor } = useApp()
+  const { settings, systemIO } = useApp()
   const { kclManager } = useSingletons()
   const navigate = useNavigate()
   const filePath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
@@ -30,7 +30,7 @@ export function HelpMenu() {
       onboardingStatus: onboardingStartPath,
       navigate,
       kclManager,
-      systemIOActor,
+      systemIO,
       settingsActor: settings.actor,
       executingPath: filePath,
     }

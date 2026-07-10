@@ -1,24 +1,31 @@
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import { signal } from '@preact/signals-core'
+import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import { describe, expect, it, vi } from 'vitest'
-import type { ActorRefFrom } from 'xstate'
 
-function createSystemIOActor() {
+function createSystemIOService(): SystemIORegistryService {
   return {
-    getSnapshot: () => ({
-      context: {
-        defaultProjectFolderName: 'untitled',
-        folders: [],
-      },
+    request: vi.fn(),
+    stateSignal: signal({
+      operations: [],
+      runningCount: 0,
+      localProjectsLoaded: true,
+      localProjectIndexStatus: 'idle',
+      canReadWriteProjectDirectory: { value: true, error: undefined },
+      currentProjectTreeVersion: 0,
     }),
-    send: vi.fn(),
-  } as unknown as ActorRefFrom<typeof systemIOMachine>
+    localProjectEntriesSignal: signal([]),
+    refreshLocalProjects: vi.fn(),
+    markCurrentProjectTreeDirty: vi.fn(),
+  }
 }
 
 describe('project command config', () => {
   it('keeps project directory mutation commands disabled by default on web', () => {
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
+      systemIO: createSystemIOService(),
+      getDefaultProjectName: () => 'untitled',
+      getProjectDirectoryPath: () => '/projects',
       enableProjectDirectoryCommands: false,
     })
 
@@ -29,7 +36,9 @@ describe('project command config', () => {
 
   it('enables project directory mutation commands for supported runtimes', () => {
     const commands = createProjectCommands({
-      systemIOActor: createSystemIOActor(),
+      systemIO: createSystemIOService(),
+      getDefaultProjectName: () => 'untitled',
+      getProjectDirectoryPath: () => '/projects',
       enableProjectDirectoryCommands: true,
     })
 

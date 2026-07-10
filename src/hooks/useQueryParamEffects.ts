@@ -29,12 +29,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-  waitForIdleState,
-} from '@src/machines/systemIO/utils'
+import { getProjectInfo } from '@src/lib/desktop'
 
 // For initializing the command arguments, we actually want `method` to be undefined
 // so that we don't skip it in the command palette.
@@ -121,7 +116,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
       // File navigation removes the project-id param while preserving the new
       // file route. Calling setSearchParams here can re-navigate from the
       // original query-param route and reopen the project default file.
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
       if (cancelled) {
         return
       }
@@ -133,9 +127,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
       if (localCloudProject) {
-        app.systemIOActor.send({
-          type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-        })
+        void app.systemIO.refreshLocalProjects()
         void navigate(
           `${PATHS.FILE}/${safeEncodeForRouterPaths(
             localCloudProject.projectPath
@@ -184,16 +176,23 @@ export function useQueryParamEffects(kclManager: KclManager) {
             )
           : downloadedProject.entrypointFilePath
 
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
-        data: {
-          files,
-          requestedProjectName: reservedProjectDestination.requestedProjectName,
-          requestedFileNameWithExtension,
-        },
+      await app.systemIO.request({
+        type: 'project.importFiles',
+        files,
+        requestedProjectName: reservedProjectDestination.requestedProjectName,
+        requestedFileNameWithExtension,
       })
-
-      await waitForIdleState({ systemIOActor: app.systemIOActor })
+      const projectPath = fsZds.join(
+        app.settings.get().app.projectDirectory.current,
+        reservedProjectDestination.requestedProjectName
+      )
+      void navigate(
+        `${PATHS.FILE}/${safeEncodeForRouterPaths(
+          requestedFileNameWithExtension
+            ? fsZds.join(projectPath, requestedFileNameWithExtension)
+            : projectPath
+        )}`
+      )
     })().catch((error) => {
       if (cancelled) {
         return
@@ -225,7 +224,6 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
     await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
-    const systemIOContext = app.systemIOActor.getSnapshot().context
     const projectDirectoryPath = app.settings.get().app.projectDirectory.current
     if (!projectDirectoryPath) {
       return new Error('Unable to determine the project directory.')
@@ -258,9 +256,14 @@ export function useQueryParamEffects(kclManager: KclManager) {
       DEFAULT_WEB_PROJECT_NAME
     const requestedSubDirectoryName = getUniqueProjectName(
       projectName,
-      getAllSubDirectoriesAtProjectRoot(systemIOContext, {
-        projectFolderName: requestedProjectName,
-      })
+      (
+        (
+          await getProjectInfo(
+            fsZds.join(projectDirectoryPath, requestedProjectName),
+            await app.wasmPromise
+          )
+        ).children ?? []
+      ).filter((entry) => entry.children !== null)
     )
     await fsZds.mkdir(
       fsZds.join(
@@ -327,14 +330,15 @@ export function useQueryParamEffects(kclManager: KclManager) {
       const projectNameArg = String(commandData.argDefaultValues.projectName)
       const projectFolderName = fsZds.basename(projectNameArg)
 
-      const systemIO = app.systemIOActor
       const foldersIncludeProject = (folders: { name: string }[] | undefined) =>
         (folders ?? []).some((f) => f.name === projectFolderName)
       let hasRequestedProjectCreate = false
-      const sendOrCreateProject = (
-        snapshot: ReturnType<typeof systemIO.getSnapshot>
-      ) => {
-        if (foldersIncludeProject(snapshot.context.folders)) {
+      const sendOrCreateProject = () => {
+        const localProjectNames =
+          app.systemIO.localProjectEntriesSignal.value.map((project) => ({
+            name: project.localProjectName || project.name,
+          }))
+        if (foldersIncludeProject(localProjectNames)) {
           sendCommand()
           return true
         }
@@ -343,31 +347,28 @@ export function useQueryParamEffects(kclManager: KclManager) {
           shouldCreateDefaultWebProject &&
           !hasRequestedProjectCreate &&
           projectFolderName === DEFAULT_WEB_PROJECT_NAME &&
-          snapshot.matches(SystemIOMachineStates.idle) &&
-          snapshot.context.folders !== undefined
+          app.systemIO.stateSignal.value.localProjectsLoaded
         ) {
           hasRequestedProjectCreate = true
-          systemIO.send({
-            type: SystemIOMachineEvents.createProject,
-            data: {
-              requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
-            },
+          void app.systemIO.request({
+            type: 'project.create',
+            requestedProjectName: DEFAULT_WEB_PROJECT_NAME,
           })
         }
 
         return false
       }
 
-      if (sendOrCreateProject(systemIO.getSnapshot())) {
+      if (sendOrCreateProject()) {
         return
       }
 
-      const subscription = systemIO.subscribe((snapshot) => {
-        if (sendOrCreateProject(snapshot)) {
-          subscription.unsubscribe()
+      const interval = window.setInterval(() => {
+        if (sendOrCreateProject()) {
+          window.clearInterval(interval)
         }
-      })
-      return () => subscription.unsubscribe()
+      }, 50)
+      return () => window.clearInterval(interval)
     }
 
     sendCommand()

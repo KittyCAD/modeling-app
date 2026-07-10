@@ -34,15 +34,18 @@ import {
   onboardingStartPath,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import { PATHS, joinRouterPaths } from '@src/lib/paths'
+import fsZds from '@src/lib/fs-zds'
+import {
+  PATHS,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
+} from '@src/lib/paths'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
 import { waitForToastAnimationEnd } from '@src/lib/toast'
 import { err, reportRejection } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
+import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import toast from 'react-hot-toast'
 
 // Get the 1-indexed step number of the current onboarding step
@@ -322,7 +325,7 @@ export function OnboardingButtons({
 export interface OnboardingUtilDeps {
   onboardingStatus: OnboardingStatus
   kclManager: KclManager
-  systemIOActor: SystemIOActor
+  systemIO: SystemIORegistryService
   settingsActor: SettingsActorType
   navigate: NavigateFunction
   executingPath?: string
@@ -342,9 +345,9 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
   /**
    * Bulk create the tutorial sample and navigate to the project.
    */
-  deps.systemIOActor.send({
-    type: SystemIOMachineEvents.bulkCreateKCLFilesAndNavigateToProject,
-    data: {
+  void deps.systemIO
+    .request({
+      type: 'files.bulkCreateKCL',
       files: coldPlateParts.map((part) => ({
         requestedProjectName: ONBOARDING_PROJECT_NAME,
         ...part,
@@ -352,9 +355,21 @@ export function acceptOnboarding(deps: OnboardingUtilDeps) {
       // Make a unique tutorial project each time
       override: true,
       requestedProjectName: ONBOARDING_PROJECT_NAME,
-      requestedSubRoute: joinRouterPaths(PATHS.ONBOARDING, onboardingStatus),
-    },
-  })
+    })
+    .then(() => {
+      const projectDirectory = getSettingsFromActorContext(deps.settingsActor)
+        .app.projectDirectory.current
+      const projectPath = fsZds.join(projectDirectory, ONBOARDING_PROJECT_NAME)
+      void deps.navigate(
+        joinRouterPaths(
+          PATHS.FILE,
+          safeEncodeForRouterPaths(fsZds.join(projectPath, 'main.kcl')),
+          PATHS.ONBOARDING,
+          onboardingStatus
+        )
+      )
+    })
+    .catch(reportRejection)
 }
 
 export function needsToOnboard(
