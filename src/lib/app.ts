@@ -271,7 +271,6 @@ export class App implements AppSubsystems {
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
     this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
-    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
     this.syncCloudSyncRuntimePolicy()
@@ -589,12 +588,8 @@ export class App implements AppSubsystems {
     const token = authSnapshot.matches('loggedIn')
       ? authSnapshot.context.token
       : undefined
-    const settingsContext = this.settings.actor.getSnapshot().context
-    const cloudSyncPluginEnabled =
-      settingsContext.plugins?.['cloud-sync']?.current !== false
     const enabled =
       Boolean(token) &&
-      cloudSyncPluginEnabled &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
@@ -604,7 +599,6 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      projectDirectoryPath: settingsContext.app.projectDirectory.current,
       syncExistingLocalProjects: !window.electron,
     })
   }
