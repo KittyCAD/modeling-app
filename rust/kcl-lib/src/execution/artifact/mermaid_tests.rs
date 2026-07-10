@@ -1045,6 +1045,20 @@ impl ArtifactGraph {
         });
 
         for ((source_id, target_id), edge) in edges {
+            // Guard: normalization must never collapse an edge onto one node.
+            // `add_unique_edge` skips self-edges when collecting, and the
+            // passes above only permute endpoints among interchangeable
+            // duplicate segment nodes. Some duplicate groups do legitimately
+            // contain intra-group edges (a region segment linked via
+            // `original_seg_id` to an original segment that shares its code
+            // range), and the sources-only remap could in principle fold such
+            // an edge into a self-edge; on all current inputs it never does. If
+            // that ever changes we would silently emit a bogus `N --- N` line,
+            // so fail loudly here instead of committing a corrupt snapshot.
+            assert_ne!(
+                source_id, target_id,
+                "artifact graph Mermaid normalization produced a self-edge on node {source_id}"
+            );
             let extra = match edge.kind {
                 // Extra length.  This is needed to make the graph layout more
                 // legible.  Without it, the sweep will be at the same rank as
