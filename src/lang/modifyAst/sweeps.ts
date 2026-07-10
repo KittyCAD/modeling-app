@@ -31,6 +31,7 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   createSketchTagMemberExpression,
+  getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
@@ -53,6 +54,7 @@ import type {
   LabeledArg,
   PathToNode,
   Program,
+  VariableDeclaration,
 } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -140,6 +142,69 @@ function getOriginalSketchSegmentNameForEdge({
   )
 }
 
+function isEdgeProfileExpr(expr: Expr): boolean {
+  return (
+    isCallExprWithName(expr, 'getOppositeEdge') ||
+    isCallExprWithName(expr, 'getNextAdjacentEdge') ||
+    isCallExprWithName(expr, 'edgeId')
+  )
+}
+
+function getEdgeProfileExprFromSourceSurface(
+  sourceSurfaceArtifact: Artifact,
+  modifiedAst: Node<Program>,
+  wasmInstance: ModuleType
+): Expr | null {
+  if (sourceSurfaceArtifact.type !== 'sweep') {
+    return null
+  }
+
+  const sourceSurfaceNode = getNodeFromPath<
+    CallExpressionKw | VariableDeclaration
+  >(modifiedAst, sourceSurfaceArtifact.codeRef.pathToNode, wasmInstance, [
+    'CallExpressionKw',
+    'VariableDeclaration',
+  ])
+  if (err(sourceSurfaceNode)) {
+    return null
+  }
+
+  const sourceSurfaceCall =
+    sourceSurfaceNode.node.type === 'CallExpressionKw'
+      ? sourceSurfaceNode.node
+      : sourceSurfaceNode.node.declaration.init.type === 'CallExpressionKw'
+        ? sourceSurfaceNode.node.declaration.init
+        : null
+  if (!sourceSurfaceCall) {
+    return null
+  }
+
+  const sweepInput = sourceSurfaceCall.unlabeled
+  if (!sweepInput) {
+    return null
+  }
+
+  if (isEdgeProfileExpr(sweepInput)) {
+    return structuredClone(sweepInput)
+  }
+
+  if (sweepInput.type !== 'Name') {
+    return null
+  }
+
+  const variableDeclaration = modifiedAst.body.find(
+    (statement): statement is Node<VariableDeclaration> =>
+      statement.type === 'VariableDeclaration' &&
+      statement.declaration.id.name === sweepInput.name.name
+  )
+  const variableInit = variableDeclaration?.declaration.init
+  if (!variableInit || !isEdgeProfileExpr(variableInit)) {
+    return null
+  }
+
+  return structuredClone(sweepInput)
+}
+
 function getEdgeProfileExprsFromSelection({
   selections,
   modifiedAst,
@@ -192,6 +257,16 @@ function getEdgeProfileExprsFromSelection({
       )
     }
     const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+
+    const sourceEdgeExpr = getEdgeProfileExprFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      modifiedAst,
+      wasmInstance
+    )
+    if (sourceEdgeExpr) {
+      exprs.push(getEdgeTagCall(sourceEdgeExpr, edgeArtifact))
+      continue
+    }
 
     const sketchSegmentName =
       getSketchSegmentNameFromSourceSurface(
@@ -421,19 +496,34 @@ export function addExtrude({
       : []
   let directionExpr: LabeledArg[] = []
   if (direction) {
-    const directionResult = getAxisExpression(
-      undefined,
-      direction,
+    const edgeDirectionResult = getEdgeProfileExprsFromSelection({
+      selections: direction,
       modifiedAst,
-      wasmInstance,
       artifactGraph,
-      mNodeToEdit
-    )
-    if (err(directionResult)) return directionResult
-    modifiedAst = directionResult.modifiedAst
-    directionExpr = [
-      createLabeledArg('direction', directionResult.generatedAxis),
-    ]
+      wasmInstance,
+      nodeToEdit: mNodeToEdit,
+    })
+    if (err(edgeDirectionResult)) return edgeDirectionResult
+    if (edgeDirectionResult.exprs.length === 1) {
+      modifiedAst = edgeDirectionResult.modifiedAst
+      directionExpr = [
+        createLabeledArg('direction', edgeDirectionResult.exprs[0]),
+      ]
+    } else {
+      const directionResult = getAxisExpression(
+        undefined,
+        direction,
+        modifiedAst,
+        wasmInstance,
+        artifactGraph,
+        mNodeToEdit
+      )
+      if (err(directionResult)) return directionResult
+      modifiedAst = directionResult.modifiedAst
+      directionExpr = [
+        createLabeledArg('direction', directionResult.generatedAxis),
+      ]
+    }
   }
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
@@ -467,11 +557,9 @@ export function addExtrude({
     if (err(twistCenterExpression)) return twistCenterExpression
     twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
   }
-  const effectiveMethod =
-    method ??
-    (hasEdgeProfileSelection(sketches)
-      ? KCL_PRELUDE_EXTRUDE_METHOD_NEW
-      : undefined)
+  const effectiveMethod = hasEdgeProfileSelection(sketches)
+    ? KCL_PRELUDE_EXTRUDE_METHOD_NEW
+    : method
   const methodExpr = effectiveMethod
     ? [createLabeledArg('method', createLocalName(effectiveMethod))]
     : []
