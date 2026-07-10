@@ -1,20 +1,13 @@
 import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
-import {
-  ASK_TO_OPEN_QUERY_PARAM,
-  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
-  PROJECT_ID_QUERY_PARAM,
-} from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
-import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
+import { transitionToFileRoute } from '@src/lib/fileRouteTransition'
 import {
   PATHS,
-  getProjectDirectoryFromKCLFilePath,
   joinOSPaths,
   joinRouterPaths,
   safeEncodeForRouterPaths,
-  webSafePathSplit,
 } from '@src/lib/paths'
 import {
   useHasListedProjects,
@@ -56,63 +49,19 @@ export function SystemIOMachineLogicListener() {
     requestedFilePathWithExtension: string | null
     requestedProjectDirectory: string | null
   }) {
-    let filePathWithExtension = null
-    let projectDirectory = null
-    // assumes /file/<encodedURIComponent>
-    // e.g '/file/%2Fhome%2Fkevin-nadro%2FDocuments%2Fzoo-modeling-app-projects%2Fbracket-1%2Fbracket.kcl'
-    const [iAmABlankString, file, encodedURI] = webSafePathSplit(pathname)
-    if (
-      iAmABlankString === '' &&
-      file === makeUrlPathRelative(PATHS.FILE) &&
-      encodedURI
-    ) {
-      filePathWithExtension = decodeURIComponent(encodedURI)
-      const applicationProjectDirectory =
-        settingsValues.app.projectDirectory.current
-      projectDirectory = getProjectDirectoryFromKCLFilePath(
-        filePathWithExtension,
-        applicationProjectDirectory
-      )
-    }
-
-    // Close current file in current project if it exists
-    onFileClose(filePathWithExtension, projectDirectory)
-    // Open the requested file in the requested project
-    onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
-
-    kclManager.engineCommandManager.rejectAllModelingCommands(
-      EXECUTE_AST_INTERRUPT_ERROR_MESSAGE
-    )
-
-    /**
-     * Check that both paths are truthy strings and if they do not match
-     * then mark it is switchedFiles.
-     * If they do not match but the origin is falsey we do not want to mark as
-     * switchedFiles because checkIfSwitchedFilesShouldClear will trigger
-     * clearSceneAndBustCache if there is a parse error!
-     *
-     * i.e. Only do switchedFiles check against two file paths, not null and a file path
-     */
-    if (
-      filePathWithExtension &&
-      requestedFilePathWithExtension &&
-      filePathWithExtension !== requestedFilePathWithExtension
-    ) {
-      kclManager.switchedFiles = true
-    }
-
-    kclManager.isExecuting = false
-
-    const url = new URL(location.href)
-    url.searchParams.delete(ASK_TO_OPEN_QUERY_PARAM)
-    if (
-      lastOperation ===
-      SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
-    ) {
-      url.searchParams.delete(PROJECT_ID_QUERY_PARAM)
-    }
-    const search = url.searchParams.toString()
-    void navigate(requestedPath + (search ? `?${search}` : ''))
+    transitionToFileRoute({
+      requestedPath,
+      requestedFilePathWithExtension,
+      requestedProjectDirectory,
+      currentPathname: pathname,
+      projectDirectoryPath: settingsValues.app.projectDirectory.current,
+      kclManager,
+      lsp: { onFileClose, onFileOpen },
+      navigate,
+      clearProjectIdQueryParam:
+        lastOperation ===
+        SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile,
+    })
   }
 
   /**
