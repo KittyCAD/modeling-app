@@ -9,12 +9,11 @@ import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { createZdsPlugin } from '@src/registry/createZdsPlugin'
 import { createElement } from 'react'
 import { EngineExecutionStatusTooltip } from './EngineExecutionStatusTooltip'
 import { EXECUTION_INDICATOR_STATUS_BAR_ITEM_ID } from './constants'
 
-const executionIndicatorStatusBarItem = defineRegistryItemFactory((ctx) => {
+const executionIndicator = defineRegistryItemFactory((ctx) => {
   const executionService = ctx.services.signal(executingEditorService)
   const statusBarItem = computed(() =>
     nullableStatusBarItem(
@@ -51,32 +50,5 @@ const executionIndicatorStatusBarItem = defineRegistryItemFactory((ctx) => {
     }),
   }
 }, 'execution-indicator.status-bar-item')
-
-const executionIndicator = createZdsPlugin({
-  id: 'execution-indicator',
-  title: 'Execution indicator',
-  description:
-    'Shows a status bar spinner with elapsed time and pending command count while the engine is processing commands.',
-  items: [executionIndicatorStatusBarItem],
-  defaultSetting: 'off',
-  activationSetting: {
-    category: 'modeling',
-    settingName: 'executionIndicator',
-    title: 'Execution indicator',
-    description:
-      'Whether to show a status bar spinner while the engine is processing commands.',
-    commandConfig: {
-      inputType: 'boolean',
-    },
-    userToml: {
-      sectionKey: 'modeling',
-      tomlKey: 'execution_indicator',
-    },
-    projectToml: {
-      sectionKey: 'modeling',
-      tomlKey: 'execution_indicator',
-    },
-  },
-})
 
 export default executionIndicator

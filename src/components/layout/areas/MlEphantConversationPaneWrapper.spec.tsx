@@ -1,9 +1,8 @@
-import { render, waitFor } from '@testing-library/react'
-import { describe, expect, test, vi } from 'vitest'
-
 import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
+import { render, waitFor } from '@testing-library/react'
+import { describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
@@ -116,7 +115,7 @@ vi.mock('@src/machines/mlEphantManagerMachine', () => ({
   },
 }))
 
-vi.mock('@src/machines/systemIO/hooks', () => ({
+vi.mock('@src/components/layout/areas/MlEphantConversationPaneHooks', () => ({
   useProjectIdToConversationId: vi.fn(),
   useWatchForNewFileRequestsFromMlEphant: (
     ...args: [unknown, unknown, NonNullable<typeof mocks.watchCallback>]
