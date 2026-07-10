@@ -12,6 +12,7 @@ import {
   getCloudSyncProjectMetadata,
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
+  getCloudSyncRemoteProjectThumbnailUrl,
   installCloudSyncFileSystemObserver,
   resolveCloudSyncProjectConflict,
   retryCloudSync,

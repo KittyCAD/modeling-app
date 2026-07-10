@@ -7,6 +7,7 @@ import type {
   CloudSyncProjectMetadata,
   CloudSyncProjectMetadataIndexEntry,
   CloudSyncStatus,
+  RemoteProjectSummary,
 } from '@src/lib/cloudSync'
 import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 
@@ -29,6 +30,9 @@ export type CloudSyncRegistryService = {
   ensureProjectLocallySynced: (
     remoteProjectId: string
   ) => Promise<CloudSyncLocalProject | undefined>
+  getRemoteProjectThumbnailUrl: (
+    remoteProject: RemoteProjectSummary
+  ) => Promise<string | undefined>
   getProjectMetadata: (
     projectPath: string
   ) => Promise<CloudSyncProjectMetadata | undefined>
