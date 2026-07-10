@@ -45,7 +45,6 @@ import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { createSystemIOService } from '@src/lib/systemIOService'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -85,6 +84,7 @@ import {
   settingsService,
 } from '@src/registry/contracts/settings'
 import {
+  systemIOAppContextService,
   type SystemIORegistryService,
   systemIOService,
 } from '@src/registry/contracts/systemIO'
@@ -294,14 +294,16 @@ export class App implements AppSubsystems {
     this.layout = subsystems.layout
     this.registry = subsystems.registry
     this.userFeatures = subsystems.userFeatures
-    this.systemIO = createSystemIOService({
-      wasmPromise: this.wasmPromise,
-      getProjectDirectoryPath: () =>
-        this.settings.get().app.projectDirectory.current,
-      getDefaultProjectName: () =>
-        this.settings.get().projects.defaultProjectName.current,
-      getOpenedProject: () => this.project,
-    })
+    const registrySystemIO = this.registry.get(systemIOService)
+    this.systemIO = {
+      request: (request) => registrySystemIO.request(request),
+      stateSignal: registrySystemIO.stateSignal,
+      localProjectEntriesSignal: registrySystemIO.localProjectEntriesSignal,
+      refreshLocalProjects: (projectDirectoryPath) =>
+        registrySystemIO.refreshLocalProjects(projectDirectoryPath),
+      markCurrentProjectTreeDirty: () =>
+        registrySystemIO.markCurrentProjectTreeDirty(),
+    }
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -769,8 +771,8 @@ export class App implements AppSubsystems {
             executingEditorService,
             kclManager.executingEditorService
           ),
-          provideService(systemIOService, {
-            ...this.systemIO,
+          provideService(systemIOAppContextService, {
+            getOpenedProject: () => this.project,
           }),
         ],
       }),

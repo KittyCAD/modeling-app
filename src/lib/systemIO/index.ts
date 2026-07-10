@@ -1,3 +1,7 @@
+export {
+  createSystemIOService,
+  type CreateSystemIOServiceOptions,
+} from '@src/lib/systemIO/service'
 export type {
   RequestedKCLFile,
   RequestedKCLFileDelete,
@@ -16,3 +20,4 @@ export {
   systemIOContract,
   systemIOService,
 } from '@src/lib/systemIO/registry/contract'
+export { systemIOExtension } from '@src/lib/systemIO/registry/extension'

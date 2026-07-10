@@ -48,29 +48,22 @@ import type {
   RequestedKCLFile,
   RequestedKCLFileDelete,
   RequestedProjectFile,
+  SystemIOOpenedProjectRef,
   SystemIOOperationSummary,
   SystemIORegistryService,
   SystemIORequest,
   SystemIORequestResult,
   SystemIOState,
-} from '@src/registry/contracts/systemIO'
+} from '@src/lib/systemIO/registry/contract'
 import type { HomeProjectEntryContribution } from '@src/registry/contracts/homeProjects'
 
 const NO_PROJECT_DIRECTORY = ''
-
-type OpenedProjectRef = {
-  name: string
-  path: string
-  executingPath?: string | null
-  executingPathSignal?: { value: { value: string } | null }
-  projectIORefSignal?: { value: Project }
-}
 
 export type CreateSystemIOServiceOptions = {
   wasmPromise: Promise<ModuleType>
   getProjectDirectoryPath: () => string | undefined
   getDefaultProjectName: () => string | undefined
-  getOpenedProject: () => OpenedProjectRef | undefined
+  getOpenedProject: () => SystemIOOpenedProjectRef | undefined
 }
 
 type ProjectDirectoryEntry = {
