@@ -1,5 +1,4 @@
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import {
   UserFeaturesState,
   UserFeaturesTransition,
@@ -31,10 +30,8 @@ type WebHomeApp = {
 }
 
 type HomeLoaderApp = {
-  systemIOActor: {
-    send: (event: {
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory
-    }) => void
+  systemIO: {
+    refreshLocalProjects: () => Promise<unknown>
   }
   closeProject: () => void
   settings: {
@@ -95,9 +92,7 @@ export async function webHomeRouteEnabled(app: WebHomeApp) {
 }
 
 export function loadHomeProjects(app: HomeLoaderApp) {
-  app.systemIOActor.send({
-    type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-  })
+  void app.systemIO.refreshLocalProjects()
   app.closeProject()
   app.settings.actor.send({
     type: 'clear.project',

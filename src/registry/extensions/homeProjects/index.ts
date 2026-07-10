@@ -6,16 +6,8 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { effect, signal } from '@preact/signals-core'
-import {
-  getProjectInfo,
-  writeProjectTitleToProjectToml,
-} from '@src/lib/desktop'
-import {
-  getHomeProjectDisplayName,
-  homeProjectEntryFromProject,
-} from '@src/lib/homeProjects'
-import type { Project } from '@src/lib/project'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { getProjectInfo } from '@src/lib/desktop'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type HomeProjectActionsService,
@@ -27,12 +19,6 @@ import {
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
-
-function localHomeProjectEntriesFromProjects(
-  projects: readonly Project[] | undefined
-): HomeProjectEntryContribution[] {
-  return projects?.map(homeProjectEntryFromProject) ?? []
-}
 
 function homeProjectDisplayNameExists({
   entries,
@@ -63,7 +49,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
   const serviceImpl: HomeProjectActionsService = {
     canOpen: (project) =>
       Boolean(
-        (project.readWriteAccess && project.defaultFile) ||
+        (project.readWriteAccess && project.localProjectPath) ||
+          project.defaultFile ||
           project.remoteProjectId
       ),
     canRename: (project) =>
@@ -73,6 +60,16 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
     open: async (project) => {
       if (project.readWriteAccess && project.defaultFile) {
         return { defaultFile: project.defaultFile }
+      }
+
+      if (project.readWriteAccess && project.localProjectPath) {
+        const projectInfo = await systemIO.value?.request({
+          type: 'project.loadTree',
+          projectPath: project.localProjectPath,
+        })
+        return projectInfo?.default_file
+          ? { defaultFile: projectInfo.default_file }
+          : undefined
       }
 
       if (!project.remoteProjectId) {
@@ -90,13 +87,15 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         syncedProject.projectPath,
         await getWasmPromise()
       )
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
+      await systemIO.value?.refreshLocalProjects()
       return { defaultFile: projectInfo.default_file }
     },
     rename: async (project, requestedName) => {
-      if (!serviceImpl.canRename(project) || !project.localProjectPath) {
+      if (
+        !serviceImpl.canRename(project) ||
+        !project.localProjectPath ||
+        !project.localProjectName
+      ) {
         return
       }
 
@@ -112,27 +111,23 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return Promise.reject(new Error(message))
       }
 
-      await writeProjectTitleToProjectToml(
-        project.localProjectPath,
-        requestedName
-      )
+      await systemIO.value?.request({
+        type: 'project.rename',
+        projectName: project.localProjectName,
+        requestedProjectName: requestedName,
+      })
       toast.success(
         `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`
       )
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
     },
     delete: async (project) => {
       if (!serviceImpl.canDelete(project) || !project.localProjectName) {
         return
       }
 
-      systemIO.value?.actor.send({
-        type: SystemIOMachineEvents.deleteProject,
-        data: {
-          requestedProjectName: project.localProjectName,
-        },
+      await systemIO.value?.request({
+        type: 'project.delete',
+        projectName: project.localProjectName,
       })
     },
   }
@@ -169,14 +164,12 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
         return
       }
 
-      const updateEntries = () => {
-        entries.value = localHomeProjectEntriesFromProjects(
-          service.actor.getSnapshot().context.folders
-        )
+      const disposeEntriesEffect = effect(() => {
+        entries.value = service.localProjectEntriesSignal.value
+      })
+      systemIOSubscription = {
+        unsubscribe: disposeEntriesEffect,
       }
-
-      updateEntries()
-      systemIOSubscription = service.actor.subscribe(updateEntries)
     })
   })
 

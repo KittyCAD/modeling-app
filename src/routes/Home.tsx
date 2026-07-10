@@ -46,15 +46,6 @@ import { reportRejection } from '@src/lib/trap'
 import { platform } from '@src/lib/utils'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { BillingTransition } from '@src/machines/billingMachine'
-import {
-  useCanReadWriteProjectDirectory,
-  useFolders,
-  useState as useSystemIOState,
-} from '@src/machines/systemIO/hooks'
-import {
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   type HomeProjectActionsService,
@@ -89,7 +80,6 @@ import {
   useNavigate,
   useSearchParams,
 } from 'react-router-dom'
-import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -105,7 +95,7 @@ const Home = () => {
     billing,
     commands,
     settings,
-    systemIOActor,
+    systemIO,
     registry,
     userFeatures,
   } = useApp()
@@ -129,17 +119,19 @@ const Home = () => {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const readWriteProjectDir = useCanReadWriteProjectDirectory()
+  const readWriteProjectDir =
+    systemIO.stateSignal.value.canReadWriteProjectDirectory
   const [nativeFileMenuCreated, setNativeFileMenuCreated] = useState(false)
   const apiToken = auth.useToken()
   const networkMachineStatus = useNetworkMachineStatus()
   const billingContext = billing.useContext()
   const hasUnlimitedCredits = billingContext.balance === Infinity
   const openBillingLinkExternally = openExternalBrowserIfDesktop()
+  const settingsValues = settings.useSettings()
+  const projectDirectoryPath = settingsValues.app.projectDirectory.current
 
-  const projects = useFolders()
-  const projectStatuses = useProjectStatuses(projects, apiToken)
   const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const projectStatuses = useProjectStatuses(homeProjectEntries, apiToken)
   const homeProjectActions = registry.get(homeProjectActionsService)
   const hasCloudSyncFeature = userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
@@ -166,6 +158,12 @@ const Home = () => {
   useEffect(() => {
     setCloudSyncProjectScope(undefined)
   }, [])
+
+  useEffect(() => {
+    void systemIO
+      .refreshLocalProjects(projectDirectoryPath)
+      .catch(reportRejection)
+  }, [projectDirectoryPath, systemIO])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
@@ -209,12 +207,10 @@ const Home = () => {
 
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const settingsValues = settings.useSettings()
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
   useEffect(() => {
-    let disposed = false
     let lastHandledSyncedAt: string | undefined
 
     const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
@@ -224,25 +220,13 @@ const Home = () => {
       }
 
       lastHandledSyncedAt = syncedAt
-      void waitFor(systemIOActor, (state) =>
-        state.matches(SystemIOMachineStates.idle)
-      )
-        .then(() => {
-          if (disposed || lastHandledSyncedAt !== syncedAt) {
-            return
-          }
-          systemIOActor.send({
-            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-          })
-        })
-        .catch(reportRejection)
+      void systemIO.refreshLocalProjects().catch(reportRejection)
     })
 
     return () => {
-      disposed = true
       disposeCloudSyncRefreshEffect()
     }
-  }, [systemIOActor])
+  }, [systemIO])
 
   // Menu listeners
   const cb = (data: WebContentSendPayload) => {
@@ -370,7 +354,7 @@ const Home = () => {
                       onboardingStatus,
                       navigate,
                       kclManager,
-                      systemIOActor,
+                      systemIO,
                       settingsActor,
                       executingPath,
                     })
@@ -503,7 +487,7 @@ const Home = () => {
         <ProjectGrid
           searchResults={searchResults ?? []}
           projects={homeProjectEntries}
-          localProjectsLoaded={projects !== undefined}
+          localProjectsLoaded={systemIO.stateSignal.value.localProjectsLoaded}
           query={query}
           sort={sort}
           projectStatuses={projectStatuses}
@@ -668,8 +652,10 @@ function ProjectGrid({
   showCloudSyncUi,
   ...rest
 }: ProjectGridProps) {
-  const state = useSystemIOState()
-  const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
+  useSignals()
+  const { systemIO } = useApp()
+  const isReadingFolders =
+    systemIO.stateSignal.value.localProjectIndexStatus === 'running'
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
   const loadingMore = isReadingFolders ? (
     <div className="py-4">
