@@ -45,6 +45,7 @@ import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
+import { createSystemIOService } from '@src/lib/systemIOService'
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -55,11 +56,6 @@ import {
 } from '@src/machines/billingMachine'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
-import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
 import {
   type UserFeaturesActorRef,
   type UserFeaturesContext,
@@ -88,7 +84,10 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { systemIOService } from '@src/registry/contracts/systemIO'
+import {
+  type SystemIORegistryService,
+  systemIOService,
+} from '@src/registry/contracts/systemIO'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
@@ -277,11 +276,8 @@ export class App implements AppSubsystems {
   layout: AppLayoutSystem
   /** The registry system for the application */
   registry: AppRegistrySystem
-  /**
-   * The interface to reading/writing to IO.
-   * TODO: We have agreed to move away from this XState approach, towards a class + signals approach.
-   */
-  systemIOActor: SystemIOActor
+  /** The interface to reading/writing filesystem IO. */
+  systemIO: SystemIORegistryService
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
@@ -298,12 +294,14 @@ export class App implements AppSubsystems {
     this.layout = subsystems.layout
     this.registry = subsystems.registry
     this.userFeatures = subsystems.userFeatures
-    this.systemIOActor = createActor(systemIOMachineImpl, {
-      input: {
-        wasmInstancePromise: this.wasmPromise,
-        app: this,
-      },
-    }).start()
+    this.systemIO = createSystemIOService({
+      wasmPromise: this.wasmPromise,
+      getProjectDirectoryPath: () =>
+        this.settings.get().app.projectDirectory.current,
+      getDefaultProjectName: () =>
+        this.settings.get().projects.defaultProjectName.current,
+      getOpenedProject: () => this.project,
+    })
 
     this.syncAppCommands()
     this.commands.actor.send({
@@ -554,7 +552,7 @@ export class App implements AppSubsystems {
       }
 
       const disposeFSHistory = buildFSHistoryExtension(
-        this.systemIOActor,
+        this.systemIO,
         executingEditor
       )
       const disposeZookeeperHistory = buildZookeeperHistoryExtension({
@@ -584,9 +582,15 @@ export class App implements AppSubsystems {
         onProjectFilesReplay: async (replayFiles) => {
           await project.syncReplayedFilesToRust(replayFiles)
           if (zookeeperReplayChangesProjectFileSet(replayFiles)) {
-            this.systemIOActor.send({
-              type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-            })
+            void this.systemIO
+              .request({
+                type: 'project.loadTree',
+                projectPath: project.path,
+              })
+              .then((projectTree) => {
+                project.projectIORefSignal.value = projectTree
+              })
+              .catch(reportRejection)
           }
         },
       })
@@ -594,19 +598,6 @@ export class App implements AppSubsystems {
       return () => {
         disposeFSHistory()
         disposeZookeeperHistory()
-      }
-    })
-
-    // TODO: Rework the systemIOActor to fit into the system better,
-    // so that the project doesn't need to subscribe to it.
-    this.systemIOActor.subscribe(({ context }) => {
-      const foundProject = (context.folders ?? []).find(
-        (p) =>
-          p.name === projectIORefSignal.value.name &&
-          p.path === projectIORefSignal.value.path
-      )
-      if (foundProject && projectIORefSignal.value !== foundProject) {
-        projectIORefSignal.value = foundProject
       }
     })
 
@@ -685,7 +676,11 @@ export class App implements AppSubsystems {
             provideCommand
           ),
           ...createProjectCommands({
-            systemIOActor: this.systemIOActor,
+            systemIO: this.systemIO,
+            getDefaultProjectName: () =>
+              this.settings.get().projects.defaultProjectName.current,
+            getProjectDirectoryPath: () =>
+              this.settings.get().app.projectDirectory.current,
             enableProjectDirectoryCommands,
           }).map(provideCommand),
         ],
@@ -775,7 +770,7 @@ export class App implements AppSubsystems {
             kclManager.executingEditorService
           ),
           provideService(systemIOService, {
-            actor: this.systemIOActor,
+            ...this.systemIO,
           }),
         ],
       }),

@@ -8,7 +8,6 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
@@ -89,7 +88,6 @@ async function waitForAuthSettled(app: App) {
 
 function disposeApp(app: App) {
   app.closeProject()
-  app.systemIOActor.stop()
   app.settings.actor.stop()
   app.commands.actor.stop()
   app.auth.actor.stop()
@@ -400,20 +398,22 @@ describe('project system', () => {
           },
         })
       )
-      const send = vi.spyOn(app.systemIOActor, 'send')
+      const request = vi.spyOn(app.systemIO, 'request')
 
       kclManager.undo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      expect(request).toHaveBeenCalledWith({
+        type: 'project.loadTree',
+        projectPath,
       })
       await expect(fsZds.readFile(createdPath, 'utf8')).rejects.toThrow()
 
-      send.mockClear()
+      request.mockClear()
       kclManager.redo()
       await waitForHistoryIdle(kclManager)
-      expect(send).toHaveBeenCalledWith({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+      expect(request).toHaveBeenCalledWith({
+        type: 'project.loadTree',
+        projectPath,
       })
       await expect(fsZds.readFile(createdPath, 'utf8')).resolves.toBe(
         'created = true\n'

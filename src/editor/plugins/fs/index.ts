@@ -3,10 +3,8 @@ import type { Extension, Transaction } from '@codemirror/state'
 import { Annotation, Compartment, StateEffect } from '@codemirror/state'
 import type { TransactionSpecNoChanges } from '@src/editor/HistoryView'
 import type { KclManager } from '@src/lang/KclManager'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
 import { EditorView } from 'codemirror'
-import type { ActorRefFrom } from 'xstate'
 
 const fsEffectCompartment = new Compartment()
 export const fsIgnoreAnnotationType = Annotation.define<true>()
@@ -55,7 +53,7 @@ export const fsMoveFile = (props: FSEffectProps) => h(moveFile.of(props))
  * actually call systemIO APIs.
  */
 export function buildFSHistoryExtension(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
+  systemIO: SystemIORegistryService,
   kclManager: KclManager
 ) {
   const fsWiredListener = EditorView.updateListener.of((vu) => {
@@ -65,16 +63,10 @@ export function buildFSHistoryExtension(
       }
       for (const e of tr.effects) {
         if (e.is(restoreFile) || e.is(archiveFile) || e.is(moveFile)) {
-          const type = e.is(moveFile)
-            ? SystemIOMachineEvents.moveRecursive
-            : SystemIOMachineEvents.moveRecursiveAndNavigate
-
-          systemIOActor.send({
-            type,
-            data: {
-              ...e.value,
-              successMessage: getSuccessMessage(e, tr),
-            },
+          void systemIO.request({
+            type: 'path.moveRecursive',
+            ...e.value,
+            successMessage: getSuccessMessage(e, tr),
           })
         }
       }
