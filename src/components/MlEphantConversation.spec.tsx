@@ -61,6 +61,7 @@ import type {
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
 import {
+  EngineSceneContributionComponent,
   type EngineSceneExtensionContext,
   engineSceneRuntimeExtensionsSlot,
   engineSceneStreamLayersValueSpec,
@@ -88,10 +89,14 @@ const TestEngineSceneStreamLayers = () => {
 
   return (
     <>
-      {layers.map((layer) => {
-        const Component = layer.Component
-        return <Component key={layer.id} {...testEngineSceneContext} />
-      })}
+      {layers.map((layer) => (
+        <EngineSceneContributionComponent
+          key={layer.id}
+          Component={layer.Component}
+          loadComponent={layer.loadComponent}
+          props={testEngineSceneContext}
+        />
+      ))}
     </>
   )
 }

@@ -1,13 +1,22 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import { defaultStatusBarItemClassNames } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
+import { LazyRegistryComponent } from '@src/registry/lazyComponent'
+import type { RegistryComponentLoader } from '@src/registry/lazyComponent'
 import type { ComponentType } from 'react'
 import { useState } from 'react'
 
-type PopoverSection = {
+type EagerPopoverSection = {
   id: string
   component: ComponentType
 }
+
+type LazyPopoverSection = {
+  id: string
+  loadComponent: RegistryComponentLoader<object>
+}
+
+type PopoverSection = EagerPopoverSection | LazyPopoverSection
 
 export function SelectionStatusBarItem({
   label,
@@ -63,9 +72,20 @@ export function SelectionStatusBarItem({
               Close
             </button>
           </div>
-          {popoverSections.map(({ id, component: Section }) => (
-            <Section key={id} />
-          ))}
+          {popoverSections.map((section) => {
+            if ('loadComponent' in section) {
+              return (
+                <LazyRegistryComponent
+                  key={section.id}
+                  loadComponent={section.loadComponent}
+                  fallback={null}
+                />
+              )
+            }
+
+            const Section = section.component
+            return <Section key={section.id} />
+          })}
         </div>
       )}
     </div>

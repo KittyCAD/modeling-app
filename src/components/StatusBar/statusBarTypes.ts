@@ -1,5 +1,6 @@
 import type { CustomIconName } from '@src/components/CustomIcon'
 import type { TooltipProps } from '@src/components/Tooltip'
+import type { ErasedLazyRegistryComponentSpec } from '@src/registry/lazyComponent'
 import type { Location } from 'react-router-dom'
 
 export type StatusBarItemType = {
@@ -34,4 +35,5 @@ export type StatusBarItemType = {
   | {
       component: React.FC
     }
+  | ErasedLazyRegistryComponentSpec
 )

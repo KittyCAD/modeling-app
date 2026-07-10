@@ -23,12 +23,10 @@ import {
   nullableStatusBarItem,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
-import { Suspense, createElement, lazy } from 'react'
+import { defineLazyRegistryComponent } from '@src/registry/lazyComponent'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
 import {
-  EngineSceneGizmoViewExtension,
-  EngineSceneToolbarViewExtension,
   SketchBackgroundOpacityViewExtension,
   SketchConstraintsToggleViewExtension,
 } from './viewExtensionControls'
@@ -63,76 +61,32 @@ const openMeasureToolKeymapItem: KeymapItem = {
   command: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
 }
 
-// Registry extension entrypoints are imported eagerly while App is still
-// initializing. These status bar components can reach boot.ts, so keep them
-// behind lazy imports to avoid an App <-> boot cycle.
-const SelectionFilterControls = lazy(async () => {
-  const { SelectionFilterControls } = await import('./SelectionFilterControls')
-  return { default: SelectionFilterControls }
-})
+const loadSelectionFilterControls = async () =>
+  (await import('./SelectionFilterControls')).SelectionFilterControls
 
-const UnitsMenu = lazy(async () => {
-  const { UnitsMenu } = await import('@src/components/UnitsMenu')
-  return { default: UnitsMenu }
-})
+const loadUnitsMenu = async () =>
+  (await import('@src/components/UnitsMenu')).UnitsMenu
 
-const ExperimentalFeaturesMenu = lazy(async () => {
-  const { ExperimentalFeaturesMenu } = await import(
-    '@src/components/ExperimentalFeaturesMenu'
-  )
-  return { default: ExperimentalFeaturesMenu }
-})
+const loadExperimentalFeaturesMenu = async () =>
+  (await import('@src/components/ExperimentalFeaturesMenu'))
+    .ExperimentalFeaturesMenu
 
-const SelectionStatusBarItem = lazy(async () => {
-  const { SelectionStatusBarItem } = await import(
-    '@src/components/SelectionStatusBarItem'
-  )
-  return { default: SelectionStatusBarItem }
-})
+const loadSelectionStatusBarItem = async () =>
+  (await import('@src/components/SelectionStatusBarItem'))
+    .SelectionStatusBarItem
 
-const SelectionReferencesPopover = lazy(async () => {
-  const { SelectionReferencesPopover } = await import(
-    '@src/components/SelectionReferencesPopover'
-  )
-  return { default: SelectionReferencesPopover }
-})
+const loadSelectionReferencesPopover = async () =>
+  (await import('@src/components/SelectionReferencesPopover'))
+    .SelectionReferencesPopover
 
-const MeasurementStatusBarItem = lazy(async () => {
-  const { MeasurementStatusBarItem } = await import('./MeasurementTool')
-  return { default: MeasurementStatusBarItem }
-})
+const loadMeasurementStatusBarItem = async () =>
+  (await import('./MeasurementTool')).MeasurementStatusBarItem
 
-const EngineSceneUnitsMenu = () =>
-  createElement(Suspense, { fallback: null }, createElement(UnitsMenu))
+const loadToolbarViewExtension = async () =>
+  (await import('./ToolbarViewExtension')).EngineSceneToolbarViewExtension
 
-const EngineSceneExperimentalFeaturesMenu = () =>
-  createElement(
-    Suspense,
-    { fallback: null },
-    createElement(ExperimentalFeaturesMenu)
-  )
-
-const EngineSceneSelectionStatusBarItem = ({ label }: { label: string }) =>
-  createElement(
-    Suspense,
-    { fallback: null },
-    createElement(SelectionStatusBarItem, {
-      label,
-      popoverSections: [
-        {
-          id: 'selection-references',
-          component: SelectionReferencesPopover,
-        },
-      ],
-    })
-  )
-
-const EngineSceneSelectionFilterControls = () =>
-  createElement(
-    Suspense,
-    { fallback: null },
-    createElement(SelectionFilterControls)
-  )
+const loadGizmoViewExtension = async () =>
+  (await import('./GizmoViewExtension')).EngineSceneGizmoViewExtension
 
 const isSketchSolveMode = (context: EngineSceneExtensionContext) =>
   context.modelingState.matches('sketchSolveMode')
@@ -147,7 +101,7 @@ const toolbarViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.toolbar',
   zone: 'top',
   order: 0,
-  Component: EngineSceneToolbarViewExtension,
+  loadComponent: loadToolbarViewExtension,
   wrapperClassName: 'w-full min-w-0 flex justify-center',
 })
 
@@ -171,15 +125,8 @@ const gizmoViewExtension = defineEngineSceneViewExtension({
   id: 'engine-scene.gizmo',
   zone: 'bottom-right',
   order: 0,
-  Component: EngineSceneGizmoViewExtension,
+  loadComponent: loadGizmoViewExtension,
 })
-
-const EngineSceneMeasurementStatusBarItem = () =>
-  createElement(
-    Suspense,
-    { fallback: null },
-    createElement(MeasurementStatusBarItem)
-  )
 
 /**
  * Engine scene extension.
@@ -196,10 +143,18 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       selectionStatusLabel
         ? {
             id: 'selection',
-            component: () =>
-              createElement(EngineSceneSelectionStatusBarItem, {
+            ...defineLazyRegistryComponent({
+              loadComponent: loadSelectionStatusBarItem,
+              componentProps: {
                 label: selectionStatusLabel.value,
-              }),
+                popoverSections: [
+                  {
+                    id: 'selection-references',
+                    loadComponent: loadSelectionReferencesPopover,
+                  },
+                ],
+              },
+            }),
             order: 10,
             scopes: ['file'],
           }
@@ -211,7 +166,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       executionService.value
         ? {
             id: 'measure',
-            component: EngineSceneMeasurementStatusBarItem,
+            ...defineLazyRegistryComponent({
+              loadComponent: loadMeasurementStatusBarItem,
+            }),
             order: 9,
             scopes: ['file'],
           }
@@ -223,7 +180,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       executionService.value
         ? {
             id: 'selection-filter',
-            component: EngineSceneSelectionFilterControls,
+            ...defineLazyRegistryComponent({
+              loadComponent: loadSelectionFilterControls,
+            }),
             order: 11,
             scopes: ['file'],
           }
@@ -235,7 +194,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       executionService.value?.showExperimentalFeaturesStatusBarItem.value
         ? {
             id: 'experimental-features',
-            component: EngineSceneExperimentalFeaturesMenu,
+            ...defineLazyRegistryComponent({
+              loadComponent: loadExperimentalFeaturesMenu,
+            }),
             order: 30,
             scopes: ['file'],
           }
@@ -247,7 +208,9 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
       executionService.value
         ? {
             id: 'units',
-            component: EngineSceneUnitsMenu,
+            ...defineLazyRegistryComponent({
+              loadComponent: loadUnitsMenu,
+            }),
             order: 20,
             scopes: ['file'],
           }
