@@ -6,6 +6,7 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import { useSignals } from '@preact/signals-react/runtime'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -18,27 +19,31 @@ import {
 import {
   getEXTNoPeriod,
   isExtensionARelevantExtension,
-  parentPathRelativeToProject,
+  joinRouterPaths,
+  safeEncodeForRouterPaths,
 } from '@src/lib/paths'
+import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
 import { reportRejection } from '@src/lib/trap'
-import {
-  useFolders,
-  useProjectDirectoryPath,
-} from '@src/machines/systemIO/hooks'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { use, useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 export function ProjectExplorerPane(props: AreaTypeComponentProps) {
-  const { commands, project, systemIOActor, layout } = useApp()
+  useSignals()
+  const { commands, project, systemIO, layout, settings } = useApp()
   const { kclManager } = useSingletons()
   const wasmInstance = use(kclManager.wasmInstancePromise)
-  const projects = useFolders()
-  const projectDirectoryPath = useProjectDirectoryPath()
+  const projectDirectoryPath =
+    settings.useSettings().app.projectDirectory.current
   const projectRef = useRef(project?.projectIORefSignal)
   const [theProject, setTheProject] = useState<Project | null>(null)
+  const [createFilePressed, setCreateFilePressed] = useState<number>(0)
+  const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
+  const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
+  const [collapsePressed, setCollapsedPressed] = useState<number>(0)
   const file = project?.executingFileEntry.value
+  const navigate = useNavigate()
   const {
     state: modelingMachineState,
     send: modelingSend,
@@ -46,34 +51,36 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   } = useModelingContext()
 
   useEffect(() => {
-    // Have no idea why the project loader data doesn't have the children from the ls on disk
-    // That means it is a different object or cached incorrectly?
     if (!project || !file) {
       return
     }
 
     const loadedProject = project.projectIORefSignal.value
-    if (projects === undefined) {
-      systemIOActor.send({
-        type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-      })
-    }
-
     const duplicated = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
-      projects,
     })
+    setTheProject(duplicated)
+  }, [file, project, systemIO.stateSignal.value.currentProjectTreeVersion])
 
-    if (!duplicated) {
+  useEffect(() => {
+    if (!project) {
       return
     }
-    setTheProject(duplicated)
-  }, [file, projects, project, systemIOActor])
-
-  const [createFilePressed, setCreateFilePressed] = useState<number>(0)
-  const [createFolderPressed, setCreateFolderPressed] = useState<number>(0)
-  const [refreshExplorerPressed, setRefresFolderPressed] = useState<number>(0)
-  const [collapsePressed, setCollapsedPressed] = useState<number>(0)
+    void systemIO
+      .request({
+        type: 'project.loadTree',
+        projectPath: project.path,
+      })
+      .then((projectTree) => {
+        project.projectIORefSignal.value = projectTree
+      })
+      .catch(reportRejection)
+  }, [
+    project,
+    refreshExplorerPressed,
+    systemIO,
+    systemIO.stateSignal.value.currentProjectTreeVersion,
+  ])
 
   const openCodeEditorPaneIfClosed = useCallback(() => {
     const rootLayout = layout.get()
@@ -115,11 +122,6 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
 
   const onRowClicked = useCallback(
     (entry: FileExplorerEntry) => {
-      const requestedFileName = parentPathRelativeToProject(
-        entry.path,
-        projectDirectoryPath
-      )
-
       const RELEVANT_FILE_EXTENSIONS = relevantFileExtensions(wasmInstance)
       const isRelevantFile = (filename: string): boolean => {
         const extension = getEXTNoPeriod(filename)
@@ -138,16 +140,10 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         entry.children == null &&
         entry.path.endsWith(FILE_EXT)
       ) {
-        const name = projectRef.current.value.name.slice()
-
         const navigateHelper = () => {
-          systemIOActor.send({
-            type: SystemIOMachineEvents.navigateToFile,
-            data: {
-              requestedProjectName: name,
-              requestedFileName: requestedFileName,
-            },
-          })
+          void navigate(
+            joinRouterPaths(PATHS.FILE, safeEncodeForRouterPaths(entry.path))
+          )
         }
 
         if (modelingMachineState.matches('Sketch')) {
@@ -196,8 +192,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       modelingActor,
       modelingMachineState,
       modelingSend,
-      projectDirectoryPath,
-      systemIOActor,
+      navigate,
       wasmInstance,
     ]
   )

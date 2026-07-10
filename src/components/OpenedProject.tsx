@@ -31,6 +31,7 @@ import {
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import { applyFileRouteTransitionEffects } from '@src/lib/fileRouteTransition'
 import {
   DefaultLayoutPaneID,
   LayoutRootNode,
@@ -39,17 +40,12 @@ import {
 } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
-import { PATHS } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
 import { maybeWriteToDisk } from '@src/lib/telemetry'
 import { reportRejection } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import { xStateValueToString } from '@src/lib/xStateValueToString'
 import { BillingTransition } from '@src/machines/billingMachine'
-
-import { useFolders, useLastOperation } from '@src/machines/systemIO/hooks'
-import { SystemIOMachineStates } from '@src/machines/systemIO/utils'
 import {
   filterStatusBarItemsForScopes,
   statusBarGlobalItemsValueSpec,
@@ -60,8 +56,7 @@ import {
   needsToOnboard,
   useApplyRememberedOnboardingWorkflow,
 } from '@src/routes/Onboarding/utils'
-import { useSelector } from '@xstate/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import ModalContainer from 'react-modal-promise'
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
@@ -74,7 +69,7 @@ if (window.electron) {
 
 export function OpenedProject() {
   useSignals()
-  const { auth, billing, settings, layout, project, systemIOActor, registry } =
+  const { auth, billing, settings, layout, project, systemIO, registry } =
     useApp()
   const { kclManager } = useSingletons()
   const settingsActor = settings.actor
@@ -87,9 +82,7 @@ export function OpenedProject() {
   const navigate = useNavigate()
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
-  const lastOperation = useLastOperation()
-  const projects = useFolders()
-  const { onProjectOpen } = useLspContext()
+  const { onProjectOpen, onFileClose, onFileOpen } = useLspContext()
   const networkHealthStatus = useNetworkHealthStatus()
   const networkMachineStatus = useNetworkMachineStatus()
 
@@ -98,8 +91,14 @@ export function OpenedProject() {
 
   const projectName = project?.name || null
   const projectPath = project?.path || null
-
-  const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
+  const executingPath = project?.executingPath ?? null
+  const previousFileRouteRef = useRef<
+    | {
+        filePathWithExtension: string | null
+        projectDirectory: string | null
+      }
+    | undefined
+  >(undefined)
 
   useEffect(() => {
     setCloudSyncProjectScope(projectPath ?? undefined)
@@ -109,37 +108,9 @@ export function OpenedProject() {
     }
   }, [projectPath])
 
-  // Handle our project folder disappearing (Go back to Projects listing)
-  useEffect(() => {
-    if (systemIOState !== SystemIOMachineStates.idle) {
-      return
-    }
-
-    if (
-      projects &&
-      projects.length > 0 &&
-      projects.every((p: Project) => p.name !== projectName) &&
-      [
-        SystemIOMachineStates.creatingProject,
-        SystemIOMachineStates.renamingProject,
-        SystemIOMachineStates.importFileFromURL,
-      ].includes(lastOperation) === false
-    ) {
-      void navigate(PATHS.HOME)
-    }
-
-    if (projects && projects.length === 0) {
-      void navigate(PATHS.HOME)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projects, lastOperation, systemIOState])
-
   // ZOOKEEPER BEHAVIOR EXCEPTION
-  // Only fires on state changes, to deal with Zookeeper control.
+  // Only fires on current-project tree changes, to deal with Zookeeper control.
   useEffect(() => {
-    if (systemIOState !== 'idle') {
-      return
-    }
     if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
       return
     }
@@ -166,15 +137,51 @@ export function OpenedProject() {
         }
       })
       .catch(reportRejection)
-  }, [systemIOState, kclManager, modelingState, modelingSend, settingsActor])
+  }, [
+    systemIO.stateSignal.value.currentProjectTreeVersion,
+    kclManager,
+    modelingState,
+    modelingSend,
+    settingsActor,
+  ])
 
-  // Run LSP file open hook when navigating between projects or files
+  // Run LSP project open hook when navigating between projects.
   useEffect(() => {
-    onProjectOpen(
-      { name: projectName, path: projectPath },
-      project?.executingPath ? project.executingFileEntry.value : null
-    )
-  }, [onProjectOpen, projectName, projectPath, project])
+    onProjectOpen({ name: projectName, path: projectPath }, null)
+  }, [onProjectOpen, projectName, projectPath])
+
+  // Preserve file-transition side effects that used to be centralized with
+  // filesystem-triggered route navigation.
+  useEffect(() => {
+    const previousFileRoute = previousFileRouteRef.current
+    const nextFileRoute = {
+      filePathWithExtension: executingPath,
+      projectDirectory: projectPath,
+    }
+    previousFileRouteRef.current = nextFileRoute
+
+    if (!previousFileRoute) {
+      onFileOpen(executingPath, projectPath)
+      return
+    }
+
+    if (
+      previousFileRoute.filePathWithExtension ===
+        nextFileRoute.filePathWithExtension &&
+      previousFileRoute.projectDirectory === nextFileRoute.projectDirectory
+    ) {
+      return
+    }
+
+    applyFileRouteTransitionEffects({
+      currentFilePathWithExtension: previousFileRoute.filePathWithExtension,
+      currentProjectDirectory: previousFileRoute.projectDirectory,
+      requestedFilePathWithExtension: nextFileRoute.filePathWithExtension,
+      requestedProjectDirectory: nextFileRoute.projectDirectory,
+      kclManager,
+      lsp: { onFileClose, onFileOpen },
+    })
+  }, [executingPath, projectPath, kclManager, onFileClose, onFileOpen])
 
   useHotKeyListener(kclManager)
 
@@ -259,7 +266,7 @@ export function OpenedProject() {
             navigate,
             kclManager,
             accountUrl: withSiteBaseURL('/account'),
-            systemIOActor,
+            systemIO,
             settingsActor,
           }),
         {
@@ -279,7 +286,7 @@ export function OpenedProject() {
     searchParams.size,
     authToken,
     kclManager,
-    systemIOActor,
+    systemIO,
     settingsActor,
   ])
 

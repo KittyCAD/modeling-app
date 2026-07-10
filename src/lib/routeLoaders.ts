@@ -10,7 +10,6 @@ import { readAppSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
   PATHS,
-  getParentAbsolutePath,
   getProjectMetaByRouteId,
   getRouterSearchFromRequestUrl,
   safeEncodeForRouterPaths,
@@ -25,7 +24,6 @@ import type {
   HomeLoaderData,
   IndexLoaderData,
 } from '@src/lib/types'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
 import { waitFor } from 'xstate'
@@ -74,10 +72,9 @@ export const baseLoader =
     // We have to create and/or navigate to a project on web.
     try {
       await fsZds.stat(requestedProjectName)
-      app.systemIOActor.send({
-        type: SystemIOMachineEvents.navigateToProject,
-        data: { requestedProjectName },
-      })
+      return redirect(
+        `${PATHS.FILE}/${safeEncodeForRouterPaths(requestedProjectName)}${routerSearch}`
+      )
     } catch {
       await projectSkeletonCreate(
         fsZds.resolve(
@@ -216,22 +213,10 @@ export const fileLoader =
         : undefined
     )
 
-    const requestedFileName =
-      app.systemIOActor.getSnapshot().context.requestedFileName
-    if (requestedFileName.project === projectName) {
-      requestedFileName.onProjectLoaderComplete?.()
-    }
-
     const appProjectDir = settings.settings.app.projectDirectory.current
-    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
-      ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
-    app.systemIOActor.send({
-      type: SystemIOMachineEvents.setProjectDirectoryPath,
-      data: {
-        requestedProjectDirectoryPath,
-      },
-    })
+    if (project.path.includes(appProjectDir)) {
+      void app.systemIO.refreshLocalProjects(appProjectDir)
+    }
 
     const projectData: IndexLoaderData = {
       code: editor.code,
