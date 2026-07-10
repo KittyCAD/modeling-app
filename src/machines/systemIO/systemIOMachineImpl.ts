@@ -1,4 +1,9 @@
 import { newKclFile } from '@src/lang/project'
+import {
+  cloudSyncStatus,
+  getCloudSyncProjectMetadataIndex,
+  getCloudSyncProjectModifiedTime,
+} from '@src/lib/cloudSync'
 import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
 import {
   canReadWriteDirectory,
@@ -19,11 +24,6 @@ import {
 } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
-import {
-  getOpfsCloudProjectMetadataIndex,
-  getOpfsCloudProjectModifiedTime,
-  opfsCloudSyncStatus,
-} from '@src/lib/fs-zds/opfsCloud'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
@@ -406,8 +406,14 @@ const sharedBulkDeleteWorkflow = async ({
 
   let totalDeleted = 0
   for (const file of filesToDelete) {
-    if (file.type === 'other') continue
-    await fsZds.rm(file.absPath)
+    // 'kcl' files carry an absolute path; 'other' files (e.g. Markdown) only
+    // carry a project-relative path, so reconstruct the absolute path from the
+    // project root. Both kinds are deletable when explicitly requested.
+    const absPath =
+      file.type === 'kcl'
+        ? file.absPath
+        : fsZds.join(project.path, file.relPath)
+    await fsZds.rm(absPath)
     totalDeleted += 1
   }
 
@@ -468,8 +474,8 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await mkdirOrNOOP(projectDirectoryPath)
-        const cloudProjectMetadataByPath = opfsCloudSyncStatus.value.enabled
-          ? await getOpfsCloudProjectMetadataIndex().catch(() => new Map())
+        const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
+          ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
           : new Map()
         // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
         const entries: ProjectDirectoryEntry[] = []
@@ -493,7 +499,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             name: entry,
             path: projectPath,
             modified:
-              getOpfsCloudProjectModifiedTime(
+              getCloudSyncProjectModifiedTime(
                 cloudProjectMetadataByPath.get(
                   normalizeProjectPathForCloudMetadata(projectPath)
                 ),
@@ -520,7 +526,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           project.cloudProjectId ??= cloudMetadata?.remoteProjectId
           project.cloudConflict = cloudMetadata?.conflict
           if (project.metadata) {
-            project.metadata.modified = getOpfsCloudProjectModifiedTime(
+            project.metadata.modified = getCloudSyncProjectModifiedTime(
               cloudMetadata,
               project.metadata.modified
             )

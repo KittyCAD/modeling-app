@@ -1,32 +1,21 @@
+import { BillingDialog } from '@kittycad/ui-components'
 import { effect as createSignalEffect } from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
-import type { Dispatch, FormEvent, HTMLProps, SetStateAction } from 'react'
-import { useEffect, useMemo, useState } from 'react'
-import { toast } from 'react-hot-toast'
-import { useHotkeys } from 'react-hotkeys-hook'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
-
-import { BillingDialog } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { Announcements } from '@src/components/Announcements'
 import { AppHeader } from '@src/components/AppHeader'
+import AppProjectCard from '@src/components/AppProjectCard/AppProjectCard'
 import Loading from '@src/components/Loading'
 import { useNetworkMachineStatus } from '@src/components/NetworkMachineIndicator'
-import ProjectCard from '@src/components/ProjectCard/ProjectCard'
 import {
   ProjectSearchBar,
   useProjectSearch,
 } from '@src/components/ProjectSearchBar'
-import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import {
   defaultGlobalStatusBarItems,
   defaultLocalStatusBarItems,
 } from '@src/components/StatusBar/defaultStatusBarItems'
+import { StatusBar } from '@src/components/StatusBar/StatusBar'
 import Tooltip from '@src/components/Tooltip'
 import { useAbsoluteFilePath } from '@src/hooks/useAbsoluteFilePath'
 import { useMenuListener } from '@src/hooks/useMenu'
@@ -40,22 +29,13 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { cloudSyncStatus, setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import { createRouteCommands } from '@src/lib/commandBarConfigs/routeCommandConfig'
-import {
-  opfsCloudSyncStatus,
-  setOpfsCloudSyncProjectScope,
-} from '@src/lib/fs-zds/opfsCloud'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
-import {
-  type OptimisticProjectRenames,
-  applyOptimisticProjectRenames,
-  pruneSettledOptimisticProjectRenames,
-} from '@src/lib/optimisticProjectRenames'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import type { Project } from '@src/lib/project'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
@@ -71,15 +51,20 @@ import {
   useFolders,
   useState as useSystemIOState,
 } from '@src/machines/systemIO/hooks'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
-  HOME_KEYMAP_SCOPE,
+  type HomeProjectActionsService,
+  type HomeProjectEntry,
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
+import {
   findKeymapItemForCommand,
+  HOME_KEYMAP_SCOPE,
   keymapKeystrokesDisplay,
   keymapScopesValueSpec,
   keymapService,
@@ -95,7 +80,16 @@ import {
   needsToOnboard,
   onDismissOnboardingInvite,
 } from '@src/routes/Onboarding/utils'
-import { type ActorRefFrom, waitFor } from 'xstate'
+import type { HTMLProps } from 'react'
+import { useEffect, useState } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
+import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
   value: boolean
@@ -106,8 +100,15 @@ type ReadWriteProjectState = {
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   useSignals()
-  const { auth, billing, commands, settings, systemIOActor, registry } =
-    useApp()
+  const {
+    auth,
+    billing,
+    commands,
+    settings,
+    systemIOActor,
+    registry,
+    userFeatures,
+  } = useApp()
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath()
@@ -138,15 +139,15 @@ const Home = () => {
 
   const projects = useFolders()
   const projectStatuses = useProjectStatuses(projects, apiToken)
-  const [optimisticProjectRenames, setOptimisticProjectRenames] =
-    useState<OptimisticProjectRenames>({})
-  const optimisticProjects = useMemo(
-    () => applyOptimisticProjectRenames(projects, optimisticProjectRenames),
-    [projects, optimisticProjectRenames]
+  const homeProjectEntries = registry.signal(homeProjectEntriesValueSpec).value
+  const homeProjectActions = registry.get(homeProjectActionsService)
+  const hasCloudSyncFeature = userFeatures.useHas(
+    OPFS_CLOUD_FEATURE_FLAG,
+    false
   )
   const [searchParams, setSearchParams] = useSearchParams()
   const { searchResults, query, setQuery } =
-    useProjectSearch(optimisticProjects)
+    useProjectSearch(homeProjectEntries)
   const projectSearchKeybinding = keymapKeystrokesDisplay(
     keymap
       ? findKeymapItemForCommand(
@@ -163,14 +164,8 @@ const Home = () => {
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
 
   useEffect(() => {
-    setOpfsCloudSyncProjectScope(undefined)
+    setCloudSyncProjectScope(undefined)
   }, [])
-
-  useEffect(() => {
-    setOptimisticProjectRenames((renames) =>
-      pruneSettledOptimisticProjectRenames(projects, renames)
-    )
-  }, [projects])
 
   useEffect(() => {
     const { RouteTelemetryCommand, RouteSettingsCommand } = createRouteCommands(
@@ -206,9 +201,11 @@ const Home = () => {
         })
         .catch(reportRejection)
     }
-    billing.send({ type: BillingTransition.Update, apiToken })
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
+
+  useEffect(() => {
+    billing.send({ type: BillingTransition.Update, apiToken })
+  }, [apiToken, billing])
 
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
@@ -221,7 +218,7 @@ const Home = () => {
     let lastHandledSyncedAt: string | undefined
 
     const disposeCloudSyncRefreshEffect = createSignalEffect(() => {
-      const syncedAt = opfsCloudSyncStatus.value.lastSyncedAt
+      const syncedAt = cloudSyncStatus.value.lastSyncedAt
       if (!syncedAt || syncedAt === lastHandledSyncedAt) {
         return
       }
@@ -505,14 +502,13 @@ const Home = () => {
         </aside>
         <ProjectGrid
           searchResults={searchResults ?? []}
-          projects={optimisticProjects}
+          projects={homeProjectEntries}
+          localProjectsLoaded={projects !== undefined}
           query={query}
           sort={sort}
           projectStatuses={projectStatuses}
-          handleRenameProject={handleRenameProject(
-            systemIOActor,
-            setOptimisticProjectRenames
-          )}
+          projectActions={homeProjectActions}
+          showCloudSyncUi={hasCloudSyncFeature}
           className="flex-1 col-start-2 -col-end-1 overflow-y-auto pr-2 pb-24"
         />
       </div>
@@ -651,27 +647,27 @@ function HomeHeader({
 }
 
 interface ProjectGridProps extends HTMLProps<HTMLDivElement> {
-  searchResults: Project[]
-  projects: Project[] | undefined
+  searchResults: HomeProjectEntry[]
+  projects: HomeProjectEntry[]
+  localProjectsLoaded: boolean
   query: string
   sort: string
   projectStatuses: Map<string, ProjectStatus>
-  handleRenameProject: (
-    e: FormEvent<HTMLFormElement>,
-    project: Project
-  ) => Promise<void>
+  projectActions: HomeProjectActionsService
+  showCloudSyncUi: boolean
 }
 
 function ProjectGrid({
   searchResults,
   projects,
+  localProjectsLoaded,
   query,
   sort,
   projectStatuses,
-  handleRenameProject,
+  projectActions,
+  showCloudSyncUi,
   ...rest
 }: ProjectGridProps) {
-  const { systemIOActor } = useApp()
   const state = useSystemIOState()
   const isReadingFolders = state.matches(SystemIOMachineStates.readingFolders)
   const sortedSearchResults = searchResults.toSorted(getSortFunction(sort))
@@ -683,23 +679,23 @@ function ProjectGrid({
 
   return (
     <section data-testid="home-section" {...rest}>
-      {projects === undefined || (isReadingFolders && projects.length === 0) ? (
+      {!localProjectsLoaded && projects.length === 0 ? (
         <Loading isDummy={true}>Loading your Projects...</Loading>
       ) : (
         <>
           {searchResults.length > 0 ? (
             <ul className="grid w-full sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {sortedSearchResults.map((project) => (
-                <ProjectCard
-                  key={project.name}
+                <AppProjectCard
+                  key={project.id}
                   project={project}
+                  projectActions={projectActions}
                   projectStatus={
-                    project.cloudProjectId
-                      ? projectStatuses.get(project.cloudProjectId)
+                    project.remoteProjectId
+                      ? projectStatuses.get(project.remoteProjectId)
                       : undefined
                   }
-                  handleRenameProject={handleRenameProject}
-                  handleDeleteProject={handleDeleteProject(systemIOActor)}
+                  showCloudSyncUi={showCloudSyncUi}
                 />
               ))}
             </ul>
@@ -709,7 +705,7 @@ function ProjectGrid({
               className="p-4 my-8 border border-dashed rounded border-chalkboard-30 dark:border-chalkboard-70"
             >
               No projects found
-              {projects !== undefined && projects.length === 0
+              {projects.length === 0
                 ? ', ready to make your first one?'
                 : ` with the search term "${query}"`}
             </p>
@@ -733,62 +729,6 @@ function errorMessage(error: unknown): string {
     return error
   }
   return 'Unknown error'
-}
-
-function handleRenameProject(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>,
-  setOptimisticProjectRenames: Dispatch<
-    SetStateAction<OptimisticProjectRenames>
-  >
-) {
-  return async function (e: FormEvent<HTMLFormElement>, project: Project) {
-    const { newProjectName } = Object.fromEntries(
-      new FormData(e.target as HTMLFormElement)
-    )
-
-    if (
-      !project.cloudProjectId &&
-      typeof newProjectName === 'string' &&
-      newProjectName.startsWith('.')
-    ) {
-      toast.error('Project names cannot start with a period.')
-      return
-    }
-
-    if (newProjectName !== getProjectDisplayName(project)) {
-      if (project.cloudProjectId && typeof newProjectName === 'string') {
-        setOptimisticProjectRenames((renames) => ({
-          ...renames,
-          [project.cloudProjectId as string]: {
-            title: newProjectName,
-            modified: Date.now(),
-          },
-        }))
-      }
-
-      systemIOActor.send({
-        type: SystemIOMachineEvents.renameProject,
-        data: {
-          requestedProjectName: String(newProjectName),
-          projectName: project.name,
-          redirect: false,
-        },
-      })
-    }
-  }
-}
-
-function handleDeleteProject(
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
-) {
-  return async function (project: Project) {
-    systemIOActor.send({
-      type: SystemIOMachineEvents.deleteProject,
-      data: {
-        requestedProjectName: String(project.name),
-      },
-    })
-  }
 }
 
 export default Home

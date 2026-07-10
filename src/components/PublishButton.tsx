@@ -11,11 +11,17 @@ import {
 } from '@src/lib/share'
 import { err } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
+import { keymapService } from '@src/registry/contracts/keymap'
+import {
+  MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
+  markdownEditorService,
+} from '@src/registry/contracts/markdownEditor'
 import {
   type ComponentProps,
   memo,
   useCallback,
   useEffect,
+  useMemo,
   useState,
 } from 'react'
 
@@ -69,6 +75,18 @@ function PublishPopoverContent({
   const publishRequiresUsername = !isCheckingUser && !!token && !username
   const accountUrl = withSiteBaseURL('/account')
   const buttonDisabled = kclEmpty || hasKclErrors
+  const keymap = app.registry.optional(keymapService)
+  const markdownEditor = app.registry.optional(markdownEditorService)
+  const markdownEditorKeymap = useMemo(
+    () =>
+      keymap && markdownEditor
+        ? {
+            focusScope: keymap.focusScope(MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE),
+            registerActions: markdownEditor.registerActiveEditor,
+          }
+        : undefined,
+    [keymap, markdownEditor]
+  )
 
   const fetchPublicationDetails = useCallback(async () => {
     if (!token || !project) {
@@ -161,6 +179,7 @@ function PublishPopoverContent({
           accountUrl={accountUrl}
           publicationDetails={publicationDetails}
           isLoadingPublicationDetails={isLoadingPublicationDetails}
+          markdownEditorKeymap={markdownEditorKeymap}
         />
       )}
     </>

@@ -20,11 +20,21 @@ export {
   defaultMarkdownEditorFeatures,
   defaultNormalizeMarkdownLinkHref,
   MarkdownEditor,
+  type MarkdownEditorActionName,
+  type MarkdownEditorActions,
   type MarkdownEditorFeature,
   type MarkdownEditorNormalizeLinkHref,
   type MarkdownEditorProps,
   normalizeMarkdownEditorValue,
 } from './components/MarkdownEditor'
+export {
+  ProjectCard,
+  defaultProjectCardClassNames,
+  type ProjectCardClassNameSlot,
+  type ProjectCardClassNames,
+  type ProjectCardOpenLinkRenderProps,
+  type ProjectCardProps,
+} from './components/ProjectCard'
 export {
   BillingError,
   EBillingError,

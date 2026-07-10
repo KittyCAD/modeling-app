@@ -40,8 +40,20 @@ export default defineConfig((env) => {
         'class-static-blocks': false,
       },
     },
-    // Needed for electron-forge (in npm run tron:start)
-    optimizeDeps: { esbuildOptions: { target: 'es2022' } },
+    // Needed for electron-forge (in npm run tron:start). Keeping the
+    // renderer-only deps explicit avoids a cold-start optimizer reload while
+    // Electron is already showing the window.
+    optimizeDeps: {
+      include: [
+        '@lezer/lr',
+        'node:path',
+        'path',
+        'vite-plugin-node-polyfills/shims/buffer',
+        'vite-plugin-node-polyfills/shims/global',
+        'vite-plugin-node-polyfills/shims/process',
+      ],
+      esbuildOptions: { target: 'es2022' },
+    },
     plugins: [
       nodePolyfills({
         include: ['path'],
