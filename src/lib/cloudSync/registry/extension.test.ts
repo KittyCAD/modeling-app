@@ -33,6 +33,7 @@ vi.mock('@src/lib/cloudSync', () => ({
   resolveCloudSyncProjectConflict: vi.fn(),
   retryCloudSync: vi.fn(),
   setCloudSyncProjectScope: vi.fn(),
+  getCloudSyncRemoteProjectThumbnailUrl: vi.fn(),
 }))
 
 describe('cloud sync extension', () => {
