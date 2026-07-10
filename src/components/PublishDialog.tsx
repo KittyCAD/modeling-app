@@ -2,6 +2,7 @@ import { Popover, Transition } from '@headlessui/react'
 import type { ProjectCategoryResponse } from '@kittycad/lib'
 import {
   MarkdownEditor,
+  type MarkdownEditorActions,
   normalizeMarkdownEditorValue,
 } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
@@ -14,6 +15,14 @@ import type {
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import { Fragment, useCallback, useEffect, useMemo, useState } from 'react'
 
+type PublishDialogMarkdownEditorKeymap = {
+  focusScope: {
+    onFocus: () => void
+    onBlur: () => void
+  }
+  registerActions: (actions: MarkdownEditorActions) => () => void
+}
+
 type PublishDialogProps = {
   onSubmit: (args: ProjectPublishSubmission) => Promise<boolean>
   initialTitle?: string
@@ -22,6 +31,7 @@ type PublishDialogProps = {
   accountUrl: string
   publicationDetails?: CurrentProjectPublicationDetails | null
   isLoadingPublicationDetails?: boolean
+  markdownEditorKeymap?: PublishDialogMarkdownEditorKeymap
 }
 
 const AQUARIUM_TERMS_URL = 'https://zoo.dev/aquarium-terms-of-use'
@@ -34,6 +44,7 @@ export function PublishDialog({
   accountUrl,
   publicationDetails = null,
   isLoadingPublicationDetails = false,
+  markdownEditorKeymap,
 }: PublishDialogProps) {
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState('')
@@ -46,6 +57,10 @@ export function PublishDialog({
   const [categories, setCategories] = useState<ProjectCategoryResponse[]>([])
   const [isLoadingCategories, setIsLoadingCategories] = useState(true)
   const [categoriesError, setCategoriesError] = useState<string | null>(null)
+  const [descriptionEditorActions, setDescriptionEditorActions] =
+    useState<MarkdownEditorActions | null>(null)
+  const [descriptionEditorFocused, setDescriptionEditorFocused] =
+    useState(false)
 
   useEffect(() => {
     if (!publicationDetails) {
@@ -115,6 +130,29 @@ export function PublishDialog({
       controller.abort()
     }
   }, [loadCategories])
+
+  useEffect(() => {
+    if (!markdownEditorKeymap || !descriptionEditorFocused) {
+      return
+    }
+
+    markdownEditorKeymap.focusScope.onFocus()
+    return () => {
+      markdownEditorKeymap.focusScope.onBlur()
+    }
+  }, [descriptionEditorFocused, markdownEditorKeymap])
+
+  useEffect(() => {
+    if (
+      !markdownEditorKeymap ||
+      !descriptionEditorFocused ||
+      !descriptionEditorActions
+    ) {
+      return
+    }
+
+    return markdownEditorKeymap.registerActions(descriptionEditorActions)
+  }, [descriptionEditorActions, descriptionEditorFocused, markdownEditorKeymap])
 
   const normalizedDescription = useMemo(
     () => normalizeMarkdownEditorValue(description),
@@ -241,8 +279,11 @@ export function PublishDialog({
                 }
                 invalid={hasTriedSubmit && !descriptionIsValid}
                 labelledBy="publish-project-description-label"
+                onActionsChange={setDescriptionEditorActions}
+                onFocusChange={setDescriptionEditorFocused}
                 placeholder="Tell people about what you made..."
                 required={true}
+                suppressDefaultKeyboardShortcuts={true}
                 testId="publish-project-description-editor"
               />
               {hasTriedSubmit && !descriptionIsValid && (

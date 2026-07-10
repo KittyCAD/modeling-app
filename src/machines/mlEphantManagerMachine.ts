@@ -463,6 +463,9 @@ export const MlEphantConversationToMarkdown = (
               'created_kcl_file',
               'updated_kcl_file',
               'deleted_kcl_file',
+              'created_project_file',
+              'updated_project_file',
+              'deleted_project_file',
             ].includes(response.reasoning.type) === false
           ) {
             const contentWithoutCode = response.reasoning.content.replace(

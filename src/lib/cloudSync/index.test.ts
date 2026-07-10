@@ -1,7 +1,4 @@
 import {
-  type OutboxEntry,
-  type ProjectArchiveFile,
-  type ProjectManifest,
   filterCloudSyncProjectFilesForSync,
   getCloudSyncConflictCopyCleanupPlan,
   getCloudSyncInitialLocalProjectSyncAction,
@@ -14,6 +11,9 @@ import {
   getCloudSyncRemoteIndexAction,
   getCloudSyncScopePlan,
   isCloudSyncConflictCopyProjectName,
+  type OutboxEntry,
+  type ProjectArchiveFile,
+  type ProjectManifest,
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
   shouldCloudSyncAutoSyncLocalProject,
@@ -215,7 +215,7 @@ describe('cloudSync sync helpers', () => {
     expect(projectToml).toContain('title = "New cloud title"')
   })
 
-  it('clones remote projects that exist in cloud but have no local match', () => {
+  it('indexes remote projects that exist in cloud but have no local match', () => {
     expect(
       getCloudSyncRemoteIndexAction({
         hasRemoteProjectId: true,
@@ -223,7 +223,7 @@ describe('cloudSync sync helpers', () => {
         hasKnownLocalMetadata: false,
         hasMatchingLocalProject: false,
       })
-    ).toBe('clone-remote')
+    ).toBe('index-remote')
   })
 
   it('skips remote projects that were tombstoned locally', () => {

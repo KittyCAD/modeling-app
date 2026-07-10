@@ -1,4 +1,3 @@
-import type { UserResponse } from '@kittycad/lib'
 import {
   defineRegistryItem,
   pluginsValueSpec,
@@ -48,7 +47,6 @@ import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
@@ -65,6 +63,10 @@ import {
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import {
+  type AuthRegistryService,
+  authService,
+} from '@src/registry/contracts/auth'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
@@ -80,6 +82,7 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
+import { systemIOService } from '@src/registry/contracts/systemIO'
 import {
   type UserFeaturesRegistryService,
   userFeaturesService,
@@ -150,13 +153,7 @@ declare global {
   }
 }
 
-export type AppAuthSystem = {
-  actor: ActorRefFrom<typeof authMachine>
-  send: ActorRefFrom<typeof authMachine>['send']
-  useAuthState: () => SnapshotFrom<typeof authMachine>
-  useToken: () => string
-  useUser: () => UserResponse | undefined
-}
+export type AppAuthSystem = AuthRegistryService
 
 export type AppCommandSystem = CommandSystemService
 
@@ -246,7 +243,6 @@ export class App implements AppSubsystems {
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
-  private pluginSettingsSubscription: Subscription
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -284,9 +280,7 @@ export class App implements AppSubsystems {
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
-    this.pluginSettingsSubscription = this.settings.actor.subscribe(
-      this.syncPluginSettings
-    )
+    this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettings(this.settings.actor.getSnapshot())
   }
 
@@ -297,16 +291,6 @@ export class App implements AppSubsystems {
   static getDefaultSystems({
     registryOverrides = [],
   }: AppRegistryOptions = {}) {
-    const authActor = createActor(authMachine).start()
-    const auth: AppAuthSystem = {
-      actor: authActor,
-      send: (...args: Parameters<typeof authActor.send>) =>
-        authActor.send(...args),
-      useAuthState: () => useSelector(authActor, (state) => state),
-      useToken: () => useSelector(authActor, (state) => state.context.token),
-      useUser: () => useSelector(authActor, (state) => state.context.user),
-    }
-
     const appRegistry = new Registry()
     appRegistry.configure([
       appRegistryOverridesSlot.of(...registryOverrides),
@@ -318,6 +302,7 @@ export class App implements AppSubsystems {
     const wasmPromise =
       appRegistry.get(wasmPromiseValueSpec) ??
       Promise.reject(new Error('Missing WASM promise registry value.'))
+    const auth = appRegistry.get(authService)
     const machineManager = appRegistry.get(machineManagerService).manager
     const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
@@ -731,6 +716,9 @@ export class App implements AppSubsystems {
             executingEditorService,
             kclManager.executingEditorService
           ),
+          provideService(systemIOService, {
+            actor: this.systemIOActor,
+          }),
         ],
       }),
     ])
@@ -750,9 +738,13 @@ export class App implements AppSubsystems {
           const streamEl = document.querySelector('[data-testid="stream"]')
           const vw = document.documentElement.clientWidth
           const vh = document.documentElement.clientHeight
-          if (!streamEl || vw <= 0 || vh <= 0) return
+          if (!streamEl || vw <= 0 || vh <= 0) {
+            return
+          }
           const r = streamEl.getBoundingClientRect()
-          if (r.width <= 0 || r.height <= 0) return
+          if (r.width <= 0 || r.height <= 0) {
+            return
+          }
           const cx = e.clientX
           const cy = e.clientY
           const ratioX = (cx - r.left) / r.width
