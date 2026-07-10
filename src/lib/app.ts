@@ -7,7 +7,7 @@ import {
   Slot,
 } from '@kittycad/registry'
 import { type Signal, signal } from '@preact/signals-core'
-import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -77,11 +77,7 @@ import {
   coreRegistryItems,
 } from '@src/registry/registry'
 import { useSelector } from '@xstate/react'
-import type {
-  ActorRefFrom,
-  ContextFrom,
-  SnapshotFrom,
-} from 'xstate'
+import type { ActorRefFrom, ContextFrom, SnapshotFrom } from 'xstate'
 import { createActor } from 'xstate'
 
 const appCommandsSlot = new Slot()
