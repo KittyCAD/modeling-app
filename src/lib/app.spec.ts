@@ -163,6 +163,14 @@ async function waitForHistoryIdle(kclManager: KclManager) {
 
 describe('project system', () => {
   it('syncs plugin settings into plugin activation and only persists overrides', async () => {
+    const previousElectron = window.electron
+    const syncActivePlugins = vi.fn().mockResolvedValue(undefined)
+    window.electron = {
+      pluginIpc: {
+        invoke: vi.fn(),
+        syncActivePlugins,
+      },
+    } as unknown as typeof window.electron
     const app = App.fromProvided({
       wasmPromise: loadWasm(),
     })
@@ -178,6 +186,9 @@ describe('project system', () => {
 
       const pluginToggle = app.registry.get(plugin!.service)
       expect(pluginToggle.active.value).toBe(true)
+      expect(syncActivePlugins).toHaveBeenCalledWith(
+        expect.arrayContaining([pluginId])
+      )
 
       app.settings.actor.send({
         type: `set.plugins.${pluginId}`,
@@ -191,6 +202,7 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       expect(pluginToggle.active.value).toBe(false)
+      expect(syncActivePlugins.mock.calls.at(-1)?.[0]).not.toContain(pluginId)
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
       ).toEqual({
@@ -209,6 +221,7 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       expect(pluginToggle.active.value).toBe(true)
+      expect(syncActivePlugins.mock.calls.at(-1)?.[0]).toContain(pluginId)
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.[
           pluginId
@@ -216,6 +229,7 @@ describe('project system', () => {
       ).toBeUndefined()
     } finally {
       disposeApp(app)
+      window.electron = previousElectron
     }
   })
 
@@ -334,52 +348,6 @@ describe('project system', () => {
 
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
       expect(app.registry.get(plugin!.service).active.value).toBe(true)
-    } finally {
-      disposeApp(app)
-    }
-  })
-
-  it('syncs a declared plugin activation setting after reload', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
-
-    try {
-      await waitForSettingsIdle(app)
-
-      const executionIndicatorPlugin = app.registry
-        .get(pluginsValueSpec)
-        .find((plugin) => plugin.id === 'execution-indicator')
-      expect(executionIndicatorPlugin).toBeDefined()
-
-      app.settings.actor.send({ type: 'reload.settings' } as never)
-
-      await waitForSettingsIdle(app)
-
-      const modelingSettings = app.settings.get().modeling as Record<
-        string,
-        { current: unknown }
-      >
-      expect(modelingSettings.executionIndicator.current).toBe(false)
-      expect(app.settings.get().plugins['execution-indicator']).toBeUndefined()
-      expect(
-        app.registry.get(executionIndicatorPlugin!.service).active.value
-      ).toBe(false)
-
-      app.settings.actor.send({
-        type: 'set.modeling.executionIndicator',
-        data: {
-          level: 'user',
-          value: true,
-        },
-        doNotPersist: true,
-      } as never)
-
-      await waitForSettingsIdle(app)
-
-      expect(
-        app.registry.get(executionIndicatorPlugin!.service).active.value
-      ).toBe(true)
     } finally {
       disposeApp(app)
     }

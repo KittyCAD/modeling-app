@@ -232,18 +232,10 @@ function findSceneObjectForPlaneSelection(
   if (plane.faceInfo.type === 'cap') {
     const capKind = plane.faceInfo.subType
     return sceneGraphObjects.find((object) => {
-      if (
-        object.kind.type !== 'Cap' ||
-        object.kind.kind !== capKind ||
-        object.source.type !== 'BackTrace'
-      ) {
+      if (object.kind.type !== 'Cap' || object.kind.kind !== capKind) {
         return false
       }
-      const sweepSource = object.source.ranges.at(-1)
-      return (
-        sweepSource !== undefined &&
-        sourceRangesEqual(sweepSource[0], sweepRange)
-      )
+      return sourceRangesEqual(object.kind.source.sweep.range, sweepRange)
     })
   }
 
@@ -255,16 +247,13 @@ function findSceneObjectForPlaneSelection(
   if (err(segmentRange)) return undefined
 
   return sceneGraphObjects.find((object) => {
-    if (object.kind.type !== 'Wall' || object.source.type !== 'BackTrace') {
+    if (object.kind.type !== 'Wall') {
       return false
     }
-    const sweepSource = object.source.ranges.at(-2)
-    const segmentSource = object.source.ranges.at(-1)
+
     return (
-      sweepSource !== undefined &&
-      segmentSource !== undefined &&
-      sourceRangesEqual(sweepSource[0], sweepRange) &&
-      sourceRangesEqual(segmentSource[0], segmentRange)
+      sourceRangesEqual(object.kind.source.sweep.range, sweepRange) &&
+      sourceRangesEqual(object.kind.source.segment.range, segmentRange)
     )
   })
 }
@@ -4245,9 +4234,7 @@ export const modelingMachine = setup({
       }
     }),
     'submit-prompt-edit': fromPromise(
-      async ({}: {
-        input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
+      async ({}: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {}
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,

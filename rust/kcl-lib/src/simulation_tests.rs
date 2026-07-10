@@ -3582,8 +3582,8 @@ mod error_inside_fn_also_has_source_range_of_call_site_recursive {
         super::execute(TEST_NAME, true).await
     }
 }
-mod error_revolve_on_edge_get_edge {
-    const TEST_NAME: &str = "error_revolve_on_edge_get_edge";
+mod revolve_on_edge_get_edge {
+    const TEST_NAME: &str = "revolve_on_edge_get_edge";
 
     /// Test parsing KCL.
     #[test]
@@ -6306,8 +6306,71 @@ mod truss_bridge {
         super::execute(TEST_NAME, true).await
     }
 }
+mod fillet_ambiguous_region_edge_specifier {
+    const TEST_NAME: &str = "fillet_ambiguous_region_edge_specifier";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod fillet_ambiguous_region_edge_specifier_broad {
+    const TEST_NAME: &str = "fillet_ambiguous_region_edge_specifier_broad";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
 mod gdt_face_api_edge_specifier {
     const TEST_NAME: &str = "gdt_face_api_edge_specifier";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod error_large_fillet_radius {
+    const TEST_NAME: &str = "error_large_fillet_radius";
 
     /// Test parsing KCL.
     #[test]

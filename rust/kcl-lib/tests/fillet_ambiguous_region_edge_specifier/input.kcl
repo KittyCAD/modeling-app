@@ -1,0 +1,33 @@
+@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  circle1 = circle(start = [var 6.17mm, var 0.04mm], center = [var 0.53mm, var -0.79mm])
+
+  chordLeft = line(start = [var -3.59mm, var -4.74mm], end = [var -2.85mm, var 3.8mm])
+  coincident([chordLeft.start, circle1])
+  coincident([chordLeft.end, circle1])
+
+  chordRight = line(start = [var 4.56mm, var -4.83mm], end = [var 3.38mm, var -1.53mm])
+  coincident([chordRight.start, circle1])
+  line1 = line(start = [var 3.38mm, var -1.53mm], end = [var 4.33mm, var 3.46mm])
+  coincident([line1.start, chordRight.end])
+  coincident([line1.end, circle1])
+}
+
+band = region(point = [0mm, 0mm], sketch = profile)
+body = extrude(band, length = 4mm, tagStart = $capStart001)
+
+// This alias name intentionally matches the underlying tag identifier,
+// so the current TS autofix can find its direct-tag metadata.
+circle1 = band.tags.circle1
+
+rounded = fillet(
+  body,
+  radius = 0.6mm,
+  edges = [
+    {
+      sideFaces = [band.tags.circle1, capStart001],
+      endFaces = [band.tags.line1]
+    }
+  ],
+)

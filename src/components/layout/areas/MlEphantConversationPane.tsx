@@ -10,6 +10,7 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeperConversationStore'
 import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
@@ -17,11 +18,6 @@ import {
 } from '@src/machines/mlEphantManagerMachine'
 import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
-import {
-  type SystemIOActor,
-  SystemIOMachineEvents,
-  SystemIOMachineStates,
-} from '@src/machines/systemIO/utils'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
 import { useSelector } from '@xstate/react'
@@ -42,7 +38,7 @@ const awaitingResponseSelector = (
 
 export const MlEphantConversationPane = (props: {
   mlEphantManagerActor: MlEphantManagerActor
-  systemIOActor: SystemIOActor
+  conversationStore: ZookeeperConversationStore
   kclManager: KclManager
   theProject: Project | undefined
   contextModeling: ModelingMachineContext
@@ -65,6 +61,8 @@ export const MlEphantConversationPane = (props: {
   const isSubmittingFromQueue = useRef(false)
   const isClearingChat = useRef(false)
   const steeredId = useRef<string | null>(null)
+  const savedProjectConversationLookupLoaded = useRef(false)
+  const savedProjectConversationId = useRef<string | undefined>(undefined)
   const loaderFileRef = useRef(props.loaderFile)
   useEffect(() => {
     loaderFileRef.current = props.loaderFile
@@ -260,17 +258,12 @@ export const MlEphantConversationPane = (props: {
       .getSnapshot()
       .matches(S.Await)
     let clearedConversationMapping = true
-    let sentDeleteConversationMapping = false
     let startedFreshConversation = false
     // biome-ignore lint/style/useConst: cleanup can run through actor callbacks before subscription assignment completes.
     let sub: ReturnType<typeof props.mlEphantManagerActor.subscribe> | undefined
-    let systemIOSub:
-      | ReturnType<typeof props.systemIOActor.subscribe>
-      | undefined
 
     const cleanupSubscriptions = () => {
       sub?.unsubscribe()
-      systemIOSub?.unsubscribe()
     }
 
     const startFreshConversation = () => {
@@ -299,38 +292,15 @@ export const MlEphantConversationPane = (props: {
     const projectId = props.settings.meta.id.current
     if (projectId !== undefined && projectId !== uuidNIL) {
       clearedConversationMapping = false
-      const maybeDeleteConversationMapping = () => {
-        if (sentDeleteConversationMapping) {
-          return
-        }
-        if (
-          props.systemIOActor.getSnapshot().value !== SystemIOMachineStates.idle
-        ) {
-          return
-        }
-
-        sentDeleteConversationMapping = true
-        props.systemIOActor.send({
-          type: SystemIOMachineEvents.deleteMlEphantConversation,
-          data: {
-            projectId,
-          },
+      void props.conversationStore
+        .deleteProjectConversationId(projectId)
+        .catch(reportRejection)
+        .finally(() => {
+          savedProjectConversationLookupLoaded.current = true
+          savedProjectConversationId.current = undefined
+          clearedConversationMapping = true
+          maybeStartFreshConversation()
         })
-      }
-
-      systemIOSub = props.systemIOActor.subscribe((next) => {
-        if (!sentDeleteConversationMapping) {
-          maybeDeleteConversationMapping()
-          return
-        }
-        if (next.value !== SystemIOMachineStates.idle) {
-          return
-        }
-
-        clearedConversationMapping = true
-        maybeStartFreshConversation()
-      })
-      maybeDeleteConversationMapping()
     }
     sub = props.mlEphantManagerActor.subscribe((next) => {
       if (!next.matches(S.Await)) {
@@ -355,26 +325,20 @@ export const MlEphantConversationPane = (props: {
       return
     }
 
-    const mlEphantConversations =
-      props.systemIOActor.getSnapshot().context.mlEphantConversations
-
-    // Not ready yet.
-    if (mlEphantConversations === undefined) {
+    if (!savedProjectConversationLookupLoaded.current) {
       return
     }
     if (props.settings.meta.id.current === uuidNIL) {
       return
     }
 
-    const conversationId = mlEphantConversations.get(
-      props.settings.meta.id.current
-    )
+    const conversationId = savedProjectConversationId.current
 
     if (conversationId === uuidNIL) {
       return
     }
 
-    // We can now reliably use the mlConversations data.
+    // We can now reliably use the saved project conversation lookup.
     // THIS IS WHERE PROJECT IDS ARE MAPPED TO CONVERSATION IDS.
     if (
       props.theProject !== undefined &&
@@ -390,31 +354,6 @@ export const MlEphantConversationPane = (props: {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: this actor coordination effect intentionally tracks project identity, matching the existing eslint suppression below.
   useEffect(() => {
-    const subscriptionSystemIOActor = props.systemIOActor.subscribe(
-      (systemIOActorSnapshot) => {
-        if (systemIOActorSnapshot.value !== 'idle') {
-          return
-        }
-        if (props.settings.meta.id.current === uuidNIL) {
-          return
-        }
-        if (systemIOActorSnapshot.context.mlEphantConversations === undefined) {
-          props.systemIOActor.send({
-            type: SystemIOMachineEvents.getMlEphantConversations,
-          })
-          return
-        }
-
-        const { context } = props.mlEphantManagerActor.getSnapshot()
-
-        if (context.conversation !== undefined) {
-          return
-        }
-
-        tryToGetExchanges()
-      }
-    )
-
     const subscriptionMlEphantManagerActor =
       props.mlEphantManagerActor.subscribe((mlEphantManagerActorSnapshot) => {
         const isProcessing =
@@ -476,21 +415,39 @@ export const MlEphantConversationPane = (props: {
         tryToGetExchanges()
       })
 
-    const systemIOSnapshot = props.systemIOActor.getSnapshot()
-    if (
-      systemIOSnapshot.value === 'idle' &&
-      props.settings.meta.id.current !== uuidNIL &&
-      systemIOSnapshot.context.mlEphantConversations === undefined
-    ) {
-      props.systemIOActor.send({
-        type: SystemIOMachineEvents.getMlEphantConversations,
-      })
+    savedProjectConversationLookupLoaded.current = false
+    savedProjectConversationId.current = undefined
+    const projectId = props.settings.meta.id.current
+    let canceled = false
+    if (projectId === undefined) {
+      savedProjectConversationLookupLoaded.current = true
+      tryToGetExchanges()
+    } else if (projectId !== uuidNIL) {
+      void props.conversationStore
+        .getProjectConversationId(projectId)
+        .then((conversationId) => {
+          if (canceled) {
+            return
+          }
+          savedProjectConversationLookupLoaded.current = true
+          savedProjectConversationId.current = conversationId
+          tryToGetExchanges()
+        })
+        .catch((error: unknown) => {
+          if (canceled) {
+            return
+          }
+          savedProjectConversationLookupLoaded.current = true
+          savedProjectConversationId.current = undefined
+          reportRejection(error)
+          tryToGetExchanges()
+        })
     }
 
     tryToGetExchanges()
 
     return () => {
-      subscriptionSystemIOActor.unsubscribe()
+      canceled = true
       subscriptionMlEphantManagerActor.unsubscribe()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!

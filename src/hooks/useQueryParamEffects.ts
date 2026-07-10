@@ -6,6 +6,7 @@ import { waitFor } from 'xstate'
 import type { KclManager } from '@src/lang/KclManager'
 import { base64ToString } from '@src/lib/base64'
 import { useApp } from '@src/lib/boot'
+import { ensureCloudProjectLocallySynced } from '@src/lib/cloudSync'
 import type { ProjectsCommandSchema } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
   ASK_TO_OPEN_QUERY_PARAM,
@@ -24,7 +25,6 @@ import {
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
-import { ensureOpfsCloudProjectLocallySynced } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
@@ -126,7 +126,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
         return
       }
 
-      const localCloudProject = await ensureOpfsCloudProjectLocallySynced(
+      const localCloudProject = await ensureCloudProjectLocallySynced(
         projectId
       ).catch(() => undefined)
       if (cancelled) {

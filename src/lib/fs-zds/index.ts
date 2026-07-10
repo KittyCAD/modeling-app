@@ -3,7 +3,6 @@ import type { IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import nodefs, { type NodeFSOptions } from '@src/lib/fs-zds/nodefs'
 import noopfs, { type NoopFSOptions } from '@src/lib/fs-zds/noopfs'
 import opfs, { type OPFSOptions } from '@src/lib/fs-zds/opfs'
-import opfsCloud, { type OPFSCloudOptions } from '@src/lib/fs-zds/opfsCloud'
 
 declare global {
   interface Window {
@@ -36,7 +35,6 @@ export enum StorageName {
   ElectronFS = 'electronfs',
   NodeFS = 'nodefs',
   OPFS = 'opfs',
-  OPFSCloud = 'opfsCloud',
 }
 
 const STORAGE_IMPL: Record<StorageName, IZooDesignStudioFS> = {
@@ -44,7 +42,6 @@ const STORAGE_IMPL: Record<StorageName, IZooDesignStudioFS> = {
   [StorageName.ElectronFS]: electronfs.impl,
   [StorageName.NodeFS]: nodefs.impl,
   [StorageName.OPFS]: opfs.impl,
-  [StorageName.OPFSCloud]: opfsCloud.impl,
 }
 
 export type StorageBacking =
@@ -52,7 +49,6 @@ export type StorageBacking =
   | { type: StorageName.ElectronFS; options: ElectronFSOptions }
   | { type: StorageName.NodeFS; options: NodeFSOptions }
   | { type: StorageName.OPFS; options: OPFSOptions }
-  | { type: StorageName.OPFSCloud; options: OPFSCloudOptions }
 
 // We must assign an object to this variable, and not undefined, because this
 // object will act as a reference to all modules that import it. This reference
