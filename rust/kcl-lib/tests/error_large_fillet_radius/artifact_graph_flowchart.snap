@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Artifact graph flowchart error_revolve_on_edge_get_edge.kcl
+description: Artifact graph flowchart error_large_fillet_radius.kcl
 extension: md
 snapshot_kind: binary
 ---

@@ -6,6 +6,7 @@ import {
   deleteRemoteProject,
   downloadRemoteProjectArchive,
   getRemoteProject,
+  getRemoteProjectThumbnailUrl,
   listRemoteProjects,
   updateRemoteProject,
 } from '@src/lib/cloudSync/cloudApi'
@@ -891,6 +892,16 @@ export async function ensureCloudProjectLocallySynced(
     projectDirectory,
     knownLocalProjectPath
   )
+}
+
+export async function getCloudSyncRemoteProjectThumbnailUrl(
+  remoteProject: RemoteProjectSummary
+) {
+  if (!isConfiguredForCloud()) {
+    return undefined
+  }
+
+  return getRemoteProjectThumbnailUrl(config, remoteProject)
 }
 
 async function readProjectTomlCloudProjectId(projectPath: string) {
