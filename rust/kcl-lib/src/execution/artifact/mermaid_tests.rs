@@ -63,6 +63,129 @@ impl EdgeDirection {
     }
 }
 
+/// Add an edge to the deduplicated edge map.
+///
+/// Mermaid renders `a --- b` and `b --- a` as two separate edges, so every edge
+/// is stored under a canonical `(min, max)` key and duplicates are merged. Self
+/// edges are skipped. `flow` records which endpoint the arrow points away from,
+/// expressed relative to the canonical key orientation; `direction` is merged
+/// so that seeing an edge in both directions collapses to `Bidirectional`.
+fn add_unique_edge(edges: &mut Edges, source_id: NodeId, target_id: NodeId, flow: EdgeFlow, kind: EdgeKind) {
+    if source_id == target_id {
+        // Self edge.  Skip it.
+        return;
+    }
+    // The key is the node IDs in canonical order.
+    let a = source_id.min(target_id);
+    let b = source_id.max(target_id);
+    let new_direction = if a == source_id {
+        EdgeDirection::Forward
+    } else {
+        EdgeDirection::Backward
+    };
+    let initial_flow = if a == source_id { flow } else { flow.reverse() };
+    let edge = edges.entry((a, b)).or_insert(EdgeInfo {
+        direction: new_direction,
+        flow: initial_flow,
+        kind,
+    });
+    // Merge with existing edge.
+    edge.direction = edge.direction.merge(new_direction);
+}
+
+/// Assign a canonical node ID to each member of every duplicate group.
+///
+/// The members of a group are interchangeable duplicate segment nodes. They are
+/// sorted by `signature_of` -- the semantic signature first, then a
+/// raw-target-ID signature as a tie-breaker -- with the original node ID as a
+/// final tie-breaker, and mapped onto the group's node IDs in ascending order.
+/// So the member whose signature sorts first is assigned the smallest node ID
+/// in the group. The returned map sends each node's current ID to its canonical
+/// ID and is a permutation within each group. Singleton groups contribute
+/// nothing.
+///
+/// The `node_ids` in each group are expected to already be sorted ascending;
+/// that is the order canonical IDs are handed out in.
+fn assign_canonical_source_ids(
+    groups: &BTreeMap<String, Vec<NodeId>>,
+    signature_of: impl Fn(NodeId) -> (String, String),
+) -> AHashMap<NodeId, NodeId> {
+    let mut source_remap = AHashMap::<NodeId, NodeId>::default();
+    for node_ids in groups.values() {
+        if node_ids.len() < 2 {
+            // We have a singleton like: Node:1 -> [1]
+            continue;
+        }
+
+        let mut signatures = node_ids
+            .iter()
+            .map(|&source_id| {
+                let (semantic_edge_signature, target_id_edge_signature) = signature_of(source_id);
+                (source_id, semantic_edge_signature, target_id_edge_signature)
+            })
+            .collect::<Vec<_>>();
+        signatures.sort_by(|a, b| a.1.cmp(&b.1).then(a.2.cmp(&b.2)).then(a.0.cmp(&b.0)));
+
+        for (canonical_source_id, (source_id, _, _)) in node_ids.iter().copied().zip(signatures) {
+            source_remap.insert(source_id, canonical_source_id);
+        }
+    }
+    source_remap
+}
+
+/// Deterministically re-pair equivalent edges between duplicate node classes.
+///
+/// Edges are grouped by their rendered class: the `node_key` of each endpoint
+/// plus direction, flow, and kind. Within a group that forms a perfect matching
+/// -- equal counts of distinct sources and distinct targets -- the sorted
+/// sources are paired with the sorted targets. This normalizes the arbitrary
+/// pairing the engine may return between otherwise-indistinguishable nodes.
+/// Groups that are not perfect matchings (a shared source or target, i.e. a
+/// many-to-one or one-to-many relationship) are left untouched.
+fn canonicalize_duplicate_edge_pairings(
+    edges: &mut [((NodeId, NodeId), EdgeInfo)],
+    node_key: impl Fn(NodeId) -> String,
+) {
+    let mut edge_groups = BTreeMap::<String, Vec<usize>>::new();
+    for (index, ((source_id, target_id), edge)) in edges.iter().enumerate() {
+        edge_groups
+            .entry(format!(
+                "{}|{}|{:?}|{:?}|{:?}",
+                node_key(*source_id),
+                node_key(*target_id),
+                edge.direction,
+                edge.flow,
+                edge.kind
+            ))
+            .or_default()
+            .push(index);
+    }
+    for group in edge_groups.values() {
+        if group.len() == 1 {
+            continue;
+        }
+
+        let mut source_ids = group.iter().map(|index| edges[*index].0.0).collect::<Vec<_>>();
+        let mut target_ids = group.iter().map(|index| edges[*index].0.1).collect::<Vec<_>>();
+        source_ids.sort_unstable();
+        source_ids.dedup();
+        target_ids.sort_unstable();
+        target_ids.dedup();
+
+        // If two edges share a source or share a target, we do nothing. That
+        // avoids incorrectly rewriting many-to-one or one-to-many relationships.
+        if source_ids.len() != group.len() || target_ids.len() != group.len() {
+            continue;
+        }
+
+        let mut group = group.clone();
+        group.sort_by_key(|index| edges[*index].0.0);
+        for (index, (source_id, target_id)) in group.into_iter().zip(source_ids.into_iter().zip(target_ids)) {
+            edges[index].0 = (source_id, target_id);
+        }
+    }
+}
+
 impl Artifact {
     /// The IDs pointing back to prior nodes in a depth-first traversal of
     /// the graph.  This should be disjoint with `child_ids`.
@@ -691,32 +814,9 @@ impl ArtifactGraph {
         stable_id_map: &AHashMap<ArtifactId, NodeId>,
         prefix: &str,
     ) -> Result<(), std::fmt::Error> {
-        // Mermaid will display two edges in either direction, even using
-        // the `---` edge type. So we need to deduplicate them.
-        fn add_unique_edge(edges: &mut Edges, source_id: NodeId, target_id: NodeId, flow: EdgeFlow, kind: EdgeKind) {
-            if source_id == target_id {
-                // Self edge.  Skip it.
-                return;
-            }
-            // The key is the node IDs in canonical order.
-            let a = source_id.min(target_id);
-            let b = source_id.max(target_id);
-            let new_direction = if a == source_id {
-                EdgeDirection::Forward
-            } else {
-                EdgeDirection::Backward
-            };
-            let initial_flow = if a == source_id { flow } else { flow.reverse() };
-            let edge = edges.entry((a, b)).or_insert(EdgeInfo {
-                direction: new_direction,
-                flow: initial_flow,
-                kind,
-            });
-            // Merge with existing edge.
-            edge.direction = edge.direction.merge(new_direction);
-        }
-
-        // Collect all edges to deduplicate them.
+        // Collect all edges, deduplicating them. `add_unique_edge` stores each
+        // edge under a canonical `(min, max)` key and merges duplicates; Mermaid
+        // would otherwise render `a --- b` and `b --- a` as two edges.
         let mut edges = IndexMap::default();
         for artifact in self.map.values() {
             let source_id = *stable_id_map.get(&artifact.id()).unwrap();
@@ -879,91 +979,54 @@ impl ArtifactGraph {
         for node_ids in duplicate_nodes.values_mut() {
             node_ids.sort_unstable();
         }
-        // This maps unstable duplicate segment source IDs to canonical source
-        // IDs.
-        let mut source_remap = AHashMap::<NodeId, NodeId>::default();
-        for node_ids in duplicate_nodes.values() {
-            if node_ids.len() < 2 {
-                // We have a singleton like: Node:1 -> [1]
-                continue;
-            }
-
-            // The duplicate segment nodes are visually indistinguishable, but
-            // their outgoing adjacency sets are still meaningful. Sort those
-            // adjacency signatures and assign them back to the lowest Mermaid
-            // node IDs so equivalent engine output produces the same text
-            // without globally reordering the graph.
-            let mut signatures = node_ids
+        // Build each duplicate segment node's signature from its outgoing
+        // edges, then let `assign_canonical_source_ids` pick canonical node IDs.
+        // The signature describes each outgoing edge by the *semantic*
+        // neighborhood of its target (via `neighborhood_node_key`, not raw node
+        // IDs), so equivalent engine output produces the same assignment. A
+        // second signature built from raw target IDs is used only as a
+        // tie-breaker for duplicate segments that are genuinely
+        // indistinguishable at the semantic level (e.g. symmetric geometry).
+        let signature_of = |source_id: NodeId| -> (String, String) {
+            let mut semantic_edge_signature = edges
                 .iter()
-                .map(|source_id| {
-                    // Build a sorted list of all outgoing edges from this
-                    // duplicate source segment, using the target's
-                    // neighborhood-aware key.
-                    let mut semantic_edge_signature = edges
-                        .iter()
-                        .filter_map(|((edge_source_id, target_id), edge)| {
-                            if edge_source_id != source_id {
-                                return None;
-                            }
-                            Some(format!(
-                                "{}|{:?}|{:?}|{:?}",
-                                neighborhood_node_key(*target_id, &edges),
-                                edge.direction,
-                                edge.flow,
-                                edge.kind
-                            ))
-                        })
-                        .collect::<Vec<_>>();
-                    semantic_edge_signature.sort();
-
-                    // Some generated region segments have the same source
-                    // range and the same semantic edge neighborhood. In that
-                    // rare tie, use the existing Mermaid target IDs as a
-                    // stable local tie-breaker rather than changing the whole
-                    // graph order.
-                    //
-                    // This case can happen when the geometry is symmetric
-                    // enough that two duplicate generated segment nodes are
-                    // genuinely indistinguishable at the semantic neighborhood
-                    // level.
-                    let mut target_id_edge_signature = edges
-                        .iter()
-                        .filter_map(|((edge_source_id, target_id), edge)| {
-                            if edge_source_id != source_id {
-                                return None;
-                            }
-                            Some(format!(
-                                "{}|{:?}|{:?}|{:?}",
-                                target_id, edge.direction, edge.flow, edge.kind
-                            ))
-                        })
-                        .collect::<Vec<_>>();
-                    target_id_edge_signature.sort();
-
-                    (
-                        *source_id,
-                        semantic_edge_signature.join(","),
-                        target_id_edge_signature.join(","),
-                    )
+                .filter_map(|((edge_source_id, target_id), edge)| {
+                    if *edge_source_id != source_id {
+                        return None;
+                    }
+                    Some(format!(
+                        "{}|{:?}|{:?}|{:?}",
+                        neighborhood_node_key(*target_id, &edges),
+                        edge.direction,
+                        edge.flow,
+                        edge.kind
+                    ))
                 })
                 .collect::<Vec<_>>();
+            semantic_edge_signature.sort();
 
-            // Sort by:
-            //
-            // 1. First: semantic neighborhood signature.
-            // 2. Then: target ID edge signature.
-            // 3. Finally: original source ID.
-            //
-            // So target IDs are only used when the semantic description cannot
-            // distinguish two duplicate segment nodes. At that point, the nodes
-            // are semantically indistinguishable for the Mermaid graph.
-            signatures.sort_by(|a, b| a.1.cmp(&b.1).then(a.2.cmp(&b.2)).then(a.0.cmp(&b.0)));
+            let mut target_id_edge_signature = edges
+                .iter()
+                .filter_map(|((edge_source_id, target_id), edge)| {
+                    if *edge_source_id != source_id {
+                        return None;
+                    }
+                    Some(format!(
+                        "{}|{:?}|{:?}|{:?}",
+                        target_id, edge.direction, edge.flow, edge.kind
+                    ))
+                })
+                .collect::<Vec<_>>();
+            target_id_edge_signature.sort();
 
-            for (canonical_source_id, (source_id, _, _)) in node_ids.iter().copied().zip(signatures) {
-                source_remap.insert(source_id, canonical_source_id);
-            }
-        }
-        // Up until now, edges are sorted numerically. Do the remapping.
+            (semantic_edge_signature.join(","), target_id_edge_signature.join(","))
+        };
+        let source_remap = assign_canonical_source_ids(&duplicate_nodes, signature_of);
+
+        // Apply the remap to edge sources. A duplicate segment and its original
+        // live in different groups (see `flowchart_duplicate_segment_key`), so
+        // this never rewrites both endpoints of one edge and cannot create a
+        // self-edge.
         for ((source_id, _), _) in &mut edges {
             if let Some(canonical_source_id) = source_remap.get(source_id) {
                 *source_id = *canonical_source_id;
@@ -991,70 +1054,12 @@ impl ArtifactGraph {
         // set, but the pairing of equivalent source/target nodes.
         //====================================================================
 
-        // Since we're using `node_key`, this does not group arbitrary walls
-        // together. It only groups edges that are identical after treating
-        // duplicate segment nodes as interchangeable.
-        let mut edge_groups = BTreeMap::<String, Vec<usize>>::new();
-        for (index, ((source_id, target_id), edge)) in edges.iter().enumerate() {
-            edge_groups
-                .entry(format!(
-                    "{}|{}|{:?}|{:?}|{:?}",
-                    node_key(*source_id),
-                    node_key(*target_id),
-                    edge.direction,
-                    edge.flow,
-                    edge.kind
-                ))
-                .or_default()
-                .push(index);
-        }
-        // Handles permutation cases where the same number of duplicate sources
-        // and duplicate targets can be paired deterministically.
-        for group in edge_groups.values() {
-            if group.len() == 1 {
-                continue;
-            }
-
-            let mut source_ids = group.iter().map(|index| edges[*index].0.0).collect::<Vec<_>>();
-            let mut target_ids = group.iter().map(|index| edges[*index].0.1).collect::<Vec<_>>();
-            source_ids.sort_unstable();
-            source_ids.dedup();
-            target_ids.sort_unstable();
-            target_ids.dedup();
-
-            // If two edges share a source or share a target, we do nothing.
-            // That avoids incorrectly rewriting many-to-one or one-to-many
-            // relationships.
-            if source_ids.len() != group.len() || target_ids.len() != group.len() {
-                continue;
-            }
-
-            // Rewrite the edge pairing. This sorts the affected edges by
-            // current source ID, then pairs sorted source IDs with sorted
-            // target IDs.
-            //
-            // If one run produces:
-            //
-            // ```text
-            // 8 -> 27
-            // 9 -> 21
-            // ```
-            //
-            // and another run produces:
-            //
-            // ```text
-            // 8 -> 21
-            // 9 -> 27
-            // ```
-            //
-            // but those edges are equivalent under `node_key`, this pass
-            // normalizes them to the same sorted pairing.
-            let mut group = group.clone();
-            group.sort_by_key(|index| edges[*index].0.0);
-            for (index, (source_id, target_id)) in group.into_iter().zip(source_ids.into_iter().zip(target_ids)) {
-                edges[index].0 = (source_id, target_id);
-            }
-        }
+        // Group edges by their rendered class -- keyed by `node_key`, so walls
+        // and other unique nodes are never grouped together -- and re-pair
+        // perfect matchings deterministically. For example, one run may emit
+        // `8 -> 27, 9 -> 21` and another `8 -> 21, 9 -> 27`; both normalize to
+        // the sorted pairing `8 -> 21, 9 -> 27`.
+        canonicalize_duplicate_edge_pairings(&mut edges, node_key);
 
         edges.sort_by(|a, b| {
             let ak = a.0;
@@ -1134,4 +1139,235 @@ fn pattern_traversal_links_source_and_copied_geometry() {
 
     assert_eq!(artifact.back_edges(), vec![source_id]);
     assert_eq!(artifact.child_ids(), vec![copy_id, copy_face_id, copy_edge_id]);
+}
+
+// ---------------------------------------------------------------------------
+// Unit tests for the Mermaid normalization helpers.
+//
+// The flowchart renderer canonicalizes an otherwise unstable graph (see the
+// module docs and `flowchart_edges`). These tests pin the invariants each
+// helper relies on so the behavior is documented and regressions are caught
+// without having to run the full engine-backed snapshot suite.
+// ---------------------------------------------------------------------------
+
+fn other_edge() -> EdgeInfo {
+    EdgeInfo {
+        direction: EdgeDirection::Forward,
+        flow: EdgeFlow::SourceToTarget,
+        kind: EdgeKind::Other,
+    }
+}
+
+fn segment_artifact(original_seg_id: Option<ArtifactId>) -> Artifact {
+    Artifact::Segment(Segment {
+        id: ArtifactId::new(Uuid::new_v4()),
+        path_id: ArtifactId::new(Uuid::new_v4()),
+        original_seg_id,
+        surface_id: None,
+        edge_ids: Vec::new(),
+        edge_cut_id: None,
+        code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+        common_surface_ids: Vec::new(),
+    })
+}
+
+#[test]
+fn edge_flow_reverse_is_an_involution() {
+    assert_eq!(EdgeFlow::SourceToTarget.reverse(), EdgeFlow::TargetToSource);
+    assert_eq!(EdgeFlow::TargetToSource.reverse(), EdgeFlow::SourceToTarget);
+    assert_eq!(EdgeFlow::SourceToTarget.reverse().reverse(), EdgeFlow::SourceToTarget);
+}
+
+#[test]
+fn edge_direction_merge_collapses_opposite_directions() {
+    use EdgeDirection::Backward;
+    use EdgeDirection::Bidirectional;
+    use EdgeDirection::Forward;
+    // A repeated direction is unchanged.
+    assert_eq!(Forward.merge(Forward), Forward);
+    assert_eq!(Backward.merge(Backward), Backward);
+    // Opposite orientations of the same edge collapse to bidirectional.
+    assert_eq!(Forward.merge(Backward), Bidirectional);
+    assert_eq!(Backward.merge(Forward), Bidirectional);
+    // Bidirectional is absorbing.
+    assert_eq!(Bidirectional.merge(Forward), Bidirectional);
+    assert_eq!(Bidirectional.merge(Backward), Bidirectional);
+    assert_eq!(Forward.merge(Bidirectional), Bidirectional);
+    assert_eq!(Backward.merge(Bidirectional), Bidirectional);
+}
+
+#[test]
+fn add_unique_edge_skips_self_edges() {
+    let mut edges = Edges::default();
+    add_unique_edge(&mut edges, 5, 5, EdgeFlow::SourceToTarget, EdgeKind::Other);
+    assert!(edges.is_empty());
+}
+
+#[test]
+fn add_unique_edge_stores_canonical_min_max_key() {
+    // Insert with source > target. The key is normalized to (min, max) and the
+    // orientation is recorded in `direction`/`flow` relative to that key.
+    let mut edges = Edges::default();
+    add_unique_edge(&mut edges, 7, 3, EdgeFlow::SourceToTarget, EdgeKind::Other);
+    let (key, info) = edges.iter().next().unwrap();
+    assert_eq!(*key, (3, 7));
+    // a (3) != source (7), so direction is Backward and the flow is reversed.
+    assert_eq!(info.direction, EdgeDirection::Backward);
+    assert_eq!(info.flow, EdgeFlow::TargetToSource);
+}
+
+#[test]
+fn add_unique_edge_merges_opposite_directions_to_bidirectional() {
+    let mut edges = Edges::default();
+    // The same node pair inserted in both orientations.
+    add_unique_edge(&mut edges, 3, 7, EdgeFlow::SourceToTarget, EdgeKind::Other);
+    add_unique_edge(&mut edges, 7, 3, EdgeFlow::SourceToTarget, EdgeKind::Other);
+    assert_eq!(edges.len(), 1);
+    let info = edges.get(&(3, 7)).unwrap();
+    assert_eq!(info.direction, EdgeDirection::Bidirectional);
+    // Flow reflects the first insert (a == source == 3, so it is left as-is).
+    assert_eq!(info.flow, EdgeFlow::SourceToTarget);
+}
+
+#[test]
+fn add_unique_edge_keeps_a_repeated_direction() {
+    let mut edges = Edges::default();
+    add_unique_edge(&mut edges, 3, 7, EdgeFlow::SourceToTarget, EdgeKind::Other);
+    add_unique_edge(&mut edges, 3, 7, EdgeFlow::SourceToTarget, EdgeKind::Other);
+    assert_eq!(edges.len(), 1);
+    assert_eq!(edges.get(&(3, 7)).unwrap().direction, EdgeDirection::Forward);
+}
+
+#[test]
+fn duplicate_segment_key_separates_region_from_original() {
+    // An original drawn segment and a region segment can share an exact source
+    // range, but they are not interchangeable: the region segment carries an
+    // `original_seg_id` back to the original, and the two are joined by an edge.
+    // They must get different grouping keys so the source remap never folds that
+    // linking edge into a self-edge.
+    let original = segment_artifact(None);
+    let region = segment_artifact(Some(ArtifactId::new(Uuid::new_v4())));
+
+    let original_key = ArtifactGraph::flowchart_duplicate_segment_key(&original).unwrap();
+    let region_key = ArtifactGraph::flowchart_duplicate_segment_key(&region).unwrap();
+
+    assert!(original_key.starts_with("Segment:"), "got {original_key}");
+    assert!(region_key.starts_with("RegionSegment:"), "got {region_key}");
+    assert_ne!(original_key, region_key);
+}
+
+#[test]
+fn duplicate_segment_key_is_none_for_non_segments() {
+    let pattern = Artifact::Pattern(Pattern {
+        id: ArtifactId::new(Uuid::new_v4()),
+        sub_type: PatternSubType::Circular,
+        source_id: ArtifactId::new(Uuid::new_v4()),
+        copy_ids: Vec::new(),
+        copy_face_ids: Vec::new(),
+        copy_edge_ids: Vec::new(),
+        code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+    });
+    assert!(ArtifactGraph::flowchart_duplicate_segment_key(&pattern).is_none());
+}
+
+#[test]
+fn assign_canonical_source_ids_orders_by_signature() {
+    // Node IDs 10, 20, 30 whose semantic signatures sort in a different order.
+    // The member whose signature sorts first gets the smallest node ID.
+    let mut groups = BTreeMap::new();
+    groups.insert("g".to_owned(), vec![10u32, 20, 30]);
+    let sigs: std::collections::HashMap<NodeId, (String, String)> = [
+        (10, ("c".to_owned(), String::new())),
+        (20, ("a".to_owned(), String::new())),
+        (30, ("b".to_owned(), String::new())),
+    ]
+    .into_iter()
+    .collect();
+
+    let remap = assign_canonical_source_ids(&groups, |id| sigs[&id].clone());
+
+    // Signature order a < b < c => members 20, 30, 10 => canonical IDs 10, 20, 30.
+    assert_eq!(remap.get(&20), Some(&10));
+    assert_eq!(remap.get(&30), Some(&20));
+    assert_eq!(remap.get(&10), Some(&30));
+}
+
+#[test]
+fn assign_canonical_source_ids_breaks_ties_by_target_signature() {
+    let mut groups = BTreeMap::new();
+    groups.insert("g".to_owned(), vec![10u32, 20, 30]);
+    // 10 and 20 tie on the semantic signature ("a"); the raw-target signature
+    // breaks the tie ("b" < "z"). 30 differs on the semantic signature.
+    let sigs: std::collections::HashMap<NodeId, (String, String)> = [
+        (10, ("a".to_owned(), "z".to_owned())),
+        (20, ("a".to_owned(), "b".to_owned())),
+        (30, ("z".to_owned(), String::new())),
+    ]
+    .into_iter()
+    .collect();
+
+    let remap = assign_canonical_source_ids(&groups, |id| sigs[&id].clone());
+
+    // Order: 20("a","b"), 10("a","z"), 30("z") => canonical IDs 10, 20, 30.
+    assert_eq!(remap.get(&20), Some(&10));
+    assert_eq!(remap.get(&10), Some(&20));
+    assert_eq!(remap.get(&30), Some(&30));
+}
+
+#[test]
+fn assign_canonical_source_ids_skips_singleton_groups() {
+    let mut groups = BTreeMap::new();
+    groups.insert("g".to_owned(), vec![42u32]);
+    let remap = assign_canonical_source_ids(&groups, |_| (String::new(), String::new()));
+    assert!(remap.is_empty());
+}
+
+#[test]
+fn canonicalize_edge_pairings_normalizes_perfect_matchings() {
+    // Two edges from one duplicate class {8, 9} to another {21, 27}, paired in
+    // an arbitrary order. All four nodes are interchangeable within their class,
+    // so the pairing is normalized to sorted-source -> sorted-target.
+    let mut edges = vec![((8u32, 27u32), other_edge()), ((9u32, 21u32), other_edge())];
+    let node_key = |id: NodeId| match id {
+        8 | 9 => "src".to_owned(),
+        21 | 27 => "dst".to_owned(),
+        other => format!("Node:{other}"),
+    };
+
+    canonicalize_duplicate_edge_pairings(&mut edges, node_key);
+
+    let mut pairs = edges.iter().map(|(key, _)| *key).collect::<Vec<_>>();
+    pairs.sort_unstable();
+    assert_eq!(pairs, vec![(8, 21), (9, 27)]);
+}
+
+#[test]
+fn canonicalize_edge_pairings_leaves_many_to_one_alone() {
+    // Both sources point at the same target: not a perfect matching, so the
+    // pairing is left untouched.
+    let mut edges = vec![((8u32, 21u32), other_edge()), ((9u32, 21u32), other_edge())];
+    let node_key = |id: NodeId| match id {
+        8 | 9 => "src".to_owned(),
+        21 => "dst".to_owned(),
+        other => format!("Node:{other}"),
+    };
+
+    let before = edges.clone();
+    canonicalize_duplicate_edge_pairings(&mut edges, node_key);
+    assert_eq!(edges, before);
+}
+
+#[test]
+fn canonicalize_edge_pairings_does_not_group_unique_nodes() {
+    // The targets have unique node keys (like walls), so the two edges never
+    // land in the same group and nothing is re-paired.
+    let mut edges = vec![((8u32, 100u32), other_edge()), ((9u32, 200u32), other_edge())];
+    let node_key = |id: NodeId| match id {
+        8 | 9 => "src".to_owned(),
+        other => format!("Node:{other}"),
+    };
+
+    let before = edges.clone();
+    canonicalize_duplicate_edge_pairings(&mut edges, node_key);
+    assert_eq!(edges, before);
 }
