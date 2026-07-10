@@ -592,7 +592,25 @@ impl ArtifactGraph {
         }
 
         match artifact {
-            Artifact::Segment(segment) => Some(format!("Segment:{}", code_ref_key(&segment.code_ref))),
+            Artifact::Segment(segment) => {
+                // Distinguish region segments (created by CreateRegion, which
+                // sets `original_seg_id`) from the original drawn segments they
+                // reference. They can share an exact source range, e.g. when a
+                // region is built from a profile via a pattern, which would
+                // otherwise group them together as interchangeable duplicates.
+                // They are NOT interchangeable: a region segment is linked to
+                // its original by an `original_seg_id` edge, and putting both in
+                // one duplicate group lets the canonical source remap fold that
+                // intra-group edge into a self-edge. Keeping them in separate
+                // groups makes the link an ordinary cross-group edge, handled
+                // the same way as every other region.
+                let kind = if segment.original_seg_id.is_some() {
+                    "RegionSegment"
+                } else {
+                    "Segment"
+                };
+                Some(format!("{kind}:{}", code_ref_key(&segment.code_ref)))
+            }
             _ => None,
         }
     }
