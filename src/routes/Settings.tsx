@@ -135,7 +135,10 @@ export const Settings = () => {
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
-                <SettingsSearchBar keybinding={settingsSearchKeybinding} />
+                <SettingsSearchBar
+                  keybinding={settingsSearchKeybinding}
+                  hasOpenProject={app.project !== undefined}
+                />
                 <button
                   type="button"
                   onClick={close}
