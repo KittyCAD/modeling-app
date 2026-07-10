@@ -6,6 +6,7 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
+import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import { PATHS, webSafeJoin } from '@src/lib/paths'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -20,6 +21,11 @@ import {
   settingsService,
   settingsValueSpec,
 } from '@src/registry/contracts/settings'
+import {
+  defineRegistryRoute,
+  lazyRouteComponent,
+  provideRoute,
+} from '@src/registry/contracts/router'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
@@ -92,9 +98,35 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
   }
 }, 'settings-extension')
 
+const fileSettingsRoute = defineRegistryRoute({
+  id: `${PATHS.FILE}.settings`,
+  parentId: PATHS.FILE,
+  order: 0,
+  buildRoute: () => ({
+    path: makeUrlPathRelative(PATHS.SETTINGS),
+    lazy: lazyRouteComponent(
+      async () => (await import('@src/routes/Settings')).Settings
+    ),
+  }),
+})
+
+const homeSettingsRoute = defineRegistryRoute({
+  id: `${PATHS.HOME}.settings`,
+  parentId: PATHS.HOME,
+  order: 10,
+  buildRoute: () => ({
+    path: makeUrlPathRelative(PATHS.SETTINGS),
+    lazy: lazyRouteComponent(
+      async () => (await import('@src/routes/Settings')).Settings
+    ),
+  }),
+})
+
 const settingsRegistryItem = defineRegistryItem({
   id: 'settings',
   provides: [
+    provideRoute(fileSettingsRoute),
+    provideRoute(homeSettingsRoute),
     provide(statusBarGlobalItemsValueSpec, {
       id: 'settings',
       element: 'link',
