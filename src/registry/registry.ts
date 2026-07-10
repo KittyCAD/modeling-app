@@ -6,9 +6,17 @@ type RegistryItemModule = {
 }
 
 const bundledRegistryItemModules: Record<string, RegistryItemModule> =
-  import.meta.glob(['./extensions/*/index.ts', './plugins/*/index.ts'], {
-    eager: true,
-  })
+  import.meta.glob(
+    [
+      './extensions/*/index.ts',
+      './extensions/*/index.tsx',
+      './plugins/*/index.ts',
+      './plugins/*/index.tsx',
+    ],
+    {
+      eager: true,
+    }
+  )
 
 export const appRegistryServicesSlot = new Slot()
 export const appRegistryOverridesSlot = new Slot()
