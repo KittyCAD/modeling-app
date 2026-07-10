@@ -1,7 +1,7 @@
+import { submitConstraintEdit } from '@src/clientSideScene/submitConstraintEdit'
 import { KclInput } from '@src/components/KclInput'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useSingletons } from '@src/lib/boot'
-import { SKETCH_FILE_VERSION } from '@src/lib/constants'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
 import {
@@ -66,34 +66,13 @@ export const EditingConstraintInput = () => {
 
   const onEditSubmit = useCallback(
     async (value: string) => {
-      sketchSolveActor?.send({ type: 'stop editing constraint' })
-
-      try {
-        const snapshot = sketchSolveActor?.getSnapshot()
-        const sketchId = isSketchSolveSnapshot(snapshot)
-          ? snapshot.context.sketchId
-          : 0
-        const result = await rustContext.editConstraint(
-          SKETCH_FILE_VERSION,
-          sketchId,
-          editingConstraintId!,
-          value,
-          jsAppSettings(rustContext.settingsActor),
-          true
-        )
-        if (result) {
-          sketchSolveActor?.send({
-            type: 'update sketch outcome',
-            data: {
-              sourceDelta: result.kclSource,
-              sceneGraphDelta: result.sceneGraphDelta,
-              checkpointId: result.checkpointId ?? null,
-            },
-          })
-        }
-      } catch (e) {
-        console.error('Failed to edit constraint:', e)
-      }
+      await submitConstraintEdit({
+        sketchSolveActor,
+        rustContext,
+        editingConstraintId: editingConstraintId!,
+        value,
+        settings: jsAppSettings(rustContext.settingsActor),
+      })
     },
     [sketchSolveActor, rustContext, editingConstraintId]
   )

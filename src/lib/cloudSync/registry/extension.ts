@@ -7,6 +7,7 @@ import { effect, signal, untracked } from '@preact/signals-core'
 import {
   cloudSyncStatus,
   configureCloudSync,
+  disconnectCloudSyncProject,
   ensureCloudProjectLocallySynced,
   getCloudSyncProjectMetadata,
   getCloudSyncProjectMetadataIndex,
@@ -15,6 +16,7 @@ import {
   resolveCloudSyncProjectConflict,
   retryCloudSync,
   setCloudSyncProjectScope,
+  startCloudSyncProject,
 } from '@src/lib/cloudSync'
 import {
   type CloudSyncRegistryService,
@@ -64,6 +66,8 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     installFileSystemObserver: installCloudSyncFileSystemObserver,
     retry: retryCloudSync,
     setProjectScope: setCloudSyncProjectScope,
+    startProjectSync: startCloudSyncProject,
+    disconnectProjectSync: disconnectCloudSyncProject,
     ensureProjectLocallySynced: ensureCloudProjectLocallySynced,
     getProjectMetadata: getCloudSyncProjectMetadata,
     getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,

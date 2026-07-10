@@ -5,6 +5,7 @@ import type {
 } from '@kittycad/registry'
 import { Toggle } from '@src/components/Toggle/Toggle'
 import { useApp } from '@src/lib/boot'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { DynamicBooleanSetEvent } from '@src/lib/settings/settingsTypes'
 import {
   type ZdsPluginActivationSetting,
@@ -20,6 +21,15 @@ type PluginsListProps = {
 
 export const PluginsList = forwardRef(
   (props: PluginsListProps, scrollRef: ForwardedRef<HTMLDivElement>) => {
+    const app = useApp()
+    const hasCloudSyncFeature = app.userFeatures.useHas(
+      OPFS_CLOUD_FEATURE_FLAG,
+      false
+    )
+    const visiblePlugins = props.plugins.filter(
+      (plugin) => plugin.id !== 'cloud-sync' || hasCloudSyncFeature
+    )
+
     // This is how we will get the interaction map from the context
     // in the future whene franknoirot/editable-hotkeys is merged.
     // const { state } = useInteractionMapContext()
@@ -27,7 +37,7 @@ export const PluginsList = forwardRef(
     return (
       <div className="relative overflow-y-auto pb-16">
         <div ref={scrollRef} className="flex flex-col gap-12">
-          {props.plugins.map((plugin) => (
+          {visiblePlugins.map((plugin) => (
             <PluginItem
               key={plugin.id}
               plugin={plugin}

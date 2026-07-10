@@ -16,6 +16,16 @@ export type CloudSyncRegistryService = {
   installFileSystemObserver: (activeFs?: IZooDesignStudioFS) => void
   retry: () => void
   setProjectScope: (projectPath?: string) => void
+  /**
+   * Explicitly enroll a local-only project in cloud sync, even when the global
+   * policy is not auto-enrolling existing local projects.
+   */
+  startProjectSync: (projectPath: string) => Promise<void>
+  /**
+   * Delete the remote cloud project and keep the local project as local-only.
+   * The local project is marked excluded so later edits do not recreate it.
+   */
+  disconnectProjectSync: (projectPath: string) => Promise<void>
   ensureProjectLocallySynced: (
     remoteProjectId: string
   ) => Promise<CloudSyncLocalProject | undefined>
