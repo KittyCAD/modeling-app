@@ -5,7 +5,13 @@ import {
   defineRuntimeRegistryItem,
   provide,
 } from '@kittycad/registry'
-import { computed, effect, signal } from '@preact/signals-core'
+import {
+  computed,
+  effect,
+  type Signal,
+  signal,
+  untracked,
+} from '@preact/signals-core'
 import { useSignals } from '@preact/signals-react/runtime'
 import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
@@ -23,6 +29,7 @@ import {
   type CloudSyncStatus,
   cloudSyncRemoteProjects,
   cloudSyncStatus,
+  type RemoteProjectSummary,
   retryCloudSync,
 } from '@src/lib/cloudSync'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -612,10 +619,59 @@ function homeProjectEntryConflictFields(
     : { status: 'cloud-only' }
 }
 
+function remoteThumbnailCacheKey(project: RemoteProjectSummary) {
+  return [
+    project.id,
+    project.revision === undefined ? '' : String(project.revision),
+    project.updated_at ?? '',
+  ].join(':')
+}
+
+function setRemoteThumbnailUrl(
+  thumbnailUrls: Signal<Map<string, string>>,
+  remoteProjectId: string,
+  thumbnailUrl: string
+) {
+  const nextThumbnailUrls = new Map(thumbnailUrls.value)
+  nextThumbnailUrls.set(remoteProjectId, thumbnailUrl)
+  thumbnailUrls.value = nextThumbnailUrls
+}
+
+function pruneRemoteThumbnailState({
+  remoteProjects,
+  requestedThumbnailKeys,
+  thumbnailUrls,
+}: {
+  remoteProjects: RemoteProjectSummary[]
+  requestedThumbnailKeys: Map<string, string>
+  thumbnailUrls: Signal<Map<string, string>>
+}) {
+  const remoteProjectIds = new Set(remoteProjects.map((project) => project.id))
+
+  for (const requestedProjectId of requestedThumbnailKeys.keys()) {
+    if (!remoteProjectIds.has(requestedProjectId)) {
+      requestedThumbnailKeys.delete(requestedProjectId)
+    }
+  }
+
+  const currentThumbnailUrls = untracked(() => thumbnailUrls.value)
+  const nextThumbnailUrls = new Map(
+    Array.from(currentThumbnailUrls).filter(([remoteProjectId]) =>
+      remoteProjectIds.has(remoteProjectId)
+    )
+  )
+
+  if (nextThumbnailUrls.size !== currentThumbnailUrls.size) {
+    thumbnailUrls.value = nextThumbnailUrls
+  }
+}
+
 const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   (ctx) => {
     const cloudSync = ctx.services.signal(cloudSyncService)
     const conflictMetadata = signal<CloudSyncProjectMetadataIndexEntry[]>([])
+    const remoteThumbnailUrls = signal<Map<string, string>>(new Map())
+    const requestedThumbnailKeys = new Map<string, string>()
     let disposed = false
     let disposeEffect: (() => void) | undefined
     let loadId = 0
@@ -641,6 +697,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
         (project) => {
           const metadata = conflictMetadataByRemoteProjectId.get(project.id)
           const name = metadata?.projectName || project.title || project.id
+          const thumbnailUrl = remoteThumbnailUrls.value.get(project.id)
 
           return {
             source: 'remote',
@@ -650,6 +707,14 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
             remoteProjectId: project.id,
             modified: getCloudSyncHomeProjectModifiedTime(project, metadata),
             readWriteAccess: true,
+            ...(thumbnailUrl
+              ? {
+                  thumbnail: {
+                    type: 'remote',
+                    url: thumbnailUrl,
+                  },
+                }
+              : {}),
           } satisfies HomeProjectEntryContribution
         }
       )
@@ -693,7 +758,48 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
 
         if (!service || !status.enabled) {
           conflictMetadata.value = []
+          remoteThumbnailUrls.value = new Map()
+          requestedThumbnailKeys.clear()
           return
+        }
+
+        const remoteProjects = cloudSyncRemoteProjects.value
+        pruneRemoteThumbnailState({
+          remoteProjects,
+          requestedThumbnailKeys,
+          thumbnailUrls: remoteThumbnailUrls,
+        })
+
+        for (const remoteProject of remoteProjects) {
+          const cacheKey = remoteThumbnailCacheKey(remoteProject)
+          if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
+            continue
+          }
+
+          requestedThumbnailKeys.set(remoteProject.id, cacheKey)
+          service
+            .getRemoteProjectThumbnailUrl(remoteProject)
+            .then((thumbnailUrl) => {
+              if (
+                disposed ||
+                requestedThumbnailKeys.get(remoteProject.id) !== cacheKey ||
+                !thumbnailUrl
+              ) {
+                return
+              }
+
+              setRemoteThumbnailUrl(
+                remoteThumbnailUrls,
+                remoteProject.id,
+                thumbnailUrl
+              )
+            })
+            .catch((error: unknown) => {
+              if (requestedThumbnailKeys.get(remoteProject.id) === cacheKey) {
+                requestedThumbnailKeys.delete(remoteProject.id)
+              }
+              reportRejection(error)
+            })
         }
 
         service
