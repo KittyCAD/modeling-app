@@ -16,10 +16,12 @@ use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
+use crate::execution::Geometry;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Solid;
+use crate::execution::TagEngineInfo;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
@@ -95,6 +97,29 @@ pub(crate) async fn get_face_ids_for_edge(
     Ok(info.faces.clone())
 }
 
+pub(super) async fn resolve_legacy_edge_id_for_solid(
+    exec_state: &mut ExecState,
+    solid: &Solid,
+    edge_id: Uuid,
+    args: &Args,
+) -> Uuid {
+    if get_face_ids_for_edge(exec_state, solid.id, edge_id, args).await.is_ok() {
+        return edge_id;
+    }
+
+    let alternate_ids: Vec<Uuid> = exec_state.legacy_edge_id_alternates(edge_id).collect();
+    for alternate_id in alternate_ids {
+        if get_face_ids_for_edge(exec_state, solid.id, alternate_id, args)
+            .await
+            .is_ok()
+        {
+            return alternate_id;
+        }
+    }
+
+    edge_id
+}
+
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
 pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Result<(), KclError> {
     let all_infos = tag.get_all_cur_info();
@@ -109,6 +134,66 @@ pub(super) fn check_tag_not_ambiguous(tag: &TagIdentifier, args: &Args) -> Resul
         )));
     }
     Ok(())
+}
+
+fn legacy_edge_helper_info(edge: &TagIdentifier, current_info: TagEngineInfo) -> TagEngineInfo {
+    if !geometry_is_clone(&current_info.geometry) {
+        return current_info;
+    }
+
+    let current_id = current_info.geometry.id();
+    edge.info
+        .iter()
+        .rev()
+        .skip_while(|(_, info)| info.geometry.id() == current_id)
+        .find_map(|(_, info)| info.surface.is_some().then_some(info.clone()))
+        .unwrap_or(current_info)
+}
+
+fn geometry_is_clone(geometry: &Geometry) -> bool {
+    match geometry {
+        Geometry::Sketch(sketch) => sketch.clone.is_some(),
+        Geometry::Solid(solid) => solid.sketch().is_some_and(|sketch| sketch.clone.is_some()),
+    }
+}
+
+fn face_id_from_tag_engine_info(edge: &TagIdentifier, info: &TagEngineInfo, args: &Args) -> Result<Uuid, KclError> {
+    let surface = info.surface.as_ref().ok_or_else(|| {
+        KclError::new_type(KclErrorDetails::new(
+            format!("Tag `{}` refers to non-face geometry", edge.value),
+            vec![args.source_range],
+        ))
+    })?;
+
+    let tagged_surface = match surface {
+        ExtrudeSurface::ExtrudePlane(extrude_plane) => extrude_plane
+            .tag
+            .as_ref()
+            .is_some_and(|plane_tag| plane_tag.name == edge.value)
+            .then_some(extrude_plane.face_id),
+        ExtrudeSurface::ExtrudeArc(extrude_arc) => extrude_arc
+            .tag
+            .as_ref()
+            .is_some_and(|arc_tag| arc_tag.name == edge.value)
+            .then_some(extrude_arc.face_id),
+        ExtrudeSurface::Chamfer(chamfer) => chamfer
+            .tag
+            .as_ref()
+            .is_some_and(|chamfer_tag| chamfer_tag.name == edge.value)
+            .then_some(chamfer.face_id),
+        ExtrudeSurface::Fillet(fillet) => fillet
+            .tag
+            .as_ref()
+            .is_some_and(|fillet_tag| fillet_tag.name == edge.value)
+            .then_some(fillet.face_id),
+    };
+
+    tagged_surface.ok_or_else(|| {
+        KclError::new_type(KclErrorDetails::new(
+            format!("Expected a face with the tag `{}`", edge.value),
+            vec![args.source_range],
+        ))
+    })
 }
 
 /// Get the opposite edge to the edge given.
@@ -131,9 +216,9 @@ async fn inner_get_opposite_edge(
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
-
-    let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let current_tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path = legacy_edge_helper_info(&edge, current_tagged_path.clone());
+    let face_id = face_id_from_tag_engine_info(&edge, &tagged_path, &args)?;
     let tagged_path_id = tagged_path.id;
     let sketch_id = tagged_path.geometry.id();
 
@@ -159,7 +244,56 @@ async fn inner_get_opposite_edge(
         )));
     };
 
+    record_clone_legacy_opposite_edge_alternate(
+        exec_state,
+        &args,
+        &edge,
+        &tagged_path,
+        &current_tagged_path,
+        opposite_edge.edge,
+    )
+    .await?;
+
     Ok(opposite_edge.edge)
+}
+
+async fn record_clone_legacy_opposite_edge_alternate(
+    exec_state: &mut ExecState,
+    args: &Args,
+    edge: &TagIdentifier,
+    selected_info: &TagEngineInfo,
+    current_info: &TagEngineInfo,
+    selected_edge_id: Uuid,
+) -> Result<(), KclError> {
+    if selected_info.id == current_info.id || !geometry_is_clone(&current_info.geometry) {
+        return Ok(());
+    }
+
+    let face_id = face_id_from_tag_engine_info(edge, current_info, args)?;
+    let resp = exec_state
+        .send_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(
+                mcmd::Solid3dGetOppositeEdge::builder()
+                    .edge_id(current_info.id)
+                    .object_id(current_info.geometry.id())
+                    .face_id(face_id)
+                    .build(),
+            ),
+        )
+        .await?;
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::Solid3dGetOppositeEdge(opposite_edge),
+    } = &resp
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("mcmd::Solid3dGetOppositeEdge response was not as expected: {resp:?}"),
+            vec![args.source_range],
+        )));
+    };
+
+    exec_state.record_legacy_edge_id_alternates([selected_edge_id, opposite_edge.edge]);
+    Ok(())
 }
 
 /// Get the next adjacent edge to the edge given.
@@ -182,9 +316,8 @@ async fn inner_get_next_adjacent_edge(
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
-
-    let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path = legacy_edge_helper_info(&edge, args.get_tag_engine_info(exec_state, &edge)?);
+    let face_id = face_id_from_tag_engine_info(&edge, &tagged_path, &args)?;
     let tagged_path_id = tagged_path.id;
     let sketch_id = tagged_path.geometry.id();
 
@@ -239,9 +372,8 @@ async fn inner_get_previous_adjacent_edge(
     if args.ctx.no_engine_commands().await {
         return Ok(exec_state.next_uuid());
     }
-    let face_id = args.get_adjacent_face_to_tag(exec_state, &edge, false).await?;
-
-    let tagged_path = args.get_tag_engine_info(exec_state, &edge)?;
+    let tagged_path = legacy_edge_helper_info(&edge, args.get_tag_engine_info(exec_state, &edge)?);
+    let face_id = face_id_from_tag_engine_info(&edge, &tagged_path, &args)?;
     let tagged_path_id = tagged_path.id;
     let sketch_id = tagged_path.geometry.id();
 

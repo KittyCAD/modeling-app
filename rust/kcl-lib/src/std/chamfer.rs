@@ -180,7 +180,10 @@ async fn inner_chamfer(
 
     let mut solid = solid.clone();
     for edge_tag in tags {
-        let edge_ids = edge_tag.get_all_engine_ids(exec_state, &args)?;
+        let mut edge_ids = Vec::new();
+        for edge_id in edge_tag.get_all_engine_ids(exec_state, &args)? {
+            edge_ids.push(super::edge::resolve_legacy_edge_id_for_solid(exec_state, &solid, edge_id, &args).await);
+        }
         for edge_id in edge_ids {
             let id = exec_state.next_uuid();
             exec_state

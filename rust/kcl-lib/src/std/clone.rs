@@ -14,11 +14,15 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
+use crate::execution::Geometry;
 use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
+use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
@@ -26,6 +30,7 @@ use crate::parsing::ast::types::TagNode;
 use crate::std::Args;
 use crate::std::extrude::BeingExtruded;
 use crate::std::extrude::NamedCapTags;
+use indexmap::IndexSet;
 
 type Result<T> = std::result::Result<T, KclError>;
 
@@ -138,6 +143,7 @@ pub(super) async fn fix_tags_and_references(
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             let (start_tag, end_tag) = get_named_cap_tags(solid);
+            let face_tag_names = solid.faces.keys().cloned().collect::<IndexSet<_>>();
             let solid_value = solid.value.clone();
 
             // Make the sketch id the new geometry id.
@@ -174,7 +180,7 @@ pub(super) async fn fix_tags_and_references(
 
             // Do the after extrude things to update those ids, based on the new sketch
             // information.
-            let new_solid = do_post_extrude(
+            let mut new_solid = do_post_extrude(
                 &sketch_for_post,
                 new_geometry_id.into(),
                 solid.sectional,
@@ -191,6 +197,8 @@ pub(super) async fn fix_tags_and_references(
                 BeingExtruded::Sketch,
             )
             .await?;
+
+            add_cloned_solid_face_tags(&mut new_solid, exec_state, &face_tag_names);
 
             *solid = new_solid;
         }
@@ -266,6 +274,8 @@ async fn fix_sketch_tags_and_references(
     args: &Args,
     surfaces: Option<Vec<ExtrudeSurface>>,
 ) -> Result<()> {
+    let original_tags = new_sketch.tags.clone();
+
     // Fix the path references in the sketch.
     for path in new_sketch.paths.as_mut_slice() {
         if let Some(new_path_id) = entity_id_map.get(&path.get_id()) {
@@ -309,6 +319,22 @@ async fn fix_sketch_tags_and_references(
             }
 
             new_sketch.add_tag(&tag, &path, exec_state, surface.as_ref());
+            if let Some(original_tag) = original_tags.get(&tag.name)
+                && let Some(cloned_tag) = new_sketch.tags.get_mut(&tag.name)
+            {
+                let cloned_epoch = cloned_tag
+                    .info
+                    .last()
+                    .map(|(epoch, _)| *epoch)
+                    .unwrap_or_else(|| exec_state.stack().current_epoch());
+                let original_epoch = cloned_epoch.saturating_sub(1);
+                let original_info = original_tag.info.iter().map(|(_, info)| (original_epoch, info.clone()));
+                // Keep the original tag info around for deprecated edge helper
+                // compatibility. It is intentionally historical metadata, not
+                // current metadata, so face API refs still use cloned faces and
+                // getOppositeEdge-style helpers can opt into the original.
+                cloned_tag.info.splice(0..0, original_info);
+            }
         }
     }
 
@@ -323,6 +349,44 @@ async fn fix_sketch_tags_and_references(
     }
 
     Ok(())
+}
+
+fn add_cloned_solid_face_tags(solid: &mut Solid, exec_state: &mut ExecState, face_tag_names: &IndexSet<String>) {
+    let solid_for_tag = {
+        let mut solid_copy = solid.clone();
+        if let Some(sketch) = solid_copy.sketch_mut() {
+            sketch.tags.clear();
+        }
+        solid_copy.faces.clear();
+        solid_copy
+    };
+
+    for surface in &solid.value {
+        let Some(tag) = surface.get_tag() else {
+            continue;
+        };
+        if !face_tag_names.contains(&tag.name) {
+            continue;
+        }
+        solid.faces.insert(
+            tag.name.clone(),
+            TagIdentifier {
+                value: tag.name.clone(),
+                info: vec![(
+                    exec_state.stack().current_epoch(),
+                    TagEngineInfo {
+                        id: surface.get_id(),
+                        surface: Some(surface.clone()),
+                        path: None,
+                        geometry: Geometry::Solid(solid_for_tag.clone()),
+                    },
+                )],
+                meta: vec![Metadata {
+                    source_range: tag.clone().into(),
+                }],
+            },
+        );
+    }
 }
 
 // Return the named cap tags for the original solid.
@@ -590,6 +654,108 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid_with_face_api_edge_specifier() {
+        let code = r#"unitSquareSketch = sketch(on = XY) {
+  s1 = line(start = [var -0.5mm, var -0.5mm], end = [var 0.5mm, var -0.5mm])
+  s2 = line(start = [var 0.5mm, var -0.5mm], end = [var 0.5mm, var 0.5mm])
+  s3 = line(start = [var 0.5mm, var 0.5mm], end = [var -0.5mm, var 0.5mm])
+  s4 = line(start = [var -0.5mm, var 0.5mm], end = [var -0.5mm, var -0.5mm])
+  coincident([s1.end, s2.start])
+  coincident([s2.end, s3.start])
+  coincident([s3.end, s4.start])
+  coincident([s4.end, s1.start])
+}
+unitBlock = extrude(
+  region(point = [0mm, 0mm], sketch = unitSquareSketch),
+  length = 1mm,
+  symmetric = true,
+  tagEnd = $capEnd001,
+)
+unitSoftBlockBase = clone(unitBlock)
+unitSoftBlock = chamfer(
+  unitSoftBlockBase,
+  length = 0.05mm,
+  edges = [
+    {
+      sideFaces = [
+        unitSoftBlockBase.sketch.tags.s1,
+        unitSoftBlockBase.faces.capEnd001
+      ]
+    }
+  ],
+)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        ctx.run_with_caching(program.clone()).await.unwrap();
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid_with_deprecated_edge_helper() {
+        let code = r#"unitSquareSketch = sketch(on = XY) {
+  s1 = line(start = [var -0.5mm, var -0.5mm], end = [var 0.5mm, var -0.5mm])
+  s2 = line(start = [var 0.5mm, var -0.5mm], end = [var 0.5mm, var 0.5mm])
+  s3 = line(start = [var 0.5mm, var 0.5mm], end = [var -0.5mm, var 0.5mm])
+  s4 = line(start = [var -0.5mm, var 0.5mm], end = [var -0.5mm, var -0.5mm])
+  coincident([s1.end, s2.start])
+  coincident([s2.end, s3.start])
+  coincident([s3.end, s4.start])
+  coincident([s4.end, s1.start])
+}
+unitBlock = extrude(region(point = [0mm, 0mm], sketch = unitSquareSketch), length = 1mm, symmetric = true)
+unitSoftBlockBase = clone(unitBlock)
+unitSoftBlock = chamfer(
+  unitBlock,
+  length = 0.05mm,
+  tags = [
+    getOppositeEdge(unitSoftBlockBase.sketch.tags.s1),
+    getOppositeEdge(unitSoftBlockBase.sketch.tags.s2),
+    getOppositeEdge(unitSoftBlockBase.sketch.tags.s3),
+    getOppositeEdge(unitSoftBlockBase.sketch.tags.s4)
+  ],
+)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        ctx.run_with_caching(program.clone()).await.unwrap();
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_solid_target_with_deprecated_edge_helper() {
+        let code = r#"unitCircleSketch = sketch(on = XY) {
+  guide = line(start = [var 0mm, var 0mm], end = [var 1mm, var 0mm], construction = true)
+  c = circle(start = [var 1mm, var 0mm], center = [var 0mm, var 0mm])
+  coincident([guide.start, ORIGIN])
+  coincident([guide.start, c.center])
+  coincident([guide.end, c.start])
+  horizontal(guide)
+  horizontalDistance([guide.start, guide.end]) == 1mm
+}
+unitCylinder = extrude(region(point = [0mm, 0mm], sketch = unitCircleSketch), length = 1mm, symmetric = true)
+unitSoftCylinderBase = clone(unitCylinder)
+unitSoftCylinder = chamfer(
+  unitSoftCylinderBase,
+  length = 0.05mm,
+  tags = [
+    getOppositeEdge(unitSoftCylinderBase.sketch.tags.c)
+  ],
+)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        ctx.run_with_caching(program.clone()).await.unwrap();
 
         ctx.close().await;
     }

@@ -221,16 +221,12 @@ async fn inner_fillet(
     }
 
     let mut solid = solid.clone();
-    let edge_ids = tags
-        .into_iter()
-        .map(|edge_tag| edge_tag.get_all_engine_ids(exec_state, &args))
-        .try_fold(Vec::new(), |mut acc, item| match item {
-            Ok(ids) => {
-                acc.extend(ids);
-                Ok(acc)
-            }
-            Err(e) => Err(e),
-        })?;
+    let mut edge_ids = Vec::new();
+    for edge_tag in tags {
+        for edge_id in edge_tag.get_all_engine_ids(exec_state, &args)? {
+            edge_ids.push(super::edge::resolve_legacy_edge_id_for_solid(exec_state, &solid, edge_id, &args).await);
+        }
+    }
 
     let id = exec_state.next_uuid();
     let mut extra_face_ids = Vec::new();

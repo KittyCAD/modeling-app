@@ -231,6 +231,11 @@ pub(super) struct ModuleState {
     /// the exact key lookup misses, this map lets us reject that solid by
     /// `engine_id`, unless the key is a recorded operation output.
     pub(super) consumed_solid_ids: AHashMap<Uuid, ConsumedSolidInfo>,
+    /// Deprecated edge helpers return bare edge UUIDs, so consumers cannot see
+    /// whether the original expression referenced a clone. Keep equivalent
+    /// original/clone edge IDs here so fillet/chamfer can pick the edge owned by
+    /// their target solid.
+    pub(super) legacy_edge_id_alternates: AHashMap<Uuid, Vec<Uuid>>,
 }
 
 /// Internal identity for one runtime KCL solid value.
@@ -685,6 +690,27 @@ impl ExecState {
     /// boolean operation.
     pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
         self.mod_local.consumed_solid_ids.get(id)
+    }
+
+    pub(crate) fn record_legacy_edge_id_alternates(&mut self, edge_ids: impl IntoIterator<Item = Uuid>) {
+        let edge_ids: Vec<Uuid> = edge_ids.into_iter().collect();
+        for edge_id in &edge_ids {
+            let entry = self.mod_local.legacy_edge_id_alternates.entry(*edge_id).or_default();
+            for alternate_id in &edge_ids {
+                if alternate_id != edge_id && !entry.contains(alternate_id) {
+                    entry.push(*alternate_id);
+                }
+            }
+        }
+    }
+
+    pub(crate) fn legacy_edge_id_alternates(&self, edge_id: Uuid) -> impl Iterator<Item = Uuid> + '_ {
+        self.mod_local
+            .legacy_edge_id_alternates
+            .get(&edge_id)
+            .into_iter()
+            .flatten()
+            .copied()
     }
 
     /// Follow direct replacement links until we find the latest known output.
@@ -1161,6 +1187,7 @@ impl ModuleState {
             denied_warnings: Vec::new(),
             consumed_solids: AHashMap::default(),
             consumed_solid_ids: AHashMap::default(),
+            legacy_edge_id_alternates: AHashMap::default(),
             inside_stdlib: false,
         }
     }
