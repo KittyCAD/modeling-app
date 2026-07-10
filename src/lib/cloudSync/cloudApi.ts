@@ -113,6 +113,44 @@ function isDisplayableImageUrl(value: string) {
   return /^(https?:|blob:|data:image\/)/i.test(value)
 }
 
+export function normalizeRemoteProjectThumbnailUrl(value: string) {
+  if (!/^https?:/i.test(value)) {
+    return value
+  }
+
+  const withoutExtension = (pathname: string) =>
+    pathname.replace(
+      /(\/user\/projects\/[^/]+\/thumbnail)\.(?:png|jpe?g|webp|gif)$/i,
+      '$1'
+    )
+
+  try {
+    const url = new URL(value)
+    url.pathname = withoutExtension(url.pathname)
+    return url.toString()
+  } catch {
+    return value.replace(
+      /(\/user\/projects\/[^/?#]+\/thumbnail)\.(?:png|jpe?g|webp|gif)(?=[?#]|$)/i,
+      '$1'
+    )
+  }
+}
+
+export function remoteProjectThumbnailTargetPathFromUrl(value: string) {
+  const normalizedValue = normalizeRemoteProjectThumbnailUrl(value)
+  try {
+    const url = new URL(normalizedValue)
+    return /^\/user\/projects\/[^/]+\/thumbnail$/i.test(url.pathname)
+      ? `${url.pathname}${url.search}`
+      : undefined
+  } catch {
+    const match = normalizedValue.match(
+      /(\/user\/projects\/[^/?#]+\/thumbnail)(\?[^#]*)?(?:#.*)?$/i
+    )
+    return match ? `${match[1]}${match[2] ?? ''}` : undefined
+  }
+}
+
 function imageMimeTypeFromRecord(record: Record<string, unknown>) {
   const mimeType =
     stringValue(record.mime_type) ||
@@ -150,7 +188,7 @@ export function thumbnailUrlFromRemoteProjectPayload(
   const directValue = stringValue(payload)
   if (directValue) {
     if (isDisplayableImageUrl(directValue)) {
-      return directValue
+      return normalizeRemoteProjectThumbnailUrl(directValue)
     }
 
     return maybeDataUrlFromBase64(directValue)
@@ -177,7 +215,7 @@ export function thumbnailUrlFromRemoteProjectPayload(
   for (const field of directUrlFields) {
     const fieldValue = stringValue(payload[field])
     if (fieldValue && isDisplayableImageUrl(fieldValue)) {
-      return fieldValue
+      return normalizeRemoteProjectThumbnailUrl(fieldValue)
     }
   }
 
@@ -211,7 +249,10 @@ export async function getRemoteProjectThumbnailUrl(
   project: RemoteProjectSummary
 ) {
   const urlFromProjectList = thumbnailUrlFromRemoteProjectPayload(project)
-  if (urlFromProjectList) {
+  const thumbnailTargetPath = urlFromProjectList
+    ? remoteProjectThumbnailTargetPathFromUrl(urlFromProjectList)
+    : undefined
+  if (urlFromProjectList && !thumbnailTargetPath) {
     return urlFromProjectList
   }
 
@@ -219,7 +260,7 @@ export async function getRemoteProjectThumbnailUrl(
   try {
     response = await cloudFetch(
       config,
-      `/user/projects/${project.id}/thumbnail`,
+      thumbnailTargetPath ?? `/user/projects/${project.id}/thumbnail`,
       {
         headers: {
           Accept: 'application/json,image/*',

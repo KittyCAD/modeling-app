@@ -74,6 +74,7 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
     getProjectMetadataIndex: getCloudSyncProjectMetadataIndex,
     getProjectModifiedTime: getCloudSyncProjectModifiedTime,
     resolveProjectConflict: resolveCloudSyncProjectConflict,
+    getRemoteProjectThumbnailUrl: getCloudSyncRemoteProjectThumbnailUrl,
   }
 
   return {
