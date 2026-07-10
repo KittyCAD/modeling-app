@@ -1,15 +1,18 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { getFileRouteInfo } from '@src/lib/fileRouteTransition'
 import fsZds from '@src/lib/fs-zds'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type {
   HomeProjectEntry,
   HomeProjectEntryContribution,
 } from '@src/registry/contracts/homeProjects'
 import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import toast from 'react-hot-toast'
 import type { ContextFrom } from 'xstate'
 
 export type ProjectsCommandSchema = {
@@ -34,14 +37,35 @@ function projectWithId(
   }
 }
 
-function navigateToFile(filePath: string) {
-  const routerPath = `${PATHS.FILE}/${safeEncodeForRouterPaths(filePath)}`
+function currentRouterPath() {
+  const pathWithSearch = window.location.hash
+    ? window.location.hash.slice(1)
+    : window.location.pathname
+  const searchStart = pathWithSearch.indexOf('?')
+  return searchStart === -1
+    ? pathWithSearch
+    : pathWithSearch.slice(0, searchStart)
+}
+
+function navigateToRouterPath(routerPath: string) {
   if (isDesktop()) {
     window.location.hash = routerPath
     return
   }
   window.history.pushState(null, '', routerPath)
   window.dispatchEvent(new PopStateEvent('popstate'))
+}
+
+function navigateToFile(filePath: string) {
+  navigateToRouterPath(`${PATHS.FILE}/${safeEncodeForRouterPaths(filePath)}`)
+}
+
+function navigateHome() {
+  navigateToRouterPath(PATHS.HOME)
+}
+
+function messageFromError(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
 }
 
 export function createProjectCommands({
@@ -91,6 +115,25 @@ export function createProjectCommands({
       projectPath: projectPathForName(name),
     })
     navigateToFile(project.default_file)
+  }
+
+  const isCurrentFileRouteProject = (projectName: string) => {
+    const routeInfo = getFileRouteInfo({
+      pathname: currentRouterPath(),
+      projectDirectoryPath: getProjectDirectoryPath(),
+    })
+    return routeInfo.projectDirectory === projectName
+  }
+
+  const deleteProjectByName = async (name: string) => {
+    const shouldNavigateHome = isCurrentFileRouteProject(name)
+    if (shouldNavigateHome) {
+      navigateHome()
+    }
+    await systemIO.request({
+      type: 'project.delete',
+      projectName: name,
+    })
   }
 
   const openProjectCommand: Command = {
@@ -147,9 +190,13 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        void systemIO.request({
-          type: 'project.delete',
-          projectName: record.name,
+        void deleteProjectByName(record.name).catch((error: unknown) => {
+          toast.error(
+            `Failed to delete project "${record.name}": ${messageFromError(
+              error
+            )}`
+          )
+          reportRejection(error)
         })
       }
     },
