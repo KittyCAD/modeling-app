@@ -358,6 +358,118 @@ const KCL_GET_COMMON_EDGE = `body = startSketchOn(XY)
   |> fillet(radius = 1, tags = [getCommonEdge(faces = [e1, cap1])])
 `
 
+const KCL_SKETCH_BLOCK_NEXT_ADJACENT_EDGE = `// Source: https://github.com/KittyCAD/engine/issues/3139
+// Open engine issue: interior fillet fails on thin extrusions when tolerance is applied.
+
+@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  rectangleSegmentA001 = line(start = [0, 0], end = [13.62, 0])
+  rectangleSegmentB001 = line(start = [13.62, 0], end = [13.62, 8.72])
+  rectangleSegmentC001 = line(start = [13.62, 8.72], end = [0, 8.72])
+  line(start = [0, 8.72], end = [0, 0])
+  circle(start = [1.25, 1], center = [1, 1])
+  circle(start = [1.25, 4], center = [1, 4])
+}
+extrude001 = extrude(region(point = [2, 2], sketch = sketch001), length = .1)
+
+sketch002 = sketch(on = faceOf(extrude001, face = END)) {
+  edge1 = line(start = [1.92, 7.51], end = [1.92, 0.84])
+  edge2 = line(start = [1.92, 0.84], end = [6.61, 0.84])
+  edge3 = line(start = [6.61, 0.84], end = [1.92, 7.51])
+}
+extrude002 = extrude(region(point = [3, 2], sketch = sketch002), length = -.1)
+  |> fillet(
+       radius = 1,
+       tolerance = 0.000001,
+       tags = [
+         getNextAdjacentEdge(%.sketch.tags.edge1),
+       ],
+     )
+`
+
+const KCL_CLONE_SKETCH_TAG_GET_OPPOSITE_EDGE = `unitSquareSketch = sketch(on = XY) {
+  s1 = line(start = [var -0.5mm, var -0.5mm], end = [var 0.5mm, var -0.5mm])
+  s2 = line(start = [var 0.5mm, var -0.5mm], end = [var 0.5mm, var 0.5mm])
+  s3 = line(start = [var 0.5mm, var 0.5mm], end = [var -0.5mm, var 0.5mm])
+  s4 = line(start = [var -0.5mm, var 0.5mm], end = [var -0.5mm, var -0.5mm])
+  coincident([s1.end, s2.start])
+  coincident([s2.end, s3.start])
+  coincident([s3.end, s4.start])
+  coincident([s4.end, s1.start])
+}
+unitBlock = extrude(
+  region(point = [0mm, 0mm], sketch = unitSquareSketch),
+  length = 1mm,
+  symmetric = true,
+  tagEnd = $capEnd001,
+)
+unitSoftBlockBase = clone(unitBlock)
+unitSoftBlock = chamfer(
+  unitBlock,
+  length = 0.05mm,
+  tags = [getOppositeEdge(unitSoftBlockBase.sketch.tags.s1)],
+)
+`
+
+const KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+bodyCenterX = 270mm
+bodyCenterY = -15mm
+bodyWidth = 400mm
+bodyDepth = 410mm
+bodyHeight = 420mm
+bodyBottomZ = 160mm
+bodyCornerRadius = 12mm
+bodyFrontY = bodyCenterY - (bodyDepth / 2)
+bodyMinX = bodyCenterX - (bodyWidth / 2)
+
+bodyBasePlane = {
+  origin = [bodyMinX, bodyFrontY, bodyBottomZ],
+  xAxis = [1, 0, 0],
+  yAxis = [0, 1, 0]
+}
+
+bodyBoxSketch = sketch(on = bodyBasePlane) {
+  b1 = line(start = [var 0mm, var 0mm], end = [var 400mm, var 0mm])
+  b2 = line(start = [var 400mm, var 0mm], end = [var 400mm, var 410mm])
+  b3 = line(start = [var 400mm, var 410mm], end = [var 0mm, var 410mm])
+  b4 = line(start = [var 0mm, var 410mm], end = [var 0mm, var 0mm])
+
+  coincident([b1.end, b2.start])
+  coincident([b2.end, b3.start])
+  coincident([b3.end, b4.start])
+  coincident([b4.end, b1.start])
+  coincident([b1.start, ORIGIN])
+  horizontal(b1)
+  vertical(b2)
+  horizontal(b3)
+  vertical(b4)
+  horizontalDistance([b1.start, b1.end]) == bodyWidth
+  verticalDistance([b1.start, b4.start]) == bodyDepth
+}
+bodyBoxRegion = region(point = [200mm, 205mm], sketch = bodyBoxSketch)
+bodyBoxRaw = extrude(bodyBoxRegion, length = bodyHeight)
+bodyBoxRounded = fillet(
+  bodyBoxRaw,
+  radius = bodyCornerRadius,
+  tags = [
+    bodyBoxRaw.sketch.tags.b1,
+    bodyBoxRaw.sketch.tags.b2,
+    bodyBoxRaw.sketch.tags.b3,
+    bodyBoxRaw.sketch.tags.b4,
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b1),
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b2),
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b3),
+    getOppositeEdge(bodyBoxRaw.sketch.tags.b4),
+    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
+    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b1),
+    getNextAdjacentEdge(bodyBoxRaw.sketch.tags.b2),
+    getPreviousAdjacentEdge(bodyBoxRaw.sketch.tags.b3)
+  ],
+)
+`
+
 const KCL_GDT_GET_COMMON_EDGE = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -1410,6 +1522,62 @@ part = bracket()
         expect(n).toContain('edges = [')
         expect(n).toContain('sideFaces = [e1, capEnd001]')
         expect(n).toContain('sideFaces = [e2, capEnd001]')
+      }
+    )
+
+    it(
+      'refactors sketch-block getNextAdjacentEdge without inserting synthetic segment tags',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_SKETCH_BLOCK_NEXT_ADJACENT_EDGE
+        )
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        expect(refactored).not.toContain('tag = $seg')
+        const n = norm(refactored)
+        expect(n).toContain('edges = [')
+        expect(n).toContain('%.sketch.tags.edge1')
+        expect(n).toContain('%.sketch.tags.edge3')
+        expect(n).not.toContain('%.sketch.tags.seg')
+      }
+    )
+
+    it(
+      'refactors mixed direct sketch tags and deprecated helper tags',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS
+        )
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        expect(refactored).not.toContain('tag = $seg')
+        const n = norm(refactored)
+        expect(n).toContain('edges = [')
+        expect(n).not.toContain('tags = [')
+        expect(n).not.toContain('getOppositeEdge')
+        expect(n).not.toContain('getNextAdjacentEdge')
+        expect(n).not.toContain('getPreviousAdjacentEdge')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b1')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
+      }
+    )
+
+    it(
+      'refactors clone sketch tags with cloned cap face references',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_CLONE_SKETCH_TAG_GET_OPPOSITE_EDGE
+        )
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        const n = norm(refactored)
+        expect(n).toContain('edges = [')
+        expect(n).toContain('unitBlock.sketch.tags.')
+        expect(n).toContain('capEnd001')
+        expect(n).not.toContain('getOppositeEdge')
+        expect(n).not.toContain('tags = [')
       }
     )
 
