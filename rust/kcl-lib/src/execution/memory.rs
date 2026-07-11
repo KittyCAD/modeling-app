@@ -124,7 +124,7 @@ impl MemoryBackendKind {
             return Self::Arena;
         }
 
-        panic!("Unsupported {KCL_MEMORY_IMPL_ENV_VAR} value `{value}`. Expected `legacy` or `arena`.")
+        panic!("Unsupported {KCL_MEMORY_IMPL_ENV_VAR} value `{value}`. Expected `arena`.",);
     }
 
     #[cfg(test)]
@@ -488,7 +488,7 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "Unsupported KCL_MEMORY_IMPL value `frozen`. Expected `legacy` or `arena`.")]
+    #[should_panic(expected = "Unsupported KCL_MEMORY_IMPL value `frozen`. Expected `arena`.")]
     fn unsupported_backend_name_panics() {
         MemoryBackendKind::parse("frozen");
     }
