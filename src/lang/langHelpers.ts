@@ -3,8 +3,8 @@ import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
-import type { ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
-import { emptyExecState, kclLint } from '@src/lang/wasm'
+import type { CheckOutcome, ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
+import { checkOutcomeFromExecState, emptyExecState, kclLint } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
@@ -62,6 +62,13 @@ interface ExecutionResult {
   logs: string[]
   errors: KCLError[]
   execState: ExecState
+  isInterrupted: boolean
+}
+
+interface CheckResult {
+  logs: string[]
+  errors: KCLError[]
+  checkOutcome: CheckOutcome
   isInterrupted: boolean
 }
 
@@ -123,6 +130,44 @@ export async function executeAstMock({
     }
   } catch (e: any) {
     return handleExecuteError(e)
+  }
+}
+
+export async function checkAst({
+  ast,
+  rustContext,
+  path,
+}: {
+  ast: Node<Program>
+  rustContext: RustContext
+  path?: string
+}): Promise<CheckResult> {
+  try {
+    const settings = jsAppSettings(rustContext.settingsActor)
+    const checkOutcome = await rustContext.check(
+      ast,
+      settings,
+      path,
+    )
+
+    await rustContext.waitForAllEngineModelingCommands()
+    return {
+      logs: [],
+      errors: [],
+      checkOutcome,
+      isInterrupted: false,
+    }
+  } catch (e: any) {
+    return checkResultFromExecutionResult(handleExecuteError(e))
+  }
+}
+
+function checkResultFromExecutionResult(execResult: ExecutionResult): CheckResult {
+  return {
+    logs: execResult.logs,
+    errors: execResult.errors,
+    checkOutcome: checkOutcomeFromExecState(execResult.execState),
+    isInterrupted: execResult.isInterrupted,
   }
 }
 

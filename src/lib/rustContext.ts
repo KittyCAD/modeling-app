@@ -29,8 +29,8 @@ import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import type { ExecCallbacks, ExecState } from '@src/lang/wasm'
-import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
+import type { CheckOutcome, ExecCallbacks, ExecState } from '@src/lang/wasm'
+import { checkOutcomeFromExecState, errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
@@ -211,7 +211,7 @@ export default class RustContext {
     settings: DeepPartial<Configuration>,
     path?: string,
     callbacks?: ExecCallbacks
-  ): Promise<ExecState> {
+  ): Promise<CheckOutcome> {
     const instance = await this._checkContextInstance()
     const executionContext = callbacks
       ? instance.cloneWithExecuteCallbacks(callbacks)
@@ -223,7 +223,7 @@ export default class RustContext {
         path,
         JSON.stringify(settings)
       )
-      return execStateFromRust(result)
+      return checkOutcomeFromExecState(execStateFromRust(result))
     } catch (e: any) {
       return Promise.reject(errFromErrWithOutputs(e))
     }

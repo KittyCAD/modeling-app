@@ -276,6 +276,10 @@ export interface ExecState {
   defaultPlanes: DefaultPlanes | null
 }
 
+export interface CheckOutcome {
+  issues: CompilationIssue[]
+}
+
 export function emptyOperationsByModule(): OperationsByModule {
   return { map: {} }
 }
@@ -313,6 +317,12 @@ export function emptyExecState(): ExecState {
     issues: [],
     filenames: [],
     defaultPlanes: null,
+  }
+}
+
+export function checkOutcomeFromExecState(execState: ExecState): CheckOutcome {
+  return {
+    issues: execState.issues,
   }
 }
 
