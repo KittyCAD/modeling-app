@@ -4,8 +4,6 @@
 //! unsafe shared mutable storage with lock-protected arena and environment
 //! mutation. Public reads return owned values, so no lock guard escapes.
 //!
-//! Legacy memory docs are below.
-//!
 //! ## Representation of KCL memory
 //!
 //! Stores `KclValue`s by name using dynamic scoping. Memory does not support addresses or references,
@@ -124,6 +122,9 @@
 //!
 //! All environments are kept by the ProgramMemory, their ordering is not important and does not
 //! correspond to anything in the program or execution.
+//! Env refs index into an environment table, whose entries are `Arc<RwLock<Environment>>` values.
+//! The table lock protects adding, removing, and cloning environment entries; each environment lock
+//! protects that environment's bindings and ownership metadata.
 //!
 //! Pushing and popping stack frames is straightforward. Most get/set/update operations don't touch
 //! the call stack other than the current env (updating tags on function return is the exception).
@@ -169,11 +170,11 @@
 //! only need to understand it if you're modifying this file (or want to call a few, rarely used
 //! functions).
 //!
-//! The memory system is a lock-free, mostly wait-free structure. Safety is guaranteed by a few
-//! invariants which are maintained (mostly) internally. There are two areas of mutability which
-//! we need to think about: modifying, updating, or deleting items in memory, and adding or deleting
-//! environments. Other areas of mutation are maintaining the call stacks which is always trivially
-//! thread-local and collecting stats which is trivially atomic.
+//! The memory system uses locks internally, but callers never receive borrowed values tied to a
+//! lock guard. Public reads clone and return owned `KclValue`s. There are two areas of mutability
+//! to think about: modifying values inside one environment, and adding or deleting environments
+//! from the global table. Other areas of mutation are maintaining call stacks, which is
+//! thread-local, and collecting stats, which is atomic.
 //!
 //! A key invariant for modifying memory items is that each env is either uniquely owned by a single
 //! `Stack` (when it is active, i.e., part of a call stack) or is read-only (once interpretation of
@@ -184,30 +185,23 @@
 //! the env is read-only, if not it is owned by the stack with that id. An env can be read or written
 //! by it's owning stack, or if read-only can be read by anyone but never written.
 //!
-//! We check this dynamically, but the checks are assertions and should never fail. The safety invariant
-//! is ensured by construction - memory in a `Stack` should not be referenced from another `Stack`,
-//! memory should only be referenced once interpretation related to it is finished. This is actually
-//! a stronger requirement than is strictly necessary but it is easy to reason about. To be precise,
-//! it is safe to reference a name in an env once it has been popped from a stack and as long as it
-//! doesn't again become active.
+//! We check this dynamically and return internal errors if an access violates the ownership
+//! invariant. The invariant is ensured by construction - memory in a `Stack` should not be
+//! referenced from another `Stack`, and memory should only be referenced once interpretation related
+//! to it is finished. This is actually a stronger requirement than is strictly necessary but it is
+//! easy to reason about. To be precise, it is safe to reference a name in an env once it has been
+//! popped from a stack and as long as it doesn't again become active.
 //!
-//! Accessing an env is safe because they are stored on the heap and cannot be moved, even if the
-//! env storage is reorganised (which should only be due to reallocation, we can't move envs within
-//! storage since their indices must be kept consistent).
+//! Accessing an env is safe because each table entry is an `Arc` pointing to an independently locked
+//! environment. The table may grow or shrink, but cloning an environment entry while holding the
+//! table read lock keeps that environment alive while the caller takes its environment lock. Env refs
+//! remain valid unless the implementation proves the env can be removed.
 //!
-//! Adding or removing an env from storage is protected by a 'lock' field in `ProgramMemory`. Modification
-//! of the env storage must only happen when holding this lock (use `with_envs`). `with_envs` uses a
-//! simple spin lock to wait (the only non-wait-free action) so don't hold the lock for long (currently
-//! the only time this might happen is if the env storage re-sizes and thus reallocates). Reading an
-//! env does not require any lock - an env can never be moved, access to the env must be either
-//! read-only or unique, and (importantly) modifying the environments cannot remove an env unless it
-//! is guaranteed there are no references to the env.
-//!
-//! Edge case: what if an env transitions ownership state at the same time as the env storage is
-//! modified? This shouldn't be a technical issue, because the owner field of an env is only used to
-//! check safety, it is not ever used for any decision. In any case, modifying the env storage is
-//! must be safe if the env is in either state, so even if the transition happens at the same time
-//! as the storage modification, it is ok.
+//! Adding or removing an env from storage takes the table write lock. Reading or mutating bindings
+//! takes the target environment's read or write lock. Code should avoid long-running work while
+//! holding either lock, and should acquire locks in table-then-environment order when both are
+//! needed. Popping an env either removes the last empty unreferenced table entry, or keeps the entry
+//! and marks it read-only after any safe compaction.
 
 use std::fmt;
 use std::sync::Arc;
