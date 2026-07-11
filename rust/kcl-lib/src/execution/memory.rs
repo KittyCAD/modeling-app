@@ -4,7 +4,6 @@
 //! be added without moving call sites first.
 
 mod arena;
-mod legacy;
 
 use std::env;
 use std::fmt;
@@ -16,16 +15,19 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
 use indexmap::IndexMap;
-pub(crate) use legacy::MODULE_PREFIX;
-pub(crate) use legacy::RETURN_NAME;
-pub(crate) use legacy::SKETCH_PREFIX;
-pub(crate) use legacy::TYPE_PREFIX;
 use serde::Deserialize;
 use serde::Serialize;
 
 use crate::SourceRange;
 use crate::errors::KclError;
 use crate::execution::KclValue;
+
+/// The distinguished name of the return value of a function.
+pub(crate) const RETURN_NAME: &str = "__return";
+/// Low-budget namespacing for types and modules.
+pub(crate) const TYPE_PREFIX: &str = "__ty_";
+pub(crate) const MODULE_PREFIX: &str = "__mod_";
+pub(crate) const SKETCH_PREFIX: &str = "__sketch_";
 
 pub(crate) const KCL_MEMORY_IMPL_ENV_VAR: &str = "KCL_MEMORY_IMPL";
 
@@ -91,13 +93,10 @@ pub(crate) struct MemoryStats {
     epoch_count: AtomicUsize,
     // Total number of values inserted or updated.
     mutation_count: AtomicUsize,
-    // The number of iterations waiting for a spin lock.
-    lock_waits: AtomicUsize,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum MemoryBackendKind {
-    Legacy,
     Arena,
 }
 
@@ -125,11 +124,12 @@ impl MemoryBackendKind {
             return Self::Arena;
         }
 
-        if value.eq_ignore_ascii_case("legacy") {
-            return Self::Legacy;
-        }
-
         panic!("Unsupported {KCL_MEMORY_IMPL_ENV_VAR} value `{value}`. Expected `legacy` or `arena`.")
+    }
+
+    #[cfg(test)]
+    pub(crate) fn all() -> &'static [Self] {
+        &[Self::Arena]
     }
 
     #[cfg(test)]
@@ -141,7 +141,6 @@ impl MemoryBackendKind {
     #[cfg(test)]
     fn test_override() -> Option<Self> {
         match TEST_BACKEND_OVERRIDE.load(Ordering::SeqCst) {
-            1 => Some(Self::Legacy),
             2 => Some(Self::Arena),
             _ => None,
         }
@@ -150,7 +149,6 @@ impl MemoryBackendKind {
     #[cfg(test)]
     fn test_override_value(self) -> u8 {
         match self {
-            Self::Legacy => 1,
             Self::Arena => 2,
         }
     }
@@ -173,13 +171,11 @@ impl Drop for MemoryBackendOverrideGuard {
 
 #[derive(Debug)]
 enum ProgramMemoryBackend {
-    Legacy(Arc<legacy::ProgramMemory>),
     Arena(Arc<arena::ProgramMemory>),
 }
 
 #[derive(Debug, Clone)]
 enum StackBackend {
-    Legacy(legacy::Stack),
     Arena(arena::Stack),
 }
 
@@ -199,7 +195,6 @@ pub(crate) struct Stack {
 impl fmt::Display for ProgramMemory {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.backend {
-            ProgramMemoryBackend::Legacy(memory) => memory.fmt(f),
             ProgramMemoryBackend::Arena(memory) => memory.fmt(f),
         }
     }
@@ -208,7 +203,6 @@ impl fmt::Display for ProgramMemory {
 impl fmt::Display for Stack {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.backend {
-            StackBackend::Legacy(stack) => stack.fmt(f),
             StackBackend::Arena(stack) => stack.fmt(f),
         }
     }
@@ -222,9 +216,6 @@ impl ProgramMemory {
 
     pub(crate) fn new_with_backend(backend: MemoryBackendKind) -> Arc<Self> {
         match backend {
-            MemoryBackendKind::Legacy => Arc::new(Self {
-                backend: ProgramMemoryBackend::Legacy(legacy::ProgramMemory::new()),
-            }),
             MemoryBackendKind::Arena => Arc::new(Self {
                 backend: ProgramMemoryBackend::Arena(arena::ProgramMemory::new()),
             }),
@@ -233,7 +224,6 @@ impl ProgramMemory {
 
     pub fn new_stack(self: Arc<Self>) -> Stack {
         let backend = match &self.backend {
-            ProgramMemoryBackend::Legacy(memory) => StackBackend::Legacy(Arc::clone(memory).new_stack()),
             ProgramMemoryBackend::Arena(memory) => StackBackend::Arena(Arc::clone(memory).new_stack()),
         };
 
@@ -242,11 +232,6 @@ impl ProgramMemory {
 
     pub fn set_std(self: &mut Arc<Self>, std: EnvironmentRef) -> Result<(), KclError> {
         match &self.backend {
-            ProgramMemoryBackend::Legacy(memory) => {
-                let mut memory = Arc::clone(memory);
-                memory.set_std(std);
-                Ok(())
-            }
             ProgramMemoryBackend::Arena(memory) => {
                 let mut memory = Arc::clone(memory);
                 memory.set_std(std)
@@ -256,14 +241,12 @@ impl ProgramMemory {
 
     pub fn requires_std(&self) -> bool {
         match &self.backend {
-            ProgramMemoryBackend::Legacy(memory) => memory.requires_std(),
             ProgramMemoryBackend::Arena(memory) => memory.requires_std(),
         }
     }
 
     pub(crate) fn stats(&self) -> &MemoryStats {
         match &self.backend {
-            ProgramMemoryBackend::Legacy(memory) => &memory.stats,
             ProgramMemoryBackend::Arena(memory) => &memory.stats,
         }
     }
@@ -276,7 +259,6 @@ impl ProgramMemory {
         owner: usize,
     ) -> Result<KclValue, KclError> {
         match &self.backend {
-            ProgramMemoryBackend::Legacy(memory) => memory.get_from_owned(var, env_ref, source_range, owner),
             ProgramMemoryBackend::Arena(memory) => memory.get_from_owned(var, env_ref, source_range, owner),
         }
     }
@@ -284,7 +266,6 @@ impl ProgramMemory {
     #[cfg(test)]
     pub fn get_from_unchecked(&self, var: &str, env_ref: EnvironmentRef) -> Result<KclValue, KclError> {
         match &self.backend {
-            ProgramMemoryBackend::Legacy(memory) => memory.get_from_unchecked(var, env_ref).cloned(),
             ProgramMemoryBackend::Arena(memory) => memory.get_from(var, env_ref, SourceRange::default(), 0),
         }
     }
@@ -293,15 +274,6 @@ impl ProgramMemory {
 impl Stack {
     pub fn deep_clone(&self) -> Result<Stack, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => {
-                let stack = stack.deep_clone();
-                Ok(Stack {
-                    memory: Arc::new(ProgramMemory {
-                        backend: ProgramMemoryBackend::Legacy(Arc::clone(&stack.memory)),
-                    }),
-                    backend: StackBackend::Legacy(stack),
-                })
-            }
             StackBackend::Arena(stack) => {
                 let stack = stack.deep_clone()?;
                 Ok(Stack {
@@ -335,7 +307,6 @@ impl Stack {
 
     pub fn current_epoch(&self) -> usize {
         match &self.backend {
-            StackBackend::Legacy(stack) => stack.current_epoch(),
             StackBackend::Arena(stack) => stack.current_epoch(),
         }
     }
@@ -343,85 +314,60 @@ impl Stack {
     #[cfg(test)]
     pub(crate) fn current_env_ref(&self) -> EnvironmentRef {
         match &self.backend {
-            StackBackend::Legacy(stack) => stack.current_env_ref(),
             StackBackend::Arena(stack) => stack.current_env_ref(),
         }
     }
 
     pub fn push_new_env_for_call(&mut self, parent: EnvironmentRef) -> Result<(), KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => {
-                stack.push_new_env_for_call(parent);
-                Ok(())
-            }
             StackBackend::Arena(stack) => stack.push_new_env_for_call(parent),
         }
     }
 
     pub fn push_new_env_for_scope(&mut self) -> Result<(), KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => {
-                stack.push_new_env_for_scope();
-                Ok(())
-            }
             StackBackend::Arena(stack) => stack.push_new_env_for_scope(),
         }
     }
 
     pub fn push_new_root_env(&mut self, include_prelude: bool) -> Result<(), KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => {
-                stack.push_new_root_env(include_prelude);
-                Ok(())
-            }
             StackBackend::Arena(stack) => stack.push_new_root_env(include_prelude),
         }
     }
 
     pub fn restore_env(&mut self, env: EnvironmentRef) -> Result<(), KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => {
-                stack.restore_env(env);
-                Ok(())
-            }
             StackBackend::Arena(stack) => stack.restore_env(env),
         }
     }
 
     pub fn pop_env(&mut self) -> Result<EnvironmentRef, KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.pop_env()),
             StackBackend::Arena(stack) => stack.pop_env(),
         }
     }
 
     pub fn pop_and_preserve_env(&mut self) -> Result<EnvironmentRef, KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.pop_and_preserve_env()),
             StackBackend::Arena(stack) => stack.pop_and_preserve_env(),
         }
     }
 
     pub fn squash_env(&mut self, old: EnvironmentRef) -> Result<(), KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => {
-                stack.squash_env(old);
-                Ok(())
-            }
             StackBackend::Arena(stack) => stack.squash_env(old),
         }
     }
 
     pub fn snapshot(&mut self) -> Result<EnvironmentRef, KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.snapshot()),
             StackBackend::Arena(stack) => stack.snapshot(),
         }
     }
 
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => stack.add(key, value, source_range),
             StackBackend::Arena(stack) => stack.add(key, value, source_range),
         }
     }
@@ -434,63 +380,54 @@ impl Stack {
         source_range: SourceRange,
     ) -> Result<KclValue, KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => stack.add_recursive_closure(key, value, placeholder_env_ref, source_range),
             StackBackend::Arena(stack) => stack.add_recursive_closure(key, value, placeholder_env_ref, source_range),
         }
     }
 
     pub fn update(&mut self, key: &str, f: impl Fn(&mut KclValue, usize)) -> Result<(), KclError> {
         match &mut self.backend {
-            StackBackend::Legacy(stack) => stack.update(key, f),
             StackBackend::Arena(stack) => stack.update(key, f),
         }
     }
 
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<KclValue, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => stack.get(var, source_range),
             StackBackend::Arena(stack) => stack.get(var, source_range),
         }
     }
 
     pub fn get_owned(&self, var: &str, source_range: SourceRange) -> Result<KclValue, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => stack.get_owned(var, source_range),
             StackBackend::Arena(stack) => stack.get_owned(var, source_range),
         }
     }
 
     pub fn cur_frame_contains(&self, var: &str) -> Result<bool, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => stack.cur_frame_contains(var),
             StackBackend::Arena(stack) => stack.cur_frame_contains(var),
         }
     }
 
     pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<(usize, KclValue), KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => stack.get_from_call_stack(key, source_range),
             StackBackend::Arena(stack) => stack.get_from_call_stack(key, source_range),
         }
     }
 
     pub fn find_keys_in_current_env(&self, pred: impl Fn(&KclValue) -> bool) -> Result<Vec<String>, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.find_keys_in_current_env(pred)),
             StackBackend::Arena(stack) => stack.find_keys_in_current_env(pred),
         }
     }
 
     pub fn find_all_in_current_env(&self) -> Result<Vec<(String, KclValue)>, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.find_all_in_current_env()),
             StackBackend::Arena(stack) => stack.find_all_in_current_env(),
         }
     }
 
     pub fn find_all_in_env(&self, env: EnvironmentRef) -> Result<Vec<(String, KclValue)>, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.find_all_in_env(env)),
             StackBackend::Arena(stack) => stack.find_all_in_env(env),
         }
     }
@@ -504,14 +441,12 @@ impl Stack {
         pred: impl Fn(&KclValue) -> bool,
     ) -> Result<Option<String>, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.find_var_name_in_all_envs(pred)),
             StackBackend::Arena(stack) => stack.find_var_name_in_all_envs(pred),
         }
     }
 
     pub fn walk_call_stack_with<T>(&self, f: impl FnMut(&KclValue) -> Option<T>) -> Result<Vec<T>, KclError> {
         match &self.backend {
-            StackBackend::Legacy(stack) => Ok(stack.walk_call_stack_with(f)),
             StackBackend::Arena(stack) => stack.walk_call_stack_with(f),
         }
     }
@@ -539,12 +474,6 @@ impl PartialEq for Stack {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn parses_legacy_backend_name() {
-        assert_eq!(MemoryBackendKind::parse("legacy"), MemoryBackendKind::Legacy);
-        assert_eq!(MemoryBackendKind::parse("LeGaCy"), MemoryBackendKind::Legacy);
-    }
 
     #[test]
     fn parses_arena_backend_name() {

@@ -3,7 +3,211 @@
 //! This backend preserves the legacy environment/epoch semantics while replacing
 //! unsafe shared mutable storage with lock-protected arena and environment
 //! mutation. Public reads return owned values, so no lock guard escapes.
-
+//!
+//! Legacy memory docs are below.
+//!
+//! ## Representation of KCL memory
+//!
+//! Stores `KclValue`s by name using dynamic scoping. Memory does not support addresses or references,
+//! so all values must be self-contained. Memory is essentially a map from `String`s to `KclValue`s.
+//! `KclValue`s are entirely opaque to this module. Memory is global and there should be only
+//! one per execution. It has no explicit support for caching between executions.
+//!
+//! Memory is mostly immutable (since KCL does not support mutation or reassignment). However, tags
+//! may change as code is executed and that mutates memory. Therefore to some extent,
+//! ProgramMemory supports mutability and does not rely on KCL's (mostly) immutable nature.
+//!
+//! ProgramMemory is observably monotonic, i.e., it only grows and even when we pop a stack frame,
+//! the frame is retained unless we can prove it is unreferenced. We remove some values which we
+//! know cannot be referenced, but we should in the future do better garbage collection (of values
+//! and envs).
+//!
+//! ## Concepts
+//!
+//! There are three main moving parts for ProgramMemory: environments, epochs, and stacks. I'll
+//! cover environments (and the call stack) first as if epochs didn't exist, then describe epochs.
+//!
+//! An environment is a set of bindings (i.e., a map from names to values). Environments handle
+//! both scoping and context switching. A new lexical scope means a new environment. Nesting of scopes
+//! means that environments form a tree, which is represented by parent pointers in the environments.
+//!
+//! Example:
+//!
+//! ```no_run
+//! a = 10
+//!
+//! fn foo() {
+//!   b = a
+//!   a = 0
+//! }
+//! ```
+//!
+//! The body of `foo` has an environment whose parent is the enclosing scope. Variables in the inner
+//! scope can hide those in the outer scope (meaning `a` can be redefined in `foo`). Variables in the
+//! outer scope are visible from the inner scope. Note that `b` and the new `a` are not visible
+//! outside of `foo`.
+//!
+//! Nesting of environments is independent of the call stack. E.g., when `foo` is called, we push a
+//! new stack frame (which is an environment). The caller's env is on the stack and is not referenced
+//! by the new environment (i.e., variables in the caller's env are not visible from the callee).
+//!
+//! Note, however, that if a function is called from it's enclosing scope, then the outer env will
+//! be on the call stack and be the parent of the current env. Calling from a different scope will
+//! mean the call stack and parent env do not correspond.
+//!
+//! We use a new call stack for each module. When interpreting a module we start a new call stack
+//! with a new environment (though see below about std). Names imported from one module into another
+//! point into the envs from the exporting module's call stack (though once the module has been
+//! interpreted, those envs won't be on it's call stack any longer). A call stack is represented by
+//! a `Stack` object which references the global `ProgramMemory` object. Environments are stored in
+//! the global memory and the call stack is a stack of references. (See below on concurrent access
+//! using `Stack`s).
+//!
+//! When a function declaration is interpreted we create a value in memory (in the env in which it
+//! is declared) which contains the function's AST and a reference to the env where it is declared.
+//! When the function is called, a new environment is created with the saved reference as its parent
+//! and used for interpreting the function body. The return value is saved into this env. When the
+//! function returns the callee env is popped to resume execution in the caller's env.
+//!
+//! Now consider extending the above example:
+//!
+//! Example:
+//!
+//! ```no_run
+//! a = 10
+//!
+//! fn foo() {
+//!   b = a
+//!   a = 0
+//! }
+//!
+//! c = 2
+//! ```
+//!
+//! `c` should not be visible inside foo and if `a` is modified after the declaration of `foo`, then
+//! the earlier value should be the one visible in `foo`, even if `foo` is called after (lexically or
+//! temporally) the definition of `c`. (Note that although KCL does not permit mutation, objects
+//! can change due to the way tags are implemented).
+//!
+//! To make this work, we have the concept of an epoch. An epoch is a simple, global, monotonic counter
+//! which is incremented at any significant moment in execution (we use the term snapshot). When a
+//! value is saved in memory we also save the epoch at which it was stored.
+//!
+//! When we save a reference to an enclosing scope we take a snapshot and save that epoch as part of
+//! the reference. When we call a function, we use the epoch when it was defined to look up variables,
+//! ignoring any variables which have a creation time later than the saved epoch.
+//!
+//! Because the callee could create new variables (with a creation time of the current epoch) which
+//! the callee should be able to read, we can't simply check the epoch with the callees (and we'd need
+//! to maintain a stack of callee epochs for further calls, etc.). Instead a stack frame consists of
+//! a reference to an environment and an epoch at which reads should take place. When we call a function
+//! this creates a new env using the current epoch, and it's parent env (which is the enclosing scope
+//! of the function declaration) includes the epoch at which the function was declared.
+//!
+//! So far, this handles variables created after a function is declared, but does not handle mutation.
+//! Mutation must be handled internally in values, see for example `TagIdentifier`. It is suggested
+//! that objects rely on epochs for this. Since epochs are linked to the stack frame, only objects in
+//! the current stack frame should be mutated.
+//!
+//! ### Std
+//!
+//! The standard library is implicitly imported into every module (unless it explicitly opts out).
+//! So that these implicitly imported names can be overridden, we want to import these names into a
+//! scope outside the implicitly importing module. Furthermore, for efficiency we'd like to share
+//! these imported names between all modules (because std is large and every module imports all
+//! those names). This is safe to do because everything in std is fully immutable.
+//!
+//! To make this work, every env has the std import (prelude) env as its root ancestor. So when an
+//! env is marked as a root env, it may still have the prelude env as its parent.
+//!
+//! ## Implementation
+//!
+//! All environments are kept by the ProgramMemory, their ordering is not important and does not
+//! correspond to anything in the program or execution.
+//!
+//! Pushing and popping stack frames is straightforward. Most get/set/update operations don't touch
+//! the call stack other than the current env (updating tags on function return is the exception).
+//!
+//! ## Invariants
+//!
+//! There's obviously a bunch of invariants in this design, some are kinda obvious, some are limited
+//! in scope and are documented inline, here are some others:
+//!
+//! - We only ever write into the current env, never into any parent envs (though we can read from
+//!   both).
+//! - We only ever write (or mutate) at the most recent epoch, never at an older one.
+//! - The env ref saved with a function decl is always to an historic epoch, never to the current one.
+//! - Since KCL does not have submodules and decls are not visible outside of a nested scope, all
+//!   references to variables in other modules must be in the root scope of a module.
+//!
+//! ## Concurrency and thread-safety
+//!
+//! `ProgramMemory` is a global singleton (technically one per program execution, if we handled multiple
+//! projects in a single interpreter process we'd need multiple `ProgramMemory`s, but that is currently
+//! not possible). `ProgramMemory` could be moved between threads, but there shouldn't be any need
+//! to do so. It can safely be referenced and accessed from multiple threads, but there are rules for
+//! doing so.
+//!
+//! `ProgramMemory` is mostly accessed via a `Stack` object, avoid accessing `ProgramMemory` directly
+//! where possible. `Stack`s can safely be moved to other threads and can access `ProgramMemory`
+//! from a different thread. There can be multiple `Stack`s on different threads or the same thread
+//! (either operating sequentially or using async tasks).
+//!
+//! The key requirement for users is that names from a `Stack` should never be exposed until the
+//! `Stack` itself is no longer needed. I.e., when interpreting a module, you would use a new `Stack`
+//! for the module and no other module can reference anything in the module until interpretation of
+//! it is complete (and the `Stack` object has been dropped).
+//!
+//! Using most of the `Stack` API is easy - you don't need to worry about thread safety and can treat
+//! it just like a self-contained object (though see the docs on `restore_env` and `squash_env` if
+//! you use that method). You shouldn't need to use `ProgramMemory` for much, other
+//! than creating new `Stack`s which is always safe (doesn't mutate `ProgramMemory`). After interpreting
+//! std, you'll need to call `set_std`. `get_from` and `find_all_in_env` take an owner parameter
+//! and follow the thread-safety invariants below.
+//!
+//! The rest of this section describes the implementation and thread-safety invariants, you should
+//! only need to understand it if you're modifying this file (or want to call a few, rarely used
+//! functions).
+//!
+//! The memory system is a lock-free, mostly wait-free structure. Safety is guaranteed by a few
+//! invariants which are maintained (mostly) internally. There are two areas of mutability which
+//! we need to think about: modifying, updating, or deleting items in memory, and adding or deleting
+//! environments. Other areas of mutation are maintaining the call stacks which is always trivially
+//! thread-local and collecting stats which is trivially atomic.
+//!
+//! A key invariant for modifying memory items is that each env is either uniquely owned by a single
+//! `Stack` (when it is active, i.e., part of a call stack) or is read-only (once interpretation of
+//! the scope backed by the env is complete and the env is no longer on any call stack). Being on a
+//! call stack means the env is owned by that `Stack`. Since the envs are all kept by the `ProgramMemory`
+//! singleton (so that env refs work), we can't rely on Rust ownership to enforce this. Instead, each
+//! `Stack` has an id (ordering of which is irrelevant) and each env has an owner id - if this is 0,
+//! the env is read-only, if not it is owned by the stack with that id. An env can be read or written
+//! by it's owning stack, or if read-only can be read by anyone but never written.
+//!
+//! We check this dynamically, but the checks are assertions and should never fail. The safety invariant
+//! is ensured by construction - memory in a `Stack` should not be referenced from another `Stack`,
+//! memory should only be referenced once interpretation related to it is finished. This is actually
+//! a stronger requirement than is strictly necessary but it is easy to reason about. To be precise,
+//! it is safe to reference a name in an env once it has been popped from a stack and as long as it
+//! doesn't again become active.
+//!
+//! Accessing an env is safe because they are stored on the heap and cannot be moved, even if the
+//! env storage is reorganised (which should only be due to reallocation, we can't move envs within
+//! storage since their indices must be kept consistent).
+//!
+//! Adding or removing an env from storage is protected by a 'lock' field in `ProgramMemory`. Modification
+//! of the env storage must only happen when holding this lock (use `with_envs`). `with_envs` uses a
+//! simple spin lock to wait (the only non-wait-free action) so don't hold the lock for long (currently
+//! the only time this might happen is if the env storage re-sizes and thus reallocates). Reading an
+//! env does not require any lock - an env can never be moved, access to the env must be either
+//! read-only or unique, and (importantly) modifying the environments cannot remove an env unless it
+//! is guaranteed there are no references to the env.
+//!
+//! Edge case: what if an env transitions ownership state at the same time as the env storage is
+//! modified? This shouldn't be a technical issue, because the owner field of an env is only used to
+//! check safety, it is not ever used for any decision. In any case, modifying the env storage is
+//! must be safe if the env is in either state, so even if the transition happens at the same time
+//! as the storage modification, it is ok.
 use std::fmt;
 use std::sync::Arc;
 use std::sync::OnceLock;
