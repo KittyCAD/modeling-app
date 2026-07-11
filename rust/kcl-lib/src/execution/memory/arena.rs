@@ -1200,3 +1200,365 @@ fn undefined_value(var: &str, source_range: SourceRange) -> KclError {
         Some(name.to_owned()),
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::execution::kcl_value::FunctionBody;
+    use crate::execution::kcl_value::FunctionSource;
+    use crate::execution::kcl_value::KclFunctionSourceParams;
+    use crate::execution::types::NumericType;
+    use crate::execution::types::NumericTypeExt;
+
+    fn sr() -> SourceRange {
+        SourceRange::default()
+    }
+
+    fn val(value: i64) -> KclValue {
+        KclValue::Number {
+            value: value as f64,
+            ty: NumericType::count(),
+            meta: Vec::new(),
+        }
+    }
+
+    fn stack_for_tests() -> Stack {
+        let mut stack = ProgramMemory::new().new_stack();
+        stack
+            .push_new_root_env(false)
+            .expect("test stack root environment should be created");
+        let std = stack.current_env;
+        stack
+            .memory
+            .set_std(std)
+            .expect("test standard library prelude should be initialized");
+        stack
+    }
+
+    #[track_caller]
+    fn assert_get(mem: &Stack, key: &str, expected: i64) {
+        match mem.get(key, sr()).unwrap() {
+            KclValue::Number { value, .. } => assert_eq!(value as i64, expected),
+            value => panic!("expected `{key}` to be a number, got {value:?}"),
+        }
+    }
+
+    #[track_caller]
+    fn assert_get_from(mem: &Stack, key: &str, expected: i64, snapshot: EnvironmentRef) {
+        match mem.memory.get_from(key, snapshot, sr(), mem.id).unwrap() {
+            KclValue::Number { value, .. } => assert_eq!(value as i64, expected),
+            value => panic!("expected `{key}` to be a number, got {value:?}"),
+        }
+    }
+
+    #[track_caller]
+    fn assert_missing_from(mem: &Stack, key: &str, snapshot: EnvironmentRef) {
+        mem.memory
+            .get_from(key, snapshot, sr(), mem.id)
+            .expect_err("expected snapshot lookup to fail");
+    }
+
+    #[test]
+    fn mem_smoke() {
+        // Follows test_pattern_transform_function_cannot_access_future_definitions.
+
+        let mem = &mut stack_for_tests();
+        let transform = mem.snapshot().unwrap();
+        mem.add("transform".to_owned(), val(1), sr()).unwrap();
+        let layer = mem.snapshot().unwrap();
+        mem.add("layer".to_owned(), val(1), sr()).unwrap();
+        mem.add("x".to_owned(), val(1), sr()).unwrap();
+
+        mem.push_new_env_for_call(layer).unwrap();
+        mem.pop_env().unwrap();
+
+        mem.push_new_env_for_call(transform).unwrap();
+        mem.get("x", sr()).unwrap_err();
+        mem.pop_env().unwrap();
+    }
+
+    #[test]
+    fn simple_snapshot() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        assert_get(mem, "a", 1);
+        mem.add("a".to_owned(), val(2), sr()).unwrap_err();
+        assert_get(mem, "a", 1);
+        mem.get("b", sr()).unwrap_err();
+
+        let sn = mem.snapshot().unwrap();
+        mem.add("a".to_owned(), val(2), sr()).unwrap_err();
+        assert_get(mem, "a", 1);
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+        assert_get(mem, "b", 3);
+        assert_missing_from(mem, "b", sn);
+    }
+
+    #[test]
+    fn multiple_snapshot() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+
+        let sn1 = mem.snapshot().unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+
+        let sn2 = mem.snapshot().unwrap();
+        mem.add("a".to_owned(), val(4), sr()).unwrap_err();
+        mem.add("b".to_owned(), val(5), sr()).unwrap_err();
+        mem.add("c".to_owned(), val(6), sr()).unwrap();
+        assert_get(mem, "a", 1);
+        assert_get(mem, "b", 3);
+        assert_get(mem, "c", 6);
+        assert_get_from(mem, "a", 1, sn1);
+        assert_missing_from(mem, "b", sn1);
+        assert_missing_from(mem, "c", sn1);
+        assert_get_from(mem, "a", 1, sn2);
+        assert_get_from(mem, "b", 3, sn2);
+        assert_missing_from(mem, "c", sn2);
+    }
+
+    #[test]
+    fn simple_call_env() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        assert_get(mem, "b", 3);
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
+        assert_get(mem, "b", 4);
+        assert_get(mem, "c", 5);
+        // Preserve the callee stack frame.
+        mem.snapshot().unwrap();
+
+        let callee = mem.pop_env().unwrap();
+        assert_get(mem, "b", 3);
+        mem.get("c", sr()).unwrap_err();
+
+        // Callee stack frame is preserved.
+        assert_get_from(mem, "b", 4, callee);
+        assert_get_from(mem, "c", 5, callee);
+    }
+
+    #[test]
+    fn multiple_call_env() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        assert_get(mem, "b", 3);
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
+        assert_get(mem, "b", 4);
+        assert_get(mem, "c", 5);
+        mem.pop_env().unwrap();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        assert_get(mem, "b", 3);
+        mem.add("b".to_owned(), val(6), sr()).unwrap();
+        mem.add("d".to_owned(), val(7), sr()).unwrap();
+        assert_get(mem, "b", 6);
+        assert_get(mem, "d", 7);
+        mem.get("c", sr()).unwrap_err();
+        mem.pop_env().unwrap();
+    }
+
+    #[test]
+    fn root_env() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+
+        mem.push_new_root_env(false).unwrap();
+        mem.get("b", sr()).unwrap_err();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
+        assert_get(mem, "b", 4);
+        assert_get(mem, "c", 5);
+
+        let callee = mem.pop_env().unwrap();
+        assert_get(mem, "b", 3);
+        mem.get("c", sr()).unwrap_err();
+
+        // Callee stack frame is preserved.
+        assert_get_from(mem, "b", 4, callee);
+        assert_get_from(mem, "c", 5, callee);
+    }
+
+    #[test]
+    fn deep_call_env() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        assert_get(mem, "b", 3);
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
+        assert_get(mem, "b", 4);
+        assert_get(mem, "c", 5);
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        assert_get(mem, "b", 4);
+        mem.add("b".to_owned(), val(6), sr()).unwrap();
+        mem.add("d".to_owned(), val(7), sr()).unwrap();
+        assert_get(mem, "b", 6);
+        assert_get(mem, "c", 5);
+        assert_get(mem, "d", 7);
+
+        mem.pop_env().unwrap();
+        assert_get(mem, "b", 4);
+        assert_get(mem, "c", 5);
+        mem.get("d", sr()).unwrap_err();
+
+        mem.pop_env().unwrap();
+        assert_get(mem, "b", 3);
+        mem.get("c", sr()).unwrap_err();
+        mem.get("d", sr()).unwrap_err();
+    }
+
+    #[test]
+    fn snap_env() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+
+        let sn = mem.snapshot().unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+
+        mem.push_new_env_for_call(sn).unwrap();
+        mem.get("b", sr()).unwrap_err();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
+        assert_get(mem, "b", 4);
+        assert_get(mem, "c", 5);
+
+        mem.pop_env().unwrap();
+        // Old snapshot is still untouched.
+        assert_missing_from(mem, "b", sn);
+    }
+
+    #[test]
+    fn snap_env2() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+
+        let sn1 = mem.snapshot().unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+
+        mem.push_new_env_for_call(mem.current_env).unwrap();
+        let sn2 = mem.snapshot().unwrap();
+        mem.add("b".to_owned(), val(4), sr()).unwrap();
+        let sn3 = mem.snapshot().unwrap();
+        assert_get_from(mem, "b", 3, sn2);
+        mem.add("c".to_owned(), val(5), sr()).unwrap();
+        assert_get(mem, "b", 4);
+        assert_get(mem, "c", 5);
+
+        mem.pop_env().unwrap();
+        // Old snapshots are still untouched.
+        assert_missing_from(mem, "b", sn1);
+        assert_get_from(mem, "b", 3, sn2);
+        assert_missing_from(mem, "c", sn2);
+        assert_get_from(mem, "b", 4, sn3);
+        assert_missing_from(mem, "c", sn3);
+    }
+
+    #[test]
+    fn squash_env() {
+        let mem = &mut stack_for_tests();
+        mem.add("a".to_owned(), val(1), sr()).unwrap();
+        mem.add("b".to_owned(), val(3), sr()).unwrap();
+        let sn1 = mem.snapshot().unwrap();
+        mem.push_new_env_for_call(sn1).unwrap();
+        mem.add("b".to_owned(), val(2), sr()).unwrap();
+
+        let sn2 = mem.snapshot().unwrap();
+        mem.add(
+            "f".to_owned(),
+            KclValue::Function {
+                value: Box::new(FunctionSource::kcl(
+                    crate::parsing::ast::types::FunctionExpression::dummy(),
+                    sn2,
+                    KclFunctionSourceParams {
+                        std_props: None,
+                        experimental: false,
+                        include_in_feature_tree: false,
+                    },
+                )),
+                meta: Vec::new(),
+            },
+            sr(),
+        )
+        .unwrap();
+        let old = mem.pop_and_preserve_env().unwrap();
+        mem.squash_env(old).unwrap();
+        assert_get(mem, "a", 1);
+        assert_get(mem, "b", 2);
+        match mem.get("f", sr()).unwrap() {
+            KclValue::Function { value, .. } => match value.as_ref() {
+                FunctionSource {
+                    body: FunctionBody::Kcl(memory),
+                    ..
+                } if memory.index() == mem.current_env.index() => {}
+                value => panic!("{value:#?}, expected env {:?}", mem.current_env),
+            },
+            value => panic!("{value:#?}, expected env {:?}", mem.current_env),
+        }
+        assert_eq!(
+            mem.memory
+                .read_env_table("counting environments in squash_env test")
+                .unwrap()
+                .len(),
+            2
+        );
+    }
+
+    #[test]
+    fn two_stacks() {
+        let stack1 = &mut stack_for_tests();
+        let stack2 = &mut stack1.memory.clone().new_stack();
+        stack2.push_new_root_env(false).unwrap();
+
+        stack1.add("a".to_owned(), val(1), sr()).unwrap();
+        stack1.push_new_env_for_call(stack1.current_env).unwrap();
+
+        stack2.add("a".to_owned(), val(2), sr()).unwrap();
+        stack2.push_new_env_for_call(stack2.current_env).unwrap();
+
+        stack2.add("a".to_owned(), val(4), sr()).unwrap();
+        stack2.push_new_env_for_call(stack2.current_env).unwrap();
+
+        stack1.add("a".to_owned(), val(3), sr()).unwrap();
+        stack1.push_new_env_for_call(stack1.current_env).unwrap();
+
+        stack1.add("a".to_owned(), val(5), sr()).unwrap();
+        stack1.push_new_env_for_call(stack1.current_env).unwrap();
+
+        stack2.add("a".to_owned(), val(6), sr()).unwrap();
+        stack2.push_new_env_for_call(stack2.current_env).unwrap();
+
+        stack1.add("a".to_owned(), val(7), sr()).unwrap();
+        stack2.add("a".to_owned(), val(8), sr()).unwrap();
+
+        assert_get(stack1, "a", 7);
+        assert_get(stack2, "a", 8);
+
+        stack1.pop_env().unwrap();
+        assert_get(stack1, "a", 5);
+        assert_get(stack2, "a", 8);
+        stack2.pop_env().unwrap();
+        assert_get(stack1, "a", 5);
+        assert_get(stack2, "a", 6);
+
+        stack2.pop_env().unwrap();
+        assert_get(stack2, "a", 4);
+        stack2.pop_env().unwrap();
+        assert_get(stack2, "a", 2);
+        stack1.pop_env().unwrap();
+        assert_get(stack1, "a", 3);
+        stack1.pop_env().unwrap();
+        assert_get(stack1, "a", 1);
+    }
+}
