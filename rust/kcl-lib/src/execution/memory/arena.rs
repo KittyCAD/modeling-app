@@ -208,6 +208,7 @@
 //! check safety, it is not ever used for any decision. In any case, modifying the env storage is
 //! must be safe if the env is in either state, so even if the transition happens at the same time
 //! as the storage modification, it is ok.
+
 use std::fmt;
 use std::sync::Arc;
 use std::sync::OnceLock;
@@ -228,6 +229,10 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::KclValue;
 
+/// KCL memory. There should be only one ProgramMemory for the interpretation of a program (
+/// including other modules). Multiple interpretation runs should have fresh instances.
+///
+/// See module docs.
 #[derive(Debug)]
 pub(crate) struct ProgramMemory {
     /// Memory for the std prelude.
@@ -250,8 +255,11 @@ pub(crate) struct Stack {
 #[derive(Debug)]
 struct Environment {
     bindings: IndexMap<String, (usize, KclValue)>,
+    // An outer scope, if one exists.
     parent: Option<EnvironmentRef>,
     might_be_refed: bool,
+    // The id of the `Stack` if this `Environment` is on a call stack. If this is >0 then it may
+    // only be read or written by that `Stack`; if 0 then the env is read-only.
     owner: usize,
 }
 
@@ -294,6 +302,7 @@ fn arena_invariant_failed(op: &str, detail: impl fmt::Display) -> KclError {
     ))
 }
 
+// Intended for debugging. Do not rely on this output in any way!
 impl fmt::Display for ProgramMemory {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let env_count = match self.environments.read() {
@@ -311,6 +320,7 @@ impl fmt::Display for ProgramMemory {
     }
 }
 
+// Intended for debugging. Do not rely on this output in any way!
 impl fmt::Display for Stack {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let stack: Vec<String> = self
@@ -340,6 +350,14 @@ impl ProgramMemory {
         })
     }
 
+    /// Clone this ProgramMemory.
+    ///
+    /// This is deliberately not a `Clone` impl or called just `clone` since it requires reading
+    /// the whole arena and so as to be totally unambiguous with cloning an `Arc` of the memory
+    /// (which you should usually prefer).
+    ///
+    /// This is a long-running operation. Callers must ensure no other task will need to mutate
+    /// `self` while this runs.
     fn deep_clone(&self) -> Result<Self, KclError> {
         let envs = self.read_env_table("cloning memory arena")?;
         let environments = envs
@@ -396,6 +414,7 @@ impl ProgramMemory {
             .map_err(|_| arena_lock_poisoned(op, format!("environment {index}")))
     }
 
+    /// Create a new stack object referencing this `ProgramMemory`.
     pub fn new_stack(self: Arc<Self>) -> Stack {
         let id = self.next_stack_id.fetch_add(1, Ordering::Relaxed);
         assert!(id > 0);
@@ -407,6 +426,7 @@ impl ProgramMemory {
         }
     }
 
+    /// Set the env var used for the standard library prelude.
     pub fn set_std(self: &mut Arc<Self>, std: EnvironmentRef) -> Result<(), KclError> {
         if !std.is_regular() {
             return Err(arena_invariant_failed(
@@ -423,10 +443,12 @@ impl ProgramMemory {
         })
     }
 
+    /// Whether this memory still needs to be initialised with its standard library prelude.
     pub fn requires_std(&self) -> bool {
         self.std.get().is_none()
     }
 
+    /// Get a value from a specific environment of the memory at a specific point in time.
     pub fn get_from(
         &self,
         var: &str,
@@ -449,6 +471,7 @@ impl ProgramMemory {
         Err(undefined_value(var, source_range))
     }
 
+    /// Get an owned value from a specific environment of the memory.
     pub fn get_from_owned(
         &self,
         var: &str,
@@ -459,6 +482,7 @@ impl ProgramMemory {
         self.get_from(var, env_ref, source_range, owner)
     }
 
+    /// Create a new environment, add it to the list of envs, and return its ref.
     fn new_env_checked(
         &self,
         parent: Option<EnvironmentRef>,
@@ -481,6 +505,9 @@ impl ProgramMemory {
         Ok(result)
     }
 
+    /// Handle tidying up an env when it has been popped from the call stack.
+    ///
+    /// If the env must be preserved, it is. If not, then it will be removed or compacted.
     fn pop_env(&self, old: EnvironmentRef, owner: usize) -> Result<(), KclError> {
         let mut envs = self.write_env_table("popping environment")?;
         let env = envs
@@ -491,6 +518,7 @@ impl ProgramMemory {
         env.compact(owner, "popping environment")?;
 
         if env.is_empty() && old.index() == envs.len() - 1 {
+            // Special case: we can literally pop it.
             drop(env);
             envs.pop();
             return Ok(());
@@ -523,6 +551,10 @@ impl ProgramMemory {
 }
 
 impl Stack {
+    /// Clone this `Stack` and the underlying `ProgramMemory`.
+    ///
+    /// This is a long-running operation. Callers must ensure that no other task will need to
+    /// mutate the `ProgramMemory` while this runs.
     pub fn deep_clone(&self) -> Result<Stack, KclError> {
         let mem = self.memory.deep_clone()?;
         let mut stack = self.clone();
@@ -530,6 +562,7 @@ impl Stack {
         Ok(stack)
     }
 
+    /// Get the current (globally most recent) epoch.
     pub fn current_epoch(&self) -> usize {
         self.memory.epoch.load(Ordering::Relaxed)
     }
@@ -539,6 +572,10 @@ impl Stack {
         self.current_env
     }
 
+    /// Push a new (standard KCL) stack frame on to the call stack.
+    ///
+    /// `parent` is the environment where the function being called is declared (not the caller's
+    /// environment, which is probably `self.current_env`).
     pub fn push_new_env_for_call(&mut self, parent: EnvironmentRef) -> Result<(), KclError> {
         let env_ref = self
             .memory
@@ -548,11 +585,20 @@ impl Stack {
         Ok(())
     }
 
+    /// Push a stack frame for an inline scope.
+    ///
+    /// This should be used for blocks but is currently only used for mock execution.
     pub fn push_new_env_for_scope(&mut self) -> Result<(), KclError> {
+        // We want to use the current env as the parent.
+        // We need to snapshot in case there is a function decl in the new scope.
         let snapshot = self.snapshot()?;
         self.push_new_env_for_call(snapshot)
     }
 
+    /// Push a new stack frame on to the call stack with no connection to a parent environment.
+    ///
+    /// Suitable for executing a separate module.
+    /// Precondition: include_prelude -> !self.memory.requires_std()
     pub fn push_new_root_env(&mut self, include_prelude: bool) -> Result<(), KclError> {
         let parent = if include_prelude {
             Some(*self.memory.std.get().ok_or_else(|| {
@@ -572,6 +618,10 @@ impl Stack {
         Ok(())
     }
 
+    /// Push a previously used environment on to the call stack.
+    ///
+    /// SAFETY: the env must not be being used by another `Stack` since we'll move the env from
+    /// read-only to owned.
     pub fn restore_env(&mut self, env: EnvironmentRef) -> Result<(), KclError> {
         if !env.is_regular() {
             return Err(arena_invariant_failed(
@@ -590,6 +640,11 @@ impl Stack {
         Ok(())
     }
 
+    /// Pop a frame from the call stack and return a reference to the popped environment. The popped
+    /// environment is preserved if it may be referenced (so the returned reference will remain valid).
+    ///
+    /// The popped environment may be retained completely (if it may be referenced by a function decl
+    /// or import) or retained but its contents deleted or completely discarded.
     pub fn pop_env(&mut self) -> Result<EnvironmentRef, KclError> {
         let old = self.current_env;
         self.current_env = self.call_stack.pop().ok_or_else(|| {
@@ -606,6 +661,8 @@ impl Stack {
         Ok(old)
     }
 
+    /// Pop a frame from the call stack and return a reference to the popped environment. The popped
+    /// environment is always preserved.
     pub fn pop_and_preserve_env(&mut self) -> Result<EnvironmentRef, KclError> {
         let old = self.current_env;
         self.current_env = self.call_stack.pop().ok_or_else(|| {
@@ -625,6 +682,12 @@ impl Stack {
         Ok(old)
     }
 
+    /// Merges the specified environment with the current environment, rewriting any environment refs
+    /// taking snapshots into account. Deletes (if possible) or clears the squashed environment.
+    ///
+    /// Precondition: the caller must have unique access to the env pointed to by `old` and there must be
+    /// no extant references to it. If violated there may be dangling references to the old env once
+    /// it is removed from storage.
     pub fn squash_env(&mut self, old: EnvironmentRef) -> Result<(), KclError> {
         if old.skip_env() {
             return Err(arena_invariant_failed(
@@ -641,10 +704,12 @@ impl Stack {
             return Ok(());
         }
 
+        // Make a new scope so we override variables properly.
         self.push_new_env_for_scope()?;
         let env_index = self.current_env.index();
         let env = self.memory.get_env_checked(env_index, "squashing an environment")?;
         let mut env = self.memory.write_env(&env, env_index, "squashing an environment")?;
+        // Move the variables in the popped env into the current env.
         for (key, (epoch, value)) in old_env.take_bindings() {
             env.insert(
                 key,
@@ -657,6 +722,7 @@ impl Stack {
         Ok(())
     }
 
+    /// Snapshot the current state of the memory.
     pub fn snapshot(&mut self) -> Result<EnvironmentRef, KclError> {
         self.memory.stats.epoch_count.fetch_add(1, Ordering::Relaxed);
 
@@ -670,6 +736,7 @@ impl Stack {
         Ok(EnvironmentRef::at_epoch(self.current_env.index(), prev_epoch))
     }
 
+    /// Add a value to the program memory (in the current scope). The value must not already exist.
     pub fn add(&mut self, key: String, value: KclValue, source_range: SourceRange) -> Result<(), KclError> {
         let env_index = self.current_env.index();
         let env = self.memory.get_env_checked(env_index, "adding a binding")?;
@@ -692,6 +759,11 @@ impl Stack {
         Ok(())
     }
 
+    /// Add a closure value to the program memory (in the current scope) such
+    /// that the closure can refer to itself. The value must not already exist.
+    /// This is one of the few functions in the memory module that needs to know
+    /// about the internals of KclValue so that it can fix up the placeholder
+    /// env ref in a function value.
     pub fn add_recursive_closure(
         &mut self,
         key: String,
@@ -716,6 +788,7 @@ impl Stack {
             }
 
             self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
+            // Add the value like a normal binding.
             env.insert(
                 key.clone(),
                 self.current_epoch(),
@@ -725,12 +798,14 @@ impl Stack {
             )?;
         }
 
+        // Fix up the placeholder env ref now that the name is bound.
         let fixed_env_ref = self.snapshot()?;
         let fixed_closure = value.map_env_ref_and_epoch(placeholder_env_ref, fixed_env_ref);
         let original_env_index = original_env.index();
         let original_env = self
             .memory
             .get_env_checked(original_env_index, "fixing a recursive closure binding")?;
+        // Update memory with the fixed closure.
         self.memory
             .write_env(&original_env, original_env_index, "fixing a recursive closure binding")?
             .update(
@@ -742,9 +817,13 @@ impl Stack {
                 self.id,
             )?;
 
+        // Return the closure with the env ref placeholder properly pointing to
+        // the environment with the recursive binding.
         Ok(fixed_closure)
     }
 
+    /// Update a variable in memory. `key` must exist in memory. If it doesn't, this function will
+    /// return an error.
     pub fn update(&mut self, key: &str, f: impl Fn(&mut KclValue, usize)) -> Result<(), KclError> {
         self.memory.stats.mutation_count.fetch_add(1, Ordering::Relaxed);
         let env_index = self.current_env.index();
@@ -757,14 +836,18 @@ impl Stack {
         )
     }
 
+    /// Get a value from the program memory.
+    /// Return Err if not found.
     pub fn get(&self, var: &str, source_range: SourceRange) -> Result<KclValue, KclError> {
         self.memory.get_from(var, self.current_env, source_range, self.id)
     }
 
+    /// Get a cloned value from the program memory.
     pub fn get_owned(&self, var: &str, source_range: SourceRange) -> Result<KclValue, KclError> {
         self.get(var, source_range)
     }
 
+    /// Whether the current frame of the stack contains a variable with the given name.
     pub fn cur_frame_contains(&self, var: &str) -> Result<bool, KclError> {
         let env_index = self.current_env.index();
         let env = self.memory.get_env_checked(env_index, "checking current frame")?;
@@ -774,6 +857,7 @@ impl Stack {
             .contains_key(var))
     }
 
+    /// Get a key from the first stack frame on the call stack.
     pub fn get_from_call_stack(&self, key: &str, source_range: SourceRange) -> Result<(usize, KclValue), KclError> {
         if !self.current_env.skip_env() {
             return Ok((self.current_env.epoch(), self.get(key, source_range)?));
@@ -791,6 +875,7 @@ impl Stack {
         ))
     }
 
+    /// Iterate over all keys in the current environment which satisfy the provided predicate.
     pub fn find_keys_in_current_env(&self, pred: impl Fn(&KclValue) -> bool) -> Result<Vec<String>, KclError> {
         let env_index = self.current_env.index();
         let env = self
@@ -805,10 +890,14 @@ impl Stack {
             .collect())
     }
 
+    /// Iterate over all key/value pairs in the current environment. `env` must
+    /// either be read-only or owned by `self`.
     pub fn find_all_in_current_env(&self) -> Result<Vec<(String, KclValue)>, KclError> {
         self.find_all_in_env(self.current_env)
     }
 
+    /// Iterate over all key/value pairs in the specified environment. `env`
+    /// must either be read-only or owned by `self`.
     pub fn find_all_in_env(&self, env: EnvironmentRef) -> Result<Vec<(String, KclValue)>, KclError> {
         if !env.is_regular() {
             return Err(arena_invariant_failed(
@@ -822,6 +911,12 @@ impl Stack {
             .find_all_by(|_| true, self.id, "enumerating environment")
     }
 
+    /// Search the current environment and all environments in the call stack
+    /// for a variable whose value satisfies the predicate. Returns the name of
+    /// the first matching variable found, or `None` if no match.
+    ///
+    /// Used on error paths to recover variable names for diagnostics; not
+    /// performance-critical.
     pub(crate) fn find_var_name_in_all_envs(
         &self,
         pred: impl Fn(&KclValue) -> bool,
@@ -846,6 +941,10 @@ impl Stack {
         Ok(None)
     }
 
+    /// Walk all values accessible from any environment in the call stack.
+    ///
+    /// This may include duplicate values or different versions of a value known by the same key,
+    /// since an environment may be accessible via multiple paths.
     pub fn walk_call_stack_with<T>(&self, mut f: impl FnMut(&KclValue) -> Option<T>) -> Result<Vec<T>, KclError> {
         let mut result = Vec::new();
         let mut cur_env = self.current_env;
@@ -858,7 +957,9 @@ impl Stack {
             cur_env = self.call_stack[stack_index];
         }
 
+        // Loop over each frame in the call stack.
         loop {
+            // Loop over each environment in the tree of scopes of which the current stack frame is a leaf.
             let parent = {
                 let env_cell = self.memory.get_env_checked(cur_env.index(), "walking call stack")?;
                 let env = self.memory.read_env(&env_cell, cur_env.index(), "walking call stack")?;
@@ -875,6 +976,7 @@ impl Stack {
                 break;
             }
 
+            // Loop to skip any non-KCL stack frames.
             loop {
                 stack_index -= 1;
                 let env_ref = self.call_stack[stack_index];
@@ -909,6 +1011,8 @@ impl Environment {
         })
     }
 
+    /// Create a new environment, parent points to its surrounding lexical scope or the std
+    /// env if it's a root scope.
     fn new_checked(
         parent: Option<EnvironmentRef>,
         might_be_refed: bool,
@@ -941,23 +1045,35 @@ impl Environment {
         }
     }
 
+    /// Mark this env as read-only (see module docs).
     fn read_only(&mut self) {
         self.owner = 0;
     }
 
+    /// Mark this env as owned (see module docs).
     fn restore_owner(&mut self, owner: usize) {
         self.owner = owner;
     }
 
+    /// Mark this environment as possibly having external references.
     fn mark_as_refed(&mut self) {
         self.might_be_refed = true;
     }
 
+    // True if the env is empty and has no external references.
     fn is_empty(&self) -> bool {
         self.bindings.is_empty() && !self.might_be_refed
     }
 
+    /// Possibly compress this environment by deleting the memory.
+    ///
+    /// This method will return without changing anything if the environment may be referenced
+    /// (this is a pretty conservative approximation, but if you keep an EnvironmentRef around
+    /// in a new way it might be incorrect).
+    ///
+    /// See module docs for more details.
     fn compact(&mut self, owner: usize, op: &str) -> Result<(), KclError> {
+        // Don't compress if there might be a closure or import referencing us.
         if self.might_be_refed {
             return Ok(());
         }
@@ -998,6 +1114,7 @@ impl Environment {
         self.parent
     }
 
+    /// Visit all values in the environment at the specified epoch.
     fn visit_values<T>(&self, epoch: usize, f: &mut impl FnMut(&KclValue) -> Option<T>, result: &mut Vec<T>) {
         for value in self
             .bindings
@@ -1010,6 +1127,9 @@ impl Environment {
         }
     }
 
+    /// Pure insert, panics if `key` is already in this environment.
+    ///
+    /// Precondition: !self.contains_key(key)
     fn insert(&mut self, key: String, epoch: usize, value: KclValue, owner: usize, op: &str) -> Result<(), KclError> {
         self.check_owned_by(owner, op)?;
         debug_assert!(!self.bindings.contains_key(&key));
@@ -1017,10 +1137,13 @@ impl Environment {
         Ok(())
     }
 
+    /// Is the key currently contained in this environment.
     fn contains_key(&self, key: &str) -> bool {
         self.bindings.contains_key(key)
     }
 
+    /// Iterate over all key/value pairs currently in this environment where the value satisfies
+    /// the provided predicate (`f`).
     fn find_all_by(
         &self,
         f: impl Fn(&KclValue) -> bool,
@@ -1036,6 +1159,7 @@ impl Environment {
             .collect())
     }
 
+    /// Take all bindings from the environment.
     fn take_bindings(&mut self) -> IndexMap<String, (usize, KclValue)> {
         std::mem::take(&mut self.bindings)
     }
