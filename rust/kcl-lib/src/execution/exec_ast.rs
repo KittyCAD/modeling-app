@@ -420,7 +420,7 @@ fn circular_angle_distance(a: f64, b: f64) -> f64 {
     libm::fmin(delta, std::f64::consts::TAU - delta)
 }
 
-fn legacy_angle_default_label_angle(
+fn legacy_angle_arc_midpoint_angle(
     lines: [([f64; 2], [f64; 2]); 2],
     directions: [[f64; 2]; 2],
     vertex: [f64; 2],
@@ -438,6 +438,8 @@ fn legacy_angle_default_label_angle(
         libm::fmax(signed_distances[0][0], signed_distances[1][0]),
         libm::fmin(signed_distances[0][1], signed_distances[1][1]),
     ];
+    // Match calculateArcRenderInput in src/machines/sketchSolve/constraints/AngleConstraintBuilder.ts;
+    // the radius sign chooses the line 0 ray on which the legacy arc starts.
     let radius = if overlap[1] >= overlap[0] {
         let near_start = overlap[0] + (overlap[1] - overlap[0]) * 0.15;
         let near_end = overlap[0] + (overlap[1] - overlap[0]) * 0.85;
@@ -492,9 +494,9 @@ fn finalize_legacy_angle_refactor_meta(
         }
     }
 
-    let default_label_angle = legacy_angle_default_label_angle([line0, line1], directions, vertex, desired);
+    let arc_midpoint_angle = legacy_angle_arc_midpoint_angle([line0, line1], directions, vertex, desired);
     let selected = candidates.into_iter().min_by(|a, b| {
-        circular_angle_distance(a.2, default_label_angle).total_cmp(&circular_angle_distance(b.2, default_label_angle))
+        circular_angle_distance(a.2, arc_midpoint_angle).total_cmp(&circular_angle_distance(b.2, arc_midpoint_angle))
     })?;
 
     Some(LegacyAngleRefactorMeta {
