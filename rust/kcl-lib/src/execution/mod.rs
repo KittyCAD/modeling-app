@@ -1574,6 +1574,34 @@ impl ExecutorContext {
         universe_info: Option<(Universe, UniverseMap)>,
         preserve_mem: PreserveMem,
     ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
+        // Tell the engine we're about to execute a lot of modeling commands.
+        let enable_render = true;
+        exec_state
+            .begin_execution(self, enable_render)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)?;
+
+        // Execute the program, which executes modeling commands.
+        let exec_res = self
+            .run_concurrent_inner(program, exec_state, universe_info, preserve_mem)
+            .await;
+
+        // Tell the engine we're done.
+        let end_exec_res = exec_state.end_execution(self).await;
+        match (exec_res, end_exec_res) {
+            (Ok(res), Ok(())) => Ok(res),
+            (Err(e), _) => Err(e),
+            (Ok(_), Err(e)) => Err(KclErrorWithOutputs::no_outputs(e)),
+        }
+    }
+
+    async fn run_concurrent_inner(
+        &self,
+        program: &crate::Program,
+        exec_state: &mut ExecState,
+        universe_info: Option<(Universe, UniverseMap)>,
+        preserve_mem: PreserveMem,
+    ) -> Result<(EnvironmentRef, Option<ModelingSessionData>), KclErrorWithOutputs> {
         // Reuse our cached universe if we have one.
 
         let (universe, universe_map) = if let Some((universe, universe_map)) = universe_info {

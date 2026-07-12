@@ -7,6 +7,9 @@ use anyhow::Result;
 use indexmap::IndexMap;
 use kcl_api::UnitAngle;
 use kcl_api::UnitLength;
+use kittycad_modeling_cmds::BeginExecution;
+use kittycad_modeling_cmds::EndExecution;
+use kittycad_modeling_cmds::ModelingCmd;
 use serde::Deserialize;
 use serde::Serialize;
 use uuid::Uuid;
@@ -33,6 +36,7 @@ use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
 use crate::execution::KclValue;
 use crate::execution::KclValueView;
+use crate::execution::ModelingCmdMeta;
 use crate::execution::OperationCallbackArgs;
 use crate::execution::OperationsByModule;
 use crate::execution::ProgramLookup;
@@ -952,6 +956,30 @@ impl ExecState {
 
     pub(crate) fn kcl_version(&self) -> KclVersion {
         self.mod_local.settings.kcl_version.parse().unwrap_or_default()
+    }
+
+    /// Call this before sending modeling commands for execution.
+    pub(crate) async fn begin_execution(&mut self, ctx: &ExecutorContext, enable_render: bool) -> Result<(), KclError> {
+        let cmd_id = self.next_uuid();
+        let cmd = ModelingCmd::from(BeginExecution::builder().enable_render(enable_render).build());
+        let meta = ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id);
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, cmd_id, meta.source_range, &cmd)
+            .await
+            .map(|_| ())
+    }
+
+    /// Call this after sending modeling commands for execution.
+    pub(crate) async fn end_execution(&mut self, ctx: &ExecutorContext) -> Result<(), KclError> {
+        let cmd_id = self.next_uuid();
+        let cmd = ModelingCmd::from(EndExecution::default());
+        let meta = ModelingCmdMeta::with_id(self, ctx, Default::default(), cmd_id);
+        meta.ctx
+            .engine
+            .send_modeling_cmd(&meta.ctx.engine_batch, cmd_id, meta.source_range, &cmd)
+            .await
+            .map(|_| ())
     }
 }
 
