@@ -1,6 +1,7 @@
 import type { FunctionExpression } from '@rust/kcl-lib/bindings/FunctionExpression'
 import type { ImportStatement } from '@rust/kcl-lib/bindings/ImportStatement'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Block } from '@rust/kcl-lib/bindings/Block'
 import type { TypeDeclaration } from '@rust/kcl-lib/bindings/TypeDeclaration'
 import {
   createLiteral,
@@ -232,6 +233,7 @@ type KCLNode = Node<
   | TypeDeclaration
   | ReturnStatement
   | Identifier
+  | Block
 >
 
 export function traverse(
@@ -285,6 +287,20 @@ export function traverse(
         ])
       )
     }
+  } else if (_node.type === 'SketchBlock') {
+    _node.arguments.forEach((arg, index) =>
+      _traverse(arg.arg, [
+        ...pathToNode,
+        ['arguments', 'SketchBlock'],
+        [index, ARG_INDEX_FIELD],
+        ['arg', LABELED_ARG_FIELD],
+      ])
+    )
+    _traverse(_node.body, [...pathToNode, ['body', 'SketchBlock']])
+  } else if (_node.type === 'Block') {
+    _node.items.forEach((item, index) =>
+      _traverse(item, [...pathToNode, ['items', 'Block'], [index, 'index']])
+    )
   } else if (_node.type === 'BinaryExpression') {
     _traverse(_node.left, [...pathToNode, ['left', 'BinaryExpression']])
     _traverse(_node.right, [...pathToNode, ['right', 'BinaryExpression']])

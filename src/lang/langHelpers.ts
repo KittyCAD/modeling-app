@@ -1,13 +1,17 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
+import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
+import { convertLegacyAngleToAngleDimension } from '@src/lang/modifyAst/angle'
 import type { ExecCallbacks, ExecState, Program } from '@src/lang/wasm'
-import { emptyExecState, kclLint } from '@src/lang/wasm'
+import { emptyExecState, kclLint, recast } from '@src/lang/wasm'
 import { EXECUTE_AST_INTERRUPT_ERROR_STRING } from '@src/lib/constants'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
+import { isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
@@ -32,6 +36,9 @@ export type ToolTip =
   | 'arcTo'
   | 'arc'
   | 'startProfile'
+
+const sourceRangesEqual = (left: SourceRange, right: SourceRange) =>
+  left[0] === right[0] && left[1] === right[1] && left[2] === right[2]
 
 export const toolTips: Array<ToolTip> = [
   'line',
@@ -182,14 +189,24 @@ export async function lintAst({
   sourceCode,
   instance,
   rustContext,
+  legacyAngleRefactorMetadata = [],
 }: {
-  ast: Program
+  ast: Node<Program>
   sourceCode: string
   instance: ModuleType
   rustContext?: RustContext
+  legacyAngleRefactorMetadata?: LegacyAngleRefactorMeta[]
 }): Promise<Array<Diagnostic>> {
   try {
     let discovered_findings = await kclLint(ast, instance)
+
+    discovered_findings = discovered_findings.filter(
+      (lint) =>
+        lint.finding.code !== 'Z0007' ||
+        legacyAngleRefactorMetadata.some((metadata) =>
+          sourceRangesEqual(metadata.sourceRange, lint.pos)
+        )
+    )
 
     // Filter out Z0005 if sketch solve mode is not enabled
     // Only show Z0005 when useSketchSolveMode setting is enabled
@@ -217,6 +234,9 @@ export async function lintAst({
         'Deprecated sketch syntax. This sketch cannot be converted to new sketch block syntax at this time.'
       let message = lint.finding.title
       const suggestion = lint.suggestion
+      const legacyAngleMetadata = legacyAngleRefactorMetadata.find((metadata) =>
+        sourceRangesEqual(metadata.sourceRange, lint.pos)
+      )
 
       if (suggestion) {
         actions = [
@@ -234,6 +254,35 @@ export async function lintAst({
             },
           },
         ]
+      } else if (lint.finding.code === 'Z0007' && legacyAngleMetadata) {
+        const modifiedAst = convertLegacyAngleToAngleDimension(
+          ast,
+          legacyAngleMetadata.sourceRange,
+          legacyAngleMetadata.sector,
+          legacyAngleMetadata.inverse,
+          instance
+        )
+        const convertedSource = isErr(modifiedAst)
+          ? modifiedAst
+          : recast(modifiedAst, instance)
+        if (!isErr(convertedSource)) {
+          actions = [
+            {
+              name: 'Convert to angleDimension',
+              apply: (view: EditorView, _from: number, _to: number) => {
+                if (view.state.doc.toString() !== sourceCode) return
+                view.dispatch({
+                  changes: {
+                    from: 0,
+                    to: view.state.doc.length,
+                    insert: convertedSource,
+                  },
+                  annotations: [lspCodeActionEvent],
+                })
+              },
+            },
+          ]
+        }
       } else if (
         lint.finding.code === 'Z0005' &&
         rustContext &&

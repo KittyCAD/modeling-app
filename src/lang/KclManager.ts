@@ -2327,6 +2327,7 @@ export class KclManager extends File {
           sourceCode: this.code,
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
+          legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
         })
       )
       if (this.sceneEntitiesManager) {

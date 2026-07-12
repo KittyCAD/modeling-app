@@ -57,8 +57,11 @@ pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
 pub use state::ExecState;
 pub(crate) use state::KclVersion;
+pub use state::LegacyAngleRefactorMeta;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::PendingLegacyAngleRefactorMeta;
+pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
 use crate::CompilationIssue;
@@ -304,6 +307,8 @@ pub struct ExecOutcome {
     pub operations: OperationsByModule,
     /// Output artifact graph.
     pub artifact_graph: ArtifactGraph,
+    /// Information collected during execution for actionable refactors.
+    pub refactor_metadata: Vec<RefactorMetadata>,
     /// Objects in the scene, created from execution.
     #[serde(skip)]
     pub scene_objects: Vec<Object>,

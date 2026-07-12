@@ -28,6 +28,7 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactCommand;
 use crate::execution::ArtifactGraph;
 use crate::execution::ArtifactId;
+use crate::execution::ConstrainableLine2d;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecOutcome;
 use crate::execution::ExecutorSettings;
@@ -170,6 +171,36 @@ pub struct ModuleArtifactState {
     pub artifact_id_to_scene_object: IndexMap<ArtifactId, ObjectId>,
     /// Solutions for sketch variables.
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
+    /// Information collected during execution for actionable refactors.
+    pub refactor_metadata: Vec<RefactorMetadata>,
+}
+
+/// Information needed to rewrite one legacy `angle` call while preserving its
+/// currently solved directed-angle branch.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(rename_all = "camelCase")]
+pub struct LegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub sector: u8,
+    pub inverse: bool,
+}
+
+/// Metadata collected during execution for refactors that cannot be derived
+/// from syntax alone.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "kind", content = "data", rename_all = "camelCase")]
+pub enum RefactorMetadata {
+    LegacyAngle(LegacyAngleRefactorMeta),
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingLegacyAngleRefactorMeta {
+    pub source_range: SourceRange,
+    pub lines: [ConstrainableLine2d; 2],
+    pub desired_angle_radians: f64,
+    pub label_position: Option<[f64; 2]>,
 }
 
 #[derive(Debug, Clone)]
@@ -334,6 +365,7 @@ pub(crate) struct SketchBlockState {
     pub solver_optional_constraints: Vec<ezpz::Constraint>,
     pub needed_by_engine: Vec<UnsolvedSegment>,
     pub segment_tags: IndexMap<ObjectId, TagNode>,
+    pub pending_legacy_angle_refactor_metadata: Vec<PendingLegacyAngleRefactorMeta>,
 }
 
 impl ExecState {
@@ -488,6 +520,7 @@ impl ExecState {
             filenames: self.global.filenames(),
             operations: self.global.operations_by_module(),
             artifact_graph: self.global.artifacts.graph,
+            refactor_metadata: self.global.root_module_artifacts.refactor_metadata,
             scene_objects: self.global.root_module_artifacts.scene_objects,
             source_range_to_object: self.global.root_module_artifacts.source_range_to_object,
             var_solutions: self.global.root_module_artifacts.var_solutions,
@@ -1036,11 +1069,21 @@ impl ArtifactState {
 }
 
 impl ModuleArtifactState {
+    pub fn legacy_angle_refactor_metadata(&self) -> Vec<LegacyAngleRefactorMeta> {
+        self.refactor_metadata
+            .iter()
+            .map(|metadata| match metadata {
+                RefactorMetadata::LegacyAngle(metadata) => *metadata,
+            })
+            .collect()
+    }
+
     pub(crate) fn clear(&mut self) {
         self.artifacts.clear();
         self.unprocessed_commands.clear();
         self.commands.clear();
         self.operations.clear();
+        self.refactor_metadata.clear();
     }
 
     pub(crate) fn restore_scene_objects(&mut self, scene_objects: &[Object]) {
@@ -1098,6 +1141,7 @@ impl ModuleArtifactState {
         self.artifact_id_to_scene_object
             .extend(other.artifact_id_to_scene_object);
         self.var_solutions.extend(other.var_solutions);
+        self.refactor_metadata.extend(other.refactor_metadata);
     }
 
     // Move unprocessed artifact commands so that we don't try to process them

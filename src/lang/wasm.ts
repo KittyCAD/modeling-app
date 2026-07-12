@@ -8,6 +8,7 @@ import type { ExecOutcome as RustExecOutcome } from '@rust/kcl-lib/bindings/Exec
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
 import type { KclErrorWithOutputs } from '@rust/kcl-lib/bindings/KclErrorWithOutputs'
 import type { KclValueView } from '@rust/kcl-lib/bindings/KclValueView'
+import type { LegacyAngleRefactorMeta } from '@rust/kcl-lib/bindings/LegacyAngleRefactorMeta'
 import type { MetaSettings } from '@rust/kcl-lib/bindings/MetaSettings'
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { ModulePath } from '@rust/kcl-lib/bindings/ModulePath'
@@ -18,6 +19,7 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
+import type { RefactorMetadata } from '@rust/kcl-lib/bindings/RefactorMetadata'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
@@ -271,6 +273,7 @@ export interface ExecState {
   variables: { [key in string]?: KclValueView }
   operations: OperationsByModule
   artifactGraph: ArtifactGraph
+  legacyAngleRefactorMetadata: LegacyAngleRefactorMeta[]
   issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
@@ -310,6 +313,7 @@ export function emptyExecState(): ExecState {
     variables: {},
     operations: emptyOperationsByModule(),
     artifactGraph: defaultArtifactGraph(),
+    legacyAngleRefactorMetadata: [],
     issues: [],
     filenames: [],
     defaultPlanes: null,
@@ -376,11 +380,20 @@ export function countOperations(
 
 export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
   const artifactGraph = artifactGraphFromRust(execOutcome.artifactGraph)
+  const legacyAngleRefactorMetadata = execOutcome.refactorMetadata
+    .filter(
+      (
+        metadata
+      ): metadata is Extract<RefactorMetadata, { kind: 'legacyAngle' }> =>
+        metadata.kind === 'legacyAngle'
+    )
+    .map((metadata) => metadata.data)
 
   return {
     variables: execOutcome.variables,
     operations: execOutcome.operations,
     artifactGraph,
+    legacyAngleRefactorMetadata,
     issues: execOutcome.issues,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,

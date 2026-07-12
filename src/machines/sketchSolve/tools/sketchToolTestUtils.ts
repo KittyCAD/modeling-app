@@ -44,6 +44,7 @@ export function createSceneGraphDelta(
     exec_outcome: {
       issues: [],
       variables: {},
+      refactorMetadata: [],
       operations: emptyOperationsByModule(),
       artifactGraph: { map: {}, itemCount: 0 },
       filenames: {},

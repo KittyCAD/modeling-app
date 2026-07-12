@@ -9,6 +9,7 @@ use kcl_api::Group;
 use kcl_api::NumericType;
 use kcl_api::Operation;
 use kcl_api::UnitAngle;
+use kcl_api::UnitLength;
 
 use crate::CompilationIssue;
 use crate::NodePath;
@@ -33,10 +34,13 @@ use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
+use crate::execution::LegacyAngleRefactorMeta;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::ModuleArtifactState;
+use crate::execution::PendingLegacyAngleRefactorMeta;
 use crate::execution::PreserveMem;
+use crate::execution::RefactorMetadata;
 use crate::execution::SKETCH_BLOCK_PARAM_ON;
 use crate::execution::SKETCH_OBJECT_META;
 use crate::execution::SKETCH_OBJECT_META_SKETCH;
@@ -78,6 +82,7 @@ use crate::execution::state::SketchBlockState;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
+use crate::execution::types::adjust_length;
 use crate::front::LineCtor;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -113,6 +118,7 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
+use crate::pretty::NumericSuffix;
 use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -387,8 +393,112 @@ struct PointsAtAngleLineData {
 }
 
 enum AngleConstraintLowering {
-    LinesAtAngle,
+    LinesAtAngle(Box<PendingLegacyAngleRefactorMeta>),
     PointsAtAngle(PointsAtAngleLineData),
+}
+
+fn number_in_solver_units(number: &crate::front::Number, solver_unit: UnitLength) -> Option<f64> {
+    let source_unit = match number.units {
+        NumericSuffix::Mm => UnitLength::Millimeters,
+        NumericSuffix::Cm => UnitLength::Centimeters,
+        NumericSuffix::M => UnitLength::Meters,
+        NumericSuffix::Inch => UnitLength::Inches,
+        NumericSuffix::Ft => UnitLength::Feet,
+        NumericSuffix::Yd => UnitLength::Yards,
+        NumericSuffix::None | NumericSuffix::Length => return Some(number.value),
+        _ => return None,
+    };
+    Some(adjust_length(source_unit, number.value, solver_unit).0)
+}
+
+fn label_position_in_solver_units(
+    label_position: &Option<crate::front::Point2d<crate::front::Number>>,
+    solver_unit: UnitLength,
+) -> Option<[f64; 2]> {
+    let point = label_position.as_ref()?;
+    Some([
+        number_in_solver_units(&point.x, solver_unit)?,
+        number_in_solver_units(&point.y, solver_unit)?,
+    ])
+}
+
+fn solved_angle_line(line: &ConstrainableLine2d, final_values: &[f64]) -> Option<([f64; 2], [f64; 2])> {
+    let point = |index: usize| {
+        let point = line.vars.get(index)?;
+        Some([*final_values.get(point.x.0)?, *final_values.get(point.y.0)?])
+    };
+    Some((point(0)?, point(1)?))
+}
+
+fn angle_ray_vector(lines: [[f64; 2]; 2], ray: AngleSectorRay) -> [f64; 2] {
+    let direction = lines[ray.line_index];
+    match ray.direction {
+        AngleRayDirection::Forward => direction,
+        AngleRayDirection::Reverse => [-direction[0], -direction[1]],
+    }
+}
+
+fn directed_angle(from: [f64; 2], to: [f64; 2]) -> f64 {
+    let cross = from[0] * to[1] - from[1] * to[0];
+    libm::atan2(cross, vec2_dot(from, to)).rem_euclid(std::f64::consts::TAU)
+}
+
+fn circular_angle_distance(a: f64, b: f64) -> f64 {
+    let delta = (a - b).abs().rem_euclid(std::f64::consts::TAU);
+    libm::fmin(delta, std::f64::consts::TAU - delta)
+}
+
+fn finalize_legacy_angle_refactor_meta(
+    pending: &PendingLegacyAngleRefactorMeta,
+    final_values: &[f64],
+) -> Option<LegacyAngleRefactorMeta> {
+    let line0 = solved_angle_line(&pending.lines[0], final_values)?;
+    let line1 = solved_angle_line(&pending.lines[1], final_values)?;
+    let vertex = intersect_lines_2d(line0, line1)?;
+    let directions = [vec2_sub(line0.1, line0.0), vec2_sub(line1.1, line1.0)];
+    if directions.iter().any(|direction| vec2_len(*direction) <= 1e-9) {
+        return None;
+    }
+
+    let desired = pending.desired_angle_radians.rem_euclid(std::f64::consts::TAU);
+    let sectors = [
+        AngleSector::One,
+        AngleSector::Two,
+        AngleSector::Three,
+        AngleSector::Four,
+    ];
+    let mut candidates = Vec::new();
+    for sector in sectors {
+        for inverse in [false, true] {
+            let rays = angle_sector_rays(sector, inverse);
+            let from = angle_ray_vector(directions, rays[0]);
+            let to = angle_ray_vector(directions, rays[1]);
+            if circular_angle_distance(directed_angle(from, to), desired) <= 1e-5 {
+                let midpoint = libm::atan2(from[1], from[0]) + desired * 0.5;
+                candidates.push((sector, inverse, midpoint.rem_euclid(std::f64::consts::TAU)));
+            }
+        }
+    }
+
+    let selected = if let Some(label_position) = pending.label_position {
+        let label_direction = vec2_sub(label_position, vertex);
+        if vec2_len(label_direction) > 1e-9 {
+            let label_angle = libm::atan2(label_direction[1], label_direction[0]).rem_euclid(std::f64::consts::TAU);
+            candidates.into_iter().min_by(|a, b| {
+                circular_angle_distance(a.2, label_angle).total_cmp(&circular_angle_distance(b.2, label_angle))
+            })?
+        } else {
+            candidates.into_iter().next()?
+        }
+    } else {
+        candidates.into_iter().next()?
+    };
+
+    Some(LegacyAngleRefactorMeta {
+        source_range: pending.source_range,
+        sector: front_angle_sector(selected.0),
+        inverse: selected.1,
+    })
 }
 
 fn push_points_at_angle_for_lines(
@@ -2115,6 +2225,17 @@ impl Node<SketchBlock> {
                 format!("{}", &warning.content)
             };
             exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
+        }
+        if solve_outcome.converged {
+            exec_state.mod_local.artifacts.refactor_metadata.extend(
+                sketch_block_state
+                    .pending_legacy_angle_refactor_metadata
+                    .iter()
+                    .filter_map(|pending| {
+                        finalize_legacy_angle_refactor_meta(pending, &solve_outcome.final_values)
+                            .map(RefactorMetadata::LegacyAngle)
+                    }),
+            );
         }
         // Substitute solutions back into sketch variables.
         let sketch_engine_id = exec_state.next_uuid();
@@ -3995,7 +4116,21 @@ impl Node<BinaryExpression> {
                                 }
                             };
                             let angle_lowering = match *mode {
-                                AngleConstraintMode::LinesAtAngle => AngleConstraintLowering::LinesAtAngle,
+                                AngleConstraintMode::LinesAtAngle => {
+                                    AngleConstraintLowering::LinesAtAngle(Box::new(PendingLegacyAngleRefactorMeta {
+                                        source_range: constraint
+                                            .meta
+                                            .first()
+                                            .map(|meta| meta.source_range)
+                                            .unwrap_or(range),
+                                        lines: [line0.clone(), line1.clone()],
+                                        desired_angle_radians: desired_angle.to_radians(),
+                                        label_position: label_position_in_solver_units(
+                                            label_position,
+                                            exec_state.length_unit(),
+                                        ),
+                                    }))
+                                }
                                 AngleConstraintMode::PointsAtAngle { sector, inverse } => {
                                     let sketch_vars = exec_state
                                         .mod_local
@@ -4057,12 +4192,15 @@ impl Node<BinaryExpression> {
                                 return Err(internal_err(message, self));
                             };
                             match angle_lowering {
-                                AngleConstraintLowering::LinesAtAngle => {
+                                AngleConstraintLowering::LinesAtAngle(refactor_meta) => {
                                     sketch_block_state.solver_constraints.push(Constraint::LinesAtAngle(
                                         datum_line_from_constrainable(line0, range)?,
                                         datum_line_from_constrainable(line1, range)?,
                                         ezpz::datatypes::AngleKind::Other(desired_angle),
                                     ));
+                                    sketch_block_state
+                                        .pending_legacy_angle_refactor_metadata
+                                        .push(*refactor_meta);
                                 }
                                 AngleConstraintLowering::PointsAtAngle(points_at_angle_data) => {
                                     push_points_at_angle_for_lines(
@@ -6173,18 +6311,99 @@ mod test {
 
     #[tokio::test(flavor = "multi_thread")]
     async fn angle_unlabeled_keeps_legacy_lines_at_angle() {
-        parse_execute(
+        let code = r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  lines = [line1, line2]
+  angle(lines) == 60deg
+}
+"#;
+        let result = parse_execute(code).await.unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 1);
+        assert!(!metadata[0].inverse);
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let findings = program.lint(crate::lint::checks::lint_legacy_angle).unwrap();
+        assert_eq!(metadata[0].source_range, findings[0].pos);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_refactor_metadata_follows_the_solved_branch() {
+        let result = parse_execute(
             r#"
 sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
-  line2 = line(start = [var 0mm, var 1mm], end = [var 2mm, var 3mm])
-  lines = [line1, line2]
-  angle(lines) == 60deg
+  line2 = line(start = [var 0mm, var 0mm], end = [var -2mm, var -3.464mm])
+  angle([line1, line2]) == 60deg
 }
 "#,
         )
         .await
         .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 2);
+        assert!(metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_label_position_selects_the_visible_sector() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  angle([line1, line2], labelPosition = [-3mm, -1.7mm]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 3);
+        assert!(!metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn parallel_legacy_angle_has_no_refactor_metadata() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
+  line2 = line(start = [var 0mm, var 1mm], end = [var 4mm, var 1mm])
+  angle([line1, line2]) == 0deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        assert!(
+            result
+                .exec_state
+                .global
+                .root_module_artifacts
+                .legacy_angle_refactor_metadata()
+                .is_empty()
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
