@@ -24,12 +24,12 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
-import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
   DefaultLayoutPaneID,
@@ -102,10 +102,10 @@ export function OpenedProject() {
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
   useEffect(() => {
-    setOpfsCloudSyncProjectScope(projectPath ?? undefined)
+    setCloudSyncProjectScope(projectPath ?? undefined)
 
     return () => {
-      setOpfsCloudSyncProjectScope(undefined)
+      setCloudSyncProjectScope(undefined)
     }
   }, [projectPath])
 

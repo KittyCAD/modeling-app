@@ -5,6 +5,10 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import {
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/components/layout/areas/MlEphantConversationPaneHooks'
+import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/editor/plugins/zookeeper'
@@ -16,6 +20,7 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { zookeeperConversationStore } from '@src/lib/zookeeperConversationStore'
 import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
@@ -28,10 +33,6 @@ import {
   type MlEphantManagerActor,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
-import {
-  useProjectIdToConversationId,
-  useWatchForNewFileRequestsFromMlEphant,
-} from '@src/machines/systemIO/hooks'
 import {
   SystemIOMachineEvents,
   normalizeKCLFileDeletePath,
@@ -213,8 +214,11 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
             new Promise<void>((resolve) => {
               let pendingHistoryStarted = false
               let requestSettled = false
+              let historyWriteCompleted = !shouldRecordZookeeperHistory
+              let postWriteCompleted = !shouldRecordZookeeperHistory
               const settleRequest = () => {
                 if (requestSettled) return
+                if (!historyWriteCompleted || !postWriteCompleted) return
                 requestSettled = true
                 resolve()
               }
@@ -250,10 +254,13 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                       if (pendingHistoryReserved || pendingHistoryStarted) {
                         cancelPendingZookeeperHistoryWrite({ exchangeId })
                       }
+                      historyWriteCompleted = true
+                      postWriteCompleted = true
                       settleRequest()
                     },
                     onFileSystemSuccess: () => {
                       if (historyRecorded) {
+                        historyWriteCompleted = true
                         settleRequest()
                         return
                       }
@@ -300,30 +307,44 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                               error
                             )
                           })
-                          .finally(settleRequest)
+                          .finally(() => {
+                            historyWriteCompleted = true
+                            settleRequest()
+                          })
                         return
                       }
+                      historyWriteCompleted = true
+                      postWriteCompleted = true
                       settleRequest()
                     },
-                    ...(shouldRefreshActiveEditorAfterPlainOutput &&
-                    activeFileOutput
+                    ...(shouldRecordZookeeperHistory ||
+                    (shouldRefreshActiveEditorAfterPlainOutput &&
+                      activeFileOutput)
                       ? {
                           onSuccess: () => {
+                            if (shouldRecordZookeeperHistory) {
+                              postWriteCompleted = true
+                              settleRequest()
+                              return
+                            }
+                            if (!activeFileOutput) return
                             if (kclManager.path !== activeFilePath) return
                             if (
-                              kclManager.code === activeFileOutput.requestedCode
-                            )
-                              return
-                            kclManager.updateCodeEditor(
-                              activeFileOutput.requestedCode,
-                              {
-                                shouldAddToHistory: false,
-                                shouldClearHistory: true,
-                                shouldExecute: true,
-                                shouldResetCamera: true,
-                                shouldWriteToDisk: true,
-                              }
-                            )
+                              kclManager.code !== activeFileOutput.requestedCode
+                            ) {
+                              kclManager.updateCodeEditor(
+                                activeFileOutput.requestedCode,
+                                {
+                                  shouldAddToHistory: false,
+                                  shouldClearHistory: true,
+                                  shouldExecute: true,
+                                  shouldResetCamera: true,
+                                  shouldWriteToDisk: true,
+                                }
+                              )
+                            }
+                            postWriteCompleted = true
+                            settleRequest()
                           },
                         }
                       : {}),
@@ -337,6 +358,8 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                   'Failed to process Zookeeper file request.',
                   error
                 )
+                historyWriteCompleted = true
+                postWriteCompleted = true
                 settleRequest()
               })
             })
@@ -347,7 +370,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   // Save the conversation id for the project id if necessary.
   useProjectIdToConversationId(
     mlEphantManagerActor,
-    systemIOActor,
+    zookeeperConversationStore,
     settingsValues
   )
 
@@ -373,7 +396,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       <MlEphantConversationPane
         {...{
           mlEphantManagerActor: mlEphantManagerActor,
-          systemIOActor,
+          conversationStore: zookeeperConversationStore,
           kclManager,
           contextModeling,
           sendModeling,
