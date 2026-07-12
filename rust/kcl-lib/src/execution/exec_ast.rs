@@ -9,7 +9,6 @@ use kcl_api::Group;
 use kcl_api::NumericType;
 use kcl_api::Operation;
 use kcl_api::UnitAngle;
-use kcl_api::UnitLength;
 
 use crate::CompilationIssue;
 use crate::NodePath;
@@ -82,7 +81,6 @@ use crate::execution::state::SketchBlockState;
 use crate::execution::types::NumericTypeExt;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
-use crate::execution::types::adjust_length;
 use crate::front::LineCtor;
 use crate::front::Object;
 use crate::front::ObjectId;
@@ -118,7 +116,6 @@ use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
-use crate::pretty::NumericSuffix;
 use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -397,31 +394,6 @@ enum AngleConstraintLowering {
     PointsAtAngle(PointsAtAngleLineData),
 }
 
-fn number_in_solver_units(number: &crate::front::Number, solver_unit: UnitLength) -> Option<f64> {
-    let source_unit = match number.units {
-        NumericSuffix::Mm => UnitLength::Millimeters,
-        NumericSuffix::Cm => UnitLength::Centimeters,
-        NumericSuffix::M => UnitLength::Meters,
-        NumericSuffix::Inch => UnitLength::Inches,
-        NumericSuffix::Ft => UnitLength::Feet,
-        NumericSuffix::Yd => UnitLength::Yards,
-        NumericSuffix::None | NumericSuffix::Length => return Some(number.value),
-        _ => return None,
-    };
-    Some(adjust_length(source_unit, number.value, solver_unit).0)
-}
-
-fn label_position_in_solver_units(
-    label_position: &Option<crate::front::Point2d<crate::front::Number>>,
-    solver_unit: UnitLength,
-) -> Option<[f64; 2]> {
-    let point = label_position.as_ref()?;
-    Some([
-        number_in_solver_units(&point.x, solver_unit)?,
-        number_in_solver_units(&point.y, solver_unit)?,
-    ])
-}
-
 fn solved_angle_line(line: &ConstrainableLine2d, final_values: &[f64]) -> Option<([f64; 2], [f64; 2])> {
     let point = |index: usize| {
         let point = line.vars.get(index)?;
@@ -521,25 +493,9 @@ fn finalize_legacy_angle_refactor_meta(
     }
 
     let default_label_angle = legacy_angle_default_label_angle([line0, line1], directions, vertex, desired);
-    let selected = if let Some(label_position) = pending.label_position {
-        let label_direction = vec2_sub(label_position, vertex);
-        if vec2_len(label_direction) > 1e-9 {
-            let label_angle = libm::atan2(label_direction[1], label_direction[0]).rem_euclid(std::f64::consts::TAU);
-            candidates.into_iter().min_by(|a, b| {
-                circular_angle_distance(a.2, label_angle).total_cmp(&circular_angle_distance(b.2, label_angle))
-            })?
-        } else {
-            candidates.into_iter().min_by(|a, b| {
-                circular_angle_distance(a.2, default_label_angle)
-                    .total_cmp(&circular_angle_distance(b.2, default_label_angle))
-            })?
-        }
-    } else {
-        candidates.into_iter().min_by(|a, b| {
-            circular_angle_distance(a.2, default_label_angle)
-                .total_cmp(&circular_angle_distance(b.2, default_label_angle))
-        })?
-    };
+    let selected = candidates.into_iter().min_by(|a, b| {
+        circular_angle_distance(a.2, default_label_angle).total_cmp(&circular_angle_distance(b.2, default_label_angle))
+    })?;
 
     Some(LegacyAngleRefactorMeta {
         source_range: pending.source_range,
@@ -4172,10 +4128,6 @@ impl Node<BinaryExpression> {
                                             .unwrap_or(range),
                                         lines: [line0.clone(), line1.clone()],
                                         desired_angle_radians: desired_angle.to_radians(),
-                                        label_position: label_position_in_solver_units(
-                                            label_position,
-                                            exec_state.length_unit(),
-                                        ),
                                     }))
                                 }
                                 AngleConstraintMode::PointsAtAngle { sector, inverse } => {
@@ -6430,7 +6382,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn legacy_angle_label_position_selects_the_visible_sector() {
+    async fn legacy_angle_label_position_does_not_change_the_sector() {
         let result = parse_execute(
             r#"
 sketch(on = XY) {
@@ -6449,7 +6401,7 @@ sketch(on = XY) {
             .root_module_artifacts
             .legacy_angle_refactor_metadata();
         assert_eq!(metadata.len(), 1);
-        assert_eq!(metadata[0].sector, 3);
+        assert_eq!(metadata[0].sector, 1);
         assert!(!metadata[0].inverse);
     }
 

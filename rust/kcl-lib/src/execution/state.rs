@@ -200,7 +200,6 @@ pub(crate) struct PendingLegacyAngleRefactorMeta {
     pub source_range: SourceRange,
     pub lines: [ConstrainableLine2d; 2],
     pub desired_angle_radians: f64,
-    pub label_position: Option<[f64; 2]>,
 }
 
 #[derive(Debug, Clone)]
