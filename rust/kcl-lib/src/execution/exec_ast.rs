@@ -448,6 +448,46 @@ fn circular_angle_distance(a: f64, b: f64) -> f64 {
     libm::fmin(delta, std::f64::consts::TAU - delta)
 }
 
+fn legacy_angle_default_label_angle(
+    lines: [([f64; 2], [f64; 2]); 2],
+    directions: [[f64; 2]; 2],
+    vertex: [f64; 2],
+    desired: f64,
+) -> f64 {
+    let signed_distances = lines.map(|line| {
+        let direction = vec2_sub(line.1, line.0);
+        let length = vec2_len(direction);
+        [
+            vec2_dot(vec2_sub(line.0, vertex), direction) / length,
+            vec2_dot(vec2_sub(line.1, vertex), direction) / length,
+        ]
+    });
+    let overlap = [
+        libm::fmax(signed_distances[0][0], signed_distances[1][0]),
+        libm::fmin(signed_distances[0][1], signed_distances[1][1]),
+    ];
+    let radius = if overlap[1] >= overlap[0] {
+        let near_start = overlap[0] + (overlap[1] - overlap[0]) * 0.15;
+        let near_end = overlap[0] + (overlap[1] - overlap[0]) * 0.85;
+        if near_start.abs() < near_end.abs() {
+            near_start
+        } else {
+            near_end
+        }
+    } else {
+        let mut distances = signed_distances.into_iter().flatten().collect::<Vec<_>>();
+        distances.sort_by(f64::total_cmp);
+        distances[1]
+    };
+    let start = if radius < 0.0 {
+        [-directions[0][0], -directions[0][1]]
+    } else {
+        directions[0]
+    };
+
+    (libm::atan2(start[1], start[0]) + desired * 0.5).rem_euclid(std::f64::consts::TAU)
+}
+
 fn finalize_legacy_angle_refactor_meta(
     pending: &PendingLegacyAngleRefactorMeta,
     final_values: &[f64],
@@ -480,6 +520,7 @@ fn finalize_legacy_angle_refactor_meta(
         }
     }
 
+    let default_label_angle = legacy_angle_default_label_angle([line0, line1], directions, vertex, desired);
     let selected = if let Some(label_position) = pending.label_position {
         let label_direction = vec2_sub(label_position, vertex);
         if vec2_len(label_direction) > 1e-9 {
@@ -488,10 +529,16 @@ fn finalize_legacy_angle_refactor_meta(
                 circular_angle_distance(a.2, label_angle).total_cmp(&circular_angle_distance(b.2, label_angle))
             })?
         } else {
-            candidates.into_iter().next()?
+            candidates.into_iter().min_by(|a, b| {
+                circular_angle_distance(a.2, default_label_angle)
+                    .total_cmp(&circular_angle_distance(b.2, default_label_angle))
+            })?
         }
     } else {
-        candidates.into_iter().next()?
+        candidates.into_iter().min_by(|a, b| {
+            circular_angle_distance(a.2, default_label_angle)
+                .total_cmp(&circular_angle_distance(b.2, default_label_angle))
+        })?
     };
 
     Some(LegacyAngleRefactorMeta {
@@ -6335,7 +6382,7 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn legacy_angle_refactor_metadata_follows_the_solved_branch() {
+    async fn legacy_angle_refactor_metadata_matches_the_default_label_side() {
         let result = parse_execute(
             r#"
 sketch(on = XY) {
@@ -6354,8 +6401,32 @@ sketch(on = XY) {
             .root_module_artifacts
             .legacy_angle_refactor_metadata();
         assert_eq!(metadata.len(), 1);
-        assert_eq!(metadata[0].sector, 2);
+        assert_eq!(metadata[0].sector, 4);
         assert!(metadata[0].inverse);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn legacy_angle_refactor_metadata_uses_reverse_segment_rays() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  line1 = line(start = [var -4mm, var 0mm], end = [var 0mm, var 0mm])
+  line2 = line(start = [var -2mm, var -3.464mm], end = [var 0mm, var 0mm])
+  angle([line1, line2]) == 60deg
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let metadata = result
+            .exec_state
+            .global
+            .root_module_artifacts
+            .legacy_angle_refactor_metadata();
+        assert_eq!(metadata.len(), 1);
+        assert_eq!(metadata[0].sector, 3);
+        assert!(!metadata[0].inverse);
     }
 
     #[tokio::test(flavor = "multi_thread")]
