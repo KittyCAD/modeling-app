@@ -5,6 +5,10 @@ import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
 import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
 import {
+  useProjectIdToConversationId,
+  useWatchForNewFileRequestsFromMlEphant,
+} from '@src/components/layout/areas/MlEphantConversationPaneHooks'
+import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
 } from '@src/editor/plugins/zookeeper'
@@ -16,6 +20,7 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
+import { zookeeperConversationStore } from '@src/lib/zookeeperConversationStore'
 import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
@@ -28,10 +33,6 @@ import {
   type MlEphantManagerActor,
   MlEphantManagerReactContext,
 } from '@src/machines/mlEphantManagerMachine'
-import {
-  useProjectIdToConversationId,
-  useWatchForNewFileRequestsFromMlEphant,
-} from '@src/machines/systemIO/hooks'
 import {
   SystemIOMachineEvents,
   normalizeKCLFileDeletePath,
@@ -369,7 +370,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
   // Save the conversation id for the project id if necessary.
   useProjectIdToConversationId(
     mlEphantManagerActor,
-    systemIOActor,
+    zookeeperConversationStore,
     settingsValues
   )
 
@@ -395,7 +396,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
       <MlEphantConversationPane
         {...{
           mlEphantManagerActor: mlEphantManagerActor,
-          systemIOActor,
+          conversationStore: zookeeperConversationStore,
           kclManager,
           contextModeling,
           sendModeling,

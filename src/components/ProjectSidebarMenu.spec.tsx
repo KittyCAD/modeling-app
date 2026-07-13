@@ -71,13 +71,13 @@ function renderBreadcrumb() {
 describe('ProjectSidebarMenu tests', () => {
   test('enables home navigation for desktop or cloud-backed web', () => {
     expect(
-      canNavigateHome({ isDesktopApp: true, hasOpfsCloudFeature: false })
+      canNavigateHome({ isDesktopApp: true, hasCloudSyncFeature: false })
     ).toBe(true)
     expect(
-      canNavigateHome({ isDesktopApp: false, hasOpfsCloudFeature: true })
+      canNavigateHome({ isDesktopApp: false, hasCloudSyncFeature: true })
     ).toBe(true)
     expect(
-      canNavigateHome({ isDesktopApp: false, hasOpfsCloudFeature: false })
+      canNavigateHome({ isDesktopApp: false, hasCloudSyncFeature: false })
     ).toBe(false)
   })
 
@@ -89,7 +89,7 @@ describe('ProjectSidebarMenu tests', () => {
 
   test('Links the logo to Home when home navigation is enabled', () => {
     renderWithRouter(
-      <ProjectSidebarMenu project={projectWellFormed} hasOpfsCloudFeature />
+      <ProjectSidebarMenu project={projectWellFormed} hasCloudSyncFeature />
     )
 
     const logoLink = screen.getByTestId('app-logo').closest('a')

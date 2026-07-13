@@ -7,7 +7,6 @@ import { FeatureTreePane } from '@src/components/layout/areas/FeatureTreePane'
 import { KclEditorPane } from '@src/components/layout/areas/KclEditorPane'
 import { LogsPane } from '@src/components/layout/areas/LoggingPanes'
 import { MemoryPane } from '@src/components/layout/areas/MemoryPane'
-import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
 import { ProjectExplorerPane } from '@src/components/layout/areas/ProjectExplorerPane'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { kclErrorsByFilename } from '@src/lang/errors'
@@ -108,15 +107,6 @@ export const useDefaultAreaLibrary = () => {
         modeling: {
           hide: () => false,
           Component: ModelingArea,
-        },
-        ttc: {
-          hide: () => false,
-          shortcut: 'Ctrl + T',
-          cssClassOverrides: {
-            button:
-              'bg-ml-green pressed:bg-transparent dark:!text-chalkboard-100 hover:dark:!text-inherit dark:pressed:!text-inherit',
-          },
-          Component: MlEphantConversationPaneWrapper,
         },
         codeEditor: {
           hide: () => false,

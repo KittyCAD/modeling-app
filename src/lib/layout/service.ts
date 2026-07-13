@@ -32,6 +32,7 @@ export function createLayoutService(
   }
 
   return {
+    current: layoutSignal,
     applyContribution(contribution) {
       return applyContributions([contribution])[0]
     },
