@@ -11,6 +11,7 @@ const bundledRegistryItemModules: Record<string, RegistryItemModule> =
   })
 
 export const appRegistryServicesSlot = new Slot()
+export const appRegistryOverridesSlot = new Slot()
 
 const bundledRegistryItemKindOrder = (path: string) =>
   path.includes('/plugins/') ? 1 : 0
