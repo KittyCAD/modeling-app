@@ -14,7 +14,9 @@ import {
   getHomeProjectDisplayName,
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
+import { PATHS } from '@src/lib/paths'
 import type { Project } from '@src/lib/project'
+import { homeLoader } from '@src/lib/routeLoaders'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
@@ -24,6 +26,12 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import {
+  defineRegistryRoute,
+  lazyRouteComponent,
+  lazyRouteComponentWithErrorBoundary,
+  provideRoute,
+} from '@src/registry/contracts/router'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
@@ -139,13 +147,13 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
 
   return {
     item: defineRuntimeRegistryItem({
-      id: 'home-projects.actions',
+      id: 'home.project-actions',
       providesServices: [
         provideService(homeProjectActionsService, serviceImpl),
       ],
     }),
   }
-}, 'home-projects.actions')
+}, 'home.project-actions')
 
 const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   const entries = signal<HomeProjectEntryContribution[]>([])
@@ -182,10 +190,10 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
 
   return {
     item: defineRuntimeRegistryItem({
-      id: 'home-projects.system-io-local-projects',
+      id: 'home.system-io-local-projects',
       provides: [
         provide(homeProjectEntriesValueSpec, entries, {
-          key: 'home-projects.system-io-local-projects',
+          key: 'home.system-io-local-projects',
         }),
       ],
       dispose: () => {
@@ -195,11 +203,37 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
       },
     }),
   }
-}, 'home-projects.system-io-local-projects')
+}, 'home.system-io-local-projects')
 
-const homeProjectsExtension = defineRegistryItem({
-  id: 'home-projects',
+const homeRoute = defineRegistryRoute({
+  id: PATHS.HOME,
+  parentId: PATHS.INDEX,
+  order: 20,
+  buildRoute: ({ app }) => ({
+    path: PATHS.HOME,
+    loader: homeLoader({ app }),
+    lazy: lazyRouteComponentWithErrorBoundary(
+      async () => (await import('./HomeRouteShell')).HomeRouteShell
+    ),
+  }),
+})
+
+const homeIndexRoute = defineRegistryRoute({
+  id: `${PATHS.HOME}.index`,
+  parentId: PATHS.HOME,
+  order: 0,
+  buildRoute: () => ({
+    index: true,
+    lazy: lazyRouteComponent(
+      async () => (await import('./HomeRouteShell')).EmptyHomeRoute
+    ),
+  }),
+})
+
+const homeExtension = defineRegistryItem({
+  id: 'home',
+  provides: [homeRoute, homeIndexRoute].map(provideRoute),
   uses: [homeProjectActions, systemIOLocalHomeProjectEntries],
 })
 
-export default homeProjectsExtension
+export default homeExtension
