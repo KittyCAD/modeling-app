@@ -27,6 +27,7 @@ import {
 import {
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
+  getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
@@ -864,26 +865,73 @@ export function createEdgeRefObjectExpression(
   artifactGraph: ArtifactGraph,
   originalEdgeSelection?: Selection,
   fallbackCodeRef?: CodeRef,
-  tagsBaseExpr?: Expr | null
+  tagsBaseExpr?: Expr | null,
+  owningBodyExpr?: Expr | null
 ): { expr: Expr; modifiedAst: Node<Program> } | Error {
   const sideFaceExprs: Expr[] = []
   let currentAst = ast
+  const effectiveTagsBaseExpr =
+    tagsBaseExpr && tagsBaseMatchesOwningBody(tagsBaseExpr, owningBodyExpr)
+      ? tagsBaseExpr
+      : tagsBaseExpr && owningBodyExpr
+        ? createMemberExpression(structuredClone(owningBodyExpr), 'sketch')
+        : null
 
   const applyTagsBaseExprIfNeeded = (
     expr: Expr,
     faceArtifact: Artifact
   ): Expr => {
     if (
-      tagsBaseExpr != null &&
+      effectiveTagsBaseExpr != null &&
       expr.type === 'Name' &&
       faceArtifact.type !== 'cap'
     ) {
       return createMemberExpr(
-        createMemberExpr(structuredClone(tagsBaseExpr), 'tags'),
+        createMemberExpr(structuredClone(effectiveTagsBaseExpr), 'tags'),
         expr.name?.name ?? ''
       )
     }
+    if (
+      effectiveTagsBaseExpr != null &&
+      expr.type === 'Name' &&
+      faceArtifact.type === 'cap'
+    ) {
+      const bodyExpr = getBodyExprFromSketchTagsBaseExpr(effectiveTagsBaseExpr)
+      if (bodyExpr) {
+        return createMemberExpression(
+          createMemberExpression(bodyExpr, 'faces'),
+          expr.name?.name ?? ''
+        )
+      }
+    }
     return structuredClone(expr)
+  }
+
+  const getExistingSketchTagExprForFace = (
+    faceArtifact: Artifact
+  ): Expr | null => {
+    if (effectiveTagsBaseExpr == null || faceArtifact.type !== 'wall') {
+      return null
+    }
+
+    const segment = getArtifactOfTypes(
+      { key: faceArtifact.segId, types: ['segment'] },
+      artifactGraph
+    )
+    if (err(segment)) return null
+
+    const segmentName = getSketchSegmentName(
+      currentAst,
+      segment.originalSegId ?? segment.id,
+      artifactGraph,
+      wasmInstance
+    )
+    if (!segmentName) return null
+
+    return createMemberExpression(
+      createMemberExpression(structuredClone(effectiveTagsBaseExpr), 'tags'),
+      segmentName
+    )
   }
 
   for (const faceId of payload.side_faces) {
@@ -899,6 +947,12 @@ export function createEdgeRefObjectExpression(
       return new Error(
         `Could not find codeRefs for face ${faceId} in edge reference`
       )
+    }
+
+    const existingSketchTagExpr = getExistingSketchTagExprForFace(faceArtifact)
+    if (existingSketchTagExpr) {
+      sideFaceExprs.push(existingSketchTagExpr)
+      continue
     }
 
     if (faceArtifact.type === 'solid2d') {
@@ -1110,6 +1164,66 @@ function getTagsBaseFromTagElement(el: Expr): Expr | null {
   return innerMember.object
 }
 
+function getBodyExprFromSketchTagsBaseExpr(tagsBaseExpr: Expr): Expr | null {
+  if (tagsBaseExpr.type !== 'MemberExpression') return null
+  const propName =
+    tagsBaseExpr.property.type === 'Name'
+      ? tagsBaseExpr.property.name.name
+      : undefined
+  if (propName !== 'sketch') return null
+  return tagsBaseExpr.object
+}
+
+function tagsBaseMatchesOwningBody(
+  tagsBaseExpr: Expr,
+  owningBodyExpr?: Expr | null
+): boolean {
+  if (!owningBodyExpr) return true
+  const bodyExpr = getBodyExprFromSketchTagsBaseExpr(tagsBaseExpr)
+  if (!bodyExpr) return true
+  return exprPathKey(bodyExpr) === exprPathKey(owningBodyExpr)
+}
+
+function exprPathKey(expr: Expr): string | null {
+  if (expr.type === 'Name') return expr.name.name
+  if (expr.type !== 'MemberExpression') return null
+
+  const objectKey = exprPathKey(expr.object)
+  const propertyName =
+    expr.property.type === 'Name' ? expr.property.name.name : null
+  if (!objectKey || !propertyName) return null
+  return `${objectKey}.${propertyName}`
+}
+
+function getTagInfoFromExpr(
+  expr: Expr
+): { tagName: string; tagsBaseExpr: Expr | null } | null {
+  if (expr.type === 'Name') {
+    return { tagName: expr.name.name, tagsBaseExpr: null }
+  }
+
+  if (expr.type !== 'MemberExpression') return null
+
+  const propertyName =
+    expr.property.type === 'Name' ? expr.property.name.name : undefined
+  if (!propertyName) return null
+
+  if (expr.object.type !== 'MemberExpression') {
+    return null
+  }
+  const tagsMember = expr.object
+  const tagsPropName =
+    tagsMember.property.type === 'Name'
+      ? tagsMember.property.name.name
+      : undefined
+  if (tagsPropName !== 'tags') return null
+
+  return {
+    tagName: propertyName,
+    tagsBaseExpr: tagsMember.object,
+  }
+}
+
 function isNestedScopePath(pathToNode: PathToNode): boolean {
   return pathToNode.some(
     ([, owner]) =>
@@ -1206,6 +1320,7 @@ interface UnifiedCallToFix {
   orderedEdgeRefExprs: Expr[]
   hasExistingEdgeRefs: boolean
   tagsBaseExpr?: Expr | null
+  owningBodyExpr?: Expr | null
 }
 
 function createEdgeRefFromGetCommonEdgeCall(
@@ -1276,14 +1391,22 @@ function findFilletChamferCallsToFixUnified(
             } else {
               hasUnconvertedTagsElement = true
             }
-          } else if (el.type === 'Name') {
-            const tagName = el.name.name
+          } else {
+            const tagInfo = getTagInfoFromExpr(el)
+            if (!tagInfo) {
+              hasUnconvertedTagsElement = true
+              continue
+            }
+            if (tagsBaseExpr === null && tagInfo.tagsBaseExpr) {
+              tagsBaseExpr = tagInfo.tagsBaseExpr
+            }
             const moduleId = call.moduleId
             const directMeta = directTagFilletMetadata.find((m) =>
               callSourceRangeMatches(m, call.start, call.end, moduleId)
             )
             const tagEntry = directMeta?.tags?.find(
-              (t: { tagIdentifier: string }) => t.tagIdentifier === tagName
+              (t: { tagIdentifier: string }) =>
+                t.tagIdentifier === tagInfo.tagName
             )
             if (tagEntry) {
               orderedPayloads.push({ side_faces: tagEntry.faceIds })
@@ -1292,7 +1415,7 @@ function findFilletChamferCallsToFixUnified(
 
             const deprecatedCall = findDeprecatedEdgeStdlibCallForVariable(
               program,
-              tagName,
+              tagInfo.tagName,
               pathToNode
             )
             if (deprecatedCall) {
@@ -1318,8 +1441,6 @@ function findFilletChamferCallsToFixUnified(
             } else {
               hasUnconvertedTagsElement = true
             }
-          } else {
-            hasUnconvertedTagsElement = true
           }
         }
       }
@@ -1338,6 +1459,9 @@ function findFilletChamferCallsToFixUnified(
           orderedEdgeRefExprs,
           hasExistingEdgeRefs: existingEdgeRefExprs.length > 0,
           tagsBaseExpr: tagsBaseExpr ?? undefined,
+          owningBodyExpr: call.unlabeled
+            ? structuredClone(call.unlabeled)
+            : undefined,
         })
       }
     },
@@ -1827,6 +1951,7 @@ export function refactorZ0006Unified(
     orderedEdgeRefExprs,
     hasExistingEdgeRefs,
     tagsBaseExpr,
+    owningBodyExpr,
   } of toFixFilletChamfer) {
     let nextAst = structuredClone(modifiedAst)
     const path = getNodePathFromSourceRange(nextAst, range)
@@ -1840,7 +1965,8 @@ export function refactorZ0006Unified(
         artifactGraph,
         undefined,
         undefined,
-        tagsBaseExpr
+        tagsBaseExpr,
+        owningBodyExpr
       )
       if (err(result)) {
         failedToCreateEdgeRef = true
