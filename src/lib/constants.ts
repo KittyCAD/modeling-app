@@ -218,6 +218,9 @@ export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 /** Toast id for the changes requested banner */
 export const CHANGES_REQUESTED_TOAST_ID = 'changes-requested-toast'
 
+/** Toast id for Zookeeper bulk file writes */
+export const ZOOKEEPER_FILE_WRITE_TOAST_ID = 'zookeeper-file-write-toast'
+
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'

@@ -4,7 +4,11 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
-import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  FILE_EXT,
+  ZOOKEEPER_FILE_WRITE_TOAST_ID,
+} from '@src/lib/constants'
 import {
   canReadWriteDirectory,
   createNewProjectDirectory,
@@ -927,6 +931,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               fileName: input.requestedFileNameWithExtension || '',
               subRoute: input.requestedSubRoute || '',
               shouldNavigate,
+              // Zookeeper streams cumulative edit patches, so one edit triggers
+              // several of these bulk writes back-to-back. Sharing a toast id
+              // collapses the otherwise-identical success toasts into one.
+              toastId: ZOOKEEPER_FILE_WRITE_TOAST_ID,
               ...(shouldNavigate && input.onSuccess
                 ? { onProjectLoaderComplete: input.onSuccess }
                 : {}),
