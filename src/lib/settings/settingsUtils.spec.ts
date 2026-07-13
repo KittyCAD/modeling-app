@@ -380,6 +380,38 @@ describe('project settings serialization regression', () => {
     expect(settings.debug.showPanel.current).toBe(false)
   })
 
+  it('round-trips project kcl_version through project.toml serialization', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeProjectConfiguration(
+      settingsPayloadToProjectConfiguration({
+        modeling: {
+          kclVersion: '2.0',
+        },
+      }),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
+
+    expect(serializedToml).toContain('kcl_version = "2.0"')
+
+    const parsedProjectConfiguration = parseProjectSettings(
+      serializedToml,
+      wasmInstance
+    )
+    if (parsedProjectConfiguration instanceof Error) {
+      throw parsedProjectConfiguration
+    }
+
+    const parsedProjectPayload = projectConfigurationToSettingsPayload(
+      parsedProjectConfiguration
+    )
+    expect(parsedProjectPayload.modeling?.kclVersion).toBe('2.0')
+  })
+
   it('preserves cloud metadata when project settings are reserialized', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
@@ -608,5 +640,6 @@ describe('formatSettingsLabel', () => {
     expect(formatSettingsLabel('siteUrl')).toBe('site URL')
     expect(formatSettingsLabel('projectId')).toBe('project ID')
     expect(formatSettingsLabel('showUi')).toBe('show UI')
+    expect(formatSettingsLabel('kclVersion')).toBe('KCL version')
   })
 })

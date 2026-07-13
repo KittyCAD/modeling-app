@@ -14,7 +14,9 @@ import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
   DEFAULT_BACKFACE_COLOR,
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_KCL_VERSION,
   DEFAULT_PROJECT_NAME,
+  LEGACY_KCL_VERSION,
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -363,6 +365,35 @@ function createCoreSettings() {
               isCurrent:
                 v ===
                 settingsContext.modeling.defaultUnit[
+                  cmdContext.argumentsToSubmit.level as SettingsLevel
+                ],
+            })),
+        },
+      }),
+      /**
+       * The KittyCAD Language version for this project.
+       *
+       * This inherits `@settings(kclVersion)` if set on an existing project entrypoint.
+       * Newly created projects use the latest stable KCL version.
+       * For interim compatibility, changes are written back to `@settings(kclVersion)`.
+       */
+      kclVersion: new Setting<string>({
+        defaultValue: LEGACY_KCL_VERSION,
+        description:
+          'The KittyCAD Language version for this project. New projects use the latest stable version.',
+        validate: (v) => typeof v === 'string' && v.length > 0,
+        hideOnLevel: 'user',
+        commandConfig: {
+          inputType: 'options',
+          defaultValueFromContext: (context) =>
+            context.modeling.kclVersion.current,
+          options: (cmdContext, settingsContext) =>
+            [LEGACY_KCL_VERSION, DEFAULT_KCL_VERSION].map((v) => ({
+              name: v,
+              value: v,
+              isCurrent:
+                v ===
+                settingsContext.modeling.kclVersion[
                   cmdContext.argumentsToSubmit.level as SettingsLevel
                 ],
             })),
