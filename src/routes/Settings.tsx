@@ -49,12 +49,41 @@ export const Settings = () => {
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
-  const defaultTab: SettingsLevel = isFileSettings ? 'project' : 'user'
+  const hasOpenProject = app.project !== undefined
+  const defaultTab: SettingsLevel =
+    isFileSettings && hasOpenProject ? 'project' : 'user'
   const requestedTab = searchParams.get('tab')
-  const requestedSettingsTab = isSettingsTab(requestedTab)
-    ? requestedTab
-    : defaultTab
+  const requestedSettingsTab =
+    requestedTab === 'project' && !hasOpenProject
+      ? 'user'
+      : isSettingsTab(requestedTab)
+        ? requestedTab
+        : defaultTab
   const searchParamTab = requestedSettingsTab
+
+  useEffect(() => {
+    if (requestedTab !== 'project' || hasOpenProject) {
+      return
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams)
+    nextSearchParams.set('tab', 'user')
+    void navigate(
+      {
+        pathname: location.pathname,
+        search: `?${nextSearchParams.toString()}`,
+        hash: location.hash,
+      },
+      { replace: true }
+    )
+  }, [
+    hasOpenProject,
+    location.hash,
+    location.pathname,
+    navigate,
+    requestedTab,
+    searchParams,
+  ])
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const settingsSearchKeybinding = keymapKeystrokesDisplay(
@@ -135,7 +164,10 @@ export const Settings = () => {
             <div className="p-5 pb-0 flex justify-between items-center">
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
-                <SettingsSearchBar keybinding={settingsSearchKeybinding} />
+                <SettingsSearchBar
+                  keybinding={settingsSearchKeybinding}
+                  hasOpenProject={hasOpenProject}
+                />
                 <button
                   type="button"
                   onClick={close}
