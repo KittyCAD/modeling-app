@@ -614,6 +614,10 @@ export function updateSceneGraphFromDelta({
   }
 
   currentSketchObjects.forEach((obj) => {
+    if (!obj) {
+      return
+    }
+
     // sketch is not a drawable object
     if (obj.kind.type === 'Sketch') {
       return
@@ -922,6 +926,10 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   }
 
   currentSketchObjects.forEach((obj) => {
+    if (!obj) {
+      return
+    }
+
     if (obj.kind.type === 'Sketch') {
       return
     }
@@ -1146,6 +1154,10 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
   )
 
   currentSketchObjects.forEach((obj) => {
+    if (!obj) {
+      return
+    }
+
     if (!isPointSegment(obj)) {
       return
     }
