@@ -16,7 +16,10 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import {
+  buildTheWorldAndNoEngineConnection,
+  createTestWasmRegistryItem,
+} from '@src/unitTestUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
@@ -103,7 +106,7 @@ beforeEach(async () => {
 
   const { instance } = await buildTheWorldAndNoEngineConnection()
   appInstanceInThisFile = App.fromProvided({
-    wasmPromise: Promise.resolve(instance),
+    registryOverrides: [createTestWasmRegistryItem(Promise.resolve(instance))],
   })
   instanceInThisFile = instance
 })
