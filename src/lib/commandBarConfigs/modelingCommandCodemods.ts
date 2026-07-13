@@ -39,9 +39,9 @@ import {
 } from '@src/lang/modifyAst/gears'
 import { addHelix } from '@src/lang/modifyAst/geometry'
 import {
-  defineModelingCodemod,
   type ModelingCodemod,
   type ModelingCodemodResult,
+  defineModelingCodemod,
 } from '@src/lang/modifyAst/modelingCodemod'
 import {
   addPatternCircular3D,
