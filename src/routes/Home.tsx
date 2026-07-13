@@ -111,7 +111,7 @@ const Home = () => {
   } = useApp()
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
-  const executingPath = useAbsoluteFilePath()
+  const executingPath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
   const settingsActor = settings.actor
   useQueryParamEffects(kclManager)
 
