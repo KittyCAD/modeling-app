@@ -105,106 +105,6 @@ function hasEdgeProfileSelection(selections: Selections): boolean {
   )
 }
 
-function getOriginalSketchSegmentNameForEdge({
-  edgeArtifact,
-  modifiedAst,
-  artifactGraph,
-  wasmInstance,
-}: {
-  edgeArtifact: Extract<Artifact, { type: 'sweepEdge' }>
-  modifiedAst: Node<Program>
-  artifactGraph: ArtifactGraph
-  wasmInstance: ModuleType
-}): string | null {
-  const segmentName = getSketchSegmentName(
-    modifiedAst,
-    edgeArtifact.segId,
-    artifactGraph,
-    wasmInstance
-  )
-  if (segmentName) {
-    return segmentName
-  }
-
-  const originalSegment = getOriginalSegmentArtifact(
-    edgeArtifact.segId,
-    artifactGraph
-  )
-  if (!originalSegment || originalSegment.id === edgeArtifact.segId) {
-    return null
-  }
-
-  return getSketchSegmentName(
-    modifiedAst,
-    originalSegment.id,
-    artifactGraph,
-    wasmInstance
-  )
-}
-
-function isEdgeProfileExpr(expr: Expr): boolean {
-  return (
-    isCallExprWithName(expr, 'getOppositeEdge') ||
-    isCallExprWithName(expr, 'getNextAdjacentEdge') ||
-    isCallExprWithName(expr, 'edgeId')
-  )
-}
-
-function getEdgeProfileExprFromSourceSurface(
-  sourceSurfaceArtifact: Artifact,
-  modifiedAst: Node<Program>,
-  wasmInstance: ModuleType
-): Expr | null {
-  if (sourceSurfaceArtifact.type !== 'sweep') {
-    return null
-  }
-
-  const sourceSurfaceNode = getNodeFromPath<
-    CallExpressionKw | VariableDeclaration
-  >(modifiedAst, sourceSurfaceArtifact.codeRef.pathToNode, wasmInstance, [
-    'CallExpressionKw',
-    'VariableDeclaration',
-  ])
-  if (err(sourceSurfaceNode)) {
-    return null
-  }
-
-  const sourceSurfaceCall =
-    sourceSurfaceNode.node.type === 'CallExpressionKw'
-      ? sourceSurfaceNode.node
-      : sourceSurfaceNode.node.declaration.init.type === 'CallExpressionKw'
-        ? sourceSurfaceNode.node.declaration.init
-        : null
-  if (!sourceSurfaceCall) {
-    return null
-  }
-
-  const sweepInput = sourceSurfaceCall.unlabeled
-  if (!sweepInput) {
-    return null
-  }
-
-  if (isEdgeProfileExpr(sweepInput)) {
-    return structuredClone(sweepInput)
-  }
-
-  if (sweepInput.type !== 'Name') {
-    return null
-  }
-
-  const variableDeclaration = modifiedAst.body.find(
-    (statement): statement is Node<VariableDeclaration> =>
-      statement.type === 'VariableDeclaration' &&
-      statement.declaration.id.name === sweepInput.name.name
-  )
-  const variableInit = variableDeclaration?.declaration.init
-  if (!variableInit || !isEdgeProfileExpr(variableInit)) {
-    return null
-  }
-
-  return structuredClone(sweepInput)
-}
-
 function getEdgeProfileExprsFromSelection({
   selections,
   modifiedAst,
@@ -258,30 +158,84 @@ function getEdgeProfileExprsFromSelection({
     }
     const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
 
-    const sourceEdgeExpr = getEdgeProfileExprFromSourceSurface(
-      sourceSurfaceArtifact as Artifact,
-      modifiedAst,
-      wasmInstance
-    )
-    if (sourceEdgeExpr) {
-      exprs.push(getEdgeTagCall(sourceEdgeExpr, edgeArtifact))
+    const sourceSurfaceNode = getNodeFromPath<
+      CallExpressionKw | VariableDeclaration
+    >(modifiedAst, sourceSurfaceArtifact.codeRef.pathToNode, wasmInstance, [
+      'CallExpressionKw',
+      'VariableDeclaration',
+    ])
+    const sourceSurfaceCall = err(sourceSurfaceNode)
+      ? null
+      : sourceSurfaceNode.node.type === 'CallExpressionKw'
+        ? sourceSurfaceNode.node
+        : sourceSurfaceNode.node.declaration.init.type === 'CallExpressionKw'
+          ? sourceSurfaceNode.node.declaration.init
+          : null
+    const sourceSurfaceInput = sourceSurfaceCall?.unlabeled
+    const sourceSurfaceInputIsEdgeExpr =
+      sourceSurfaceInput &&
+      (isCallExprWithName(sourceSurfaceInput, 'getOppositeEdge') ||
+        isCallExprWithName(sourceSurfaceInput, 'getNextAdjacentEdge') ||
+        isCallExprWithName(sourceSurfaceInput, 'edgeId'))
+
+    if (sourceSurfaceInputIsEdgeExpr) {
+      exprs.push(
+        getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
+      )
       continue
     }
 
-    const sketchSegmentName =
-      getSketchSegmentNameFromSourceSurface(
-        sourceSurfaceArtifact as Artifact,
-        edgeArtifact,
-        artifactGraph,
+    if (sourceSurfaceInput?.type === 'Name') {
+      const variableDeclaration = modifiedAst.body.find(
+        (statement): statement is Node<VariableDeclaration> =>
+          statement.type === 'VariableDeclaration' &&
+          statement.declaration.id.name === sourceSurfaceInput.name.name
+      )
+      const variableInit = variableDeclaration?.declaration.init
+      if (
+        variableInit &&
+        (isCallExprWithName(variableInit, 'getOppositeEdge') ||
+          isCallExprWithName(variableInit, 'getNextAdjacentEdge') ||
+          isCallExprWithName(variableInit, 'edgeId'))
+      ) {
+        exprs.push(
+          getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
+        )
+        continue
+      }
+    }
+
+    let sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      edgeArtifact,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (!sketchSegmentName) {
+      sketchSegmentName = getSketchSegmentName(
         modifiedAst,
+        edgeArtifact.segId,
+        artifactGraph,
         wasmInstance
-      ) ??
-      getOriginalSketchSegmentNameForEdge({
-        edgeArtifact,
+      )
+    }
+    const originalSegment = getOriginalSegmentArtifact(
+      edgeArtifact.segId,
+      artifactGraph
+    )
+    if (
+      !sketchSegmentName &&
+      originalSegment &&
+      originalSegment.id !== edgeArtifact.segId
+    ) {
+      sketchSegmentName = getSketchSegmentName(
         modifiedAst,
+        originalSegment.id,
         artifactGraph,
-        wasmInstance,
-      })
+        wasmInstance
+      )
+    }
     if (sketchSegmentName) {
       exprs.push(
         getEdgeTagCall(
