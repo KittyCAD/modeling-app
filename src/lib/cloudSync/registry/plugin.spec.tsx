@@ -71,6 +71,7 @@ function createCloudSyncService(): CloudSyncRegistryService {
     startProjectSync: vi.fn().mockResolvedValue(undefined),
     disconnectProjectSync: vi.fn().mockResolvedValue(undefined),
     ensureProjectLocallySynced: vi.fn().mockResolvedValue(undefined),
+    getRemoteProjectThumbnailUrl: vi.fn().mockResolvedValue(undefined),
     getProjectMetadata: vi.fn().mockResolvedValue(undefined),
     getProjectMetadataIndex: vi.fn().mockResolvedValue(new Map()),
     getProjectModifiedTime: vi.fn((_metadata, localModified) => localModified),
@@ -194,6 +195,53 @@ describe('cloud sync project menu item', () => {
 })
 
 describe('cloud sync home project entries', () => {
+  test('contributes remote thumbnails for cloud-only home entries', async () => {
+    cloudSyncStatus.value = {
+      enabled: true,
+      state: 'idle',
+      pendingCount: 0,
+    }
+    cloudSyncRemoteProjects.value = [
+      {
+        id: 'remote-123',
+        title: 'Remote title',
+        revision: 'remote-rev-2',
+        updated_at: '2026-06-02T20:00:00.000Z',
+      },
+    ]
+    const cloudSync = createCloudSyncService()
+    vi.mocked(cloudSync.getRemoteProjectThumbnailUrl).mockResolvedValue(
+      'https://example.test/remote-123-thumbnail.png'
+    )
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
+
+    try {
+      await waitFor(() =>
+        expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
+          expect.objectContaining({
+            source: 'remote',
+            status: 'cloud-only',
+            name: 'Remote title',
+            title: 'Remote title',
+            remoteProjectId: 'remote-123',
+            thumbnail: {
+              type: 'remote',
+              url: 'https://example.test/remote-123-thumbnail.png',
+            },
+          }),
+        ])
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
   test('marks home entries with both sources as conflicted from cloud sync metadata', async () => {
     cloudSyncStatus.value = {
       enabled: true,
