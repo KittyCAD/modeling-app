@@ -351,7 +351,7 @@ describe('filletToolImpl', () => {
       ])
     })
 
-    it('adds original-intersection point constraints after arc-line fillet constraints', async () => {
+    it('uses construction arcs instead of point-arc coincident constraints for arc-line fillets', async () => {
       const rustContext = createMockRustContext()
       const rustContextMock = rustContext as unknown as MockRustContext
       const kclManager = createMockKclManager()
@@ -422,6 +422,26 @@ describe('filletToolImpl', () => {
         y: 2.26,
       })
       const objectsWithIntersection = [...postDeleteObjects, intersectionPoint]
+      const constructionArcStart = createPointApiObject({ id: 13, x: 0, y: 0 })
+      const constructionArcEnd = createPointApiObject({ id: 14, x: 0, y: 0 })
+      const constructionArcCenter = createPointApiObject({
+        id: 15,
+        x: 0,
+        y: 0,
+      })
+      const constructionArc = createArcApiObject({
+        id: 16,
+        start: 13,
+        end: 14,
+        center: 15,
+      })
+      const objectsWithConstruction = [
+        ...objectsWithIntersection,
+        constructionArcStart,
+        constructionArcEnd,
+        constructionArcCenter,
+        constructionArc,
+      ]
       const deleteObjectsMock = rustContextMock.deleteObjects
       const editSegmentsMock = rustContextMock.editSegments
       const addSegmentMock = rustContextMock.addSegment
@@ -440,6 +460,13 @@ describe('filletToolImpl', () => {
         kclSource: { text: 'intersection-point' },
         sceneGraphDelta: createSceneGraphDelta(objectsWithIntersection, [12]),
       })
+      addSegmentMock.mockResolvedValueOnce({
+        kclSource: { text: 'construction-arc' },
+        sceneGraphDelta: createSceneGraphDelta(
+          objectsWithConstruction,
+          [13, 14, 15, 16]
+        ),
+      })
 
       let nextConstraintId = 30
       addConstraintMock.mockImplementation(
@@ -455,7 +482,7 @@ describe('filletToolImpl', () => {
             kclSource: { text: `constraint-${constraintId}` },
             sceneGraphDelta: createSceneGraphDelta(
               [
-                ...objectsWithIntersection,
+                ...objectsWithConstruction,
                 createConstraintApiObject({ id: constraintId, constraint }),
               ],
               [constraintId]
@@ -491,16 +518,34 @@ describe('filletToolImpl', () => {
         'Tangent',
         'Coincident',
         'Coincident',
+        'Coincident',
+        'Coincident',
       ])
       expect(constraints[4]).toEqual({
         type: 'Coincident',
-        segments: [6, 12],
-      })
-      expect(constraints[5]).toEqual({
-        type: 'Coincident',
         segments: [7, 12],
       })
+      expect(constraints).not.toContainEqual({
+        type: 'Coincident',
+        segments: [6, 12],
+      })
+      expect(constraints.slice(5)).toEqual([
+        {
+          type: 'Coincident',
+          segments: [2, 13],
+        },
+        {
+          type: 'Coincident',
+          segments: [12, 14],
+        },
+        {
+          type: 'Coincident',
+          segments: [3, 15],
+        },
+      ])
       expect(addConstraintMock.mock.calls.map((call) => call[4])).toEqual([
+        false,
+        false,
         false,
         false,
         false,

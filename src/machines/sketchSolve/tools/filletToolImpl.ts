@@ -1733,6 +1733,64 @@ function getArcPointIdForSide({
   return sideIsArcStart ? arc.kind.segment.start : arc.kind.segment.end
 }
 
+function constructionArcCtorForSide({
+  side,
+  tangentPoint,
+  units,
+}: {
+  side: FilletSegmentInfo
+  tangentPoint: Coords2d
+  units: NumericSuffix
+}): SegmentCtor | null {
+  const arc = side.arc
+  if (!arc) {
+    return null
+  }
+
+  return arcCtor({
+    start: side.endpointName === 'start' ? side.vertex : tangentPoint,
+    end: side.endpointName === 'start' ? tangentPoint : side.vertex,
+    center: arc.center,
+    units,
+    construction: true,
+  })
+}
+
+function getConstructionArcIds({
+  sceneGraphDelta,
+  side,
+  constructionId,
+}: {
+  sceneGraphDelta: SceneGraphDelta
+  side: FilletSegmentInfo
+  constructionId: number
+}): {
+  vertexPointId: number
+  tangentPointId: number
+  centerPointId: number
+} | null {
+  const obj = sceneGraphDelta.new_graph.objects[constructionId]
+  if (!isArcSegment(obj)) {
+    return null
+  }
+
+  const endpointIds =
+    side.endpointName === 'start'
+      ? {
+          vertexPointId: obj.kind.segment.start,
+          tangentPointId: obj.kind.segment.end,
+        }
+      : {
+          vertexPointId: obj.kind.segment.end,
+          tangentPointId: obj.kind.segment.start,
+        }
+
+  return {
+    ...endpointIds,
+    centerPointId: obj.kind.segment.center,
+  }
+}
+
 function getNewSegmentId(
   sceneGraphDelta: SceneGraphDelta,
   predicate: (obj: ApiObject | undefined) => boolean
@@ -1935,9 +1993,64 @@ export async function finalizeFilletActor({
       return { error: 'Failed to create fillet intersection point' }
     }
 
+    const constructionArcData: Array<{
+      side: FilletSegmentInfo
+      vertexPointId: number
+      tangentPointId: number
+      centerPointId: number
+    }> = []
+
+    for (const [index, side] of currentSelection.sides.entries()) {
+      if (side.kind !== 'arc') {
+        continue
+      }
+
+      const ctor = constructionArcCtorForSide({
+        side,
+        tangentPoint: geometry.sideTangencies[index as 0 | 1],
+        units,
+      })
+      if (!ctor) {
+        return { error: 'Failed to build fillet construction arc' }
+      }
+
+      const addResult = await rustContext.addSegment(
+        0,
+        sketchId,
+        ctor,
+        'fillet-construction-extension',
+        settings
+      )
+      newObjects.push(...addResult.sceneGraphDelta.new_objects)
+      latestKclSource = addResult.kclSource
+      latestSceneGraphDelta = addResult.sceneGraphDelta
+
+      const constructionId = getNewSegmentId(addResult.sceneGraphDelta, (obj) =>
+        isArcSegment(obj)
+      )
+      if (constructionId === undefined) {
+        return { error: 'Failed to create fillet construction arc' }
+      }
+
+      const constructionIds = getConstructionArcIds({
+        sceneGraphDelta: addResult.sceneGraphDelta,
+        side,
+        constructionId,
+      })
+      if (!constructionIds) {
+        return { error: 'Failed to find fillet construction arc points' }
+      }
+
+      constructionArcData.push({
+        side,
+        ...constructionIds,
+      })
+    }
+
     const endpointCoincidentConstraints: ApiConstraint[] = []
     const tangentConstraints: ApiConstraint[] = []
     const intersectionPointConstraints: ApiConstraint[] = []
+    const constructionArcConstraints: ApiConstraint[] = []
 
     for (const [index, side] of currentSelection.sides.entries()) {
       const sideEndpointId = getEndpointPointIdForSide(
@@ -1961,16 +2074,46 @@ export async function finalizeFilletActor({
         type: 'Tangent',
         input: [side.segmentId, currentDraft.arcId],
       })
-      intersectionPointConstraints.push({
-        type: 'Coincident',
-        segments: [side.segmentId, intersectionPointId],
-      })
+      if (side.kind === 'line') {
+        intersectionPointConstraints.push({
+          type: 'Coincident',
+          segments: [side.segmentId, intersectionPointId],
+        })
+      }
+    }
+
+    for (const data of constructionArcData) {
+      const sideEndpointId = getEndpointPointIdForSide(
+        data.side,
+        latestSceneGraphDelta.new_graph.objects
+      )
+      const sideArc =
+        latestSceneGraphDelta.new_graph.objects[data.side.segmentId]
+      if (sideEndpointId === null || !isArcSegment(sideArc)) {
+        return { error: 'Failed to find fillet construction arc source' }
+      }
+
+      constructionArcConstraints.push(
+        {
+          type: 'Coincident',
+          segments: [sideEndpointId, data.tangentPointId],
+        },
+        {
+          type: 'Coincident',
+          segments: [intersectionPointId, data.vertexPointId],
+        },
+        {
+          type: 'Coincident',
+          segments: [sideArc.kind.segment.center, data.centerPointId],
+        }
+      )
     }
 
     const constraintsToAdd = [
       ...endpointCoincidentConstraints,
       ...tangentConstraints,
       ...intersectionPointConstraints,
+      ...constructionArcConstraints,
     ]
 
     for (const dimensionConstraint of selection.dimensionConstraints) {
