@@ -94,6 +94,7 @@ import { useNavigate } from 'react-router-dom'
 type Singletons = ReturnType<typeof useSingletons>
 
 type ModuleInstanceOperation = Extract<Operation, { type: 'ModuleInstance' }>
+type StdLibCallOperation = Extract<Operation, { type: 'StdLibCall' }>
 
 type SystemDeps = Pick<Singletons, 'kclManager'> & {
   commandBarActor: CommandBarActorType
@@ -111,6 +112,39 @@ type SystemDeps = Pick<Singletons, 'kclManager'> & {
 // this seems brittle.
 const ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT = true
 const UNRENDERED_EXECUTE_HOTKEY = 'mod+s'
+
+const Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES = new Set([
+  'fillet',
+  'chamfer',
+  'extrude',
+  'revolve',
+  'helix',
+  'gdt::flatness',
+  'gdt::straightness',
+  'gdt::circularity',
+  'gdt::cylindricity',
+  'gdt::position',
+  'gdt::profile',
+  'gdt::profileLine',
+  'gdt::profileSurface',
+  'gdt::distance',
+  'gdt::perpendicularity',
+  'gdt::angularity',
+  'gdt::concentricity',
+  'gdt::symmetry',
+  'gdt::runout',
+  'gdt::parallelism',
+  'gdt::annotation',
+])
+
+export function supportsZ0006AutoFixBeforeFeatureTreeEdit(
+  operation: Operation
+): boolean {
+  return (
+    operation.type === 'StdLibCall' &&
+    Z0006_AUTO_FIX_BEFORE_EDIT_OPERATION_NAMES.has(operation.name)
+  )
+}
 
 export function FeatureTreePane(props: AreaTypeComponentProps) {
   return (
@@ -758,6 +792,108 @@ interface OperationProps {
   /** When set, this item is a deduplicated module reference; clicking scrolls to the expanded branch. */
   referenceModuleId?: number
 }
+
+function getFeatureTreeArtifactForEditOperation(
+  operation: Operation,
+  artifactGraph: SystemDeps['kclManager']['artifactGraph']
+) {
+  if (
+    'sourceRange' in operation &&
+    operation.sourceRange != null &&
+    isArray(operation.sourceRange) &&
+    operation.sourceRange.length >= 2
+  ) {
+    const sourceRange = operation.sourceRange
+    const artifact = getArtifactFromRange(
+      [sourceRange[0], sourceRange[1], sourceRange[2] ?? 0],
+      artifactGraph
+    )
+    if (artifact) return artifact
+  }
+
+  if (operation.type === 'StdLibCall') {
+    return findOperationArtifact(operation, artifactGraph) ?? undefined
+  }
+
+  return undefined
+}
+
+async function applyZ0006FixAndReselectFeatureTreeOperation({
+  operation,
+  systemDeps,
+}: {
+  operation: StdLibCallOperation
+  systemDeps: SystemDeps
+}): Promise<StdLibCallOperation | undefined> {
+  const beforeOperations = getAllOperations(
+    systemDeps.kclManager.lastSuccessfulOperations
+  )
+  const applied = await systemDeps.kclManager.applyZ0006FixBeforeEdit()
+  if (!applied) return operation
+
+  return findSameVisibleStdLibOperationAfterSourceChange({
+    operation,
+    beforeOperations,
+    afterOperations: getAllOperations(
+      systemDeps.kclManager.lastSuccessfulOperations
+    ),
+  })
+}
+
+async function prepareFeatureTreeEditCommand({
+  operation,
+  artifact,
+  commandBarActor,
+  selectOperation,
+  systemDeps,
+}: {
+  operation: Operation
+  artifact: ReturnType<typeof getArtifactFromRange> | undefined
+  commandBarActor: CommandBarActorType
+  selectOperation: () => Promise<void>
+  systemDeps: SystemDeps
+}) {
+  await selectOperation()
+
+  let operationToEdit: Operation | undefined = operation
+  if (
+    ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
+    operation.type === 'StdLibCall' &&
+    supportsZ0006AutoFixBeforeFeatureTreeEdit(operation)
+  ) {
+    operationToEdit = await applyZ0006FixAndReselectFeatureTreeOperation({
+      operation,
+      systemDeps,
+    })
+  }
+
+  if (!operationToEdit) {
+    toast.error(
+      'Could not safely reselect operation after automatic migration. Please try again.'
+    )
+    return
+  }
+
+  const artifactForEdit:
+    | NonNullable<ReturnType<typeof getArtifactFromRange>>
+    | undefined =
+    operationToEdit === operation
+      ? (artifact ?? undefined)
+      : getFeatureTreeArtifactForEditOperation(
+          operationToEdit,
+          systemDeps.kclManager.artifactGraph
+        )
+
+  return prepareEditCommand({
+    artifactGraph: systemDeps.kclManager.artifactGraph,
+    code: systemDeps.kclManager.code,
+    commandBarActor,
+    operation: operationToEdit,
+    rustContext: systemDeps.rustContext,
+    artifact: artifactForEdit,
+  })
+}
+
 /**
  * A button with an icon, name, and context menu
  * for an operation in the feature tree.
@@ -937,83 +1073,15 @@ const OperationItem = ({
         return
       }
 
-      void selectOperation()
-        .then(async () => {
-          const op = item
-          const needsZ0006FixBeforeEdit =
-            ENABLE_Z0006_AUTO_FIX_BEFORE_FEATURE_TREE_EDIT &&
-            op.type === 'StdLibCall' &&
-            (op.name === 'fillet' ||
-              op.name === 'chamfer' ||
-              op.name === 'extrude' ||
-              op.name === 'revolve' ||
-              op.name === 'helix')
-
-          let operationToEdit: Operation = item
-          if (needsZ0006FixBeforeEdit) {
-            const beforeOperations = getAllOperations(
-              systemDeps.kclManager.lastSuccessfulOperations
-            )
-            const applied =
-              await systemDeps.kclManager.applyZ0006FixBeforeEdit()
-            if (applied) {
-              const nextOp = findSameVisibleStdLibOperationAfterSourceChange({
-                operation: op,
-                beforeOperations,
-                afterOperations: getAllOperations(
-                  systemDeps.kclManager.lastSuccessfulOperations
-                ),
-              })
-              if (!nextOp) {
-                toast.error(
-                  'Could not safely reselect operation after automatic migration. Please try again.'
-                )
-                return
-              }
-              operationToEdit = nextOp
-            }
-          }
-
-          const opToEdit = operationToEdit
-          const artifactForEdit =
-            operationToEdit !== item
-              ? (() => {
-                  if (
-                    'sourceRange' in opToEdit &&
-                    opToEdit.sourceRange != null &&
-                    isArray(opToEdit.sourceRange) &&
-                    opToEdit.sourceRange.length >= 2
-                  ) {
-                    const sr = opToEdit.sourceRange
-                    const range: SourceRange = [sr[0], sr[1], sr[2] ?? 0]
-                    const fromRange = getArtifactFromRange(
-                      range,
-                      systemDeps.kclManager.artifactGraph
-                    )
-                    if (fromRange) return fromRange
-                  }
-                  if (opToEdit.type === 'StdLibCall') {
-                    return (
-                      findOperationArtifact(
-                        opToEdit,
-                        systemDeps.kclManager.artifactGraph
-                      ) ?? undefined
-                    )
-                  }
-                  return undefined
-                })()
-              : artifact
-
-          return prepareEditCommand({
-            artifactGraph: systemDeps.kclManager.artifactGraph,
-            code: systemDeps.kclManager.code,
-            commandBarActor,
-            operation: operationToEdit,
-            rustContext: systemDeps.rustContext,
-            artifact: artifactForEdit,
-          })
-        })
-        .catch((e) => toast.error(err(e) ? e.message : JSON.stringify(e)))
+      prepareFeatureTreeEditCommand({
+        operation: item,
+        artifact,
+        commandBarActor,
+        selectOperation,
+        systemDeps,
+      }).catch((e) => {
+        toast.error(err(e) ? e.message : JSON.stringify(e))
+      })
     }
   }, [
     isModuleOwned,
@@ -1021,8 +1089,7 @@ const OperationItem = ({
     modelingActor,
     commandBarActor,
     selectOperation,
-    systemDeps.kclManager,
-    systemDeps.rustContext,
+    systemDeps,
   ])
 
   function enterAppearanceFlow() {

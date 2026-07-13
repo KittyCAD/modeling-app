@@ -8,6 +8,12 @@ import {
 } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
+const bootMockState = vi.hoisted<{
+  registry: Registry | undefined
+}>(() => ({
+  registry: undefined,
+}))
+
 // Mock modules that access localStorage at import time
 vi.mock('@src/routes/utils', () => ({
   getAppVersion: () => 'test',
@@ -23,6 +29,9 @@ vi.mock('@src/lib/desktop', () => ({
 
 // Mock useSingletons which requires heavy initialization
 vi.mock('@src/lib/boot', () => ({
+  useApp: () => {
+    return { registry: bootMockState.registry }
+  },
   useSingletons: () => ({
     kclManager: {
       astSignal: { value: null },
@@ -39,6 +48,8 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
   }
 })
 
+import { Registry } from '@kittycad/registry'
+import { useSignals } from '@preact/signals-react/runtime'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { MlEphantConversation } from '@src/components/MlEphantConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
@@ -49,6 +60,41 @@ import type {
   MlCopilotModeId,
   MlCopilotModeOption,
 } from '@src/machines/mlEphantManagerMachine'
+import {
+  type EngineSceneExtensionContext,
+  engineSceneRuntimeExtensionsSlot,
+  engineSceneStreamLayersValueSpec,
+} from '@src/registry/contracts/engineScene'
+import { ZOODLE_BRUSH_SIZE_DEFAULT_PX } from '@src/registry/contracts/zoodle'
+
+const configureTestRegistry = () => {
+  const registry = new Registry()
+  registry.configure([engineSceneRuntimeExtensionsSlot.of()])
+  bootMockState.registry = registry
+  return registry
+}
+
+const testEngineSceneContext = {
+  modelingState: { matches: () => false },
+  modelingSend: vi.fn(),
+  sketchSolveStreamDimming: 0.8,
+  setSketchSolveStreamDimming: vi.fn(),
+} as unknown as EngineSceneExtensionContext
+
+const TestEngineSceneStreamLayers = () => {
+  useSignals()
+  const registry = bootMockState.registry as Registry
+  const layers = registry.signal(engineSceneStreamLayersValueSpec).value
+
+  return (
+    <>
+      {layers.map((layer) => {
+        const Component = layer.Component
+        return <Component key={layer.id} {...testEngineSceneContext} />
+      })}
+    </>
+  )
+}
 
 const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   {
@@ -69,6 +115,7 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
 
 describe('MlEphantConversation', () => {
   beforeEach(() => {
+    configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
   })
 
@@ -978,22 +1025,25 @@ describe('MlEphantConversation', () => {
 
     const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
       return render(
-        <MlEphantConversation
-          isLoading={false}
-          conversation={{ exchanges: [] }}
-          onProcess={handleProcess}
-          onClickClearChat={() => {}}
-          onReconnect={() => {}}
-          onCancel={() => {}}
-          needsReconnect={false}
-          disabled={disabled}
-          hasPromptCompleted={true}
-          contexts={[]}
-          isProcessing={false}
-          queue={[]}
-          onRemoveFromQueue={() => {}}
-          onSteer={() => {}}
-        />
+        <>
+          <MlEphantConversation
+            isLoading={false}
+            conversation={{ exchanges: [] }}
+            onProcess={handleProcess}
+            onClickClearChat={() => {}}
+            onReconnect={() => {}}
+            onCancel={() => {}}
+            needsReconnect={false}
+            disabled={disabled}
+            hasPromptCompleted={true}
+            contexts={[]}
+            isProcessing={false}
+            queue={[]}
+            onRemoveFromQueue={() => {}}
+            onSteer={() => {}}
+          />
+          <TestEngineSceneStreamLayers />
+        </>
       )
     }
 
@@ -1025,6 +1075,16 @@ describe('MlEphantConversation', () => {
       ).toBeInTheDocument()
     })
 
+    test('displays screenshot annotation button', () => {
+      renderConversation()
+      const zoodleButton = screen.getByTestId(
+        'ml-ephant-annotate-screenshot-button'
+      )
+      expect(zoodleButton).toBeInTheDocument()
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
+      expect(screen.getByText('Zoodle')).toBeInTheDocument()
+    })
+
     test('adds captured viewport screenshot as an attachment', async () => {
       renderConversation()
 
@@ -1033,6 +1093,100 @@ describe('MlEphantConversation', () => {
       expect(
         await screen.findByText('viewport-screenshot.png')
       ).toBeInTheDocument()
+    })
+
+    test('marks screenshot annotation button active and cancels on second click', () => {
+      renderConversation()
+
+      const zoodleButton = screen.getByTestId(
+        'ml-ephant-annotate-screenshot-button'
+      )
+
+      fireEvent.click(zoodleButton)
+
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'true')
+      expect(
+        screen.getByTestId('viewport-annotation-overlay')
+      ).toBeInTheDocument()
+
+      fireEvent.click(zoodleButton)
+
+      expect(zoodleButton).toHaveAttribute('aria-pressed', 'false')
+      expect(
+        screen.queryByTestId('viewport-annotation-overlay')
+      ).not.toBeInTheDocument()
+    })
+
+    test('adds annotated viewport screenshot as an attachment', async () => {
+      const OriginalImage = globalThis.Image
+      class MockImage {
+        onload: (() => void) | null = null
+        onerror: (() => void) | null = null
+        complete = true
+        naturalWidth = 16
+        naturalHeight = 16
+        width = 16
+        height = 16
+      }
+
+      const drawImageSpy = vi
+        .spyOn(CanvasRenderingContext2D.prototype, 'drawImage')
+        .mockImplementation(() => {})
+      globalThis.Image = MockImage as typeof Image
+      try {
+        renderConversation()
+
+        fireEvent.click(
+          screen.getByTestId('ml-ephant-annotate-screenshot-button')
+        )
+
+        expect(
+          screen.getByTestId('viewport-annotation-overlay')
+        ).toBeInTheDocument()
+        expect(
+          screen.getByTestId('viewport-annotation-tool-drawOrange')
+        ).toHaveAttribute('aria-pressed', 'true')
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-slider')
+        ).toHaveValue(String(ZOODLE_BRUSH_SIZE_DEFAULT_PX))
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-dot')
+        ).toHaveStyle({
+          width: `${ZOODLE_BRUSH_SIZE_DEFAULT_PX}px`,
+          height: `${ZOODLE_BRUSH_SIZE_DEFAULT_PX}px`,
+        })
+
+        fireEvent.change(
+          screen.getByTestId('viewport-annotation-brush-size-slider'),
+          {
+            target: { value: '6' },
+          }
+        )
+
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-slider')
+        ).toHaveValue('6')
+        expect(
+          screen.getByTestId('viewport-annotation-brush-size-dot')
+        ).toHaveStyle({ width: '6px', height: '6px' })
+
+        fireEvent.click(screen.getByTestId('viewport-annotation-tool-erase'))
+
+        expect(
+          screen.getByTestId('viewport-annotation-tool-erase')
+        ).toHaveAttribute('aria-pressed', 'true')
+
+        const sendButton = screen.getByTestId('viewport-annotation-send-button')
+        await waitFor(() => expect(sendButton).not.toBeDisabled())
+        fireEvent.click(sendButton)
+
+        expect(
+          await screen.findByText('annotated-viewport-screenshot.png')
+        ).toBeInTheDocument()
+      } finally {
+        drawImageSpy.mockRestore()
+        globalThis.Image = OriginalImage
+      }
     })
 
     test('shows attached files when files are added via drag and drop', async () => {

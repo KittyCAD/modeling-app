@@ -359,11 +359,6 @@ code,
   word-wrap: break-word;
 }
 
-.cm-ghostText,
-.cm-ghostText * {
-  color: rgb(120, 120, 120, 0.8) !important;
-}
-
 .extra-segment-handle {
   position: absolute;
   pointer-events: auto;
@@ -427,12 +422,17 @@ code,
     @apply group-hover/avatar:border-chalkboard-30 group-hover/avatar:dark:border-chalkboard-70;
   }
 
+  .toolbar-container {
+    box-sizing: border-box;
+    container-type: inline-size;
+    display: flex;
+    inline-size: 100%;
+    justify-content: center;
+    min-inline-size: 0;
+  }
+
   .toolbar {
     box-sizing: border-box;
-    :has(> &) {
-      container-type: inline-size;
-    }
-
     /** relate the values of cqi units (% container's inline size)
     and percentage (which uses child's inline-size) to get a percentage */
     --container-percentage-width: calc(100cqi - 100%);

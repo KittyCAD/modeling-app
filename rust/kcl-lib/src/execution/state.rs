@@ -50,6 +50,7 @@ use crate::execution::types::NumericType;
 use crate::front::Number;
 use crate::front::Object;
 use crate::front::ObjectId;
+use crate::front::ObjectKind;
 use crate::id::IncIdGenerator;
 use crate::modules::ModuleId;
 use crate::modules::ModuleInfo;
@@ -1210,17 +1211,25 @@ impl ModuleArtifactState {
                 object.id.0, expected_id
             );
 
-            match &object.source {
-                crate::front::SourceRef::Simple { range, node_path: _ } => {
-                    self.source_range_to_object.insert(*range, object.id);
+            match &object.kind {
+                ObjectKind::Wall(wall) => {
+                    self.source_range_to_object.insert(wall.source.solid.range, object.id);
                 }
-                crate::front::SourceRef::BackTrace { ranges } => {
-                    // Don't map the entire backtrace, only the most specific
-                    // range.
-                    if let Some((range, _)) = ranges.first() {
+                ObjectKind::Cap(cap) => {
+                    self.source_range_to_object.insert(cap.source.solid.range, object.id);
+                }
+                _ => match &object.source {
+                    crate::front::SourceRef::Simple { range, node_path: _ } => {
                         self.source_range_to_object.insert(*range, object.id);
                     }
-                }
+                    crate::front::SourceRef::BackTrace { ranges } => {
+                        // Don't map the entire backtrace, only the most specific
+                        // range.
+                        if let Some((range, _)) = ranges.first() {
+                            self.source_range_to_object.insert(*range, object.id);
+                        }
+                    }
+                },
             }
 
             // Ignore placeholder artifacts.

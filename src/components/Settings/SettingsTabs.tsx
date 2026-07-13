@@ -6,14 +6,12 @@ interface SettingsTabButtonProps {
   value: string
   onChange: (value: string) => void
   showProjectTab: boolean
-  showPluginsTab: boolean
 }
 
 export function SettingsTabs({
   value,
   onChange,
   showProjectTab,
-  showPluginsTab,
 }: SettingsTabButtonProps) {
   return (
     <RadioGroup
@@ -46,17 +44,11 @@ export function SettingsTabs({
           />
         )}
       </RadioGroup.Option>
-      {showPluginsTab && (
-        <RadioGroup.Option value="plugins">
-          {({ checked }) => (
-            <SettingsTabButton
-              checked={checked}
-              icon="function"
-              text="Plugins"
-            />
-          )}
-        </RadioGroup.Option>
-      )}
+      <RadioGroup.Option value="plugins">
+        {({ checked }) => (
+          <SettingsTabButton checked={checked} icon="function" text="Plugins" />
+        )}
+      </RadioGroup.Option>
     </RadioGroup>
   )
 }
