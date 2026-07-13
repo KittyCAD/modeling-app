@@ -168,11 +168,6 @@ export const machine = setup({
         },
         escape: {
           target: 'unequipping',
-          actions: ({ self }) => {
-            self._parent?.send({
-              type: 'delete draft entities',
-            })
-          },
         },
       },
     },
@@ -232,7 +227,7 @@ export const machine = setup({
       entry: [
         'remove fillet listeners',
         ({ self }) => {
-          self._parent?.send({ type: 'clear draft entities' })
+          self._parent?.send({ type: 'delete draft entities' })
         },
       ],
     },
