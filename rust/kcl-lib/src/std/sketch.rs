@@ -2972,7 +2972,7 @@ async fn inner_region(
         KclVersion::V2 => RegionVersion::V1,
     };
 
-    let (sketch_or_segment, region_mapping) = match (point, segments) {
+    let (sketch_or_segment, region_mapping, hole_region_mappings) = match (point, segments) {
         (Some(point), None) => {
             let (sketch, pt) = region_from_point(point, sketch, &args)?;
 
@@ -2990,16 +2990,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            let region_mapping = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
+            let (region_mapping, hole_region_mappings) = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
                 modeling_response: kcmc::ok_response::OkModelingCmdResponse::CreateRegionFromQueryPoint(data),
             } = response
             {
-                data.region_mapping
+                (data.region_mapping, data.hole_region_mappings)
             } else {
                 Default::default()
             };
 
-            (sketch, region_mapping)
+            (sketch, region_mapping, hole_region_mappings)
         }
         (None, Some(segments)) => {
             if sketch.is_some() {
@@ -3056,16 +3056,16 @@ async fn inner_region(
                 )
                 .await?;
 
-            let region_mapping = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
+            let (region_mapping, hole_region_mappings) = if let kcmc::websocket::OkWebSocketResponseData::Modeling {
                 modeling_response: kcmc::ok_response::OkModelingCmdResponse::CreateRegion(data),
             } = response
             {
-                data.region_mapping
+                (data.region_mapping, data.hole_region_mappings)
             } else {
                 Default::default()
             };
 
-            (SketchOrSegment::Segment(seg0), region_mapping)
+            (SketchOrSegment::Segment(seg0), region_mapping, hole_region_mappings)
         }
         (Some(_), Some(_)) => {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -3147,12 +3147,17 @@ async fn inner_region(
         }
         region_mapping = mock_mapping;
     }
-    let original_segment_ids = sketch.paths.iter().map(|p| p.get_id()).collect::<Vec<_>>();
+    let original_paths = sketch.paths.clone();
+    let original_segment_ids = original_paths.iter().map(|p| p.get_id()).collect::<Vec<_>>();
     let original_seg_to_region = build_reverse_region_mapping(&region_mapping, &original_segment_ids);
+    let original_seg_to_hole_regions = hole_region_mappings
+        .iter()
+        .map(|mapping| build_reverse_region_mapping(mapping, &original_segment_ids))
+        .collect::<Vec<_>>();
 
     {
         let mut new_paths = Vec::new();
-        for path in &sketch.paths {
+        for path in &original_paths {
             let original_id = path.get_id();
             if let Some(region_ids) = original_seg_to_region.get(&original_id) {
                 for region_id in region_ids {
@@ -3165,12 +3170,36 @@ async fn inner_region(
 
         sketch.paths = new_paths;
 
+        let mut inner_paths = Vec::new();
+        for hole_mapping in &original_seg_to_hole_regions {
+            for path in &original_paths {
+                let original_id = path.get_id();
+                if let Some(region_ids) = hole_mapping.get(&original_id) {
+                    for region_id in region_ids {
+                        let mut new_path = path.clone();
+                        new_path.set_id(*region_id);
+                        inner_paths.push(new_path);
+                    }
+                }
+            }
+        }
+        sketch.inner_paths = inner_paths;
+
         for (_tag_name, tag) in &mut sketch.tags {
             let Some(info) = tag.get_cur_info().cloned() else {
                 continue;
             };
             let original_id = info.id;
-            if let Some(region_ids) = original_seg_to_region.get(&original_id) {
+            let mut region_ids = Vec::new();
+            if let Some(ids) = original_seg_to_region.get(&original_id) {
+                region_ids.extend(ids.iter().copied());
+            }
+            for hole_mapping in &original_seg_to_hole_regions {
+                if let Some(ids) = hole_mapping.get(&original_id) {
+                    region_ids.extend(ids.iter().copied());
+                }
+            }
+            if !region_ids.is_empty() {
                 let epoch = tag.info.last().map(|(e, _)| *e).unwrap_or(0);
                 for (i, region_id) in region_ids.iter().enumerate() {
                     if i == 0 {

@@ -35,6 +35,8 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::Program;
 use crate::std::sketch::build_reverse_region_mapping;
 
+const AUTO_HOLE_REGION_PATH_NAMESPACE: Uuid = uuid::uuid!("d44550a2-1a63-5c3e-87ad-f7a89b3f98fe");
+
 #[cfg(test)]
 mod mermaid_tests;
 #[cfg(test)]
@@ -1937,12 +1939,66 @@ fn artifacts_to_update(
                     "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
                 );
             };
+            let Some(
+                OkModelingCmdResponse::CreateRegion(kcmc::output::CreateRegion {
+                    region_mapping,
+                    hole_region_mappings,
+                    ..
+                })
+                | OkModelingCmdResponse::CreateRegionFromQueryPoint(kcmc::output::CreateRegionFromQueryPoint {
+                    region_mapping,
+                    hole_region_mappings,
+                    ..
+                }),
+            ) = response
+            else {
+                // Create the path representing the region, even without a
+                // response. The response is required to create mapped
+                // segment artifacts.
+                return_arr.push(Artifact::Path(Path {
+                    id,
+                    sub_type: PathSubType::Region,
+                    plane_id: path.plane_id,
+                    seg_ids: Vec::new(),
+                    consumed: false,
+                    sweep_id: None,
+                    trajectory_sweep_id: None,
+                    solid2d_id: None,
+                    code_ref,
+                    composite_solid_id: None,
+                    sketch_block_id: None,
+                    origin_path_id: Some(ArtifactId::new(*origin_path_id)),
+                    inner_path_id: None,
+                    outer_path_id: None,
+                    pattern_ids: Vec::new(),
+                }));
+                return Ok(return_arr);
+            };
+
+            // Each key is a segment in the region. The value is the segment in
+            // the original path. Build the reverse mapping.
+            let original_segment_ids = path.seg_ids.iter().map(Uuid::from).collect::<Vec<_>>();
+            let reverse = build_reverse_region_mapping(region_mapping, &original_segment_ids);
+            let region_segment_ids = reverse
+                .values()
+                .flat_map(|region_segment_ids| region_segment_ids.iter().copied())
+                .map(ArtifactId::new)
+                .collect::<Vec<_>>();
+            let hole_path_ids = (0..hole_region_mappings.len())
+                .map(|hole_index| {
+                    ArtifactId::new(Uuid::new_v5(
+                        &AUTO_HOLE_REGION_PATH_NAMESPACE,
+                        format!("{}:{hole_index}", Uuid::from(id)).as_bytes(),
+                    ))
+                })
+                .collect::<Vec<_>>();
+
             // Create the path representing the region.
             return_arr.push(Artifact::Path(Path {
                 id,
                 sub_type: PathSubType::Region,
                 plane_id: path.plane_id,
-                seg_ids: Vec::new(),
+                seg_ids: region_segment_ids,
                 consumed: false,
                 sweep_id: None,
                 trajectory_sweep_id: None,
@@ -1951,26 +2007,10 @@ fn artifacts_to_update(
                 composite_solid_id: None,
                 sketch_block_id: None,
                 origin_path_id: Some(ArtifactId::new(*origin_path_id)),
-                inner_path_id: None,
+                inner_path_id: hole_path_ids.first().copied(),
                 outer_path_id: None,
                 pattern_ids: Vec::new(),
             }));
-            // If we have a response, we can also create the segments in the
-            // region.
-            let Some(
-                OkModelingCmdResponse::CreateRegion(kcmc::output::CreateRegion { region_mapping, .. })
-                | OkModelingCmdResponse::CreateRegionFromQueryPoint(kcmc::output::CreateRegionFromQueryPoint {
-                    region_mapping,
-                    ..
-                }),
-            ) = response
-            else {
-                return Ok(return_arr);
-            };
-            // Each key is a segment in the region. The value is the segment in
-            // the original path. Build the reverse mapping.
-            let original_segment_ids = path.seg_ids.iter().map(Uuid::from).collect::<Vec<_>>();
-            let reverse = build_reverse_region_mapping(region_mapping, &original_segment_ids);
             for (original_segment_id, region_segment_ids) in reverse.iter() {
                 for segment_id in region_segment_ids {
                     return_arr.push(Artifact::Segment(Segment {
@@ -1983,6 +2023,46 @@ fn artifacts_to_update(
                         code_ref: code_ref.clone(),
                         common_surface_ids: Vec::new(),
                     }))
+                }
+            }
+            for (hole_index, hole_mapping) in hole_region_mappings.iter().enumerate() {
+                let hole_path_id = hole_path_ids[hole_index];
+                let reverse = build_reverse_region_mapping(hole_mapping, &original_segment_ids);
+                let hole_segment_ids = reverse
+                    .values()
+                    .flat_map(|region_segment_ids| region_segment_ids.iter().copied())
+                    .map(ArtifactId::new)
+                    .collect::<Vec<_>>();
+                return_arr.push(Artifact::Path(Path {
+                    id: hole_path_id,
+                    sub_type: PathSubType::Region,
+                    plane_id: path.plane_id,
+                    seg_ids: hole_segment_ids,
+                    consumed: false,
+                    sweep_id: None,
+                    trajectory_sweep_id: None,
+                    solid2d_id: None,
+                    code_ref: code_ref.clone(),
+                    composite_solid_id: None,
+                    sketch_block_id: None,
+                    origin_path_id: Some(ArtifactId::new(*origin_path_id)),
+                    inner_path_id: None,
+                    outer_path_id: Some(id),
+                    pattern_ids: Vec::new(),
+                }));
+                for (original_segment_id, region_segment_ids) in reverse.iter() {
+                    for segment_id in region_segment_ids {
+                        return_arr.push(Artifact::Segment(Segment {
+                            id: ArtifactId::new(*segment_id),
+                            path_id: hole_path_id,
+                            original_seg_id: Some(ArtifactId::new(*original_segment_id)),
+                            surface_id: None,
+                            edge_ids: Vec::new(),
+                            edge_cut_id: None,
+                            code_ref: code_ref.clone(),
+                            common_surface_ids: Vec::new(),
+                        }))
+                    }
                 }
             }
             return Ok(return_arr);
@@ -2224,13 +2304,22 @@ fn artifacts_to_update(
                 new_path.sweep_id = Some(id);
                 new_path.consumed = true;
                 return_arr.push(Artifact::Path(new_path));
-                if let Some(inner_path_id) = path.inner_path_id
-                    && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
-                    && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
-                {
-                    inner_path_artifact.sweep_id = Some(id);
-                    inner_path_artifact.consumed = true;
-                    return_arr.push(Artifact::Path(inner_path_artifact))
+                let mut inner_path_ids = AHashSet::default();
+                if let Some(inner_path_id) = path.inner_path_id {
+                    inner_path_ids.insert(inner_path_id);
+                }
+                inner_path_ids.extend(artifacts.values().filter_map(|artifact| match artifact {
+                    Artifact::Path(inner_path) if inner_path.outer_path_id == Some(target) => Some(inner_path.id),
+                    _ => None,
+                }));
+                for inner_path_id in inner_path_ids {
+                    if let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
+                        && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
+                    {
+                        inner_path_artifact.sweep_id = Some(id);
+                        inner_path_artifact.consumed = true;
+                        return_arr.push(Artifact::Path(inner_path_artifact))
+                    }
                 }
             }
             return Ok(return_arr);
@@ -2260,13 +2349,22 @@ fn artifacts_to_update(
                 new_path.sweep_id = Some(id);
                 new_path.consumed = true;
                 return_arr.push(Artifact::Path(new_path));
-                if let Some(inner_path_id) = path.inner_path_id
-                    && let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
-                    && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
-                {
-                    inner_path_artifact.sweep_id = Some(id);
-                    inner_path_artifact.consumed = true;
-                    return_arr.push(Artifact::Path(inner_path_artifact))
+                let mut inner_path_ids = AHashSet::default();
+                if let Some(inner_path_id) = path.inner_path_id {
+                    inner_path_ids.insert(inner_path_id);
+                }
+                inner_path_ids.extend(artifacts.values().filter_map(|artifact| match artifact {
+                    Artifact::Path(inner_path) if inner_path.outer_path_id == Some(target) => Some(inner_path.id),
+                    _ => None,
+                }));
+                for inner_path_id in inner_path_ids {
+                    if let Some(inner_path_artifact) = artifacts.get(&inner_path_id)
+                        && let Artifact::Path(mut inner_path_artifact) = inner_path_artifact.clone()
+                    {
+                        inner_path_artifact.sweep_id = Some(id);
+                        inner_path_artifact.consumed = true;
+                        return_arr.push(Artifact::Path(inner_path_artifact))
+                    }
                 }
             }
             if let Some(trajectory_artifact) = artifacts.get(&trajectory) {
