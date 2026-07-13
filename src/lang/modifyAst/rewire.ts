@@ -105,11 +105,31 @@ export function rewireAfterDelete(
 
   const rewiredAst = structuredClone(afterDeleteAst)
   let didRewire = false
+  const functionScopes: Set<string>[] = []
 
   // First pass is intentionally generic: if a deleted feature had a parent
-  // reference, every downstream local reference gets rebound through that parent chain.
+  // reference, every unshadowed downstream reference gets rebound through that
+  // parent chain.
   traverse(rewiredAst, {
     enter: (node, pathToNode) => {
+      if (node.type === 'FunctionExpression') {
+        const bindings = new Set(
+          node.params.map((param) => param.identifier.name)
+        )
+        if (node.name) {
+          bindings.add(node.name.name)
+        }
+        functionScopes.push(bindings)
+        return
+      }
+
+      if (node.type === 'VariableDeclaration' && functionScopes.length > 0) {
+        functionScopes[functionScopes.length - 1].add(
+          node.declaration.id.name
+        )
+        return
+      }
+
       if (node.type !== 'Name') {
         return
       }
@@ -120,6 +140,9 @@ export function rewireAfterDelete(
         return
       }
       if (pathToNode[pathToNode.length - 1]?.[0] === 'callee') {
+        return
+      }
+      if (functionScopes.some((scope) => scope.has(node.name.name))) {
         return
       }
 
@@ -133,6 +156,11 @@ export function rewireAfterDelete(
 
       node.name.name = replacement
       didRewire = true
+    },
+    leave: (node) => {
+      if (node.type === 'FunctionExpression') {
+        functionScopes.pop()
+      }
     },
   })
 
