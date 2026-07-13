@@ -132,7 +132,7 @@ const reasoning = (): Extract<MlCopilotServerMessage, { reasoning: any }> => {
   return {
     reasoning: {
       ...outputs[Math.floor(Math.random() * outputs.length)],
-    } as any,
+    },
   }
 }
 

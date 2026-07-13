@@ -1,8 +1,4 @@
-import type {
-  MlCopilotFile,
-  MlCopilotServerMessage,
-  PlanStep,
-} from '@kittycad/lib'
+import type { MlCopilotFile, PlanStep } from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
