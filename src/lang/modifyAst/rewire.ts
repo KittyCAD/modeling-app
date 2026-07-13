@@ -124,9 +124,7 @@ export function rewireAfterDelete(
       }
 
       if (node.type === 'VariableDeclaration' && functionScopes.length > 0) {
-        functionScopes[functionScopes.length - 1].add(
-          node.declaration.id.name
-        )
+        functionScopes[functionScopes.length - 1].add(node.declaration.id.name)
         return
       }
 
