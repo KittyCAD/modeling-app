@@ -75,7 +75,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
       const [clickProfile] = scene.makeMouseHelpers(0.49, 0.79, {
         format: 'ratio',
       })
-      const [clickEdge, mv] = scene.makeMouseHelpers(0.0594, 0.3614, {
+      const [clickEdge, mv] = scene.makeMouseHelpers(0.0625, 0.422, {
         format: 'ratio',
         steps: 5,
       })
@@ -247,7 +247,7 @@ test.describe('Face API edge selection', { tag: '@web' }, () => {
         codeBeforeSecondRevolveSubmit.match(/\brevolve\(/g) ?? []
       ).length
 
-      await cmdBar.submit()
+      await scene.waitForExecutionDoneAfter(() => cmdBar.submit())
 
       const codeAfterSecondRevolveSubmit = await editor.getCurrentCode()
       const revolveCountAfterSecondSubmit = (
