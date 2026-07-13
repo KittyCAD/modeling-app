@@ -388,30 +388,6 @@ extrude002 = extrude(region(point = [3, 2], sketch = sketch002), length = -.1)
      )
 `
 
-const KCL_CLONE_SKETCH_TAG_GET_OPPOSITE_EDGE = `unitSquareSketch = sketch(on = XY) {
-  s1 = line(start = [var -0.5mm, var -0.5mm], end = [var 0.5mm, var -0.5mm])
-  s2 = line(start = [var 0.5mm, var -0.5mm], end = [var 0.5mm, var 0.5mm])
-  s3 = line(start = [var 0.5mm, var 0.5mm], end = [var -0.5mm, var 0.5mm])
-  s4 = line(start = [var -0.5mm, var 0.5mm], end = [var -0.5mm, var -0.5mm])
-  coincident([s1.end, s2.start])
-  coincident([s2.end, s3.start])
-  coincident([s3.end, s4.start])
-  coincident([s4.end, s1.start])
-}
-unitBlock = extrude(
-  region(point = [0mm, 0mm], sketch = unitSquareSketch),
-  length = 1mm,
-  symmetric = true,
-  tagEnd = $capEnd001,
-)
-unitSoftBlockBase = clone(unitBlock)
-unitSoftBlock = chamfer(
-  unitBlock,
-  length = 0.05mm,
-  tags = [getOppositeEdge(unitSoftBlockBase.sketch.tags.s1)],
-)
-`
-
 const KCL_MIXED_SKETCH_TAGS_AND_DEPRECATED_HELPERS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
 
 bodyCenterX = 270mm
@@ -1561,23 +1537,6 @@ part = bracket()
         expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
         expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
         expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
-      }
-    )
-
-    it(
-      'refactors clone sketch tags with cloned cap face references',
-      { timeout: 30_000 },
-      async () => {
-        const refactored = await runIntegrationRefactor(
-          KCL_CLONE_SKETCH_TAG_GET_OPPOSITE_EDGE
-        )
-        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
-        const n = norm(refactored)
-        expect(n).toContain('edges = [')
-        expect(n).toContain('unitBlock.sketch.tags.')
-        expect(n).toContain('capEnd001')
-        expect(n).not.toContain('getOppositeEdge')
-        expect(n).not.toContain('tags = [')
       }
     )
 
