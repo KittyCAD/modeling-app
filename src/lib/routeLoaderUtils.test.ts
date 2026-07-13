@@ -3,7 +3,6 @@ import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/events'
 import {
   type UserFeaturesContext,
   UserFeaturesState,
@@ -72,8 +71,8 @@ function createAppWithWebHomeFeature(enabled: boolean) {
       actor: userFeaturesActor,
       send: vi.fn(),
     },
-    systemIOActor: {
-      send: vi.fn(),
+    systemIO: {
+      refreshLocalProjects: vi.fn(async () => undefined),
     },
     closeProject,
     settings: {
@@ -114,9 +113,7 @@ describe('route loaders', () => {
     const result = loadHomeProjects(app)
 
     expect(result).toEqual({})
-    expect(app.systemIOActor.send).toHaveBeenCalledWith({
-      type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
-    })
+    expect(app.systemIO.refreshLocalProjects).toHaveBeenCalled()
     expect(closeProject).toHaveBeenCalled()
     expect(app.settings.actor.send).toHaveBeenCalledWith({
       type: 'clear.project',

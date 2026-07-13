@@ -29,14 +29,12 @@ import {
 } from '@src/lib/constants'
 import { getPathFilenameInVariableCase } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import { baseUnitsUnion, warningLevels } from '@src/lib/settings/settingsTypes'
 import { err, reportRejection } from '@src/lib/trap'
 import type { IndexLoaderData } from '@src/lib/types'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarContext } from '@src/machines/commandBarMachine'
-import { listAllImportFilesWithinProject } from '@src/machines/systemIO/snapshotContext'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
 
 interface KclCommandConfig {
   // TODO: find a different approach that doesn't require
@@ -45,7 +43,6 @@ interface KclCommandConfig {
     providedOptions: ReadonlyArray<CommandArgumentOption<string>>
   }
   kclManager: KclManager
-  systemIOActor: SystemIOActor
   wasmInstance: ModuleType
   projectData: IndexLoaderData
   settings: {
@@ -57,6 +54,31 @@ interface KclCommandConfig {
 const NO_INPUT_PROVIDED_MESSAGE = 'No input provided'
 const EXECUTING_MESSAGE =
   'Cannot run command while code is executing. Please try again later.'
+
+function listImportableFilesFromProject({
+  project,
+  importExtensions,
+}: {
+  project: Project | undefined
+  importExtensions: readonly string[]
+}) {
+  const files: string[] = []
+  const visit = (entry: FileEntry) => {
+    if (entry.children) {
+      entry.children.forEach(visit)
+      return
+    }
+
+    const extension = fsZds.extname(entry.path).replace(/^\./, '')
+    if (!importExtensions.includes(extension)) {
+      return
+    }
+    files.push(fsZds.relative(project?.path || '', entry.path))
+  }
+
+  project?.children?.forEach(visit)
+  return files
+}
 
 export function kclCommands(commandProps: KclCommandConfig): Command[] {
   return [
@@ -202,15 +224,13 @@ export function kclCommands(commandProps: KclCommandConfig): Command[] {
           required: true,
           options: () => {
             const providedOptions: { name: string; value: string }[] = []
-            const context = commandProps.systemIOActor.getSnapshot().context
-            const projectName = commandProps.project?.name
             const sep = fsZds.sep
             const relevantFiles = relevantFileExtensions(
               commandProps.wasmInstance
             )
-            if (projectName && sep) {
-              const importableFiles = listAllImportFilesWithinProject(context, {
-                projectFolderName: projectName,
+            if (sep) {
+              const importableFiles = listImportableFilesFromProject({
+                project: commandProps.project,
                 importExtensions: relevantFiles,
               })
               importableFiles.forEach((file) => {

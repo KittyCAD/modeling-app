@@ -29,7 +29,6 @@ describe('getProjectExplorerProjectWithPlaceholders', () => {
 
     const explorerProject = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
-      projects: undefined,
     })
 
     expect(explorerProject?.children?.map((child) => child.name)).toEqual([
@@ -42,7 +41,7 @@ describe('getProjectExplorerProjectWithPlaceholders', () => {
     ])
   })
 
-  it('prefers the hydrated project from the folder list', () => {
+  it('uses the opened project as the source of truth', () => {
     const loadedProject = project('demo', [
       {
         name: 'stale.kcl',
@@ -50,22 +49,13 @@ describe('getProjectExplorerProjectWithPlaceholders', () => {
         children: null,
       },
     ])
-    const hydratedProject = project('demo', [
-      {
-        name: 'fresh.kcl',
-        path: '/projects/demo/fresh.kcl',
-        children: null,
-      },
-    ])
-
     const explorerProject = getProjectExplorerProjectWithPlaceholders({
       loadedProject,
-      projects: [hydratedProject],
     })
 
     expect(explorerProject?.children?.map((child) => child.name)).toEqual([
       FOLDER_PLACEHOLDER_NAME,
-      'fresh.kcl',
+      'stale.kcl',
       FILE_PLACEHOLDER_NAME,
     ])
   })

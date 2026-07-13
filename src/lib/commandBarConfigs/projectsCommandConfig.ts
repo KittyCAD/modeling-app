@@ -1,12 +1,20 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import { getFileRouteInfo } from '@src/lib/fileRouteTransition'
+import fsZds from '@src/lib/fs-zds'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS } from '@src/lib/paths'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
+import { reportRejection } from '@src/lib/trap'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
-import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
-import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
-import type { ActorRefFrom, ContextFrom } from 'xstate'
+import type {
+  HomeProjectEntry,
+  HomeProjectEntryContribution,
+} from '@src/registry/contracts/homeProjects'
+import type { SystemIORegistryService } from '@src/registry/contracts/systemIO'
+import toast from 'react-hot-toast'
+import type { ContextFrom } from 'xstate'
+
 export type ProjectsCommandSchema = {
   'Import file from URL': {
     name: string
@@ -20,66 +28,131 @@ function defaultEnableProjectDirectoryCommands() {
   return typeof window !== 'undefined' && Boolean(window.electron)
 }
 
+function projectWithId(
+  project: HomeProjectEntryContribution
+): HomeProjectEntry {
+  return {
+    ...project,
+    id: project.id ?? project.localProjectPath ?? project.name,
+  }
+}
+
+function currentRouterPath() {
+  const pathWithSearch = window.location.hash
+    ? window.location.hash.slice(1)
+    : window.location.pathname
+  const searchStart = pathWithSearch.indexOf('?')
+  return searchStart === -1
+    ? pathWithSearch
+    : pathWithSearch.slice(0, searchStart)
+}
+
+function navigateToRouterPath(routerPath: string) {
+  if (isDesktop()) {
+    window.location.hash = routerPath
+    return
+  }
+  window.history.pushState(null, '', routerPath)
+  window.dispatchEvent(new PopStateEvent('popstate'))
+}
+
+function navigateToFile(filePath: string) {
+  navigateToRouterPath(`${PATHS.FILE}/${safeEncodeForRouterPaths(filePath)}`)
+}
+
+function navigateHome() {
+  navigateToRouterPath(PATHS.HOME)
+}
+
+function messageFromError(error: unknown) {
+  return error instanceof Error ? error.message : String(error)
+}
+
 export function createProjectCommands({
-  systemIOActor,
+  systemIO,
+  getDefaultProjectName,
+  getProjectDirectoryPath,
   enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
 }: {
-  systemIOActor: ActorRefFrom<typeof systemIOMachine>
+  systemIO: SystemIORegistryService
+  getDefaultProjectName: () => string
+  getProjectDirectoryPath: () => string
   enableProjectDirectoryCommands?: boolean
 }) {
-  /**
-   * Helper functions instead of importing these due to circular deps.
-   * unable to resolve this in a cleaner way at the moment.
-   * This is safe in terms of logic but visually ugly.
-   * TODO: https://github.com/KittyCAD/modeling-app/issues/6032
-   */
-  const folderSnapshot = () => {
-    const { folders } = systemIOActor.getSnapshot().context
-    return folders
+  const projectEntriesSnapshot = () => systemIO.localProjectEntriesSignal.value
+
+  const projectOptions = () => {
+    const options: CommandArgumentOption<string>[] = []
+    for (const project of projectEntriesSnapshot()) {
+      if (!project.localProjectName) {
+        continue
+      }
+      const displayName = getHomeProjectDisplayName(projectWithId(project))
+      options.push({
+        name:
+          displayName === project.localProjectName
+            ? displayName
+            : `${displayName} (${project.localProjectName})`,
+        value: project.localProjectName,
+        isCurrent: false,
+      })
+    }
+    return options
   }
 
-  const defaultProjectFolderNameSnapshot = () => {
-    const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
-    return defaultProjectFolderName
+  const projectPathForName = (name: string) => {
+    const entry = projectEntriesSnapshot().find(
+      (project) => project.localProjectName === name
+    )
+    return (
+      entry?.localProjectPath || fsZds.join(getProjectDirectoryPath(), name)
+    )
+  }
+
+  const openProjectByName = async (name: string) => {
+    const project = await systemIO.request({
+      type: 'project.loadTree',
+      projectPath: projectPathForName(name),
+    })
+    navigateToFile(project.default_file)
+  }
+
+  const isCurrentFileRouteProject = (projectName: string) => {
+    const routeInfo = getFileRouteInfo({
+      pathname: currentRouterPath(),
+      projectDirectoryPath: getProjectDirectoryPath(),
+    })
+    return routeInfo.projectDirectory === projectName
+  }
+
+  const deleteProjectByName = async (name: string) => {
+    const shouldNavigateHome = isCurrentFileRouteProject(name)
+    if (shouldNavigateHome) {
+      navigateHome()
+    }
+    await systemIO.request({
+      type: 'project.delete',
+      projectName: name,
+    })
   }
 
   const openProjectCommand: Command = {
     icon: 'folder',
     name: 'Open project',
-    displayName: `Open project`,
+    displayName: 'Open project',
     description: 'Open a project',
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.navigateToProject,
-          data: { requestedProjectName: record.name },
-        })
+        void openProjectByName(record.name)
       }
     },
     args: {
       name: {
         required: true,
         inputType: 'options',
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            const displayName = getProjectDisplayName(folder)
-            options.push({
-              name:
-                displayName === folder.name
-                  ? displayName
-                  : `${displayName} (${folder.name})`,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: projectOptions,
       },
     },
   }
@@ -87,15 +160,15 @@ export function createProjectCommands({
   const createProjectCommand: Command = {
     icon: 'folder',
     name: 'Create project',
-    displayName: `Create project`,
+    displayName: 'Create project',
     description: 'Create a project',
     groupId: 'projects',
     needsReview: false,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.createProject,
-          data: { requestedProjectName: record.name },
+        void systemIO.request({
+          type: 'project.create',
+          requestedProjectName: record.name,
         })
       }
     },
@@ -103,7 +176,7 @@ export function createProjectCommands({
       name: {
         required: true,
         inputType: 'string',
-        defaultValue: defaultProjectFolderNameSnapshot,
+        defaultValue: getDefaultProjectName,
       },
     },
   }
@@ -111,15 +184,19 @@ export function createProjectCommands({
   const deleteProjectCommand: Command = {
     icon: 'folder',
     name: 'Delete project',
-    displayName: `Delete project`,
+    displayName: 'Delete project',
     description: 'Delete a project',
     groupId: 'projects',
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.deleteProject,
-          data: { requestedProjectName: record.name },
+        void deleteProjectByName(record.name).catch((error: unknown) => {
+          toast.error(
+            `Failed to delete project "${record.name}": ${messageFromError(
+              error
+            )}`
+          )
+          reportRejection(error)
         })
       }
     },
@@ -132,20 +209,7 @@ export function createProjectCommands({
       name: {
         inputType: 'options',
         required: true,
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: projectOptions,
       },
     },
   }
@@ -153,59 +217,49 @@ export function createProjectCommands({
   const renameProjectCommand: Command = {
     icon: 'folder',
     name: 'Rename project',
-    displayName: `Rename project`,
+    displayName: 'Rename project',
     description: 'Rename a project',
     groupId: 'projects',
     needsReview: true,
     onSubmit: (record) => {
-      if (record) {
-        // Only redirect back to the project when not on the home page
-        const hash = window.location.hash
-        const pathname = hash
-          ? hash.replace(/^#/, '')
-          : window.location.pathname
-        const isOnHomePage = pathname.startsWith(PATHS.HOME)
-        systemIOActor.send({
-          type: SystemIOMachineEvents.renameProject,
-          data: {
-            requestedProjectName: record.newName,
-            projectName: record.oldName,
-            redirect: !isOnHomePage, // only redirect when renaming from within a project
-          },
-        })
+      if (!record) {
+        return
       }
+
+      const hash = window.location.hash
+      const pathname = hash ? hash.replace(/^#/, '') : window.location.pathname
+      const isOnHomePage = pathname.startsWith(PATHS.HOME)
+      void systemIO
+        .request({
+          type: 'project.rename',
+          requestedProjectName: record.newName,
+          projectName: record.oldName,
+        })
+        .then((result) => {
+          if (!isOnHomePage) {
+            void openProjectByName(result.newName)
+          }
+        })
     },
     args: {
       oldName: {
         inputType: 'options',
         required: true,
-        options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: projectOptions,
       },
       newName: {
         inputType: 'string',
         required: true,
         defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
-          // Prefill with the old project name if it's already selected
           const oldName = context.argumentsToSubmit.oldName as
             | string
             | undefined
-          const folder = folderSnapshot()?.find((item) => item.name === oldName)
-          return folder
-            ? getProjectDisplayName(folder)
-            : oldName || defaultProjectFolderNameSnapshot()
+          const project = projectEntriesSnapshot().find(
+            (item) => item.localProjectName === oldName
+          )
+          return project
+            ? getHomeProjectDisplayName(projectWithId(project))
+            : oldName || getDefaultProjectName()
         },
       },
     },
@@ -219,14 +273,24 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.importFileFromURL,
-          data: {
+        void systemIO
+          .request({
+            type: 'file.createKCL',
             requestedProjectName: record.projectName,
             requestedCode: record.code,
             requestedFileNameWithExtension: record.name,
-          },
-        })
+          })
+          .then((result) => {
+            if (result.projectName && result.fileName) {
+              navigateToFile(
+                fsZds.join(
+                  getProjectDirectoryPath(),
+                  result.projectName,
+                  result.fileName
+                )
+              )
+            }
+          })
       }
     },
     args: {
@@ -248,28 +312,13 @@ export function createProjectCommands({
             : 'Overwrite'
         },
       },
-      // TODO: We can't get the currently-opened project to auto-populate here because
-      // it's not available on projectMachine, but lower in fileMachine. Unify these.
       projectName: {
         inputType: 'options',
         required: (commandsContext) =>
           isDesktop() &&
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
-        options: (_, _context) => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
-        },
+        options: projectOptions,
       },
       name: {
         inputType: 'string',
@@ -301,7 +350,7 @@ export function createProjectCommands({
     },
   }
 
-  const projectCommands = enableProjectDirectoryCommands
+  return enableProjectDirectoryCommands
     ? [
         openProjectCommand,
         createProjectCommand,
@@ -310,6 +359,4 @@ export function createProjectCommands({
         importFileFromURL,
       ]
     : [importFileFromURL]
-
-  return projectCommands
 }

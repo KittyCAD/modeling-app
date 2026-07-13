@@ -1,11 +1,13 @@
 import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
-import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
-  const systemIOSend = vi.fn()
+  const systemIORequest = vi.fn(async (_request: any) => ({
+    shouldNavigate: false,
+  }))
   const useWatchForNewFileRequestsFromMlEphant = vi.fn()
   const mlEphantSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
   const kclManager = {
@@ -23,7 +25,7 @@ const mocks = vi.hoisted(() => {
   return {
     kclManager,
     mlEphantSubscribe,
-    systemIOSend,
+    systemIORequest,
     useWatchForNewFileRequestsFromMlEphant,
     watchCallback: undefined as
       | ((props: {
@@ -79,8 +81,8 @@ vi.mock('@src/lib/boot', () => ({
       actor: { send: vi.fn() },
       useSettings: () => ({ meta: { id: { current: 'project-id' } } }),
     },
-    systemIOActor: {
-      send: mocks.systemIOSend,
+    systemIO: {
+      request: mocks.systemIORequest,
     },
   }),
   useSingletons: () => ({
@@ -124,15 +126,6 @@ vi.mock('@src/components/layout/areas/MlEphantConversationPaneHooks', () => ({
     mocks.watchCallback = args[2]
   },
 }))
-
-vi.mock('@src/machines/systemIO/utils', async (importOriginal) => {
-  const original = await importOriginal<typeof SystemIOUtils>()
-
-  return {
-    ...original,
-    waitForIdleState: vi.fn(async () => undefined),
-  }
-})
 
 vi.mock('@src/routes/utils', () => ({
   IS_STAGING_OR_DEBUG: false,
@@ -180,48 +173,47 @@ async function flushQueuedWork() {
 
 describe('MlEphantConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
-    mocks.systemIOSend.mockClear()
+    let resolveFirstRequest: (() => void) | undefined
+    mocks.systemIORequest.mockClear()
+    mocks.systemIORequest.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveFirstRequest = () => resolve({ shouldNavigate: false })
+        })
+    )
     mocks.watchCallback = undefined
 
     render(
-      <MlEphantConversationPaneWrapper
-        areaConfig={{ hide: () => false }}
-        layout={{
-          areaType: AreaType.TTC,
-          id: 'zookeeper',
-          label: 'Zookeeper',
-          type: LayoutType.Simple,
-        }}
-        onClose={vi.fn()}
-      />
+      <MemoryRouter>
+        <MlEphantConversationPaneWrapper
+          areaConfig={{ hide: () => false }}
+          layout={{
+            areaType: AreaType.TTC,
+            id: 'zookeeper',
+            label: 'Zookeeper',
+            type: LayoutType.Simple,
+          }}
+          onClose={vi.fn()}
+        />
+      </MemoryRouter>
     )
 
     expect(mocks.watchCallback).toBeDefined()
 
     emitZookeeperFileRequest('intermediate code')
 
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
-
-    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
-    expect(firstRequest.onSuccess).toEqual(expect.any(Function))
-
-    // The filesystem callback completes before the route/editor refresh callback.
-    // Starting the next edit here can let the older refresh win and leave stale
-    // intermediate KCL visible in the editor.
-    firstRequest.onFileSystemSuccess()
-    await flushQueuedWork()
+    await waitFor(() => expect(mocks.systemIORequest).toHaveBeenCalledTimes(1))
 
     emitZookeeperFileRequest('final code')
     await flushQueuedWork()
 
-    expect(mocks.systemIOSend).toHaveBeenCalledTimes(1)
+    expect(mocks.systemIORequest).toHaveBeenCalledTimes(1)
 
-    // Once the editor refresh has completed, the queued final edit can run.
-    firstRequest.onSuccess()
+    resolveFirstRequest?.()
 
-    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
+    await waitFor(() => expect(mocks.systemIORequest).toHaveBeenCalledTimes(2))
 
-    const secondRequest = mocks.systemIOSend.mock.calls[1][0].data
+    const secondRequest = mocks.systemIORequest.mock.calls[1][0]
     expect(secondRequest.files[0]).toMatchObject({
       requestedFileName: 'main.kcl',
       requestedCode: 'final code',

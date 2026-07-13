@@ -42,7 +42,7 @@ export const AllSettingsFields = forwardRef(
     { searchParamTab, isFileSettings }: AllSettingsFieldsProps,
     scrollRef: ForwardedRef<HTMLDivElement>
   ) => {
-    const { settings, layout, systemIOActor } = useApp()
+    const { settings, layout, systemIO } = useApp()
     const { kclManager } = useSingletons()
     const location = useLocation()
     const navigate = useNavigate()
@@ -71,7 +71,7 @@ export const AllSettingsFields = forwardRef(
         onboardingStatus: onboardingStartPath,
         navigate,
         kclManager,
-        systemIOActor,
+        systemIO,
         settingsActor: settings.actor,
         executingPath,
       }
