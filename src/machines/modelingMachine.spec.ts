@@ -1,11 +1,11 @@
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { KclManager } from '@src/lang/KclManager'
 import { ARG_END_ABSOLUTE, ARG_INTERIOR_ABSOLUTE } from '@src/lang/constants'
 import {
   createIdentifier,
   createLiteral,
   createVariableDeclaration,
 } from '@src/lang/create'
+import type { KclManager } from '@src/lang/KclManager'
 import { removeSingleConstraintInfo } from '@src/lang/modifyAst'
 import { artifactToEntityRef, getNodeFromPath } from '@src/lang/queryAst'
 import { getConstraintInfoKw } from '@src/lang/std/sketch'
@@ -18,8 +18,8 @@ import {
 import {
   type Artifact,
   type ArtifactGraph,
-  type CallExpressionKw,
   assertParse,
+  type CallExpressionKw,
   recast,
 } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
@@ -39,9 +39,9 @@ import {
   buildTheWorldAndNoEngineConnection,
 } from '@src/unitTestUtils'
 import toast from 'react-hot-toast'
-import { afterAll, beforeEach, describe, expect, it } from 'vitest'
-import { vi } from 'vitest'
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { type ActorRefFrom, createActor, fromPromise } from 'xstate'
+
 const GLOBAL_TIMEOUT_FOR_MODELING_MACHINE = 5000
 
 let instanceInThisFile: ModuleType = null!

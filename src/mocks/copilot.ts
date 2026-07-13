@@ -1,9 +1,6 @@
-import type {
-  MlCopilotServerMessage,
-  MlToolResult,
-  ReasoningMessage,
-} from '@kittycad/lib'
+import type { MlCopilotServerMessage, MlToolResult } from '@kittycad/lib'
 import { encode as msgpackEncode } from '@msgpack/msgpack'
+import type { AppReasoningMessage } from '@src/lib/mlReasoningTypes'
 
 const ALPHA = 'abcdefghijklmnopqrstuvwyz     '.split('')
 const EMOJI = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '🥲', '🥹', '☺']
@@ -66,7 +63,7 @@ const info = (): MlCopilotServerMessage & { info: any } => {
 }
 
 const reasoning = (): Extract<MlCopilotServerMessage, { reasoning: any }> => {
-  const outputs: ReasoningMessage[] = [
+  const outputs: AppReasoningMessage[] = [
     ...new Array(18).fill(undefined).map(() => ({
       content: stringRand(EMOJI, 1) + ' ' + stringRand(ALPHA, 40),
       type: 'text' as const,
@@ -116,12 +113,26 @@ const reasoning = (): Extract<MlCopilotServerMessage, { reasoning: any }> => {
       file_name: stringRand(ALPHA, 30) + '.kcl',
       type: 'deleted_kcl_file' as const,
     },
+    {
+      content: stringRand(ALPHA.concat('\n'), 200),
+      file_name: stringRand(ALPHA, 30) + '.md',
+      type: 'created_project_file' as const,
+    },
+    {
+      content: stringRand(ALPHA.concat('\n'), 200),
+      file_name: stringRand(ALPHA, 30) + '.md',
+      type: 'updated_project_file' as const,
+    },
+    {
+      file_name: stringRand(ALPHA, 30) + '.md',
+      type: 'deleted_project_file' as const,
+    },
   ]
 
   return {
     reasoning: {
       ...outputs[Math.floor(Math.random() * outputs.length)],
-    },
+    } as any,
   }
 }
 

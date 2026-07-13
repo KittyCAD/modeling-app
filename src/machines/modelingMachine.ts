@@ -1718,12 +1718,6 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(true)
-    },
-    'disable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(false)
-    },
     'Set selection': assign(
       ({
         context: {
@@ -8193,14 +8187,11 @@ export const modelingMachine = setup({
         },
       },
 
-      exit: ['enable copilot'],
-
       entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },
 
     'Sketch no face': {
       entry: [
-        'disable copilot',
         'show planes sketch no face',
         'set selection filter to faces only',
       ],
@@ -8211,19 +8202,11 @@ export const modelingMachine = setup({
           {
             guard: 'Artifact graph is empty',
             target: '#Modeling.idle.showPlanes',
-            actions: [
-              'reset sketch metadata',
-              'enable copilot',
-              'stop scene infra',
-            ],
+            actions: ['reset sketch metadata', 'stop scene infra'],
           },
           {
             target: '#Modeling.idle.hidePlanes',
-            actions: [
-              'reset sketch metadata',
-              'enable copilot',
-              'stop scene infra',
-            ],
+            actions: ['reset sketch metadata', 'stop scene infra'],
           },
         ],
 
@@ -8274,7 +8257,7 @@ export const modelingMachine = setup({
 
         onDone: {
           target: 'Sketch',
-          actions: ['disable copilot', 'set new sketch metadata'],
+          actions: ['set new sketch metadata'],
         },
 
         onError: 'idle',
@@ -9510,7 +9493,6 @@ export const modelingMachine = setup({
       // maybe cancel needs to have a guard for if else logic?
       actions: [
         'reset sketch metadata',
-        'enable copilot',
         ({ context }) => {
           context.kclManager.sceneInfra.stop()
         },

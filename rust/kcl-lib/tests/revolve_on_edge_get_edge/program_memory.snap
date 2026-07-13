@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Variables in memory after executing error_revolve_on_edge_get_edge.kcl
+description: Variables in memory after executing revolve_on_edge_get_edge.kcl
 ---
 {
   "box": {

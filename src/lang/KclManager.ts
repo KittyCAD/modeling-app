@@ -1092,7 +1092,6 @@ export class KclManager extends File {
   get isExecutingSignal() {
     return this._isExecuting
   }
-  private _copilotEnabled: boolean = true
   private _isAllTextSelected: boolean = false
   private _isShiftDown: boolean = false
   private _kclVersion: string = ''
@@ -2855,13 +2854,6 @@ export class KclManager extends File {
   get globalHistoryView() {
     return this._globalHistoryView
   }
-  setCopilotEnabled(enabled: boolean) {
-    this._copilotEnabled = enabled
-  }
-  get copilotEnabled(): boolean {
-    return this._copilotEnabled
-  }
-
   get isAllTextSelected() {
     return this._isAllTextSelected
   }
