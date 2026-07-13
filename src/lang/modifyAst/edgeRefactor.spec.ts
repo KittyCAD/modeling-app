@@ -36,6 +36,7 @@ import {
   findExtrudeToCallsToFix,
   findGdtDistanceEndpointCallsToFix,
   findGdtEdgesCallsToFix,
+  findRevolveHelixCallsToFix,
   refactorZ0006Unified,
 } from '@src/lang/modifyAst/edges'
 import {
@@ -464,6 +465,30 @@ bodyBoxRounded = fillet(
 )
 `
 
+const KCL_MEMBER_DIRECT_SKETCH_TAGS = `@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+bodyBoxSketch = sketch(on = XY) {
+  b1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
+  b2 = line(start = [var 10mm, var 0mm], end = [var 10mm, var 10mm])
+  b3 = line(start = [var 10mm, var 10mm], end = [var 0mm, var 10mm])
+  b4 = line(start = [var 0mm, var 10mm], end = [var 0mm, var 0mm])
+  coincident([b1.end, b2.start])
+  coincident([b2.end, b3.start])
+  coincident([b3.end, b4.start])
+  coincident([b4.end, b1.start])
+}
+bodyBoxRegion = region(point = [5mm, 5mm], sketch = bodyBoxSketch)
+bodyBoxRaw = extrude(bodyBoxRegion, length = 10mm)
+bodyBoxRounded = fillet(
+  bodyBoxRaw,
+  radius = 1mm,
+  tags = [
+    bodyBoxRaw.sketch.tags.b1,
+    bodyBoxRaw.sketch.tags.b2
+  ],
+)
+`
+
 const KCL_GDT_GET_COMMON_EDGE = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0], tag = $e1)
@@ -572,6 +597,22 @@ cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
 yo = extrude(cylinder3, to = getCommonEdge(faces = [facetag0, facetag1]))
 `
 
+const KCL_EXTRUDE_TO_GET_COMMON_EDGE_VARIABLE = `// Extrude circle to edge via sideFaces object (same edge as getCommonEdge(faces = [...]))
+sketch001 = startSketchOn(XY)
+profile001 = startProfile(sketch001, at = [2, 2])
+  |> yLine(length = 1)
+  |> xLine(length = 1)
+  |> yLine(length = -1, tag = $facetag0)
+  |> line(endAbsolute = [profileStartX(%), profileStartY(%)], tag = $facetag1)
+  |> close()
+cube = extrude(profile001, length = 1)
+
+sketch005 = startSketchOn(offsetPlane(YZ, offset = 4))
+cylinder3 = circle(sketch005, center = [0.5, 0.5], radius = 0.25)
+targetEdge = getCommonEdge(faces = [facetag0, facetag1])
+yo = extrude(cylinder3, to = targetEdge)
+`
+
 const KCL_EDGE_ID = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0])
@@ -674,6 +715,21 @@ extrude001 = extrude(profile, length = 3, tagEnd = $capEnd001)
 sketch002 = startSketchOn(extrude001, face = capEnd001)
 profile001 = circle(sketch002, center = [-3.44, -2.23], radius = 1.64)
 revolve001 = revolve(profile001, angle = 360deg, axis = getOppositeEdge(seg02))
+`
+
+const KCL_REVOLVE_GET_OPPOSITE_EDGE_VARIABLE = `sketch001 = startSketchOn(XY)
+profile = startProfile(sketch001, at = [0, 0])
+  |> line(endAbsolute = [10, 0])
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0], tag = $seg02)
+  |> close()
+
+extrude001 = extrude(profile, length = 3, tagEnd = $capEnd001)
+sketch002 = startSketchOn(extrude001, face = capEnd001)
+profile001 = circle(sketch002, center = [-3.44, -2.23], radius = 1.64)
+axisEdge = getOppositeEdge(seg02)
+revolve001 = revolve(profile001, angle = 360deg, axis = axisEdge)
 `
 
 /** Helix with deprecated axis: axis = getOppositeEdge(seg01). Z0006 refactor should convert to edgeRef. */
@@ -908,6 +964,50 @@ describe('refactorZ0006Unified', () => {
         },
       ]
       const toFix = findExtrudeToCallsToFix(ast, metadata)
+      expect(toFix.length).toBeGreaterThanOrEqual(1)
+      expect(toFix[0]?.faceIds).toHaveLength(2)
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('finds extrude call with to = helper variable for Z0006 refactor', () => {
+      const ast = assertParse(
+        KCL_EXTRUDE_TO_GET_COMMON_EDGE_VARIABLE,
+        wasmInstance
+      )
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getCommonEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getCommonEdge',
+        },
+      ]
+      const toFix = findExtrudeToCallsToFix(ast, metadata)
+      expect(toFix.length).toBeGreaterThanOrEqual(1)
+      expect(toFix[0]?.faceIds).toHaveLength(2)
+      expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
+    })
+
+    it('finds revolve call with axis = helper variable for Z0006 refactor', () => {
+      const ast = assertParse(
+        KCL_REVOLVE_GET_OPPOSITE_EDGE_VARIABLE,
+        wasmInstance
+      )
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getOppositeEdge',
+        },
+      ]
+      const toFix = findRevolveHelixCallsToFix(ast, metadata)
       expect(toFix.length).toBeGreaterThanOrEqual(1)
       expect(toFix[0]?.faceIds).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
@@ -1559,6 +1659,35 @@ part = bracket()
     )
 
     it(
+      'refactors extrude to = helper variable to to = { sideFaces = [facetag0, facetag1] }',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_EXTRUDE_TO_GET_COMMON_EDGE_VARIABLE,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.edgeRefactorMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        expect(execState.artifactGraph.size).toBeGreaterThan(0)
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        const n = norm(refactored)
+        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).not.toContain('to = targetEdge')
+      }
+    )
+
+    it(
       'refactors edgeId in fillet to edgeRefs with tag names not UUIDs',
       { timeout: 30_000 },
       async () => {
@@ -1672,6 +1801,39 @@ part = bracket()
         expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
         expect(n).toContain('bodyBoxRaw.sketch.tags.b3')
         expect(n).toContain('bodyBoxRaw.sketch.tags.b4')
+      }
+    )
+
+    it(
+      'refactors member-style direct sketch tags without deprecated helpers',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_MEMBER_DIRECT_SKETCH_TAGS,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(
+          execState.directTagFilletMetadata?.length ?? 0
+        ).toBeGreaterThanOrEqual(1)
+        expect(execState.artifactGraph.size).toBeGreaterThan(0)
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        expect(refactored).not.toMatch(UUID_IN_FACES_REGEX)
+        expect(refactored).not.toContain('tag = $seg')
+        const n = norm(refactored)
+        expect(n).toContain('edges = [')
+        expect(n).not.toContain('tags = [')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b1')
+        expect(n).toContain('bodyBoxRaw.sketch.tags.b2')
       }
     )
 
