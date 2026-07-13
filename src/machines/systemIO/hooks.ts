@@ -1,17 +1,11 @@
 import { type MlToolResult } from '@kittycad/lib'
 import { useApp } from '@src/lib/boot'
 import type { FileEntry } from '@src/lib/project'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { type MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
-import {
-  type RequestedKCLFileDelete,
-  type SystemIOActor,
-  SystemIOMachineEvents,
-} from '@src/machines/systemIO/utils'
+import { type RequestedKCLFileDelete } from '@src/machines/systemIO/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { useSelector } from '@xstate/react'
 import { useEffect } from 'react'
-import { NIL as uuidNIL } from 'uuid'
 
 export const useRequestedProjectName = () => {
   const { systemIOActor } = useApp()
@@ -59,46 +53,6 @@ export const useLastOperation = () => {
 export const useClearURLParams = () => {
   const { systemIOActor } = useApp()
   return useSelector(systemIOActor, (state) => state.context.clearURLParams)
-}
-
-export const useProjectIdToConversationId = (
-  mlEphantManagerActor: MlEphantManagerActor,
-  systemIOActor: SystemIOActor,
-  settings2: SettingsType
-) => {
-  useEffect(() => {
-    let lastConversationId =
-      mlEphantManagerActor.getSnapshot().context.conversationId
-    const subscription = mlEphantManagerActor.subscribe((next) => {
-      if (settings2.meta.id.current === undefined) {
-        return
-      }
-      if (settings2.meta.id.current === uuidNIL) {
-        return
-      }
-      if (next.context.conversationId === undefined) {
-        return
-      }
-      if (lastConversationId === next.context.conversationId) {
-        return
-      }
-
-      lastConversationId = next.context.conversationId
-
-      systemIOActor.send({
-        type: SystemIOMachineEvents.saveMlEphantConversations,
-        data: {
-          projectId: settings2.meta.id.current,
-          conversationId: next.context.conversationId,
-        },
-      })
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-  }, [settings2.meta.id.current])
 }
 
 export interface MlEphantNewFileRequestProps {

@@ -1,4 +1,4 @@
-import type { UserFeature, UserResponse } from '@kittycad/lib'
+import type { UserFeature } from '@kittycad/lib'
 import {
   defineRegistryItem,
   pluginsValueSpec,
@@ -49,7 +49,6 @@ import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
@@ -70,6 +69,10 @@ import {
   userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import {
+  type AuthRegistryService,
+  authService,
+} from '@src/registry/contracts/auth'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
@@ -186,13 +189,7 @@ declare global {
   }
 }
 
-export type AppAuthSystem = {
-  actor: ActorRefFrom<typeof authMachine>
-  send: ActorRefFrom<typeof authMachine>['send']
-  useAuthState: () => SnapshotFrom<typeof authMachine>
-  useToken: () => string
-  useUser: () => UserResponse | undefined
-}
+export type AppAuthSystem = AuthRegistryService
 
 export type AppCommandSystem = CommandSystemService
 
@@ -316,7 +313,6 @@ export class App implements AppSubsystems {
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
     this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
-    this.settings.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
     this.syncCloudSyncRuntimePolicy()
@@ -334,16 +330,6 @@ export class App implements AppSubsystems {
    * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
    */
   static getDefaultSystems(wasmPromise = initialiseWasm()) {
-    const authActor = createActor(authMachine).start()
-    const auth: AppAuthSystem = {
-      actor: authActor,
-      send: (...args: Parameters<typeof authActor.send>) =>
-        authActor.send(...args),
-      useAuthState: () => useSelector(authActor, (state) => state),
-      useToken: () => useSelector(authActor, (state) => state.context.token),
-      useUser: () => useSelector(authActor, (state) => state.context.user),
-    }
-
     const machineManager = window.electron
       ? new MachineManager({
           getMachineApiIp: window.electron.getMachineApiIp,
@@ -355,6 +341,7 @@ export class App implements AppSubsystems {
     appRegistry.configure(
       createAppRegistryItems({ wasmPromise, machineManager })
     )
+    const auth = appRegistry.get(authService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
     const settingsActor = settings.actor
@@ -665,12 +652,8 @@ export class App implements AppSubsystems {
     const token = authSnapshot.matches('loggedIn')
       ? authSnapshot.context.token
       : undefined
-    const settingsContext = this.settings.actor.getSnapshot().context
-    const cloudSyncPluginEnabled =
-      settingsContext.plugins?.['cloud-sync']?.current !== false
     const enabled =
       Boolean(token) &&
-      cloudSyncPluginEnabled &&
       userFeaturesContextHas(
         this.userFeatures.actor.getSnapshot().context,
         OPFS_CLOUD_FEATURE_FLAG,
@@ -680,7 +663,6 @@ export class App implements AppSubsystems {
     this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      projectDirectoryPath: settingsContext.app.projectDirectory.current,
       syncExistingLocalProjects: !window.electron,
     })
   }

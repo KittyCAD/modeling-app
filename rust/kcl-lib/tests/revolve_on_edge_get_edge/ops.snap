@@ -1,9 +1,9 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Operations executed error_revolve_on_edge_get_edge.kcl
+description: Operations executed revolve_on_edge_get_edge.kcl
 ---
 {
-  "rust/kcl-lib/tests/error_revolve_on_edge_get_edge/input.kcl": [
+  "rust/kcl-lib/tests/revolve_on_edge_get_edge/input.kcl": [
     {
       "type": "StdLibCall",
       "name": "startSketchOn",

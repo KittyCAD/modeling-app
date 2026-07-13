@@ -82,7 +82,7 @@ function createEngineSceneViewExtensionContext(
 }
 
 describe('engineScene extension', () => {
-  it('bundles the execution indicator plugin off by default', () => {
+  it('bundles the execution indicator without a plugin or setting', () => {
     const registry = new Registry()
     registry.configure([engineSceneExtension])
 
@@ -90,21 +90,10 @@ describe('engineScene extension', () => {
       .get(pluginsValueSpec)
       .find((plugin) => plugin.id === 'execution-indicator')
 
-    expect(executionIndicatorPlugin).toBeDefined()
-    if (!executionIndicatorPlugin) {
-      throw new Error('Expected execution indicator plugin')
-    }
+    expect(executionIndicatorPlugin).toBeUndefined()
     expect(
-      registry
-        .get(settingsValueSpec)
-        .modeling.executionIndicator.createSetting().default
-    ).toBe(false)
-    expect(
-      registry.get(settingsValueSpec).plugins?.['execution-indicator']
+      registry.get(settingsValueSpec).modeling?.executionIndicator
     ).toBeUndefined()
-    expect(registry.get(executionIndicatorPlugin.service).active.value).toBe(
-      false
-    )
   })
 
   it('contributes ordered engine scene local status bar items', () => {

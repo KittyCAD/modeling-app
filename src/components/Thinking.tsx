@@ -1,10 +1,13 @@
-import ms from 'ms'
-
-import type { MlCopilotFile, MlCopilotServerMessage } from '@kittycad/lib'
-import type { PlanStep } from '@kittycad/lib'
+import type {
+  MlCopilotFile,
+  MlCopilotServerMessage,
+  PlanStep,
+} from '@kittycad/lib'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { MarkdownText } from '@src/components/MarkdownText'
 import { PlaceholderLine } from '@src/components/PlaceholderLine'
+import type { AppMlCopilotServerMessage } from '@src/lib/mlReasoningTypes'
+import ms from 'ms'
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 
 interface IRowCollapse {
@@ -51,12 +54,15 @@ export const GeneratedKclCode = (props: {
   filename: string | undefined
   setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
   keyIndex: number
+  /** Noun describing what was operated on. Defaults to 'KCL Code'. */
+  label?: string
 }) => {
+  const label = props.label ?? 'KCL Code'
   return (
     <ThoughtContainer
       heading={
         <ThoughtHeader icon={<CustomIcon name="code" className="w-6 h-6" />}>
-          {`${props.operation} KCL Code${props.filename ? ` (${props.filename})` : ''}`}
+          {`${props.operation} ${label}${props.filename ? ` (${props.filename})` : ''}`}
         </ThoughtHeader>
       }
     >
@@ -511,7 +517,7 @@ interface Range {
 }
 
 const fromDataToComponent = (
-  thought: MlCopilotServerMessage,
+  thought: AppMlCopilotServerMessage,
   options: {
     key?: string | number
     setAnyRowCollapse: React.Dispatch<React.SetStateAction<IRowCollapse[]>>
@@ -644,6 +650,48 @@ const fromDataToComponent = (
         )
       }
 
+      case 'created_project_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Created}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+            label="Project File"
+            setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
+          />
+        )
+      }
+
+      case 'updated_project_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Updated}
+            filename={thought.reasoning.file_name}
+            code={thought.reasoning.content}
+            label="Project File"
+            setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
+          />
+        )
+      }
+
+      case 'deleted_project_file': {
+        return (
+          <GeneratedKclCode
+            key={options.key}
+            operation={EGeneratedKclCode.Deleted}
+            filename={thought.reasoning.file_name}
+            code={undefined}
+            label="Project File"
+            setAnyRowCollapse={options.setAnyRowCollapse}
+            keyIndex={options.keyIndex}
+          />
+        )
+      }
+
       default:
         const _ex: never = type
     }
@@ -657,7 +705,7 @@ const fromDataToComponent = (
 }
 
 export const Thinking = (props: {
-  thoughts?: MlCopilotServerMessage[]
+  thoughts?: AppMlCopilotServerMessage[]
   isDone: boolean
   onlyShowImmediateThought: boolean
 }) => {
@@ -674,7 +722,7 @@ export const Thinking = (props: {
   }, [anyRowCollapse])
 
   const reasoningThoughts =
-    props.thoughts?.filter((x: MlCopilotServerMessage) => {
+    props.thoughts?.filter((x: AppMlCopilotServerMessage) => {
       return 'reasoning' in x || 'files' in x
     }) ?? []
 
