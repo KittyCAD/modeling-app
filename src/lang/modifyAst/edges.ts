@@ -1267,6 +1267,27 @@ function findDeprecatedEdgeStdlibCallForVariable(
   return null
 }
 
+function findDeprecatedEdgeStdlibCallFromExpr(
+  program: Program,
+  expr: Expr,
+  referencePath: PathToNode
+): { call: Node<CallExpressionKw>; tagsBaseExpr: Expr | null } | null {
+  const directCall = getCallFromExpr(expr)
+  if (directCall && isDeprecatedEdgeStdlib(getCalleeName(directCall))) {
+    return {
+      call: directCall,
+      tagsBaseExpr: getTagsBaseFromTagElement(directCall),
+    }
+  }
+
+  if (expr.type !== 'Name') return null
+  return findDeprecatedEdgeStdlibCallForVariable(
+    program,
+    expr.name.name,
+    referencePath
+  )
+}
+
 function callSourceRangeMatches(
   meta: DirectTagFilletMeta,
   start: number,
@@ -1518,11 +1539,11 @@ export function findRevolveHelixCallsToFix(
       if (!calleeName || !isRevolveOrHelix(calleeName)) return
 
       const axisArg = findKwArg('axis', call)
-      const inner = axisArg ? getCallFromExpr(axisArg) : null
-      if (!inner) return
-
-      const innerCallee = getCalleeName(inner)
-      if (!isDeprecatedEdgeStdlib(innerCallee)) return
+      const deprecatedCall = axisArg
+        ? findDeprecatedEdgeStdlibCallFromExpr(program, axisArg, pathToNode)
+        : null
+      if (!deprecatedCall) return
+      const inner = deprecatedCall.call
 
       const innerStart = inner.start
       const innerEnd = inner.end
@@ -1566,11 +1587,11 @@ export function findExtrudeToCallsToFix(
       if (!calleeName || !isExtrude(calleeName)) return
 
       const toArg = findToArg(call)
-      const inner = toArg ? getCallFromExpr(toArg) : null
-      if (!inner) return
-
-      const innerCallee = getCalleeName(inner)
-      if (!isDeprecatedEdgeStdlib(innerCallee)) return
+      const deprecatedCall = toArg
+        ? findDeprecatedEdgeStdlibCallFromExpr(program, toArg, pathToNode)
+        : null
+      if (!deprecatedCall) return
+      const inner = deprecatedCall.call
 
       const innerStart = inner.start
       const innerEnd = inner.end
@@ -1618,17 +1639,16 @@ export function findGdtEdgesCallsToFix(
       for (const el of elements) {
         if (el.type === 'ObjectExpression') continue
 
-        const inner = getCallFromExpr(el)
-        if (!inner) {
+        const deprecatedCall = findDeprecatedEdgeStdlibCallFromExpr(
+          program,
+          el,
+          pathToNode
+        )
+        if (!deprecatedCall) {
           hasUnconvertedEdgesElement = true
           continue
         }
-
-        const innerCallee = getCalleeName(inner)
-        if (!isDeprecatedEdgeStdlib(innerCallee)) {
-          hasUnconvertedEdgesElement = true
-          continue
-        }
+        const inner = deprecatedCall.call
 
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
@@ -1679,11 +1699,13 @@ export function findGdtDistanceEndpointCallsToFix(
         )
         if (!endpointArg?.arg) continue
 
-        const inner = getCallFromExpr(endpointArg.arg)
-        if (!inner) continue
-
-        const innerCallee = getCalleeName(inner)
-        if (!isDeprecatedEdgeStdlib(innerCallee)) continue
+        const deprecatedCall = findDeprecatedEdgeStdlibCallFromExpr(
+          program,
+          endpointArg.arg,
+          pathToNode
+        )
+        if (!deprecatedCall) continue
+        const inner = deprecatedCall.call
 
         const meta = edgeRefactorMetadata.find((m) =>
           sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)

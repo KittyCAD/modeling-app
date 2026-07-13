@@ -10,6 +10,7 @@ use crate::lint::rule::Discovered;
 use crate::lint::rule::Finding;
 use crate::lint::rule::FindingFamily;
 use crate::lint::rule::def_finding;
+use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Expr;
 use crate::parsing::ast::types::Node as AstNode;
@@ -107,6 +108,26 @@ fn is_deprecated_edge_stdlib_expr(expr: &Expr) -> bool {
     }
 }
 
+fn top_level_variable_init<'a>(prog: &'a AstNode<Program>, variable_name: &str) -> Option<&'a Expr> {
+    prog.body.iter().find_map(|item| {
+        let BodyItem::VariableDeclaration(var_decl) = item else {
+            return None;
+        };
+        (var_decl.declaration.id.name == variable_name).then_some(&var_decl.declaration.init)
+    })
+}
+
+fn is_deprecated_edge_stdlib_or_variable_expr(expr: &Expr, prog: &AstNode<Program>) -> bool {
+    if is_deprecated_edge_stdlib_expr(expr) {
+        return true;
+    }
+
+    let Expr::Name(name) = expr else {
+        return false;
+    };
+    top_level_variable_init(prog, name.name.name.as_str()).is_some_and(is_deprecated_edge_stdlib_expr)
+}
+
 /// Elements to check for deprecated/direct usage: from tags = [a, b] or tags = singleExpr.
 fn get_tags_elements(call: &CallExpressionKw) -> Option<Vec<&Expr>> {
     let tags_arg = call
@@ -131,13 +152,29 @@ fn get_edges_elements(call: &CallExpressionKw) -> Option<Vec<&Expr>> {
     })
 }
 
-/// True if the expression is a direct tag reference (e.g. identifier `e1`), not a call.
+/// True if the expression is a direct tag reference (e.g. identifier `e1` or `body.sketch.tags.e1`), not a call.
 fn is_direct_tag_ref(element: &Expr) -> bool {
-    matches!(element, Expr::Name(_))
+    if matches!(element, Expr::Name(_)) {
+        return true;
+    }
+
+    let Expr::MemberExpression(member) = element else {
+        return false;
+    };
+    let Expr::Name(_) = &member.property else {
+        return false;
+    };
+    let Expr::MemberExpression(tags_member) = &member.object else {
+        return false;
+    };
+    let Expr::Name(tags_property) = &tags_member.property else {
+        return false;
+    };
+    tags_property.name.name == "tags"
 }
 
 /// Lint: prefer edges/edge specifiers over deprecated tags/axis usage.
-pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
+pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, prog: &AstNode<Program>) -> Result<Vec<Discovered>> {
     let mut findings = vec![];
 
     let Node::CallExpressionKw(call_node) = node else {
@@ -151,7 +188,9 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
             return Ok(findings);
         };
         if !elements.is_empty() {
-            let any_deprecated = elements.iter().any(|el| is_deprecated_edge_stdlib_expr(el));
+            let any_deprecated = elements
+                .iter()
+                .any(|el| is_deprecated_edge_stdlib_or_variable_expr(el, prog));
             let any_direct = elements.iter().any(|el| is_direct_tag_ref(el));
             if any_deprecated || any_direct {
                 let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
@@ -160,8 +199,7 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         }
     } else if is_revolve_or_helix(callee_name)
         && let Some(axis_expr) = get_axis_arg(call_node)
-        && let Expr::CallExpressionKw(inner) = axis_expr
-        && is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+        && is_deprecated_edge_stdlib_or_variable_expr(axis_expr, prog)
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
@@ -174,8 +212,7 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         ));
     } else if is_extrude(callee_name)
         && let Some(to_expr) = get_to_arg(call_node)
-        && let Expr::CallExpressionKw(inner) = to_expr
-        && is_deprecated_edge_stdlib(inner.callee.name.name.as_str())
+        && is_deprecated_edge_stdlib_or_variable_expr(to_expr, prog)
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
@@ -185,7 +222,9 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         ));
     } else if is_gdt_edge_command(callee_name)
         && let Some(elements) = get_edges_elements(call_node)
-        && elements.iter().any(|el| is_deprecated_edge_stdlib_expr(el))
+        && elements
+            .iter()
+            .any(|el| is_deprecated_edge_stdlib_or_variable_expr(el, prog))
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
@@ -200,7 +239,7 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, _prog: &AstNode
         && ["from", "to"]
             .iter()
             .filter_map(|label| get_arg(call_node, label))
-            .any(is_deprecated_edge_stdlib_expr)
+            .any(|expr| is_deprecated_edge_stdlib_or_variable_expr(expr, prog))
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
@@ -302,6 +341,24 @@ mod tests {
     }
 
     #[test]
+    fn z0006_detects_member_direct_tags_in_fillet() {
+        let kcl = r#"body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $e1)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+  |> extrude(length = 5, tagStart = $capStart001)
+fillet(body, radius = 1, tags = [body.sketch.tags.e1])
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "expected one Z0006 for fillet with member direct tags");
+    }
+
+    #[test]
     fn z0006_fires_when_tags_has_deprecated_stdlib() {
         let kcl = r#"fillet(body, radius = 1, tags = [getOppositeEdge(e1)])
 "#;
@@ -341,6 +398,17 @@ mod tests {
     }
 
     #[test]
+    fn z0006_fires_for_revolve_with_deprecated_axis_variable() {
+        let kcl = r#"axisEdge = getOppositeEdge(seg01)
+revolve(profile, axis = axisEdge)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for revolve with deprecated axis variable");
+    }
+
+    #[test]
     fn z0006_fires_for_helix_with_deprecated_axis() {
         let kcl = r#"helix(profile, axis = getOppositeEdge(seg01), radius = 1)
 "#;
@@ -362,6 +430,17 @@ mod tests {
             z0006[0].description.contains("to") || z0006[0].description.contains("sideFaces"),
             "description should mention to or sideFaces"
         );
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_to_variable() {
+        let kcl = r#"targetEdge = getCommonEdge(faces = [facetag0, facetag1])
+extrude(cylinder3, to = targetEdge)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for extrude with deprecated to variable");
     }
 
     #[test]
