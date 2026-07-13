@@ -1935,7 +1935,9 @@ export async function finalizeFilletActor({
       return { error: 'Failed to create fillet intersection point' }
     }
 
-    const constraintsToAdd: ApiConstraint[] = []
+    const endpointCoincidentConstraints: ApiConstraint[] = []
+    const tangentConstraints: ApiConstraint[] = []
+    const intersectionPointConstraints: ApiConstraint[] = []
 
     for (const [index, side] of currentSelection.sides.entries()) {
       const sideEndpointId = getEndpointPointIdForSide(
@@ -1951,19 +1953,25 @@ export async function finalizeFilletActor({
         return { error: 'Failed to find fillet endpoint' }
       }
 
-      constraintsToAdd.push({
+      endpointCoincidentConstraints.push({
         type: 'Coincident',
         segments: [sideEndpointId, filletArcPointId],
       })
-      constraintsToAdd.push({
-        type: 'Coincident',
-        segments: [side.segmentId, intersectionPointId],
-      })
-      constraintsToAdd.push({
+      tangentConstraints.push({
         type: 'Tangent',
         input: [side.segmentId, currentDraft.arcId],
       })
+      intersectionPointConstraints.push({
+        type: 'Coincident',
+        segments: [side.segmentId, intersectionPointId],
+      })
     }
+
+    const constraintsToAdd = [
+      ...endpointCoincidentConstraints,
+      ...tangentConstraints,
+      ...intersectionPointConstraints,
+    ]
 
     for (const dimensionConstraint of selection.dimensionConstraints) {
       const inheritedConstraint = buildInheritedDimensionConstraint({
