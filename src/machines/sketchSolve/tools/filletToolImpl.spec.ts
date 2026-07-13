@@ -242,21 +242,8 @@ describe('filletToolImpl', () => {
         arcCenterAfterDelete,
         arcAfterDelete,
       ]
-      const constructionA = [
-        createPointApiObject({ id: 16, x: 0, y: 0 }),
-        createPointApiObject({ id: 17, x: 2, y: 0 }),
-        createLineApiObject({ id: 18, start: 16, end: 17 }),
-      ]
-      const constructionB = [
-        createPointApiObject({ id: 19, x: 0, y: 0 }),
-        createPointApiObject({ id: 20, x: 0, y: 2 }),
-        createLineApiObject({ id: 21, start: 19, end: 20 }),
-      ]
-      const objectsWithConstructions = [
-        ...postDeleteObjects,
-        ...constructionA,
-        ...constructionB,
-      ]
+      const intersectionPoint = createPointApiObject({ id: 16, x: 0, y: 0 })
+      const objectsWithIntersection = [...postDeleteObjects, intersectionPoint]
       const deleteObjectsMock = rustContextMock.deleteObjects
       const editSegmentsMock = rustContextMock.editSegments
       const addSegmentMock = rustContextMock.addSegment
@@ -271,21 +258,10 @@ describe('filletToolImpl', () => {
         sceneGraphDelta: createSceneGraphDelta(postDeleteObjects),
         checkpointId: null,
       })
-      addSegmentMock
-        .mockResolvedValueOnce({
-          kclSource: { text: 'construction-a' },
-          sceneGraphDelta: createSceneGraphDelta(
-            [...postDeleteObjects, ...constructionA],
-            [16, 17, 18]
-          ),
-        })
-        .mockResolvedValueOnce({
-          kclSource: { text: 'construction-b' },
-          sceneGraphDelta: createSceneGraphDelta(
-            objectsWithConstructions,
-            [19, 20, 21]
-          ),
-        })
+      addSegmentMock.mockResolvedValueOnce({
+        kclSource: { text: 'intersection-point' },
+        sceneGraphDelta: createSceneGraphDelta(objectsWithIntersection, [16]),
+      })
 
       let nextConstraintId = 30
       addConstraintMock.mockImplementation(
@@ -301,7 +277,7 @@ describe('filletToolImpl', () => {
             kclSource: { text: `constraint-${constraintId}` },
             sceneGraphDelta: createSceneGraphDelta(
               [
-                ...objectsWithConstructions,
+                ...objectsWithIntersection,
                 createConstraintApiObject({ id: constraintId, constraint }),
               ],
               [constraintId]
@@ -356,19 +332,175 @@ describe('filletToolImpl', () => {
         ]),
         expect.anything(),
       ])
+      expect(addSegmentMock.mock.calls).toHaveLength(1)
       expect(addConstraintMock.mock.calls).toContainEqual([
         0,
         2,
         { type: 'Tangent', input: [6, 14] },
         expect.anything(),
-        undefined,
+        false,
       ])
       expect(addConstraintMock.mock.calls).toContainEqual([
         0,
         2,
         { type: 'Tangent', input: [10, 14] },
         expect.anything(),
-        undefined,
+        true,
+      ])
+    })
+
+    it('reattaches inherited dimensions to the original intersection point', async () => {
+      const rustContext = createMockRustContext()
+      const rustContextMock = rustContext as unknown as MockRustContext
+      const kclManager = createMockKclManager()
+      const lineAStart = createPointApiObject({ id: 1, x: 10, y: 0 })
+      const lineAEnd = createPointApiObject({ id: 2, x: 0, y: 0 })
+      const lineBStart = createPointApiObject({ id: 3, x: 0, y: 0 })
+      const lineBEnd = createPointApiObject({ id: 4, x: 0, y: 10 })
+      const lineA = createLineApiObject({ id: 5, start: 1, end: 2 })
+      const lineB = createLineApiObject({ id: 6, start: 3, end: 4 })
+      const arcStart = createPointApiObject({ id: 7, x: 2, y: 0 })
+      const arcEnd = createPointApiObject({ id: 8, x: 0, y: 2 })
+      const arcCenter = createPointApiObject({ id: 9, x: 2, y: 2 })
+      const arc = createArcApiObject({
+        id: 10,
+        start: 7,
+        end: 8,
+        center: 9,
+      })
+      const cornerCoincident = createConstraintApiObject({
+        id: 20,
+        constraint: { type: 'Coincident', segments: [2, 3] },
+      })
+      const horizontalDimension = createConstraintApiObject({
+        id: 21,
+        constraint: {
+          type: 'HorizontalDistance',
+          points: [1, 2],
+          distance: { value: 10, units: 'Mm' },
+          source: { expr: '10', is_literal: true },
+        },
+      })
+      const beforeObjects = createSceneGraphDelta([
+        lineAStart,
+        lineAEnd,
+        lineBStart,
+        lineBEnd,
+        lineA,
+        lineB,
+        arcStart,
+        arcEnd,
+        arcCenter,
+        arc,
+        cornerCoincident,
+        horizontalDimension,
+      ]).new_graph.objects
+      const selection = resolveFilletSelection({
+        segmentIds: [5, 6],
+        objects: beforeObjects,
+      })
+      if (!selection) {
+        throw new Error('Expected adjacent line selection')
+      }
+
+      const geometry = solveFilletGeometry({ selection, radius: 2 })
+      if (!geometry) {
+        throw new Error('Expected fillet geometry')
+      }
+
+      const postDeleteObjects = [
+        lineAStart,
+        lineAEnd,
+        lineBStart,
+        lineBEnd,
+        lineA,
+        lineB,
+        arcStart,
+        arcEnd,
+        arcCenter,
+        arc,
+      ]
+      const intersectionPoint = createPointApiObject({ id: 11, x: 0, y: 0 })
+      const objectsWithIntersection = [...postDeleteObjects, intersectionPoint]
+      const deleteObjectsMock = rustContextMock.deleteObjects
+      const editSegmentsMock = rustContextMock.editSegments
+      const addSegmentMock = rustContextMock.addSegment
+      const addConstraintMock = rustContextMock.addConstraint
+
+      deleteObjectsMock.mockResolvedValue({
+        kclSource: { text: 'delete' },
+        sceneGraphDelta: createSceneGraphDelta(postDeleteObjects),
+      })
+      editSegmentsMock.mockResolvedValue({
+        kclSource: { text: 'edit' },
+        sceneGraphDelta: createSceneGraphDelta(postDeleteObjects),
+        checkpointId: null,
+      })
+      addSegmentMock.mockResolvedValueOnce({
+        kclSource: { text: 'intersection-point' },
+        sceneGraphDelta: createSceneGraphDelta(objectsWithIntersection, [11]),
+      })
+
+      let nextConstraintId = 30
+      addConstraintMock.mockImplementation(
+        async (
+          _version: number,
+          _sketchId: number,
+          constraint: ApiConstraint,
+          _settings: unknown,
+          createCheckpoint?: boolean
+        ) => {
+          const constraintId = nextConstraintId++
+          return {
+            kclSource: { text: `constraint-${constraintId}` },
+            sceneGraphDelta: createSceneGraphDelta(
+              [
+                ...objectsWithIntersection,
+                createConstraintApiObject({ id: constraintId, constraint }),
+              ],
+              [constraintId]
+            ),
+            checkpointId: createCheckpoint ? 42 : null,
+          }
+        }
+      )
+
+      const result = await finalizeFilletActor({
+        input: {
+          selection,
+          geometry,
+          draft: {
+            arcId: 10,
+            arcStartPointId: 7,
+            arcEndPointId: 8,
+            arcCenterPointId: 9,
+            segmentIds: [10, 7, 8, 9],
+          },
+          rustContext,
+          kclManager,
+          sketchId: 2,
+        },
+      })
+
+      expect(result).not.toHaveProperty('error')
+      expect(deleteObjectsMock.mock.calls).toContainEqual([
+        0,
+        2,
+        [20, 21],
+        [],
+        expect.anything(),
+      ])
+      expect(addConstraintMock.mock.calls).toContainEqual([
+        0,
+        2,
+        {
+          type: 'HorizontalDistance',
+          points: [1, 11],
+          distance: { value: 10, units: 'Mm' },
+          source: { expr: '10', is_literal: true },
+        },
+        expect.anything(),
+        true,
       ])
     })
   })

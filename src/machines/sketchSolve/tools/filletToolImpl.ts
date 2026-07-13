@@ -34,6 +34,7 @@ import {
   isArcSegment,
   isCircleSegment,
   isConstraint,
+  isDistanceConstraint,
   isLineSegment,
   isPointSegment,
   pointToCoords2d,
@@ -63,6 +64,10 @@ type SegmentEndpointName = 'start' | 'end'
 type FilletSegmentKind = 'line' | 'arc'
 type NumericSuffix = ReturnType<typeof baseUnitToNumericSuffix>
 type AppSettings = Awaited<ReturnType<typeof jsAppSettings>>
+type DistanceApiConstraint = Extract<
+  ApiConstraint,
+  { type: 'Distance' | 'HorizontalDistance' | 'VerticalDistance' }
+>
 
 export type FilletSegmentInfo = {
   segmentId: number
@@ -88,6 +93,11 @@ export type FilletSelection = {
   sides: [FilletSegmentInfo, FilletSegmentInfo]
   vertex: Coords2d
   adjacencyConstraintIds: number[]
+  dimensionConstraints: Array<{
+    constraintId: number
+    constraint: DistanceApiConstraint
+    replacePointIds: number[]
+  }>
 }
 
 export type FilletGeometry = {
@@ -233,6 +243,22 @@ function arcCtor({
       y: makeVarExpr(center[1], units),
     },
     ...(construction ? { construction: true } : {}),
+  }
+}
+
+function pointCtor({
+  position,
+  units,
+}: {
+  position: Coords2d
+  units: NumericSuffix
+}): SegmentCtor {
+  return {
+    type: 'Point',
+    position: {
+      x: makeVarExpr(position[0], units),
+      y: makeVarExpr(position[1], units),
+    },
   }
 }
 
@@ -470,6 +496,40 @@ function buildSegmentInfo({
   )
 }
 
+function getDimensionConstraintsForFillet({
+  sides,
+  objects,
+}: {
+  sides: [FilletSegmentInfo, FilletSegmentInfo]
+  objects: ApiObject[]
+}): FilletSelection['dimensionConstraints'] {
+  const replacementPointIds = new Set(
+    sides.flatMap((side) => [...pointIdCluster(side.endpointId, objects)])
+  )
+
+  return objects
+    .filter(isDistanceConstraint)
+    .map((obj) => {
+      const replacePointIds = obj.kind.constraint.points.filter(
+        (point): point is number =>
+          typeof point === 'number' && replacementPointIds.has(point)
+      )
+      if (replacePointIds.length === 0) {
+        return null
+      }
+
+      return {
+        constraintId: obj.id,
+        constraint: {
+          ...obj.kind.constraint,
+          points: [...obj.kind.constraint.points],
+        },
+        replacePointIds,
+      }
+    })
+    .filter((constraint) => constraint !== null)
+}
+
 export function resolveFilletSelection({
   segmentIds,
   objects,
@@ -531,6 +591,10 @@ export function resolveFilletSelection({
     sides: [firstSide, secondSide],
     vertex: shared.vertex,
     adjacencyConstraintIds: shared.adjacencyConstraintIds,
+    dimensionConstraints: getDimensionConstraintsForFillet({
+      sides: [firstSide, secondSide],
+      objects,
+    }),
   }
 }
 
@@ -1504,28 +1568,22 @@ function buildTrimmedSegmentEdit({
   return null
 }
 
-async function deleteAdjacencyConstraints({
-  selection,
+async function deleteConstraints({
+  constraintIds,
   rustContext,
   sketchId,
   settings,
 }: {
-  selection: FilletSelection
+  constraintIds: number[]
   rustContext: RustContext
   sketchId: number
   settings: AppSettings
 }) {
-  if (selection.adjacencyConstraintIds.length === 0) {
+  if (constraintIds.length === 0) {
     return null
   }
 
-  return rustContext.deleteObjects(
-    0,
-    sketchId,
-    selection.adjacencyConstraintIds,
-    [],
-    settings
-  )
+  return rustContext.deleteObjects(0, sketchId, constraintIds, [], settings)
 }
 
 function remapObjectIdAfterDeletedConstraints(
@@ -1675,43 +1733,6 @@ function getArcPointIdForSide({
   return sideIsArcStart ? arc.kind.segment.start : arc.kind.segment.end
 }
 
-function constructionSegmentCtorForSide({
-  side,
-  tangentPoint,
-  units,
-}: {
-  side: FilletSegmentInfo
-  tangentPoint: Coords2d
-  units: NumericSuffix
-}): SegmentCtor {
-  if (side.kind === 'line') {
-    return lineCtor({
-      start: side.vertex,
-      end: tangentPoint,
-      units,
-      construction: true,
-    })
-  }
-
-  const arc = side.arc
-  if (!arc) {
-    return lineCtor({
-      start: side.vertex,
-      end: tangentPoint,
-      units,
-      construction: true,
-    })
-  }
-
-  return arcCtor({
-    start: side.endpointName === 'start' ? side.vertex : tangentPoint,
-    end: side.endpointName === 'start' ? tangentPoint : side.vertex,
-    center: arc.center,
-    units,
-    construction: true,
-  })
-}
-
 function getNewSegmentId(
   sceneGraphDelta: SceneGraphDelta,
   predicate: (obj: ApiObject | undefined) => boolean
@@ -1719,38 +1740,6 @@ function getNewSegmentId(
   return [...sceneGraphDelta.new_objects]
     .reverse()
     .find((objId) => predicate(sceneGraphDelta.new_graph.objects[objId]))
-}
-
-function getConstructionEndpointIds({
-  sceneGraphDelta,
-  side,
-  constructionId,
-}: {
-  sceneGraphDelta: SceneGraphDelta
-  side: FilletSegmentInfo
-  constructionId: number
-}): { vertexPointId: number; tangentPointId: number } | null {
-  const obj = sceneGraphDelta.new_graph.objects[constructionId]
-  if (isLineSegment(obj)) {
-    return {
-      vertexPointId: obj.kind.segment.start,
-      tangentPointId: obj.kind.segment.end,
-    }
-  }
-
-  if (isArcSegment(obj)) {
-    return side.endpointName === 'start'
-      ? {
-          vertexPointId: obj.kind.segment.start,
-          tangentPointId: obj.kind.segment.end,
-        }
-      : {
-          vertexPointId: obj.kind.segment.end,
-          tangentPointId: obj.kind.segment.start,
-        }
-  }
-
-  return null
 }
 
 async function addConstraintAndTrack({
@@ -1777,6 +1766,49 @@ async function addConstraintAndTrack({
   )
   newObjects.push(...result.sceneGraphDelta.new_objects)
   return result
+}
+
+function remapConstraintSegmentAfterDeletedConstraints({
+  segment,
+  deletedConstraintIds,
+}: {
+  segment: DistanceApiConstraint['points'][number]
+  deletedConstraintIds: number[]
+}) {
+  return typeof segment === 'number'
+    ? remapObjectIdAfterDeletedConstraints(segment, deletedConstraintIds)
+    : segment
+}
+
+function buildInheritedDimensionConstraint({
+  dimensionConstraint,
+  intersectionPointId,
+  deletedConstraintIds,
+}: {
+  dimensionConstraint: FilletSelection['dimensionConstraints'][number]
+  intersectionPointId: number
+  deletedConstraintIds: number[]
+}): DistanceApiConstraint | null {
+  const replacePointIds = new Set(dimensionConstraint.replacePointIds)
+  const points = dimensionConstraint.constraint.points.map((point) => {
+    if (typeof point === 'number' && replacePointIds.has(point)) {
+      return intersectionPointId
+    }
+
+    return remapConstraintSegmentAfterDeletedConstraints({
+      segment: point,
+      deletedConstraintIds,
+    })
+  })
+
+  if (new Set(points.map((point) => String(point))).size < 2) {
+    return null
+  }
+
+  return {
+    ...dimensionConstraint.constraint,
+    points,
+  }
 }
 
 export async function finalizeFilletActor({
@@ -1812,15 +1844,21 @@ export async function finalizeFilletActor({
   const settings = jsAppSettings(rustContext.settingsActor)
 
   try {
-    const deleteResult = await deleteAdjacencyConstraints({
-      selection,
+    const constraintIdsToDelete = [
+      ...new Set([
+        ...selection.adjacencyConstraintIds,
+        ...selection.dimensionConstraints.map(
+          (dimensionConstraint) => dimensionConstraint.constraintId
+        ),
+      ]),
+    ]
+    const deleteResult = await deleteConstraints({
+      constraintIds: constraintIdsToDelete,
       rustContext,
       sketchId,
       settings,
     })
-    const deletedConstraintIds = deleteResult
-      ? selection.adjacencyConstraintIds
-      : []
+    const deletedConstraintIds = deleteResult ? constraintIdsToDelete : []
     const currentSelection = remapSelectionAfterDeletedConstraints({
       selection,
       deletedConstraintIds,
@@ -1875,148 +1913,81 @@ export async function finalizeFilletActor({
     let latestSceneGraphDelta = editResult.sceneGraphDelta
     let latestCheckpointId = editResult.checkpointId ?? null
 
-    const constructionData: Array<{
-      side: FilletSegmentInfo
-      sideIndex: 0 | 1
-      segmentId: number
-      vertexPointId: number
-      tangentPointId: number
-    }> = []
+    const intersectionPointResult = await rustContext.addSegment(
+      0,
+      sketchId,
+      pointCtor({
+        position: currentSelection.vertex,
+        units,
+      }),
+      'fillet-intersection-point',
+      settings
+    )
+    newObjects.push(...intersectionPointResult.sceneGraphDelta.new_objects)
+    latestKclSource = intersectionPointResult.kclSource
+    latestSceneGraphDelta = intersectionPointResult.sceneGraphDelta
 
-    for (const [index, side] of currentSelection.sides.entries()) {
-      const addResult = await rustContext.addSegment(
-        0,
-        sketchId,
-        constructionSegmentCtorForSide({
-          side,
-          tangentPoint: geometry.sideTangencies[index as 0 | 1],
-          units,
-        }),
-        'fillet-construction-extension',
-        settings
-      )
-      newObjects.push(...addResult.sceneGraphDelta.new_objects)
-      latestKclSource = addResult.kclSource
-      latestSceneGraphDelta = addResult.sceneGraphDelta
-
-      const constructionId = getNewSegmentId(
-        addResult.sceneGraphDelta,
-        (obj) => (side.kind === 'line' ? isLineSegment(obj) : isArcSegment(obj))
-      )
-      if (constructionId === undefined) {
-        return { error: 'Failed to create fillet construction extension' }
-      }
-
-      const endpoints = getConstructionEndpointIds({
-        sceneGraphDelta: addResult.sceneGraphDelta,
-        side,
-        constructionId,
-      })
-      if (!endpoints) {
-        return { error: 'Failed to find construction extension endpoints' }
-      }
-
-      constructionData.push({
-        side,
-        sideIndex: index as 0 | 1,
-        segmentId: constructionId,
-        vertexPointId: endpoints.vertexPointId,
-        tangentPointId: endpoints.tangentPointId,
-      })
+    const intersectionPointId = getNewSegmentId(
+      intersectionPointResult.sceneGraphDelta,
+      isPointSegment
+    )
+    if (intersectionPointId === undefined) {
+      return { error: 'Failed to create fillet intersection point' }
     }
 
-    for (const data of constructionData) {
+    const constraintsToAdd: ApiConstraint[] = []
+
+    for (const [index, side] of currentSelection.sides.entries()) {
       const sideEndpointId = getEndpointPointIdForSide(
-        data.side,
+        side,
         latestSceneGraphDelta.new_graph.objects
       )
       const filletArcPointId = getArcPointIdForSide({
         geometry,
         arc: latestSceneGraphDelta.new_graph.objects[currentDraft.arcId],
-        sideIndex: data.sideIndex,
+        sideIndex: index as 0 | 1,
       })
       if (sideEndpointId === null || filletArcPointId === null) {
         return { error: 'Failed to find fillet endpoint' }
       }
 
-      const arcCoincident = await addConstraintAndTrack({
-        constraint: {
-          type: 'Coincident',
-          segments: [sideEndpointId, filletArcPointId],
-        },
-        rustContext,
-        sketchId,
-        settings,
-        newObjects,
+      constraintsToAdd.push({
+        type: 'Coincident',
+        segments: [sideEndpointId, filletArcPointId],
       })
-      latestKclSource = arcCoincident.kclSource
-      latestSceneGraphDelta = arcCoincident.sceneGraphDelta
-
-      const constructionCoincident = await addConstraintAndTrack({
-        constraint: {
-          type: 'Coincident',
-          segments: [sideEndpointId, data.tangentPointId],
-        },
-        rustContext,
-        sketchId,
-        settings,
-        newObjects,
+      constraintsToAdd.push({
+        type: 'Coincident',
+        segments: [side.segmentId, intersectionPointId],
       })
-      latestKclSource = constructionCoincident.kclSource
-      latestSceneGraphDelta = constructionCoincident.sceneGraphDelta
-
-      const shapeConstraint =
-        data.side.kind === 'line'
-          ? ({
-              type: 'Parallel',
-              lines: [data.side.segmentId, data.segmentId],
-            } satisfies ApiConstraint)
-          : ({
-              type: 'EqualRadius',
-              input: [data.side.segmentId, data.segmentId],
-            } satisfies ApiConstraint)
-      const shapeResult = await addConstraintAndTrack({
-        constraint: shapeConstraint,
-        rustContext,
-        sketchId,
-        settings,
-        newObjects,
+      constraintsToAdd.push({
+        type: 'Tangent',
+        input: [side.segmentId, currentDraft.arcId],
       })
-      latestKclSource = shapeResult.kclSource
-      latestSceneGraphDelta = shapeResult.sceneGraphDelta
-
-      const tangentResult = await addConstraintAndTrack({
-        constraint: {
-          type: 'Tangent',
-          input: [data.side.segmentId, currentDraft.arcId],
-        },
-        rustContext,
-        sketchId,
-        settings,
-        newObjects,
-      })
-      latestKclSource = tangentResult.kclSource
-      latestSceneGraphDelta = tangentResult.sceneGraphDelta
     }
 
-    if (constructionData.length === 2) {
-      const vertexResult = await addConstraintAndTrack({
-        constraint: {
-          type: 'Coincident',
-          segments: [
-            constructionData[0].vertexPointId,
-            constructionData[1].vertexPointId,
-          ],
-        },
+    for (const dimensionConstraint of selection.dimensionConstraints) {
+      const inheritedConstraint = buildInheritedDimensionConstraint({
+        dimensionConstraint,
+        intersectionPointId,
+        deletedConstraintIds,
+      })
+      if (inheritedConstraint) {
+        constraintsToAdd.push(inheritedConstraint)
+      }
+    }
+
+    for (const [index, constraint] of constraintsToAdd.entries()) {
+      const constraintResult = await addConstraintAndTrack({
+        constraint,
         rustContext,
         sketchId,
         settings,
-        createCheckpoint: true,
+        createCheckpoint: index === constraintsToAdd.length - 1,
         newObjects,
       })
-      latestKclSource = vertexResult.kclSource
-      latestSceneGraphDelta = vertexResult.sceneGraphDelta
-      latestCheckpointId = vertexResult.checkpointId ?? null
+      latestKclSource = constraintResult.kclSource
+      latestSceneGraphDelta = constraintResult.sceneGraphDelta
+      latestCheckpointId = constraintResult.checkpointId ?? latestCheckpointId
     }
 
     return {
