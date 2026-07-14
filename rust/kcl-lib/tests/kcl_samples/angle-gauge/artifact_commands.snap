@@ -68,8 +68,8 @@ description: Artifact commands angle-gauge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000000005470563661224636,
-          "y": -0.0000000000002671510715623786,
+          "x": -0.000000000000008871143589702368,
+          "y": 0.0000000000017594939780231368,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands angle-gauge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000005563073285335113,
-            "y": 31.749999999999734,
+            "x": -0.00000000000000896273599483877,
+            "y": 31.75000000000176,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands angle-gauge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.100000000000136,
-            "y": 31.749999999999734,
+            "x": 38.099999999998694,
+            "y": 31.75000000000176,
             "z": 0.0
           },
           "relative": false
@@ -124,55 +124,8 @@ description: Artifact commands angle-gauge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000000000014,
-            "y": 20.827999999998664,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 38.09999999999997,
-          "y": 7.619999999998664,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 38.09999999999997,
-            "y": -0.0000000000010682787109752386,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -0.000000000000010802362883657258,
-            "y": -0.000000000000534228148747105,
+            "x": 38.099999999998694,
+            "y": 20.828000000008817,
             "z": 0.0
           },
           "relative": false
@@ -186,8 +139,8 @@ description: Artifact commands angle-gauge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.09999999999992,
-          "y": 7.619999999998398,
+          "x": 38.09999999999995,
+          "y": 7.6200000000087975,
           "z": 0.0
         }
       }
@@ -201,8 +154,8 @@ description: Artifact commands angle-gauge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 12.70000000000033,
-            "y": 12.098705309990343,
+            "x": 38.099999999999966,
+            "y": 0.000000000007038363044587781,
             "z": 0.0
           },
           "relative": false
@@ -218,8 +171,38 @@ description: Artifact commands angle-gauge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 12.700000000000236,
-            "y": 20.827999999998664,
+            "x": -0.00000000000001760489857432643,
+            "y": 0.0000000000035190759406999834,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 38.100000000000264,
+          "y": 7.620000000010539,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 12.699999999997452,
+            "y": 12.098705307844186,
             "z": 0.0
           },
           "relative": false
@@ -235,8 +218,25 @@ description: Artifact commands angle-gauge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000000000014,
-            "y": 20.827999999998664,
+            "x": 12.699999999998075,
+            "y": 20.828000000008817,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 38.099999999998694,
+            "y": 20.828000000008817,
             "z": 0.0
           },
           "relative": false

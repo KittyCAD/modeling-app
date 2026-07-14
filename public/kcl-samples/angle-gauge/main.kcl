@@ -89,12 +89,12 @@ gaugeProfileSketch = sketch(on = XY) {
   horizontal(cutoutAngleReferenceEdge)
   vertical(cutoutLeftVerticalEdge)
   angleDimension(
-    lines = [
-      cutoutAngleReferenceEdge,
-      cutoutAngledEdge
-    ],
-    sector = 1,
-  ) == cutoutAngle
+  lines = [
+    cutoutAngleReferenceEdge,
+    cutoutAngledEdge
+  ],
+  sector = 1,
+) == cutoutAngle
 
   horizontalDistance([cutoutTopEdge.start, cutoutTopEdge.end]) == cutoutDepth
   verticalDistance([

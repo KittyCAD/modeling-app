@@ -68,8 +68,8 @@ description: Artifact commands m4-insert.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.150000000025,
-          "y": 0.00000000005169368042384991,
+          "x": -3.15,
+          "y": -0.00000000000011334396960489123,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.150000000025,
-            "y": -2.279999999942562,
+            "x": -3.15,
+            "y": -2.280000000000126,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.550000000018368,
-            "y": -2.279999999931075,
+            "x": -2.550000000000013,
+            "y": -2.280000000000151,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.550000000018368,
-            "y": -3.132871870667607,
+            "x": -2.550000000000013,
+            "y": -3.1328718708048537,
             "z": 0.0
           },
           "relative": false
@@ -141,8 +141,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.1100000000316324,
-            "y": -3.132871870664735,
+            "x": -3.109999999999987,
+            "y": -3.1328718708048635,
             "z": 0.0
           },
           "relative": false
@@ -158,8 +158,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -3.110000000044407,
-            "y": -5.532871870673323,
+            "x": -3.1099999999999617,
+            "y": -5.532871870804853,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.1499999999653094,
-            "y": -6.087128129162952,
+            "x": -2.150000000000118,
+            "y": -6.087128129195516,
             "z": 0.0
           },
           "relative": false
@@ -192,8 +192,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.149999999978574,
-            "y": -6.939999999919587,
+            "x": -2.150000000000092,
+            "y": -6.940000000000176,
             "z": 0.0
           },
           "relative": false
@@ -209,8 +209,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.749999999998471,
-            "y": -6.939999999931075,
+            "x": -2.7500000000000524,
+            "y": -6.940000000000151,
             "z": 0.0
           },
           "relative": false
@@ -226,8 +226,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.7500000000117355,
-            "y": -8.099999999942563,
+            "x": -2.750000000000026,
+            "y": -8.100000000000126,
             "z": 0.0
           },
           "relative": false
@@ -241,8 +241,8 @@ description: Artifact commands m4-insert.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.150000000025,
-          "y": 0.00000000004594993807505346,
+          "x": -3.15,
+          "y": -0.00000000000010075004870403091,
           "z": 0.0
         }
       }
@@ -256,8 +256,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.555000000075,
-            "y": 0.00000000004020619577220696,
+            "x": -1.5550000000000002,
+            "y": -0.00000000000008815618544209148,
             "z": 0.0
           },
           "relative": false
@@ -273,8 +273,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.55500000008,
-            "y": -8.099999999959794,
+            "x": -1.5550000000000002,
+            "y": -8.100000000000088,
             "z": 0.0
           },
           "relative": false
@@ -290,8 +290,8 @@ description: Artifact commands m4-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.7500000000183675,
-            "y": -8.099999999948306,
+            "x": -2.7500000000000133,
+            "y": -8.100000000000113,
             "z": 0.0
           },
           "relative": false

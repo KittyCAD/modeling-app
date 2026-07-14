@@ -10951,22 +10951,61 @@ description: Operations executed axial-fan.kcl
     },
     {
       "type": "StdLibCall",
-      "name": "angle",
-      "unlabeledArg": {
-        "value": {
-          "type": "Array",
-          "value": [
-            {
-              "type": "KclNone"
-            },
-            {
-              "type": "KclNone"
-            }
-          ]
+      "name": "angleDimension",
+      "unlabeledArg": null,
+      "labeledArgs": {
+        "labelPosition": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "Number",
+                "value": 7.16,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              },
+              {
+                "type": "Number",
+                "value": 24.34,
+                "ty": {
+                  "mm": null,
+                  "type": "Known",
+                  "type": "Length"
+                }
+              }
+            ]
+          },
+          "sourceRange": []
         },
-        "sourceRange": []
+        "lines": {
+          "value": {
+            "type": "Array",
+            "value": [
+              {
+                "type": "KclNone"
+              },
+              {
+                "type": "KclNone"
+              }
+            ]
+          },
+          "sourceRange": []
+        },
+        "sector": {
+          "value": {
+            "type": "Number",
+            "value": 4.0,
+            "ty": {
+              "type": "Known",
+              "type": "Count"
+            }
+          },
+          "sourceRange": []
+        }
       },
-      "labeledArgs": {},
       "nodePath": {
         "steps": [
           {
