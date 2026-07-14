@@ -97,6 +97,7 @@ export enum SystemIOMachineActions {
   setDefaultProjectFolderName = 'set default project folder name',
   toastSuccess = 'toastSuccess',
   toastError = 'toastError',
+  toastErrorZookeeperFileWrite = 'toastErrorZookeeperFileWrite',
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
   setLastProjectDeleteRequest = 'set last project delete request',

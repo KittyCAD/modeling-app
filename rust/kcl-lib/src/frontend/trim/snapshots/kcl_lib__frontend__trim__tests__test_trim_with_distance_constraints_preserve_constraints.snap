@@ -1,0 +1,46 @@
+---
+source: kcl-lib/src/frontend/trim/tests.rs
+expression: "result_normalized"
+---
+sketch(on = YZ) {
+  line1 = line(start = [var -5.5mm, var 7mm], end = [var -3mm, var 5mm])
+  line4 = line(start = [var -6mm, var 4mm], end = [var -3.5mm, var 2mm])
+  endTrimmedShouldDeleteDisConstraint = line(start = [var -3.5mm, var 2mm], end = [var -2.33mm, var 2mm])
+  coincident([
+    line4.end,
+    endTrimmedShouldDeleteDisConstraint.start
+  ])
+  line6 = line(start = [var -3mm, var 1mm], end = [var -2mm, var 2.5mm])
+  startTrimmedAlsoDeleteDisConstraint = line(start = [var 1.63mm, var -0.73mm], end = [var 3.02mm, var -0.75mm])
+  line3 = line(start = [var 3.02mm, var -0.75mm], end = [var 5.38mm, var 1.14mm])
+  coincident([
+    startTrimmedAlsoDeleteDisConstraint.end,
+    line3.start
+  ])
+  line5 = line(start = [var 1.24mm, var 0.92mm], end = [var 1.84mm, var -1.64mm])
+  splitTrimLineDistanceConstraintMigrated = line(start = [var -3.7mm, var -3.56mm], end = [var -0.71mm, var -3.93mm])
+  line8 = line(start = [var 1.84mm, var -3.74mm], end = [var 5.42mm, var -1.72mm])
+  line9 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.28mm, var -5.69mm])
+  line10 = line(start = [var 1.98mm, var -3.74mm], end = [var 2.57mm, var -5.65mm])
+  line11 = line(start = [var -1.05mm, var -2.11mm], end = [var -0.45mm, var -5.31mm])
+  coincident([
+    endTrimmedShouldDeleteDisConstraint.end,
+    line6
+  ])
+  coincident([
+    startTrimmedAlsoDeleteDisConstraint.start,
+    line5
+  ])
+  line2 = line(start = [var 1.1mm, var -3.71mm], end = [var 1.84mm, var -3.74mm])
+  coincident([
+    splitTrimLineDistanceConstraintMigrated.end,
+    line11
+  ])
+  coincident([line2.start, line9.start])
+  coincident([line2.end, line8.start])
+  coincident([line10.start, line2])
+  distance([
+  splitTrimLineDistanceConstraintMigrated.start,
+  line2.end
+]) == 5.54mm
+}
