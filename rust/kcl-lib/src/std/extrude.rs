@@ -941,19 +941,9 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    let any_edge_id = if let Some(id) = edge_id {
-        Some(id)
-    } else {
-       None // It's better to not provide an edge id than to provide a bad one - the engine will intuit an edge to use instead.
-    };
-
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
     // So let's find an edge of the old body.
-    let extrusion_info_edge_id = if sketch.clone.is_some() {
-        None
-    } else {
-        any_edge_id
-    };
+    let extrusion_info_edge_id = if sketch.clone.is_some() { None } else { edge_id };
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
