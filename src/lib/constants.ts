@@ -1,4 +1,4 @@
-import type { UserFeature, WebSocketResponse } from '@kittycad/lib'
+import type { Feature, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -25,12 +25,13 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * */
 export const FILE_EXT = '.kcl'
 export const DEFAULT_KCL_VERSION = '2.0'
-export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
-export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
+export const BODIES_PANE_FEATURE_FLAG: Feature = 'bodies_pane'
+export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
-export const OPFS_CLOUD_FEATURE_FLAG: UserFeature = 'web_app_file_browser'
-export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: UserFeature =
+export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
+export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
   'segments_based_regions'
+export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */

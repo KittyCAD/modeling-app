@@ -1111,6 +1111,10 @@ pub(crate) async fn do_post_extrude<'a>(
                 Some((*fe_key, fe_value))
             })
             .collect::<HashMap<Uuid, Option<Uuid>>>();
+        // The face info above was queried using the original solid's id, so
+        // the cap ids belong to the original. Map them to the clone's ids.
+        start_cap_id = start_cap_id.and_then(|id| clone_id_map.get(&id).copied());
+        end_cap_id = end_cap_id.and_then(|id| clone_id_map.get(&id).copied());
     }
 
     // Iterate over the sketch.value array and add face_id to GeoMeta
