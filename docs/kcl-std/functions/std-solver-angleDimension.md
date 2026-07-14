@@ -34,6 +34,10 @@ solver::angleDimension(
 profile = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 4mm, var 0mm])
   line2 = line(start = [var 0mm, var 0mm], end = [var 2mm, var 3.464mm])
+  line3 = line(start = [var 2mm, var 3.464mm], end = [var 4mm, var 0mm])
+  coincident([line1.start, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line1.end])
   angleDimension(lines = [line1, line2], sector = 1) == 60deg
 }
 
