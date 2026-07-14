@@ -1093,14 +1093,16 @@ pub(crate) async fn do_post_extrude<'a>(
 
     let Faces {
         sides: mut face_id_map,
-        start_cap_id,
-        end_cap_id,
+        mut start_cap_id,
+        mut end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
 
     // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
     if sketch.clone.is_some()
         && let Some(clone_id_map) = clone_id_map
     {
+        start_cap_id = start_cap_id.map(|id| clone_id_map.get(&id).copied().unwrap_or(id));
+        end_cap_id = end_cap_id.map(|id| clone_id_map.get(&id).copied().unwrap_or(id));
         face_id_map = face_id_map
             .into_iter()
             .filter_map(|(k, v)| {

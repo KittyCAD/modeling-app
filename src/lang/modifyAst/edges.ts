@@ -633,7 +633,7 @@ export function groupSelectionsByBodyAndAddTags(
       pathIfPipe = vars.pathIfPipe
     }
 
-    // Add tags after resolving the body so cap references can be qualified.
+    // Resolve faces after the body so cap references can use `body.faces`.
     const { tagsExprs, modifiedAst: taggedAst } = getTagsExprsFromSelection(
       modifiedAst,
       bodySelections,
@@ -812,30 +812,21 @@ function getTagsExprsFromSelection(
       continue
     }
 
-    const result = modifyAstWithTagsForSelection(
+    const result = getEdgeFaceExprs(
       modifiedAst,
       edge,
       artifactGraph,
-      wasmInstance
+      wasmInstance,
+      bodyExpr
     )
     if (err(result)) {
-      console.warn('Failed to add tag for edge selection', result)
-      continue
-    }
-    const faceExprs = getBodyQualifiedCapExprs(
-      edge,
-      result.exprs,
-      bodyExpr,
-      artifactGraph
-    )
-    if (err(faceExprs)) {
-      console.warn('Failed to qualify edge cap selection', faceExprs)
+      console.warn('Failed to resolve edge faces', result)
       continue
     }
 
     tagsExprs.push(
       createCallExpressionStdLibKw('getCommonEdge', null, [
-        createLabeledArg('faces', createArrayExpression(faceExprs)),
+        createLabeledArg('faces', createArrayExpression(result.exprs)),
       ])
     )
 
@@ -844,40 +835,75 @@ function getTagsExprsFromSelection(
   return { tagsExprs, modifiedAst }
 }
 
-function getBodyQualifiedCapExprs(
+function getEdgeFaceExprs(
+  ast: Node<Program>,
   edge: Selection,
-  faceExprs: Expr[],
-  bodyExpr: Expr | null | undefined,
-  artifactGraph: ArtifactGraph
-): Expr[] | Error {
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType,
+  bodyExpr: Expr | null | undefined
+): { modifiedAst: Node<Program>; exprs: Expr[] } | Error {
   if (
-    !bodyExpr ||
-    (edge.artifact?.type !== 'sweepEdge' && edge.artifact?.type !== 'segment')
+    edge.artifact?.type !== 'sweepEdge' &&
+    edge.artifact?.type !== 'segment'
   ) {
-    return faceExprs
+    return new Error('Expected a sweep edge or segment selection')
   }
 
   const commonFaces = getCommonFacesForEdge(edge.artifact, artifactGraph)
   if (err(commonFaces)) {
     return commonFaces
   }
-  if (commonFaces.length !== faceExprs.length) {
-    return new Error('Edge face expressions do not match its common faces')
+
+  let modifiedAst = ast
+  const exprs: Expr[] = []
+  for (const commonFace of commonFaces) {
+    if (commonFace.type === 'cap') {
+      if (!bodyExpr) {
+        return new Error('Could not resolve the body for an edge cap')
+      }
+      exprs.push(createBodyCapFaceExpression(bodyExpr, commonFace))
+      continue
+    }
+
+    const codeRefs = getCodeRefsByArtifactId(commonFace.id, artifactGraph)
+    if (!codeRefs?.[0]) {
+      return new Error('Could not resolve a wall for the selected edge')
+    }
+
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      {
+        artifact: commonFace,
+        codeRef: codeRefs[0],
+      },
+      artifactGraph,
+      wasmInstance
+    )
+    if (err(tagResult)) {
+      return tagResult
+    }
+    if (!tagResult.exprs[0]) {
+      return new Error('Could not resolve a wall tag for the selected edge')
+    }
+
+    exprs.push(tagResult.exprs[0])
+    modifiedAst = tagResult.modifiedAst
   }
 
-  return faceExprs.map((faceExpr, index) => {
-    if (commonFaces[index].type !== 'cap') {
-      return faceExpr
-    }
-    const tagName = getTagName(faceExpr)
-    if (!tagName) {
-      return faceExpr
-    }
-    return createMemberExpression(
-      createMemberExpression(structuredClone(bodyExpr), 'faces'),
-      tagName
-    )
-  })
+  return { modifiedAst, exprs }
+}
+
+function createBodyCapFaceExpression(
+  bodyExpr: string | Expr,
+  cap: Extract<Artifact, { type: 'cap' }>
+): Expr {
+  return createMemberExpression(
+    createMemberExpression(
+      typeof bodyExpr === 'string' ? bodyExpr : structuredClone(bodyExpr),
+      'faces'
+    ),
+    `${cap.subType}Cap`
+  )
 }
 
 function getCloneEdgeFaceExprs(
@@ -911,24 +937,31 @@ function getCloneEdgeFaceExprs(
   let modifiedAst = ast
   const exprs: Expr[] = []
   for (const commonFace of commonFaces) {
-    const sourceFace = getOriginalFaceForClone(
+    if (commonFace.type === 'cap') {
+      exprs.push(
+        createBodyCapFaceExpression(cloneContext.variableName, commonFace)
+      )
+      continue
+    }
+
+    const sourceWall = getOriginalWallForClone(
       cloneContext,
       commonFace,
       artifactGraph
     )
-    if (err(sourceFace)) {
-      return sourceFace
+    if (err(sourceWall)) {
+      return sourceWall
     }
 
-    const codeRefs = getCodeRefsByArtifactId(sourceFace.id, artifactGraph)
+    const codeRefs = getCodeRefsByArtifactId(sourceWall.id, artifactGraph)
     if (!codeRefs?.[0]) {
-      return new Error('Could not resolve the source face for cloned edge')
+      return new Error('Could not resolve the source wall for cloned edge')
     }
 
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       {
-        artifact: sourceFace,
+        artifact: sourceWall,
         codeRef: codeRefs[0],
       },
       artifactGraph,
@@ -940,17 +973,14 @@ function getCloneEdgeFaceExprs(
     const tagExpr = tagResult.exprs[0]
     const tagName = getTagName(tagExpr)
     if (!tagName) {
-      return new Error('Could not resolve the source face tag for cloned edge')
+      return new Error('Could not resolve the source wall tag for cloned edge')
     }
 
-    const faceCollection =
-      sourceFace.type === 'wall'
-        ? createMemberExpression(
-            createMemberExpression(cloneContext.variableName, 'sketch'),
-            'tags'
-          )
-        : createMemberExpression(cloneContext.variableName, 'faces')
-    exprs.push(createMemberExpression(faceCollection, tagName))
+    const cloneSketchTags = createMemberExpression(
+      createMemberExpression(cloneContext.variableName, 'sketch'),
+      'tags'
+    )
+    exprs.push(createMemberExpression(cloneSketchTags, tagName))
     modifiedAst = tagResult.modifiedAst
   }
 
@@ -1024,23 +1054,15 @@ function getCloneEdgeContext(
   }
 }
 
-function getOriginalFaceForClone(
+function getOriginalWallForClone(
   cloneContext: CloneEdgeContext,
-  selectedFace: Extract<Artifact, { type: 'wall' | 'cap' }>,
+  selectedFace: Extract<Artifact, { type: 'wall' }>,
   artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'wall' | 'cap' }> | Error {
+): Extract<Artifact, { type: 'wall' }> | Error {
   const sourceFaces = cloneContext.sourceSweep.surfaceIds.flatMap((id) => {
     const artifact = artifactGraph.get(id)
-    return artifact?.type === 'wall' || artifact?.type === 'cap'
-      ? [artifact]
-      : []
+    return artifact?.type === 'wall' ? [artifact] : []
   })
-  if (selectedFace.type === 'cap') {
-    const sourceCap = sourceFaces.find(
-      (face) => face.type === 'cap' && face.subType === selectedFace.subType
-    )
-    return sourceCap ?? new Error('Could not map cloned cap to its source cap')
-  }
 
   const originalSegment = getOriginalSegmentArtifact(
     selectedFace.segId,
@@ -1052,7 +1074,6 @@ function getOriginalFaceForClone(
   // Region paths do not always populate segIds. The cloned and source-region
   // segments still point back to the same original sketch segment, though.
   const sourceWall = sourceFaces.find((face) => {
-    if (face.type !== 'wall') return false
     const sourceSegment = getOriginalSegmentArtifact(face.segId, artifactGraph)
     return sourceSegment?.id === originalSegment.id
   })

@@ -12,6 +12,9 @@ use crate::errors::KclErrorDetails;
 use crate::execution::BodyType;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
+use crate::execution::ExtrudePlane;
+use crate::execution::ExtrudeSurface;
+use crate::execution::GeoMeta;
 use crate::execution::Geometry;
 use crate::execution::KclValue;
 use crate::execution::KclValueControlFlow;
@@ -31,6 +34,7 @@ use crate::execution::memory;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::CallExpressionKw;
 use crate::parsing::ast::types::Node;
+use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
 use crate::std::ConsumedSolidArgCheck;
 use crate::std::solid_consumption::validate_value_not_consumed;
@@ -510,9 +514,7 @@ impl FunctionSource {
             && let Ok(Some(result)) = &mut result
         {
             update_memory_for_tags_of_geometry(result, exec_state)?;
-            if !face_tag_names.is_empty() {
-                attach_face_tags_to_geometry(result, exec_state, &face_tag_names);
-            }
+            attach_face_tags_to_geometry(result, exec_state, &face_tag_names);
         }
 
         coerce_result_type(result, self, exec_state).map(|r| r.map(KclValue::continue_))
@@ -594,13 +596,62 @@ fn std_function_allows_face_tags(std_fn_name: &str) -> bool {
 
 fn attach_face_tags_to_geometry(result: &mut KclValue, exec_state: &ExecState, tag_names: &[String]) {
     match result {
-        KclValue::Solid { value } => attach_face_tags_to_solid(value, exec_state, tag_names),
+        KclValue::Solid { value } => {
+            attach_face_tags_to_solid(value, exec_state, tag_names);
+            attach_builtin_cap_faces_to_solid(value, exec_state);
+        }
         KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
             for v in value {
                 attach_face_tags_to_geometry(v, exec_state, tag_names);
             }
         }
         _ => {}
+    }
+}
+
+fn attach_builtin_cap_faces_to_solid(solid: &mut Solid, exec_state: &ExecState) {
+    for (name, face_id) in [("startCap", solid.start_cap_id), ("endCap", solid.end_cap_id)] {
+        let Some(face_id) = face_id else {
+            continue;
+        };
+
+        let tag_node = TagDeclarator::new(name);
+        let source_range = solid.meta.first().map(|meta| meta.source_range).unwrap_or_default();
+        let mut surface = solid
+            .value
+            .iter()
+            .find(|surface| surface.face_id() == face_id)
+            .cloned()
+            .unwrap_or_else(|| {
+                ExtrudeSurface::ExtrudePlane(ExtrudePlane {
+                    face_id,
+                    tag: None,
+                    geo_meta: GeoMeta {
+                        id: face_id,
+                        metadata: source_range.into(),
+                    },
+                })
+            });
+        surface.set_surface_tag(&tag_node);
+
+        let mut solid_copy = solid.clone();
+        clear_tags_from_solid_copy(&mut solid_copy);
+        solid.faces.insert(
+            name.to_owned(),
+            TagIdentifier {
+                value: name.to_owned(),
+                info: vec![(
+                    exec_state.stack().current_epoch(),
+                    TagEngineInfo {
+                        id: face_id,
+                        surface: Some(surface),
+                        path: None,
+                        geometry: Geometry::Solid(solid_copy),
+                    },
+                )],
+                meta: vec![Metadata { source_range }],
+            },
+        );
     }
 }
 
@@ -1493,7 +1544,7 @@ legacyTop = top
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn extrude_without_tag_arguments_does_not_get_face_tags() {
+    async fn extrude_without_tag_arguments_gets_builtin_cap_faces() {
         let program = r#"@settings(kclVersion = 2.0)
 profile = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 0mm])
@@ -1508,18 +1559,17 @@ profile = sketch(on = XY) {
 region1 = region(point = [5mm, 5mm], sketch = profile)
 
 body = extrude(region1, length = 5mm)
+startFromBody = body.faces.startCap
+endFromBody = body.faces.endCap
+clonedBody = clone(body)
+clonedStart = clonedBody.faces.startCap
+clonedEnd = clonedBody.faces.endCap
 "#;
 
         let result = parse_execute(program).await.unwrap();
-        let body = get_var(&result, "body");
-        let KclValue::Solid { value: body } = body else {
-            panic!("expected `body` to be a solid");
-        };
-
-        assert!(
-            body.faces.is_empty(),
-            "body faces should only be populated for tagged calls"
-        );
+        assert_body_face_tags(&result, &["startCap", "endCap"], &["line1"]);
+        assert_vars_are_tags(&result, &["startFromBody", "endFromBody", "clonedStart", "clonedEnd"]);
+        assert_vars_are_missing(&result, &["startCap", "endCap"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]

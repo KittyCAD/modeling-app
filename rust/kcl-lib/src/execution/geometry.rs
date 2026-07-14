@@ -1265,7 +1265,8 @@ pub struct Solid {
     pub artifact_id: ArtifactId,
     /// The extrude surfaces.
     pub value: Vec<ExtrudeSurface>,
-    /// Tag identifiers for the faces of this body, declared via tag arguments
+    /// Tag identifiers for the faces of this body. This includes the built-in
+    /// `startCap` and `endCap` faces, plus faces declared via tag arguments
     /// (e.g. `tag`, `tagStart`, `tagEnd`) on the call that created it.
     #[serde(default, skip_serializing_if = "IndexMap::is_empty")]
     pub faces: IndexMap<String, TagIdentifier>,
