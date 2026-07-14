@@ -73,233 +73,9 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
-  EnginePrimitiveSelection,
   EngineRegionSelection,
-  Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-
-function isSweepEdgeProfileSelection(selection: Selection): boolean {
-  return selection.artifact?.type === 'sweepEdge'
-}
-
-function isGraphEdgeProfileSelection(selection: Selection): boolean {
-  return (
-    selection.artifact?.type === 'sweepEdge' ||
-    selection.artifact?.type === 'primitiveEdge'
-  )
-}
-
-function isEnginePrimitiveEdgeSelection(
-  selection: Selections['otherSelections'][number]
-): selection is EnginePrimitiveSelection {
-  return (
-    isEnginePrimitiveSelection(selection) && selection.primitiveType === 'edge'
-  )
-}
-
-function hasEdgeProfileSelection(selections: Selections): boolean {
-  return (
-    selections.graphSelections.some(isGraphEdgeProfileSelection) ||
-    selections.otherSelections.some(isEnginePrimitiveEdgeSelection)
-  )
-}
-
-function getEdgeProfileExprsFromSelection({
-  selections,
-  modifiedAst,
-  artifactGraph,
-  wasmInstance,
-  nodeToEdit,
-}: {
-  selections: Selections
-  modifiedAst: Node<Program>
-  artifactGraph: ArtifactGraph
-  wasmInstance: ModuleType
-  nodeToEdit?: PathToNode
-}): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
-  const exprs: Expr[] = []
-  const edgeSelections = selections.graphSelections.filter(
-    isSweepEdgeProfileSelection
-  )
-
-  for (const selection of edgeSelections) {
-    const edgeArtifact = selection.artifact
-    if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
-      return new Error('Extrude edge profiles must be sweep edge selections.')
-    }
-
-    const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-      selection,
-      artifactGraph
-    )
-    if (err(sourceSurfaceArtifact)) return sourceSurfaceArtifact
-
-    const sourceSurfaceVars = getVariableExprsFromSelection(
-      {
-        graphSelections: [
-          {
-            artifact: sourceSurfaceArtifact as Artifact,
-            codeRef: sourceSurfaceArtifact.codeRef,
-          },
-        ],
-        otherSelections: [],
-      },
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      nodeToEdit
-    )
-    if (err(sourceSurfaceVars)) return sourceSurfaceVars
-    if (sourceSurfaceVars.exprs.length !== 1) {
-      return new Error(
-        'Expected exactly one source surface for each selected edge.'
-      )
-    }
-    const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
-
-    const sourceSurfaceNode = getNodeFromPath<
-      CallExpressionKw | VariableDeclaration
-    >(modifiedAst, sourceSurfaceArtifact.codeRef.pathToNode, wasmInstance, [
-      'CallExpressionKw',
-      'VariableDeclaration',
-    ])
-    const sourceSurfaceCall = err(sourceSurfaceNode)
-      ? null
-      : sourceSurfaceNode.node.type === 'CallExpressionKw'
-        ? sourceSurfaceNode.node
-        : sourceSurfaceNode.node.declaration.init.type === 'CallExpressionKw'
-          ? sourceSurfaceNode.node.declaration.init
-          : null
-    const sourceSurfaceInput = sourceSurfaceCall?.unlabeled
-    const sourceSurfaceInputIsEdgeExpr =
-      sourceSurfaceInput &&
-      (isCallExprWithName(sourceSurfaceInput, 'getOppositeEdge') ||
-        isCallExprWithName(sourceSurfaceInput, 'getNextAdjacentEdge') ||
-        isCallExprWithName(sourceSurfaceInput, 'edgeId'))
-
-    if (sourceSurfaceInputIsEdgeExpr) {
-      exprs.push(
-        getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
-      )
-      continue
-    }
-
-    if (sourceSurfaceInput?.type === 'Name') {
-      const variableDeclaration = modifiedAst.body.find(
-        (statement): statement is Node<VariableDeclaration> =>
-          statement.type === 'VariableDeclaration' &&
-          statement.declaration.id.name === sourceSurfaceInput.name.name
-      )
-      const variableInit = variableDeclaration?.declaration.init
-      if (
-        variableInit &&
-        (isCallExprWithName(variableInit, 'getOppositeEdge') ||
-          isCallExprWithName(variableInit, 'getNextAdjacentEdge') ||
-          isCallExprWithName(variableInit, 'edgeId'))
-      ) {
-        exprs.push(
-          getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
-        )
-        continue
-      }
-    }
-
-    let sketchSegmentName = getSketchSegmentNameFromSourceSurface(
-      sourceSurfaceArtifact as Artifact,
-      edgeArtifact,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance
-    )
-    if (!sketchSegmentName) {
-      sketchSegmentName = getSketchSegmentName(
-        modifiedAst,
-        edgeArtifact.segId,
-        artifactGraph,
-        wasmInstance
-      )
-    }
-    const originalSegment = getOriginalSegmentArtifact(
-      edgeArtifact.segId,
-      artifactGraph
-    )
-    if (
-      !sketchSegmentName &&
-      originalSegment &&
-      originalSegment.id !== edgeArtifact.segId
-    ) {
-      sketchSegmentName = getSketchSegmentName(
-        modifiedAst,
-        originalSegment.id,
-        artifactGraph,
-        wasmInstance
-      )
-    }
-    if (sketchSegmentName) {
-      exprs.push(
-        getEdgeTagCall(
-          createSketchTagMemberExpression(sourceSurfaceExpr, sketchSegmentName),
-          edgeArtifact
-        )
-      )
-      continue
-    }
-
-    const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-      sourceSurfaceArtifact as Artifact,
-      edgeArtifact,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance
-    )
-    if (regionSketchTagExpr) {
-      exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
-      continue
-    }
-
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      selection,
-      artifactGraph,
-      wasmInstance,
-      ['oppositeAndAdjacentEdges']
-    )
-    if (err(tagResult)) return tagResult
-    modifiedAst = tagResult.modifiedAst
-
-    if (tagResult.exprs.length !== 1) {
-      return new Error("Couldn't retrieve edge profile expression.")
-    }
-
-    exprs.push(getEdgeTagCall(tagResult.exprs[0], edgeArtifact))
-  }
-
-  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
-  if (primitiveEdgeSelections.length > 0) {
-    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
-      {
-        primitiveEdgeSelections,
-        bodies: new Map(),
-        modifiedAst,
-        artifactGraph,
-        wasmInstance,
-        nodeToEdit,
-      }
-    )
-    if (err(primitiveEdgeResult)) return primitiveEdgeResult
-
-    for (const { tagsExpr } of primitiveEdgeResult.bodies.values()) {
-      if (tagsExpr.type === 'ArrayExpression') {
-        exprs.push(...tagsExpr.elements)
-      } else {
-        exprs.push(tagsExpr)
-      }
-    }
-  }
-
-  return { modifiedAst, exprs }
-}
 
 export function addExtrude({
   ast,
@@ -371,10 +147,14 @@ export function addExtrude({
     graphSelections: sketches.graphSelections.filter(
       (selection) =>
         !isFaceArtifact(selection.artifact) &&
-        !isSweepEdgeProfileSelection(selection)
+        selection.artifact?.type !== 'sweepEdge'
     ),
     otherSelections: sketches.otherSelections.filter(
-      (selection) => !isEnginePrimitiveEdgeSelection(selection)
+      (selection) =>
+        !(
+          isEnginePrimitiveSelection(selection) &&
+          selection.primitiveType === 'edge'
+        )
     ),
   }
   if (nonFaceSelections.graphSelections.length > 0) {
@@ -511,9 +291,19 @@ export function addExtrude({
     if (err(twistCenterExpression)) return twistCenterExpression
     twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
   }
-  const effectiveMethod = hasEdgeProfileSelection(sketches)
-    ? KCL_PRELUDE_EXTRUDE_METHOD_NEW
-    : method
+  const effectiveMethod =
+    sketches.graphSelections.some(
+      (selection) =>
+        selection.artifact?.type === 'sweepEdge' ||
+        selection.artifact?.type === 'primitiveEdge'
+    ) ||
+    sketches.otherSelections.some(
+      (selection) =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge'
+    )
+      ? KCL_PRELUDE_EXTRUDE_METHOD_NEW
+      : method
   const methodExpr = effectiveMethod
     ? [createLabeledArg('method', createLocalName(effectiveMethod))]
     : []
@@ -1403,4 +1193,200 @@ export function retrieveBodyTypeFromOpArg(
   }
 
   return new Error("Couldn't retrieve bodyType argument")
+}
+
+function getEdgeProfileExprsFromSelection({
+  selections,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selections: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
+  const exprs: Expr[] = []
+  const edgeSelections = selections.graphSelections.filter(
+    (selection) => selection.artifact?.type === 'sweepEdge'
+  )
+
+  for (const selection of edgeSelections) {
+    const edgeArtifact = selection.artifact
+    if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
+      return new Error('Extrude edge profiles must be sweep edge selections.')
+    }
+
+    const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+      selection,
+      artifactGraph
+    )
+    if (err(sourceSurfaceArtifact)) return sourceSurfaceArtifact
+
+    const sourceSurfaceVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            artifact: sourceSurfaceArtifact as Artifact,
+            codeRef: sourceSurfaceArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(sourceSurfaceVars)) return sourceSurfaceVars
+    if (sourceSurfaceVars.exprs.length !== 1) {
+      return new Error(
+        'Expected exactly one source surface for each selected edge.'
+      )
+    }
+    const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+
+    const sourceSurfaceNode = getNodeFromPath<
+      CallExpressionKw | VariableDeclaration
+    >(modifiedAst, sourceSurfaceArtifact.codeRef.pathToNode, wasmInstance, [
+      'CallExpressionKw',
+      'VariableDeclaration',
+    ])
+    const sourceSurfaceCall = err(sourceSurfaceNode)
+      ? null
+      : sourceSurfaceNode.node.type === 'CallExpressionKw'
+        ? sourceSurfaceNode.node
+        : sourceSurfaceNode.node.declaration.init.type === 'CallExpressionKw'
+          ? sourceSurfaceNode.node.declaration.init
+          : null
+    const sourceSurfaceInput = sourceSurfaceCall?.unlabeled
+    const sourceSurfaceInputIsEdgeExpr =
+      sourceSurfaceInput &&
+      (isCallExprWithName(sourceSurfaceInput, 'getOppositeEdge') ||
+        isCallExprWithName(sourceSurfaceInput, 'getNextAdjacentEdge') ||
+        isCallExprWithName(sourceSurfaceInput, 'edgeId'))
+
+    if (sourceSurfaceInputIsEdgeExpr) {
+      exprs.push(
+        getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
+      )
+      continue
+    }
+
+    if (sourceSurfaceInput?.type === 'Name') {
+      const variableDeclaration = modifiedAst.body.find(
+        (statement): statement is Node<VariableDeclaration> =>
+          statement.type === 'VariableDeclaration' &&
+          statement.declaration.id.name === sourceSurfaceInput.name.name
+      )
+      const variableInit = variableDeclaration?.declaration.init
+      if (
+        variableInit &&
+        (isCallExprWithName(variableInit, 'getOppositeEdge') ||
+          isCallExprWithName(variableInit, 'getNextAdjacentEdge') ||
+          isCallExprWithName(variableInit, 'edgeId'))
+      ) {
+        exprs.push(
+          getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
+        )
+        continue
+      }
+    }
+
+    let sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      edgeArtifact,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (!sketchSegmentName) {
+      sketchSegmentName = getSketchSegmentName(
+        modifiedAst,
+        edgeArtifact.segId,
+        artifactGraph,
+        wasmInstance
+      )
+    }
+    const originalSegment = getOriginalSegmentArtifact(
+      edgeArtifact.segId,
+      artifactGraph
+    )
+    if (
+      !sketchSegmentName &&
+      originalSegment &&
+      originalSegment.id !== edgeArtifact.segId
+    ) {
+      sketchSegmentName = getSketchSegmentName(
+        modifiedAst,
+        originalSegment.id,
+        artifactGraph,
+        wasmInstance
+      )
+    }
+    if (sketchSegmentName) {
+      exprs.push(
+        getEdgeTagCall(
+          createSketchTagMemberExpression(sourceSurfaceExpr, sketchSegmentName),
+          edgeArtifact
+        )
+      )
+      continue
+    }
+
+    const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      edgeArtifact,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (regionSketchTagExpr) {
+      exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
+      continue
+    }
+
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      selection,
+      artifactGraph,
+      wasmInstance,
+      ['oppositeAndAdjacentEdges']
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+
+    if (tagResult.exprs.length !== 1) {
+      return new Error("Couldn't retrieve edge profile expression.")
+    }
+
+    exprs.push(getEdgeTagCall(tagResult.exprs[0], edgeArtifact))
+  }
+
+  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
+  if (primitiveEdgeSelections.length > 0) {
+    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
+      {
+        primitiveEdgeSelections,
+        bodies: new Map(),
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+        nodeToEdit,
+      }
+    )
+    if (err(primitiveEdgeResult)) return primitiveEdgeResult
+
+    for (const { tagsExpr } of primitiveEdgeResult.bodies.values()) {
+      if (tagsExpr.type === 'ArrayExpression') {
+        exprs.push(...tagsExpr.elements)
+      } else {
+        exprs.push(tagsExpr)
+      }
+    }
+  }
+
+  return { modifiedAst, exprs }
 }

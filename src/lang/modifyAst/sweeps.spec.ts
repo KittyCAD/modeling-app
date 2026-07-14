@@ -913,13 +913,12 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('extrude002 = extrude(')
-      expect(newCode).toContain('getOppositeEdge(extrude001.sketch.tags.line1)')
-      expect(newCode).toContain('length = 2')
-      expect(newCode).toContain('bodyType = SURFACE')
-      expect(newCode).toContain('method = NEW')
-      expect(newCode).toContain('getOppositeEdge(')
-      expect(newCode).not.toContain('direction =')
+      expect(newCode).toContain(`extrude002 = extrude(
+  getOppositeEdge(extrude001.sketch.tags.line1),
+  length = 2,
+  method = NEW,
+  bodyType = SURFACE,
+)`)
     })
 
     it('should force method NEW and compose edge references for extruded edge profiles', async () => {
