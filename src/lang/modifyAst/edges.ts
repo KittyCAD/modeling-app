@@ -31,6 +31,7 @@ import {
 } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
+  getArtifactsOfTypes,
   getCodeRefsByArtifactId,
   getCommonFacesForEdge,
   getOriginalSegmentArtifact,
@@ -841,38 +842,34 @@ function getEdgeFaceExprs(
   )
   const faceOwnerExpr = cloneContext?.variableName ?? bodyExpr
 
-  let modifiedAst = ast
-  const exprs: Expr[] = []
+  const sourceFaces: typeof commonFaces = []
   for (const commonFace of commonFaces) {
-    const face = cloneContext
+    const sourceFace = cloneContext
       ? getOriginalFaceForClone(cloneContext, commonFace, artifactGraph)
       : commonFace
-    if (err(face)) {
-      return face
-    }
+    if (err(sourceFace)) return sourceFace
+    sourceFaces.push(sourceFace)
+  }
 
-    const codeRefs = getCodeRefsByArtifactId(face.id, artifactGraph)
-    if (!codeRefs?.[0]) {
-      return new Error(
-        cloneContext
-          ? 'Could not resolve the source face for cloned edge'
-          : 'Could not resolve a face for the selected edge'
-      )
-    }
-
-    const tagResult = modifyAstWithTagsForSelection(
-      modifiedAst,
-      {
-        artifact: face,
-        codeRef: codeRefs[0],
+  // Reuse the shared edge-tagging flow after mapping clone faces to the
+  // corresponding source faces where tags can be added.
+  const tagResult = modifyAstWithTagsForSelection(
+    ast,
+    {
+      ...edge,
+      artifact: {
+        ...edge.artifact,
+        commonSurfaceIds: sourceFaces.map((face) => face.id),
       },
-      artifactGraph,
-      wasmInstance
-    )
-    if (err(tagResult)) {
-      return tagResult
-    }
-    const tagExpr = tagResult.exprs[0]
+    },
+    artifactGraph,
+    wasmInstance
+  )
+  if (err(tagResult)) return tagResult
+
+  const exprs: Expr[] = []
+  for (const [index, commonFace] of commonFaces.entries()) {
+    const tagExpr = tagResult.exprs[index]
     if (!tagExpr) {
       return new Error('Could not resolve a face tag for the selected edge')
     }
@@ -901,10 +898,9 @@ function getEdgeFaceExprs(
     } else {
       exprs.push(tagExpr)
     }
-    modifiedAst = tagResult.modifiedAst
   }
 
-  return { modifiedAst, exprs }
+  return { modifiedAst: tagResult.modifiedAst, exprs }
 }
 
 function createBodyFaceExpression(
@@ -992,12 +988,15 @@ function getOriginalFaceForClone(
   selectedFace: Extract<Artifact, { type: 'wall' | 'cap' }>,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }> | Error {
-  const sourceFaces = cloneContext.sourceSweep.surfaceIds.flatMap((id) => {
-    const artifact = artifactGraph.get(id)
-    return artifact?.type === 'wall' || artifact?.type === 'cap'
-      ? [artifact]
-      : []
-  })
+  const sourceFaces = [
+    ...getArtifactsOfTypes(
+      {
+        keys: cloneContext.sourceSweep.surfaceIds,
+        types: ['wall', 'cap'],
+      },
+      artifactGraph
+    ).values(),
+  ]
   if (selectedFace.type === 'cap') {
     const sourceCap = sourceFaces.find(
       (face) => face.type === 'cap' && face.subType === selectedFace.subType
