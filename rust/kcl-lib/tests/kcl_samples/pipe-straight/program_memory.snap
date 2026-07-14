@@ -145,14 +145,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -162,8 +162,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -202,12 +202,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -267,14 +267,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -284,8 +284,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -324,12 +324,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -389,14 +389,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -406,8 +406,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -446,12 +446,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -511,14 +511,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -528,8 +528,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -568,12 +568,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -633,14 +633,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -650,8 +650,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -690,12 +690,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -755,14 +755,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -772,8 +772,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -812,12 +812,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -877,14 +877,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -894,8 +894,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -934,12 +934,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -999,14 +999,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1016,8 +1016,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1056,12 +1056,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1121,14 +1121,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1138,8 +1138,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1178,12 +1178,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1243,14 +1243,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1260,8 +1260,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1300,12 +1300,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1365,14 +1365,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1382,8 +1382,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1422,12 +1422,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1487,14 +1487,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1504,8 +1504,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1544,12 +1544,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1609,14 +1609,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1626,8 +1626,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1666,12 +1666,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1731,14 +1731,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1748,8 +1748,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1788,12 +1788,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1853,14 +1853,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1870,8 +1870,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -1910,12 +1910,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -1975,14 +1975,14 @@ description: Variables in memory after executing pipe-straight.kcl
                 },
                 "ccw": true,
                 "center": [
-                  55.00000000039612,
-                  0.0000000006150269045309947
+                  55.00000000003961,
+                  0.00000000006150264434411065
                 ],
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
-                "radius": 6.000000000487703,
+                "radius": 6.000000000048773,
                 "tag": {
                   "commentStart": 1974,
                   "end": 1981,
@@ -1992,8 +1992,8 @@ description: Variables in memory after executing pipe-straight.kcl
                   "value": "circle1"
                 },
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "type": "Circle",
                 "units": "mm"
@@ -2032,12 +2032,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "start": {
               "from": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "to": [
-                58.24887407326204,
-                5.044285605585475
+                58.24887392520871,
+                5.0442856996369745
               ],
               "units": "mm",
               "tag": null,
@@ -2099,14 +2099,14 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "ccw": true,
             "center": [
-              55.00000000039612,
-              0.0000000006150269045309947
+              55.00000000003961,
+              0.00000000006150264434411065
             ],
             "from": [
-              58.24887407326204,
-              5.044285605585475
+              58.24887392520871,
+              5.0442856996369745
             ],
-            "radius": 6.000000000487703,
+            "radius": 6.000000000048773,
             "tag": {
               "commentStart": 1974,
               "end": 1981,
@@ -2116,8 +2116,8 @@ description: Variables in memory after executing pipe-straight.kcl
               "value": "circle1"
             },
             "to": [
-              58.24887407326204,
-              5.044285605585475
+              58.24887392520871,
+              5.0442856996369745
             ],
             "type": "Circle",
             "units": "mm"
@@ -2156,12 +2156,12 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "start": {
           "from": [
-            58.24887407326204,
-            5.044285605585475
+            58.24887392520871,
+            5.0442856996369745
           ],
           "to": [
-            58.24887407326204,
-            5.044285605585475
+            58.24887392520871,
+            5.0442856996369745
           ],
           "units": "mm",
           "tag": null,
@@ -2220,7 +2220,7 @@ description: Variables in memory after executing pipe-straight.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 58.24887407326204,
+                        "n": 58.24887392520871,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2228,7 +2228,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": 5.044285605585475,
+                        "n": 5.0442856996369745,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2238,7 +2238,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     ],
                     "center": [
                       {
-                        "n": 55.00000000039612,
+                        "n": 55.00000000003961,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2246,7 +2246,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": 0.0000000006150269045309947,
+                        "n": 0.00000000006150264434411065,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2340,7 +2340,7 @@ description: Variables in memory after executing pipe-straight.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 55.00000000026408,
+                        "n": 55.00000000002641,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2348,7 +2348,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": 0.00000000041001793421349,
+                        "n": 0.00000000004100176271277454,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2358,7 +2358,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.00000000013204015708582138,
+                        "n": 0.000000000013204025894081281,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2366,7 +2366,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": 0.0000000002050089664645931,
+                        "n": 0.000000000020500881301397543,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2465,14 +2465,14 @@ description: Variables in memory after executing pipe-straight.kcl
                   },
                   "ccw": true,
                   "center": [
-                    55.00000000039612,
-                    0.0000000006150269045309947
+                    55.00000000003961,
+                    0.00000000006150264434411065
                   ],
                   "from": [
-                    58.24887407326204,
-                    5.044285605585475
+                    58.24887392520871,
+                    5.0442856996369745
                   ],
-                  "radius": 6.000000000487703,
+                  "radius": 6.000000000048773,
                   "tag": {
                     "commentStart": 1974,
                     "end": 1981,
@@ -2482,8 +2482,8 @@ description: Variables in memory after executing pipe-straight.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    58.24887407326204,
-                    5.044285605585475
+                    58.24887392520871,
+                    5.0442856996369745
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -2522,12 +2522,12 @@ description: Variables in memory after executing pipe-straight.kcl
               },
               "start": {
                 "from": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "to": [
-                  58.24887407326204,
-                  5.044285605585475
+                  58.24887392520871,
+                  5.0442856996369745
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2567,14 +2567,14 @@ description: Variables in memory after executing pipe-straight.kcl
           },
           "ccw": true,
           "center": [
-            55.00000000039612,
-            0.0000000006150269045309947
+            55.00000000003961,
+            0.00000000006150264434411065
           ],
           "from": [
-            58.24887407326204,
-            5.044285605585475
+            58.24887392520871,
+            5.0442856996369745
           ],
-          "radius": 6.000000000487703,
+          "radius": 6.000000000048773,
           "tag": {
             "commentStart": 1974,
             "end": 1981,
@@ -2584,8 +2584,8 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "circle1"
           },
           "to": [
-            58.24887407326204,
-            5.044285605585475
+            58.24887392520871,
+            5.0442856996369745
           ],
           "type": "Circle",
           "units": "mm"
@@ -2624,12 +2624,12 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "start": {
         "from": [
-          58.24887407326204,
-          5.044285605585475
+          58.24887392520871,
+          5.0442856996369745
         ],
         "to": [
-          58.24887407326204,
-          5.044285605585475
+          58.24887392520871,
+          5.0442856996369745
         ],
         "units": "mm",
         "tag": null,
@@ -2689,12 +2689,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000000008483875051381927,
-              -0.00000000000000003292047233525593
+              -0.000000000000000008483872073531722,
+              -0.000000000000000003292049797785492
             ],
             "from": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "radius": 65.0,
             "tag": {
@@ -2706,8 +2706,8 @@ description: Variables in memory after executing pipe-straight.kcl
               "value": "flangeOuterCircle"
             },
             "to": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "type": "Circle",
             "units": "mm"
@@ -2746,12 +2746,12 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "start": {
           "from": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "to": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "units": "mm",
           "tag": null,
@@ -2815,12 +2815,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000000008483875051381927,
-              -0.00000000000000003292047233525593
+              -0.000000000000000008483872073531722,
+              -0.000000000000000003292049797785492
             ],
             "from": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "radius": 65.0,
             "tag": {
@@ -2832,8 +2832,8 @@ description: Variables in memory after executing pipe-straight.kcl
               "value": "flangeOuterCircle"
             },
             "to": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "type": "Circle",
             "units": "mm"
@@ -2872,12 +2872,12 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "start": {
           "from": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "to": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "units": "mm",
           "tag": null,
@@ -2948,12 +2948,12 @@ description: Variables in memory after executing pipe-straight.kcl
           },
           "ccw": true,
           "center": [
-            -0.00000000000000008483875051381927,
-            -0.00000000000000003292047233525593
+            -0.000000000000000008483872073531722,
+            -0.000000000000000003292049797785492
           ],
           "from": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "radius": 65.0,
           "tag": {
@@ -2965,8 +2965,8 @@ description: Variables in memory after executing pipe-straight.kcl
             "value": "flangeOuterCircle"
           },
           "to": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "type": "Circle",
           "units": "mm"
@@ -3005,12 +3005,12 @@ description: Variables in memory after executing pipe-straight.kcl
       },
       "start": {
         "from": [
-          60.59775022821917,
-          23.51409507674841
+          60.597750228219155,
+          23.514095076748436
         ],
         "to": [
-          60.59775022821917,
-          23.51409507674841
+          60.597750228219155,
+          23.514095076748436
         ],
         "units": "mm",
         "tag": null,
@@ -3050,7 +3050,7 @@ description: Variables in memory after executing pipe-straight.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 31.12987357216734,
+                        "n": 31.129873572167345,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3058,7 +3058,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": -15.997842710218066,
+                        "n": -15.997842710218064,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3068,7 +3068,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000000002550629616780737,
+                        "n": 0.0000000000000000002550631064346809,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3076,7 +3076,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000000013107848300445252,
+                        "n": -0.0000000000000000001310786070815444,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3170,7 +3170,7 @@ description: Variables in memory after executing pipe-straight.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 60.59775022821917,
+                        "n": 60.597750228219155,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3178,7 +3178,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": 23.51409507674841,
+                        "n": 23.514095076748436,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3188,7 +3188,7 @@ description: Variables in memory after executing pipe-straight.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000000000008483875051381927,
+                        "n": -0.000000000000000008483872073531722,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3196,7 +3196,7 @@ description: Variables in memory after executing pipe-straight.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000003292047233525593,
+                        "n": -0.000000000000000003292049797785492,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3294,12 +3294,12 @@ description: Variables in memory after executing pipe-straight.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.00000000000000008483875051381927,
-                    -0.00000000000000003292047233525593
+                    -0.000000000000000008483872073531722,
+                    -0.000000000000000003292049797785492
                   ],
                   "from": [
-                    60.59775022821917,
-                    23.51409507674841
+                    60.597750228219155,
+                    23.514095076748436
                   ],
                   "radius": 65.0,
                   "tag": {
@@ -3311,8 +3311,8 @@ description: Variables in memory after executing pipe-straight.kcl
                     "value": "flangeOuterCircle"
                   },
                   "to": [
-                    60.59775022821917,
-                    23.51409507674841
+                    60.597750228219155,
+                    23.514095076748436
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -3323,13 +3323,13 @@ description: Variables in memory after executing pipe-straight.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    60.59775022821917,
-                    23.51409507674841
+                    60.597750228219155,
+                    23.514095076748436
                   ],
                   "tag": null,
                   "to": [
-                    31.12987357216734,
-                    -15.997842710218066
+                    31.129873572167345,
+                    -15.997842710218064
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -3341,12 +3341,12 @@ description: Variables in memory after executing pipe-straight.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000000000000002550629616780737,
-                    -0.0000000000000000013107848300445252
+                    0.0000000000000000002550631064346809,
+                    -0.0000000000000000001310786070815444
                   ],
                   "from": [
-                    31.12987357216734,
-                    -15.997842710218066
+                    31.129873572167345,
+                    -15.997842710218064
                   ],
                   "radius": 35.0,
                   "tag": {
@@ -3358,8 +3358,8 @@ description: Variables in memory after executing pipe-straight.kcl
                     "value": "flangeInnerCircle"
                   },
                   "to": [
-                    31.12987357216734,
-                    -15.997842710218066
+                    31.129873572167345,
+                    -15.997842710218064
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -3398,12 +3398,12 @@ description: Variables in memory after executing pipe-straight.kcl
               },
               "start": {
                 "from": [
-                  60.59775022821917,
-                  23.51409507674841
+                  60.597750228219155,
+                  23.514095076748436
                 ],
                 "to": [
-                  60.59775022821917,
-                  23.51409507674841
+                  60.597750228219155,
+                  23.514095076748436
                 ],
                 "units": "mm",
                 "tag": null,
@@ -3462,12 +3462,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000000008483875051381927,
-              -0.00000000000000003292047233525593
+              -0.000000000000000008483872073531722,
+              -0.000000000000000003292049797785492
             ],
             "from": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "radius": 65.0,
             "tag": {
@@ -3479,8 +3479,8 @@ description: Variables in memory after executing pipe-straight.kcl
               "value": "flangeOuterCircle"
             },
             "to": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "type": "Circle",
             "units": "mm"
@@ -3519,12 +3519,12 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "start": {
           "from": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "to": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "units": "mm",
           "tag": null,
@@ -4259,12 +4259,12 @@ description: Variables in memory after executing pipe-straight.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000000000008483875051381927,
-              -0.00000000000000003292047233525593
+              -0.000000000000000008483872073531722,
+              -0.000000000000000003292049797785492
             ],
             "from": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "radius": 65.0,
             "tag": {
@@ -4276,8 +4276,8 @@ description: Variables in memory after executing pipe-straight.kcl
               "value": "flangeOuterCircle"
             },
             "to": [
-              60.59775022821917,
-              23.51409507674841
+              60.597750228219155,
+              23.514095076748436
             ],
             "type": "Circle",
             "units": "mm"
@@ -4316,12 +4316,12 @@ description: Variables in memory after executing pipe-straight.kcl
         },
         "start": {
           "from": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "to": [
-            60.59775022821917,
-            23.51409507674841
+            60.597750228219155,
+            23.514095076748436
           ],
           "units": "mm",
           "tag": null,

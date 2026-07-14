@@ -68,8 +68,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.00000000000032917121530743186,
-          "y": -0.0000000000005700935078577667,
+          "x": -0.000000000000000000009097996342281411,
+          "y": -0.00000000000000000019371529680462074,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 150.00000000000034,
-            "y": -0.00000000013699763090746473,
+            "x": 150.0,
+            "y": -0.00000000000000007773362832750456,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 150.00000000000034,
-            "y": 5.999999999590147,
+            "x": 150.0,
+            "y": 5.999999999999999,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.00000000000032209978698930855,
-            "y": 5.999999999317292,
+            "x": 0.000000000000007876179657971618,
+            "y": 5.999999999999999,
             "z": 0.0
           },
           "relative": false
@@ -141,17 +141,17 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000003579750850840073,
-            "y": 13.499999999449024
+            "x": -0.0000000000000009097355763973145,
+            "y": 13.5
           },
-          "radius": 7.500000000131733,
+          "radius": 7.500000000000001,
           "start": {
             "unit": "degrees",
-            "value": -89.99999999726282
+            "value": -89.99999999999993
           },
           "end": {
             "unit": "degrees",
-            "value": -149.9961982550574
+            "value": -149.99710839918998
           },
           "relative": false
         }
@@ -166,8 +166,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -31.49494169747123,
-            "y": 53.05083921784563,
+            "x": -31.495001273552674,
+            "y": 53.05094239023973,
             "z": 0.0
           },
           "relative": false
@@ -183,8 +183,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -36.691094120896075,
-            "y": 50.05083921743044,
+            "x": -36.691153696259306,
+            "y": 50.05094239023973,
             "z": 0.0
           },
           "relative": false
@@ -200,8 +200,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -11.691094121614412,
-            "y": 6.749569027793636,
+            "x": -11.691153696259306,
+            "y": 6.749672201017803,
             "z": 0.0
           },
           "relative": false
@@ -217,17 +217,17 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000025142998794080995,
-            "y": 13.499999997574328
+            "x": 0.000000000000003552713678800501,
+            "y": 13.499999999999996
           },
-          "radius": 13.499999999238204,
+          "radius": 13.500000005306278,
           "start": {
             "unit": "degrees",
-            "value": -149.99788792149604
+            "value": -149.99839355510466
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00000000152768
+            "value": -90.00000000000001
           },
           "relative": false
         }

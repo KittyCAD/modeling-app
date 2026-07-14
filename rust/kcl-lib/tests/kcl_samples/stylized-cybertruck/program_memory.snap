@@ -3616,8 +3616,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "sourceRange": []
           },
           "from": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "tag": {
             "commentStart": 3856,
@@ -3628,8 +3628,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line1"
           },
           "to": [
-            -0.2625000000020267,
-            0.8046633388265529
+            -0.26250000000020485,
+            0.8046633388240977
           ],
           "type": "ToPoint",
           "units": "m"
@@ -3640,8 +3640,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "sourceRange": []
           },
           "from": [
-            -0.2625000000020267,
-            0.8046633388265529
+            -0.26250000000020485,
+            0.8046633388240977
           ],
           "tag": {
             "commentStart": 3933,
@@ -3652,8 +3652,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line2"
           },
           "to": [
-            0.2625000000007751,
-            0.8046633388266685
+            0.26250000000007895,
+            0.804663338824103
           ],
           "type": "ToPoint",
           "units": "m"
@@ -3664,8 +3664,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "sourceRange": []
           },
           "from": [
-            0.2625000000007751,
-            0.8046633388266685
+            0.26250000000007895,
+            0.804663338824103
           ],
           "tag": {
             "commentStart": 4049,
@@ -3676,8 +3676,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line3"
           },
           "to": [
-            0.5250000000017148,
-            0.35000000000002723
+            0.5250000000001714,
+            0.3500000000000027
           ],
           "type": "ToPoint",
           "units": "m"
@@ -3688,8 +3688,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "sourceRange": []
           },
           "from": [
-            0.5250000000017148,
-            0.35000000000002723
+            0.5250000000001714,
+            0.3500000000000027
           ],
           "tag": {
             "commentStart": 4205,
@@ -3700,8 +3700,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line4"
           },
           "to": [
-            0.2625000000005006,
-            -0.10466333882676333
+            0.2625000000000522,
+            -0.10466333882410377
           ],
           "type": "ToPoint",
           "units": "m"
@@ -3712,8 +3712,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "sourceRange": []
           },
           "from": [
-            0.2625000000005006,
-            -0.10466333882676333
+            0.2625000000000522,
+            -0.10466333882410377
           ],
           "tag": {
             "commentStart": 4321,
@@ -3724,8 +3724,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line5"
           },
           "to": [
-            -0.2625000000023643,
-            -0.10466333882642047
+            -0.262500000000238,
+            -0.10466333882409191
           ],
           "type": "ToPoint",
           "units": "m"
@@ -3736,8 +3736,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "sourceRange": []
           },
           "from": [
-            -0.2625000000023643,
-            -0.10466333882642047
+            -0.262500000000238,
+            -0.10466333882409191
           ],
           "tag": {
             "commentStart": 4439,
@@ -3748,8 +3748,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
             "value": "line6"
           },
           "to": [
-            -0.5250000000034141,
-            0.35000000000016324
+            -0.5250000000003414,
+            0.3500000000000079
           ],
           "type": "ToPoint",
           "units": "m"
@@ -3788,12 +3788,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
       },
       "start": {
         "from": [
-          -0.5250000000033983,
-          0.3500000000001905
+          -0.5250000000003399,
+          0.35000000000001064
         ],
         "to": [
-          -0.5250000000033983,
-          0.3500000000001905
+          -0.5250000000003399,
+          0.35000000000001064
         ],
         "units": "m",
         "tag": null,
@@ -3937,8 +3937,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000033983,
-              0.3500000000001905
+              -0.5250000000003399,
+              0.35000000000001064
             ],
             "tag": {
               "commentStart": 3856,
@@ -3949,8 +3949,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line1"
             },
             "to": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3961,8 +3961,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "tag": {
               "commentStart": 3933,
@@ -3973,8 +3973,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line2"
             },
             "to": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3985,8 +3985,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "tag": {
               "commentStart": 4049,
@@ -3997,8 +3997,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4009,8 +4009,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "tag": {
               "commentStart": 4205,
@@ -4021,8 +4021,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4033,8 +4033,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "tag": {
               "commentStart": 4321,
@@ -4045,8 +4045,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line5"
             },
             "to": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4057,8 +4057,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "tag": {
               "commentStart": 4439,
@@ -4069,8 +4069,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000034141,
-              0.35000000000016324
+              -0.5250000000003414,
+              0.3500000000000079
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4109,12 +4109,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "to": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "units": "m",
           "tag": null,
@@ -5900,8 +5900,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000033983,
-              0.3500000000001905
+              -0.5250000000003399,
+              0.35000000000001064
             ],
             "tag": {
               "commentStart": 3856,
@@ -5912,8 +5912,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line1"
             },
             "to": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5924,8 +5924,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "tag": {
               "commentStart": 3933,
@@ -5936,8 +5936,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line2"
             },
             "to": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5948,8 +5948,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "tag": {
               "commentStart": 4049,
@@ -5960,8 +5960,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5972,8 +5972,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "tag": {
               "commentStart": 4205,
@@ -5984,8 +5984,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5996,8 +5996,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "tag": {
               "commentStart": 4321,
@@ -6008,8 +6008,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line5"
             },
             "to": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6020,8 +6020,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "tag": {
               "commentStart": 4439,
@@ -6032,8 +6032,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000034141,
-              0.35000000000016324
+              -0.5250000000003414,
+              0.3500000000000079
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6072,12 +6072,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "to": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "units": "m",
           "tag": null,
@@ -6226,8 +6226,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000033983,
-              0.3500000000001905
+              -0.5250000000003399,
+              0.35000000000001064
             ],
             "tag": {
               "commentStart": 3856,
@@ -6238,8 +6238,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line1"
             },
             "to": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6250,8 +6250,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "tag": {
               "commentStart": 3933,
@@ -6262,8 +6262,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line2"
             },
             "to": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6274,8 +6274,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "tag": {
               "commentStart": 4049,
@@ -6286,8 +6286,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6298,8 +6298,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "tag": {
               "commentStart": 4205,
@@ -6310,8 +6310,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6322,8 +6322,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "tag": {
               "commentStart": 4321,
@@ -6334,8 +6334,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line5"
             },
             "to": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6346,8 +6346,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "tag": {
               "commentStart": 4439,
@@ -6358,8 +6358,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000034141,
-              0.35000000000016324
+              -0.5250000000003414,
+              0.3500000000000079
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6398,12 +6398,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "to": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "units": "m",
           "tag": null,
@@ -7811,8 +7811,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000033983,
-              0.3500000000001905
+              -0.5250000000003399,
+              0.35000000000001064
             ],
             "tag": {
               "commentStart": 3856,
@@ -7823,8 +7823,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line1"
             },
             "to": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7835,8 +7835,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "tag": {
               "commentStart": 3933,
@@ -7847,8 +7847,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line2"
             },
             "to": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7859,8 +7859,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "tag": {
               "commentStart": 4049,
@@ -7871,8 +7871,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7883,8 +7883,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "tag": {
               "commentStart": 4205,
@@ -7895,8 +7895,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7907,8 +7907,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "tag": {
               "commentStart": 4321,
@@ -7919,8 +7919,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line5"
             },
             "to": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7931,8 +7931,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "tag": {
               "commentStart": 4439,
@@ -7943,8 +7943,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000034141,
-              0.35000000000016324
+              -0.5250000000003414,
+              0.3500000000000079
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7983,12 +7983,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "to": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "units": "m",
           "tag": null,
@@ -8146,8 +8146,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000033983,
-              0.3500000000001905
+              -0.5250000000003399,
+              0.35000000000001064
             ],
             "tag": {
               "commentStart": 3856,
@@ -8158,8 +8158,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line1"
             },
             "to": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8170,8 +8170,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000020267,
-              0.8046633388265529
+              -0.26250000000020485,
+              0.8046633388240977
             ],
             "tag": {
               "commentStart": 3933,
@@ -8182,8 +8182,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line2"
             },
             "to": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8194,8 +8194,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000007751,
-              0.8046633388266685
+              0.26250000000007895,
+              0.804663338824103
             ],
             "tag": {
               "commentStart": 4049,
@@ -8206,8 +8206,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8218,8 +8218,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000017148,
-              0.35000000000002723
+              0.5250000000001714,
+              0.3500000000000027
             ],
             "tag": {
               "commentStart": 4205,
@@ -8230,8 +8230,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8242,8 +8242,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000005006,
-              -0.10466333882676333
+              0.2625000000000522,
+              -0.10466333882410377
             ],
             "tag": {
               "commentStart": 4321,
@@ -8254,8 +8254,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line5"
             },
             "to": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8266,8 +8266,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.2625000000023643,
-              -0.10466333882642047
+              -0.262500000000238,
+              -0.10466333882409191
             ],
             "tag": {
               "commentStart": 4439,
@@ -8278,8 +8278,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000034141,
-              0.35000000000016324
+              -0.5250000000003414,
+              0.3500000000000079
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8318,12 +8318,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "to": [
-            -0.5250000000033983,
-            0.3500000000001905
+            -0.5250000000003399,
+            0.35000000000001064
           ],
           "units": "m",
           "tag": null,
@@ -9622,7 +9622,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.5250000000023126,
+                        "n": 0.5250000000002312,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9630,7 +9630,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000002723,
+                        "n": 0.3500000000000027,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9640,7 +9640,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.0000000000005663833864229715,
+                        "n": -0.00000000000005663827739078771,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9743,7 +9743,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.5250000000033983,
+                        "n": -0.5250000000003399,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9751,7 +9751,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.3500000000001905,
+                        "n": 0.35000000000001064,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9761,7 +9761,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.2625000000020267,
+                        "n": -0.26250000000020485,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9769,7 +9769,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388265529,
+                        "n": 0.8046633388240977,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9863,7 +9863,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.262500000002011,
+                        "n": -0.2625000000002033,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9871,7 +9871,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388264984,
+                        "n": 0.8046633388240922,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9881,7 +9881,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.2625000000007751,
+                        "n": 0.26250000000007895,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9889,7 +9889,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388266685,
+                        "n": 0.804663338824103,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9983,7 +9983,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.2625000000007122,
+                        "n": 0.2625000000000726,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9991,7 +9991,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388265868,
+                        "n": 0.8046633388240948,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10001,7 +10001,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5250000000017148,
+                        "n": 0.5250000000001714,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10009,7 +10009,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000002723,
+                        "n": 0.3500000000000027,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10103,7 +10103,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.5250000000011327,
+                        "n": 0.5250000000001132,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10121,7 +10121,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.2625000000005006,
+                        "n": 0.2625000000000522,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10129,7 +10129,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882676333,
+                        "n": -0.10466333882410377,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10223,7 +10223,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.2625000000004849,
+                        "n": 0.26250000000005064,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10231,7 +10231,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882670882,
+                        "n": -0.10466333882409831,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10241,7 +10241,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.2625000000023643,
+                        "n": -0.262500000000238,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10249,7 +10249,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882642047,
+                        "n": -0.10466333882409191,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10343,7 +10343,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.2625000000023014,
+                        "n": -0.2625000000002317,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10351,7 +10351,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882633871,
+                        "n": -0.10466333882408374,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10361,7 +10361,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.5250000000034141,
+                        "n": -0.5250000000003414,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10369,7 +10369,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000016324,
+                        "n": 0.3500000000000079,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10463,7 +10463,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000000000018647759073473426,
+                        "n": 0.0000000000000000002693551847571604,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10481,7 +10481,7 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5250000000005663,
+                        "n": 0.5250000000000565,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -10587,8 +10587,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.5250000000033983,
-                    0.3500000000001905
+                    -0.5250000000003399,
+                    0.35000000000001064
                   ],
                   "tag": {
                     "commentStart": 3856,
@@ -10599,8 +10599,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.2625000000020267,
-                    0.8046633388265529
+                    -0.26250000000020485,
+                    0.8046633388240977
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10611,8 +10611,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.2625000000020267,
-                    0.8046633388265529
+                    -0.26250000000020485,
+                    0.8046633388240977
                   ],
                   "tag": {
                     "commentStart": 3933,
@@ -10623,8 +10623,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "value": "line2"
                   },
                   "to": [
-                    0.2625000000007751,
-                    0.8046633388266685
+                    0.26250000000007895,
+                    0.804663338824103
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10635,8 +10635,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.2625000000007751,
-                    0.8046633388266685
+                    0.26250000000007895,
+                    0.804663338824103
                   ],
                   "tag": {
                     "commentStart": 4049,
@@ -10647,8 +10647,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "value": "line3"
                   },
                   "to": [
-                    0.5250000000017148,
-                    0.35000000000002723
+                    0.5250000000001714,
+                    0.3500000000000027
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10659,8 +10659,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.5250000000017148,
-                    0.35000000000002723
+                    0.5250000000001714,
+                    0.3500000000000027
                   ],
                   "tag": {
                     "commentStart": 4205,
@@ -10671,8 +10671,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "value": "line4"
                   },
                   "to": [
-                    0.2625000000005006,
-                    -0.10466333882676333
+                    0.2625000000000522,
+                    -0.10466333882410377
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10683,8 +10683,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.2625000000005006,
-                    -0.10466333882676333
+                    0.2625000000000522,
+                    -0.10466333882410377
                   ],
                   "tag": {
                     "commentStart": 4321,
@@ -10695,8 +10695,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "value": "line5"
                   },
                   "to": [
-                    -0.2625000000023643,
-                    -0.10466333882642047
+                    -0.262500000000238,
+                    -0.10466333882409191
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10707,8 +10707,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.2625000000023643,
-                    -0.10466333882642047
+                    -0.262500000000238,
+                    -0.10466333882409191
                   ],
                   "tag": {
                     "commentStart": 4439,
@@ -10719,8 +10719,8 @@ description: Variables in memory after executing stylized-cybertruck.kcl
                     "value": "line6"
                   },
                   "to": [
-                    -0.5250000000034141,
-                    0.35000000000016324
+                    -0.5250000000003414,
+                    0.3500000000000079
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -10759,12 +10759,12 @@ description: Variables in memory after executing stylized-cybertruck.kcl
               },
               "start": {
                 "from": [
-                  -0.5250000000033983,
-                  0.3500000000001905
+                  -0.5250000000003399,
+                  0.35000000000001064
                 ],
                 "to": [
-                  -0.5250000000033983,
-                  0.3500000000001905
+                  -0.5250000000003399,
+                  0.35000000000001064
                 ],
                 "units": "m",
                 "tag": null,

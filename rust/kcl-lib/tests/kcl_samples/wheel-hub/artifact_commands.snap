@@ -68,8 +68,8 @@ description: Artifact commands wheel-hub.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 63.2732142857332,
-          "y": -14.140957664684374,
+          "x": 63.27321428573317,
+          "y": -14.140957664684322,
           "z": 0.0
         }
       }
@@ -91,16 +91,16 @@ description: Artifact commands wheel-hub.kcl
           "type": "arc",
           "center": {
             "x": 55.10892857139082,
-            "y": 0.0000000000000028199664825478975
+            "y": -0.0
           },
-          "radius": 16.328571428628127,
+          "radius": 16.32857142862807,
           "start": {
             "unit": "degrees",
-            "value": -59.99999999988528
+            "value": -59.999999999885254
           },
           "end": {
             "unit": "degrees",
-            "value": 59.99999999988528
+            "value": 59.999999999885254
           },
           "relative": false
         }
@@ -115,8 +115,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -20.246816921115734,
-            "y": 62.361270164683866,
+            "x": -20.246816921134048,
+            "y": 62.36127016465215,
             "z": 0.0
           },
           "relative": false
@@ -132,17 +132,17 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -28.41110263548466,
-            "y": 48.22031249993558
+            "x": -28.41110263540833,
+            "y": 48.22031249999896
           },
-          "radius": 16.328571428696755,
+          "radius": 16.328571428567074,
           "start": {
             "unit": "degrees",
-            "value": 59.999999999916724
+            "value": 60.0000000000375
           },
           "end": {
             "unit": "degrees",
-            "value": 179.99999999988705
+            "value": 179.99999999999818
           },
           "relative": false
         }
@@ -157,7 +157,7 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -44.7396740639641,
+            "x": -44.73967406400384,
             "y": -48.22031249999999,
             "z": 0.0
           },
@@ -174,17 +174,17 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -28.41110263549346,
-            "y": -48.2203124999678
+            "x": -28.411102635395686,
+            "y": -48.22031249999947
           },
-          "radius": 16.328571428470646,
+          "radius": 16.32857142860816,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999988705
+            "value": -179.99999999999818
           },
           "end": {
             "unit": "degrees",
-            "value": -59.999999999916724
+            "value": -60.0000000000375
           },
           "relative": false
         }
@@ -199,8 +199,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 63.273214285733225,
-            "y": -14.14095766468443,
+            "x": 63.27321428573317,
+            "y": -14.140957664684327,
             "z": 0.0
           },
           "relative": false
@@ -763,8 +763,8 @@ description: Artifact commands wheel-hub.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 38.10000000000015,
-          "y": -19.049999999999958,
+          "x": 38.1,
+          "y": -19.049999999999915,
           "z": 0.0
         }
       }
@@ -785,8 +785,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 75.62117538976531,
-            "y": -12.434004430889896,
+            "x": 75.62117538977142,
+            "y": -12.434004430890894,
             "z": 0.0
           },
           "relative": false
@@ -802,8 +802,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 75.62117538976536,
-            "y": -126.73400443088988,
+            "x": 75.62117538977142,
+            "y": -126.73400443089086,
             "z": 0.0
           },
           "relative": false
@@ -819,8 +819,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000000000015,
-            "y": -126.73400443088987,
+            "x": 38.1,
+            "y": -126.73400443089086,
             "z": 0.0
           },
           "relative": false
@@ -836,8 +836,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.10000000000015,
-            "y": -19.049999999999958,
+            "x": 38.1,
+            "y": -19.049999999999915,
             "z": 0.0
           },
           "relative": false
@@ -1468,8 +1468,8 @@ description: Artifact commands wheel-hub.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -68.12142857144765,
-          "y": 0.000000000001375717823803882,
+          "x": -68.12142857143047,
+          "y": 0.00000000000013115034358013318,
           "z": 0.0
         }
       }
@@ -1490,8 +1490,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -62.6357142807128,
-            "y": 9.501535865925545,
+            "x": -62.63571428070372,
+            "y": 9.501535865907602,
             "z": 0.0
           },
           "relative": false
@@ -1507,8 +1507,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -51.664285719286895,
-            "y": 9.501535865925183,
+            "x": -51.664285719296224,
+            "y": 9.501535865907565,
             "z": 0.0
           },
           "relative": false
@@ -1524,8 +1524,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -46.17857142855452,
-            "y": -0.0000000000006357042660867457,
+            "x": -46.17857142856973,
+            "y": -0.00000000000006275120840067839,
             "z": 0.0
           },
           "relative": false
@@ -1541,8 +1541,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -51.664285719288166,
-            "y": -9.501535865925769,
+            "x": -51.66428571929636,
+            "y": -9.501535865907623,
             "z": 0.0
           },
           "relative": false
@@ -1558,8 +1558,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -62.63571428071414,
-            "y": -9.501535865924971,
+            "x": -62.63571428070387,
+            "y": -9.501535865907545,
             "z": 0.0
           },
           "relative": false
@@ -1575,8 +1575,8 @@ description: Artifact commands wheel-hub.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -68.12142857144748,
-            "y": 0.0000000000010943555943943627,
+            "x": -68.12142857143046,
+            "y": 0.0000000000001034183221495561,
             "z": 0.0
           },
           "relative": false

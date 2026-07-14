@@ -143,8 +143,8 @@ description: Variables in memory after executing hex-nut.kcl
               "sourceRange": []
             },
             "from": [
-              -0.31250000000027683,
-              0.000000000006592814693054267
+              -0.312500000000221,
+              0.000000000006627821767865103
             ],
             "tag": {
               "commentStart": 677,
@@ -155,8 +155,8 @@ description: Variables in memory after executing hex-nut.kcl
               "value": "line1"
             },
             "to": [
-              -0.15624999999638367,
-              0.2706329386849746
+              -0.15624999999633302,
+              0.27063293868494975
             ],
             "type": "ToPoint",
             "units": "in"
@@ -167,8 +167,8 @@ description: Variables in memory after executing hex-nut.kcl
               "sourceRange": []
             },
             "from": [
-              -0.15624999999638367,
-              0.2706329386849746
+              -0.15624999999633302,
+              0.27063293868494975
             ],
             "tag": {
               "commentStart": 757,
@@ -179,8 +179,8 @@ description: Variables in memory after executing hex-nut.kcl
               "value": "line2"
             },
             "to": [
-              0.15625000000186076,
-              0.2706329386816733
+              0.15625000000185538,
+              0.270632938681624
             ],
             "type": "ToPoint",
             "units": "in"
@@ -191,8 +191,8 @@ description: Variables in memory after executing hex-nut.kcl
               "sourceRange": []
             },
             "from": [
-              0.15625000000186076,
-              0.2706329386816733
+              0.15625000000185538,
+              0.270632938681624
             ],
             "tag": {
               "commentStart": 879,
@@ -203,8 +203,8 @@ description: Variables in memory after executing hex-nut.kcl
               "value": "line3"
             },
             "to": [
-              0.3125000000000445,
-              0.000000000000006449898798734408
+              0.31250000000000044,
+              0.00000000000000006451424591137964
             ],
             "type": "ToPoint",
             "units": "in"
@@ -215,8 +215,8 @@ description: Variables in memory after executing hex-nut.kcl
               "sourceRange": []
             },
             "from": [
-              0.3125000000000445,
-              0.000000000000006449898798734408
+              0.31250000000000044,
+              0.00000000000000006451424591137964
             ],
             "tag": {
               "commentStart": 1042,
@@ -227,8 +227,8 @@ description: Variables in memory after executing hex-nut.kcl
               "value": "line4"
             },
             "to": [
-              0.15624999999031647,
-              -0.27063293868910665
+              0.15624999999027245,
+              -0.27063293868904736
             ],
             "type": "ToPoint",
             "units": "in"
@@ -239,8 +239,8 @@ description: Variables in memory after executing hex-nut.kcl
               "sourceRange": []
             },
             "from": [
-              0.15624999999031647,
-              -0.27063293868910665
+              0.15624999999027245,
+              -0.27063293868904736
             ],
             "tag": {
               "commentStart": 1165,
@@ -251,8 +251,8 @@ description: Variables in memory after executing hex-nut.kcl
               "value": "line5"
             },
             "to": [
-              -0.15625000000815406,
-              -0.270632938678646
+              -0.15625000000814385,
+              -0.27063293867857413
             ],
             "type": "ToPoint",
             "units": "in"
@@ -263,8 +263,8 @@ description: Variables in memory after executing hex-nut.kcl
               "sourceRange": []
             },
             "from": [
-              -0.15625000000815406,
-              -0.270632938678646
+              -0.15625000000814385,
+              -0.27063293867857413
             ],
             "tag": {
               "commentStart": 1289,
@@ -275,8 +275,8 @@ description: Variables in memory after executing hex-nut.kcl
               "value": "line6"
             },
             "to": [
-              -0.31250000000027633,
-              0.0000000000065924799748032096
+              -0.312500000000221,
+              0.0000000000066278184204967744
             ],
             "type": "ToPoint",
             "units": "in"
@@ -315,12 +315,12 @@ description: Variables in memory after executing hex-nut.kcl
         },
         "start": {
           "from": [
-            -0.31250000000027683,
-            0.000000000006592814693054267
+            -0.312500000000221,
+            0.000000000006627821767865103
           ],
           "to": [
-            -0.31250000000027683,
-            0.000000000006592814693054267
+            -0.312500000000221,
+            0.000000000006627821767865103
           ],
           "units": "in",
           "tag": null,
@@ -424,7 +424,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.3125000000000554,
+                        "n": 0.31250000000000056,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -432,7 +432,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000006449875720657043,
+                        "n": 0.00000000000000006451435524381555,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -442,7 +442,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000000000040559078028112183,
+                        "n": 0.0000000000000000040576483586896305,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -450,7 +450,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000795131496747263,
+                        "n": -0.00000000000000007951415364984368,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -545,7 +545,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 0.13975424859061453,
+                        "n": 0.13975424859061736,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -553,7 +553,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.06987712430310596,
+                        "n": 0.06987712430310737,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -563,7 +563,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000000000004055858407422056,
+                        "n": 0.000000000000000004057643416961998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -571,7 +571,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000007951314389213,
+                        "n": -0.00000000000000007951437553097082,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -665,7 +665,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.31250000000027683,
+                        "n": -0.312500000000221,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -673,7 +673,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.000000000006592814693054267,
+                        "n": 0.000000000006627821767865103,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -683,7 +683,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.15624999999638367,
+                        "n": -0.15624999999633302,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -691,7 +691,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.2706329386849746,
+                        "n": 0.27063293868494975,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -785,7 +785,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.15624999999638284,
+                        "n": -0.15624999999633302,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -793,7 +793,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.27063293868497523,
+                        "n": 0.2706329386849498,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -803,7 +803,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.15625000000186076,
+                        "n": 0.15625000000185538,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -811,7 +811,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.2706329386816733,
+                        "n": 0.270632938681624,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -905,7 +905,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.15625000000186248,
+                        "n": 0.1562500000018554,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -913,7 +913,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.2706329386816732,
+                        "n": 0.270632938681624,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -923,7 +923,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3125000000000445,
+                        "n": 0.31250000000000044,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -931,7 +931,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000006449898798734408,
+                        "n": 0.00000000000000006451424591137964,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1025,7 +1025,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.3125000000000346,
+                        "n": 0.31250000000000033,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1033,7 +1033,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000004741165192479056,
+                        "n": 0.00000000000000004742514981330675,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1043,7 +1043,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.15624999999031647,
+                        "n": 0.15624999999027245,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1051,7 +1051,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": -0.27063293868910665,
+                        "n": -0.27063293868904736,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1145,7 +1145,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.15624999999031594,
+                        "n": 0.15624999999027242,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1153,7 +1153,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": -0.27063293868910204,
+                        "n": -0.2706329386890473,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1163,7 +1163,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.15625000000815406,
+                        "n": -0.15625000000814385,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1171,7 +1171,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": -0.270632938678646,
+                        "n": -0.27063293867857413,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1265,7 +1265,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.15625000000815234,
+                        "n": -0.15625000000814382,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1273,7 +1273,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": -0.2706329386786443,
+                        "n": -0.2706329386785741,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1283,7 +1283,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.31250000000027633,
+                        "n": -0.312500000000221,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1291,7 +1291,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000065924799748032096,
+                        "n": 0.0000000000066278184204967744,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1385,7 +1385,7 @@ description: Variables in memory after executing hex-nut.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000011792989907404565,
+                        "n": 0.0000000000000001179337622943578,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1393,7 +1393,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000003720496473242549,
+                        "n": -0.00000000000000003720103435085159,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1403,7 +1403,7 @@ description: Variables in memory after executing hex-nut.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3125000000000232,
+                        "n": 0.3125000000000002,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1411,7 +1411,7 @@ description: Variables in memory after executing hex-nut.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000000005103278286682531,
+                        "n": 0.0000000000000000051120512003175635,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1509,8 +1509,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.31250000000027683,
-                    0.000000000006592814693054267
+                    -0.312500000000221,
+                    0.000000000006627821767865103
                   ],
                   "tag": {
                     "commentStart": 677,
@@ -1521,8 +1521,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.15624999999638367,
-                    0.2706329386849746
+                    -0.15624999999633302,
+                    0.27063293868494975
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1533,8 +1533,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.15624999999638367,
-                    0.2706329386849746
+                    -0.15624999999633302,
+                    0.27063293868494975
                   ],
                   "tag": {
                     "commentStart": 757,
@@ -1545,8 +1545,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "value": "line2"
                   },
                   "to": [
-                    0.15625000000186076,
-                    0.2706329386816733
+                    0.15625000000185538,
+                    0.270632938681624
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1557,8 +1557,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.15625000000186076,
-                    0.2706329386816733
+                    0.15625000000185538,
+                    0.270632938681624
                   ],
                   "tag": {
                     "commentStart": 879,
@@ -1569,8 +1569,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "value": "line3"
                   },
                   "to": [
-                    0.3125000000000445,
-                    0.000000000000006449898798734408
+                    0.31250000000000044,
+                    0.00000000000000006451424591137964
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1581,8 +1581,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.3125000000000445,
-                    0.000000000000006449898798734408
+                    0.31250000000000044,
+                    0.00000000000000006451424591137964
                   ],
                   "tag": {
                     "commentStart": 1042,
@@ -1593,8 +1593,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "value": "line4"
                   },
                   "to": [
-                    0.15624999999031647,
-                    -0.27063293868910665
+                    0.15624999999027245,
+                    -0.27063293868904736
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1605,8 +1605,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.15624999999031647,
-                    -0.27063293868910665
+                    0.15624999999027245,
+                    -0.27063293868904736
                   ],
                   "tag": {
                     "commentStart": 1165,
@@ -1617,8 +1617,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "value": "line5"
                   },
                   "to": [
-                    -0.15625000000815406,
-                    -0.270632938678646
+                    -0.15625000000814385,
+                    -0.27063293867857413
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1629,8 +1629,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.15625000000815406,
-                    -0.270632938678646
+                    -0.15625000000814385,
+                    -0.27063293867857413
                   ],
                   "tag": {
                     "commentStart": 1289,
@@ -1641,8 +1641,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "value": "line6"
                   },
                   "to": [
-                    -0.31250000000027633,
-                    0.0000000000065924799748032096
+                    -0.312500000000221,
+                    0.0000000000066278184204967744
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1653,13 +1653,13 @@ description: Variables in memory after executing hex-nut.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.31250000000027633,
-                    0.0000000000065924799748032096
+                    -0.312500000000221,
+                    0.0000000000066278184204967744
                   ],
                   "tag": null,
                   "to": [
-                    0.13975424859061453,
-                    0.06987712430310596
+                    0.13975424859061736,
+                    0.06987712430310737
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1671,12 +1671,12 @@ description: Variables in memory after executing hex-nut.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000000000004055858407422056,
-                    -0.000000000000007951314389213
+                    0.000000000000000004057643416961998,
+                    -0.00000000000000007951437553097082
                   ],
                   "from": [
-                    0.13975424859061453,
-                    0.06987712430310596
+                    0.13975424859061736,
+                    0.06987712430310737
                   ],
                   "radius": 0.15625,
                   "tag": {
@@ -1688,8 +1688,8 @@ description: Variables in memory after executing hex-nut.kcl
                     "value": "circle2"
                   },
                   "to": [
-                    0.13975424859061453,
-                    0.06987712430310596
+                    0.13975424859061736,
+                    0.06987712430310737
                   ],
                   "type": "Circle",
                   "units": "in"
@@ -1728,12 +1728,12 @@ description: Variables in memory after executing hex-nut.kcl
               },
               "start": {
                 "from": [
-                  -0.31250000000027683,
-                  0.000000000006592814693054267
+                  -0.312500000000221,
+                  0.000000000006627821767865103
                 ],
                 "to": [
-                  -0.31250000000027683,
-                  0.000000000006592814693054267
+                  -0.312500000000221,
+                  0.000000000006627821767865103
                 ],
                 "units": "in",
                 "tag": null,
@@ -1796,8 +1796,8 @@ description: Variables in memory after executing hex-nut.kcl
             "sourceRange": []
           },
           "from": [
-            -0.31250000000027683,
-            0.000000000006592814693054267
+            -0.312500000000221,
+            0.000000000006627821767865103
           ],
           "tag": {
             "commentStart": 677,
@@ -1808,8 +1808,8 @@ description: Variables in memory after executing hex-nut.kcl
             "value": "line1"
           },
           "to": [
-            -0.15624999999638367,
-            0.2706329386849746
+            -0.15624999999633302,
+            0.27063293868494975
           ],
           "type": "ToPoint",
           "units": "in"
@@ -1820,8 +1820,8 @@ description: Variables in memory after executing hex-nut.kcl
             "sourceRange": []
           },
           "from": [
-            -0.15624999999638367,
-            0.2706329386849746
+            -0.15624999999633302,
+            0.27063293868494975
           ],
           "tag": {
             "commentStart": 757,
@@ -1832,8 +1832,8 @@ description: Variables in memory after executing hex-nut.kcl
             "value": "line2"
           },
           "to": [
-            0.15625000000186076,
-            0.2706329386816733
+            0.15625000000185538,
+            0.270632938681624
           ],
           "type": "ToPoint",
           "units": "in"
@@ -1844,8 +1844,8 @@ description: Variables in memory after executing hex-nut.kcl
             "sourceRange": []
           },
           "from": [
-            0.15625000000186076,
-            0.2706329386816733
+            0.15625000000185538,
+            0.270632938681624
           ],
           "tag": {
             "commentStart": 879,
@@ -1856,8 +1856,8 @@ description: Variables in memory after executing hex-nut.kcl
             "value": "line3"
           },
           "to": [
-            0.3125000000000445,
-            0.000000000000006449898798734408
+            0.31250000000000044,
+            0.00000000000000006451424591137964
           ],
           "type": "ToPoint",
           "units": "in"
@@ -1868,8 +1868,8 @@ description: Variables in memory after executing hex-nut.kcl
             "sourceRange": []
           },
           "from": [
-            0.3125000000000445,
-            0.000000000000006449898798734408
+            0.31250000000000044,
+            0.00000000000000006451424591137964
           ],
           "tag": {
             "commentStart": 1042,
@@ -1880,8 +1880,8 @@ description: Variables in memory after executing hex-nut.kcl
             "value": "line4"
           },
           "to": [
-            0.15624999999031647,
-            -0.27063293868910665
+            0.15624999999027245,
+            -0.27063293868904736
           ],
           "type": "ToPoint",
           "units": "in"
@@ -1892,8 +1892,8 @@ description: Variables in memory after executing hex-nut.kcl
             "sourceRange": []
           },
           "from": [
-            0.15624999999031647,
-            -0.27063293868910665
+            0.15624999999027245,
+            -0.27063293868904736
           ],
           "tag": {
             "commentStart": 1165,
@@ -1904,8 +1904,8 @@ description: Variables in memory after executing hex-nut.kcl
             "value": "line5"
           },
           "to": [
-            -0.15625000000815406,
-            -0.270632938678646
+            -0.15625000000814385,
+            -0.27063293867857413
           ],
           "type": "ToPoint",
           "units": "in"
@@ -1916,8 +1916,8 @@ description: Variables in memory after executing hex-nut.kcl
             "sourceRange": []
           },
           "from": [
-            -0.15625000000815406,
-            -0.270632938678646
+            -0.15625000000814385,
+            -0.27063293867857413
           ],
           "tag": {
             "commentStart": 1289,
@@ -1928,8 +1928,8 @@ description: Variables in memory after executing hex-nut.kcl
             "value": "line6"
           },
           "to": [
-            -0.31250000000027633,
-            0.0000000000065924799748032096
+            -0.312500000000221,
+            0.0000000000066278184204967744
           ],
           "type": "ToPoint",
           "units": "in"
@@ -1968,12 +1968,12 @@ description: Variables in memory after executing hex-nut.kcl
       },
       "start": {
         "from": [
-          -0.31250000000027683,
-          0.000000000006592814693054267
+          -0.312500000000221,
+          0.000000000006627821767865103
         ],
         "to": [
-          -0.31250000000027683,
-          0.000000000006592814693054267
+          -0.312500000000221,
+          0.000000000006627821767865103
         ],
         "units": "in",
         "tag": null,

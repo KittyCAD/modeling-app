@@ -68,8 +68,8 @@ description: Artifact commands bottle.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -62.500000000022034,
-          "y": -26.669999999996705,
+          "x": -62.4999999999962,
+          "y": -26.670000000000762,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -62.500000000023924,
-            "y": 26.66333333333638,
+            "x": -62.499999999995865,
+            "y": 26.66333333333257,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000000027213786779611837,
-            "y": -112.59441187335123
+            "x": -0.0000000000007105427357601002,
+            "y": -112.59441187317721
           },
-          "radius": 152.64000000017708,
+          "radius": 152.64000000000195,
           "start": {
             "unit": "degrees",
-            "value": 114.17092789340526
+            "value": 114.17092789342182
           },
           "end": {
             "unit": "degrees",
-            "value": 65.82907210661133
+            "value": 65.82907210657523
           },
           "relative": false
         }
@@ -132,8 +132,8 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 62.49999999997797,
-            "y": -26.670000000010017,
+            "x": 62.5000000000038,
+            "y": -26.66999999999857,
             "z": 0.0
           },
           "relative": false
@@ -149,17 +149,17 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000055493387662863825,
-            "y": 113.14656733030625
+            "x": 0.0000000000007744915819785092,
+            "y": 113.14656733020234
           },
-          "radius": 153.15000000010056,
+          "radius": 153.15000000000322,
           "start": {
             "unit": "degrees",
-            "value": -65.91467551249656
+            "value": -65.91467551247229
           },
           "end": {
             "unit": "degrees",
-            "value": -114.08532448751697
+            "value": -114.08532448752531
           },
           "relative": false
         }

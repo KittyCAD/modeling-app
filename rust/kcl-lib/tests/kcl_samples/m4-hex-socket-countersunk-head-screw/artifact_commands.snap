@@ -230,8 +230,8 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1.4500000000000244,
-          "y": 0.000000000000003903627133189027,
+          "x": 1.4500000000000024,
+          "y": 0.0000000000000003903861320817506,
           "z": 0.0
         }
       }
@@ -252,8 +252,8 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.725000000003701,
-            "y": 1.2557368354990235,
+            "x": 0.7250000000036871,
+            "y": 1.255736835498964,
             "z": 0.0
           },
           "relative": false
@@ -269,8 +269,8 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.7250000000037173,
-            "y": 1.2557368354990124,
+            "x": -0.7250000000036885,
+            "y": 1.2557368354989629,
             "z": 0.0
           },
           "relative": false
@@ -286,8 +286,8 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.4500000000000555,
-            "y": -0.0000000000000031736216792276407,
+            "x": -1.4500000000000055,
+            "y": -0.00000000000000018021930565295252,
             "z": 0.0
           },
           "relative": false
@@ -303,8 +303,8 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.7250000000037083,
-            "y": -1.2557368354990197,
+            "x": -0.7250000000036877,
+            "y": -1.2557368354989635,
             "z": 0.0
           },
           "relative": false
@@ -320,8 +320,8 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7250000000037072,
-            "y": -1.2557368354990204,
+            "x": 0.7250000000036877,
+            "y": -1.2557368354989638,
             "z": 0.0
           },
           "relative": false
@@ -337,8 +337,8 @@ description: Artifact commands m4-hex-socket-countersunk-head-screw.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.4500000000000421,
-            "y": -0.000000000000003902911186974853,
+            "x": 1.4500000000000042,
+            "y": -0.00000000000000039027092993707943,
             "z": 0.0
           },
           "relative": false

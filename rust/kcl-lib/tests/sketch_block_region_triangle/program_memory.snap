@@ -47,8 +47,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "sourceRange": []
           },
           "from": [
-            -0.22104745036579948,
-            0.323390814234285
+            -0.22104746979281129,
+            0.323390789500588
           ],
           "tag": {
             "commentStart": 24,
@@ -59,8 +59,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "value": "line1"
           },
           "to": [
-            3.394380782855422,
-            0.3233908142344787
+            3.394380771462946,
+            0.32339078950058997
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -71,8 +71,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "sourceRange": []
           },
           "from": [
-            3.394380782855422,
-            0.3233908142344787
+            3.394380771462946,
+            0.32339078950058997
           ],
           "tag": {
             "commentStart": 107,
@@ -83,8 +83,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "value": "line2"
           },
           "to": [
-            1.586666666243411,
-            4.808218489067258
+            1.5866666508349256,
+            4.808218492451258
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -95,8 +95,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "sourceRange": []
           },
           "from": [
-            1.586666666243411,
-            4.808218489067258
+            1.5866666508349256,
+            4.808218492451258
           ],
           "tag": {
             "commentStart": 227,
@@ -107,8 +107,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
             "value": "line3"
           },
           "to": [
-            -0.2210474503658385,
-            0.3233908142340914
+            -0.22104746979281167,
+            0.3233907895005861
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -147,12 +147,12 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
       },
       "start": {
         "from": [
-          -0.22104745036579948,
-          0.323390814234285
+          -0.22104746979281129,
+          0.323390789500588
         ],
         "to": [
-          -0.22104745036579948,
-          0.323390814234285
+          -0.22104746979281129,
+          0.323390789500588
         ],
         "units": "mm",
         "tag": null,
@@ -196,7 +196,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                   "line": {
                     "start": [
                       {
-                        "n": -0.22104745036579948,
+                        "n": -0.22104746979281129,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -204,7 +204,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       },
                       {
-                        "n": 0.323390814234285,
+                        "n": 0.323390789500588,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -214,7 +214,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     ],
                     "end": [
                       {
-                        "n": 3.394380782855422,
+                        "n": 3.394380771462946,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -222,7 +222,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       },
                       {
-                        "n": 0.3233908142344787,
+                        "n": 0.32339078950058997,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -316,7 +316,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                   "line": {
                     "start": [
                       {
-                        "n": 3.394380782855383,
+                        "n": 3.3943807714629455,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -324,7 +324,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       },
                       {
-                        "n": 0.32339081423467236,
+                        "n": 0.3233907895005919,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -334,7 +334,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     ],
                     "end": [
                       {
-                        "n": 1.586666666243411,
+                        "n": 1.5866666508349256,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -342,7 +342,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       },
                       {
-                        "n": 4.808218489067258,
+                        "n": 4.808218492451258,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -436,7 +436,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                   "line": {
                     "start": [
                       {
-                        "n": 1.586666666243411,
+                        "n": 1.5866666508349256,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -444,7 +444,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       },
                       {
-                        "n": 4.8082184890674515,
+                        "n": 4.808218492451259,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -454,7 +454,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     ],
                     "end": [
                       {
-                        "n": -0.2210474503658385,
+                        "n": -0.22104746979281167,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -462,7 +462,7 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                         }
                       },
                       {
-                        "n": 0.3233908142340914,
+                        "n": 0.3233907895005861,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -559,8 +559,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -0.22104745036579948,
-                    0.323390814234285
+                    -0.22104746979281129,
+                    0.323390789500588
                   ],
                   "tag": {
                     "commentStart": 24,
@@ -571,8 +571,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "value": "line1"
                   },
                   "to": [
-                    3.394380782855422,
-                    0.3233908142344787
+                    3.394380771462946,
+                    0.32339078950058997
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -583,8 +583,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "sourceRange": []
                   },
                   "from": [
-                    3.394380782855422,
-                    0.3233908142344787
+                    3.394380771462946,
+                    0.32339078950058997
                   ],
                   "tag": {
                     "commentStart": 107,
@@ -595,8 +595,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "value": "line2"
                   },
                   "to": [
-                    1.586666666243411,
-                    4.808218489067258
+                    1.5866666508349256,
+                    4.808218492451258
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -607,8 +607,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "sourceRange": []
                   },
                   "from": [
-                    1.586666666243411,
-                    4.808218489067258
+                    1.5866666508349256,
+                    4.808218492451258
                   ],
                   "tag": {
                     "commentStart": 227,
@@ -619,8 +619,8 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
                     "value": "line3"
                   },
                   "to": [
-                    -0.2210474503658385,
-                    0.3233908142340914
+                    -0.22104746979281167,
+                    0.3233907895005861
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -659,12 +659,12 @@ description: Variables in memory after executing sketch_block_region_triangle.kc
               },
               "start": {
                 "from": [
-                  -0.22104745036579948,
-                  0.323390814234285
+                  -0.22104746979281129,
+                  0.323390789500588
                 ],
                 "to": [
-                  -0.22104745036579948,
-                  0.323390814234285
+                  -0.22104746979281129,
+                  0.323390789500588
                 ],
                 "units": "mm",
                 "tag": null,

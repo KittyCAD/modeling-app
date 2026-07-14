@@ -231,7 +231,7 @@ description: Variables in memory after executing double-hook.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -10.000000000000796,
+                        "n": -10.000000000011111,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -249,7 +249,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "end": [
                       {
-                        "n": -10.000000000000796,
+                        "n": -10.000000000011111,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -359,7 +359,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": -7.999999991000018,
+                        "n": -7.999999991,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -369,7 +369,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000010344770584231953,
+                        "n": -0.00000000014444445632960915,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -387,7 +387,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "center": [
                       {
-                        "n": -3.0000000007344796,
+                        "n": -3.0000000005333334,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -395,7 +395,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": -4.999999990224159,
+                        "n": -4.99999998988889,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -511,7 +511,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": -7.999999987389678,
+                        "n": -7.999999987255556,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -529,7 +529,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": -7.999999982889687,
+                        "n": -7.999999982755557,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -623,7 +623,7 @@ description: Variables in memory after executing double-hook.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000000006441673583987914,
+                        "n": -0.000000000000000005020593402385322,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -641,7 +641,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000000000000012883347174417502,
+                        "n": -0.000000000000000010041186809791238,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -746,7 +746,7 @@ description: Variables in memory after executing double-hook.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.000000000000000006441673583987914,
+                    -0.000000000000000005020593402385322,
                     0.0000000030000004687657177
                   ],
                   "tag": {
@@ -758,7 +758,7 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "lowerTip"
                   },
                   "to": [
-                    0.000000000000000012883347174417502,
+                    -0.000000000000000010041186809791238,
                     -4.9999999939999995
                   ],
                   "type": "ToPoint",
@@ -771,14 +771,14 @@ description: Variables in memory after executing double-hook.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -3.000000000724135,
-                    -4.9999999917241595
+                    -3.000000000388889,
+                    -4.99999999138889
                   ],
                   "from": [
-                    0.000000000000000012883347174417502,
+                    -0.000000000000000010041186809791238,
                     -4.9999999939999995
                   ],
-                  "radius": 3.000000000724135,
+                  "radius": 3.000000000388889,
                   "tag": {
                     "commentStart": 1224,
                     "end": 1233,
@@ -788,8 +788,8 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "lowerBend"
                   },
                   "to": [
-                    -2.999999999989656,
-                    -7.999999992448295
+                    -2.9999999998555555,
+                    -7.999999991777779
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -800,8 +800,8 @@ description: Variables in memory after executing double-hook.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.999999999989656,
-                    -7.999999992448295
+                    -2.9999999998555555,
+                    -7.999999991777779
                   ],
                   "tag": {
                     "commentStart": 1528,
@@ -813,7 +813,7 @@ description: Variables in memory after executing double-hook.kcl
                   },
                   "to": [
                     -7.0,
-                    -7.999999982889687
+                    -7.999999982755557
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -825,14 +825,14 @@ description: Variables in memory after executing double-hook.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -6.999999999251992,
-                    -4.9999999821377
+                    -6.999999999277777,
+                    -4.999999981977779
                   ],
                   "from": [
                     -7.0,
-                    -7.999999982889687
+                    -7.999999982755557
                   ],
-                  "radius": 3.000000000751987,
+                  "radius": 3.000000000777778,
                   "tag": {
                     "commentStart": 1811,
                     "end": 1821,
@@ -842,8 +842,8 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "upperEntry"
                   },
                   "to": [
-                    -10.000000000003979,
-                    -4.999999992799197
+                    -10.000000000055554,
+                    -4.999999992788888
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -854,8 +854,8 @@ description: Variables in memory after executing double-hook.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -10.000000000003979,
-                    -4.999999992799197
+                    -10.000000000055554,
+                    -4.999999992788888
                   ],
                   "tag": {
                     "commentStart": 2128,
@@ -866,7 +866,7 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "connector"
                   },
                   "to": [
-                    -10.000000000000796,
+                    -10.000000000011111,
                     29.0000000225
                   ],
                   "type": "ToPoint",
@@ -878,7 +878,7 @@ description: Variables in memory after executing double-hook.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -10.000000000000796,
+                    -10.000000000011111,
                     29.0000000225
                   ],
                   "tag": {
@@ -890,7 +890,7 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "upperBottom"
                   },
                   "to": [
-                    -10.000000000000796,
+                    -10.000000000011111,
                     39.00000003
                   ],
                   "type": "ToPoint",
@@ -903,14 +903,14 @@ description: Variables in memory after executing double-hook.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -12.99999999927666,
-                    39.00000000827585
+                    -12.999999999622222,
+                    39.00000000861111
                   ],
                   "from": [
-                    -10.000000000000796,
+                    -10.000000000011111,
                     39.00000003
                   ],
-                  "radius": 2.9999999992758646,
+                  "radius": 2.999999999611111,
                   "tag": {
                     "commentStart": 2612,
                     "end": 2626,
@@ -920,8 +920,8 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "upperLowerBend"
                   },
                   "to": [
-                    -13.000000000010347,
-                    42.00000000755171
+                    -13.000000000144444,
+                    42.00000000822222
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -932,8 +932,8 @@ description: Variables in memory after executing double-hook.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -13.000000000010347,
-                    42.00000000755171
+                    -13.000000000144444,
+                    42.00000000822222
                   ],
                   "tag": {
                     "commentStart": 2957,
@@ -945,7 +945,7 @@ description: Variables in memory after executing double-hook.kcl
                   },
                   "to": [
                     -23.0,
-                    42.00000001711032
+                    42.000000017244446
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -957,14 +957,14 @@ description: Variables in memory after executing double-hook.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -23.000000000748006,
-                    39.000000017862305
+                    -23.00000000072222,
+                    39.00000001802222
                   ],
                   "from": [
                     -23.0,
-                    42.00000001711032
+                    42.000000017244446
                   ],
-                  "radius": 2.9999999992480113,
+                  "radius": 2.9999999992222257,
                   "tag": {
                     "commentStart": 3220,
                     "end": 3232,
@@ -974,8 +974,8 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "upperTopBend"
                   },
                   "to": [
-                    -25.999999999996017,
-                    39.00000000270081
+                    -25.999999999944446,
+                    39.00000000271111
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -986,8 +986,8 @@ description: Variables in memory after executing double-hook.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -25.999999999996017,
-                    39.00000000270081
+                    -25.999999999944446,
+                    39.00000000271111
                   ],
                   "tag": {
                     "commentStart": 3543,
@@ -998,7 +998,7 @@ description: Variables in memory after executing double-hook.kcl
                     "value": "upperTop"
                   },
                   "to": [
-                    -25.999999999999204,
+                    -25.999999999988887,
                     35.000000009000004
                   ],
                   "type": "ToPoint",
@@ -1038,11 +1038,11 @@ description: Variables in memory after executing double-hook.kcl
               },
               "start": {
                 "from": [
-                  0.000000000000000006441673583987914,
+                  -0.000000000000000005020593402385322,
                   0.0000000030000004687657177
                 ],
                 "to": [
-                  0.000000000000000006441673583987914,
+                  -0.000000000000000005020593402385322,
                   0.0000000030000004687657177
                 ],
                 "units": "mm",
@@ -1115,7 +1115,7 @@ description: Variables in memory after executing double-hook.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -10.000000000000796,
+                        "n": -10.000000000011111,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1133,7 +1133,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "end": [
                       {
-                        "n": -10.000000000000796,
+                        "n": -10.000000000011111,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1261,7 +1261,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": -7.999999981090488,
+                        "n": -7.999999980966668,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1271,7 +1271,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "center": [
                       {
-                        "n": -6.999999999251992,
+                        "n": -6.999999999277778,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1279,7 +1279,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": -4.999999980338501,
+                        "n": -4.99999998018889,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1387,7 +1387,7 @@ description: Variables in memory after executing double-hook.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -9.99999999999045,
+                        "n": -9.999999999866667,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1413,7 +1413,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": 42.00000000899998,
+                        "n": 42.000000009000004,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1423,7 +1423,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "center": [
                       {
-                        "n": -12.999999999266315,
+                        "n": -12.999999999477778,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1431,7 +1431,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": 39.000000009775846,
+                        "n": 39.00000001011111,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1547,7 +1547,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": 42.00000001261032,
+                        "n": 42.000000012744444,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1565,7 +1565,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": 42.00000001711032,
+                        "n": 42.000000017244446,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1659,7 +1659,7 @@ description: Variables in memory after executing double-hook.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -25.999999999999204,
+                        "n": -25.999999999988887,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1677,7 +1677,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "end": [
                       {
-                        "n": -25.999999999999204,
+                        "n": -25.999999999988887,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1787,7 +1787,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": 42.00000001890951,
+                        "n": 42.00000001903334,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1815,7 +1815,7 @@ description: Variables in memory after executing double-hook.kcl
                     ],
                     "center": [
                       {
-                        "n": -23.000000000748006,
+                        "n": -23.00000000072222,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1823,7 +1823,7 @@ description: Variables in memory after executing double-hook.kcl
                         }
                       },
                       {
-                        "n": 39.0000000196615,
+                        "n": 39.00000001981111,
                         "ty": {
                           "mm": null,
                           "type": "Known",

@@ -68,8 +68,8 @@ description: Artifact commands golf-tee.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000000000000018249802648491673,
-          "y": -0.0000000000050000155831651546,
+          "x": 0.000000000000000000001821301525964162,
+          "y": -0.00000000000000008146230574884271,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands golf-tee.kcl
           "type": "line",
           "end": {
             "x": 2.25,
-            "y": 9.999999999995,
+            "y": 10.0,
             "z": 0.0
           },
           "relative": false
@@ -108,7 +108,7 @@ description: Artifact commands golf-tee.kcl
           "type": "line",
           "end": {
             "x": 2.25,
-            "y": 55.399999999985,
+            "y": 55.39999999999999,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands golf-tee.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 7.2999999999817495,
-            "y": 69.999999999985,
+            "x": 7.3,
+            "y": 70.0,
             "z": 0.0
           },
           "relative": false
@@ -141,17 +141,17 @@ description: Artifact commands golf-tee.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000036498803979156946,
-            "y": 82.32249999901586
+            "x": 0.0000000000000017763568394002505,
+            "y": 82.32249999999995
           },
-          "radius": 14.322499999138293,
+          "radius": 14.322499999999955,
           "start": {
             "unit": "degrees",
-            "value": -59.35697984848283
+            "value": -59.356979850270314
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00000000014602
+            "value": -90.00000000000001
           },
           "relative": false
         }
@@ -166,8 +166,8 @@ description: Artifact commands golf-tee.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000000000000003649960531523315,
-            "y": -0.000000000010000031181330357,
+            "x": 0.000000000000000000003642603053934836,
+            "y": -0.00000000000000016292311176592048,
             "z": 0.0
           },
           "relative": false

@@ -71,14 +71,14 @@ description: Variables in memory after executing c-shape-solid.kcl
           },
           "ccw": true,
           "center": [
-            0.0000000000000017763568394002505,
-            -0.000000000000002220446049250313
+            0.00000000000002930988785010413,
+            -0.00000000000000510702591327572
           ],
           "from": [
-            4.898979485566363,
-            0.9999999999999833
+            4.89897948591536,
+            1.0000000000947156
           ],
-          "radius": 5.000000000000002,
+          "radius": 5.000000000360869,
           "tag": {
             "commentStart": 501,
             "end": 509,
@@ -88,8 +88,8 @@ description: Variables in memory after executing c-shape-solid.kcl
             "value": "innerArc"
           },
           "to": [
-            4.898979485566358,
-            -1.0000000000000087
+            4.89897948594144,
+            -0.9999999999669649
           ],
           "type": "Arc",
           "units": "mm"
@@ -100,8 +100,8 @@ description: Variables in memory after executing c-shape-solid.kcl
             "sourceRange": []
           },
           "from": [
-            4.898979485566362,
-            0.999999999999983
+            4.898979485915362,
+            1.0000000000947167
           ],
           "tag": {
             "commentStart": 613,
@@ -112,8 +112,8 @@ description: Variables in memory after executing c-shape-solid.kcl
             "value": "topBridge"
           },
           "to": [
-            9.949874371066207,
-            0.9999999999999829
+            9.949874371247715,
+            1.000000000094718
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -125,14 +125,14 @@ description: Variables in memory after executing c-shape-solid.kcl
           },
           "ccw": true,
           "center": [
-            0.0000000000000017763568394002505,
-            -0.0000000000000021094237467877974
+            0.00000000000003197442310920451,
+            -0.000000000000005995204332975845
           ],
           "from": [
-            9.949874371066207,
-            0.9999999999999829
+            9.949874371247715,
+            1.000000000094718
           ],
-          "radius": 10.000000000000004,
+          "radius": 10.000000000190047,
           "tag": {
             "commentStart": 699,
             "end": 707,
@@ -142,8 +142,8 @@ description: Variables in memory after executing c-shape-solid.kcl
             "value": "outerArc"
           },
           "to": [
-            9.949874371066203,
-            -1.0000000000000133
+            9.949874371264839,
+            -0.9999999999243478
           ],
           "type": "Arc",
           "units": "mm"
@@ -154,8 +154,8 @@ description: Variables in memory after executing c-shape-solid.kcl
             "sourceRange": []
           },
           "from": [
-            9.949874371066203,
-            -1.0000000000000133
+            9.949874371264839,
+            -0.9999999999243478
           ],
           "tag": {
             "commentStart": 813,
@@ -166,8 +166,8 @@ description: Variables in memory after executing c-shape-solid.kcl
             "value": "bottomBridge"
           },
           "to": [
-            4.898979485566386,
-            -1.0000000000000162
+            4.898979485639223,
+            -0.9999999999052721
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -206,12 +206,12 @@ description: Variables in memory after executing c-shape-solid.kcl
       },
       "start": {
         "from": [
-          4.898979485566363,
-          0.9999999999999833
+          4.89897948591536,
+          1.0000000000947156
         ],
         "to": [
-          4.898979485566363,
-          0.9999999999999833
+          4.89897948591536,
+          1.0000000000947156
         ],
         "units": "mm",
         "tag": null,
@@ -259,7 +259,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.898979485566386,
+                        "n": 4.898979485639223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -267,7 +267,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -1.0000000000000162,
+                        "n": -0.9999999999052721,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -277,7 +277,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 9.949874371066203,
+                        "n": 9.949874371075142,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -285,7 +285,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -1.0000000000000167,
+                        "n": -0.9999999999052751,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -379,7 +379,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000000042012617224549135,
+                        "n": 0.00000000000005708870300578105,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -387,7 +387,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000005575212985482041,
+                        "n": 0.00000000002253752781154869,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -397,7 +397,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.898979485566377,
+                        "n": 4.898979485749681,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -405,7 +405,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000009421446331281725,
+                        "n": 0.000000000045077409422625715,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -500,7 +500,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 4.898979485566363,
+                        "n": 4.89897948591536,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -508,7 +508,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.9999999999999833,
+                        "n": 1.0000000000947156,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -518,7 +518,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.8989794855663895,
+                        "n": 4.89897948558399,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -526,7 +526,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -1.000000000000017,
+                        "n": -0.9999999998939979,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -536,7 +536,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000000000021006408756042493,
+                        "n": 0.000000000000028484721395472226,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -544,7 +544,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000209127833201717,
+                        "n": -0.000000000000005198410054705789,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -652,7 +652,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.8989794855663815,
+                        "n": 4.8989794856944515,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -660,7 +660,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -1.0000000000000144,
+                        "n": -0.999999999916543,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -670,7 +670,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.898979485566377,
+                        "n": 4.8989794857496785,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -678,7 +678,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000013183156098924584,
+                        "n": 0.00000000006761752521290167,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -777,14 +777,14 @@ description: Variables in memory after executing c-shape-solid.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000000000017763568394002505,
-                    -0.000000000000002220446049250313
+                    0.00000000000002930988785010413,
+                    -0.00000000000000510702591327572
                   ],
                   "from": [
-                    4.898979485566363,
-                    0.9999999999999833
+                    4.89897948591536,
+                    1.0000000000947156
                   ],
-                  "radius": 5.000000000000002,
+                  "radius": 5.000000000360869,
                   "tag": {
                     "commentStart": 501,
                     "end": 509,
@@ -794,8 +794,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "value": "innerArc"
                   },
                   "to": [
-                    4.898979485566358,
-                    -1.0000000000000087
+                    4.89897948594144,
+                    -0.9999999999669649
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -806,13 +806,13 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.898979485566358,
-                    -1.0000000000000087
+                    4.89897948594144,
+                    -0.9999999999669649
                   ],
                   "tag": null,
                   "to": [
-                    4.898979485566362,
-                    0.999999999999983
+                    4.898979485915362,
+                    1.0000000000947167
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -823,8 +823,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.898979485566362,
-                    0.999999999999983
+                    4.898979485915362,
+                    1.0000000000947167
                   ],
                   "tag": {
                     "commentStart": 613,
@@ -835,8 +835,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "value": "topBridge"
                   },
                   "to": [
-                    9.949874371066207,
-                    0.9999999999999829
+                    9.949874371247715,
+                    1.000000000094718
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -848,14 +848,14 @@ description: Variables in memory after executing c-shape-solid.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000000000017763568394002505,
-                    -0.0000000000000021094237467877974
+                    0.00000000000003197442310920451,
+                    -0.000000000000005995204332975845
                   ],
                   "from": [
-                    9.949874371066207,
-                    0.9999999999999829
+                    9.949874371247715,
+                    1.000000000094718
                   ],
-                  "radius": 10.000000000000004,
+                  "radius": 10.000000000190047,
                   "tag": {
                     "commentStart": 699,
                     "end": 707,
@@ -865,8 +865,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "value": "outerArc"
                   },
                   "to": [
-                    9.949874371066203,
-                    -1.0000000000000133
+                    9.949874371264839,
+                    -0.9999999999243478
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -877,8 +877,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    9.949874371066203,
-                    -1.0000000000000133
+                    9.949874371264839,
+                    -0.9999999999243478
                   ],
                   "tag": {
                     "commentStart": 813,
@@ -889,8 +889,8 @@ description: Variables in memory after executing c-shape-solid.kcl
                     "value": "bottomBridge"
                   },
                   "to": [
-                    4.898979485566386,
-                    -1.0000000000000162
+                    4.898979485639223,
+                    -0.9999999999052721
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -929,12 +929,12 @@ description: Variables in memory after executing c-shape-solid.kcl
               },
               "start": {
                 "from": [
-                  4.898979485566363,
-                  0.9999999999999833
+                  4.89897948591536,
+                  1.0000000000947156
                 ],
                 "to": [
-                  4.898979485566363,
-                  0.9999999999999833
+                  4.89897948591536,
+                  1.0000000000947156
                 ],
                 "units": "mm",
                 "tag": null,
@@ -982,7 +982,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 9.949874371066207,
+                        "n": 9.949874371247713,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -990,7 +990,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.9999999999999829,
+                        "n": 1.0000000000947198,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1000,7 +1000,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 9.949874371066203,
+                        "n": 9.949874371075138,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1008,7 +1008,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -1.000000000000017,
+                        "n": -0.9999999999052778,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1018,7 +1018,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000000000021006511039849448,
+                        "n": 0.000000000000028484725972921715,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1026,7 +1026,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000020759068392985204,
+                        "n": -0.000000000000004270760043037278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1134,7 +1134,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.898979485566362,
+                        "n": 4.898979485915362,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1142,7 +1142,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.999999999999983,
+                        "n": 1.0000000000947167,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1152,7 +1152,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 9.949874371066207,
+                        "n": 9.949874371247715,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1160,7 +1160,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.9999999999999829,
+                        "n": 1.000000000094718,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1254,7 +1254,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.8989794855663655,
+                        "n": 4.8989794858601226,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1262,7 +1262,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.9999999999999846,
+                        "n": 1.000000000083441,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1272,7 +1272,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.898979485566372,
+                        "n": 4.898979485804901,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1280,7 +1280,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000015074576911434733,
+                        "n": 0.00000000007888755387185043,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1442,14 +1442,14 @@ description: Variables in memory after executing c-shape-solid.kcl
             },
             "ccw": true,
             "center": [
-              0.0000000000000017763568394002505,
-              -0.000000000000002220446049250313
+              0.00000000000002930988785010413,
+              -0.00000000000000510702591327572
             ],
             "from": [
-              4.898979485566363,
-              0.9999999999999833
+              4.89897948591536,
+              1.0000000000947156
             ],
-            "radius": 5.000000000000002,
+            "radius": 5.000000000360869,
             "tag": {
               "commentStart": 501,
               "end": 509,
@@ -1459,8 +1459,8 @@ description: Variables in memory after executing c-shape-solid.kcl
               "value": "innerArc"
             },
             "to": [
-              4.898979485566358,
-              -1.0000000000000087
+              4.89897948594144,
+              -0.9999999999669649
             ],
             "type": "Arc",
             "units": "mm"
@@ -1471,8 +1471,8 @@ description: Variables in memory after executing c-shape-solid.kcl
               "sourceRange": []
             },
             "from": [
-              4.898979485566362,
-              0.999999999999983
+              4.898979485915362,
+              1.0000000000947167
             ],
             "tag": {
               "commentStart": 613,
@@ -1483,8 +1483,8 @@ description: Variables in memory after executing c-shape-solid.kcl
               "value": "topBridge"
             },
             "to": [
-              9.949874371066207,
-              0.9999999999999829
+              9.949874371247715,
+              1.000000000094718
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1496,14 +1496,14 @@ description: Variables in memory after executing c-shape-solid.kcl
             },
             "ccw": true,
             "center": [
-              0.0000000000000017763568394002505,
-              -0.0000000000000021094237467877974
+              0.00000000000003197442310920451,
+              -0.000000000000005995204332975845
             ],
             "from": [
-              9.949874371066207,
-              0.9999999999999829
+              9.949874371247715,
+              1.000000000094718
             ],
-            "radius": 10.000000000000004,
+            "radius": 10.000000000190047,
             "tag": {
               "commentStart": 699,
               "end": 707,
@@ -1513,8 +1513,8 @@ description: Variables in memory after executing c-shape-solid.kcl
               "value": "outerArc"
             },
             "to": [
-              9.949874371066203,
-              -1.0000000000000133
+              9.949874371264839,
+              -0.9999999999243478
             ],
             "type": "Arc",
             "units": "mm"
@@ -1525,8 +1525,8 @@ description: Variables in memory after executing c-shape-solid.kcl
               "sourceRange": []
             },
             "from": [
-              9.949874371066203,
-              -1.0000000000000133
+              9.949874371264839,
+              -0.9999999999243478
             ],
             "tag": {
               "commentStart": 813,
@@ -1537,8 +1537,8 @@ description: Variables in memory after executing c-shape-solid.kcl
               "value": "bottomBridge"
             },
             "to": [
-              4.898979485566386,
-              -1.0000000000000162
+              4.898979485639223,
+              -0.9999999999052721
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1577,12 +1577,12 @@ description: Variables in memory after executing c-shape-solid.kcl
         },
         "start": {
           "from": [
-            4.898979485566363,
-            0.9999999999999833
+            4.89897948591536,
+            1.0000000000947156
           ],
           "to": [
-            4.898979485566363,
-            0.9999999999999833
+            4.89897948591536,
+            1.0000000000947156
           ],
           "units": "mm",
           "tag": null,

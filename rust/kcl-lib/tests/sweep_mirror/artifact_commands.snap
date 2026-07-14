@@ -68,8 +68,8 @@ description: Artifact commands sweep_mirror.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.12499999999999753,
-          "y": 0.12500000000000316,
+          "x": -0.1250000000000005,
+          "y": 0.125,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.12499999999999985,
-            "y": 0.12500000000000486,
+            "x": 0.12499999999999949,
+            "y": 0.1250000000000002,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.12500000000000064,
-            "y": -0.12499999999999731,
+            "x": 0.125,
+            "y": -0.12500000000000006,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.12499999999999929,
-            "y": -0.12499999999999738,
+            "x": -0.12499999999999983,
+            "y": -0.12500000000000006,
             "z": 0.0
           },
           "relative": false
@@ -141,8 +141,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.12499999999999753,
-            "y": 0.12500000000000308,
+            "x": -0.1250000000000005,
+            "y": 0.1250000000000002,
             "z": 0.0
           },
           "relative": false
@@ -226,8 +226,8 @@ description: Artifact commands sweep_mirror.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.010984813941652502,
-          "y": -0.0000000000000042086592334753474,
+          "x": -0.01080702466452768,
+          "y": -0.0000000000000000004366950295151887,
           "z": 0.0
         }
       }
@@ -248,8 +248,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.678975730572019,
-            "y": 3.858583871348646,
+            "x": -0.6787107802984397,
+            "y": 3.8589157113722443,
             "z": 0.0
           },
           "relative": false
@@ -265,17 +265,17 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.5487590487619685,
-            "y": 4.071009153005216
+            "x": 0.5481251779437636,
+            "y": 4.0711481731177965
           },
-          "radius": 1.245976399725592,
+          "radius": 1.2450578646210153,
           "start": {
             "unit": "degrees",
-            "value": -170.1837477172918
+            "value": -170.18543925992657
           },
           "end": {
             "unit": "degrees",
-            "value": -275.1303780421198
+            "value": -275.16005406746115
           },
           "relative": false
         }
@@ -320,8 +320,8 @@ description: Artifact commands sweep_mirror.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.010984813941652502,
-          "y": -0.0000000000000042086592334753474,
+          "x": -0.01080702466452768,
+          "y": -0.0000000000000000004366950295151887,
           "z": 0.0
         }
       }
@@ -342,8 +342,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.678975730572019,
-            "y": 3.858583871348646,
+            "x": -0.6787107802984397,
+            "y": 3.8589157113722443,
             "z": 0.0
           },
           "relative": false
@@ -359,17 +359,17 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.5487590487619685,
-            "y": 4.071009153005216
+            "x": 0.5481251779437636,
+            "y": 4.0711481731177965
           },
-          "radius": 1.245976399725592,
+          "radius": 1.2450578646210153,
           "start": {
             "unit": "degrees",
-            "value": -170.1837477172918
+            "value": -170.18543925992657
           },
           "end": {
             "unit": "degrees",
-            "value": -275.1303780421198
+            "value": -275.16005406746115
           },
           "relative": false
         }

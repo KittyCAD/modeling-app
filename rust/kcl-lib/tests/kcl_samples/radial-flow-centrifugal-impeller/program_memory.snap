@@ -196,7 +196,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.00000001874999197920074,
+              0.00000001874999206357577,
               0.0
             ],
             "from": [
@@ -3510,11 +3510,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.000000003749999755927745,
+              0.000000003749997291261116,
               0.0
             ],
             "from": [
-              15.00000000375,
+              15.000000003749998,
               0.0
             ],
             "radius": 15.0,
@@ -3527,7 +3527,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               "value": "circle1"
             },
             "to": [
-              15.00000000375,
+              15.000000003749998,
               0.0
             ],
             "type": "Circle",
@@ -3567,11 +3567,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
         },
         "start": {
           "from": [
-            15.00000000375,
+            15.000000003749998,
             0.0
           ],
           "to": [
-            15.00000000375,
+            15.000000003749998,
             0.0
           ],
           "units": "mm",
@@ -3613,7 +3613,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   "circle": {
                     "start": [
                       {
-                        "n": 15.00000000375,
+                        "n": 15.000000003749998,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3631,7 +3631,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                     ],
                     "center": [
                       {
-                        "n": 0.000000003749999755927745,
+                        "n": 0.000000003749997291261116,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3737,11 +3737,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   },
                   "ccw": true,
                   "center": [
-                    0.000000003749999755927745,
+                    0.000000003749997291261116,
                     0.0
                   ],
                   "from": [
-                    15.00000000375,
+                    15.000000003749998,
                     0.0
                   ],
                   "radius": 15.0,
@@ -3754,7 +3754,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                     "value": "circle1"
                   },
                   "to": [
-                    15.00000000375,
+                    15.000000003749998,
                     0.0
                   ],
                   "type": "Circle",
@@ -3794,11 +3794,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
               },
               "start": {
                 "from": [
-                  15.00000000375,
+                  15.000000003749998,
                   0.0
                 ],
                 "to": [
-                  15.00000000375,
+                  15.000000003749998,
                   0.0
                 ],
                 "units": "mm",
@@ -3901,7 +3901,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                     ],
                     "center": [
                       {
-                        "n": 0.00000001874999197920074,
+                        "n": 0.00000001874999206357577,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4007,7 +4007,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   },
                   "ccw": true,
                   "center": [
-                    0.00000001874999197920074,
+                    0.00000001874999206357577,
                     0.0
                   ],
                   "from": [
@@ -4163,7 +4163,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.000000005000000307354519,
+              0.0000000050000003298545235,
               0.0
             ],
             "from": [
@@ -4278,7 +4278,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                     ],
                     "center": [
                       {
-                        "n": 0.000000005000000307354519,
+                        "n": 0.0000000050000003298545235,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4378,7 +4378,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
                   },
                   "ccw": true,
                   "center": [
-                    0.000000005000000307354519,
+                    0.0000000050000003298545235,
                     0.0
                   ],
                   "from": [
@@ -4540,7 +4540,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             },
             "ccw": true,
             "center": [
-              0.000000005000000307354519,
+              0.0000000050000003298545235,
               0.0
             ],
             "from": [
@@ -5604,7 +5604,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           },
           "ccw": true,
           "center": [
-            0.00000001874999197920074,
+            0.00000001874999206357577,
             0.0
           ],
           "from": [
@@ -5700,7 +5700,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           },
           "ccw": true,
           "center": [
-            0.000000005000000307354519,
+            0.0000000050000003298545235,
             0.0
           ],
           "from": [
@@ -5790,11 +5790,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
           },
           "ccw": true,
           "center": [
-            0.000000003749999755927745,
+            0.000000003749997291261116,
             0.0
           ],
           "from": [
-            15.00000000375,
+            15.000000003749998,
             0.0
           ],
           "radius": 15.0,
@@ -5807,7 +5807,7 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
             "value": "circle1"
           },
           "to": [
-            15.00000000375,
+            15.000000003749998,
             0.0
           ],
           "type": "Circle",
@@ -5847,11 +5847,11 @@ description: Variables in memory after executing radial-flow-centrifugal-impelle
       },
       "start": {
         "from": [
-          15.00000000375,
+          15.000000003749998,
           0.0
         ],
         "to": [
-          15.00000000375,
+          15.000000003749998,
           0.0
         ],
         "units": "mm",

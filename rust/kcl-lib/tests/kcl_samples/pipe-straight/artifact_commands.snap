@@ -291,8 +291,8 @@ description: Artifact commands pipe-straight.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 60.59775022821917,
-          "y": 23.51409507674841,
+          "x": 60.597750228219155,
+          "y": 23.514095076748436,
           "z": 0.0
         }
       }
@@ -313,17 +313,17 @@ description: Artifact commands pipe-straight.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000000000000008483875051381927,
-            "y": -0.00000000000000003292047233525593
+            "x": -0.000000000000000008483872073531722,
+            "y": -0.000000000000000003292049797785492
           },
           "radius": 65.0,
           "start": {
             "unit": "radians",
-            "value": 0.37015003419056935
+            "value": 0.3701500341905698
           },
           "end": {
             "unit": "radians",
-            "value": 6.6533353413701555
+            "value": 6.653335341370156
           },
           "relative": false
         }
@@ -336,8 +336,8 @@ description: Artifact commands pipe-straight.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 31.12987357216734,
-          "y": -15.997842710218066,
+          "x": 31.129873572167345,
+          "y": -15.997842710218064,
           "z": 0.0
         }
       }
@@ -351,13 +351,13 @@ description: Artifact commands pipe-straight.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000000000002550629616780737,
-            "y": -0.0000000000000000013107848300445252
+            "x": 0.0000000000000000002550631064346809,
+            "y": -0.0000000000000000001310786070815444
           },
           "radius": 35.0,
           "start": {
             "unit": "radians",
-            "value": -0.47471077266730954
+            "value": -0.4747107726673095
           },
           "end": {
             "unit": "radians",
@@ -514,8 +514,8 @@ description: Artifact commands pipe-straight.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 58.24887407326204,
-          "y": 5.044285605585475,
+          "x": 58.24887392520871,
+          "y": 5.0442856996369745,
           "z": 0.0
         }
       }
@@ -536,17 +536,17 @@ description: Artifact commands pipe-straight.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 55.00000000039612,
-            "y": 0.0000000006150269045309947
+            "x": 55.00000000003961,
+            "y": 0.00000000006150264434411065
           },
-          "radius": 6.000000000487703,
+          "radius": 6.000000000048773,
           "start": {
             "unit": "radians",
-            "value": 0.9986009792456848
+            "value": 0.9986010084785941
           },
           "end": {
             "unit": "radians",
-            "value": 7.281786286425271
+            "value": 7.281786315658181
           },
           "relative": false
         }

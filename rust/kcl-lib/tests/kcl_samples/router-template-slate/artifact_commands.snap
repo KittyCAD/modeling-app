@@ -68,7 +68,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000004038446625897093,
+          "x": -0.000000004038474002237585,
           "y": 28.119999999999845,
           "z": 0.0
         }
@@ -183,7 +183,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000002522020735589705,
+            "x": -0.000000000000002522129937049522,
             "y": -122.49,
             "z": 0.0
           },
@@ -235,7 +235,7 @@ description: Artifact commands router-template-slate.kcl
           "type": "line",
           "end": {
             "x": -18.869375000000623,
-            "y": -12.489999999665352,
+            "y": -12.489999999665342,
             "z": 0.0
           },
           "relative": false
@@ -251,8 +251,8 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -18.86958331673116,
-            "y": 19.999999999666816,
+            "x": -18.869583319075826,
+            "y": 19.999999999666805,
             "z": 0.0
           },
           "relative": false
@@ -268,17 +268,17 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -10.750833359502215,
-            "y": 20.000833363337303
+            "x": -10.750833361846723,
+            "y": 20.000833361805533
           },
           "radius": 8.11875,
           "start": {
             "unit": "degrees",
-            "value": -179.99411877183036
+            "value": -179.9941187826403
           },
           "end": {
             "unit": "degrees",
-            "value": -270.0058812272431
+            "value": -270.005881243789
           },
           "relative": false
         }
@@ -293,7 +293,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000403844662993554,
+            "x": -0.000000004038474002641433,
             "y": 28.119999999999845,
             "z": 0.0
           },

@@ -68,8 +68,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0345391463724767,
-          "y": 3.870891596316077,
+          "x": 0.060217412333736016,
+          "y": 4.063435111055528,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.31779667024565,
-            "y": 1.041242494895562,
+            "x": 1.5303593663874422,
+            "y": 0.7751904312294232,
             "z": 0.0
           },
           "relative": false
@@ -107,24 +107,11 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.317796711585515,
-            "y": 1.0412426910069752,
+            "x": 1.5303593663874422,
+            "y": 0.7751904312294232,
             "z": 0.0
           },
           "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 3.4989470497882578,
-          "y": 0.1466339480431578,
-          "z": 0.0
         }
       }
     },
@@ -137,8 +124,8 @@ description: Artifact commands sketch_block_angle_constraint.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.31779667024565,
-            "y": 1.041242494895562,
+            "x": 2.9790827711804573,
+            "y": 0.4860693024506223,
             "z": 0.0
           },
           "relative": false

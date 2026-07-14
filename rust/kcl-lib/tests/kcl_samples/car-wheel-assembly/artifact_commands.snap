@@ -69,7 +69,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "path": "[uuid]",
         "to": {
           "x": 37.97300000006349,
-          "y": 0.1269999999365,
+          "y": 0.12699999993650002,
           "z": 0.0
         }
       }
@@ -124,8 +124,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 99.93221253872832,
-            "y": 33.01950385861053,
+            "x": 99.93221246740895,
+            "y": 33.01950386717512,
             "z": 0.0
           },
           "relative": false
@@ -141,17 +141,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 102.43289878327236,
-            "y": 32.71139369399668
+            "x": 102.43289878151604,
+            "y": 32.7113936524048
           },
-          "radius": 2.519595913473061,
+          "radius": 2.5195959886474455,
           "start": {
             "unit": "degrees",
-            "value": 172.9759735840716
+            "value": 172.97597264550973
           },
           "end": {
             "unit": "degrees",
-            "value": 2.7314657352637206
+            "value": 2.7314666706023902
           },
           "relative": false
         }
@@ -167,7 +167,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 152.39999999999998,
-            "y": 32.8314650740585,
+            "y": 32.83146507713764,
             "z": 0.0
           },
           "relative": false
@@ -182,7 +182,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "path": "[uuid]",
         "to": {
           "x": 152.39999999999998,
-          "y": 42.356465074058534,
+          "y": 42.35646507713765,
           "z": 0.0
         }
       }
@@ -197,7 +197,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 94.78556100094757,
-            "y": 42.35646507405854,
+            "y": 42.35646507713765,
             "z": 0.0
           },
           "relative": false
@@ -213,8 +213,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 89.52547499124633,
-            "y": 0.1269999999365,
+            "x": 89.52547499124634,
+            "y": 0.12699999993650002,
             "z": 0.0
           },
           "relative": false
@@ -231,7 +231,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 37.97300000006349,
-            "y": 0.1269999999365,
+            "y": 0.12699999993650002,
             "z": 0.0
           },
           "relative": false
@@ -246,7 +246,7 @@ description: Artifact commands car-wheel-assembly.kcl
         "path": "[uuid]",
         "to": {
           "x": 152.39999999999998,
-          "y": 32.831465074058514,
+          "y": 32.83146507713764,
           "z": 0.0
         }
       }
@@ -261,7 +261,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 152.39999999999998,
-            "y": 42.35646507405853,
+            "y": 42.35646507713765,
             "z": 0.0
           },
           "relative": false
@@ -1842,8 +1842,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 305.06354253084663,
-            "y": 102.10799998614824,
+            "x": 305.06356471076714,
+            "y": 102.10799999999999,
             "z": 0.0
           },
           "relative": false
@@ -1859,19 +1859,32 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 279.63663263138955,
-            "y": 102.12708491711815
+            "x": 279.63658528933894,
+            "y": 102.12705241905122
           },
-          "radius": 25.426917061840147,
+          "radius": 25.426986559409755,
           "start": {
             "unit": "degrees",
-            "value": -0.043005060223708036
+            "value": -0.04293168208307412
           },
           "end": {
             "unit": "degrees",
-            "value": 84.81424322870808
+            "value": 84.8141438327926
           },
           "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 281.9348476397507,
+          "y": 127.44995980287213,
+          "z": 0.0
         }
       }
     },
@@ -1884,17 +1897,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 270.80501192346355,
-            "y": 1.2752729203995876
+            "x": 270.8050296265574,
+            "y": 1.2751808868650585
           },
-          "radius": 126.66458272416986,
+          "radius": 126.66470575306315,
           "start": {
             "unit": "degrees",
-            "value": 84.95900203236816
+            "value": 84.95901367514729
           },
           "end": {
             "unit": "degrees",
-            "value": 109.47107389241468
+            "value": 109.47106751296293
           },
           "relative": false
         }
@@ -1926,8 +1939,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 230.90064536764018,
-            "y": 115.52876753501592,
+            "x": 230.90061924001327,
+            "y": 115.52884122491386,
             "z": 0.0
           },
           "relative": false
@@ -1943,17 +1956,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 247.30947974046558,
-            "y": 69.10467319073733
+            "x": 247.30942918842624,
+            "y": 69.10440797030886
           },
-          "radius": 49.23866754047367,
+          "radius": 49.23897893878802,
           "start": {
             "unit": "degrees",
-            "value": 109.46621618719473
+            "value": 109.46605796835895
           },
           "end": {
             "unit": "degrees",
-            "value": 48.89250434816674
+            "value": 48.89266311530062
           },
           "relative": false
         }
@@ -1985,8 +1998,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 279.6826148904047,
-            "y": -106.20489566466816,
+            "x": 279.6826661583263,
+            "y": -106.20495479307989,
             "z": 0.0
           },
           "relative": false
@@ -2002,17 +2015,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 247.3094797764583,
-            "y": -69.10467318380151
+            "x": 247.3094291902087,
+            "y": -69.10440797003258
           },
-          "radius": 49.23866758184702,
+          "radius": 49.238978932985795,
           "start": {
             "unit": "degrees",
-            "value": -48.89250428562472
+            "value": -48.89266312259305
           },
           "end": {
             "unit": "degrees",
-            "value": -109.46621624211677
+            "value": -109.4660579721854
           },
           "relative": false
         }
@@ -2044,8 +2057,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 228.58379024930758,
-            "y": -120.69589484883241,
+            "x": 228.58378019412115,
+            "y": -120.69592355464107,
             "z": 0.0
           },
           "relative": false
@@ -2061,17 +2074,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 270.80501163533023,
-            "y": -1.2752729142884496
+            "x": 270.80502961950305,
+            "y": -1.2751808862625555
           },
-          "radius": 126.66458257366507,
+          "radius": 126.66470574910515,
           "start": {
             "unit": "degrees",
-            "value": -109.47107375488551
+            "value": -109.47106750870405
           },
           "end": {
             "unit": "degrees",
-            "value": -84.95900190842985
+            "value": -84.95901367196127
           },
           "relative": false
         }
@@ -2086,19 +2099,32 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 279.63663267764025,
-            "y": -102.12708483079165
+            "x": 279.6365852948006,
+            "y": -102.127052420075
           },
-          "radius": 25.42691696169182,
+          "radius": 25.426986605978783,
           "start": {
             "unit": "degrees",
-            "value": -84.81424337719064
+            "value": -84.81414384463343
           },
           "end": {
             "unit": "degrees",
-            "value": 0.043004865869723
+            "value": 0.04293169479704195
           },
           "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 305.0635647098805,
+          "y": -102.10799999999999,
+          "z": 0.0
         }
       }
     },
@@ -2663,7 +2689,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 0.0,
-            "y": -36.836306504281396,
+            "y": -36.83630695742731,
             "z": 0.0
           },
           "relative": false
@@ -2679,17 +2705,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00431530084602746,
-            "y": 62.56197525659698
+            "x": 0.004314991020825131,
+            "y": 62.56197699504398
           },
-          "radius": 99.39828185455113,
+          "radius": 99.39828404613058,
           "start": {
             "unit": "degrees",
-            "value": -90.00248745271318
+            "value": -90.00248727406695
           },
           "end": {
             "unit": "degrees",
-            "value": -69.99872994045245
+            "value": -69.99873011863077
           },
           "relative": false
         }
@@ -2705,7 +2731,7 @@ description: Artifact commands car-wheel-assembly.kcl
           "type": "line",
           "end": {
             "x": 53.162708,
-            "y": -30.84701893118478,
+            "y": -30.84701893128356,
             "z": 0.0
           },
           "relative": false
@@ -2721,17 +2747,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 53.16272495842904,
-            "y": -47.17568190792106
+            "x": 53.16272495830813,
+            "y": -47.17568190782649
           },
-          "radius": 16.328662976745086,
+          "radius": 16.328662976551733,
           "start": {
             "unit": "degrees",
-            "value": 90.00005950557083
+            "value": 90.00005950514657
           },
           "end": {
             "unit": "degrees",
-            "value": 39.99985438270848
+            "value": 39.99985438217291
           },
           "relative": false
         }
@@ -2746,17 +2772,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 78.1796210369452,
-            "y": -26.184059515044545
+            "x": 78.17962103769229,
+            "y": -26.184059514082147
           },
-          "radius": 16.328546029700668,
+          "radius": 16.328546031116776,
           "start": {
             "unit": "degrees",
-            "value": -139.99997770653485
+            "value": -139.9999777056244
           },
           "end": {
             "unit": "degrees",
-            "value": -110.0008497103175
+            "value": -110.0008497115479
           },
           "relative": false
         }
@@ -3510,8 +3536,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 72.59307409336095,
-          "y": -41.53284033006745,
+          "x": 72.59307519642394,
+          "y": -41.53283469723506,
           "z": 0.0
         }
       }
@@ -3549,8 +3575,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 86.58635880525043,
-            "y": -6.432783206249106,
+            "x": 86.58636033359623,
+            "y": -6.4327836348316385,
             "z": 0.0
           },
           "relative": false
@@ -3566,17 +3592,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 362.7942745845037,
-            "y": 435.68454775212626
+            "x": 362.79427441318404,
+            "y": 435.6845484220227
           },
-          "radius": 521.304658595026,
+          "radius": 521.3046586260934,
           "start": {
             "unit": "degrees",
-            "value": -121.99462618021349
+            "value": -121.99462595781375
           },
           "end": {
             "unit": "degrees",
-            "value": -108.09817297528345
+            "value": -108.09817303453185
           },
           "relative": false
         }
@@ -3625,8 +3651,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 217.4953200535593,
-            "y": -81.74468121907636,
+            "x": 217.49532160757593,
+            "y": -81.74467564270051,
             "z": 0.0
           },
           "relative": false
@@ -3642,17 +3668,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 626.6696633409883,
-            "y": 1673.88516031074
+            "x": 626.6696623928027,
+            "y": 1673.8851606777364
           },
-          "radius": 1802.681276231244,
+          "radius": 1802.681270589881,
           "start": {
             "unit": "degrees",
-            "value": -103.11939367519471
+            "value": -103.11939363532332
           },
           "end": {
             "unit": "degrees",
-            "value": -107.90035301644293
+            "value": -107.90035300584523
           },
           "relative": false
         }
@@ -3821,8 +3847,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -101.6108896090923,
-          "y": 19.034875547851627,
+          "x": -101.61088960921906,
+          "y": 19.034875548378018,
           "z": 0.0
         }
       }
@@ -3873,8 +3899,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -74.67429206357498,
-            "y": 39.62734161415084,
+            "x": -74.67429320616942,
+            "y": 39.62733937971079,
             "z": 0.0
           },
           "relative": false
@@ -3890,17 +3916,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -68.84320800951197,
-            "y": 51.052069289939084
+            "x": -68.8432120670276,
+            "y": 51.05207897097209
           },
-          "radius": 12.826766689679419,
+          "radius": 12.826775977594249,
           "start": {
             "unit": "degrees",
-            "value": -117.03938060554881
+            "value": -117.03934481187441
           },
           "end": {
             "unit": "degrees",
-            "value": -39.33570161770026
+            "value": -39.33572460982553
           },
           "relative": false
         }
@@ -3913,8 +3939,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -58.71266945516134,
-          "y": -43.20811092201281,
+          "x": -58.712669576535355,
+          "y": -43.20811075708565,
           "z": 0.0
         }
       }
@@ -3928,17 +3954,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -68.61368480785976,
-            "y": -50.79304914587104
+            "x": -68.61369129736907,
+            "y": -50.79306461500161
           },
-          "radius": 12.4724253004023,
+          "radius": 12.472439863279975,
           "start": {
             "unit": "degrees",
-            "value": 37.45488809496025
+            "value": 37.45492731732275
           },
           "end": {
             "unit": "degrees",
-            "value": 119.04805572843603
+            "value": 119.04799515861876
           },
           "relative": false
         }
@@ -3983,8 +4009,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -101.6108896077149,
-            "y": -19.03487554769499,
+            "x": -101.61088961074313,
+            "y": -19.034875548455528,
             "z": 0.0
           },
           "relative": false
@@ -3998,8 +4024,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -58.92240440531869,
-          "y": 42.92165727341008,
+          "x": -58.922404541782385,
+          "y": 42.92165708607418,
           "z": 0.0
         }
       }
@@ -4013,17 +4039,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000000002255973186038318,
-            "y": 0.00000000000001127986593019159
+            "x": -0.0,
+            "y": -0.00000000000001127986593019159
           },
           "radius": 72.89799999999998,
           "start": {
             "unit": "degrees",
-            "value": 143.92876748842693
+            "value": 143.92876767059118
           },
           "end": {
             "unit": "degrees",
-            "value": 216.35027433323074
+            "value": 216.35027417228372
           },
           "relative": false
         }
@@ -4096,8 +4122,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -101.6108896077149,
-          "y": -19.034875547694988,
+          "x": -101.61088961074313,
+          "y": -19.034875548455528,
           "z": 0.0
         }
       }
@@ -4111,17 +4137,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -115.34698901369028,
-            "y": -0.00000000041866914379795616
+            "x": -115.3469890135455,
+            "y": 0.0000000005111471246266319
           },
-          "radius": 23.47353646111159,
+          "radius": 23.473536460625542,
           "start": {
             "unit": "degrees",
-            "value": -54.18472823138149
+            "value": -54.18472824007631
           },
           "end": {
             "unit": "degrees",
-            "value": 54.18472823552755
+            "value": 54.184728235488805
           },
           "relative": false
         }
@@ -4451,8 +4477,8 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 11.893865170670392,
-            "y": 16.001998772794376,
+            "x": 11.895666666790278,
+            "y": 16.002,
             "z": 0.0
           },
           "relative": false
@@ -4468,17 +4494,17 @@ description: Artifact commands car-wheel-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 8.978272347802092,
-            "y": 15.921081229429069
+            "x": 8.974666666715772,
+            "y": 15.91733333332656
           },
-          "radius": 2.916715474225317,
+          "radius": 2.9222267955928514,
           "start": {
             "unit": "degrees",
-            "value": 1.5897432193055931
+            "value": 1.6602823690732151
           },
           "end": {
             "unit": "degrees",
-            "value": 91.73430770054917
+            "value": 91.66028236912132
           },
           "relative": false
         }

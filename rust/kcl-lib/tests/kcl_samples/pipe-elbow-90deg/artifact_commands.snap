@@ -68,8 +68,8 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 121.95327150495379,
-          "y": -21.187803338172763,
+          "x": 121.9532715330765,
+          "y": -21.18780327685004,
           "z": 0.0
         }
       }
@@ -90,17 +90,17 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 80.00000000325018,
-            "y": 0.000000001731690322916593
+            "x": 80.00000000032502,
+            "y": 0.0000000001731690782342289
           },
-          "radius": 47.00000000070343,
+          "radius": 47.000000000070344,
           "start": {
             "unit": "radians",
-            "value": -0.46766621627454247
+            "value": -0.46766621478250536
           },
           "end": {
             "unit": "radians",
-            "value": 5.815519090905044
+            "value": 5.815519092397081
           },
           "relative": false
         }
@@ -113,8 +113,8 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 105.65717226251472,
-          "y": 24.534863194445666,
+          "x": 105.65717303026472,
+          "y": 24.534862382799485,
           "z": 0.0
         }
       }
@@ -128,17 +128,17 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 80.00000000401963,
-            "y": 0.0000000024674763689652963
+            "x": 80.00000000040195,
+            "y": 0.00000000024674770695109264
           },
-          "radius": 35.50000000212925,
+          "radius": 35.500000000212935,
           "start": {
             "unit": "radians",
-            "value": 0.7630415869536348
+            "value": 0.7630415554575282
           },
           "end": {
             "unit": "radians",
-            "value": 7.046226894133221
+            "value": 7.0462268626371145
           },
           "relative": false
         }
@@ -272,8 +272,8 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 59.12788512385724,
-          "y": 53.00197778738383,
+          "x": 59.12788545311912,
+          "y": 53.00197855204715,
           "z": 0.0
         }
       }
@@ -294,17 +294,17 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000015956567330010124,
-            "y": 79.99999999676287
+            "x": 0.0000000015956565648460312,
+            "y": 79.99999999967629
           },
-          "radius": 65.0000000042402,
+          "radius": 65.00000000042402,
           "start": {
             "unit": "radians",
-            "value": -0.42833213132552067
+            "value": -0.42833211846923763
           },
           "end": {
             "unit": "radians",
-            "value": 5.854853175854066
+            "value": 5.854853188710349
           },
           "relative": false
         }
@@ -317,8 +317,8 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 35.43933553961451,
-          "y": 77.92551250223232,
+          "x": 35.43933552495827,
+          "y": 77.92551265701398,
           "z": 0.0
         }
       }
@@ -332,17 +332,17 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000019346853375798334,
-            "y": 79.99999999656441
+            "x": 0.000000001934685264256435,
+            "y": 79.99999999965644
           },
-          "radius": 35.500000006792185,
+          "radius": 35.50000000067922,
           "start": {
             "unit": "radians",
-            "value": -0.05846957664699674
+            "value": -0.05846957237681468
           },
           "end": {
             "unit": "radians",
-            "value": 6.22471573053259
+            "value": 6.224715734802771
           },
           "relative": false
         }
@@ -477,8 +477,8 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 57.99692021818228,
-          "y": 74.34205782618673,
+          "x": 57.99691808103793,
+          "y": 74.34205706297202,
           "z": 0.0
         }
       }
@@ -499,17 +499,17 @@ description: Artifact commands pipe-elbow-90deg.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 56.0,
-            "y": 80.0
+            "x": 56.00000000200154,
+            "y": 79.99999999432897
           },
-          "radius": 5.999999999999999,
+          "radius": 6.000000002406211,
           "start": {
             "unit": "radians",
-            "value": -1.2315037986316861
+            "value": -1.2315041768516322
           },
           "end": {
             "unit": "radians",
-            "value": 5.0516815085479
+            "value": 5.051681130327954
           },
           "relative": false
         }

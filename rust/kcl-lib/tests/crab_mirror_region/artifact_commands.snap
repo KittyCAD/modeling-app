@@ -489,8 +489,8 @@ description: Artifact commands crab_mirror_region.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 38.18770614535611,
-            "y": -57.891451782100155,
+            "x": 38.33472013973672,
+            "y": -57.734446213609246,
             "z": 0.0
           },
           "relative": false
@@ -506,17 +506,17 @@ description: Artifact commands crab_mirror_region.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 21.76983995551333,
-            "y": -78.29718727567996
+            "x": 21.78207454488621,
+            "y": -78.80513012577373
           },
-          "radius": 26.190463364773166,
+          "radius": 26.794846458135773,
           "start": {
             "unit": "degrees",
-            "value": 51.18084751027218
+            "value": 51.84763561149794
           },
           "end": {
             "unit": "degrees",
-            "value": 153.2867476799182
+            "value": 152.25221336515824
           },
           "relative": false
         }

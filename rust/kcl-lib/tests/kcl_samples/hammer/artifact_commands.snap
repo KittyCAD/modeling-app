@@ -90,8 +90,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 8.367791754202761,
-            "y": 288.54400000932804,
+            "x": 8.367753619990028,
+            "y": 288.544,
             "z": 0.0
           },
           "relative": false
@@ -107,19 +107,32 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 22.63746115918702,
-            "y": 288.57241654350815
+            "x": 22.637528182632966,
+            "y": 288.5723306048576
           },
-          "radius": 14.269697699214186,
+          "radius": 14.269802685805544,
           "start": {
             "unit": "degrees",
-            "value": -179.8859016786945
+            "value": -179.88624754024312
           },
           "end": {
             "unit": "degrees",
-            "value": -276.0018531569725
+            "value": -276.0015500312158
           },
           "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 69.08217091614394,
+          "y": 285.9957037233798,
+          "z": 0.0
         }
       }
     },
@@ -132,19 +145,32 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.48761452179175,
-            "y": 208.27641493294976
+            "x": 14.487597412553207,
+            "y": 208.27641883329966
           },
-          "radius": 94.97815564989092,
+          "radius": 94.9781801250393,
           "start": {
             "unit": "degrees",
-            "value": 84.17346856371393
+            "value": 54.91355031464595
           },
           "end": {
             "unit": "degrees",
-            "value": 54.913560112134306
+            "value": 84.17345791925953
           },
           "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 69.08217091614976,
+          "y": 285.99570372338803,
+          "z": 0.0
         }
       }
     },
@@ -174,8 +200,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 63.005610261460745,
-            "y": 299.22561016155396,
+            "x": 63.00561237592383,
+            "y": 299.2256123730267,
             "z": 0.0
           },
           "relative": false
@@ -191,17 +217,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -3.3373558305210596,
-            "y": 232.9284294459481
+            "x": -3.337356014749763,
+            "y": 232.92840843474704
           },
-          "radius": 93.79075285293082,
+          "radius": 93.79077089415439,
           "start": {
             "unit": "degrees",
-            "value": 44.980222362620175
+            "value": 44.98023140483149
           },
           "end": {
             "unit": "degrees",
-            "value": 102.17250602863214
+            "value": 102.17250321320152
           },
           "relative": false
         }
@@ -216,17 +242,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -29.950929874400096,
-            "y": 356.3600593267297
+            "x": -29.950930914556807,
+            "y": 356.3600895621542
           },
-          "radius": 32.477413881867925,
+          "radius": 32.47744611740026,
           "start": {
             "unit": "degrees",
-            "value": -77.84697521905392
+            "value": -77.8469846560653
           },
           "end": {
             "unit": "degrees",
-            "value": -112.58651767325671
+            "value": -112.58649549922045
           },
           "relative": false
         }
@@ -258,13 +284,13 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -48.768000000000015,
+            "x": -48.76800000000001,
             "y": 325.12
           },
           "radius": 1.269999999999973,
           "start": {
             "unit": "degrees",
-            "value": 89.99999999999925
+            "value": 89.9999999999995
           },
           "end": {
             "unit": "degrees",
@@ -283,8 +309,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -50.07635991043704,
-            "y": 296.67201260545227,
+            "x": -50.08033333320973,
+            "y": 296.67199999999997,
             "z": 0.0
           },
           "relative": false
@@ -300,17 +326,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -48.69130118224251,
-            "y": 296.57998662962643
+            "x": -48.68333333328422,
+            "y": 296.5873333333265
           },
-          "radius": 1.3881125533524155,
+          "radius": 1.3995633048338532,
           "start": {
             "unit": "degrees",
-            "value": 176.19874481236667
+            "value": 176.53177074062128
           },
           "end": {
             "unit": "degrees",
-            "value": 266.83299822159506
+            "value": 266.53177074083106
           },
           "relative": false
         }
@@ -342,8 +368,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -40.14244461727289,
-            "y": 296.1886386466852,
+            "x": -40.14247466400633,
+            "y": 296.1887094665256,
             "z": 0.0
           },
           "relative": false
@@ -359,17 +385,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -30.159047230975904,
-            "y": 272.77457511614836
+            "x": -30.15911843655106,
+            "y": 272.7743540362819
           },
-          "radius": 25.453616528594463,
+          "radius": 25.453868896064733,
           "start": {
             "unit": "degrees",
-            "value": 113.09265583426595
+            "value": 113.09231290073811
           },
           "end": {
             "unit": "degrees",
-            "value": 31.27855433676726
+            "value": 31.278896049328747
           },
           "relative": false
         }
@@ -617,8 +643,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -42.42156910168096,
-            "y": -15.483752161521139,
+            "x": -42.42147806913599,
+            "y": -15.484013762808692,
             "z": 0.0
           },
           "relative": false
@@ -634,17 +660,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -32.794478618418054,
-            "y": -43.171730917021264
+            "x": -32.793754331272375,
+            "y": -43.171943961949985
           },
-          "radius": 29.31390521131494,
+          "radius": 29.314067324155875,
           "start": {
             "unit": "degrees",
-            "value": 109.17252678171558
+            "value": 109.17372702536608
           },
           "end": {
             "unit": "degrees",
-            "value": 70.67548897710962
+            "value": 70.67815777088536
           },
           "relative": false
         }
@@ -657,8 +683,8 @@ description: Artifact commands hammer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -23.093976239893173,
-          "y": -15.509386565126968,
+          "x": -23.094486775343345,
+          "y": -15.508994702409508,
           "z": 0.0
         }
       }
@@ -672,17 +698,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 63.24193809048765,
-            "y": 230.62981473721157
+            "x": 63.242075059674725,
+            "y": 230.62951286350636
           },
-          "radius": 260.8417077865731,
+          "radius": 260.84126747174867,
           "start": {
             "unit": "degrees",
-            "value": -109.3288562590934
+            "value": -109.3290409092945
           },
           "end": {
             "unit": "degrees",
-            "value": -84.97132940664746
+            "value": -84.97135356955094
           },
           "relative": false
         }
@@ -866,8 +892,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 83.5622623708985,
-            "y": -14.04071738882554,
+            "x": 83.56226128029901,
+            "y": -14.04073658002851,
             "z": 0.0
           },
           "relative": false
@@ -883,17 +909,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 96.24462125031495,
-            "y": 226.3166911719089
+            "x": 96.24463086025925,
+            "y": 226.31677044898078
           },
-          "radius": 240.6917657020658,
+          "radius": 240.69186459737884,
           "start": {
             "unit": "degrees",
-            "value": -93.02038707662243
+            "value": -93.02038838522394
           },
           "end": {
             "unit": "degrees",
-            "value": -101.743466764012
+            "value": -101.74346489780041
           },
           "relative": false
         }
@@ -908,17 +934,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 49.2760000002252,
-            "y": 0.03381008071690914
+            "x": 49.2759999998985,
+            "y": 0.03380101942848089
           },
-          "radius": 9.586008383788057,
+          "radius": 9.586018838847599,
           "start": {
             "unit": "degrees",
-            "value": -102.16110869557326
+            "value": -102.16111260756476
           },
           "end": {
             "unit": "degrees",
-            "value": -257.75747939974264
+            "value": -257.7574908210516
           },
           "relative": false
         }
@@ -933,17 +959,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 96.27002975966634,
-            "y": -227.3294995663898
+            "x": 96.27002959070286,
+            "y": -227.32950137186847
           },
-          "radius": 241.75470996366758,
+          "radius": 241.75471329709558,
           "start": {
             "unit": "degrees",
-            "value": 101.70047438705042
+            "value": 101.70047426723158
           },
           "end": {
             "unit": "degrees",
-            "value": 92.40945666855882
+            "value": 92.40945661039082
           },
           "relative": false
         }
@@ -1152,8 +1178,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -42.41751899239838,
-            "y": 15.4953797317569,
+            "x": -42.417518972871726,
+            "y": 15.495379788451656,
             "z": 0.0
           },
           "relative": false
@@ -1169,17 +1195,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -32.767924029174424,
-            "y": 43.179999999999644
+            "x": -32.76792410910687,
+            "y": 43.179999999998614
           },
-          "radius": 29.318132313486036,
+          "radius": 29.31813222721378,
           "start": {
             "unit": "degrees",
-            "value": -109.21622291444805
+            "value": -109.21622276737487
           },
           "end": {
             "unit": "degrees",
-            "value": -70.7766923384829
+            "value": -70.77669235268557
           },
           "relative": false
         }
@@ -1194,17 +1220,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 63.24950826659524,
-            "y": -230.63155944626243
+            "x": 63.24950832036726,
+            "y": -230.63155968702029
           },
-          "radius": 260.84069789636055,
+          "radius": 260.8406982540936,
           "start": {
             "unit": "degrees",
-            "value": 109.33556836019771
+            "value": 109.33556837195968
           },
           "end": {
             "unit": "degrees",
-            "value": 84.97301944727774
+            "value": 84.97301946385677
           },
           "relative": false
         }
@@ -1987,8 +2013,8 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 14.477973054232569,
-            "y": -0.005622629905612571,
+            "x": 14.477973120020293,
+            "y": -0.005624459494262391,
             "z": 0.0
           },
           "relative": false
@@ -2004,17 +2030,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.499059840707636,
-            "y": 1.274074847179798
+            "x": 14.499163383747065,
+            "y": 1.2740746354343193
           },
-          "radius": 1.2798711987628326,
+          "radius": 1.2798745254273332,
           "start": {
             "unit": "degrees",
-            "value": -90.94403134972801
+            "value": -90.94866186445597
           },
           "end": {
             "unit": "degrees",
-            "value": -0.021982665601322095
+            "value": -0.021890728885020864
           },
           "relative": false
         }
@@ -2027,8 +2053,8 @@ description: Artifact commands hammer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.778931032893345,
-          "y": 1.2735837991120904,
+          "x": 15.779037903423648,
+          "y": 1.27358563977498,
           "z": 0.0
         }
       }
@@ -2042,17 +2068,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -3247.8670689653436,
-            "y": 1.276983822483917
+            "x": -3247.8669620947667,
+            "y": 1.2770298365800792
           },
           "radius": 3263.646000000008,
           "start": {
             "unit": "degrees",
-            "value": -0.00005968998765538164
+            "value": -0.00006046548576183037
           },
           "end": {
             "unit": "degrees",
-            "value": 3.520337727367984
+            "value": 3.520336565619429
           },
           "relative": false
         }
@@ -2067,17 +2093,17 @@ description: Artifact commands hammer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 1517.396087710921,
-            "y": 294.38175116647466
+            "x": 1517.3960869825885,
+            "y": 294.3817642397151
           },
-          "radius": 1510.6228824777813,
+          "radius": 1510.6227730579496,
           "start": {
             "unit": "degrees",
-            "value": -176.48151941708477
+            "value": -176.48151790375636
           },
           "end": {
             "unit": "degrees",
-            "value": -181.16595869172247
+            "value": -181.16595816249176
           },
           "relative": false
         }

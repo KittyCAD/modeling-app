@@ -1782,8 +1782,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "sourceRange": []
             },
             "from": [
-              1.4500000000000244,
-              0.000000000000003903627133189027
+              1.4500000000000024,
+              0.0000000000000003903861320817506
             ],
             "tag": {
               "commentStart": 1856,
@@ -1794,8 +1794,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "value": "upperRightFacet"
             },
             "to": [
-              0.725000000003701,
-              1.2557368354990235
+              0.7250000000036871,
+              1.255736835498964
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1806,8 +1806,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "sourceRange": []
             },
             "from": [
-              0.725000000003701,
-              1.2557368354990235
+              0.7250000000036871,
+              1.255736835498964
             ],
             "tag": {
               "commentStart": 1944,
@@ -1818,8 +1818,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "value": "topFacet"
             },
             "to": [
-              -0.7250000000037173,
-              1.2557368354990124
+              -0.7250000000036885,
+              1.2557368354989629
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1830,8 +1830,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "sourceRange": []
             },
             "from": [
-              -0.7250000000037173,
-              1.2557368354990124
+              -0.7250000000036885,
+              1.2557368354989629
             ],
             "tag": {
               "commentStart": 2133,
@@ -1842,8 +1842,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "value": "upperLeftFacet"
             },
             "to": [
-              -1.4500000000000555,
-              -0.0000000000000031736216792276407
+              -1.4500000000000055,
+              -0.00000000000000018021930565295252
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1854,8 +1854,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "sourceRange": []
             },
             "from": [
-              -1.4500000000000555,
-              -0.0000000000000031736216792276407
+              -1.4500000000000055,
+              -0.00000000000000018021930565295252
             ],
             "tag": {
               "commentStart": 2364,
@@ -1866,8 +1866,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "value": "lowerLeftFacet"
             },
             "to": [
-              -0.7250000000037083,
-              -1.2557368354990197
+              -0.7250000000036877,
+              -1.2557368354989635
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1878,8 +1878,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "sourceRange": []
             },
             "from": [
-              -0.7250000000037083,
-              -1.2557368354990197
+              -0.7250000000036877,
+              -1.2557368354989635
             ],
             "tag": {
               "commentStart": 2593,
@@ -1890,8 +1890,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "value": "bottomFacet"
             },
             "to": [
-              0.7250000000037072,
-              -1.2557368354990204
+              0.7250000000036877,
+              -1.2557368354989638
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1902,8 +1902,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "sourceRange": []
             },
             "from": [
-              0.7250000000037072,
-              -1.2557368354990204
+              0.7250000000036877,
+              -1.2557368354989638
             ],
             "tag": {
               "commentStart": 2792,
@@ -1914,8 +1914,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               "value": "lowerRightFacet"
             },
             "to": [
-              1.4500000000000421,
-              -0.000000000000003902911186974853
+              1.4500000000000042,
+              -0.00000000000000039027092993707943
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1954,12 +1954,12 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
         },
         "start": {
           "from": [
-            1.4500000000000244,
-            0.000000000000003903627133189027
+            1.4500000000000024,
+            0.0000000000000003903861320817506
           ],
           "to": [
-            1.4500000000000244,
-            0.000000000000003903627133189027
+            1.4500000000000024,
+            0.0000000000000003903861320817506
           ],
           "units": "mm",
           "tag": null,
@@ -2017,8 +2017,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            1.4500000000000244,
-            0.000000000000003903627133189027
+            1.4500000000000024,
+            0.0000000000000003903861320817506
           ],
           "tag": {
             "commentStart": 1856,
@@ -2029,8 +2029,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "upperRightFacet"
           },
           "to": [
-            0.725000000003701,
-            1.2557368354990235
+            0.7250000000036871,
+            1.255736835498964
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2041,8 +2041,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            0.725000000003701,
-            1.2557368354990235
+            0.7250000000036871,
+            1.255736835498964
           ],
           "tag": {
             "commentStart": 1944,
@@ -2053,8 +2053,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "topFacet"
           },
           "to": [
-            -0.7250000000037173,
-            1.2557368354990124
+            -0.7250000000036885,
+            1.2557368354989629
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2065,8 +2065,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            -0.7250000000037173,
-            1.2557368354990124
+            -0.7250000000036885,
+            1.2557368354989629
           ],
           "tag": {
             "commentStart": 2133,
@@ -2077,8 +2077,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "upperLeftFacet"
           },
           "to": [
-            -1.4500000000000555,
-            -0.0000000000000031736216792276407
+            -1.4500000000000055,
+            -0.00000000000000018021930565295252
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2089,8 +2089,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            -1.4500000000000555,
-            -0.0000000000000031736216792276407
+            -1.4500000000000055,
+            -0.00000000000000018021930565295252
           ],
           "tag": {
             "commentStart": 2364,
@@ -2101,8 +2101,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "lowerLeftFacet"
           },
           "to": [
-            -0.7250000000037083,
-            -1.2557368354990197
+            -0.7250000000036877,
+            -1.2557368354989635
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2113,8 +2113,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            -0.7250000000037083,
-            -1.2557368354990197
+            -0.7250000000036877,
+            -1.2557368354989635
           ],
           "tag": {
             "commentStart": 2593,
@@ -2125,8 +2125,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "bottomFacet"
           },
           "to": [
-            0.7250000000037072,
-            -1.2557368354990204
+            0.7250000000036877,
+            -1.2557368354989638
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2137,8 +2137,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            0.7250000000037072,
-            -1.2557368354990204
+            0.7250000000036877,
+            -1.2557368354989638
           ],
           "tag": {
             "commentStart": 2792,
@@ -2149,8 +2149,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "lowerRightFacet"
           },
           "to": [
-            1.4500000000000421,
-            -0.000000000000003902911186974853
+            1.4500000000000042,
+            -0.00000000000000039027092993707943
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2189,12 +2189,12 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
       },
       "start": {
         "from": [
-          1.4500000000000244,
-          0.000000000000003903627133189027
+          1.4500000000000024,
+          0.0000000000000003903861320817506
         ],
         "to": [
-          1.4500000000000244,
-          0.000000000000003903627133189027
+          1.4500000000000024,
+          0.0000000000000003903861320817506
         ],
         "units": "mm",
         "tag": null,
@@ -2250,7 +2250,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "line": {
                     "start": [
                       {
-                        "n": -0.7250000000037131,
+                        "n": -0.7250000000036881,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2258,7 +2258,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -1.2557368354990242,
+                        "n": -1.255736835498964,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2268,7 +2268,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "end": [
                       {
-                        "n": 0.7250000000037072,
+                        "n": 0.7250000000036877,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2276,7 +2276,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -1.2557368354990204,
+                        "n": -1.2557368354989638,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2370,7 +2370,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "line": {
                     "start": [
                       {
-                        "n": -1.4500000000000532,
+                        "n": -1.4500000000000053,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2378,7 +2378,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -0.0000000000000070768188792998685,
+                        "n": -0.00000000000000057053732734560975,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2388,7 +2388,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "end": [
                       {
-                        "n": -0.7250000000037083,
+                        "n": -0.7250000000036877,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2396,7 +2396,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -1.2557368354990197,
+                        "n": -1.2557368354989635,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2490,7 +2490,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "line": {
                     "start": [
                       {
-                        "n": 0.7250000000037052,
+                        "n": 0.7250000000036875,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2498,7 +2498,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -1.255736835499021,
+                        "n": -1.2557368354989638,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2508,7 +2508,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "end": [
                       {
-                        "n": 1.4500000000000421,
+                        "n": 1.4500000000000042,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2516,7 +2516,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -0.000000000000003902911186974853,
+                        "n": -0.00000000000000039027092993707943,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2613,8 +2613,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "sourceRange": []
                   },
                   "from": [
-                    1.4500000000000244,
-                    0.000000000000003903627133189027
+                    1.4500000000000024,
+                    0.0000000000000003903861320817506
                   ],
                   "tag": {
                     "commentStart": 1856,
@@ -2625,8 +2625,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "value": "upperRightFacet"
                   },
                   "to": [
-                    0.725000000003701,
-                    1.2557368354990235
+                    0.7250000000036871,
+                    1.255736835498964
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2637,8 +2637,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "sourceRange": []
                   },
                   "from": [
-                    0.725000000003701,
-                    1.2557368354990235
+                    0.7250000000036871,
+                    1.255736835498964
                   ],
                   "tag": {
                     "commentStart": 1944,
@@ -2649,8 +2649,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "value": "topFacet"
                   },
                   "to": [
-                    -0.7250000000037173,
-                    1.2557368354990124
+                    -0.7250000000036885,
+                    1.2557368354989629
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2661,8 +2661,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "sourceRange": []
                   },
                   "from": [
-                    -0.7250000000037173,
-                    1.2557368354990124
+                    -0.7250000000036885,
+                    1.2557368354989629
                   ],
                   "tag": {
                     "commentStart": 2133,
@@ -2673,8 +2673,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "value": "upperLeftFacet"
                   },
                   "to": [
-                    -1.4500000000000555,
-                    -0.0000000000000031736216792276407
+                    -1.4500000000000055,
+                    -0.00000000000000018021930565295252
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2685,8 +2685,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "sourceRange": []
                   },
                   "from": [
-                    -1.4500000000000555,
-                    -0.0000000000000031736216792276407
+                    -1.4500000000000055,
+                    -0.00000000000000018021930565295252
                   ],
                   "tag": {
                     "commentStart": 2364,
@@ -2697,8 +2697,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "value": "lowerLeftFacet"
                   },
                   "to": [
-                    -0.7250000000037083,
-                    -1.2557368354990197
+                    -0.7250000000036877,
+                    -1.2557368354989635
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2709,8 +2709,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "sourceRange": []
                   },
                   "from": [
-                    -0.7250000000037083,
-                    -1.2557368354990197
+                    -0.7250000000036877,
+                    -1.2557368354989635
                   ],
                   "tag": {
                     "commentStart": 2593,
@@ -2721,8 +2721,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "value": "bottomFacet"
                   },
                   "to": [
-                    0.7250000000037072,
-                    -1.2557368354990204
+                    0.7250000000036877,
+                    -1.2557368354989638
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2733,8 +2733,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "sourceRange": []
                   },
                   "from": [
-                    0.7250000000037072,
-                    -1.2557368354990204
+                    0.7250000000036877,
+                    -1.2557368354989638
                   ],
                   "tag": {
                     "commentStart": 2792,
@@ -2745,8 +2745,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     "value": "lowerRightFacet"
                   },
                   "to": [
-                    1.4500000000000421,
-                    -0.000000000000003902911186974853
+                    1.4500000000000042,
+                    -0.00000000000000039027092993707943
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2785,12 +2785,12 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
               },
               "start": {
                 "from": [
-                  1.4500000000000244,
-                  0.000000000000003903627133189027
+                  1.4500000000000024,
+                  0.0000000000000003903861320817506
                 ],
                 "to": [
-                  1.4500000000000244,
-                  0.000000000000003903627133189027
+                  1.4500000000000024,
+                  0.0000000000000003903861320817506
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2846,7 +2846,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000013294249940005441,
+                        "n": 0.0000000000000013294344324189078,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2854,7 +2854,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": 0.00000000000000000010672482381552858,
+                        "n": 0.000000000000000000023842362194244258,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2864,7 +2864,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "end": [
                       {
-                        "n": 1.4500000000000266,
+                        "n": 1.4500000000000026,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2872,7 +2872,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": 0.00000000000000000027422368193087037,
+                        "n": 0.00000000000000000004634816920715355,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2967,7 +2967,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "circle": {
                     "start": [
                       {
-                        "n": 1.45000000000006,
+                        "n": 1.450000000000006,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2975,7 +2975,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -0.000000000000003902909944328036,
+                        "n": -0.00000000000000039027062238280546,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2985,7 +2985,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "center": [
                       {
-                        "n": 0.00000000000000000008148703085588226,
+                        "n": 0.000000000000000000007030826515272352,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2993,7 +2993,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -0.00000000000000000006077403817618051,
+                        "n": 0.0000000000000000000013365547913417614,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3088,7 +3088,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "line": {
                     "start": [
                       {
-                        "n": 0.7250000000037029,
+                        "n": 0.7250000000036874,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3096,7 +3096,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": 1.255736835499023,
+                        "n": 1.255736835498964,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3106,7 +3106,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "end": [
                       {
-                        "n": -0.7250000000037173,
+                        "n": -0.7250000000036885,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3114,7 +3114,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": 1.2557368354990124,
+                        "n": 1.2557368354989629,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3208,7 +3208,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "line": {
                     "start": [
                       {
-                        "n": -0.7250000000037146,
+                        "n": -0.7250000000036882,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3216,7 +3216,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": 1.2557368354990115,
+                        "n": 1.2557368354989626,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3226,7 +3226,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "end": [
                       {
-                        "n": -1.4500000000000555,
+                        "n": -1.4500000000000055,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3234,7 +3234,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": -0.0000000000000031736216792276407,
+                        "n": -0.00000000000000018021930565295252,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3328,7 +3328,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                   "line": {
                     "start": [
                       {
-                        "n": 1.4500000000000244,
+                        "n": 1.4500000000000024,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3336,7 +3336,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": 0.000000000000003903627133189027,
+                        "n": 0.0000000000000003903861320817506,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3346,7 +3346,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                     ],
                     "end": [
                       {
-                        "n": 0.725000000003701,
+                        "n": 0.7250000000036871,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3354,7 +3354,7 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
                         }
                       },
                       {
-                        "n": 1.2557368354990235,
+                        "n": 1.255736835498964,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3653,8 +3653,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            1.4500000000000244,
-            0.000000000000003903627133189027
+            1.4500000000000024,
+            0.0000000000000003903861320817506
           ],
           "tag": {
             "commentStart": 1856,
@@ -3665,8 +3665,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "upperRightFacet"
           },
           "to": [
-            0.725000000003701,
-            1.2557368354990235
+            0.7250000000036871,
+            1.255736835498964
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3677,8 +3677,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            0.725000000003701,
-            1.2557368354990235
+            0.7250000000036871,
+            1.255736835498964
           ],
           "tag": {
             "commentStart": 1944,
@@ -3689,8 +3689,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "topFacet"
           },
           "to": [
-            -0.7250000000037173,
-            1.2557368354990124
+            -0.7250000000036885,
+            1.2557368354989629
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3701,8 +3701,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            -0.7250000000037173,
-            1.2557368354990124
+            -0.7250000000036885,
+            1.2557368354989629
           ],
           "tag": {
             "commentStart": 2133,
@@ -3713,8 +3713,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "upperLeftFacet"
           },
           "to": [
-            -1.4500000000000555,
-            -0.0000000000000031736216792276407
+            -1.4500000000000055,
+            -0.00000000000000018021930565295252
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3725,8 +3725,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            -1.4500000000000555,
-            -0.0000000000000031736216792276407
+            -1.4500000000000055,
+            -0.00000000000000018021930565295252
           ],
           "tag": {
             "commentStart": 2364,
@@ -3737,8 +3737,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "lowerLeftFacet"
           },
           "to": [
-            -0.7250000000037083,
-            -1.2557368354990197
+            -0.7250000000036877,
+            -1.2557368354989635
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3749,8 +3749,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            -0.7250000000037083,
-            -1.2557368354990197
+            -0.7250000000036877,
+            -1.2557368354989635
           ],
           "tag": {
             "commentStart": 2593,
@@ -3761,8 +3761,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "bottomFacet"
           },
           "to": [
-            0.7250000000037072,
-            -1.2557368354990204
+            0.7250000000036877,
+            -1.2557368354989638
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3773,8 +3773,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "sourceRange": []
           },
           "from": [
-            0.7250000000037072,
-            -1.2557368354990204
+            0.7250000000036877,
+            -1.2557368354989638
           ],
           "tag": {
             "commentStart": 2792,
@@ -3785,8 +3785,8 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
             "value": "lowerRightFacet"
           },
           "to": [
-            1.4500000000000421,
-            -0.000000000000003902911186974853
+            1.4500000000000042,
+            -0.00000000000000039027092993707943
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3825,12 +3825,12 @@ description: Variables in memory after executing m4-hex-socket-countersunk-head-
       },
       "start": {
         "from": [
-          1.4500000000000244,
-          0.000000000000003903627133189027
+          1.4500000000000024,
+          0.0000000000000003903861320817506
         ],
         "to": [
-          1.4500000000000244,
-          0.000000000000003903627133189027
+          1.4500000000000024,
+          0.0000000000000003903861320817506
         ],
         "units": "mm",
         "tag": null,

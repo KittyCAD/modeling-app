@@ -59,7 +59,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                   "line": {
                     "start": [
                       {
-                        "n": -1.7913914572449539,
+                        "n": -1.7913914569171994,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -67,7 +67,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                         }
                       },
                       {
-                        "n": 2.651878509047543,
+                        "n": 2.6518785110838667,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -77,7 +77,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     ],
                     "end": [
                       {
-                        "n": 0.8413905505799008,
+                        "n": 0.8413905502521459,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -85,7 +85,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                         }
                       },
                       {
-                        "n": 2.2281214909524567,
+                        "n": 2.228121488916133,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -179,7 +179,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                   "line": {
                     "start": [
                       {
-                        "n": -2.1864998384498913,
+                        "n": -2.1864998383822822,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -187,7 +187,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                         }
                       },
                       {
-                        "n": -0.3364174653417452,
+                        "n": -0.33641746056402655,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -197,7 +197,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     ],
                     "end": [
                       {
-                        "n": 1.146499796615717,
+                        "n": 1.146499796548108,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -205,7 +205,7 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                         }
                       },
                       {
-                        "n": -0.3835825346582548,
+                        "n": -0.3835825394359735,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -302,8 +302,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -1.7913914572449539,
-                    2.651878509047543
+                    -1.7913914569171994,
+                    2.6518785110838667
                   ],
                   "tag": {
                     "commentStart": 61,
@@ -314,8 +314,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     "value": "line1"
                   },
                   "to": [
-                    0.8413905505799008,
-                    2.2281214909524567
+                    0.8413905502521459,
+                    2.228121488916133
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -326,13 +326,13 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     "sourceRange": []
                   },
                   "from": [
-                    0.8413905505799008,
-                    2.2281214909524567
+                    0.8413905502521459,
+                    2.228121488916133
                   ],
                   "tag": null,
                   "to": [
-                    -2.1864998384498913,
-                    -0.3364174653417452
+                    -2.1864998383822822,
+                    -0.33641746056402655
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -343,8 +343,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     "sourceRange": []
                   },
                   "from": [
-                    -2.1864998384498913,
-                    -0.3364174653417452
+                    -2.1864998383822822,
+                    -0.33641746056402655
                   ],
                   "tag": {
                     "commentStart": 184,
@@ -355,8 +355,8 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
                     "value": "line2"
                   },
                   "to": [
-                    1.146499796615717,
-                    -0.3835825346582548
+                    1.146499796548108,
+                    -0.3835825394359735
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -395,12 +395,12 @@ description: Variables in memory after executing inconsistent_sketch_converge.kc
               },
               "start": {
                 "from": [
-                  -1.7913914572449539,
-                  2.651878509047543
+                  -1.7913914569171994,
+                  2.6518785110838667
                 ],
                 "to": [
-                  -1.7913914572449539,
-                  2.651878509047543
+                  -1.7913914569171994,
+                  2.6518785110838667
                 ],
                 "units": "mm",
                 "tag": null,

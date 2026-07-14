@@ -50,7 +50,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   "arc": {
                     "start": [
                       {
-                        "n": 0.9999999998637178,
+                        "n": 0.9999999984999998,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -58,7 +58,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 0.000000000000024657673419120412,
+                        "n": -0.00000000000000003330669035350728,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000008280972933137656,
+                        "n": 0.00000000000000011102230077497644,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -76,7 +76,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 1.000000000546202,
+                        "n": 0.9999999984999994,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -86,7 +86,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     ],
                     "center": [
                       {
-                        "n": 0.00000000013634178889918502,
+                        "n": 0.00000000000000022204460471408892,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -94,7 +94,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": -0.00000000013637167332270698,
+                        "n": -0.00000000000000019428902914703224,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -202,7 +202,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000013657336853705663,
+                        "n": 0.000000000000000111022301330088,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -210,7 +210,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 0.000000000000040336985211834335,
+                        "n": -0.00000000000000004996003565516102,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -220,7 +220,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     ],
                     "end": [
                       {
-                        "n": 1.000000000000136,
+                        "n": 0.9999999979999996,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -228,7 +228,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 0.000000000000025988806365319692,
+                        "n": -0.000000000000000033306690386813973,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -322,7 +322,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000007966494277597656,
+                        "n": 0.00000000000000011102230110804338,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -330,7 +330,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 0.00000000013655007845307036,
+                        "n": -0.00000000000000006661338090685472,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -340,7 +340,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000008132374639772339,
+                        "n": 0.00000000000000011102230088599875,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -348,7 +348,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 1.0000000004097453,
+                        "n": 0.9999999974999989,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -446,14 +446,14 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   },
                   "ccw": true,
                   "center": [
-                    0.00000000013634182671751205,
-                    -0.00000000013637167332270698
+                    0.0000000000000002220446049250313,
+                    -0.00000000000000019428902914703224
                   ],
                   "from": [
-                    0.9999999998637178,
-                    0.000000000000024657673419120412
+                    0.9999999984999998,
+                    -0.00000000000000003330669035350728
                   ],
-                  "radius": 0.999999999727376,
+                  "radius": 0.9999999984999995,
                   "tag": {
                     "commentStart": 65,
                     "end": 69,
@@ -463,8 +463,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "value": "arc1"
                   },
                   "to": [
-                    -0.00000000000008276136810444463,
-                    0.9999999995910043
+                    0.00000000000000006123234019858613,
+                    0.9999999984999993
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -475,13 +475,13 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000008276136810444463,
-                    0.9999999995910043
+                    0.00000000000000006123234019858613,
+                    0.9999999984999993
                   ],
                   "tag": null,
                   "to": [
-                    -0.00000000013657336853705663,
-                    0.000000000000040336985211834335
+                    0.000000000000000111022301330088,
+                    -0.00000000000000004996003565516102
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -492,8 +492,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000013657336853705663,
-                    0.000000000000040336985211834335
+                    0.000000000000000111022301330088,
+                    -0.00000000000000004996003565516102
                   ],
                   "tag": {
                     "commentStart": 357,
@@ -504,8 +504,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "value": "lineX"
                   },
                   "to": [
-                    1.000000000000136,
-                    0.000000000000025988806365319692
+                    0.9999999979999996,
+                    -0.000000000000000033306690386813973
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -516,13 +516,13 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "sourceRange": []
                   },
                   "from": [
-                    1.000000000000136,
-                    0.000000000000025988806365319692
+                    0.9999999979999996,
+                    -0.000000000000000033306690386813973
                   ],
                   "tag": null,
                   "to": [
-                    -0.00000000000007966494277597656,
-                    0.00000000013655007845307036
+                    0.00000000000000011102230110804338,
+                    -0.00000000000000006661338090685472
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -533,8 +533,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000007966494277597656,
-                    0.00000000013655007845307036
+                    0.00000000000000011102230110804338,
+                    -0.00000000000000006661338090685472
                   ],
                   "tag": {
                     "commentStart": 430,
@@ -545,8 +545,8 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                     "value": "lineY"
                   },
                   "to": [
-                    -0.00000000000008132374639772339,
-                    1.0000000004097453
+                    0.00000000000000011102230088599875,
+                    0.9999999974999989
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -585,12 +585,12 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
               },
               "start": {
                 "from": [
-                  0.9999999998637178,
-                  0.000000000000024657673419120412
+                  0.9999999984999998,
+                  -0.00000000000000003330669035350728
                 ],
                 "to": [
-                  0.9999999998637178,
-                  0.000000000000024657673419120412
+                  0.9999999984999998,
+                  -0.00000000000000003330669035350728
                 ],
                 "units": "mm",
                 "tag": null,
@@ -616,7 +616,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
               "artifactId": "[uuid]",
               "originalId": "[uuid]",
               "units": "mm",
-              "isClosed": "implicitly"
+              "isClosed": "no"
             }
           }
         },
@@ -634,7 +634,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   "point": {
                     "position": [
                       {
-                        "n": -0.0000000000000778461374892296,
+                        "n": 0.00000000000000011102230144111031,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -642,7 +642,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 0.00000000000005468762587027467,
+                        "n": -0.00000000000000006661338097346811,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -720,7 +720,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                   "point": {
                     "position": [
                       {
-                        "n": 1.0000000000000682,
+                        "n": 0.9999999984999998,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -728,7 +728,7 @@ description: Variables in memory after executing sketch_block_arc_using_center_c
                         }
                       },
                       {
-                        "n": 0.000000000000012990217635525438,
+                        "n": -0.000000000000000016653345185080313,
                         "ty": {
                           "mm": null,
                           "type": "Known",

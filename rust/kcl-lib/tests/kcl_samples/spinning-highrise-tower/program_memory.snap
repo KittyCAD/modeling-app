@@ -226,7 +226,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -238,7 +238,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "tag": {
             "commentStart": 949,
@@ -249,8 +249,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -261,8 +261,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "tag": {
             "commentStart": 1015,
@@ -274,7 +274,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -286,7 +286,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "tag": {
             "commentStart": 1081,
@@ -416,7 +416,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -15.000000000000002,
+                        "n": -15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -510,7 +510,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 15.0,
+                        "n": 15.000000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -518,7 +518,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -15.000000000000002,
+                        "n": -15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -528,7 +528,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     ],
                     "end": [
                       {
-                        "n": 15.0,
+                        "n": 15.000000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -536,7 +536,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -630,7 +630,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 15.0,
+                        "n": 15.000000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -638,7 +638,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -656,7 +656,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -758,7 +758,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -886,7 +886,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     15.000000000000002,
-                    -15.000000000000002
+                    -15.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -898,7 +898,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     15.000000000000002,
-                    -15.000000000000002
+                    -15.0
                   ],
                   "tag": {
                     "commentStart": 949,
@@ -909,8 +909,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    15.0,
-                    14.999999999999996
+                    15.000000000000002,
+                    15.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -921,8 +921,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    15.0,
-                    14.999999999999996
+                    15.000000000000002,
+                    15.0
                   ],
                   "tag": {
                     "commentStart": 1015,
@@ -934,7 +934,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     -15.0,
-                    14.999999999999996
+                    15.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -946,7 +946,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     -15.0,
-                    14.999999999999996
+                    15.0
                   ],
                   "tag": {
                     "commentStart": 1081,
@@ -1129,7 +1129,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               15.000000000000002,
-              -15.000000000000002
+              -15.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1141,7 +1141,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               15.000000000000002,
-              -15.000000000000002
+              -15.0
             ],
             "tag": {
               "commentStart": 949,
@@ -1152,8 +1152,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "value": "edge2"
             },
             "to": [
-              15.0,
-              14.999999999999996
+              15.000000000000002,
+              15.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1164,8 +1164,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "sourceRange": []
             },
             "from": [
-              15.0,
-              14.999999999999996
+              15.000000000000002,
+              15.0
             ],
             "tag": {
               "commentStart": 1015,
@@ -1177,7 +1177,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               -15.0,
-              14.999999999999996
+              15.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1189,7 +1189,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               -15.0,
-              14.999999999999996
+              15.0
             ],
             "tag": {
               "commentStart": 1081,
@@ -1404,7 +1404,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               5.0,
-              3.9999999999999996
+              4.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1416,7 +1416,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               5.0,
-              3.9999999999999996
+              4.0
             ],
             "tag": {
               "commentStart": 2981,
@@ -1428,7 +1428,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               -5.0,
-              3.999999999999999
+              4.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1440,7 +1440,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               -5.0,
-              3.999999999999999
+              4.0
             ],
             "tag": {
               "commentStart": 3047,
@@ -1601,7 +1601,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             5.0,
-            3.9999999999999996
+            4.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -1613,7 +1613,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             5.0,
-            3.9999999999999996
+            4.0
           ],
           "tag": {
             "commentStart": 2981,
@@ -1625,7 +1625,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -5.0,
-            3.999999999999999
+            4.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -1637,7 +1637,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -5.0,
-            3.999999999999999
+            4.0
           ],
           "tag": {
             "commentStart": 3047,
@@ -1869,7 +1869,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -4.000000000000001,
+                        "n": -4.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1887,7 +1887,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 3.9999999999999996,
+                        "n": 4.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1989,7 +1989,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 3.999999999999999,
+                        "n": 4.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2007,7 +2007,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 3.999999999999999,
+                        "n": 4.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2109,7 +2109,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 3.999999999999999,
+                        "n": 4.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2261,7 +2261,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     5.0,
-                    3.9999999999999996
+                    4.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2273,7 +2273,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     5.0,
-                    3.9999999999999996
+                    4.0
                   ],
                   "tag": {
                     "commentStart": 2981,
@@ -2285,7 +2285,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     -5.0,
-                    3.999999999999999
+                    4.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2297,7 +2297,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     -5.0,
-                    3.999999999999999
+                    4.0
                   ],
                   "tag": {
                     "commentStart": 3047,
@@ -2455,7 +2455,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             12.0,
-            -12.000000000000002
+            -12.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2467,7 +2467,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             12.0,
-            -12.000000000000002
+            -12.0
           ],
           "tag": {
             "commentStart": 5961,
@@ -2478,8 +2478,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            11.999999999999998,
-            11.999999999999998
+            12.0,
+            12.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2490,8 +2490,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            11.999999999999998,
-            11.999999999999998
+            12.0,
+            12.0
           ],
           "tag": {
             "commentStart": 6027,
@@ -2503,7 +2503,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -12.0,
-            11.999999999999996
+            12.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2515,7 +2515,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -12.0,
-            11.999999999999996
+            12.0
           ],
           "tag": {
             "commentStart": 6093,
@@ -2645,7 +2645,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -12.000000000000002,
+                        "n": -12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2747,7 +2747,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -12.000000000000002,
+                        "n": -12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2757,7 +2757,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     ],
                     "end": [
                       {
-                        "n": 11.999999999999998,
+                        "n": 12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2765,7 +2765,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 11.999999999999998,
+                        "n": 12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2859,7 +2859,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 11.999999999999998,
+                        "n": 12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2867,7 +2867,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 11.999999999999996,
+                        "n": 12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2885,7 +2885,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 11.999999999999996,
+                        "n": 12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2987,7 +2987,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 11.999999999999996,
+                        "n": 12.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3115,7 +3115,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     12.0,
-                    -12.000000000000002
+                    -12.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -3127,7 +3127,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     12.0,
-                    -12.000000000000002
+                    -12.0
                   ],
                   "tag": {
                     "commentStart": 5961,
@@ -3138,8 +3138,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    11.999999999999998,
-                    11.999999999999998
+                    12.0,
+                    12.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -3150,8 +3150,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    11.999999999999998,
-                    11.999999999999998
+                    12.0,
+                    12.0
                   ],
                   "tag": {
                     "commentStart": 6027,
@@ -3163,7 +3163,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     -12.0,
-                    11.999999999999996
+                    12.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -3175,7 +3175,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     -12.0,
-                    11.999999999999996
+                    12.0
                   ],
                   "tag": {
                     "commentStart": 6093,
@@ -3358,7 +3358,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               12.0,
-              -12.000000000000002
+              -12.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3370,7 +3370,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               12.0,
-              -12.000000000000002
+              -12.0
             ],
             "tag": {
               "commentStart": 5961,
@@ -3381,8 +3381,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "value": "edge2"
             },
             "to": [
-              11.999999999999998,
-              11.999999999999998
+              12.0,
+              12.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3393,8 +3393,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "sourceRange": []
             },
             "from": [
-              11.999999999999998,
-              11.999999999999998
+              12.0,
+              12.0
             ],
             "tag": {
               "commentStart": 6027,
@@ -3406,7 +3406,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               -12.0,
-              11.999999999999996
+              12.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3418,7 +3418,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               -12.0,
-              11.999999999999996
+              12.0
             ],
             "tag": {
               "commentStart": 6093,
@@ -3603,7 +3603,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -3615,7 +3615,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -3626,8 +3626,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -3638,8 +3638,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -3651,7 +3651,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -3663,7 +3663,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -3845,7 +3845,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -3857,7 +3857,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -3868,8 +3868,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -3880,8 +3880,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -3893,7 +3893,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -3905,7 +3905,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -4087,7 +4087,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4099,7 +4099,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -4110,8 +4110,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4122,8 +4122,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -4135,7 +4135,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4147,7 +4147,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -4329,7 +4329,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4341,7 +4341,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -4352,8 +4352,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4364,8 +4364,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -4377,7 +4377,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4389,7 +4389,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -4571,7 +4571,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4583,7 +4583,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -4594,8 +4594,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4606,8 +4606,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -4619,7 +4619,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4631,7 +4631,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -4813,7 +4813,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4825,7 +4825,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -4836,8 +4836,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4848,8 +4848,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -4861,7 +4861,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -4873,7 +4873,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -5055,7 +5055,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5067,7 +5067,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -5078,8 +5078,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5090,8 +5090,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -5103,7 +5103,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5115,7 +5115,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -5297,7 +5297,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5309,7 +5309,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -5320,8 +5320,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5332,8 +5332,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -5345,7 +5345,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5357,7 +5357,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -5539,7 +5539,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5551,7 +5551,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -5562,8 +5562,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5574,8 +5574,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -5587,7 +5587,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5599,7 +5599,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -5781,7 +5781,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5793,7 +5793,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -5804,8 +5804,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5816,8 +5816,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -5829,7 +5829,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -5841,7 +5841,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -6023,7 +6023,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6035,7 +6035,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -6046,8 +6046,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6058,8 +6058,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -6071,7 +6071,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6083,7 +6083,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -6265,7 +6265,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6277,7 +6277,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -6288,8 +6288,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6300,8 +6300,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -6313,7 +6313,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6325,7 +6325,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -6507,7 +6507,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6519,7 +6519,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -6530,8 +6530,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6542,8 +6542,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -6555,7 +6555,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6567,7 +6567,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -6749,7 +6749,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6761,7 +6761,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -6772,8 +6772,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6784,8 +6784,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -6797,7 +6797,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -6809,7 +6809,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -6991,7 +6991,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7003,7 +7003,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -7014,8 +7014,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7026,8 +7026,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -7039,7 +7039,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7051,7 +7051,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -7233,7 +7233,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7245,7 +7245,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -7256,8 +7256,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7268,8 +7268,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -7281,7 +7281,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7293,7 +7293,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -7475,7 +7475,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7487,7 +7487,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   12.0,
-                  -12.000000000000002
+                  -12.0
                 ],
                 "tag": {
                   "commentStart": 5961,
@@ -7498,8 +7498,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7510,8 +7510,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  11.999999999999998,
-                  11.999999999999998
+                  12.0,
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6027,
@@ -7523,7 +7523,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -7535,7 +7535,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -12.0,
-                  11.999999999999996
+                  12.0
                 ],
                 "tag": {
                   "commentStart": 6093,
@@ -7728,7 +7728,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               15.000000000000002,
-              -15.000000000000002
+              -15.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7740,7 +7740,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               15.000000000000002,
-              -15.000000000000002
+              -15.0
             ],
             "tag": {
               "commentStart": 3925,
@@ -7751,8 +7751,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "value": "edge2"
             },
             "to": [
-              15.0,
-              14.999999999999996
+              15.000000000000002,
+              15.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7763,8 +7763,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "sourceRange": []
             },
             "from": [
-              15.0,
-              14.999999999999996
+              15.000000000000002,
+              15.0
             ],
             "tag": {
               "commentStart": 3991,
@@ -7776,7 +7776,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               -15.0,
-              14.999999999999996
+              15.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7788,7 +7788,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               -15.0,
-              14.999999999999996
+              15.0
             ],
             "tag": {
               "commentStart": 4057,
@@ -7907,7 +7907,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -7919,7 +7919,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "tag": {
             "commentStart": 3925,
@@ -7930,8 +7930,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -7942,8 +7942,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "tag": {
             "commentStart": 3991,
@@ -7955,7 +7955,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -7967,7 +7967,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "tag": {
             "commentStart": 4057,
@@ -8097,7 +8097,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -15.000000000000002,
+                        "n": -15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8191,7 +8191,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 15.0,
+                        "n": 15.000000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8199,7 +8199,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -15.000000000000002,
+                        "n": -15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8209,7 +8209,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     ],
                     "end": [
                       {
-                        "n": 15.0,
+                        "n": 15.000000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8217,7 +8217,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8311,7 +8311,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 15.0,
+                        "n": 15.000000000000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8319,7 +8319,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8337,7 +8337,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8439,7 +8439,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.999999999999996,
+                        "n": 15.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -8567,7 +8567,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     15.000000000000002,
-                    -15.000000000000002
+                    -15.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -8579,7 +8579,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     15.000000000000002,
-                    -15.000000000000002
+                    -15.0
                   ],
                   "tag": {
                     "commentStart": 3925,
@@ -8590,8 +8590,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    15.0,
-                    14.999999999999996
+                    15.000000000000002,
+                    15.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -8602,8 +8602,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    15.0,
-                    14.999999999999996
+                    15.000000000000002,
+                    15.0
                   ],
                   "tag": {
                     "commentStart": 3991,
@@ -8615,7 +8615,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     -15.0,
-                    14.999999999999996
+                    15.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -8627,7 +8627,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     -15.0,
-                    14.999999999999996
+                    15.0
                   ],
                   "tag": {
                     "commentStart": 4057,
@@ -8827,7 +8827,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               14.7,
-              -14.700000000000001
+              -14.7
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8839,7 +8839,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               14.7,
-              -14.700000000000001
+              -14.7
             ],
             "tag": {
               "commentStart": 4938,
@@ -8850,8 +8850,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "value": "edge2"
             },
             "to": [
-              14.699999999999998,
-              14.699999999999996
+              14.7,
+              14.7
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8862,8 +8862,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "sourceRange": []
             },
             "from": [
-              14.699999999999998,
-              14.699999999999996
+              14.7,
+              14.7
             ],
             "tag": {
               "commentStart": 5004,
@@ -8875,7 +8875,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               -14.7,
-              14.699999999999996
+              14.7
             ],
             "type": "ToPoint",
             "units": "m"
@@ -8887,7 +8887,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               -14.7,
-              14.699999999999996
+              14.7
             ],
             "tag": {
               "commentStart": 5070,
@@ -9066,7 +9066,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9078,7 +9078,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -9089,8 +9089,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9101,8 +9101,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -9114,7 +9114,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9126,7 +9126,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -9302,7 +9302,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9314,7 +9314,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -9325,8 +9325,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9337,8 +9337,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -9350,7 +9350,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9362,7 +9362,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -9538,7 +9538,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9550,7 +9550,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -9561,8 +9561,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9573,8 +9573,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -9586,7 +9586,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9598,7 +9598,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -9774,7 +9774,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9786,7 +9786,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -9797,8 +9797,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9809,8 +9809,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -9822,7 +9822,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -9834,7 +9834,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -10010,7 +10010,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10022,7 +10022,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -10033,8 +10033,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10045,8 +10045,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -10058,7 +10058,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10070,7 +10070,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -10246,7 +10246,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10258,7 +10258,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -10269,8 +10269,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10281,8 +10281,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -10294,7 +10294,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10306,7 +10306,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -10482,7 +10482,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10494,7 +10494,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -10505,8 +10505,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10517,8 +10517,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -10530,7 +10530,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10542,7 +10542,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -10718,7 +10718,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10730,7 +10730,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -10741,8 +10741,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10753,8 +10753,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -10766,7 +10766,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10778,7 +10778,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -10954,7 +10954,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10966,7 +10966,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -10977,8 +10977,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -10989,8 +10989,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -11002,7 +11002,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11014,7 +11014,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -11190,7 +11190,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11202,7 +11202,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -11213,8 +11213,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11225,8 +11225,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -11238,7 +11238,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11250,7 +11250,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -11426,7 +11426,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11438,7 +11438,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -11449,8 +11449,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11461,8 +11461,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -11474,7 +11474,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11486,7 +11486,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -11662,7 +11662,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11674,7 +11674,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -11685,8 +11685,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11697,8 +11697,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -11710,7 +11710,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11722,7 +11722,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -11898,7 +11898,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11910,7 +11910,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -11921,8 +11921,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11933,8 +11933,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -11946,7 +11946,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -11958,7 +11958,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -12134,7 +12134,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12146,7 +12146,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -12157,8 +12157,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12169,8 +12169,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -12182,7 +12182,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12194,7 +12194,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -12370,7 +12370,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12382,7 +12382,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -12393,8 +12393,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12405,8 +12405,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -12418,7 +12418,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12430,7 +12430,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -12606,7 +12606,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12618,7 +12618,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -12629,8 +12629,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12641,8 +12641,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -12654,7 +12654,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12666,7 +12666,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -12842,7 +12842,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12854,7 +12854,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   14.7,
-                  -14.700000000000001
+                  -14.7
                 ],
                 "tag": {
                   "commentStart": 4938,
@@ -12865,8 +12865,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "value": "edge2"
                 },
                 "to": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12877,8 +12877,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  14.699999999999998,
-                  14.699999999999996
+                  14.7,
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5004,
@@ -12890,7 +12890,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "to": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -12902,7 +12902,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                 },
                 "from": [
                   -14.7,
-                  14.699999999999996
+                  14.7
                 ],
                 "tag": {
                   "commentStart": 5070,
@@ -13017,7 +13017,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             14.7,
-            -14.700000000000001
+            -14.7
           ],
           "type": "ToPoint",
           "units": "m"
@@ -13029,7 +13029,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             14.7,
-            -14.700000000000001
+            -14.7
           ],
           "tag": {
             "commentStart": 4938,
@@ -13040,8 +13040,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            14.699999999999998,
-            14.699999999999996
+            14.7,
+            14.7
           ],
           "type": "ToPoint",
           "units": "m"
@@ -13052,8 +13052,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            14.699999999999998,
-            14.699999999999996
+            14.7,
+            14.7
           ],
           "tag": {
             "commentStart": 5004,
@@ -13065,7 +13065,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -14.7,
-            14.699999999999996
+            14.7
           ],
           "type": "ToPoint",
           "units": "m"
@@ -13077,7 +13077,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -14.7,
-            14.699999999999996
+            14.7
           ],
           "tag": {
             "commentStart": 5070,
@@ -13201,7 +13201,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -14.700000000000001,
+                        "n": -14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13289,7 +13289,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 14.699999999999998,
+                        "n": 14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13297,7 +13297,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -14.700000000000001,
+                        "n": -14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13307,7 +13307,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     ],
                     "end": [
                       {
-                        "n": 14.699999999999998,
+                        "n": 14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13315,7 +13315,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.699999999999996,
+                        "n": 14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13403,7 +13403,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 14.699999999999998,
+                        "n": 14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13411,7 +13411,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.699999999999996,
+                        "n": 14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13429,7 +13429,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.699999999999996,
+                        "n": 14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13525,7 +13525,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 14.699999999999996,
+                        "n": 14.7,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13647,7 +13647,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     14.7,
-                    -14.700000000000001
+                    -14.7
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -13659,7 +13659,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     14.7,
-                    -14.700000000000001
+                    -14.7
                   ],
                   "tag": {
                     "commentStart": 4938,
@@ -13670,8 +13670,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    14.699999999999998,
-                    14.699999999999996
+                    14.7,
+                    14.7
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -13682,8 +13682,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    14.699999999999998,
-                    14.699999999999996
+                    14.7,
+                    14.7
                   ],
                   "tag": {
                     "commentStart": 5004,
@@ -13695,7 +13695,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     -14.7,
-                    14.699999999999996
+                    14.7
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -13707,7 +13707,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     -14.7,
-                    14.699999999999996
+                    14.7
                   ],
                   "tag": {
                     "commentStart": 5070,
@@ -13884,7 +13884,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               25.0,
-              -25.000000000000004
+              -25.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -13896,7 +13896,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               25.0,
-              -25.000000000000004
+              -25.0
             ],
             "tag": {
               "commentStart": 1944,
@@ -13907,8 +13907,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "value": "edge2"
             },
             "to": [
-              24.999999999999996,
-              24.999999999999996
+              25.0,
+              25.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -13919,8 +13919,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
               "sourceRange": []
             },
             "from": [
-              24.999999999999996,
-              24.999999999999996
+              25.0,
+              25.0
             ],
             "tag": {
               "commentStart": 2010,
@@ -13932,7 +13932,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "to": [
               -25.0,
-              24.999999999999993
+              25.0
             ],
             "type": "ToPoint",
             "units": "m"
@@ -13944,7 +13944,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             },
             "from": [
               -25.0,
-              24.999999999999993
+              25.0
             ],
             "tag": {
               "commentStart": 2076,
@@ -14072,7 +14072,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             25.0,
-            -25.000000000000004
+            -25.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -14084,7 +14084,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             25.0,
-            -25.000000000000004
+            -25.0
           ],
           "tag": {
             "commentStart": 1944,
@@ -14095,8 +14095,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            24.999999999999996,
-            24.999999999999996
+            25.0,
+            25.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -14107,8 +14107,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            24.999999999999996,
-            24.999999999999996
+            25.0,
+            25.0
           ],
           "tag": {
             "commentStart": 2010,
@@ -14120,7 +14120,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -25.0,
-            24.999999999999993
+            25.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -14132,7 +14132,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -25.0,
-            24.999999999999993
+            25.0
           ],
           "tag": {
             "commentStart": 2076,
@@ -14271,7 +14271,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -25.000000000000004,
+                        "n": -25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14373,7 +14373,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": -25.000000000000004,
+                        "n": -25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14383,7 +14383,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     ],
                     "end": [
                       {
-                        "n": 24.999999999999996,
+                        "n": 25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14391,7 +14391,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 24.999999999999996,
+                        "n": 25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14485,7 +14485,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 24.999999999999996,
+                        "n": 25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14493,7 +14493,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 24.999999999999993,
+                        "n": 25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14511,7 +14511,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 24.999999999999993,
+                        "n": 25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14613,7 +14613,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                         }
                       },
                       {
-                        "n": 24.999999999999993,
+                        "n": 25.0,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -14741,7 +14741,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     25.0,
-                    -25.000000000000004
+                    -25.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -14753,7 +14753,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     25.0,
-                    -25.000000000000004
+                    -25.0
                   ],
                   "tag": {
                     "commentStart": 1944,
@@ -14764,8 +14764,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "value": "edge2"
                   },
                   "to": [
-                    24.999999999999996,
-                    24.999999999999996
+                    25.0,
+                    25.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -14776,8 +14776,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    24.999999999999996,
-                    24.999999999999996
+                    25.0,
+                    25.0
                   ],
                   "tag": {
                     "commentStart": 2010,
@@ -14789,7 +14789,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "to": [
                     -25.0,
-                    24.999999999999993
+                    25.0
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -14801,7 +14801,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
                   },
                   "from": [
                     -25.0,
-                    24.999999999999993
+                    25.0
                   ],
                   "tag": {
                     "commentStart": 2076,
@@ -14939,7 +14939,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -14951,7 +14951,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "tag": {
             "commentStart": 949,
@@ -14962,8 +14962,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -14974,8 +14974,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "tag": {
             "commentStart": 1015,
@@ -14987,7 +14987,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -14999,7 +14999,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "tag": {
             "commentStart": 1081,
@@ -15137,7 +15137,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             5.0,
-            3.9999999999999996
+            4.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15149,7 +15149,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             5.0,
-            3.9999999999999996
+            4.0
           ],
           "tag": {
             "commentStart": 2981,
@@ -15161,7 +15161,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -5.0,
-            3.999999999999999
+            4.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15173,7 +15173,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -5.0,
-            3.999999999999999
+            4.0
           ],
           "tag": {
             "commentStart": 3047,
@@ -15287,7 +15287,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             12.0,
-            -12.000000000000002
+            -12.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15299,7 +15299,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             12.0,
-            -12.000000000000002
+            -12.0
           ],
           "tag": {
             "commentStart": 5961,
@@ -15310,8 +15310,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            11.999999999999998,
-            11.999999999999998
+            12.0,
+            12.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15322,8 +15322,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            11.999999999999998,
-            11.999999999999998
+            12.0,
+            12.0
           ],
           "tag": {
             "commentStart": 6027,
@@ -15335,7 +15335,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -12.0,
-            11.999999999999996
+            12.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15347,7 +15347,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -12.0,
-            11.999999999999996
+            12.0
           ],
           "tag": {
             "commentStart": 6093,
@@ -15461,7 +15461,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15473,7 +15473,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             15.000000000000002,
-            -15.000000000000002
+            -15.0
           ],
           "tag": {
             "commentStart": 3925,
@@ -15484,8 +15484,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15496,8 +15496,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            15.0,
-            14.999999999999996
+            15.000000000000002,
+            15.0
           ],
           "tag": {
             "commentStart": 3991,
@@ -15509,7 +15509,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15521,7 +15521,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -15.0,
-            14.999999999999996
+            15.0
           ],
           "tag": {
             "commentStart": 4057,
@@ -15635,7 +15635,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             14.7,
-            -14.700000000000001
+            -14.7
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15647,7 +15647,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             14.7,
-            -14.700000000000001
+            -14.7
           ],
           "tag": {
             "commentStart": 4938,
@@ -15658,8 +15658,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            14.699999999999998,
-            14.699999999999996
+            14.7,
+            14.7
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15670,8 +15670,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            14.699999999999998,
-            14.699999999999996
+            14.7,
+            14.7
           ],
           "tag": {
             "commentStart": 5004,
@@ -15683,7 +15683,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -14.7,
-            14.699999999999996
+            14.7
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15695,7 +15695,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -14.7,
-            14.699999999999996
+            14.7
           ],
           "tag": {
             "commentStart": 5070,
@@ -15803,7 +15803,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             25.0,
-            -25.000000000000004
+            -25.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15815,7 +15815,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             25.0,
-            -25.000000000000004
+            -25.0
           ],
           "tag": {
             "commentStart": 1944,
@@ -15826,8 +15826,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "value": "edge2"
           },
           "to": [
-            24.999999999999996,
-            24.999999999999996
+            25.0,
+            25.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15838,8 +15838,8 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
             "sourceRange": []
           },
           "from": [
-            24.999999999999996,
-            24.999999999999996
+            25.0,
+            25.0
           ],
           "tag": {
             "commentStart": 2010,
@@ -15851,7 +15851,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "to": [
             -25.0,
-            24.999999999999993
+            25.0
           ],
           "type": "ToPoint",
           "units": "m"
@@ -15863,7 +15863,7 @@ description: Variables in memory after executing spinning-highrise-tower.kcl
           },
           "from": [
             -25.0,
-            24.999999999999993
+            25.0
           ],
           "tag": {
             "commentStart": 2076,

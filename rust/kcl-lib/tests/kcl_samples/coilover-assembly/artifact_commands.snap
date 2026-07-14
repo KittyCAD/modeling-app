@@ -2673,7 +2673,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.3500000000062835,
+          "x": 6.350000000002971,
           "y": 45.00374999969544,
           "z": 0.0
         }
@@ -2688,7 +2688,7 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 6.350000000006282,
+            "x": 6.350000000002971,
             "y": 67.00374999969544,
             "z": 0.0
           },
@@ -2705,7 +2705,7 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.34999999999372,
+            "x": -6.349999999997029,
             "y": 67.00374999969544,
             "z": 0.0
           },
@@ -2722,7 +2722,7 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -6.349999999993723,
+            "x": -6.34999999999703,
             "y": 45.00374999969544,
             "z": 0.0
           },
@@ -2819,7 +2819,7 @@ description: Artifact commands coilover-assembly.kcl
         "path": "[uuid]",
         "to": {
           "x": -11.35,
-          "y": 40.00000000000004,
+          "y": 40.0,
           "z": 0.0
         }
       }
@@ -2833,17 +2833,17 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -11.349998593743853,
-            "y": 44.99999999999994
+            "x": -11.349998593747058,
+            "y": 45.0
           },
-          "radius": 5.000000000000099,
+          "radius": 5.000000000000198,
           "start": {
             "unit": "degrees",
-            "value": -90.00001611450843
+            "value": -90.00001611447169
           },
           "end": {
             "unit": "degrees",
-            "value": 0.04297183517403297
+            "value": 0.04297183517338245
           },
           "relative": false
         }
@@ -2856,7 +2856,7 @@ description: Artifact commands coilover-assembly.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.350000000006285,
+          "x": 6.350000000002971,
           "y": 45.00374999969544,
           "z": 0.0
         }
@@ -2871,17 +2871,17 @@ description: Artifact commands coilover-assembly.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 11.349998593756414,
-            "y": 44.99999999999994
+            "x": 11.349998593753002,
+            "y": 45.0
           },
-          "radius": 5.000000000000098,
+          "radius": 5.0,
           "start": {
             "unit": "degrees",
-            "value": 179.95702816482597
+            "value": 179.95702816482662
           },
           "end": {
             "unit": "degrees",
-            "value": 270.0000161143645
+            "value": 270.0000161144036
           },
           "relative": false
         }

@@ -352,8 +352,8 @@ description: Artifact commands stylized-firetruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -525.0000000033983,
-          "y": 350.0000000001905,
+          "x": -525.0000000003398,
+          "y": 350.00000000001063,
           "z": 0.0
         }
       }
@@ -374,8 +374,8 @@ description: Artifact commands stylized-firetruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000020267,
-            "y": 804.663338826553,
+            "x": -262.50000000020486,
+            "y": 804.6633388240977,
             "z": 0.0
           },
           "relative": false
@@ -391,8 +391,8 @@ description: Artifact commands stylized-firetruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.5000000007751,
-            "y": 804.6633388266686,
+            "x": 262.50000000007896,
+            "y": 804.663338824103,
             "z": 0.0
           },
           "relative": false
@@ -408,8 +408,8 @@ description: Artifact commands stylized-firetruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 525.0000000017147,
-            "y": 350.0000000000272,
+            "x": 525.0000000001714,
+            "y": 350.0000000000027,
             "z": 0.0
           },
           "relative": false
@@ -425,8 +425,8 @@ description: Artifact commands stylized-firetruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.5000000005006,
-            "y": -104.66333882676334,
+            "x": 262.5000000000522,
+            "y": -104.66333882410376,
             "z": 0.0
           },
           "relative": false
@@ -442,8 +442,8 @@ description: Artifact commands stylized-firetruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.5000000023643,
-            "y": -104.66333882642047,
+            "x": -262.500000000238,
+            "y": -104.66333882409191,
             "z": 0.0
           },
           "relative": false
@@ -459,8 +459,8 @@ description: Artifact commands stylized-firetruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -525.000000003414,
-            "y": 350.00000000016325,
+            "x": -525.0000000003414,
+            "y": 350.0000000000079,
             "z": 0.0
           },
           "relative": false

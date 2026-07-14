@@ -70,7 +70,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "arc": {
                     "start": [
                       {
-                        "n": 0.0000026382426200026826,
+                        "n": 0.000002660896448714286,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -78,7 +78,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 548.9994896299802,
+                        "n": 548.9994886641385,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -88,7 +88,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -59.00001558628023,
+                        "n": -59.00001514101517,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -96,7 +96,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 334.99978567546725,
+                        "n": 334.99978113643385,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -106,7 +106,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "center": [
                       {
-                        "n": 0.6002542570635133,
+                        "n": 0.6002616608351862,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -114,7 +114,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 433.700953594384,
+                        "n": 433.7009490633744,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -222,7 +222,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "arc": {
                     "start": [
                       {
-                        "n": -169.99928669232347,
+                        "n": -169.9992882123992,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -230,7 +230,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": -53.00046711952287,
+                        "n": -53.00046784230583,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -240,7 +240,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -87.99932870719708,
+                        "n": -87.99933021734662,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -248,7 +248,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": -112.0005283126162,
+                        "n": -112.00052622180334,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -258,7 +258,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "center": [
                       {
-                        "n": -127.75276137595901,
+                        "n": -127.7527631415362,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -266,7 +266,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": -80.7680122895937,
+                        "n": -80.76801187085444,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -374,7 +374,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "arc": {
                     "start": [
                       {
-                        "n": -232.00006769104291,
+                        "n": -232.00006772243393,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -382,7 +382,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 195.00010694967148,
+                        "n": 195.00010690994134,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -392,7 +392,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -187.00007631383218,
+                        "n": -187.0000762292447,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -400,7 +400,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 130.0001009847176,
+                        "n": 130.00010102052116,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -410,7 +410,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "center": [
                       {
-                        "n": -210.82971203084693,
+                        "n": -210.82971209668028,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -418,7 +418,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 161.579584208389,
+                        "n": 161.57958413899266,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -526,7 +526,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "arc": {
                     "start": [
                       {
-                        "n": -59.00001558628023,
+                        "n": -59.00001514101447,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -534,7 +534,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 311.9994719764006,
+                        "n": 311.99947093004806,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -544,7 +544,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -108.00032698694014,
+                        "n": -108.0003276657348,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -552,7 +552,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 290.00042884692436,
+                        "n": 290.0004277025283,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -562,7 +562,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "center": [
                       {
-                        "n": -36.88954649391801,
+                        "n": -36.88954842616131,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -570,7 +570,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 197.18020170809174,
+                        "n": 197.18020273474764,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -696,7 +696,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -87.99932870719708,
+                        "n": -87.99933021734729,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -704,7 +704,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": -112.0005283126162,
+                        "n": -112.00052622180282,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -798,7 +798,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "line": {
                     "start": [
                       {
-                        "n": -169.99928669232347,
+                        "n": -169.9992882123999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -806,7 +806,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": -53.00046711952287,
+                        "n": -53.00046784230536,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1056,7 +1056,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -187.00007631383218,
+                        "n": -187.00007622924466,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1064,7 +1064,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 130.0001009847176,
+                        "n": 130.00010102052107,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1158,7 +1158,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "line": {
                     "start": [
                       {
-                        "n": -232.00006769104291,
+                        "n": -232.00006772243387,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1166,7 +1166,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 195.00010694967148,
+                        "n": 195.00010690994122,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1176,7 +1176,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -108.00032698694014,
+                        "n": -108.00032766573447,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1184,7 +1184,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 290.00042884692436,
+                        "n": 290.00042770252793,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1278,7 +1278,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   "line": {
                     "start": [
                       {
-                        "n": -59.00001558628023,
+                        "n": -59.000015141014686,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1286,7 +1286,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 311.9994719764006,
+                        "n": 311.9994709300486,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1296,7 +1296,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     ],
                     "end": [
                       {
-                        "n": -59.00001558628023,
+                        "n": -59.00001514101492,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1304,7 +1304,7 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                         }
                       },
                       {
-                        "n": 334.99978567546725,
+                        "n": 334.9997811364341,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1413,8 +1413,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "line1"
                   },
                   "to": [
-                    -87.99932870719708,
-                    -112.0005283126162
+                    -87.99933021734729,
+                    -112.00052622180282
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1426,14 +1426,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   },
                   "ccw": false,
                   "center": [
-                    -127.75276137595901,
-                    -80.7680122895937
+                    -127.75276314153687,
+                    -80.76801187085391
                   ],
                   "from": [
-                    -87.99932870719708,
-                    -112.0005283126162
+                    -87.99933021734729,
+                    -112.00052622180282
                   ],
-                  "radius": 50.55497469169721,
+                  "radius": 50.5549738595548,
                   "tag": {
                     "commentStart": 776,
                     "end": 780,
@@ -1443,8 +1443,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "arc2"
                   },
                   "to": [
-                    -169.99928669232347,
-                    -53.000467119522895
+                    -169.99928821239845,
+                    -53.000467842306236
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -1455,8 +1455,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "sourceRange": []
                   },
                   "from": [
-                    -169.99928669232347,
-                    -53.000467119522895
+                    -169.99928821239845,
+                    -53.000467842306236
                   ],
                   "tag": {
                     "commentStart": 929,
@@ -1515,8 +1515,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "line5"
                   },
                   "to": [
-                    -187.00007631383218,
-                    130.0001009847176
+                    -187.00007622924466,
+                    130.00010102052107
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1528,14 +1528,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   },
                   "ccw": false,
                   "center": [
-                    -210.82971203084693,
-                    161.579584208389
+                    -210.82971209668023,
+                    161.57958413899257
                   ],
                   "from": [
-                    -187.00007631383218,
-                    130.0001009847176
+                    -187.00007622924466,
+                    130.00010102052107
                   ],
-                  "radius": 39.561538128335826,
+                  "radius": 39.56153813496637,
                   "tag": {
                     "commentStart": 1278,
                     "end": 1282,
@@ -1545,8 +1545,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "arc6"
                   },
                   "to": [
-                    -232.00006769104291,
-                    195.00010694967145
+                    -232.000067722434,
+                    195.00010690994145
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -1557,8 +1557,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "sourceRange": []
                   },
                   "from": [
-                    -232.00006769104291,
-                    195.00010694967145
+                    -232.000067722434,
+                    195.00010690994145
                   ],
                   "tag": {
                     "commentStart": 1431,
@@ -1569,8 +1569,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "line7"
                   },
                   "to": [
-                    -108.00032698694014,
-                    290.00042884692436
+                    -108.00032766573447,
+                    290.00042770252793
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1582,14 +1582,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   },
                   "ccw": false,
                   "center": [
-                    -36.88954649391802,
-                    197.18020170809174
+                    -36.88954842616094,
+                    197.1802027347473
                   ],
                   "from": [
-                    -108.00032698694014,
-                    290.00042884692436
+                    -108.00032766573447,
+                    290.00042770252793
                   ],
-                  "radius": 116.92877177338029,
+                  "radius": 116.92876928766835,
                   "tag": {
                     "commentStart": 1550,
                     "end": 1554,
@@ -1599,8 +1599,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "arc8"
                   },
                   "to": [
-                    -59.00001558628024,
-                    311.99947197640057
+                    -59.00001514091369,
+                    311.9994709295263
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -1611,8 +1611,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "sourceRange": []
                   },
                   "from": [
-                    -59.00001558628024,
-                    311.99947197640057
+                    -59.00001514091369,
+                    311.9994709295263
                   ],
                   "tag": {
                     "commentStart": 1701,
@@ -1623,8 +1623,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "line9"
                   },
                   "to": [
-                    -59.00001558628023,
-                    334.99978567546725
+                    -59.00001514101492,
+                    334.9997811364341
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1636,14 +1636,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                   },
                   "ccw": false,
                   "center": [
-                    0.6002542570635043,
-                    433.700953594384
+                    0.6002616608354714,
+                    433.70094906337465
                   ],
                   "from": [
-                    -59.00001558628023,
-                    334.99978567546725
+                    -59.00001514101492,
+                    334.9997811364341
                   ],
-                  "radius": 115.30009849934034,
+                  "radius": 115.3001021031608,
                   "tag": {
                     "commentStart": 1818,
                     "end": 1823,
@@ -1653,8 +1653,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
                     "value": "arc10"
                   },
                   "to": [
-                    0.000002638242600383478,
-                    548.9994896299802
+                    0.0000026608953234141808,
+                    548.9994886644133
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -1785,8 +1785,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line1"
           },
           "to": [
-            -87.99932870719708,
-            -112.0005283126162
+            -87.99933021734729,
+            -112.00052622180282
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1798,14 +1798,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            -127.75276137595901,
-            -80.7680122895937
+            -127.75276314153687,
+            -80.76801187085391
           ],
           "from": [
-            -87.99932870719708,
-            -112.0005283126162
+            -87.99933021734729,
+            -112.00052622180282
           ],
-          "radius": 50.55497469169721,
+          "radius": 50.5549738595548,
           "tag": {
             "commentStart": 776,
             "end": 780,
@@ -1815,8 +1815,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc2"
           },
           "to": [
-            -169.99928669232347,
-            -53.000467119522895
+            -169.99928821239845,
+            -53.000467842306236
           ],
           "type": "Arc",
           "units": "mm"
@@ -1827,8 +1827,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            -169.99928669232347,
-            -53.000467119522895
+            -169.99928821239845,
+            -53.000467842306236
           ],
           "tag": {
             "commentStart": 929,
@@ -1887,8 +1887,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line5"
           },
           "to": [
-            -187.00007631383218,
-            130.0001009847176
+            -187.00007622924466,
+            130.00010102052107
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1900,14 +1900,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            -210.82971203084693,
-            161.579584208389
+            -210.82971209668023,
+            161.57958413899257
           ],
           "from": [
-            -187.00007631383218,
-            130.0001009847176
+            -187.00007622924466,
+            130.00010102052107
           ],
-          "radius": 39.561538128335826,
+          "radius": 39.56153813496637,
           "tag": {
             "commentStart": 1278,
             "end": 1282,
@@ -1917,8 +1917,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc6"
           },
           "to": [
-            -232.00006769104291,
-            195.00010694967145
+            -232.000067722434,
+            195.00010690994145
           ],
           "type": "Arc",
           "units": "mm"
@@ -1929,8 +1929,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            -232.00006769104291,
-            195.00010694967145
+            -232.000067722434,
+            195.00010690994145
           ],
           "tag": {
             "commentStart": 1431,
@@ -1941,8 +1941,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line7"
           },
           "to": [
-            -108.00032698694014,
-            290.00042884692436
+            -108.00032766573447,
+            290.00042770252793
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1954,14 +1954,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            -36.88954649391802,
-            197.18020170809174
+            -36.88954842616094,
+            197.1802027347473
           ],
           "from": [
-            -108.00032698694014,
-            290.00042884692436
+            -108.00032766573447,
+            290.00042770252793
           ],
-          "radius": 116.92877177338029,
+          "radius": 116.92876928766835,
           "tag": {
             "commentStart": 1550,
             "end": 1554,
@@ -1971,8 +1971,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc8"
           },
           "to": [
-            -59.00001558628024,
-            311.99947197640057
+            -59.00001514091369,
+            311.9994709295263
           ],
           "type": "Arc",
           "units": "mm"
@@ -1983,8 +1983,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            -59.00001558628024,
-            311.99947197640057
+            -59.00001514091369,
+            311.9994709295263
           ],
           "tag": {
             "commentStart": 1701,
@@ -1995,8 +1995,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line9"
           },
           "to": [
-            -59.00001558628023,
-            334.99978567546725
+            -59.00001514101492,
+            334.9997811364341
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2008,14 +2008,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            0.6002542570635043,
-            433.700953594384
+            0.6002616608354714,
+            433.70094906337465
           ],
           "from": [
-            -59.00001558628023,
-            334.99978567546725
+            -59.00001514101492,
+            334.9997811364341
           ],
-          "radius": 115.30009849934034,
+          "radius": 115.3001021031608,
           "tag": {
             "commentStart": 1818,
             "end": 1823,
@@ -2025,8 +2025,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc10"
           },
           "to": [
-            0.000002638242600383478,
-            548.9994896299802
+            0.0000026608953234141808,
+            548.9994886644133
           ],
           "type": "Arc",
           "units": "mm"
@@ -2151,8 +2151,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line1"
           },
           "to": [
-            -87.99932870719708,
-            -112.0005283126162
+            -87.99933021734729,
+            -112.00052622180282
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2164,14 +2164,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            -127.75276137595901,
-            -80.7680122895937
+            -127.75276314153687,
+            -80.76801187085391
           ],
           "from": [
-            -87.99932870719708,
-            -112.0005283126162
+            -87.99933021734729,
+            -112.00052622180282
           ],
-          "radius": 50.55497469169721,
+          "radius": 50.5549738595548,
           "tag": {
             "commentStart": 776,
             "end": 780,
@@ -2181,8 +2181,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc2"
           },
           "to": [
-            -169.99928669232347,
-            -53.000467119522895
+            -169.99928821239845,
+            -53.000467842306236
           ],
           "type": "Arc",
           "units": "mm"
@@ -2193,8 +2193,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            -169.99928669232347,
-            -53.000467119522895
+            -169.99928821239845,
+            -53.000467842306236
           ],
           "tag": {
             "commentStart": 929,
@@ -2253,8 +2253,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line5"
           },
           "to": [
-            -187.00007631383218,
-            130.0001009847176
+            -187.00007622924466,
+            130.00010102052107
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2266,14 +2266,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            -210.82971203084693,
-            161.579584208389
+            -210.82971209668023,
+            161.57958413899257
           ],
           "from": [
-            -187.00007631383218,
-            130.0001009847176
+            -187.00007622924466,
+            130.00010102052107
           ],
-          "radius": 39.561538128335826,
+          "radius": 39.56153813496637,
           "tag": {
             "commentStart": 1278,
             "end": 1282,
@@ -2283,8 +2283,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc6"
           },
           "to": [
-            -232.00006769104291,
-            195.00010694967145
+            -232.000067722434,
+            195.00010690994145
           ],
           "type": "Arc",
           "units": "mm"
@@ -2295,8 +2295,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            -232.00006769104291,
-            195.00010694967145
+            -232.000067722434,
+            195.00010690994145
           ],
           "tag": {
             "commentStart": 1431,
@@ -2307,8 +2307,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line7"
           },
           "to": [
-            -108.00032698694014,
-            290.00042884692436
+            -108.00032766573447,
+            290.00042770252793
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2320,14 +2320,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            -36.88954649391802,
-            197.18020170809174
+            -36.88954842616094,
+            197.1802027347473
           ],
           "from": [
-            -108.00032698694014,
-            290.00042884692436
+            -108.00032766573447,
+            290.00042770252793
           ],
-          "radius": 116.92877177338029,
+          "radius": 116.92876928766835,
           "tag": {
             "commentStart": 1550,
             "end": 1554,
@@ -2337,8 +2337,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc8"
           },
           "to": [
-            -59.00001558628024,
-            311.99947197640057
+            -59.00001514091369,
+            311.9994709295263
           ],
           "type": "Arc",
           "units": "mm"
@@ -2349,8 +2349,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "sourceRange": []
           },
           "from": [
-            -59.00001558628024,
-            311.99947197640057
+            -59.00001514091369,
+            311.9994709295263
           ],
           "tag": {
             "commentStart": 1701,
@@ -2361,8 +2361,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "line9"
           },
           "to": [
-            -59.00001558628023,
-            334.99978567546725
+            -59.00001514101492,
+            334.9997811364341
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2374,14 +2374,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
           },
           "ccw": false,
           "center": [
-            0.6002542570635043,
-            433.700953594384
+            0.6002616608354714,
+            433.70094906337465
           ],
           "from": [
-            -59.00001558628023,
-            334.99978567546725
+            -59.00001514101492,
+            334.9997811364341
           ],
-          "radius": 115.30009849934034,
+          "radius": 115.3001021031608,
           "tag": {
             "commentStart": 1818,
             "end": 1823,
@@ -2391,8 +2391,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             "value": "arc10"
           },
           "to": [
-            0.000002638242600383478,
-            548.9994896299802
+            0.0000026608953234141808,
+            548.9994886644133
           ],
           "type": "Arc",
           "units": "mm"
@@ -2664,8 +2664,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "line1"
             },
             "to": [
-              -87.99932870719708,
-              -112.0005283126162
+              -87.99933021734729,
+              -112.00052622180282
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2677,14 +2677,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             },
             "ccw": false,
             "center": [
-              -127.75276137595901,
-              -80.7680122895937
+              -127.75276314153687,
+              -80.76801187085391
             ],
             "from": [
-              -87.99932870719708,
-              -112.0005283126162
+              -87.99933021734729,
+              -112.00052622180282
             ],
-            "radius": 50.55497469169721,
+            "radius": 50.5549738595548,
             "tag": {
               "commentStart": 776,
               "end": 780,
@@ -2694,8 +2694,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "arc2"
             },
             "to": [
-              -169.99928669232347,
-              -53.000467119522895
+              -169.99928821239845,
+              -53.000467842306236
             ],
             "type": "Arc",
             "units": "mm"
@@ -2706,8 +2706,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "sourceRange": []
             },
             "from": [
-              -169.99928669232347,
-              -53.000467119522895
+              -169.99928821239845,
+              -53.000467842306236
             ],
             "tag": {
               "commentStart": 929,
@@ -2766,8 +2766,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "line5"
             },
             "to": [
-              -187.00007631383218,
-              130.0001009847176
+              -187.00007622924466,
+              130.00010102052107
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2779,14 +2779,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             },
             "ccw": false,
             "center": [
-              -210.82971203084693,
-              161.579584208389
+              -210.82971209668023,
+              161.57958413899257
             ],
             "from": [
-              -187.00007631383218,
-              130.0001009847176
+              -187.00007622924466,
+              130.00010102052107
             ],
-            "radius": 39.561538128335826,
+            "radius": 39.56153813496637,
             "tag": {
               "commentStart": 1278,
               "end": 1282,
@@ -2796,8 +2796,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "arc6"
             },
             "to": [
-              -232.00006769104291,
-              195.00010694967145
+              -232.000067722434,
+              195.00010690994145
             ],
             "type": "Arc",
             "units": "mm"
@@ -2808,8 +2808,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "sourceRange": []
             },
             "from": [
-              -232.00006769104291,
-              195.00010694967145
+              -232.000067722434,
+              195.00010690994145
             ],
             "tag": {
               "commentStart": 1431,
@@ -2820,8 +2820,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "line7"
             },
             "to": [
-              -108.00032698694014,
-              290.00042884692436
+              -108.00032766573447,
+              290.00042770252793
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2833,14 +2833,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             },
             "ccw": false,
             "center": [
-              -36.88954649391802,
-              197.18020170809174
+              -36.88954842616094,
+              197.1802027347473
             ],
             "from": [
-              -108.00032698694014,
-              290.00042884692436
+              -108.00032766573447,
+              290.00042770252793
             ],
-            "radius": 116.92877177338029,
+            "radius": 116.92876928766835,
             "tag": {
               "commentStart": 1550,
               "end": 1554,
@@ -2850,8 +2850,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "arc8"
             },
             "to": [
-              -59.00001558628024,
-              311.99947197640057
+              -59.00001514091369,
+              311.9994709295263
             ],
             "type": "Arc",
             "units": "mm"
@@ -2862,8 +2862,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "sourceRange": []
             },
             "from": [
-              -59.00001558628024,
-              311.99947197640057
+              -59.00001514091369,
+              311.9994709295263
             ],
             "tag": {
               "commentStart": 1701,
@@ -2874,8 +2874,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "line9"
             },
             "to": [
-              -59.00001558628023,
-              334.99978567546725
+              -59.00001514101492,
+              334.9997811364341
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2887,14 +2887,14 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
             },
             "ccw": false,
             "center": [
-              0.6002542570635043,
-              433.700953594384
+              0.6002616608354714,
+              433.70094906337465
             ],
             "from": [
-              -59.00001558628023,
-              334.99978567546725
+              -59.00001514101492,
+              334.9997811364341
             ],
-            "radius": 115.30009849934034,
+            "radius": 115.3001021031608,
             "tag": {
               "commentStart": 1818,
               "end": 1823,
@@ -2904,8 +2904,8 @@ description: Variables in memory after executing gingerbread-man-cookie-cutter.k
               "value": "arc10"
             },
             "to": [
-              0.000002638242600383478,
-              548.9994896299802
+              0.0000026608953234141808,
+              548.9994886644133
             ],
             "type": "Arc",
             "units": "mm"
