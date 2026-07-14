@@ -1,4 +1,4 @@
-import { MlEphantConversationPaneWrapper } from '@src/components/layout/areas/MlEphantConversationPaneWrapper'
+import { MlEphantConversationPaneWrapper } from '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
@@ -49,7 +49,7 @@ vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
   ),
 }))
 
-vi.mock('@src/components/layout/areas/MlEphantConversationPane', () => ({
+vi.mock('@src/lib/zookeeper/components/MlEphantConversationPane', () => ({
   MlEphantConversationPane: () => null,
 }))
 
@@ -101,7 +101,7 @@ vi.mock('@src/lib/fs-zds', () => ({
   },
 }))
 
-vi.mock('@src/machines/mlEphantManagerMachine', () => ({
+vi.mock('@src/lib/zookeeper/mlEphantManagerMachine', () => ({
   MlEphantConversationToMarkdown: vi.fn(() => ''),
   MlEphantManagerReactContext: {
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
@@ -115,7 +115,7 @@ vi.mock('@src/machines/mlEphantManagerMachine', () => ({
   },
 }))
 
-vi.mock('@src/components/layout/areas/MlEphantConversationPaneHooks', () => ({
+vi.mock('@src/lib/zookeeper/components/MlEphantConversationPaneHooks', () => ({
   useProjectIdToConversationId: vi.fn(),
   useWatchForNewFileRequestsFromMlEphant: (
     ...args: [unknown, unknown, NonNullable<typeof mocks.watchCallback>]
