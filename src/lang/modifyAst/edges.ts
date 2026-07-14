@@ -665,8 +665,8 @@ export function groupSelectionsByBodyAndAddTags(
 
 /**
  * Groups edge selections by their parent editable body.
- * Uses each body's pathToNode as a unique key, or the cloned path ID when the
- * selected geometry belongs to a clone.
+ * Uses each body's pathToNode as a unique key, or the clone variable name when
+ * the selected geometry belongs to a clone.
  *
  * @param selections - Edge selections to group by body
  * @param artifactGraph - Graph mapping artifacts to AST nodes
@@ -694,7 +694,7 @@ function groupSelectionsByBody(
       wasmInstance
     )
     const bodyKey = cloneContext
-      ? cloneContext.clonePath.id
+      ? cloneContext.variableName
       : JSON.stringify(sweepArtifact.codeRef.pathToNode)
     if (bodyToSelections.has(bodyKey)) {
       bodyToSelections.get(bodyKey)?.push(selection)
@@ -841,14 +841,25 @@ function getEdgeFaceExprs(
     wasmInstance
   )
   const faceOwnerExpr = cloneContext?.variableName ?? bodyExpr
+  const sourceFaces = cloneContext
+    ? [
+        ...getArtifactsOfTypes(
+          {
+            keys: cloneContext.sourceSweep.surfaceIds,
+            types: ['wall', 'cap'],
+          },
+          artifactGraph
+        ).values(),
+      ]
+    : commonFaces
 
-  const sourceFaces: typeof commonFaces = []
+  const tagFaces: typeof commonFaces = []
   for (const commonFace of commonFaces) {
     const sourceFace = cloneContext
-      ? getOriginalFaceForClone(cloneContext, commonFace, artifactGraph)
+      ? getOriginalFaceForClone(commonFace, sourceFaces, artifactGraph)
       : commonFace
     if (err(sourceFace)) return sourceFace
-    sourceFaces.push(sourceFace)
+    tagFaces.push(sourceFace)
   }
 
   // Reuse the shared edge-tagging flow after mapping clone faces to the
@@ -859,7 +870,7 @@ function getEdgeFaceExprs(
       ...edge,
       artifact: {
         ...edge.artifact,
-        commonSurfaceIds: sourceFaces.map((face) => face.id),
+        commonSurfaceIds: tagFaces.map((face) => face.id),
       },
     },
     artifactGraph,
@@ -882,7 +893,17 @@ function getEdgeFaceExprs(
       if (!tagName) {
         return new Error('Could not resolve the cap tag for the selected edge')
       }
-      exprs.push(createBodyFaceExpression(faceOwnerExpr, tagName))
+      exprs.push(
+        createMemberExpression(
+          createMemberExpression(
+            typeof faceOwnerExpr === 'string'
+              ? faceOwnerExpr
+              : structuredClone(faceOwnerExpr),
+            'faces'
+          ),
+          tagName
+        )
+      )
     } else if (cloneContext) {
       const tagName = getTagName(tagExpr)
       if (!tagName) {
@@ -903,21 +924,7 @@ function getEdgeFaceExprs(
   return { modifiedAst: tagResult.modifiedAst, exprs }
 }
 
-function createBodyFaceExpression(
-  bodyExpr: string | Expr,
-  tagName: string
-): Expr {
-  return createMemberExpression(
-    createMemberExpression(
-      typeof bodyExpr === 'string' ? bodyExpr : structuredClone(bodyExpr),
-      'faces'
-    ),
-    tagName
-  )
-}
-
 type CloneEdgeContext = {
-  clonePath: Extract<Artifact, { type: 'path' }>
   sourceSweep: Extract<Artifact, { type: 'sweep' }>
   variableName: string
 }
@@ -977,26 +984,16 @@ function getCloneEdgeContext(
   }
 
   return {
-    clonePath,
     sourceSweep: sourceSweep as Extract<Artifact, { type: 'sweep' }>,
     variableName: cloneVariable.variableDeclarator.id.name,
   }
 }
 
 function getOriginalFaceForClone(
-  cloneContext: CloneEdgeContext,
   selectedFace: Extract<Artifact, { type: 'wall' | 'cap' }>,
+  sourceFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[],
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }> | Error {
-  const sourceFaces = [
-    ...getArtifactsOfTypes(
-      {
-        keys: cloneContext.sourceSweep.surfaceIds,
-        types: ['wall', 'cap'],
-      },
-      artifactGraph
-    ).values(),
-  ]
   if (selectedFace.type === 'cap') {
     const sourceCap = sourceFaces.find(
       (face) => face.type === 'cap' && face.subType === selectedFace.subType
