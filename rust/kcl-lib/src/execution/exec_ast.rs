@@ -2208,14 +2208,14 @@ impl Node<SketchBlock> {
                             &format!("Internal error from constraint solver: {}", &failure.error).into(),
                         );
                         return Err(internal_err(
-                            format!("Internal error from constraint solver: {}", &failure.error),
+                            format!("Internal error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
                     _ => {
                         // Catch all error case so that it's not a breaking change to publish new errors.
                         return Err(internal_err(
-                            format!("Error from constraint solver: {}", &failure.error),
+                            format!("Error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
@@ -2225,9 +2225,9 @@ impl Node<SketchBlock> {
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
-                format!("{}; constraint index {}", &warning.content, index)
+                format!("{}; constraint index {}", warning.content, index)
             } else {
-                format!("{}", &warning.content)
+                format!("{}", warning.content)
             };
             exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
         }
@@ -2327,7 +2327,7 @@ impl Node<SketchBlock> {
             debug_assert!(
                 false,
                 "{}; scene_objects={:#?}",
-                &message, &exec_state.mod_local.artifacts.scene_objects
+                message, exec_state.mod_local.artifacts.scene_objects
             );
             return Err(internal_err(message, range));
         };

@@ -2041,7 +2041,7 @@ pub async fn coincident(exec_state: &mut ExecState, args: Args) -> Result<KclVal
                 _ => Err(KclError::new_semantic(KclErrorDetails::new(
                     format!(
                         "coincident supports point-point, point-segment, or segment-segment; found {:?} and {:?}",
-                        &unsolved0.kind, &unsolved1.kind
+                        unsolved0.kind, unsolved1.kind
                     ),
                     vec![args.source_range],
                 ))),
