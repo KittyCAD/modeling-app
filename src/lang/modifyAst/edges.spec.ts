@@ -71,16 +71,16 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
-fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, extrude001.faces.endCap]), radius = 1)`
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+fillet001 = fillet(extrude001, tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]), radius = 1)`
   const extrudedTriangleWithChamfer = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5, tag = $seg01)
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
-chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg01, extrude001.faces.endCap]), length = 1)`
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
+chamfer001 = chamfer(extrude001, tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]), length = 1)`
   const twoExtrudedTriangles = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> xLine(length = 5)
@@ -259,8 +259,8 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       }
       expect(newCode).toContain('fillet001 = fillet(\n  cube2,')
       expect(newCode).toContain('cube2.sketch.tags.')
-      expect(newCode).toContain('cube2.faces.endCap')
-      expect(newCode).not.toContain('tagEnd =')
+      expect(newCode).toContain('cube2.faces.capEnd001')
+      expect(newCode).toContain('tagEnd = $capEnd001')
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       await getAstAndArtifactGraph(
         newCode,
@@ -316,8 +316,8 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       if (err(newCode)) {
         throw newCode
       }
-      expect(newCode).toContain('cube1.faces.endCap')
-      expect(newCode).not.toContain('tagEnd =')
+      expect(newCode).toContain('cube1.faces.capEnd001')
+      expect(newCode).toContain('tagEnd = $capEnd001')
       await getAstAndArtifactGraph(
         newCode,
         instanceInThisFile,
@@ -472,7 +472,7 @@ hide([boxProfile, bottomProfile, lowerWallProfile, upperWallProfile, topProfile]
   part,
   tags = getCommonEdge(faces = [
     boxRegion.tags.topEdge,
-    part.faces.endCap
+    part.faces.capEnd001
   ]),
   radius = 1,
 )`
@@ -563,12 +563,17 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
+extrude001 = extrude(
+  profile001,
+  length = 5,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
 fillet001 = fillet(
   extrude001,
   tags = [
-    getCommonEdge(faces = [seg01, extrude001.faces.endCap]),
-    getCommonEdge(faces = [seg01, extrude001.faces.startCap])
+    getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+    getCommonEdge(faces = [seg01, extrude001.faces.capStart001])
   ],
   radius = 1,
 )`)
@@ -609,10 +614,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 fillet001 = fillet(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.endCap]),
+  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
   radius = 1,
   tag = $myTag,
 )`
@@ -659,7 +664,7 @@ ${extrudedTriangle}`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`fillet001 = fillet(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.endCap]),
+  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
   radius = 1,
   version = 2,
 )`)
@@ -750,7 +755,13 @@ extrude001 = extrude(profile001, length = 20, tagEnd = $capEnd001)
       expect(newCode).toContain(
         code.replace(
           '  |> fillet(tags = getCommonEdge(faces = [rectangleSegmentA001, capEnd001]), radius = 2.5)',
-          '  |> fillet(tags = getCommonEdge(faces = [rectangleSegmentA001, %.faces.endCap]), radius = 2)'
+          `  |> fillet(
+       tags = getCommonEdge(faces = [
+         rectangleSegmentA001,
+         %.faces.capEnd001
+       ]),
+       radius = 2,
+     )`
         )
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
@@ -966,12 +977,17 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
+extrude001 = extrude(
+  profile001,
+  length = 5,
+  tagEnd = $capEnd001,
+  tagStart = $capStart001,
+)
 chamfer001 = chamfer(
   extrude001,
   tags = [
-    getCommonEdge(faces = [seg01, extrude001.faces.endCap]),
-    getCommonEdge(faces = [seg01, extrude001.faces.startCap])
+    getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
+    getCommonEdge(faces = [seg01, extrude001.faces.capStart001])
   ],
   length = 1,
 )`)
@@ -1015,10 +1031,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.endCap]),
+  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
   length = 1,
   secondLength = 1.1,
 )`)
@@ -1063,10 +1079,10 @@ profile001 = startProfile(sketch001, at = [0, 0])
   |> line(endAbsolute = [0, 5])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
-extrude001 = extrude(profile001, length = 5)
+extrude001 = extrude(profile001, length = 5, tagEnd = $capEnd001)
 chamfer001 = chamfer(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.endCap]),
+  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
   length = 1,
   angle = 46deg,
   tag = $myChamferTag,
@@ -1113,7 +1129,7 @@ ${extrudedTriangle}`
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       expect(newCode).toContain(`chamfer001 = chamfer(
   extrude001,
-  tags = getCommonEdge(faces = [seg01, extrude001.faces.endCap]),
+  tags = getCommonEdge(faces = [seg01, extrude001.faces.capEnd001]),
   length = 1,
   version = 2,
 )`)

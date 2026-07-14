@@ -633,7 +633,7 @@ export function groupSelectionsByBodyAndAddTags(
       pathIfPipe = vars.pathIfPipe
     }
 
-    // Resolve faces after the body so cap references can use `body.faces`.
+    // Add tags after resolving the body so cap references can be qualified.
     const { tagsExprs, modifiedAst: taggedAst } = getTagsExprsFromSelection(
       modifiedAst,
       bodySelections,
@@ -844,34 +844,26 @@ function getEdgeFaceExprs(
   let modifiedAst = ast
   const exprs: Expr[] = []
   for (const commonFace of commonFaces) {
-    if (commonFace.type === 'cap') {
-      if (!faceOwnerExpr) {
-        return new Error('Could not resolve the body for an edge cap')
-      }
-      exprs.push(createBodyCapFaceExpression(faceOwnerExpr, commonFace))
-      continue
-    }
-
-    const wall = cloneContext
-      ? getOriginalWallForClone(cloneContext, commonFace, artifactGraph)
+    const face = cloneContext
+      ? getOriginalFaceForClone(cloneContext, commonFace, artifactGraph)
       : commonFace
-    if (err(wall)) {
-      return wall
+    if (err(face)) {
+      return face
     }
 
-    const codeRefs = getCodeRefsByArtifactId(wall.id, artifactGraph)
+    const codeRefs = getCodeRefsByArtifactId(face.id, artifactGraph)
     if (!codeRefs?.[0]) {
       return new Error(
         cloneContext
-          ? 'Could not resolve the source wall for cloned edge'
-          : 'Could not resolve a wall for the selected edge'
+          ? 'Could not resolve the source face for cloned edge'
+          : 'Could not resolve a face for the selected edge'
       )
     }
 
     const tagResult = modifyAstWithTagsForSelection(
       modifiedAst,
       {
-        artifact: wall,
+        artifact: face,
         codeRef: codeRefs[0],
       },
       artifactGraph,
@@ -882,10 +874,19 @@ function getEdgeFaceExprs(
     }
     const tagExpr = tagResult.exprs[0]
     if (!tagExpr) {
-      return new Error('Could not resolve a wall tag for the selected edge')
+      return new Error('Could not resolve a face tag for the selected edge')
     }
 
-    if (cloneContext) {
+    if (commonFace.type === 'cap') {
+      if (!faceOwnerExpr) {
+        return new Error('Could not resolve the body for an edge cap')
+      }
+      const tagName = getTagName(tagExpr)
+      if (!tagName) {
+        return new Error('Could not resolve the cap tag for the selected edge')
+      }
+      exprs.push(createBodyFaceExpression(faceOwnerExpr, tagName))
+    } else if (cloneContext) {
       const tagName = getTagName(tagExpr)
       if (!tagName) {
         return new Error(
@@ -906,16 +907,16 @@ function getEdgeFaceExprs(
   return { modifiedAst, exprs }
 }
 
-function createBodyCapFaceExpression(
+function createBodyFaceExpression(
   bodyExpr: string | Expr,
-  cap: Extract<Artifact, { type: 'cap' }>
+  tagName: string
 ): Expr {
   return createMemberExpression(
     createMemberExpression(
       typeof bodyExpr === 'string' ? bodyExpr : structuredClone(bodyExpr),
       'faces'
     ),
-    `${cap.subType}Cap`
+    tagName
   )
 }
 
@@ -986,15 +987,23 @@ function getCloneEdgeContext(
   }
 }
 
-function getOriginalWallForClone(
+function getOriginalFaceForClone(
   cloneContext: CloneEdgeContext,
-  selectedFace: Extract<Artifact, { type: 'wall' }>,
+  selectedFace: Extract<Artifact, { type: 'wall' | 'cap' }>,
   artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'wall' }> | Error {
+): Extract<Artifact, { type: 'wall' | 'cap' }> | Error {
   const sourceFaces = cloneContext.sourceSweep.surfaceIds.flatMap((id) => {
     const artifact = artifactGraph.get(id)
-    return artifact?.type === 'wall' ? [artifact] : []
+    return artifact?.type === 'wall' || artifact?.type === 'cap'
+      ? [artifact]
+      : []
   })
+  if (selectedFace.type === 'cap') {
+    const sourceCap = sourceFaces.find(
+      (face) => face.type === 'cap' && face.subType === selectedFace.subType
+    )
+    return sourceCap ?? new Error('Could not map cloned cap to its source cap')
+  }
 
   const originalSegment = getOriginalSegmentArtifact(
     selectedFace.segId,
@@ -1006,6 +1015,7 @@ function getOriginalWallForClone(
   // Region paths do not always populate segIds. The cloned and source-region
   // segments still point back to the same original sketch segment, though.
   const sourceWall = sourceFaces.find((face) => {
+    if (face.type !== 'wall') return false
     const sourceSegment = getOriginalSegmentArtifact(face.segId, artifactGraph)
     return sourceSegment?.id === originalSegment.id
   })

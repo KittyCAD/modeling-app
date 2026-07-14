@@ -326,11 +326,13 @@ extrude001 = extrude(region001, length = 100)`
       if (err(result)) throw result
       await enginelessExecutor(ast, rustContextInThisFile)
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(`extrude001 = extrude(region001, length = 100)
+      expect(
+        newCode
+      ).toContain(`extrude001 = extrude(region001, length = 100, tagEnd = $capEnd001)
 helix001 = helix(
   axis = getCommonEdge(faces = [
     region001.tags.line1,
-    extrude001.faces.endCap
+    extrude001.faces.capEnd001
   ]),
   revolutions = 1,
   angleStart = 2,
