@@ -941,20 +941,10 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    let any_edge_id = if let Some(_edge_id) = sketch.mirror {
-        None // if the sketch is mirrored, opt for the engine to intuit the edge to use for extrusion face info, since the mirrored edge may not exist in the engine
-    } else if let Some(id) = edge_id {
+    let any_edge_id = if let Some(id) = edge_id {
         Some(id)
     } else {
-        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
-        // So, let's just use the first one.
-        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
-            return Err(KclError::new_type(KclErrorDetails::new(
-                "Expected a non-empty sketch".to_owned(),
-                vec![args.source_range],
-            )));
-        };
-        Some(any_edge_id)
+       None // It's better to not provide an edge id than to provide a bad one - the engine will intuit an edge to use instead.
     };
 
     // If the sketch is a clone, we will use the original info to get the extrusion face info.
