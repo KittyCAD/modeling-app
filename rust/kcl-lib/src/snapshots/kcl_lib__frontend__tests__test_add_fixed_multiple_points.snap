@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  point1 = point(at = [var 2, var 3])
+  point2 = point(at = [var 4, var 5])
+  fixed([point1, [2mm, 3mm]])
+  fixed([point2, [4mm, 5mm]])
+}
+

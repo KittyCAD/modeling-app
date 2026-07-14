@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  point1 = point(at = [var 1.29, var 2.29])
+  point2 = point(at = [var 2.71, var 3.71])
+  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
+}
+
