@@ -7,6 +7,7 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
+  createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
   findUniqueName,
@@ -18,6 +19,7 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
+import { getFacesExprsFromSelection } from '@src/lang/modifyAst/faces'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
   createSketchTagMemberExpression,
@@ -850,25 +852,22 @@ function getEdgeFaceExprs(
       ]
     : commonFaces
 
-  const tagFaces: typeof commonFaces = []
+  const faceSelections: Selection[] = []
   for (const commonFace of commonFaces) {
     const sourceFace = cloneContext
       ? getOriginalFaceForClone(commonFace, sourceFaces, artifactGraph)
       : commonFace
     if (err(sourceFace)) return sourceFace
-    tagFaces.push(sourceFace)
+    faceSelections.push({ ...edge, artifact: sourceFace })
   }
 
-  // Reuse the shared edge-tagging flow after mapping clone faces to the
-  // corresponding source faces where tags can be added.
-  const tagResult = modifyAstWithTagsForSelection(
+  // Preserve the selected-face order while tagging the corresponding source
+  // faces. Artifact graph order can differ between a clone and its source.
+  const tagResult = getFacesExprsFromSelection(
     ast,
     {
-      ...edge,
-      artifact: {
-        ...edge.artifact,
-        commonSurfaceIds: tagFaces.map((face) => face.id),
-      },
+      graphSelections: faceSelections,
+      otherSelections: [],
     },
     artifactGraph,
     wasmInstance
@@ -908,11 +907,12 @@ function getEdgeFaceExprs(
           'Could not resolve the source wall tag for cloned edge'
         )
       }
-      const cloneSketchTags = createMemberExpression(
-        createMemberExpression(cloneContext.variableName, 'sketch'),
-        'tags'
+      exprs.push(
+        createSketchTagMemberExpression(
+          createLocalName(cloneContext.variableName),
+          tagName
+        )
       )
-      exprs.push(createMemberExpression(cloneSketchTags, tagName))
     } else {
       exprs.push(tagExpr)
     }
