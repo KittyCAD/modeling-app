@@ -151,6 +151,7 @@ web-sys = { version = "0.3.76", features = ["console"] }
 [dev-dependencies]
 approx = "0.5"
 base64 = "0.22.1"
+camino = "1.2.4"
 criterion = { version = "0.8.2", features = ["async_tokio"] }
 expectorate = "1.2.0"
 handlebars = "6.4.1"
@@ -160,6 +161,7 @@ kcl-directory-test-macro = { version = "0.1", path = "../kcl-directory-test-macr
 miette = { version = "7.6.0", features = ["fancy"] }
 pretty_assertions = "1.4.1"
 proptest = { workspace = true }
+tabled = "0.21.0"
 tokio = { version = "1.52.3", features = ["rt-multi-thread", "macros", "time"] }
 twenty-twenty = "0.8.3"
 
