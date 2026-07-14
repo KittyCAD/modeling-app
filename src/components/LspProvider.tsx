@@ -1,5 +1,3 @@
-import { Prec } from '@codemirror/state'
-import type { LanguageServerPlugin } from '@kittycad/codemirror-lsp-client'
 import {
   FromServer,
   IntoServer,
@@ -14,10 +12,8 @@ import React, {
   useState,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type * as LSP from 'vscode-languageserver-protocol'
 
-import { kclLspCompartment } from '@src/editor'
-import { kcl } from '@src/lang/lsp/kcl/language'
+import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
 import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
 import { LspWorker } from '@src/lang/lsp/workerTypes'
 import Worker from '@src/lang/lsp/worker.ts?worker'
@@ -28,10 +24,6 @@ import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
 import { err } from '@src/lib/trap'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-
-function getWorkspaceFolders(): LSP.WorkspaceFolder[] {
-  return []
-}
 
 // an OS-agnostic way to get the basename of the path.
 export function projectBasename(filePath: string, projectPath: string): string {
@@ -131,56 +123,13 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [kclLspClient, isKclLspReady, kclManager.code])
 
-  // Here we initialize the plugin which will start the client.
-  // Now that we have multi-file support the name of the file is a dep of
-  // this use memo, as well as the directory structure, which I think is
-  // a good setup because it will restart the client but not the server :)
-  // We do not want to restart the server, its just wasteful.
-  const kclLSP = useMemo(() => {
-    if (!isKclLspReady || !kclLspClient) {
-      return null
-    }
-
-    return kcl({
-      documentUri: `file:///${PROJECT_ENTRYPOINT}`,
-      workspaceFolders: getWorkspaceFolders(),
-      client: kclLspClient,
-      processLspNotification: (
-        plugin: LanguageServerPlugin,
-        notification: LSP.NotificationMessage
-      ) => {
-        try {
-          switch (notification.method) {
-            case 'kcl/astUpdated':
-              // Update the folding ranges, since the AST has changed.
-              // This is a hack since codemirror does not support async foldService.
-              // When they do we can delete this.
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              plugin.updateFoldingRanges()
-              // eslint-disable-next-line @typescript-eslint/no-floating-promises
-              plugin.requestSemanticTokens()
-              break
-          }
-        } catch (error) {
-          console.error(error)
-        }
-      },
-    })
-  }, [kclLspClient, isKclLspReady])
-
   useEffect(() => {
-    // New code to just update the CodeMirror extensions directly.
-    if (kclLSP === null) {
+    if (!isKclLspReady || !kclLspClient) {
       return
     }
-    kclManager.editorView.dispatch({
-      effects: kclLspCompartment.reconfigure(Prec.highest(kclLSP)),
-    })
-    return () =>
-      kclManager.editorView.dispatch({
-        effects: kclLspCompartment.reconfigure(Prec.highest([])),
-      })
-  }, [kclLSP, kclManager.editorView])
+
+    return attachKclLspToCodeMirror(kclManager, kclLspClient)
+  }, [kclLspClient, isKclLspReady, kclManager])
 
   const lspClients = useMemo(
     () => (kclLspClient ? [kclLspClient] : []),
