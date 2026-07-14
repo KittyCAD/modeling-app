@@ -410,8 +410,8 @@ export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
 export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
 export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
 export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
-  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
 ]
 
 export const ARCHIVE_DIR = 'archive'

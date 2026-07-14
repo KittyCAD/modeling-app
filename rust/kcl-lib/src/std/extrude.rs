@@ -892,34 +892,39 @@ pub(crate) async fn after_surface_creation(
         )
         .await?;
 
-    // Get the body entity ids.
-    let response = exec_state
-        .send_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(body_id).build()),
-        )
-        .await?;
-    let OkWebSocketResponseData::Modeling {
-        modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(ref all_child_ids_resp),
-    } = response
-    else {
-        return Err(KclError::new_engine(KclErrorDetails::new(
-            format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
-            vec![args.source_range],
-        )));
-    };
-    let entity_ids = &all_child_ids_resp.entity_ids;
-    let Some(face_id) = entity_ids.first().copied() else {
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            format!("Expected EntityGetAllChildUuids response to have at least 1 ID: {response:?}",),
-            vec![args.source_range],
-        )));
-    };
-    let Some(edge_id) = entity_ids.get(1).copied() else {
-        return Err(KclError::new_internal(KclErrorDetails::new(
-            format!("Expected EntityGetAllChildUuids response to have at least 2 IDs: {response:?}"),
-            vec![args.source_range],
-        )));
+    let (face_id, edge_id) = if args.ctx.no_engine_commands().await {
+        (exec_state.next_uuid(), exec_state.next_uuid())
+    } else {
+        // Get the body entity ids.
+        let response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(body_id).build()),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(ref all_child_ids_resp),
+        } = response
+        else {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+        let entity_ids = &all_child_ids_resp.entity_ids;
+        let Some(face_id) = entity_ids.first().copied() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Expected EntityGetAllChildUuids response to have at least 1 ID: {response:?}",),
+                vec![args.source_range],
+            )));
+        };
+        let Some(edge_id) = entity_ids.get(1).copied() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Expected EntityGetAllChildUuids response to have at least 2 IDs: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+        (face_id, edge_id)
     };
 
     // TODO: Do we need to use ExtrudeArc?
@@ -1484,6 +1489,26 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
                 .contains("`bidirectionalLength` must be greater than or equal to 0"),
             "{err:?}"
         );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_succeeds_in_mock_exec() {
+        let code = r#"
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [0mm, 0mm], end = [1mm, 0mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+extrude(
+  getOppositeEdge(extrude001.sketch.tags.line1),
+  length = 1,
+  method = NEW,
+  bodyType = SURFACE,
+)
+"#;
+
+        parse_execute(code).await.unwrap();
     }
 
     #[tokio::test(flavor = "multi_thread")]
