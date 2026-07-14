@@ -9,6 +9,7 @@ function createSystemIOActor() {
       context: {
         defaultProjectFolderName: 'untitled',
         folders: [],
+        requestedProjectName: { name: '' },
       },
     }),
     send: vi.fn(),
@@ -36,9 +37,31 @@ describe('project command config', () => {
     expect(commands.map((command) => command.name)).toEqual([
       'Open project',
       'Create project',
+      'Duplicate project',
       'Delete project',
       'Rename project',
       'Import file from URL',
     ])
+  })
+
+  it('submits duplicate project requests through system IO', () => {
+    const systemIOActor = createSystemIOActor()
+    const duplicateCommand = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+    }).find((command) => command.name === 'Duplicate project')
+
+    duplicateCommand?.onSubmit({
+      name: 'source-project',
+      newName: 'Copied project',
+    })
+
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: 'duplicate project',
+      data: {
+        projectName: 'source-project',
+        requestedProjectName: 'Copied project',
+      },
+    })
   })
 })

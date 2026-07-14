@@ -243,6 +243,10 @@ function ProjectMenuPopover({
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
+  const duplicateProjectCommandInfo = {
+    name: 'Duplicate project',
+    groupId: 'projects',
+  }
   const exportProjectZipCommandInfo = {
     name: 'export-project-zip',
     groupId: 'application',
@@ -285,6 +289,32 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
+        project && findCommand(duplicateProjectCommandInfo)
+          ? {
+              id: 'duplicate-project',
+              Element: 'button' as const,
+              children: (
+                <span
+                  className="flex-1"
+                  data-testid="project-sidebar-duplicate-project"
+                >
+                  Duplicate project
+                </span>
+              ),
+              disabled: !project.readWriteAccess,
+              onClick: () => {
+                commands.send({
+                  type: 'Find and select command',
+                  data: {
+                    ...duplicateProjectCommandInfo,
+                    argDefaultValues: {
+                      name: project.name,
+                    },
+                  },
+                })
+              },
+            }
+          : null,
         ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
           if (!projectPath || !project) {
             return []

@@ -47,11 +47,13 @@ function createProjectActions({
 } = {}): HomeProjectActionsService {
   return {
     canOpen: () => true,
+    canDuplicate: () => true,
     canRename: () => true,
     canDelete: () => true,
     open: vi.fn().mockResolvedValue({
       defaultFile: '/projects/old-cloud-title/main.kcl',
     }),
+    duplicate: vi.fn().mockResolvedValue(undefined),
     rename,
     delete: vi.fn().mockResolvedValue(undefined),
   }
@@ -110,6 +112,16 @@ describe('ProjectCard', () => {
       createObjectURL: createObjectURLMock,
       revokeObjectURL: revokeObjectURLMock,
     })
+  })
+
+  test('duplicates a local project from its card action', async () => {
+    const { projectActions } = renderProjectCard()
+
+    fireEvent.click(screen.getByText('Duplicate project').closest('button')!)
+
+    await waitFor(() =>
+      expect(projectActions.duplicate).toHaveBeenCalledWith(cloudProject)
+    )
   })
 
   test('eagerly shows cloud project renames while sync continues', async () => {

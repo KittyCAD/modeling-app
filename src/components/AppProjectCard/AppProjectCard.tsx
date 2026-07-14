@@ -197,6 +197,7 @@ function AppProjectCard({
   }, [project.id, projectDisplayName])
 
   const projectName = getHomeProjectDisplayName(displayedProject)
+  const canDuplicate = projectActions.canDuplicate(project)
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
   const canOpen = projectActions.canOpen(project) || hasCloudConflict
@@ -270,6 +271,23 @@ function AppProjectCard({
 
   const actions = (
     <>
+      <ActionButton
+        disabled={!canDuplicate}
+        Element="button"
+        iconStart={{
+          icon: 'clone',
+          iconClassName: 'dark:!text-chalkboard-20',
+          bgClassName: '!bg-transparent',
+        }}
+        onClick={(e) => {
+          e.stopPropagation()
+          e.nativeEvent.stopPropagation()
+          void projectActions.duplicate(project).catch(reportRejection)
+        }}
+        className="!p-0"
+      >
+        <Tooltip position="top-right">Duplicate project</Tooltip>
+      </ActionButton>
       <ActionButton
         disabled={!canRename}
         Element="button"

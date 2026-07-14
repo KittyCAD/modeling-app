@@ -3,10 +3,14 @@ import {
   cloudSyncStatus,
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
+  runCloudSyncWriteTransaction,
 } from '@src/lib/cloudSync'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
+  DUPLICATE_IN_PROGRESS_FILE_NAME,
   FILE_EXT,
+  MAX_PROJECT_NAME_LENGTH,
+  PROJECT_SETTINGS_FILE_NAME,
   ZOOKEEPER_FILE_WRITE_TOAST_ID,
 } from '@src/lib/constants'
 import {
@@ -17,6 +21,7 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
+  writeProjectSettingsFile,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
 import {
@@ -28,6 +33,7 @@ import {
 } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { isPublishDirectoryDestinationExists } from '@src/lib/fs-zds/errors'
 import {
   getProjectDirectoryFromKCLFilePath,
   getStringAfterLastSeparator,
@@ -36,6 +42,8 @@ import {
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { sanitizeProjectName } from '@src/lib/projectName'
+import { getProjectTomlContents } from '@src/lib/projectToml'
+import { prepareProjectTomlForDuplication } from '@src/lib/projectTomlMetadata'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -52,7 +60,47 @@ import {
   SystemIOMachineActors,
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
+import { v4 } from 'uuid'
 import { fromPromise } from 'xstate'
+
+const DUPLICATE_STAGING_PREFIX = '.zds-duplicate-'
+const DUPLICATE_STAGING_NAME_REGEXP =
+  /^\.zds-duplicate-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+const OPFS_DIRECTORY_METADATA_FILE_NAME = '._meta'
+const activeDuplicateStagingPaths = new Set<string>()
+
+function getWebLockManager() {
+  return typeof navigator !== 'undefined' ? navigator.locks : undefined
+}
+
+function duplicateWebLockName(
+  kind: 'directory' | 'staging',
+  targetPath: string
+) {
+  return `zds:duplicate:${kind}:${targetPath.replaceAll('\\', '/')}`
+}
+
+async function runWithWebLock<T>(
+  lockName: string,
+  operation: () => Promise<T>
+): Promise<T> {
+  const lockManager = getWebLockManager()
+  if (!lockManager) {
+    return operation()
+  }
+  let lockAcquired = false
+  try {
+    return await lockManager.request(lockName, async () => {
+      lockAcquired = true
+      return operation()
+    })
+  } catch (error) {
+    if (lockAcquired) {
+      return Promise.reject(error)
+    }
+    return operation()
+  }
+}
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -88,6 +136,36 @@ async function pathExists(targetPath: string) {
       return false
     }
     return Promise.reject(error)
+  }
+}
+
+async function hasDuplicateInProgressMarker(projectPath: string) {
+  try {
+    await fsZds.stat(fsZds.join(projectPath, DUPLICATE_IN_PROGRESS_FILE_NAME))
+    return true
+  } catch (error) {
+    // If the marker cannot be inspected, hiding the project is safer than
+    // exposing a potentially partial copy.
+    return !isPathNotFoundError(error)
+  }
+}
+
+async function isProjectDirectoryQuarantined(projectPath: string) {
+  try {
+    const entries = await fsZds.readdir(projectPath)
+    // The marker can appear after the stat in
+    // hasDuplicateInProgressMarker. Treat the directory snapshot as a second
+    // authoritative check before any project inspection can mutate it.
+    if (entries.includes(DUPLICATE_IN_PROGRESS_FILE_NAME)) {
+      return true
+    }
+    return entries.every(
+      (entryName) => entryName === OPFS_DIRECTORY_METADATA_FILE_NAME
+    )
+  } catch {
+    // Do not let project inspection mutate a directory whose contents cannot
+    // be established safely.
+    return true
   }
 }
 
@@ -151,6 +229,181 @@ async function getUniqueProjectNameForCreate({
     })
   )
   return getUniqueProjectName(requestedProjectName, existingEntries)
+}
+
+async function getUniqueDuplicateProjectName({
+  context,
+  requestedProjectName,
+  fallbackProjectName,
+  projectDirectoryPath,
+}: {
+  context: SystemIOContext
+  requestedProjectName: string
+  fallbackProjectName: string
+  projectDirectoryPath: string
+}) {
+  const reservedNames = new Set<string>()
+  for (const folder of context.folders ?? []) {
+    reservedNames.add(folder.name)
+    reservedNames.add(getProjectDisplayName(folder))
+  }
+  for (const entryName of await getProjectDirectoryEntryNames(
+    projectDirectoryPath
+  )) {
+    reservedNames.add(entryName)
+  }
+  if (cloudSyncStatus.value.enabled) {
+    const normalizedProjectDirectoryPath =
+      normalizeProjectPathForCloudMetadata(projectDirectoryPath)
+    const projectPathPrefix = `${normalizedProjectDirectoryPath}/`
+    const cloudProjectMetadataByPath =
+      await getCloudSyncProjectMetadataIndex().catch(() => new Map())
+    for (const metadataPath of cloudProjectMetadataByPath.keys()) {
+      const normalizedMetadataPath =
+        normalizeProjectPathForCloudMetadata(metadataPath)
+      if (!normalizedMetadataPath.startsWith(projectPathPrefix)) {
+        continue
+      }
+      const relativePath = normalizedMetadataPath.slice(
+        projectPathPrefix.length
+      )
+      if (relativePath && !relativePath.includes('/')) {
+        reservedNames.add(relativePath)
+      }
+    }
+  }
+
+  const normalizedReservedNames = new Set(
+    Array.from(reservedNames, (name) => name.toLowerCase())
+  )
+  const sanitizedBaseName = sanitizeProjectName(
+    requestedProjectName,
+    fallbackProjectName
+  )
+  const safeBaseName = sanitizedBaseName
+    .slice(0, MAX_PROJECT_NAME_LENGTH)
+    .replace(/[. ]+$/g, '')
+  if (!normalizedReservedNames.has(safeBaseName.toLowerCase())) {
+    return safeBaseName
+  }
+
+  const endingNumber = safeBaseName.match(/^(.*?)([-_ ]?)(\d+)$/)
+  let stem = endingNumber?.[1] ?? safeBaseName
+  let numericSeparator = endingNumber?.[2] ?? '-'
+  let index = endingNumber ? BigInt(endingNumber[3]) + 1n : 1n
+  while (true) {
+    let suffix = `${numericSeparator}${index}`
+    if (suffix.length > MAX_PROJECT_NAME_LENGTH) {
+      // A maximal all-9 suffix grows by one digit. Start a fresh bounded
+      // sequence instead of slicing with a negative length or looping on an
+      // imprecise Number.
+      stem = safeBaseName
+      numericSeparator = '-'
+      index = 1n
+      suffix = '-1'
+    }
+    const candidate = `${stem.slice(
+      0,
+      MAX_PROJECT_NAME_LENGTH - suffix.length
+    )}${suffix}`
+    if (!normalizedReservedNames.has(candidate.toLowerCase())) {
+      return candidate
+    }
+    index += 1n
+  }
+}
+
+async function cleanupStaleDuplicateStagingDirectories(
+  projectDirectoryPath: string
+) {
+  const lockManager = getWebLockManager()
+  for (const entryName of await getProjectDirectoryEntryNames(
+    projectDirectoryPath
+  )) {
+    if (!DUPLICATE_STAGING_NAME_REGEXP.test(entryName)) {
+      continue
+    }
+
+    const stagingPath = fsZds.join(projectDirectoryPath, entryName)
+    if (activeDuplicateStagingPaths.has(stagingPath)) {
+      continue
+    }
+
+    const cleanup = async () => {
+      try {
+        const stagingStat = await fsZds.stat(stagingPath)
+        if (!(stagingStat.mode & fsZdsConstants.S_IFDIR)) {
+          return
+        }
+        await fsZds.rm(stagingPath, { recursive: true, force: true })
+      } catch (error) {
+        if (!isPathNotFoundError(error)) {
+          console.error('Failed to clean up stale duplicated project', error)
+        }
+      }
+    }
+
+    if (!lockManager) {
+      // Without a cross-renderer lease there is no safe way to distinguish a
+      // crashed stage from another renderer's active copy. Leave it alone.
+      continue
+    }
+
+    const lockName = duplicateWebLockName('staging', stagingPath)
+    try {
+      await lockManager.request(
+        lockName,
+        { ifAvailable: true },
+        async (lock) => {
+          if (lock) {
+            await cleanup()
+          }
+        }
+      )
+    } catch {
+      // A partial Web Locks implementation is not sufficient proof that this
+      // renderer owns cleanup rights, so preserve the staging directory.
+    }
+  }
+}
+
+async function resetDuplicatedProjectSettings({
+  projectPath,
+  projectTitle,
+  wasmInstance,
+}: {
+  projectPath: string
+  projectTitle: string
+  wasmInstance: ModuleType
+}) {
+  const projectToml = await getProjectTomlContents({
+    projectPath,
+    wasmInstance,
+  })
+  if (isErr(projectToml)) {
+    return Promise.reject(projectToml)
+  }
+
+  const duplicatedProjectToml = prepareProjectTomlForDuplication(
+    projectToml,
+    projectTitle,
+    v4()
+  )
+  if (isErr(duplicatedProjectToml)) {
+    return Promise.reject(duplicatedProjectToml)
+  }
+
+  // Desktop copies preserve symbolic links. Remove the copied project.toml
+  // before writing so a symlink cannot mutate its source or an external file.
+  const projectTomlPath = fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
+  try {
+    await fsZds.rm(projectTomlPath, { force: true })
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
+  await writeProjectSettingsFile(projectPath, duplicatedProjectToml)
 }
 
 export function shouldSendProjectFolderReadProgress(
@@ -478,6 +731,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await mkdirOrNOOP(projectDirectoryPath)
+        await cleanupStaleDuplicateStagingDirectories(projectDirectoryPath)
         const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
           ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
           : new Map()
@@ -496,6 +750,15 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             continue
           }
           if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
+            continue
+          }
+          if (await hasDuplicateInProgressMarker(projectPath)) {
+            continue
+          }
+          // getProjectInfo may initialize an empty writable directory with a
+          // main.kcl. Skip empty reservations before calling it so a crash in
+          // the mkdir-to-marker window remains quarantined and unmodified.
+          if (await isProjectDirectoryQuarantined(projectPath)) {
             continue
           }
 
@@ -520,10 +783,19 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           if (signal.aborted) {
             return projects
           }
+          if (await hasDuplicateInProgressMarker(entry.path)) {
+            continue
+          }
+          if (await isProjectDirectoryQuarantined(entry.path)) {
+            continue
+          }
           const project: Project = await getProjectInfo(
             entry.path,
             await context.wasmInstancePromise
           )
+          if (await hasDuplicateInProgressMarker(entry.path)) {
+            continue
+          }
           const cloudMetadata = cloudProjectMetadataByPath.get(
             normalizeProjectPathForCloudMetadata(entry.path)
           )
@@ -582,6 +854,187 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
+        }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input,
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          requestedProjectName: string
+        }
+      }) => {
+        const folders = input.context.folders
+        if (!folders) {
+          return Promise.reject(new Error('Projects have not finished loading'))
+        }
+        if (input.context.projectDirectoryPath === NO_PROJECT_DIRECTORY) {
+          return Promise.reject(
+            new Error('Unable to determine the project directory.')
+          )
+        }
+
+        const project = folders.find(
+          (folder) => folder.name === input.projectName
+        )
+        if (!project) {
+          return Promise.reject(
+            new Error(`Project "${input.projectName}" does not exist`)
+          )
+        }
+        if (!project.readWriteAccess) {
+          return Promise.reject(
+            new Error(
+              `Project "${getProjectDisplayName(project)}" cannot be read`
+            )
+          )
+        }
+
+        const requestedProjectName =
+          input.requestedProjectName.trim() || project.name
+        const projectDirectoryPath = fsZds.resolve(
+          input.context.projectDirectoryPath
+        )
+        const stagingPath = fsZds.join(
+          projectDirectoryPath,
+          `${DUPLICATE_STAGING_PREFIX}${v4()}`
+        )
+        activeDuplicateStagingPaths.add(stagingPath)
+        try {
+          return await runWithWebLock(
+            duplicateWebLockName('staging', stagingPath),
+            async () => {
+              let ownsStagingProject = false
+              try {
+                await fsZds.mkdir(stagingPath)
+                ownsStagingProject = true
+                await fsZds.cp(project.path, stagingPath, {
+                  recursive: true,
+                  force: false,
+                  verbatimSymlinks: true,
+                })
+
+                let duplicateName = ''
+                await runWithWebLock(
+                  duplicateWebLockName('directory', projectDirectoryPath),
+                  async () => {
+                    while (ownsStagingProject) {
+                      duplicateName = await getUniqueDuplicateProjectName({
+                        context: input.context,
+                        requestedProjectName,
+                        fallbackProjectName: project.name,
+                        projectDirectoryPath,
+                      })
+                      if (duplicateName.length > MAX_PROJECT_NAME_LENGTH) {
+                        return Promise.reject(
+                          new Error(
+                            `Project name "${duplicateName}" is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters.`
+                          )
+                        )
+                      }
+
+                      const targetPath = fsZds.resolve(
+                        projectDirectoryPath,
+                        duplicateName
+                      )
+                      if (fsZds.dirname(targetPath) !== projectDirectoryPath) {
+                        return Promise.reject(
+                          new Error(
+                            `Project name "${duplicateName}" is invalid.`
+                          )
+                        )
+                      }
+
+                      await resetDuplicatedProjectSettings({
+                        projectPath: stagingPath,
+                        projectTitle: duplicateName,
+                        wasmInstance: await input.context.wasmInstancePromise,
+                      })
+
+                      let published = false
+                      try {
+                        await runCloudSyncWriteTransaction(
+                          targetPath,
+                          async () => {
+                            await fsZds.publishDirectory(
+                              stagingPath,
+                              targetPath,
+                              DUPLICATE_IN_PROGRESS_FILE_NAME
+                            )
+                            // Publication copies rather than renames so the
+                            // destination can be reserved without clobbering
+                            // an empty directory on Node/macOS. From here on,
+                            // the complete target is independent of staging.
+                            ownsStagingProject = false
+                            published = true
+                            await fsZds
+                              .rm(stagingPath, {
+                                recursive: true,
+                                force: true,
+                              })
+                              .catch((cleanupError) => {
+                                console.error(
+                                  'Failed to clean up published duplicate staging directory',
+                                  cleanupError
+                                )
+                              })
+                          },
+                          {
+                            freshProjectIdentity: true,
+                            // Keep the complete copy quarantined until stale
+                            // path-keyed cloud identity has been cleared.
+                            // This runs under the same project lock before
+                            // the final cloud registration.
+                            afterFreshIdentityReset: async () => {
+                              await fsZds.rm(
+                                fsZds.join(
+                                  targetPath,
+                                  DUPLICATE_IN_PROGRESS_FILE_NAME
+                                )
+                              )
+                            },
+                          }
+                        )
+                      } catch (error) {
+                        // A destination can appear after name selection. Its
+                        // contents are never ours, so preserve it and retry
+                        // with a freshly selected bounded name.
+                        if (
+                          !published &&
+                          isPublishDirectoryDestinationExists(error)
+                        ) {
+                          continue
+                        }
+                        return Promise.reject(error)
+                      }
+                    }
+                  }
+                )
+
+                return {
+                  message: `Successfully duplicated "${getProjectDisplayName(project)}" as "${duplicateName}"`,
+                  name: duplicateName,
+                }
+              } catch (error) {
+                if (ownsStagingProject) {
+                  await fsZds
+                    .rm(stagingPath, { recursive: true, force: true })
+                    .catch((cleanupError) => {
+                      console.error(
+                        'Failed to clean up duplicated project',
+                        cleanupError
+                      )
+                    })
+                }
+                return Promise.reject(error)
+              }
+            }
+          )
+        } finally {
+          activeDuplicateStagingPaths.delete(stagingPath)
         }
       }
     ),

@@ -83,6 +83,10 @@ export const systemIOMachine = setup({
           data: { requestedProjectName: string }
         }
       | {
+          type: SystemIOMachineEvents.duplicateProject
+          data: { projectName: string; requestedProjectName: string }
+        }
+      | {
           type: SystemIOMachineEvents.renameProject
           data: {
             requestedProjectName: string
@@ -324,6 +328,7 @@ export const systemIOMachine = setup({
     }): boolean => {
       assertEvent(event, [
         SystemIOMachineEvents.createProject,
+        SystemIOMachineEvents.duplicateProject,
         SystemIOMachineEvents.renameProject,
       ])
       const { requestedProjectName } = event.data
@@ -483,6 +488,19 @@ export const systemIOMachine = setup({
         input: { context, requestedProjectName },
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
+      }) => {
+        return { message: '', name: '' }
+      }
+    ),
+    [SystemIOMachineActors.duplicateProject]: fromPromise(
+      async ({
+        input: { context, projectName, requestedProjectName },
+      }: {
+        input: {
+          context: SystemIOContext
+          projectName: string
+          requestedProjectName: string
+        }
       }) => {
         return { message: '', name: '' }
       }
@@ -867,6 +885,15 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
+        [SystemIOMachineEvents.duplicateProject]: [
+          {
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+            target: SystemIOMachineStates.duplicatingProject,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -970,6 +997,15 @@ export const systemIOMachine = setup({
           {
             guard: SystemIOMachineGuards.projectNameIsValidLength,
             target: SystemIOMachineStates.creatingProject,
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.duplicateProject]: [
+          {
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+            target: SystemIOMachineStates.duplicatingProject,
           },
           {
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
@@ -1110,6 +1146,36 @@ export const systemIOMachine = setup({
                   name: (event as { output: { name: string } }).output.name,
                 }
               },
+            }),
+            SystemIOMachineActions.toastSuccess,
+          ],
+        },
+        onError: {
+          target: SystemIOMachineStates.idle,
+          actions: [SystemIOMachineActions.toastError],
+        },
+      },
+    },
+    [SystemIOMachineStates.duplicatingProject]: {
+      invoke: {
+        id: SystemIOMachineActors.duplicateProject,
+        src: SystemIOMachineActors.duplicateProject,
+        input: ({ context, event }) => {
+          assertEvent(event, SystemIOMachineEvents.duplicateProject)
+          return {
+            context,
+            projectName: event.data.projectName,
+            requestedProjectName: event.data.requestedProjectName,
+          }
+        },
+        onDone: {
+          target: SystemIOMachineStates.readingFolders,
+          actions: [
+            assign({
+              lastOperation: SystemIOMachineStates.duplicatingProject,
+              requestedProjectName: ({ event }) => ({
+                name: (event as { output: { name: string } }).output.name,
+              }),
             }),
             SystemIOMachineActions.toastSuccess,
           ],
@@ -1299,6 +1365,15 @@ export const systemIOMachine = setup({
           actions: [SystemIOMachineActions.setProjectDirectoryPath],
         },
         [SystemIOMachineEvents.createProject]: [
+          {
+            guard: SystemIOMachineGuards.projectNameIsValidLength,
+            actions: [SystemIOMachineActions.deferSystemIOEvent],
+          },
+          {
+            actions: [SystemIOMachineActions.toastProjectNameTooLong],
+          },
+        ],
+        [SystemIOMachineEvents.duplicateProject]: [
           {
             guard: SystemIOMachineGuards.projectNameIsValidLength,
             actions: [SystemIOMachineActions.deferSystemIOEvent],

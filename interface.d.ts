@@ -63,6 +63,11 @@ export interface IElectronAPI {
   mkdir: typeof fs.mkdir
   path: typeof path
   cp: typeof fs.cp
+  publishDirectory: (
+    sourcePath: string,
+    targetPath: string,
+    inProgressMarkerName: string
+  ) => Promise<void>
   // No such thing as fs.mv, but our function will use fs.cp as a fallback
   move: (
     source: string | URL,

@@ -35,6 +35,7 @@ import {
   getAllProjectMetadata,
   getProjectMetadata,
   putProjectMetadata,
+  resetProjectSyncIdentity,
 } from '@src/lib/cloudSync/syncDb'
 import type {
   CloudSyncConfig,
@@ -49,7 +50,11 @@ import type {
   RemoteProjectSummary,
   Revision,
 } from '@src/lib/cloudSync/types'
-import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_IN_PROGRESS_FILE_NAME,
+  PROJECT_FOLDER,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs from '@src/lib/fs-zds/opfs'
 import {
@@ -109,6 +114,22 @@ let conflictCopyRepairComplete = false
 let pendingStatusSyncedAt: string | undefined
 let detachVisibilityChangeListener: (() => void) | undefined
 let syncScopeProjectPath: string | undefined
+let activeCloudSyncRunCompletion: Promise<void> | undefined
+
+type ProjectMutationSuppression = {
+  count: number
+  commitRequested: boolean
+  freshProjectIdentityRequested: boolean
+  freshProjectIdentityResetFailed: boolean
+  afterFreshIdentityResetCallbacks: Array<() => Promise<void>>
+  webLockReady: Promise<void>
+  resolveWebLockReady: () => void
+  transactionsComplete: Promise<void>
+  resolveTransactionsComplete: () => void
+}
+
+const suppressedProjectMutations = new Map<string, ProjectMutationSuppression>()
+const quarantinedPartialProjectPaths = new Set<string>()
 
 export const cloudSyncStatus = signal<CloudSyncStatus>({
   enabled: false,
@@ -172,6 +193,176 @@ function isConfiguredProjectDirectoryPath(targetPath: string) {
 
 function projectNameFromPath(projectPath: string) {
   return localFs.basename(normalizePathForSync(projectPath))
+}
+
+function isProjectMutationSuppressed(projectPath: string) {
+  return suppressedProjectMutations.has(normalizePathForSync(projectPath))
+}
+
+function isPathNotFoundError(error: unknown) {
+  if (error === 'ENOENT') {
+    return true
+  }
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    error.code === 'ENOENT'
+  )
+}
+
+async function hasDuplicateInProgressMarker(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const markerPath = localFs.join(
+    normalizedProjectPath,
+    DUPLICATE_IN_PROGRESS_FILE_NAME
+  )
+  try {
+    await localFs.stat(markerPath)
+    quarantinedPartialProjectPaths.add(normalizedProjectPath)
+    return true
+  } catch (error) {
+    if (isPathNotFoundError(error)) {
+      quarantinedPartialProjectPaths.delete(normalizedProjectPath)
+      return false
+    }
+    // An unreadable marker must quarantine the project just like a present one.
+    quarantinedPartialProjectPaths.add(normalizedProjectPath)
+    return true
+  }
+}
+
+async function isPartialProjectQuarantined(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  if (await hasDuplicateInProgressMarker(normalizedProjectPath)) {
+    return true
+  }
+
+  try {
+    const entries = await localFs.readdir(normalizedProjectPath)
+    // The marker can appear after the stat above. Re-check the directory
+    // snapshot before treating any other entries as publishable content.
+    if (entries.includes(DUPLICATE_IN_PROGRESS_FILE_NAME)) {
+      quarantinedPartialProjectPaths.add(normalizedProjectPath)
+      return true
+    }
+    const hasUserProjectContent = entries.some(
+      (entry) =>
+        entry !== INTERNAL_OPFS_META_FILE &&
+        entry !== DUPLICATE_IN_PROGRESS_FILE_NAME
+    )
+    if (hasUserProjectContent) {
+      quarantinedPartialProjectPaths.delete(normalizedProjectPath)
+      return false
+    }
+    quarantinedPartialProjectPaths.add(normalizedProjectPath)
+    return true
+  } catch (error) {
+    if (isPathNotFoundError(error)) {
+      // A missing directory can represent an intentional local deletion and
+      // must remain eligible for remote-delete synchronization.
+      quarantinedPartialProjectPaths.delete(normalizedProjectPath)
+      return false
+    }
+    quarantinedPartialProjectPaths.add(normalizedProjectPath)
+    return true
+  }
+}
+
+function hasCloudSyncProjectLocks() {
+  return (
+    typeof navigator !== 'undefined' &&
+    typeof navigator.locks?.request === 'function'
+  )
+}
+
+async function withCloudSyncProjectLock<T>(
+  projectPath: string,
+  operation: () => Promise<T>
+) {
+  const lockManager =
+    typeof navigator === 'undefined' ? undefined : navigator.locks
+  if (!lockManager) {
+    return operation()
+  }
+
+  let lockAcquired = false
+  try {
+    return await lockManager.request(
+      `zds-cloud-sync:${normalizePathForSync(projectPath)}`,
+      async () => {
+        lockAcquired = true
+        return operation()
+      }
+    )
+  } catch (error) {
+    if (lockAcquired) {
+      // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+      throw error
+    }
+    // A partial Web Locks implementation must not strand the local fallback.
+    return operation()
+  }
+}
+
+function createVoidDeferred() {
+  let resolve: () => void = () => undefined
+  const promise = new Promise<void>((resolvePromise) => {
+    resolve = resolvePromise
+  })
+  return { promise, resolve }
+}
+
+function suppressProjectMutations(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const existing = suppressedProjectMutations.get(normalizedProjectPath)
+  if (existing) {
+    existing.count += 1
+    return {
+      isOutermostTransaction: false,
+      normalizedProjectPath,
+      suppression: existing,
+    }
+  }
+
+  const webLockReady = createVoidDeferred()
+  const transactionsComplete = createVoidDeferred()
+  const suppression: ProjectMutationSuppression = {
+    count: 1,
+    commitRequested: false,
+    freshProjectIdentityRequested: false,
+    freshProjectIdentityResetFailed: false,
+    afterFreshIdentityResetCallbacks: [],
+    webLockReady: webLockReady.promise,
+    resolveWebLockReady: webLockReady.resolve,
+    transactionsComplete: transactionsComplete.promise,
+    resolveTransactionsComplete: transactionsComplete.resolve,
+  }
+  suppressedProjectMutations.set(normalizedProjectPath, suppression)
+  return {
+    isOutermostTransaction: true,
+    normalizedProjectPath,
+    suppression,
+  }
+}
+
+function resumeProjectMutations(suppression: ProjectMutationSuppression) {
+  suppression.count -= 1
+  if (suppression.count > 0) {
+    return false
+  }
+
+  suppression.resolveTransactionsComplete()
+  return true
+}
+
+function releaseProjectMutationSuppression(
+  projectPath: string,
+  suppression: ProjectMutationSuppression
+) {
+  if (suppressedProjectMutations.get(projectPath) === suppression) {
+    suppressedProjectMutations.delete(projectPath)
+  }
 }
 
 function isProjectPathInDirectory(
@@ -607,8 +798,14 @@ async function clearOutboxEntriesForProject(projectPath: string) {
 async function refreshPendingCount() {
   try {
     const entries = await getAllOutboxEntries()
+    const visibleEntries = entries.filter(
+      (entry) =>
+        !quarantinedPartialProjectPaths.has(
+          normalizePathForSync(entry.projectPath)
+        )
+    )
     updateStatus({
-      pendingCount: getCloudSyncScopePlan(entries, syncScopeProjectPath)
+      pendingCount: getCloudSyncScopePlan(visibleEntries, syncScopeProjectPath)
         .pendingCount,
     })
   } catch {
@@ -762,6 +959,12 @@ async function findLocalProjectPathByRemoteProjectId(
       continue
     }
     const candidatePath = localFs.join(projectDirectory, entry)
+    if (isProjectMutationSuppressed(candidatePath)) {
+      continue
+    }
+    if (await isPartialProjectQuarantined(candidatePath)) {
+      continue
+    }
     if (!(await exists(candidatePath))) {
       continue
     }
@@ -936,6 +1139,52 @@ async function readProjectTomlCloudProjectId(projectPath: string) {
   return projectIdPattern.exec(projectToml)?.[1]
 }
 
+async function readConflictCopyCleanupCandidate(
+  projectPath: string,
+  projectName: string
+): Promise<CloudSyncConflictCopyCleanupCandidate | undefined> {
+  if (
+    isProjectMutationSuppressed(projectPath) ||
+    (await isPartialProjectQuarantined(projectPath))
+  ) {
+    return undefined
+  }
+  const stat = await localFs.stat(projectPath).catch(() => undefined)
+  if (!stat || !statIsDirectory(stat)) {
+    return undefined
+  }
+
+  const remoteProjectId = await readProjectTomlCloudProjectId(
+    projectPath
+  ).catch(() => undefined)
+  const manifest = await collectLocalProjectFiles(projectPath)
+    .then(projectManifestFromFiles)
+    .catch(() => undefined)
+  return {
+    projectPath,
+    projectName,
+    remoteProjectId,
+    manifest,
+  }
+}
+
+async function conflictCopyCandidateIsCurrent(
+  candidate: CloudSyncConflictCopyCleanupCandidate
+) {
+  if (!candidate.manifest) {
+    return false
+  }
+  const currentCandidate = await readConflictCopyCleanupCandidate(
+    candidate.projectPath,
+    candidate.projectName
+  )
+  return Boolean(
+    currentCandidate?.manifest &&
+      currentCandidate.remoteProjectId === candidate.remoteProjectId &&
+      projectManifestsEqual(currentCandidate.manifest, candidate.manifest)
+  )
+}
+
 async function repairExistingConflictCopies() {
   if (conflictCopyRepairComplete) {
     return
@@ -955,23 +1204,14 @@ async function repairExistingConflictCopies() {
     }
 
     const projectPath = localFs.join(projectDirectory, entry)
-    const stat = await localFs.stat(projectPath).catch(() => undefined)
-    if (!stat || !statIsDirectory(stat)) {
-      continue
-    }
-
-    const remoteProjectId = await readProjectTomlCloudProjectId(
-      projectPath
-    ).catch(() => undefined)
-    const manifest = await collectLocalProjectFiles(projectPath)
-      .then(projectManifestFromFiles)
-      .catch(() => undefined)
-
-    candidates.push({
-      projectPath,
-      projectName: entry,
-      remoteProjectId,
-      manifest,
+    await withCloudSyncProjectLock(projectPath, async () => {
+      const candidate = await readConflictCopyCleanupCandidate(
+        projectPath,
+        entry
+      )
+      if (candidate) {
+        candidates.push(candidate)
+      }
     })
   }
 
@@ -990,36 +1230,47 @@ async function repairExistingConflictCopies() {
       continue
     }
 
-    const candidate = candidatesByPath.get(projectPath)
-    const metadata = await getOrCreateProjectMetadata(projectPath)
-    const remoteProjectId =
-      candidate?.remoteProjectId ?? metadata.remoteProjectId
-    const sourceProjectName = candidate
-      ? getCloudConflictSourceProjectName(candidate.projectName)
-      : undefined
-    await clearOutboxEntriesForProject(projectPath)
-    await putProjectMetadata({
-      ...metadata,
-      remoteProjectId,
-      tombstone: false,
-      syncExcluded: {
-        reason: 'conflict-copy',
-        sourceProjectPath:
-          sourceProjectName && candidate?.projectName !== sourceProjectName
-            ? localFs.join(projectDirectory, sourceProjectName)
-            : undefined,
+    await withCloudSyncProjectLock(projectPath, async () => {
+      const candidate = candidatesByPath.get(projectPath)
+      if (!candidate || !(await conflictCopyCandidateIsCurrent(candidate))) {
+        return
+      }
+      const metadata = await getOrCreateProjectMetadata(projectPath)
+      const remoteProjectId =
+        candidate.remoteProjectId ?? metadata.remoteProjectId
+      const sourceProjectName = getCloudConflictSourceProjectName(
+        candidate.projectName
+      )
+      await clearOutboxEntriesForProject(projectPath)
+      await putProjectMetadata({
+        ...metadata,
         remoteProjectId,
-        createdAt: metadata.syncExcluded?.createdAt ?? createdAt,
-      },
+        tombstone: false,
+        syncExcluded: {
+          reason: 'conflict-copy',
+          sourceProjectPath:
+            sourceProjectName && candidate.projectName !== sourceProjectName
+              ? localFs.join(projectDirectory, sourceProjectName)
+              : undefined,
+          remoteProjectId,
+          createdAt: metadata.syncExcluded?.createdAt ?? createdAt,
+        },
+      })
     })
   }
 
   for (const projectPath of cleanupPlan.deleteProjectPaths) {
-    await clearOutboxEntriesForProject(projectPath)
-    if (await exists(projectPath)) {
-      await localFs.rm(projectPath, { recursive: true })
-    }
-    await deleteProjectMetadata(projectPath)
+    await withCloudSyncProjectLock(projectPath, async () => {
+      const candidate = candidatesByPath.get(projectPath)
+      if (!candidate || !(await conflictCopyCandidateIsCurrent(candidate))) {
+        return
+      }
+      await clearOutboxEntriesForProject(projectPath)
+      if (await exists(projectPath)) {
+        await localFs.rm(projectPath, { recursive: true })
+      }
+      await deleteProjectMetadata(projectPath)
+    })
   }
 
   conflictCopyRepairComplete = true
@@ -1566,7 +1817,18 @@ async function localProjectChangedFromSyncBase(metadata: ProjectMetadata) {
   return !projectManifestsEqual(localManifest, metadata.baseManifest)
 }
 
-async function syncProject(projectPath: string, entries: OutboxEntry[]) {
+async function syncProjectUnlocked(
+  projectPath: string,
+  entries: OutboxEntry[]
+) {
+  if (isProjectMutationSuppressed(projectPath)) {
+    scheduleSync()
+    return
+  }
+  if (await isPartialProjectQuarantined(projectPath)) {
+    return
+  }
+
   let metadata = await getOrCreateProjectMetadata(projectPath)
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(metadata.localProjectPath)
@@ -1785,6 +2047,22 @@ async function syncProject(projectPath: string, entries: OutboxEntry[]) {
   }
 }
 
+async function syncProject(projectPath: string) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  if (isProjectMutationSuppressed(normalizedProjectPath)) {
+    scheduleSync()
+    return
+  }
+
+  await withCloudSyncProjectLock(normalizedProjectPath, async () => {
+    const currentEntries = outboxEntriesForProject(
+      await getAllOutboxEntries(),
+      normalizedProjectPath
+    )
+    await syncProjectUnlocked(normalizedProjectPath, currentEntries)
+  })
+}
+
 async function syncRemoteIndex() {
   const now = Date.now()
   if (now - lastRemoteIndexSyncAt < REMOTE_INDEX_INTERVAL_MS) {
@@ -1800,12 +2078,9 @@ async function syncRemoteIndex() {
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
   )
   let metadata = (await getAllProjectMetadata()).filter(
-    (entry) => !isProjectSyncExcluded(entry)
-  )
-  const pendingProjectPaths = new Set(
-    (await getAllOutboxEntries()).map((entry) =>
-      normalizePathForSync(entry.projectPath)
-    )
+    (entry) =>
+      !isProjectSyncExcluded(entry) &&
+      !isProjectMutationSuppressed(entry.localProjectPath)
   )
   const tombstonedRemoteProjectIds = new Set(
     metadata
@@ -1842,16 +2117,45 @@ async function syncRemoteIndex() {
     }
 
     try {
-      const nextMetadata = await reconcileMissingRemoteProject(localMetadata, {
-        hasPendingLocalChanges: pendingProjectPaths.has(
-          normalizePathForSync(localMetadata.localProjectPath)
-        ),
-      })
-      if (nextMetadata) {
-        upsertMetadata(nextMetadata)
-      } else {
-        removeMetadata(localMetadata.localProjectPath)
-      }
+      await withCloudSyncProjectLock(
+        localMetadata.localProjectPath,
+        async () => {
+          if (isProjectMutationSuppressed(localMetadata.localProjectPath)) {
+            return
+          }
+          if (
+            await isPartialProjectQuarantined(localMetadata.localProjectPath)
+          ) {
+            return
+          }
+          const currentMetadata = await getProjectMetadata(
+            localMetadata.localProjectPath
+          )
+          if (
+            !currentMetadata?.remoteProjectId ||
+            currentMetadata.remoteProjectId !== localMetadata.remoteProjectId ||
+            currentMetadata.tombstone
+          ) {
+            return
+          }
+          const currentProjectEntries = outboxEntriesForProject(
+            await getAllOutboxEntries(),
+            currentMetadata.localProjectPath
+          )
+
+          const nextMetadata = await reconcileMissingRemoteProject(
+            currentMetadata,
+            {
+              hasPendingLocalChanges: currentProjectEntries.length > 0,
+            }
+          )
+          if (nextMetadata) {
+            upsertMetadata(nextMetadata)
+          } else {
+            removeMetadata(currentMetadata.localProjectPath)
+          }
+        }
+      )
     } catch (error) {
       failures.push(error)
     }
@@ -1871,7 +2175,7 @@ async function syncRemoteIndex() {
     }
 
     try {
-      const knownLocalMetadata = metadata.find(
+      let knownLocalMetadata = metadata.find(
         (entry) => entry.remoteProjectId === remoteProject.id
       )
       const knownLocalAction = getCloudSyncRemoteIndexAction({
@@ -1881,77 +2185,97 @@ async function syncRemoteIndex() {
         hasMatchingLocalProject: false,
       })
       if (knownLocalAction === 'sync-known-local' && knownLocalMetadata) {
-        const knownLocalProjectPath = projectPathInDirectory(
-          knownLocalMetadata,
-          projectDirectory
-        )
-        const knownLocalPathIsCurrent =
-          knownLocalProjectPath && (await exists(knownLocalProjectPath))
-        if (!knownLocalPathIsCurrent) {
-          await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
-          metadata = metadata.filter((entry) => entry !== knownLocalMetadata)
-          continue
-        }
-
-        const hasPendingLocalChanges = pendingProjectPaths.has(
-          normalizePathForSync(knownLocalMetadata.localProjectPath)
-        )
-        const nextLocalMetadata = hasPendingLocalChanges
-          ? knownLocalMetadata
-          : await hydrateCleanLocalProjectTitle(
-              knownLocalMetadata,
-              remoteProject.title
-            )
-        const remoteRevision = getRevision(remoteProject)
-        const hasUnqueuedLocalChanges =
-          !hasPendingLocalChanges &&
-          (await localProjectChangedFromSyncBase(nextLocalMetadata))
-        const remoteChanged = Boolean(
-          remoteRevision &&
-            nextLocalMetadata.remoteRevision &&
-            remoteRevision !== nextLocalMetadata.remoteRevision
-        )
-        const knownLocalRemoteIndexAction =
-          getCloudSyncKnownLocalRemoteIndexAction({
-            hasPendingLocalChanges,
-            remoteChanged,
-            localChangedFromSyncBase: hasUnqueuedLocalChanges,
-          })
-
-        if (knownLocalRemoteIndexAction === 'defer-pending-local-changes') {
-          const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
-          if (remoteUpdatedAt) {
-            const indexedMetadata = {
-              ...nextLocalMetadata,
-              remoteUpdatedAt,
-            }
-            await putProjectMetadata(indexedMetadata)
-            upsertMetadata(indexedMetadata)
+        const knownMetadataPath = knownLocalMetadata.localProjectPath
+        await withCloudSyncProjectLock(knownMetadataPath, async () => {
+          if (isProjectMutationSuppressed(knownMetadataPath)) {
+            return
           }
-          continue
-        }
-
-        if (knownLocalRemoteIndexAction === 'sync-known-local') {
-          await syncProject(nextLocalMetadata.localProjectPath, [])
-          const syncedMetadata = await getProjectMetadata(
-            nextLocalMetadata.localProjectPath
+          if (await isPartialProjectQuarantined(knownMetadataPath)) {
+            return
+          }
+          const currentMetadata = await getProjectMetadata(knownMetadataPath)
+          if (currentMetadata?.remoteProjectId !== remoteProject.id) {
+            return
+          }
+          knownLocalMetadata = currentMetadata
+          const currentProjectEntries = outboxEntriesForProject(
+            await getAllOutboxEntries(),
+            currentMetadata.localProjectPath
           )
-          if (syncedMetadata) {
-            upsertMetadata(syncedMetadata)
+
+          const knownLocalProjectPath = projectPathInDirectory(
+            knownLocalMetadata,
+            projectDirectory
+          )
+          const knownLocalPathIsCurrent =
+            knownLocalProjectPath && (await exists(knownLocalProjectPath))
+          if (!knownLocalPathIsCurrent) {
+            await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
+            metadata = metadata.filter((entry) => entry !== knownLocalMetadata)
+            return
           }
-        } else {
-          const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
-          const indexedMetadata = remoteUpdatedAt
-            ? {
+
+          const hasPendingLocalChanges = currentProjectEntries.length > 0
+          const nextLocalMetadata = hasPendingLocalChanges
+            ? knownLocalMetadata
+            : await hydrateCleanLocalProjectTitle(
+                knownLocalMetadata,
+                remoteProject.title
+              )
+          const remoteRevision = getRevision(remoteProject)
+          const hasUnqueuedLocalChanges =
+            !hasPendingLocalChanges &&
+            (await localProjectChangedFromSyncBase(nextLocalMetadata))
+          const remoteChanged = Boolean(
+            remoteRevision &&
+              nextLocalMetadata.remoteRevision &&
+              remoteRevision !== nextLocalMetadata.remoteRevision
+          )
+          const knownLocalRemoteIndexAction =
+            getCloudSyncKnownLocalRemoteIndexAction({
+              hasPendingLocalChanges,
+              remoteChanged,
+              localChangedFromSyncBase: hasUnqueuedLocalChanges,
+            })
+
+          if (knownLocalRemoteIndexAction === 'defer-pending-local-changes') {
+            const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
+            if (remoteUpdatedAt) {
+              const indexedMetadata = {
                 ...nextLocalMetadata,
                 remoteUpdatedAt,
               }
-            : nextLocalMetadata
-          if (indexedMetadata !== nextLocalMetadata) {
-            await putProjectMetadata(indexedMetadata)
+              await putProjectMetadata(indexedMetadata)
+              upsertMetadata(indexedMetadata)
+            }
+            return
           }
-          upsertMetadata(indexedMetadata)
-        }
+
+          if (knownLocalRemoteIndexAction === 'sync-known-local') {
+            await syncProjectUnlocked(
+              nextLocalMetadata.localProjectPath,
+              currentProjectEntries
+            )
+            const syncedMetadata = await getProjectMetadata(
+              nextLocalMetadata.localProjectPath
+            )
+            if (syncedMetadata) {
+              upsertMetadata(syncedMetadata)
+            }
+          } else {
+            const remoteUpdatedAt = getRemoteUpdatedAt(remoteProject)
+            const indexedMetadata = remoteUpdatedAt
+              ? {
+                  ...nextLocalMetadata,
+                  remoteUpdatedAt,
+                }
+              : nextLocalMetadata
+            if (indexedMetadata !== nextLocalMetadata) {
+              await putProjectMetadata(indexedMetadata)
+            }
+            upsertMetadata(indexedMetadata)
+          }
+        })
         continue
       }
 
@@ -1962,18 +2286,37 @@ async function syncRemoteIndex() {
         projectName
       )
       if (existingProjectPath) {
-        const nextMetadata = {
-          ...(await getOrCreateProjectMetadata(existingProjectPath)),
-          remoteProjectId: remoteProject.id,
-          remoteUpdatedAt: getRemoteUpdatedAt(remoteProject),
-        }
-        await putProjectMetadata(nextMetadata)
-        upsertMetadata(nextMetadata)
-        await syncProject(existingProjectPath, [])
-        const syncedMetadata = await getProjectMetadata(existingProjectPath)
-        if (syncedMetadata) {
-          upsertMetadata(syncedMetadata)
-        }
+        await withCloudSyncProjectLock(existingProjectPath, async () => {
+          if (isProjectMutationSuppressed(existingProjectPath)) {
+            return
+          }
+          if (await isPartialProjectQuarantined(existingProjectPath)) {
+            return
+          }
+          const currentProjectId = await readProjectTomlCloudProjectId(
+            existingProjectPath
+          ).catch(() => undefined)
+          if (currentProjectId !== remoteProject.id) {
+            return
+          }
+
+          const nextMetadata = {
+            ...(await getOrCreateProjectMetadata(existingProjectPath)),
+            remoteProjectId: remoteProject.id,
+            remoteUpdatedAt: getRemoteUpdatedAt(remoteProject),
+          }
+          await putProjectMetadata(nextMetadata)
+          upsertMetadata(nextMetadata)
+          const currentProjectEntries = outboxEntriesForProject(
+            await getAllOutboxEntries(),
+            existingProjectPath
+          )
+          await syncProjectUnlocked(existingProjectPath, currentProjectEntries)
+          const syncedMetadata = await getProjectMetadata(existingProjectPath)
+          if (syncedMetadata) {
+            upsertMetadata(syncedMetadata)
+          }
+        })
       }
     } catch (error) {
       failures.push(error)
@@ -2015,6 +2358,12 @@ async function enqueueExistingLocalProjectsForInitialSync() {
       continue
     }
     const projectPath = localFs.join(projectDirectory, entry)
+    if (isProjectMutationSuppressed(projectPath)) {
+      continue
+    }
+    if (await isPartialProjectQuarantined(projectPath)) {
+      continue
+    }
     const stat = await localFs.stat(projectPath)
     if (!statIsDirectory(stat)) {
       continue
@@ -2046,6 +2395,11 @@ async function runCloudSync() {
   }
 
   syncInProgress = true
+  let resolveActiveCloudSyncRun: (() => void) | undefined
+  const runCompletion = new Promise<void>((resolve) => {
+    resolveActiveCloudSyncRun = resolve
+  })
+  activeCloudSyncRunCompletion = runCompletion
   pendingStatusSyncedAt = undefined
   updateStatus({ enabled: true, state: 'syncing' })
   const scopedProjectPath = syncScopeProjectPath
@@ -2073,11 +2427,10 @@ async function runCloudSync() {
       syncScopePlan = getCloudSyncScopePlan(entries, scopedProjectPath)
     }
 
-    for (const projectPath of syncScopePlan.projectPaths) {
-      await syncProject(
-        projectPath,
-        outboxEntriesForProject(entries, projectPath)
-      )
+    for (const projectPath of syncScopePlan.projectPaths.filter(
+      (candidatePath) => !isProjectMutationSuppressed(candidatePath)
+    )) {
+      await syncProject(projectPath)
     }
 
     await refreshPendingCount()
@@ -2122,6 +2475,10 @@ async function runCloudSync() {
     scheduleSync(SYNC_RETRY_MS)
   } finally {
     syncInProgress = false
+    if (activeCloudSyncRunCompletion === runCompletion) {
+      activeCloudSyncRunCompletion = undefined
+    }
+    resolveActiveCloudSyncRun?.()
     pendingStatusSyncedAt = undefined
     if (
       cloudSyncStatus.value.pendingCount > 0 &&
@@ -2342,7 +2699,7 @@ function attachVisibilityChangeListener() {
   }
 }
 
-async function registerProjectMutation(
+async function registerProjectMutationUnlocked(
   projectPath: string,
   kind: OutboxEntry['kind'],
   targetPath: string,
@@ -2353,6 +2710,15 @@ async function registerProjectMutation(
   }
 
   const normalizedProjectPath = normalizePathForSync(projectPath)
+  if (
+    isProjectMutationSuppressed(normalizedProjectPath) ||
+    projectNameFromPath(normalizedProjectPath).startsWith('.')
+  ) {
+    return
+  }
+  if (await isPartialProjectQuarantined(normalizedProjectPath)) {
+    return
+  }
   let metadata = await getOrCreateProjectMetadata(normalizedProjectPath)
   if (isProjectSyncExcluded(metadata)) {
     await clearOutboxEntriesForProject(normalizedProjectPath)
@@ -2384,6 +2750,34 @@ async function registerProjectMutation(
   scheduleSync()
 }
 
+async function registerProjectMutation(
+  projectPath: string,
+  kind: OutboxEntry['kind'],
+  targetPath: string,
+  sourcePath?: string
+) {
+  if (!isConfiguredForCloud() || isInternalOpfsPath(targetPath)) {
+    return
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  if (
+    isProjectMutationSuppressed(normalizedProjectPath) ||
+    projectNameFromPath(normalizedProjectPath).startsWith('.')
+  ) {
+    return
+  }
+
+  await withCloudSyncProjectLock(normalizedProjectPath, async () => {
+    await registerProjectMutationUnlocked(
+      normalizedProjectPath,
+      kind,
+      targetPath,
+      sourcePath
+    )
+  })
+}
+
 async function registerProjectRename(sourcePath: string, targetPath: string) {
   if (!isConfiguredForCloud()) {
     return
@@ -2392,6 +2786,9 @@ async function registerProjectRename(sourcePath: string, targetPath: string) {
   const sourceProjectRoot = getConfiguredProjectRoot(sourcePath)
   const targetProjectRoot = getConfiguredProjectRoot(targetPath)
   if (!targetProjectRoot) {
+    return
+  }
+  if (await isPartialProjectQuarantined(targetProjectRoot)) {
     return
   }
 
@@ -2470,6 +2867,177 @@ export async function notifyCloudSyncRenameMutation(
   await registerProjectRename(sourcePath, targetPath).catch(
     markCloudMetadataFailure
   )
+}
+
+async function resetCloudSyncProjectIdentity(projectPath: string) {
+  // Desktop/unit-test contexts can duplicate projects without ever installing
+  // the browser cloud-sync persistence layer.
+  if (typeof indexedDB === 'undefined') {
+    return
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const pendingDeletionPath = normalizePathForSync(
+    localFs.join(
+      localFs.dirname(normalizedProjectPath),
+      `.zds-cloud-delete-${crypto.randomUUID()}`
+    )
+  )
+  const preservedRemoteDeletion = await resetProjectSyncIdentity(
+    normalizedProjectPath,
+    pendingDeletionPath
+  )
+  await refreshPendingCount()
+  if (preservedRemoteDeletion) {
+    scheduleSync()
+  }
+}
+
+export type CloudSyncWriteTransactionOptions = {
+  /** Discards any prior path-keyed sync identity after a successful commit. */
+  freshProjectIdentity?: boolean
+  /** Finalizes the filesystem commit after its fresh cloud identity is safe. */
+  afterFreshIdentityReset?: () => Promise<void>
+}
+
+/**
+ * Prevents cloud sync from observing a project while a multi-step filesystem
+ * operation is incomplete, then reports the finished project exactly once.
+ */
+export async function runCloudSyncWriteTransaction<T>(
+  projectPath: string,
+  operation: () => Promise<T>,
+  options: CloudSyncWriteTransactionOptions = {}
+) {
+  const { isOutermostTransaction, normalizedProjectPath, suppression } =
+    suppressProjectMutations(projectPath)
+  if (options.freshProjectIdentity) {
+    suppression.freshProjectIdentityRequested = true
+  }
+
+  const executeTransaction = async () => {
+    let result!: T
+    try {
+      if (!isOutermostTransaction) {
+        await suppression.webLockReady
+      }
+
+      result = await operation()
+      if (options.afterFreshIdentityReset) {
+        suppression.afterFreshIdentityResetCallbacks.push(
+          options.afterFreshIdentityReset
+        )
+      }
+      suppression.commitRequested = true
+    } finally {
+      resumeProjectMutations(suppression)
+    }
+    return result
+  }
+
+  if (!isOutermostTransaction) {
+    return executeTransaction()
+  }
+
+  let result!: T
+  let operationError: unknown
+  let operationFailed = false
+  let finalizationError: unknown
+  let finalizationFailed = false
+  let suppressionReleased = false
+  const releaseSuppression = () => {
+    if (suppressionReleased) {
+      return
+    }
+    suppressionReleased = true
+    releaseProjectMutationSuppression(normalizedProjectPath, suppression)
+  }
+
+  try {
+    // Suppression is installed synchronously above, so a newly scheduled local
+    // run skips this path while an already-active fallback run drains. This
+    // wait must happen before acquiring the Web Lock to preserve lock ordering.
+    if (!hasCloudSyncProjectLocks()) {
+      const inProgressSync = activeCloudSyncRunCompletion
+      if (inProgressSync) {
+        await inProgressSync
+      }
+    }
+
+    await withCloudSyncProjectLock(normalizedProjectPath, async () => {
+      suppression.resolveWebLockReady()
+      try {
+        try {
+          result = await executeTransaction()
+        } catch (error) {
+          operationFailed = true
+          operationError = error
+        }
+        await suppression.transactionsComplete
+        if (
+          suppression.commitRequested &&
+          suppression.freshProjectIdentityRequested
+        ) {
+          try {
+            await resetCloudSyncProjectIdentity(normalizedProjectPath)
+          } catch (error) {
+            suppression.freshProjectIdentityResetFailed = true
+            finalizationFailed = true
+            finalizationError = error
+          }
+
+          if (!suppression.freshProjectIdentityResetFailed) {
+            for (const finalizeFreshIdentity of suppression.afterFreshIdentityResetCallbacks) {
+              try {
+                await finalizeFreshIdentity()
+              } catch (error) {
+                suppression.freshProjectIdentityResetFailed = true
+                finalizationFailed = true
+                finalizationError = error
+                break
+              }
+            }
+          }
+        }
+
+        if (
+          suppression.commitRequested &&
+          !suppression.freshProjectIdentityResetFailed
+        ) {
+          // Publish the final cloud identity before releasing the shared lock.
+          // Local suppression must be lifted first so the unlocked registrar
+          // accepts this one intentional commit notification.
+          releaseSuppression()
+          await registerProjectMutationUnlocked(
+            normalizedProjectPath,
+            'upsert',
+            normalizedProjectPath
+          ).catch(markCloudMetadataFailure)
+        }
+      } finally {
+        releaseSuppression()
+      }
+    })
+  } finally {
+    // Covers failures from a partial/host-provided Web Locks implementation.
+    releaseSuppression()
+  }
+
+  if (finalizationFailed) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw finalizationError instanceof Error
+      ? finalizationError
+      : new Error(String(finalizationError))
+  }
+
+  if (operationFailed) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw operationError instanceof Error
+      ? operationError
+      : new Error(String(operationError))
+  }
+
+  return result
 }
 
 export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {

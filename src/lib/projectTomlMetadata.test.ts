@@ -1,6 +1,7 @@
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  prepareProjectTomlForDuplication,
   removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
@@ -38,6 +39,24 @@ describe('projectTomlMetadata', () => {
       'project-123'
     )
     expect(toml).toContain('default_file = "main.kcl"')
+  })
+
+  it('prepares duplicated projects without dropping unrelated metadata', () => {
+    const toml = prepareProjectTomlForDuplication(
+      'title = "Original"\ndefault_file = "nested/part.kcl"\n\n[custom]\nvalue = "kept"\n\n[settings.meta]\nid = "old-local-id"\n\n[cloud."zoo.dev"]\nproject_id = "old-cloud-id"\n',
+      'Original-1',
+      'new-local-id'
+    )
+
+    expect(toml).not.toBeInstanceOf(Error)
+    expect(toml).toContain('title = "Original-1"')
+    expect(toml).toContain('default_file = "nested/part.kcl"')
+    expect(toml).toContain('[custom]')
+    expect(toml).toContain('value = "kept"')
+    expect(toml).toContain('id = "new-local-id"')
+    expect(toml).not.toContain('old-local-id')
+    expect(toml).not.toContain('old-cloud-id')
+    expect(toml).not.toContain('[cloud.')
   })
 
   it('reads cloud project ids from environment-scoped metadata', () => {

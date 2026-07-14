@@ -56,6 +56,22 @@ export interface IZooDesignStudioFS {
     options?: any
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<void | undefined>
+  /**
+   * Publishes a directory into a destination that must not already exist.
+   *
+   * Implementations reserve the destination and create
+   * `inProgressMarkerName` before copying any project content. The marker is
+   * intentionally left in place after a complete copy; the caller removes it
+   * only after related transactional state is committed. Implementations must
+   * never remove the destination on failure: another process could have
+   * written to it after it was reserved.
+   */
+  publishDirectory: (
+    src: string,
+    dest: string,
+    inProgressMarkerName: string
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  ) => Promise<void | undefined>
   writeFile: (
     src: string,
     data: Uint8Array<ArrayBuffer>,

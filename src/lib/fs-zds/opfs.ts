@@ -1,6 +1,10 @@
 import path from 'path'
 import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import {
+  isAlreadyExistsError,
+  PUBLISH_DIRECTORY_DESTINATION_EXISTS,
+} from '@src/lib/fs-zds/errors'
 // The Origin Private File System. Used for browser environments.
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import OPFSWriteWorker from '@src/lib/fs-zds/opfsWriteWorker.ts?worker'
@@ -327,44 +331,107 @@ const readFile = async <T extends ReadFileOptions>(
   return Promise.reject()
 }
 
-const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
-  const parts = targetPath.split(path.sep)
+function opfsPathMutationLockName(targetPath: string) {
+  return `zds:opfs:path-mutation:${path
+    .resolve(targetPath)
+    .replaceAll('\\', '/')}`
+}
 
-  if (options?.recursive === true) {
-    let current = navigator.storage.getDirectory()
-    for (const part of parts) {
-      // Indicative we're at /
-      if (part === '') continue
-      current = (await current).getDirectoryHandle(part, { create: true })
-    }
-    return undefined
+async function runWithOPFSPathMutationLock<T>(
+  targetPath: string,
+  operation: () => Promise<T>,
+  requireCrossRendererLock = false
+) {
+  const lockManager =
+    typeof navigator !== 'undefined' ? navigator.locks : undefined
+  if (!lockManager) {
+    return requireCrossRendererLock
+      ? Promise.reject('OPFS_PATH_LOCK_UNAVAILABLE')
+      : operation()
   }
 
-  // If not recursive, try to walk to the parent first, then create.
-  const parent = parts.slice(0, -1).join(path.sep)
-  const handle = await walk(parent)
-  if (handle === undefined) return Promise.reject('ENOENT')
-  if (handle instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
-  await handle.getDirectoryHandle(parts.slice(-1)[0], { create: true })
+  let lockAcquired = false
+  try {
+    return await lockManager.request(
+      opfsPathMutationLockName(targetPath),
+      async () => {
+        lockAcquired = true
+        return operation()
+      }
+    )
+  } catch (error) {
+    if (lockAcquired || requireCrossRendererLock) {
+      return Promise.reject(error)
+    }
+    return operation()
+  }
+}
+
+async function mkdirSingle(targetPath: string, allowExisting: boolean) {
+  const existing = await walk(targetPath)
+  if (existing !== undefined) {
+    if (allowExisting && existing instanceof FileSystemDirectoryHandle) {
+      return undefined
+    }
+    return Promise.reject('EEXIST')
+  }
+
+  const parentPath = path.dirname(targetPath)
+  const parent = await walk(parentPath)
+  if (parent === undefined) return Promise.reject('ENOENT')
+  if (parent instanceof FileSystemFileHandle) return Promise.reject('EISFILE')
+  await parent.getDirectoryHandle(path.basename(targetPath), { create: true })
   return undefined
 }
 
-const rm = async (targetPath: string, options?: { recursive: boolean }) => {
+const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
+  if (!options?.recursive) {
+    return runWithOPFSPathMutationLock(targetPath, () =>
+      mkdirSingle(targetPath, false)
+    )
+  }
+
+  const resolvedTargetPath = path.resolve(targetPath)
+  const relativeParts = resolvedTargetPath
+    .slice(path.parse(resolvedTargetPath).root.length)
+    .split(path.sep)
+    .filter(Boolean)
+  let currentPath = path.parse(resolvedTargetPath).root
+  for (const part of relativeParts) {
+    currentPath = path.resolve(currentPath, part)
+    await runWithOPFSPathMutationLock(currentPath, () =>
+      mkdirSingle(currentPath, true)
+    )
+  }
+  return undefined
+}
+
+const rm = async (
+  targetPath: string,
+  options?: { recursive: boolean; force?: boolean }
+) => {
   const dirName = path.dirname(targetPath)
   const baseName = path.basename(targetPath)
   const handle = await walk(dirName)
-  if (handle === undefined) return Promise.reject('ENOENT')
+  if (handle === undefined) {
+    return options?.force ? undefined : Promise.reject('ENOENT')
+  }
   if (handle instanceof FileSystemFileHandle) return
   let isFile = false
   try {
     await handle.getFileHandle(baseName)
     isFile = true
-  } catch (e: unknown) {
-    console.log(e)
+  } catch {}
+  try {
+    return await handle.removeEntry(baseName, {
+      recursive: (options?.recursive ?? false) && !isFile,
+    })
+  } catch (error) {
+    if (options?.force && (await walk(targetPath)) === undefined) {
+      return undefined
+    }
+    return Promise.reject(error)
   }
-  return handle.removeEntry(baseName, {
-    recursive: (options?.recursive ?? false) && !isFile,
-  })
 }
 
 const writeFile = async (
@@ -458,18 +525,22 @@ const rename = async (
   sourcePath: string,
   targetPath: string
 ): Promise<undefined> => {
-  const handle = await walk(sourcePath)
-  if (handle === undefined) return Promise.reject('ENOENT')
+  const operation = async (): Promise<undefined> => {
+    const handle = await walk(sourcePath)
+    if (handle === undefined) return Promise.reject('ENOENT')
+    if ((await walk(targetPath)) !== undefined) return Promise.reject('EEXIST')
 
-  if (handle instanceof FileSystemFileHandle) {
-    await cp(sourcePath, targetPath)
-    await rm(sourcePath)
-  } else {
-    await mkdir(targetPath)
-    await cp(sourcePath, targetPath)
-    await rm(sourcePath, { recursive: true })
+    if (handle instanceof FileSystemFileHandle) {
+      await cp(sourcePath, targetPath)
+      await rm(sourcePath)
+    } else {
+      await mkdirSingle(targetPath, false)
+      await cp(sourcePath, targetPath)
+      await rm(sourcePath, { recursive: true })
+    }
+    return undefined
   }
-  return undefined
+  return runWithOPFSPathMutationLock(targetPath, operation, true)
 }
 
 // OPFS takes a very minimal approach to its API surface via primitives.
@@ -492,7 +563,7 @@ const cp = async (
     }
   } else {
     await scan(sourcePath, async (cwd, handle) => {
-      const relativePathToSourcePath = path.basename(cwd, sourcePath)
+      const relativePathToSourcePath = path.relative(sourcePath, cwd)
       const absolutePath = path.resolve(
         targetPath,
         relativePathToSourcePath,
@@ -510,6 +581,66 @@ const cp = async (
   return undefined
 }
 
+const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
+  sourcePath,
+  targetPath,
+  inProgressMarkerName
+) => {
+  const operation = async () => {
+    // The destination path lock is shared with mkdir. Creating the target
+    // while holding it gives cooperating renderers a single no-clobber
+    // reservation for the whole publication.
+    try {
+      await mkdirSingle(targetPath, false)
+    } catch (error) {
+      return Promise.reject(
+        isAlreadyExistsError(error)
+          ? PUBLISH_DIRECTORY_DESTINATION_EXISTS
+          : error
+      )
+    }
+
+    const markerPath = path.resolve(targetPath, inProgressMarkerName)
+    try {
+      await writeFile(markerPath, new Uint8Array())
+    } catch (error) {
+      // Never delete by pathname after reservation: another renderer may have
+      // replaced it. Copying has not started, so it is empty unless a marker
+      // was partially created or another renderer populated it.
+      return Promise.reject(error)
+    }
+
+    for (const entryName of await readdir(sourcePath)) {
+      // OPFS directory metadata is regenerated for the new target. More
+      // importantly, never copy a stale publication marker from the source.
+      if (entryName === inProgressMarkerName || entryName === META_FILE) {
+        continue
+      }
+
+      const sourceEntryPath = path.resolve(sourcePath, entryName)
+      const targetEntryPath = path.resolve(targetPath, entryName)
+      if ((await walk(targetEntryPath)) !== undefined) {
+        return Promise.reject('EEXIST')
+      }
+
+      const sourceEntry = await walk(sourceEntryPath)
+      if (sourceEntry === undefined) {
+        return Promise.reject('ENOENT')
+      }
+      if (sourceEntry instanceof FileSystemDirectoryHandle) {
+        await mkdirSingle(targetEntryPath, false)
+      }
+      await cp(sourceEntryPath, targetEntryPath)
+    }
+
+    return undefined
+  }
+
+  // Without Web Locks, OPFS has no atomic create-if-absent operation exposed
+  // across renderers. Refuse publication instead of risking a merge.
+  return runWithOPFSPathMutationLock(targetPath, operation, true)
+}
+
 const impl: IZooDesignStudioFS = {
   resolve: path.resolve.bind(path),
   join: path.join.bind(path),
@@ -523,6 +654,7 @@ const impl: IZooDesignStudioFS = {
   cp,
   readFile,
   rename,
+  publishDirectory,
   writeFile,
   readdir,
   stat,

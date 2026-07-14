@@ -4,6 +4,7 @@ import type {
   OutboxEntry,
   ProjectMetadata,
 } from '@src/lib/cloudSync/types'
+import { webSafePathSplit } from '@src/lib/pathUtils'
 
 const DB_NAME = 'zds-opfs-cloud-sync'
 const DB_VERSION = 1
@@ -176,6 +177,107 @@ export async function clearOutboxEntriesForProject(projectPath: string) {
     transaction.oncomplete = () => {
       db.close()
       resolve()
+    }
+  })
+}
+
+/**
+ * Atomically retires every path-keyed sync record before a new local project
+ * is published at the same path. A queued remote deletion is moved to a
+ * hidden synthetic identity so replacing the local path cannot cancel it.
+ */
+export async function resetProjectSyncIdentity(
+  projectPath: string,
+  pendingDeletionProjectPath: string
+) {
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const normalizedPendingDeletionPath = normalizePathForSync(
+    pendingDeletionProjectPath
+  )
+  const db = await openSyncDb()
+
+  return new Promise<boolean>((resolve, reject) => {
+    const transaction = db.transaction(
+      [PROJECTS_STORE, OUTBOX_STORE],
+      'readwrite'
+    )
+    const projectsStore = transaction.objectStore(PROJECTS_STORE)
+    const outboxStore = transaction.objectStore(OUTBOX_STORE)
+    const metadataRequest = projectsStore.get(normalizedProjectPath)
+    const outboxRequest = outboxStore.getAll()
+    let metadata: ProjectMetadata | undefined
+    let outboxEntries: OutboxEntry[] | undefined
+    let metadataLoaded = false
+    let preservedRemoteDeletion = false
+    let updatesApplied = false
+
+    const applyUpdates = () => {
+      if (updatesApplied || !metadataLoaded || !outboxEntries) {
+        return
+      }
+      updatesApplied = true
+
+      const projectOutboxEntries = outboxEntries.filter(
+        (entry) =>
+          normalizePathForSync(entry.projectPath) === normalizedProjectPath
+      )
+      const latestEntry = projectOutboxEntries
+        .toSorted((left, right) => (left.id ?? 0) - (right.id ?? 0))
+        .at(-1)
+      preservedRemoteDeletion = Boolean(
+        metadata?.remoteProjectId &&
+          (metadata.tombstone || latestEntry?.kind === 'delete')
+      )
+
+      if (metadata?.remoteProjectId && preservedRemoteDeletion) {
+        projectsStore.put({
+          schemaVersion: 1,
+          localProjectPath: normalizedPendingDeletionPath,
+          projectName:
+            webSafePathSplit(normalizedPendingDeletionPath).at(-1) ?? '',
+          remoteProjectId: metadata.remoteProjectId,
+          remoteRevision: metadata.remoteRevision,
+          remoteUpdatedAt: metadata.remoteUpdatedAt,
+          tombstone: true,
+        } satisfies ProjectMetadata)
+        outboxStore.add({
+          projectPath: normalizedPendingDeletionPath,
+          kind: 'delete',
+          targetPath: normalizedPendingDeletionPath,
+          createdAt: latestEntry?.createdAt ?? new Date().toISOString(),
+        } satisfies Omit<OutboxEntry, 'id'>)
+      }
+
+      for (const entry of projectOutboxEntries) {
+        if (entry.id !== undefined) {
+          outboxStore.delete(entry.id)
+        }
+      }
+      projectsStore.delete(normalizedProjectPath)
+    }
+
+    metadataRequest.onsuccess = () => {
+      metadata = metadataRequest.result as ProjectMetadata | undefined
+      metadataLoaded = true
+      applyUpdates()
+    }
+    outboxRequest.onsuccess = () => {
+      outboxEntries = outboxRequest.result as OutboxEntry[]
+      applyUpdates()
+    }
+    metadataRequest.onerror = () => reject(metadataRequest.error)
+    outboxRequest.onerror = () => reject(outboxRequest.error)
+    transaction.onerror = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.onabort = () => {
+      db.close()
+      reject(transaction.error)
+    }
+    transaction.oncomplete = () => {
+      db.close()
+      resolve(preservedRemoteDeletion)
     }
   })
 }

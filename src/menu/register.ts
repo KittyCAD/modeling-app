@@ -41,6 +41,18 @@ export function modelingMenuCallbackMostActions({
           },
         },
       })
+    } else if (data.menuLabel === 'File.Duplicate project') {
+      const currentProject = settingsActor.getSnapshot().context.currentProject
+      commandBarActor.send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Duplicate project',
+          argDefaultValues: {
+            name: currentProject?.name,
+          },
+        },
+      })
     } else if (data.menuLabel === 'File.Open project') {
       commandBarActor.send({
         type: 'Find and select command',

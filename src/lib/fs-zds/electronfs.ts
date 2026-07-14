@@ -28,6 +28,7 @@ const impl: IZooDesignStudioFS =
         cp: window.electron.cp,
         readFile: window.electron.readFile,
         rename: window.electron.rename,
+        publishDirectory: window.electron.publishDirectory,
         writeFile: window.electron.writeFile,
         readdir: window.electron.readdir,
         stat: window.electron.stat,

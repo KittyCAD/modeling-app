@@ -268,6 +268,11 @@ test.describe(
         await nativeMenu.click('File.Create project')
         await cmdBar.expectCommandName('Create project')
       })
+      await test.step('Modeling.File.Duplicate project', async () => {
+        await page.waitForTimeout(250)
+        await nativeMenu.click('File.Duplicate project')
+        await cmdBar.expectCommandName('Duplicate project')
+      })
       await test.step('Modeling.File.Open project', async () => {
         await page.waitForTimeout(250)
         await nativeMenu.click('File.Open project')

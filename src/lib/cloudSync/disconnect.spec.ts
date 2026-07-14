@@ -1,17 +1,26 @@
 import 'fake-indexeddb/auto'
 import {
   cloudSyncRemoteProjects,
+  cloudSyncStatus,
   configureCloudSyncEngine,
   configureCloudSyncLocalFileSystem,
   disconnectCloudSyncProject,
   getCloudSyncProjectMetadata,
+  installCloudSyncFileSystemObserver,
+  notifyCloudSyncWriteLikeMutation,
+  runCloudSyncWriteTransaction,
 } from '@src/lib/cloudSync'
+import { INTERNAL_OPFS_META_FILE } from '@src/lib/cloudSync/paths'
 import {
   appendOutboxEntry,
   getAllOutboxEntries,
+  getAllProjectMetadata,
   putProjectMetadata,
 } from '@src/lib/cloudSync/syncDb'
-import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
+import {
+  DUPLICATE_IN_PROGRESS_FILE_NAME,
+  PROJECT_SETTINGS_FILE_NAME,
+} from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -197,6 +206,7 @@ function createTestFs(files: Map<string, string>) {
       return new TextEncoder().encode(contents)
     },
     rename: async () => undefined,
+    publishDirectory: async () => undefined,
     writeFile: async (path: string, data: Uint8Array<ArrayBuffer>) => {
       files.set(normalizePath(path), new TextDecoder().decode(data))
     },
@@ -365,6 +375,910 @@ describe('disconnectCloudSyncProject', () => {
     })
     expect(files.get(projectTomlPath)).toContain(
       `project_id = "${remoteProjectId}"`
+    )
+  })
+
+  it('registers a duplicated project only after its cloud metadata is detached', async () => {
+    const duplicateProjectPath = '/documents/Projects/bracket-copy'
+    const duplicateProjectTomlPath = `${duplicateProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`
+    const stagingProjectPath = '/documents/Projects/.zds-duplicate-staging'
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({
+      enabled: true,
+      syncExistingLocalProjects: false,
+    })
+
+    await runCloudSyncWriteTransaction(duplicateProjectPath, async () => {
+      files.set(
+        duplicateProjectTomlPath,
+        `title = "Bracket copy"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+      )
+      files.set(
+        `${stagingProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+        files.get(duplicateProjectTomlPath) ?? ''
+      )
+
+      await notifyCloudSyncWriteLikeMutation(stagingProjectPath)
+      await notifyCloudSyncWriteLikeMutation(duplicateProjectPath)
+
+      expect(
+        await getCloudSyncProjectMetadata(stagingProjectPath)
+      ).toBeUndefined()
+      expect(
+        await getCloudSyncProjectMetadata(duplicateProjectPath)
+      ).toBeUndefined()
+
+      files.set(duplicateProjectTomlPath, 'title = "Bracket copy"\n')
+    })
+
+    const duplicateMetadata =
+      await getCloudSyncProjectMetadata(duplicateProjectPath)
+    expect(duplicateMetadata).toMatchObject({
+      localProjectPath: duplicateProjectPath,
+    })
+    expect(duplicateMetadata).not.toHaveProperty('remoteProjectId')
+    expect(await getAllOutboxEntries()).toEqual([])
+  })
+
+  it('does not register an incomplete duplicate when its transaction fails', async () => {
+    const duplicateProjectPath = '/documents/Projects/failed-copy'
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+
+    await expect(
+      runCloudSyncWriteTransaction(duplicateProjectPath, async () => {
+        files.set(
+          `${duplicateProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+          `title = "Failed copy"\n\n[cloud."dev.zoo.dev"]\nproject_id = "${remoteProjectId}"\n`
+        )
+        await notifyCloudSyncWriteLikeMutation(duplicateProjectPath)
+        return Promise.reject(new Error('copy failed'))
+      })
+    ).rejects.toThrow('copy failed')
+
+    expect(
+      await getCloudSyncProjectMetadata(duplicateProjectPath)
+    ).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
+  })
+
+  it('does not discover or register a marker-bearing partial duplicate', async () => {
+    const files = new Map([
+      [projectTomlPath, 'title = "Partial copy"\n'],
+      [`${projectPath}/${DUPLICATE_IN_PROGRESS_FILE_NAME}`, ''],
+    ])
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    try {
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: true,
+      })
+      vi.advanceTimersByTime(0)
+      let stopWatchingStatus: () => void = () => undefined
+      const runFinished = new Promise<void>((resolve) => {
+        stopWatchingStatus = cloudSyncStatus.subscribe((status) => {
+          if (status.state === 'idle') {
+            stopWatchingStatus()
+            resolve()
+          }
+        })
+      })
+      await runFinished
+
+      await notifyCloudSyncWriteLikeMutation(projectTomlPath)
+
+      expect(await getCloudSyncProjectMetadata(projectPath)).toBeUndefined()
+      expect(await getAllOutboxEntries()).toEqual([])
+      expect(cloudSyncStatus.value.pendingCount).toBe(0)
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('quarantines a marker created between marker stat and directory read', async () => {
+    const markerPath = `${projectPath}/${DUPLICATE_IN_PROGRESS_FILE_NAME}`
+    const files = new Map([[projectTomlPath, 'title = "Partial copy"\n']])
+    const testFs = createTestFs(files)
+    const stat = testFs.stat
+    const readdir = testFs.readdir
+    let markerStatMissed = false
+    testFs.stat = async (targetPath: string, options?: unknown) => {
+      if (normalizePath(targetPath) === markerPath) {
+        expect(files.has(markerPath)).toBe(false)
+        markerStatMissed = true
+      }
+      return stat(targetPath, options)
+    }
+    testFs.readdir = async (targetPath: string, options?: unknown) => {
+      if (normalizePath(targetPath) === projectPath) {
+        expect(markerStatMissed).toBe(true)
+        files.set(markerPath, '')
+      }
+      return readdir(targetPath, options)
+    }
+    configureCloudSyncLocalFileSystem(testFs)
+
+    await notifyCloudSyncWriteLikeMutation(projectTomlPath)
+
+    expect(markerStatMissed).toBe(true)
+    expect(await getCloudSyncProjectMetadata(projectPath)).toBeUndefined()
+    expect(await getAllOutboxEntries()).toEqual([])
+  })
+
+  it('does not consume queued work for a crashed marker-bearing duplicate', async () => {
+    const markerPath = `${projectPath}/${DUPLICATE_IN_PROGRESS_FILE_NAME}`
+    const files = new Map([
+      [projectTomlPath, 'title = "Partial copy"\n'],
+      [markerPath, ''],
+    ])
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    try {
+      await putProjectMetadata({
+        schemaVersion: 1,
+        localProjectPath: projectPath,
+        projectName: 'bracket',
+        remoteProjectId,
+        remoteRevision,
+        baseManifest: { files: {} },
+      })
+      await appendOutboxEntry({
+        projectPath,
+        kind: 'delete',
+        targetPath: projectPath,
+        createdAt: '2026-07-08T12:00:00.000Z',
+      })
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: false,
+      })
+      vi.advanceTimersByTime(0)
+      let stopWatchingStatus: () => void = () => undefined
+      const runFinished = new Promise<void>((resolve) => {
+        stopWatchingStatus = cloudSyncStatus.subscribe((status) => {
+          if (status.state === 'idle') {
+            stopWatchingStatus()
+            resolve()
+          }
+        })
+      })
+      await runFinished
+
+      expect(await getCloudSyncProjectMetadata(projectPath)).toMatchObject({
+        remoteProjectId,
+        remoteRevision,
+        baseManifest: { files: {} },
+      })
+      expect(await getAllOutboxEntries()).toEqual([
+        expect.objectContaining({
+          projectPath,
+          kind: 'delete',
+        }),
+      ])
+      expect(cloudSyncStatus.value.pendingCount).toBe(0)
+      expect(
+        fetchMock.mock.calls.some(
+          ([input, init]) =>
+            getFetchMethod(input, init) === 'DELETE' &&
+            getFetchUrl(input).endsWith(`/${remoteProjectId}`)
+        )
+      ).toBe(false)
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('quarantines a markerless empty or OPFS-internal-only publish artifact', async () => {
+    const files = new Map([
+      [
+        `${projectPath}/${INTERNAL_OPFS_META_FILE}`,
+        'internal OPFS bookkeeping',
+      ],
+    ])
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    const runScheduledSync = async () => {
+      vi.advanceTimersByTime(0)
+      let stopWatchingStatus: () => void = () => undefined
+      await new Promise<void>((resolve) => {
+        stopWatchingStatus = cloudSyncStatus.subscribe((status) => {
+          if (status.state === 'idle') {
+            stopWatchingStatus()
+            resolve()
+          }
+        })
+      })
+    }
+
+    try {
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: true,
+      })
+      await runScheduledSync()
+      await notifyCloudSyncWriteLikeMutation(projectPath)
+
+      expect(await getCloudSyncProjectMetadata(projectPath)).toBeUndefined()
+      expect(await getAllOutboxEntries()).toEqual([])
+
+      configureCloudSyncEngine({ enabled: false })
+      await putProjectMetadata({
+        schemaVersion: 1,
+        localProjectPath: projectPath,
+        projectName: 'bracket',
+        remoteProjectId,
+        remoteRevision,
+      })
+      await appendOutboxEntry({
+        projectPath,
+        kind: 'delete',
+        targetPath: projectPath,
+        createdAt: '2026-07-08T12:00:00.000Z',
+      })
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: false,
+      })
+      await runScheduledSync()
+
+      expect(await getCloudSyncProjectMetadata(projectPath)).toMatchObject({
+        remoteProjectId,
+        remoteRevision,
+      })
+      expect(await getAllOutboxEntries()).toEqual([
+        expect.objectContaining({
+          projectPath,
+          kind: 'delete',
+        }),
+      ])
+      expect(cloudSyncStatus.value.pendingCount).toBe(0)
+      expect(
+        fetchMock.mock.calls.some(
+          ([input, init]) =>
+            getFetchMethod(input, init) === 'DELETE' &&
+            getFetchUrl(input).endsWith(`/${remoteProjectId}`)
+        )
+      ).toBe(false)
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('atomically gives a duplicate a fresh identity while preserving a queued remote deletion', async () => {
+    const duplicateProjectPath = '/documents/Projects/bracket-copy'
+    const duplicateMarkerPath = `${duplicateProjectPath}/${DUPLICATE_IN_PROGRESS_FILE_NAME}`
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    try {
+      await putProjectMetadata({
+        schemaVersion: 1,
+        localProjectPath: duplicateProjectPath,
+        projectName: 'bracket-copy',
+        remoteProjectId,
+        remoteRevision,
+        remoteUpdatedAt: '2026-07-08T12:00:00.000Z',
+        baseManifest: { files: {} },
+        tombstone: true,
+        conflict: {
+          remoteRevision,
+          conflictProjectPath: '/documents/Projects/stale-conflict',
+          createdAt: '2026-07-08T12:00:00.000Z',
+        },
+        syncExcluded: {
+          reason: 'user-disconnected',
+          remoteProjectId,
+          createdAt: '2026-07-08T12:00:00.000Z',
+        },
+      })
+      await appendOutboxEntry({
+        projectPath: duplicateProjectPath,
+        kind: 'delete',
+        targetPath: duplicateProjectPath,
+        createdAt: '2026-07-08T12:00:00.000Z',
+      })
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: false,
+      })
+
+      await runCloudSyncWriteTransaction(
+        duplicateProjectPath,
+        async () => {
+          files.set(duplicateMarkerPath, '')
+          files.set(
+            `${duplicateProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+            'title = "Bracket copy"\n'
+          )
+        },
+        {
+          freshProjectIdentity: true,
+          afterFreshIdentityReset: async () => {
+            expect(files.has(duplicateMarkerPath)).toBe(true)
+            expect(
+              await getCloudSyncProjectMetadata(duplicateProjectPath)
+            ).toBeUndefined()
+            expect(
+              (await getAllOutboxEntries()).filter(
+                (entry) => entry.projectPath === duplicateProjectPath
+              )
+            ).toEqual([])
+            files.delete(duplicateMarkerPath)
+          },
+        }
+      )
+
+      expect(files.has(duplicateMarkerPath)).toBe(false)
+      expect(await getCloudSyncProjectMetadata(duplicateProjectPath)).toEqual({
+        schemaVersion: 1,
+        localProjectPath: duplicateProjectPath,
+        projectName: 'bracket-copy',
+      })
+      const retiredMetadata = (await getAllProjectMetadata()).find(
+        (metadata) => metadata.localProjectPath !== duplicateProjectPath
+      )
+      expect(retiredMetadata).toMatchObject({
+        localProjectPath: expect.stringContaining('/.zds-cloud-delete-'),
+        remoteProjectId,
+        remoteRevision,
+        tombstone: true,
+      })
+      expect(retiredMetadata).not.toHaveProperty('baseManifest')
+      expect(retiredMetadata).not.toHaveProperty('conflict')
+      expect(retiredMetadata).not.toHaveProperty('syncExcluded')
+      expect(await getAllOutboxEntries()).toEqual([
+        expect.objectContaining({
+          projectPath: retiredMetadata?.localProjectPath,
+          kind: 'delete',
+          targetPath: retiredMetadata?.localProjectPath,
+        }),
+      ])
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('keeps queued work fenced while a write transaction is active', async () => {
+    const files = new Map([[projectTomlPath, 'title = "Bracket"\n']])
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    try {
+      await putProjectMetadata({
+        schemaVersion: 1,
+        localProjectPath: projectPath,
+        projectName: 'bracket',
+      })
+      await appendOutboxEntry({
+        projectPath,
+        kind: 'upsert',
+        targetPath: projectTomlPath,
+        createdAt: '2026-07-08T12:00:00.000Z',
+      })
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: true,
+      })
+
+      let releaseOperation: (() => void) | undefined
+      let markOperationStarted: (() => void) | undefined
+      const operationStarted = new Promise<void>((resolve) => {
+        markOperationStarted = resolve
+      })
+      const operationGate = new Promise<void>((resolve) => {
+        releaseOperation = resolve
+      })
+      const transaction = runCloudSyncWriteTransaction(
+        projectPath,
+        async () => {
+          markOperationStarted?.()
+          await operationGate
+        }
+      )
+      await operationStarted
+
+      await vi.advanceTimersByTimeAsync(0)
+
+      expect(await getAllOutboxEntries()).toHaveLength(1)
+      expect(
+        fetchMock.mock.calls.some(
+          ([input, init]) => getFetchMethod(input, init) !== 'GET'
+        )
+      ).toBe(false)
+
+      releaseOperation?.()
+      await transaction
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('emits one final commit for overlapping successful transactions', async () => {
+    const duplicateProjectPath = '/documents/Projects/overlap-copy'
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    try {
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: true,
+      })
+      let releaseFirst: (() => void) | undefined
+      let markFirstStarted: (() => void) | undefined
+      const firstStarted = new Promise<void>((resolve) => {
+        markFirstStarted = resolve
+      })
+      const firstGate = new Promise<void>((resolve) => {
+        releaseFirst = resolve
+      })
+      const first = runCloudSyncWriteTransaction(
+        duplicateProjectPath,
+        async () => {
+          markFirstStarted?.()
+          await firstGate
+          files.set(
+            `${duplicateProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+            'title = "Overlap copy"\n'
+          )
+        },
+        { freshProjectIdentity: true }
+      )
+      await firstStarted
+
+      await runCloudSyncWriteTransaction(duplicateProjectPath, async () => {
+        files.set(
+          `${duplicateProjectPath}/main.kcl`,
+          'cube = startSketchOn(XY)'
+        )
+        await notifyCloudSyncWriteLikeMutation(duplicateProjectPath)
+      })
+
+      expect(
+        await getCloudSyncProjectMetadata(duplicateProjectPath)
+      ).toBeUndefined()
+      expect(await getAllOutboxEntries()).toEqual([])
+
+      releaseFirst?.()
+      await first
+
+      expect(await getAllOutboxEntries()).toEqual([
+        expect.objectContaining({
+          projectPath: duplicateProjectPath,
+          kind: 'upsert',
+        }),
+      ])
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('does not lose a nested commit when the outer operation fails', async () => {
+    const duplicateProjectPath = '/documents/Projects/nested-copy'
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    try {
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: true,
+      })
+
+      await expect(
+        runCloudSyncWriteTransaction(duplicateProjectPath, async () => {
+          await runCloudSyncWriteTransaction(duplicateProjectPath, async () => {
+            files.set(
+              `${duplicateProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+              'title = "Nested copy"\n'
+            )
+          })
+          return Promise.reject(new Error('outer operation failed'))
+        })
+      ).rejects.toThrow('outer operation failed')
+
+      expect(await getAllOutboxEntries()).toEqual([
+        expect.objectContaining({
+          projectPath: duplicateProjectPath,
+          kind: 'upsert',
+        }),
+      ])
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('preserves a committed write when fresh identity finalization fails', async () => {
+    const failedProjectPath = '/documents/Projects/rollback-copy'
+    const markerPath = `${failedProjectPath}/${DUPLICATE_IN_PROGRESS_FILE_NAME}`
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    const testIndexedDb = globalThis.indexedDB
+    let published = false
+    const afterFreshIdentityReset = vi.fn(async () => {
+      files.delete(markerPath)
+    })
+    vi.stubGlobal('indexedDB', {})
+
+    try {
+      await expect(
+        runCloudSyncWriteTransaction(
+          failedProjectPath,
+          async () => {
+            files.set(markerPath, '')
+            published = true
+            return 'published'
+          },
+          {
+            freshProjectIdentity: true,
+            afterFreshIdentityReset,
+          }
+        )
+      ).rejects.toThrow()
+      expect(published).toBe(true)
+      expect(afterFreshIdentityReset).not.toHaveBeenCalled()
+      expect(files.has(markerPath)).toBe(true)
+    } finally {
+      vi.stubGlobal('indexedDB', testIndexedDb)
+    }
+  })
+
+  it('leaves the marker quarantined when filesystem finalization fails', async () => {
+    const failedProjectPath = '/documents/Projects/finalizer-failed-copy'
+    const markerPath = `${failedProjectPath}/${DUPLICATE_IN_PROGRESS_FILE_NAME}`
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    try {
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: true,
+      })
+      await expect(
+        runCloudSyncWriteTransaction(
+          failedProjectPath,
+          async () => {
+            files.set(markerPath, '')
+            files.set(
+              `${failedProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+              'title = "Failed finalizer copy"\n'
+            )
+          },
+          {
+            freshProjectIdentity: true,
+            afterFreshIdentityReset: async () =>
+              Promise.reject(new Error('marker removal failed')),
+          }
+        )
+      ).rejects.toThrow('marker removal failed')
+
+      expect(files.has(markerPath)).toBe(true)
+      expect(
+        await getCloudSyncProjectMetadata(failedProjectPath)
+      ).toBeUndefined()
+      expect(
+        (await getAllOutboxEntries()).filter(
+          (entry) => entry.projectPath === failedProjectPath
+        )
+      ).toEqual([])
+    } finally {
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+    }
+  })
+
+  it('reloads queued work after the project lock before syncing a fresh identity', async () => {
+    const duplicateProjectPath = '/documents/Projects/reused-copy'
+    const files = new Map([[projectTomlPath, 'title = "Bracket"\n']])
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    const lockTails = new Map<string, Promise<void>>()
+    const requestLock = async <T>(
+      _name: string,
+      callback: () => Promise<T>
+    ) => {
+      const previous = lockTails.get(_name) ?? Promise.resolve()
+      let releaseCurrent: (() => void) | undefined
+      const current = new Promise<void>((resolve) => {
+        releaseCurrent = resolve
+      })
+      lockTails.set(_name, current)
+      await previous
+      try {
+        return await callback()
+      } finally {
+        releaseCurrent?.()
+        if (lockTails.get(_name) === current) {
+          lockTails.delete(_name)
+        }
+      }
+    }
+    const originalLocks = Object.getOwnPropertyDescriptor(
+      globalThis.navigator,
+      'locks'
+    )
+    Object.defineProperty(globalThis.navigator, 'locks', {
+      configurable: true,
+      value: { request: requestLock },
+    })
+
+    let releaseBlockerUpload: (() => void) | undefined
+    let markBlockerUploadStarted: (() => void) | undefined
+    const blockerUploadStarted = new Promise<void>((resolve) => {
+      markBlockerUploadStarted = resolve
+    })
+    const blockerUploadGate = new Promise<void>((resolve) => {
+      releaseBlockerUpload = resolve
+    })
+
+    try {
+      fetchMock.mockImplementation(async (input, init) => {
+        const url = getFetchUrl(input)
+        const method = getFetchMethod(input, init)
+        if (url === 'https://example.test/user/projects' && method === 'GET') {
+          return new Response(JSON.stringify([]), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          })
+        }
+        if (
+          url === 'https://example.test/user/projects/blocker-old' &&
+          method === 'DELETE'
+        ) {
+          markBlockerUploadStarted?.()
+          await blockerUploadGate
+          return new Response(null, { status: 204 })
+        }
+        return new Response(null, { status: 204 })
+      })
+
+      await putProjectMetadata({
+        schemaVersion: 1,
+        localProjectPath: projectPath,
+        projectName: 'bracket',
+        remoteProjectId: 'blocker-old',
+        tombstone: true,
+      })
+      await appendOutboxEntry({
+        projectPath,
+        kind: 'delete',
+        targetPath: projectPath,
+        createdAt: '2026-07-08T12:00:00.000Z',
+      })
+      await putProjectMetadata({
+        schemaVersion: 1,
+        localProjectPath: duplicateProjectPath,
+        projectName: 'reused-copy',
+        remoteProjectId,
+        tombstone: true,
+      })
+      await appendOutboxEntry({
+        projectPath: duplicateProjectPath,
+        kind: 'delete',
+        targetPath: duplicateProjectPath,
+        createdAt: '2026-07-08T12:00:00.000Z',
+      })
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: false,
+      })
+
+      vi.advanceTimersByTime(0)
+      await blockerUploadStarted
+
+      await runCloudSyncWriteTransaction(
+        duplicateProjectPath,
+        async () => {
+          files.set(
+            `${duplicateProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+            'title = "Reused copy"\n'
+          )
+        },
+        { freshProjectIdentity: true }
+      )
+
+      let stopWatchingStatus: () => void = () => undefined
+      const runFinished = new Promise<void>((resolve) => {
+        stopWatchingStatus = cloudSyncStatus.subscribe((status) => {
+          if (status.state === 'idle') {
+            stopWatchingStatus()
+            resolve()
+          }
+        })
+      })
+      releaseBlockerUpload?.()
+      await runFinished
+
+      expect(await getCloudSyncProjectMetadata(duplicateProjectPath)).toEqual({
+        schemaVersion: 1,
+        localProjectPath: duplicateProjectPath,
+        projectName: 'reused-copy',
+      })
+      expect(
+        (await getAllOutboxEntries()).filter(
+          (entry) => entry.projectPath === duplicateProjectPath
+        )
+      ).toEqual([])
+      expect(
+        fetchMock.mock.calls.some(
+          ([input, init]) =>
+            getFetchMethod(input, init) === 'DELETE' &&
+            getFetchUrl(input).endsWith(`/${remoteProjectId}`)
+        )
+      ).toBe(false)
+    } finally {
+      releaseBlockerUpload?.()
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+      if (originalLocks) {
+        Object.defineProperty(globalThis.navigator, 'locks', originalLocks)
+      } else {
+        Reflect.deleteProperty(globalThis.navigator, 'locks')
+      }
+    }
+  })
+
+  it('supports fresh transactions when cloud persistence is unavailable', async () => {
+    configureCloudSyncEngine({ enabled: false })
+    const testIndexedDb = globalThis.indexedDB
+    vi.stubGlobal('indexedDB', undefined)
+
+    try {
+      await expect(
+        runCloudSyncWriteTransaction(
+          '/documents/Projects/local-copy',
+          async () => 'copied',
+          { freshProjectIdentity: true }
+        )
+      ).resolves.toBe('copied')
+    } finally {
+      vi.stubGlobal('indexedDB', testIndexedDb)
+    }
+  })
+
+  it('publishes the fresh identity before releasing the shared project lock', async () => {
+    const lockedProjectPath = '/documents/Projects/locked-copy'
+    const files = new Map<string, string>()
+    configureCloudSyncLocalFileSystem(createTestFs(files))
+    configureCloudSyncEngine({ enabled: false })
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+
+    const lockTails = new Map<string, Promise<void>>()
+    const request = async <T>(name: string, callback: () => Promise<T>) => {
+      const previous = lockTails.get(name) ?? Promise.resolve()
+      let releaseCurrent: (() => void) | undefined
+      const current = new Promise<void>((resolve) => {
+        releaseCurrent = resolve
+      })
+      lockTails.set(name, current)
+      await previous
+      try {
+        return await callback()
+      } finally {
+        releaseCurrent?.()
+        if (lockTails.get(name) === current) {
+          lockTails.delete(name)
+        }
+      }
+    }
+    const originalLocks = Object.getOwnPropertyDescriptor(
+      globalThis.navigator,
+      'locks'
+    )
+    Object.defineProperty(globalThis.navigator, 'locks', {
+      configurable: true,
+      value: { request },
+    })
+
+    let releaseOperation: (() => void) | undefined
+    let markOperationStarted: (() => void) | undefined
+    const operationStarted = new Promise<void>((resolve) => {
+      markOperationStarted = resolve
+    })
+    const operationGate = new Promise<void>((resolve) => {
+      releaseOperation = resolve
+    })
+
+    try {
+      configureCloudSyncEngine({
+        enabled: true,
+        syncExistingLocalProjects: true,
+      })
+      const transaction = runCloudSyncWriteTransaction(
+        lockedProjectPath,
+        async () => {
+          markOperationStarted?.()
+          await operationGate
+          files.set(
+            `${lockedProjectPath}/${PROJECT_SETTINGS_FILE_NAME}`,
+            'title = "Locked copy"\n'
+          )
+        },
+        { freshProjectIdentity: true }
+      )
+      await operationStarted
+
+      const waitingRenderer = request(
+        `zds-cloud-sync:${lockedProjectPath}`,
+        async () => ({
+          metadata: await getCloudSyncProjectMetadata(lockedProjectPath),
+          entries: (await getAllOutboxEntries()).filter(
+            (entry) => entry.projectPath === lockedProjectPath
+          ),
+        })
+      )
+
+      releaseOperation?.()
+      await transaction
+      const { metadata: observedMetadata, entries: observedEntries } =
+        await waitingRenderer
+
+      expect(observedMetadata).toEqual({
+        schemaVersion: 1,
+        localProjectPath: lockedProjectPath,
+        projectName: 'locked-copy',
+      })
+      expect(observedEntries).toEqual([
+        expect.objectContaining({
+          projectPath: lockedProjectPath,
+          kind: 'upsert',
+        }),
+      ])
+    } finally {
+      releaseOperation?.()
+      configureCloudSyncEngine({ enabled: false })
+      vi.useRealTimers()
+      if (originalLocks) {
+        Object.defineProperty(globalThis.navigator, 'locks', originalLocks)
+      } else {
+        Reflect.deleteProperty(globalThis.navigator, 'locks')
+      }
+    }
+  })
+
+  it('forwards the three-argument directory publication through the observer', async () => {
+    configureCloudSyncEngine({ enabled: false })
+    const files = new Map<string, string>()
+    const activeFs = createTestFs(files)
+    const publishDirectory = vi.fn(async () => undefined)
+    activeFs.publishDirectory = publishDirectory
+    installCloudSyncFileSystemObserver(activeFs)
+
+    await activeFs.publishDirectory(
+      '/documents/Projects/source',
+      '/documents/Projects/target',
+      DUPLICATE_IN_PROGRESS_FILE_NAME
+    )
+
+    expect(publishDirectory).toHaveBeenCalledWith(
+      '/documents/Projects/source',
+      '/documents/Projects/target',
+      DUPLICATE_IN_PROGRESS_FILE_NAME
     )
   })
 })

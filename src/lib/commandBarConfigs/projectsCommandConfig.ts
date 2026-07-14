@@ -8,6 +8,10 @@ import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
+  'Duplicate project': {
+    name: string
+    newName: string
+  }
   'Import file from URL': {
     name: string
     code?: string
@@ -104,6 +108,67 @@ export function createProjectCommands({
         required: true,
         inputType: 'string',
         defaultValue: defaultProjectFolderNameSnapshot,
+      },
+    },
+  }
+
+  const duplicateProjectCommand: Command = {
+    icon: 'clone',
+    name: 'Duplicate project',
+    displayName: 'Duplicate project',
+    description: 'Duplicate a project',
+    groupId: 'projects',
+    needsReview: false,
+    onSubmit: (record) => {
+      if (record) {
+        systemIOActor.send({
+          type: SystemIOMachineEvents.duplicateProject,
+          data: {
+            projectName: record.name,
+            requestedProjectName: record.newName,
+          },
+        })
+      }
+    },
+    args: {
+      name: {
+        inputType: 'options',
+        required: true,
+        options: () => {
+          const folders = folderSnapshot()
+          const options: CommandArgumentOption<string>[] = []
+          if (!folders) return options
+
+          const currentProjectName =
+            systemIOActor.getSnapshot().context.requestedProjectName.name
+          folders.forEach((folder) => {
+            const displayName = getProjectDisplayName(folder)
+            options.push({
+              name:
+                displayName === folder.name
+                  ? displayName
+                  : `${displayName} (${folder.name})`,
+              value: folder.name,
+              isCurrent: folder.name === currentProjectName,
+            })
+          })
+          return options
+        },
+      },
+      newName: {
+        inputType: 'string',
+        required: true,
+        defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
+          const sourceName = context.argumentsToSubmit.name as
+            | string
+            | undefined
+          const sourceProject = folderSnapshot()?.find(
+            (folder) => folder.name === sourceName
+          )
+          return sourceProject
+            ? getProjectDisplayName(sourceProject)
+            : sourceName || defaultProjectFolderNameSnapshot()
+        },
       },
     },
   }
@@ -305,6 +370,7 @@ export function createProjectCommands({
     ? [
         openProjectCommand,
         createProjectCommand,
+        duplicateProjectCommand,
         deleteProjectCommand,
         renameProjectCommand,
         importFileFromURL,

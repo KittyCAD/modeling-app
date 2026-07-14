@@ -1,7 +1,24 @@
+import {
+  lstat,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readlink,
+  readdir,
+  rm,
+  symlink,
+  utimes,
+  writeFile,
+} from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { App } from '@src/lib/app'
-import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
-import fsZds from '@src/lib/fs-zds'
+import {
+  DEFAULT_PROJECT_NAME,
+  DUPLICATE_IN_PROGRESS_FILE_NAME,
+  MAX_PROJECT_NAME_LENGTH,
+} from '@src/lib/constants'
+import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -1220,6 +1237,944 @@ describe('systemIOMachine - XState', () => {
         }
       })
     })
+    describe('when duplicating projects', () => {
+      it('copies project files under a unique title and resets project metadata', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-project-')
+        )
+        const sourceFolderName = '550e8400-e29b-41d4-a716-446655440000'
+        const sourceProject = path.join(projectDirectory, sourceFolderName)
+        const oldLocalProjectId = '11111111-1111-4111-8111-111111111111'
+        const oldCloudProjectId = '22222222-2222-4222-8222-222222222222'
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(path.join(sourceProject, 'nested'), { recursive: true })
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'main')
+          await writeFile(
+            path.join(sourceProject, 'nested', 'part.kcl'),
+            'nested'
+          )
+          await writeFile(
+            path.join(sourceProject, 'project.toml'),
+            `title = "Simple Box"
+default_file = "nested/part.kcl"
+
+[settings.meta]
+id = "${oldLocalProjectId}"
+
+[settings.modeling]
+base_unit = "mm"
+
+[cloud."zoo.dev"]
+project_id = "${oldCloudProjectId}"
+`
+          )
+          await mkdir(path.join(projectDirectory, 'Simple Box-1'))
+          await writeFile(
+            path.join(projectDirectory, 'Simple Box-1', 'main.kcl'),
+            'existing'
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some(
+                (folder) => folder.name === sourceFolderName
+              )
+            )
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: sourceFolderName,
+              requestedProjectName: 'Simple Box',
+            },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              state.context.requestedProjectName.name === 'Simple Box-2'
+          )
+
+          await expect(
+            readFile(
+              path.join(projectDirectory, 'Simple Box-2', 'nested', 'part.kcl'),
+              'utf-8'
+            )
+          ).resolves.toBe('nested')
+          const duplicatedProjectToml = await readFile(
+            path.join(projectDirectory, 'Simple Box-2', 'project.toml'),
+            'utf-8'
+          )
+          expect(duplicatedProjectToml).toContain('title = "Simple Box-2"')
+          expect(duplicatedProjectToml).toContain(
+            'default_file = "nested/part.kcl"'
+          )
+          expect(duplicatedProjectToml).toContain('base_unit = "mm"')
+          expect(duplicatedProjectToml).not.toContain(oldLocalProjectId)
+          expect(duplicatedProjectToml).not.toContain(oldCloudProjectId)
+          expect(duplicatedProjectToml).not.toContain('[cloud.')
+          expect(
+            (await readdir(projectDirectory)).filter((name) =>
+              name.startsWith('.zds-duplicate-')
+            )
+          ).toEqual([])
+        } finally {
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('preserves a destination created during publication and retries with a new name', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-collision-')
+        )
+        const sourceFolderName = 'source'
+        const sourceProject = path.join(projectDirectory, sourceFolderName)
+        const targetProject = path.join(projectDirectory, 'Copy')
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+        const originalPublishDirectory = fsZds.publishDirectory.bind(fsZds)
+        let insertedCompetingProject = false
+        const publishDirectorySpy = vi
+          .spyOn(fsZds, 'publishDirectory')
+          .mockImplementation(async (source, target, markerName) => {
+            if (target === targetProject && !insertedCompetingProject) {
+              insertedCompetingProject = true
+              // Node's rename replaces an existing empty directory on macOS.
+              // Insert one at the last possible moment to prove publication
+              // uses an exclusive destination reservation instead.
+              await mkdir(targetProject)
+            }
+            return originalPublishDirectory(source, target, markerName)
+          })
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await writeFile(
+            path.join(sourceProject, 'project.toml'),
+            'title = "Source"\ndefault_file = "main.kcl"\n'
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some(
+                (folder) => folder.name === sourceFolderName
+              )
+            )
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: sourceFolderName,
+              requestedProjectName: 'Copy',
+            },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              state.context.requestedProjectName.name === 'Copy-1'
+          )
+
+          await expect(readdir(targetProject)).resolves.toEqual([])
+          await expect(
+            readFile(path.join(projectDirectory, 'Copy-1', 'main.kcl'), 'utf-8')
+          ).resolves.toBe('source')
+          expect(
+            (await readdir(projectDirectory)).filter((name) =>
+              name.startsWith('.zds-duplicate-')
+            )
+          ).toEqual([])
+        } finally {
+          publishDirectorySpy.mockRestore()
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('keeps a failed mid-copy target quarantined and never deletes it', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-copy-failure-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const targetProject = path.join(projectDirectory, 'Copy')
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+        let reader: typeof actor | undefined
+        let publicationFailed = false
+        const publishDirectorySpy = vi
+          .spyOn(fsZds, 'publishDirectory')
+          .mockImplementationOnce(async (_source, target, markerName) => {
+            await mkdir(target)
+            await writeFile(path.join(target, markerName), '')
+            await writeFile(path.join(target, 'competitor.kcl'), 'preserve me')
+            publicationFailed = true
+            return Promise.reject(
+              Object.assign(new Error('simulated copy failure'), {
+                code: 'EPERM',
+              })
+            )
+          })
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+
+          const failureSettled = waitFor(
+            actor,
+            (state) =>
+              publicationFailed && state.matches(SystemIOMachineStates.idle)
+          )
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: 'source',
+              requestedProjectName: 'Copy',
+            },
+          })
+          await failureSettled
+
+          expect(publishDirectorySpy).toHaveBeenCalledTimes(1)
+          await expect(
+            readFile(path.join(sourceProject, 'main.kcl'), 'utf-8')
+          ).resolves.toBe('source')
+          await expect(
+            readFile(path.join(targetProject, 'competitor.kcl'), 'utf-8')
+          ).resolves.toBe('preserve me')
+          await expect(
+            readFile(
+              path.join(targetProject, DUPLICATE_IN_PROGRESS_FILE_NAME),
+              'utf-8'
+            )
+          ).resolves.toBe('')
+
+          reader = createActor(systemIOMachineImpl, {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }).start()
+          reader.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(reader, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+          expect(
+            reader
+              .getSnapshot()
+              .context.folders?.some((folder) => folder.name === 'Copy')
+          ).toBe(false)
+        } finally {
+          publishDirectorySpy.mockRestore()
+          reader?.stop()
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('serializes simultaneous duplicates into two complete projects', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-simultaneous-')
+        )
+        const sourceFolderName = 'source'
+        const sourceProject = path.join(projectDirectory, sourceFolderName)
+        const actors = [
+          createActor(systemIOMachineImpl, {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }).start(),
+          createActor(systemIOMachineImpl, {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }).start(),
+        ]
+        const lockTails = new Map<string, Promise<unknown>>()
+        const lockRequest = vi.fn(async (...args: unknown[]) => {
+          const lockName = args[0] as string
+          const options =
+            typeof args[1] === 'function'
+              ? undefined
+              : (args[1] as { ifAvailable?: boolean })
+          const callback = args.at(-1) as (
+            lock: Lock | null
+          ) => Promise<unknown>
+          if (options?.ifAvailable && lockTails.has(lockName)) {
+            return callback(null)
+          }
+
+          const previous = lockTails.get(lockName) ?? Promise.resolve()
+          const current = previous
+            .catch(() => undefined)
+            .then(() => callback({ name: lockName, mode: 'exclusive' }))
+          lockTails.set(lockName, current)
+          try {
+            return await current
+          } finally {
+            if (lockTails.get(lockName) === current) {
+              lockTails.delete(lockName)
+            }
+          }
+        })
+        Object.defineProperty(globalThis.navigator, 'locks', {
+          configurable: true,
+          value: { request: lockRequest },
+        })
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await writeFile(
+            path.join(sourceProject, 'project.toml'),
+            'title = "Source"\ndefault_file = "main.kcl"\n'
+          )
+
+          for (const actor of actors) {
+            actor.send({
+              type: SystemIOMachineEvents.setProjectDirectoryPath,
+              data: { requestedProjectDirectoryPath: projectDirectory },
+            })
+          }
+          await Promise.all(
+            actors.map((actor) =>
+              waitFor(actor, (state) =>
+                Boolean(
+                  state.context.folders?.some(
+                    (folder) => folder.name === sourceFolderName
+                  )
+                )
+              )
+            )
+          )
+
+          for (const actor of actors) {
+            actor.send({
+              type: SystemIOMachineEvents.duplicateProject,
+              data: {
+                projectName: sourceFolderName,
+                requestedProjectName: 'Copy',
+              },
+            })
+          }
+          await Promise.all(
+            actors.map((actor) =>
+              waitFor(
+                actor,
+                (state) =>
+                  state.matches(SystemIOMachineStates.idle) &&
+                  state.context.requestedProjectName.name.startsWith('Copy')
+              )
+            )
+          )
+
+          expect(
+            new Set(
+              actors.map(
+                (actor) => actor.getSnapshot().context.requestedProjectName.name
+              )
+            )
+          ).toEqual(new Set(['Copy', 'Copy-1']))
+          await expect(
+            readFile(path.join(projectDirectory, 'Copy', 'main.kcl'), 'utf-8')
+          ).resolves.toBe('source')
+          await expect(
+            readFile(path.join(projectDirectory, 'Copy-1', 'main.kcl'), 'utf-8')
+          ).resolves.toBe('source')
+        } finally {
+          Reflect.deleteProperty(globalThis.navigator, 'locks')
+          for (const actor of actors) {
+            actor.stop()
+          }
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('never follows a copied project.toml symlink when resetting metadata', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-symlink-')
+        )
+        const sourceFolderName = 'source'
+        const sourceProject = path.join(projectDirectory, sourceFolderName)
+        const externalProjectToml = path.join(
+          projectDirectory,
+          '.external-project.toml'
+        )
+        const originalProjectToml =
+          'title = "Linked Source"\ndefault_file = "main.kcl"\n'
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await writeFile(path.join(sourceProject, 'real.kcl'), 'original')
+          await symlink('real.kcl', path.join(sourceProject, 'linked.kcl'))
+          await writeFile(externalProjectToml, originalProjectToml)
+          await symlink(
+            externalProjectToml,
+            path.join(sourceProject, 'project.toml')
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some(
+                (folder) => folder.name === sourceFolderName
+              )
+            )
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: sourceFolderName,
+              requestedProjectName: 'Independent Copy',
+            },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              state.context.requestedProjectName.name === 'Independent Copy'
+          )
+
+          await expect(readFile(externalProjectToml, 'utf-8')).resolves.toBe(
+            originalProjectToml
+          )
+          expect(
+            (
+              await lstat(
+                path.join(projectDirectory, 'Independent Copy', 'project.toml')
+              )
+            ).isSymbolicLink()
+          ).toBe(false)
+          expect(
+            (
+              await lstat(path.join(sourceProject, 'project.toml'))
+            ).isSymbolicLink()
+          ).toBe(true)
+          const duplicateProject = path.join(
+            projectDirectory,
+            'Independent Copy'
+          )
+          await expect(
+            readlink(path.join(duplicateProject, 'linked.kcl'))
+          ).resolves.toBe('real.kcl')
+          await writeFile(
+            path.join(duplicateProject, 'linked.kcl'),
+            'duplicate edit'
+          )
+          await expect(
+            readFile(path.join(sourceProject, 'real.kcl'), 'utf-8')
+          ).resolves.toBe('original')
+          await expect(
+            readFile(path.join(duplicateProject, 'real.kcl'), 'utf-8')
+          ).resolves.toBe('duplicate edit')
+        } finally {
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('cleans stale staging directories while preserving leased work', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-stale-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const staleStaging = path.join(
+          projectDirectory,
+          '.zds-duplicate-11111111-1111-4111-8111-111111111111'
+        )
+        const activeStaging = path.join(
+          projectDirectory,
+          '.zds-duplicate-22222222-2222-4222-8222-222222222222'
+        )
+        const unrelatedHiddenDirectory = path.join(
+          projectDirectory,
+          '.zds-duplicate-user-backup'
+        )
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await mkdir(staleStaging)
+          await writeFile(path.join(staleStaging, 'partial.kcl'), 'partial')
+          const staleTime = new Date(Date.now() - 48 * 60 * 60 * 1000)
+          await utimes(staleStaging, staleTime, staleTime)
+          await mkdir(activeStaging)
+          await writeFile(path.join(activeStaging, 'partial.kcl'), 'partial')
+          await utimes(activeStaging, staleTime, staleTime)
+          await mkdir(unrelatedHiddenDirectory)
+          await writeFile(
+            path.join(unrelatedHiddenDirectory, 'keep.kcl'),
+            'keep'
+          )
+          const lockRequest = vi.fn(async (...args: unknown[]) => {
+            const lockName = args[0] as string
+            const callback = args.at(-1) as (lock: Lock | null) => Promise<void>
+            return callback(
+              lockName.includes('22222222-2222-4222-8222-222222222222')
+                ? null
+                : { name: lockName, mode: 'exclusive' }
+            )
+          })
+          Object.defineProperty(globalThis.navigator, 'locks', {
+            configurable: true,
+            value: { request: lockRequest },
+          })
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+
+          const entries = await readdir(projectDirectory)
+          expect(entries).not.toContain(
+            '.zds-duplicate-11111111-1111-4111-8111-111111111111'
+          )
+          expect(entries).toContain(
+            '.zds-duplicate-22222222-2222-4222-8222-222222222222'
+          )
+          expect(entries).toContain('.zds-duplicate-user-backup')
+        } finally {
+          Reflect.deleteProperty(globalThis.navigator, 'locks')
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('does not expose a marker-bearing partial duplicate', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-hidden-partial-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const partialProject = path.join(projectDirectory, 'partial-copy')
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await mkdir(partialProject)
+          await writeFile(path.join(partialProject, 'main.kcl'), 'partial')
+          await writeFile(
+            path.join(partialProject, DUPLICATE_IN_PROGRESS_FILE_NAME),
+            ''
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+
+          expect(
+            actor
+              .getSnapshot()
+              .context.folders?.some((folder) => folder.name === 'partial-copy')
+          ).toBe(false)
+        } finally {
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('does not initialize a project when its marker appears between stat and readdir', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-marker-race-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const partialProject = path.join(projectDirectory, 'partial-copy')
+        const markerPath = path.join(
+          partialProject,
+          DUPLICATE_IN_PROGRESS_FILE_NAME
+        )
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+        const stat = fsZds.stat.bind(fsZds)
+        let markerStatCount = 0
+        const statSpy = vi
+          .spyOn(fsZds, 'stat')
+          .mockImplementation(async (targetPath, options) => {
+            if (targetPath === markerPath) {
+              markerStatCount += 1
+              if (markerStatCount === 2) {
+                await writeFile(markerPath, '')
+                return Promise.reject(
+                  Object.assign(new Error('not found before marker write'), {
+                    code: 'ENOENT',
+                  })
+                )
+              }
+            }
+            return stat(targetPath, options)
+          })
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await mkdir(partialProject)
+          await writeFile(path.join(partialProject, 'notes.txt'), 'keep')
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+
+          expect(markerStatCount).toBeGreaterThanOrEqual(2)
+          expect(
+            actor
+              .getSnapshot()
+              .context.folders?.some((folder) => folder.name === 'partial-copy')
+          ).toBe(false)
+          await expect(readdir(partialProject)).resolves.toEqual(
+            expect.arrayContaining([
+              'notes.txt',
+              DUPLICATE_IN_PROGRESS_FILE_NAME,
+            ])
+          )
+          await expect(
+            readFile(path.join(partialProject, 'main.kcl'), 'utf-8')
+          ).rejects.toMatchObject({ code: 'ENOENT' })
+        } finally {
+          statSpy.mockRestore()
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('does not expose or initialize a markerless empty reservation', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-empty-reservation-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const emptyReservation = path.join(
+          projectDirectory,
+          'empty-reservation'
+        )
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await mkdir(emptyReservation)
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+
+          expect(
+            actor
+              .getSnapshot()
+              .context.folders?.some(
+                (folder) => folder.name === 'empty-reservation'
+              )
+          ).toBe(false)
+          await expect(readdir(emptyReservation)).resolves.toEqual([])
+        } finally {
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('preserves staging directories when Web Locks are unavailable', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        Reflect.deleteProperty(globalThis.navigator, 'locks')
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-no-lock-cleanup-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const stagingName =
+          '.zds-duplicate-33333333-3333-4333-8333-333333333333'
+        const stagingPath = path.join(projectDirectory, stagingName)
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await mkdir(stagingPath)
+          await writeFile(path.join(stagingPath, 'partial.kcl'), 'partial')
+          const staleTime = new Date(Date.now() - 48 * 60 * 60 * 1000)
+          await utimes(stagingPath, staleTime, staleTime)
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+
+          expect(await readdir(projectDirectory)).toContain(stagingName)
+        } finally {
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it.each([
+        {
+          caseName: 'bounds a growing suffix to the project name limit',
+          sourceFolderName: `${'a'.repeat(MAX_PROJECT_NAME_LENGTH - 2)}-9`,
+          expectedDuplicateName: `${'a'.repeat(
+            MAX_PROJECT_NAME_LENGTH - 3
+          )}-10`,
+        },
+        {
+          caseName: 'increments suffixes beyond Number safe integer precision',
+          sourceFolderName: 'part-9007199254740992',
+          expectedDuplicateName: 'part-9007199254740993',
+        },
+        {
+          caseName: 'falls back when an all-9 successor exceeds the limit',
+          sourceFolderName: '9'.repeat(MAX_PROJECT_NAME_LENGTH),
+          expectedDuplicateName: `${'9'.repeat(MAX_PROJECT_NAME_LENGTH - 2)}-1`,
+        },
+      ])('$caseName', async ({ sourceFolderName, expectedDuplicateName }) => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-max-name-')
+        )
+        const sourceProject = path.join(projectDirectory, sourceFolderName)
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await writeFile(
+            path.join(sourceProject, 'project.toml'),
+            `title = "${sourceFolderName}"\ndefault_file = "main.kcl"\n`
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some(
+                (folder) => folder.name === sourceFolderName
+              )
+            )
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: sourceFolderName,
+              requestedProjectName: '',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(actor.getSnapshot().context.requestedProjectName.name).toBe(
+            expectedDuplicateName
+          )
+          expect(expectedDuplicateName.length).toBeLessThanOrEqual(
+            MAX_PROJECT_NAME_LENGTH
+          )
+          await expect(
+            readFile(
+              path.join(projectDirectory, expectedDuplicateName, 'main.kcl'),
+              'utf-8'
+            )
+          ).resolves.toBe('source')
+        } finally {
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+    })
+
     describe('when setting default project folder name', () => {
       it('should set a new default project folder name', async () => {
         const expected = 'coolcoolcoolProjectName'

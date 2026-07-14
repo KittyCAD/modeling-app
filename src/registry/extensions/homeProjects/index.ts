@@ -17,6 +17,7 @@ import {
 import type { Project } from '@src/lib/project'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
+import { commandSystemService } from '@src/registry/contracts/commands'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -66,6 +67,12 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         (project.readWriteAccess && project.defaultFile) ||
           project.remoteProjectId
       ),
+    canDuplicate: (project) =>
+      Boolean(
+        project.localProjectName &&
+          project.localProjectPath &&
+          project.readWriteAccess
+      ),
     canRename: (project) =>
       Boolean(project.localProjectPath && project.readWriteAccess),
     canDelete: (project) =>
@@ -94,6 +101,23 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
       return { defaultFile: projectInfo.default_file }
+    },
+    duplicate: async (project) => {
+      if (!serviceImpl.canDuplicate(project) || !project.localProjectName) {
+        return
+      }
+
+      ctx.services.get(commandSystemService).send({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Duplicate project',
+          argDefaultValues: {
+            name: project.localProjectName,
+            newName: getHomeProjectDisplayName(project),
+          },
+        },
+      })
     },
     rename: async (project, requestedName) => {
       if (!serviceImpl.canRename(project) || !project.localProjectPath) {

@@ -52,7 +52,12 @@ function createProjectMenuApp() {
   const commandsActor = createActor(
     createMachine({
       context: {
-        commands: [],
+        commands: [
+          {
+            name: 'Duplicate project',
+            groupId: 'projects',
+          },
+        ],
       },
     })
   ).start()
@@ -86,6 +91,34 @@ function createProjectMenuApp() {
 }
 
 describe('project explorer project menu', () => {
+  test('opens the duplicate project command for the current project', async () => {
+    const { app, dispose } = createProjectMenuApp()
+
+    try {
+      renderWithRouter(
+        <ProjectSidebarMenu app={app} enableMenu project={projectWellFormed} />
+      )
+
+      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
+      fireEvent.click(
+        await screen.findByTestId('project-sidebar-duplicate-project')
+      )
+
+      expect(app.commands.send).toHaveBeenCalledWith({
+        type: 'Find and select command',
+        data: {
+          groupId: 'projects',
+          name: 'Duplicate project',
+          argDefaultValues: {
+            name: projectWellFormed.name,
+          },
+        },
+      })
+    } finally {
+      dispose()
+    }
+  })
+
   test('reveals the current project from the contributed menu item on desktop', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')
     const showInFolder = vi.fn()
