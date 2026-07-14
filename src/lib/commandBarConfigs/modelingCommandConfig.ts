@@ -42,6 +42,7 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_PRELUDE_BODY_TYPE_VALUES,
+  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
@@ -173,6 +174,32 @@ export function extrudeSelectionRequiresBodyType(context: {
   }
 
   return profileSelectionRequiresBodyType(context)
+}
+
+export function extrudeSelectionRequiresMethod({
+  argumentsToSubmit,
+}: {
+  argumentsToSubmit: Record<string, unknown>
+}): boolean {
+  if (!isExtrudeRequirementKclCommandValue(argumentsToSubmit.length)) {
+    return false
+  }
+
+  const sketches = argumentsToSubmit.sketches
+  if (!isSelections(sketches)) return false
+
+  return (
+    sketches.graphSelections.some(
+      (selection) =>
+        selection.artifact?.type === 'sweepEdge' ||
+        selection.artifact?.type === 'primitiveEdge'
+    ) ||
+    sketches.otherSelections.some(
+      (selection) =>
+        isEnginePrimitiveSelection(selection) &&
+        selection.primitiveType === 'edge'
+    )
+  )
 }
 
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
@@ -646,10 +673,15 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           method: {
             inputType: 'options',
-            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
-              name: capitaliseFC(value.toLowerCase()),
-              value,
-            })),
+            required: extrudeSelectionRequiresMethod,
+            options: (commandContext) =>
+              KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
+                name: capitaliseFC(value.toLowerCase()),
+                value,
+                isCurrent:
+                  extrudeSelectionRequiresMethod(commandContext) &&
+                  value === KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+              })),
           },
           bodyType: {
             inputType: 'options',

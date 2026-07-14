@@ -3,6 +3,7 @@ import { type Artifact, assertParse } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   type ModelingCommandSchema,
+  extrudeSelectionRequiresMethod,
   extrudeSelectionRequiresBodyType,
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
@@ -150,7 +151,7 @@ describe('GDT tolerance defaults', () => {
   })
 })
 
-describe('Extrude bodyType argument', () => {
+describe('Extrude surface arguments', () => {
   it('allows extrude profiles to include body edge selections', () => {
     const commandConfig = modelingMachineCommandConfig.Extrude
     if (!commandConfig || isArray(commandConfig)) {
@@ -204,6 +205,91 @@ describe('Extrude bodyType argument', () => {
         length: parsedLength(),
       })
     ).toBe(true)
+  })
+
+  it('requires and defaults method for body edges after length is confirmed', () => {
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({
+            type: 'primitiveEdge',
+          } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: {
+            graphSelections: [],
+            otherSelections: [
+              {
+                type: 'enginePrimitive',
+                entityId: 'edge-entity',
+                parentEntityId: 'body-entity',
+                primitiveIndex: 0,
+                primitiveType: 'edge',
+              },
+            ],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    const commandConfig = modelingMachineCommandConfig.Extrude
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Extrude should have a single command config')
+    }
+    const methodArg = commandConfig.args?.method
+    if (!methodArg || !('options' in methodArg)) {
+      throw new Error('Extrude should expose method options')
+    }
+    const commandContext = {
+      argumentsToSubmit: {
+        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+        length: parsedLength(),
+      },
+    }
+    const options =
+      typeof methodArg.options === 'function'
+        ? methodArg.options(commandContext, {} as ModelingMachineContext)
+        : methodArg.options
+
+    expect(options.find((option) => option.value === 'NEW')?.isCurrent).toBe(
+      true
+    )
+  })
+
+  it('keeps method optional for sketch segments and before length is confirmed', () => {
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(false)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+          length: '5',
+        },
+      })
+    ).toBe(false)
   })
 
   it('uses experimental features for explicit direction selections', () => {
