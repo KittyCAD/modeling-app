@@ -112,6 +112,8 @@ Workflow run: ???
 If anything goes wrong during the deployment of the new release and it needs to be yanked (or rolled back),
 the quickest way is to locate the previous release publish job and simply re-run it.
 
+Use the Announcements API to communicate the urgency of the rollback to users.
+
 1. Head to https://github.com/KittyCAD/modeling-app/actions/workflows/publish-apps.yml
 2. Click the previous `publish-apps` job, eg. https://github.com/KittyCAD/modeling-app/actions/runs/22152987561
 3. Click _Re-run all jobs_ and wait for success
