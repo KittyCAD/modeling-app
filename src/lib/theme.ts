@@ -69,8 +69,8 @@ export function getThemeColorForEngine(theme: Themes) {
   const dark = 28 / 255
   const light = 249 / 255
   return resolvedTheme === Themes.Dark
-    ? { r: dark, g: dark, b: dark, a: 1 }
-    : { r: light, g: light, b: light, a: 1 }
+    ? { r: dark, g: dark, b: dark, a: 0 }
+    : { r: light, g: light, b: light, a: 0 }
 }
 
 /**
