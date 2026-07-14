@@ -3280,9 +3280,18 @@ mod clone_w_fillets {
     }
 
     /// Test that KCL is executed correctly.
+    ///
+    /// The engine's EntityClone does not yet carry fillets/chamfers over to
+    /// the cloned body, even though the cut commands are sent before the
+    /// clone (verified 2026-07 after KittyCAD/engine#3380: execution
+    /// succeeds, but the clone renders without fillets, and its KCL-side
+    /// surfaces, edge cuts, and cap ids are empty). Ignored so an engine
+    /// deploy that fixes it doesn't break CI. When enabling, regenerate the
+    /// snapshots, and expect the clone bookkeeping in
+    /// `fix_tags_and_references` to need to carry over edge cuts and
+    /// fillet/chamfer surfaces.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore] // turn on when https://github.com/KittyCAD/engine/pull/3380 is merged
-    // There's also a test in clone.rs you need to turn too
+    #[ignore] // engine EntityClone does not carry fillets/chamfers to the clone yet
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -3304,7 +3313,6 @@ mod clone_w_shell {
 
     /// Test that KCL is executed correctly.
     #[tokio::test(flavor = "multi_thread")]
-    #[ignore] // turn on when https://github.com/KittyCAD/engine/pull/3380 is merged
     async fn kcl_test_execute() {
         super::execute(TEST_NAME, true).await
     }
@@ -6371,6 +6379,27 @@ mod gdt_face_api_edge_specifier {
 }
 mod error_large_fillet_radius {
     const TEST_NAME: &str = "error_large_fillet_radius";
+
+    /// Test parsing KCL.
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    /// Test that parsing and unparsing KCL produces the original KCL input.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    /// Test that KCL is executed correctly.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}
+mod clone_w_face_tags {
+    const TEST_NAME: &str = "clone_w_face_tags";
 
     /// Test parsing KCL.
     #[test]
