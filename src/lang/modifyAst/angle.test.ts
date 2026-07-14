@@ -1,17 +1,18 @@
+import { join } from 'node:path'
 import { convertLegacyAngleToAngleDimension } from '@src/lang/modifyAst/angle'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import { assertParse, recast } from '@src/lang/wasm'
 import type { Program, SourceRange } from '@src/lang/wasm'
+import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
-let instance: ModuleType = null!
+const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+let instance: ModuleType
 
-beforeEach(async () => {
-  if (instance) return
-  instance = (await buildTheWorldAndNoEngineConnection()).instance
+beforeAll(async () => {
+  instance = await loadAndInitialiseWasmInstance(WASM_PATH)
 })
 
 function legacyAngleRange(ast: Node<Program>): SourceRange {
