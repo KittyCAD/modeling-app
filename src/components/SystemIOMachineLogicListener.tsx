@@ -1,4 +1,3 @@
-import { useLspContext } from '@src/components/LspProvider'
 import { useFileSystemWatcher } from '@src/hooks/useFileSystemWatcher'
 import { useApp, useSingletons } from '@src/lib/boot'
 import {
@@ -16,6 +15,7 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import {
   useHasListedProjects,
   useLastOperation,
@@ -33,7 +33,7 @@ import { useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
-  const { settings, systemIOActor } = useApp()
+  const { settings, systemIOActor, registry } = useApp()
   const { kclManager } = useSingletons()
   // We gotta stop with this pattern. It doesn't scale. "Eager hook creation"
   const requestedProjectName = useRequestedProjectName()
@@ -44,7 +44,7 @@ export function SystemIOMachineLogicListener() {
 
   const navigate = useNavigate()
   const settingsValues = settings.useSettings()
-  const { onFileOpen, onFileClose } = useLspContext()
+  const lsp = registry.get(lspService)
   const { pathname } = useLocation()
 
   function safestNavigateToFile({
@@ -76,9 +76,9 @@ export function SystemIOMachineLogicListener() {
     }
 
     // Close current file in current project if it exists
-    onFileClose(filePathWithExtension, projectDirectory)
+    lsp.onFileClose(filePathWithExtension, projectDirectory)
     // Open the requested file in the requested project
-    onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
+    lsp.onFileOpen(requestedFilePathWithExtension, requestedProjectDirectory)
 
     kclManager.engineCommandManager.rejectAllModelingCommands(
       EXECUTE_AST_INTERRUPT_ERROR_MESSAGE

@@ -34,6 +34,7 @@ import {
   setBodiesPaneLayoutEnabled,
   setLayoutSaveHandler,
 } from '@src/lib/layout'
+import { lspService } from '@src/lang/lsp/registry/contract'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
@@ -716,6 +717,7 @@ export class App implements AppSubsystems {
         ],
       }),
     ])
+    this.registry.get(lspService).attachKclManager(kclManager)
 
     if (typeof window !== 'undefined') {
       window.engineCommandManager = kclManager.engineCommandManager
