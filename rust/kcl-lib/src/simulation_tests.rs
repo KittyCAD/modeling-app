@@ -114,7 +114,7 @@ impl ExecState {
             let relative_path = relative_module_path(&info.path, &project_directory).unwrap_or_else(|err| {
                 panic!(
                     "Failed to get relative module path for {:?} in {:?}; caused by {err:?}",
-                    &info.path, project_directory
+                    info.path, project_directory
                 )
             });
             match &info.repr {
@@ -160,7 +160,7 @@ where
     settings.set_omit_expression(true);
     settings.set_snapshot_path(Path::new("..").join(&test.output_dir));
     settings.set_prepend_module_to_snapshot(false);
-    settings.set_description(format!("{operation} {}.kcl", &test.name));
+    settings.set_description(format!("{operation} {}.kcl", test.name));
     // We don't do it on the flowchart
     if operation != "Artifact graph flowchart" {
         // Sorting maps makes them easier to diff.
