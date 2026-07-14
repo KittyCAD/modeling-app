@@ -3,6 +3,8 @@
 #[cfg(test)]
 mod gen_std_tests;
 pub mod kcl_doc;
+#[cfg(test)]
+mod stdlib_command_bindings;
 
 #[cfg(test)]
 mod tests {

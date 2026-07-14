@@ -43,6 +43,10 @@ import {
   type VariableMap,
   formatNumberValue,
 } from '@src/lang/wasm'
+import {
+  modelingStdLibCall,
+  modelingStdLibCommandName,
+} from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue, KclExpression } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
@@ -106,10 +110,14 @@ export function addShell({
     return new Error("Couldn't retrieve face from selection")
   }
 
-  const call = createCallExpressionStdLibKw('shell', solidsExpr, [
-    createLabeledArg('faces', facesExpr),
-    createLabeledArg('thickness', valueOrVariable(thickness)),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Shell'),
+    solidsExpr,
+    [
+      createLabeledArg('faces', facesExpr),
+      createLabeledArg('thickness', valueOrVariable(thickness)),
+    ]
+  )
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in thickness && thickness.variableName) {
@@ -197,9 +205,11 @@ export function addDeleteFace({
     return new Error("Couldn't retrieve face from selection")
   }
 
-  const call = createCallExpressionStdLibKw('deleteFace', solidsExpr, [
-    createLabeledArg('faces', facesExpr),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Delete Face'),
+    solidsExpr,
+    [createLabeledArg('faces', facesExpr)]
+  )
 
   // 3. If edit, we assign the new function call declaration to the existing node,
   // otherwise just push to the end
@@ -296,7 +306,8 @@ export function addHole({
 
   // Extra args for createCallExpressionStdLibKw as we're calling functions from a module
   const nonCodeMeta = undefined
-  const modulePath = [createIdentifier('hole')]
+  const holeCall = modelingStdLibCall('Hole')
+  const modulePath = holeCall.path.map(createIdentifier)
 
   // Prep the big label args
   let holeBodyNode: Node<CallExpressionKw> | undefined
@@ -392,7 +403,7 @@ export function addHole({
   if (err(cutAtExpr)) return cutAtExpr
 
   const call = createCallExpressionStdLibKw(
-    'hole',
+    holeCall.name,
     solidsExpr,
     [
       createLabeledArg('face', facesExpr),
@@ -797,9 +808,11 @@ export function addOffsetPlane({
   }
   modifiedAst = planeResult.modifiedAst
 
-  const call = createCallExpressionStdLibKw('offsetPlane', planeResult.expr, [
-    createLabeledArg('offset', valueOrVariable(offset)),
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Offset plane'),
+    planeResult.expr,
+    [createLabeledArg('offset', valueOrVariable(offset))]
+  )
 
   // Insert variables for labeled arguments if provided
   if ('variableName' in offset && offset.variableName) {

@@ -14,7 +14,7 @@ import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import { loadWasm } from '@src/unitTestUtils'
+import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 
 const apps: App[] = []
 const historyDisposers: Array<() => void> = []
@@ -558,6 +558,70 @@ describe('Zookeeper project history integration', () => {
       await waitForHistoryIdle(harness.kclManager)
       expect(harness.kclManager.code).toBe(expectedState)
     }
+  })
+
+  it('uses snapshots to undo active-file Zookeeper edits when the streamed diff is stale', async () => {
+    const harness = await createProjectHarness({
+      'main.kcl': 'legCount = 4\nbraceLayout = "rectangle"\n',
+      'brace.kcl': 'braceCount = 4\n',
+    })
+    const mainPath = fsZds.join(harness.projectPath, 'main.kcl')
+    const bracePath = fsZds.join(harness.projectPath, 'brace.kcl')
+    const mainBefore = 'legCount = 4\nbraceLayout = "rectangle"\n'
+    const mainAfter = 'legCount = 3\nbraceLayout = "triangle"\n'
+    const braceBefore = 'braceCount = 4\n'
+    const braceAfter = 'braceCount = 3\n'
+    const patch: ZookeeperEditPatch = {
+      run_id: 'stale-diff-snapshot-replay',
+      changed_files: [
+        modifiedFile(
+          'main.kcl',
+          'this is not the table before\n',
+          'this is not the table after\n'
+        ),
+        modifiedFile(
+          'brace.kcl',
+          'this is not the brace before\n',
+          'this is not the brace after\n'
+        ),
+      ],
+    }
+
+    await writeText(mainPath, mainAfter)
+    await writeText(bracePath, braceAfter)
+    harness.kclManager.addGlobalHistoryEventWithCodeChange(
+      zookeeperEditPatchHistoryEvent({
+        projectPath: harness.projectPath,
+        activeFilePath: harness.kclManager.path,
+        patch,
+        snapshotFiles: [
+          {
+            relativePath: 'main.kcl',
+            absolutePath: mainPath,
+            previousContent: mainBefore,
+            nextContent: mainAfter,
+          },
+          {
+            relativePath: 'brace.kcl',
+            absolutePath: bracePath,
+            previousContent: braceBefore,
+            nextContent: braceAfter,
+          },
+        ],
+      }),
+      mainAfter,
+      mainBefore
+    )
+
+    harness.kclManager.undo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(mainBefore)
+    await expect(fsZds.readFile(bracePath, 'utf8')).resolves.toBe(braceBefore)
+
+    harness.kclManager.redo()
+    await waitForHistoryIdle(harness.kclManager)
+    expect(harness.kclManager.code).toBe(mainAfter)
+    await expect(fsZds.readFile(bracePath, 'utf8')).resolves.toBe(braceAfter)
   })
 
   it('redoes the original active file after undoing a multi-file Zookeeper edit and switching files', async () => {
@@ -1314,7 +1378,9 @@ async function createProjectHarness(files: Record<string, string>) {
       children: null,
     })),
   }
-  const app = App.fromProvided({ wasmPromise: loadWasm() })
+  const app = App.fromProvided({
+    registryOverrides: [createTestWasmRegistryItem()],
+  })
   apps.push(app)
   const openedProject = await app.openProject(project)
   const kclManager = await openedProject.openEditor(

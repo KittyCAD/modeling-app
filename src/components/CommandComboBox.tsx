@@ -117,6 +117,12 @@ function CommandComboBox({
                   <span>Experimental</span>
                 </div>
               )}
+              {option.status === 'deprecated' && (
+                <div className="text-xs flex items-center justify-center gap-1 text-warn-80 dark:text-warn-40">
+                  <CustomIcon name="triangleExclamation" className="w-4 h-4" />
+                  <span>Deprecated</span>
+                </div>
+              )}
             </Combobox.Option>
           ))}
         </Combobox.Options>
