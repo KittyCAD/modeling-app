@@ -1,4 +1,4 @@
-import type { UserFeature } from '@kittycad/lib'
+import type { Feature } from '@kittycad/lib'
 import {
   Registry,
   defineRegistryItem,
@@ -59,7 +59,7 @@ function createRuntimeService() {
 }
 
 function createUserFeaturesService(): UserFeaturesRegistryService {
-  const context = signal({ featureIds: new Set<UserFeature>() })
+  const context = signal({ featureIds: new Set<Feature>() })
   const snapshot = {
     context: context.value,
     matches: () => true,
@@ -79,10 +79,9 @@ function createUserFeaturesService(): UserFeaturesRegistryService {
     context,
     contextSignal: context,
     ready,
-    has: (_featureFlagId: UserFeature, defaultValue: boolean) => defaultValue,
+    has: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
     useContext: () => context.value,
-    useHas: (_featureFlagId: UserFeature, defaultValue: boolean) =>
-      defaultValue,
+    useHas: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
   } as unknown as UserFeaturesRegistryService
 }
 
