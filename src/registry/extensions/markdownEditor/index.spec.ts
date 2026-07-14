@@ -1,10 +1,5 @@
-import {
-  defineRegistryItem,
-  provideService,
-  Registry,
-} from '@kittycad/registry'
+import { defineRegistryItem, Registry } from '@kittycad/registry'
 import type { MarkdownEditorActions } from '@kittycad/ui-components'
-import { MachineManager } from '@src/lib/MachineManager'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import {
@@ -14,7 +9,6 @@ import {
   keymapValueSpec,
   matchKeymapKeystrokes,
 } from '@src/registry/contracts/keymap'
-import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   MARKDOWN_EDITOR_FOCUSED_KEYMAP_SCOPE,
   markdownEditorService,
@@ -25,6 +19,7 @@ import keymapExtension from '@src/registry/extensions/keymap'
 import { defaultKeymapItem } from '@src/registry/extensions/keymap/defaultKeymap'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import markdownEditorExtension, { MARKDOWN_EDITOR_COMMAND_IDS } from '.'
+import { machineManagerExtension } from '../machineManager'
 
 const persistenceMocks = vi.hoisted(() => ({
   readUserKeymapFile: vi.fn(),
@@ -138,12 +133,7 @@ describe('markdown editor extension', () => {
         id: 'test-wasm-promise',
         provides: [provideWasmPromise(Promise.resolve({} as ModuleType))],
       }),
-      defineRegistryItem({
-        id: 'test-machine-manager',
-        providesServices: [
-          provideService(machineManagerService, new MachineManager()),
-        ],
-      }),
+      machineManagerExtension,
       commandsExtension,
       keymapExtension,
       markdownEditorExtension,

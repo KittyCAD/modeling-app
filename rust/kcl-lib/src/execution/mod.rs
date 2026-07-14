@@ -2350,6 +2350,48 @@ mod tests {
         keys
     }
 
+    async fn collect_backend_results<T, Fut>(
+        mut run: impl FnMut(memory::MemoryBackendKind) -> Fut,
+    ) -> Vec<(memory::MemoryBackendKind, T)>
+    where
+        Fut: std::future::Future<Output = T>,
+    {
+        let all = memory::MemoryBackendKind::all();
+        let mut results = Vec::with_capacity(all.len());
+        for &kind in all {
+            results.push((kind, run(kind).await));
+        }
+        results
+    }
+
+    fn assert_backend_results_match<T>(results: &[(memory::MemoryBackendKind, T)])
+    where
+        T: std::fmt::Debug + PartialEq,
+    {
+        let (first, rest) = results.split_first().expect("expected at least one memory backend");
+        let (first_kind, first_result) = first;
+        for (kind, result) in rest {
+            assert_eq!(
+                result, first_result,
+                "memory kind {kind:?} doesn't match {first_kind:?}"
+            );
+        }
+    }
+
+    fn assert_backend_variable_results_match_expected_keys(
+        results: &[(memory::MemoryBackendKind, IndexMap<String, KclValueView>)],
+        expected_keys: &[&str],
+    ) {
+        let (first_kind, first_variables) = results.first().expect("expected at least one memory backend");
+        let expected_keys = expected_keys.iter().map(|key| (*key).to_owned()).collect::<Vec<_>>();
+        assert_eq!(
+            sorted_variable_keys(first_variables),
+            expected_keys,
+            "memory kind {first_kind:?} doesn't match expected variables"
+        );
+        assert_backend_results_match(results);
+    }
+
     fn assert_number_variable(variables: &IndexMap<String, KclValueView>, key: &str, expected: f64) {
         let value = variables.get(key).unwrap_or_else(|| panic!("missing variable `{key}`"));
         let KclValueView::Number { value, .. } = value else {
@@ -2362,44 +2404,36 @@ mod tests {
     async fn exec_outcome_variables_match_between_memory_backends() {
         let code = "x = 2\ny = x + 1\narr = [x, y]";
 
-        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["arr", "x", "y"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["arr", "x", "y"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn error_output_variables_match_between_memory_backends() {
         let code = "x = 2\ny = missing + 1";
 
-        let legacy = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_error_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_error_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["x"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["x"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn cached_execution_variables_match_between_memory_backends() {
         let code = "x = 2\ny = x + 1";
 
-        let legacy = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = run_with_caching_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| run_with_caching_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["x", "y"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["x", "y"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
     async fn mock_execution_variables_match_between_memory_backends() {
         let code = "y = x + 1";
 
-        let legacy = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = run_mock_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| run_mock_variables_with_backend(code, kind)).await;
 
-        assert_eq!(sorted_variable_keys(&legacy), vec!["y"]);
-        assert_eq!(arena, legacy);
+        assert_backend_variable_results_match_expected_keys(&results, &["y"]);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2420,23 +2454,15 @@ qualified = math::addBase(n = 1)
 direct = math::base
 "#;
 
-        let legacy = execute_project_variables_with_backend(
-            main_code,
-            &[("math.kcl", module_code)],
-            memory::MemoryBackendKind::Legacy,
-        )
-        .await;
-        let arena = execute_project_variables_with_backend(
-            main_code,
-            &[("math.kcl", module_code)],
-            memory::MemoryBackendKind::Arena,
-        )
-        .await;
+        let files = [("math.kcl", module_code)];
+        let results =
+            collect_backend_results(|kind| execute_project_variables_with_backend(main_code, &files, kind)).await;
 
-        assert_number_variable(&legacy, "named", 42.0);
-        assert_number_variable(&legacy, "qualified", 41.0);
-        assert_number_variable(&legacy, "direct", 40.0);
-        assert_eq!(arena, legacy);
+        let (_, first_variables) = results.first().expect("expected at least one memory backend");
+        assert_number_variable(first_variables, "named", 42.0);
+        assert_number_variable(first_variables, "qualified", 41.0);
+        assert_number_variable(first_variables, "direct", 40.0);
+        assert_backend_results_match(&results);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2449,12 +2475,12 @@ sketch001 = sketch(on = XY) {
 lineCount = 2
 "#;
 
-        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_variables_with_backend(code, kind)).await;
 
-        assert!(legacy.contains_key("sketch001"), "actual: {legacy:?}");
-        assert_number_variable(&legacy, "lineCount", 2.0);
-        assert_eq!(arena, legacy);
+        let (_, first_variables) = results.first().expect("expected at least one memory backend");
+        assert!(first_variables.contains_key("sketch001"), "actual: {first_variables:?}");
+        assert_number_variable(first_variables, "lineCount", 2.0);
+        assert_backend_results_match(&results);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2467,11 +2493,11 @@ sketch001 = startSketchOn(XY)
 segLength = segLen(seg01)
 "#;
 
-        let legacy = execute_variables_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_variables_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let results = collect_backend_results(|kind| execute_variables_with_backend(code, kind)).await;
 
-        assert_number_variable(&legacy, "segLength", 10.0);
-        assert_eq!(arena, legacy);
+        let (_, first_variables) = results.first().expect("expected at least one memory backend");
+        assert_number_variable(first_variables, "segLength", 10.0);
+        assert_backend_results_match(&results);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -2483,12 +2509,14 @@ sketch001 = startSketchOn(XY)
 "#;
         let program = crate::Program::parse_no_errs(code).unwrap();
 
-        let legacy = execute_outcome_with_backend(code, memory::MemoryBackendKind::Legacy).await;
-        let arena = execute_outcome_with_backend(code, memory::MemoryBackendKind::Arena).await;
+        let outcomes = collect_backend_results(|kind| execute_outcome_with_backend(code, kind)).await;
+        let mut transpiled = Vec::with_capacity(outcomes.len());
+        for (kind, outcome) in &outcomes {
+            let sketch = transpile_old_sketch_to_new(outcome, &program, "sketch001").unwrap();
+            transpiled.push((*kind, sketch));
+        }
 
-        let legacy_transpiled = transpile_old_sketch_to_new(&legacy, &program, "sketch001").unwrap();
-        let arena_transpiled = transpile_old_sketch_to_new(&arena, &program, "sketch001").unwrap();
-        assert_eq!(arena_transpiled, legacy_transpiled);
+        assert_backend_results_match(&transpiled);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -3597,7 +3625,7 @@ w = f() + f()
         let ctx = ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
         let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
-        assert!(result.variables.contains_key("s"), "actual: {:?}", &result.variables);
+        assert!(result.variables.contains_key("s"), "actual: {:?}", result.variables);
 
         let code2 = code.to_owned()
             + "
@@ -3609,7 +3637,7 @@ extrude001 = extrude(region001, length = 1)
         assert!(
             result.variables.contains_key("region001"),
             "actual: {:?}",
-            &result.variables
+            result.variables
         );
 
         ctx.close().await;

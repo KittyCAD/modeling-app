@@ -1,4 +1,5 @@
 import { join } from 'path'
+import { defineRegistryItem } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import env from '@src/env'
 import { KclManager } from '@src/lang/KclManager'
@@ -22,6 +23,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { commandBarMachine } from '@src/machines/commandBarMachine'
 import { settingsMachine } from '@src/machines/settingsMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import { provideWasmPromise } from '@src/registry/contracts/wasm'
 import { createActor } from 'xstate'
 
 /**
@@ -138,6 +140,15 @@ export async function loadWasm() {
   const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
   const instancePromise = loadAndInitialiseWasmInstance(WASM_PATH)
   return instancePromise
+}
+
+export function createTestWasmRegistryItem(
+  wasmPromise: Promise<ModuleType> = loadWasm()
+) {
+  return defineRegistryItem({
+    id: 'test.wasm-promise',
+    provides: [provideWasmPromise(wasmPromise)],
+  })
 }
 
 /**
