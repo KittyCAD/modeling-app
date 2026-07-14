@@ -25,6 +25,7 @@ import {
   mutateAstWithTagForSketchSegment,
 } from '@src/lang/modifyAst/tagManagement'
 import {
+  createSketchTagMemberExpression,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
@@ -520,11 +521,8 @@ function buildEdgeExpr(
     wasmInstance
   )
   if (sketchSegmentName) {
-    const sketchTagExpr = createMemberExpression(
-      createMemberExpression(
-        createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
-        'tags'
-      ),
+    const sketchTagExpr = createSketchTagMemberExpression(
+      sourceSurfaceExpr,
       sketchSegmentName
     )
     const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)

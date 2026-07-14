@@ -19,6 +19,11 @@ import {
 } from '@src/lang/modifyAst'
 import { retrieveEdgeSelectionsFromSingleEdgeRef } from '@src/lang/modifyAst/edges'
 import {
+  getEdgeTagCall,
+  getPrimitiveEdgeSelections,
+  insertPrimitiveEdgeVariablesAndOffsetPathToNode,
+} from '@src/lang/modifyAst/edges'
+import {
   getFacesExprsFromSelection,
   isFaceArtifact,
 } from '@src/lang/modifyAst/faces'
@@ -26,6 +31,11 @@ import { getAxisExpression } from '@src/lang/modifyAst/geometry'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import { addHide } from '@src/lang/modifyAst/transforms'
 import {
+  createSketchTagMemberExpression,
+  getNodeFromPath,
+  getRegionSketchTagExprFromSourceSurface,
+  getSketchSegmentName,
+  getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
   getVariableNameFromNodePath,
   isCallExprWithName,
@@ -33,15 +43,19 @@ import {
 } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
+  getOriginalSegmentArtifact,
+  getSweepArtifactFromSelection,
   getSweepEdgeCodeRef,
 } from '@src/lang/std/artifactGraph'
 import type {
+  Artifact,
   ArtifactGraph,
   CallExpressionKw,
   Expr,
   LabeledArg,
   PathToNode,
   Program,
+  VariableDeclaration,
 } from '@src/lang/wasm'
 import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
@@ -52,10 +66,14 @@ import {
   type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
-import { isEngineRegionSelection } from '@src/lib/selections'
+import {
+  isEnginePrimitiveSelection,
+  isEngineRegionSelection,
+} from '@src/lib/selections'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
+  EnginePrimitiveSelection,
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -68,6 +86,7 @@ export function addExtrude({
   length,
   to,
   symmetric,
+  direction,
   bidirectionalLength,
   tagStart,
   tagEnd,
@@ -87,6 +106,7 @@ export function addExtrude({
   length?: KclCommandValue
   to?: Selections
   symmetric?: boolean
+  direction?: Selections
   bidirectionalLength?: KclCommandValue
   tagStart?: string
   tagEnd?: string
@@ -126,9 +146,17 @@ export function addExtrude({
 
   const nonFaceSelections: Selections = {
     graphSelections: sketches.graphSelections.filter(
-      (selection) => !isFaceArtifact(selection.artifact)
+      (selection) =>
+        !isFaceArtifact(selection.artifact) &&
+        selection.artifact?.type !== 'sweepEdge'
     ),
-    otherSelections: sketches.otherSelections,
+    otherSelections: sketches.otherSelections.filter(
+      (selection) =>
+        !(
+          isEnginePrimitiveSelection(selection) &&
+          selection.primitiveType === 'edge'
+        )
+    ),
   }
   if (nonFaceSelections.graphSelections.length > 0) {
     const res = getVariableExprsFromSelection(
@@ -144,6 +172,17 @@ export function addExtrude({
     vars.pathIfPipe = res.pathIfPipe
     vars.exprs.push(...res.exprs)
   }
+
+  const edgeProfileExprs = getEdgeProfileExprsFromSelection({
+    selections: sketches,
+    modifiedAst,
+    artifactGraph,
+    wasmInstance,
+    nodeToEdit: mNodeToEdit,
+  })
+  if (err(edgeProfileExprs)) return edgeProfileExprs
+  modifiedAst = edgeProfileExprs.modifiedAst
+  vars.exprs.push(...edgeProfileExprs.exprs)
 
   const engineRegions = sketches.otherSelections.filter(isEngineRegionSelection)
   if (engineRegions.length > 0) {
@@ -190,6 +229,37 @@ export function addExtrude({
     symmetric !== undefined
       ? [createLabeledArg('symmetric', createLiteral(symmetric, wasmInstance))]
       : []
+  let directionExpr: LabeledArg[] = []
+  if (direction) {
+    const edgeDirectionResult = getEdgeProfileExprsFromSelection({
+      selections: direction,
+      modifiedAst,
+      artifactGraph,
+      wasmInstance,
+      nodeToEdit: mNodeToEdit,
+    })
+    if (err(edgeDirectionResult)) return edgeDirectionResult
+    if (edgeDirectionResult.exprs.length === 1) {
+      modifiedAst = edgeDirectionResult.modifiedAst
+      directionExpr = [
+        createLabeledArg('direction', edgeDirectionResult.exprs[0]),
+      ]
+    } else {
+      const directionResult = getAxisExpression(
+        undefined,
+        direction,
+        modifiedAst,
+        wasmInstance,
+        artifactGraph,
+        mNodeToEdit
+      )
+      if (err(directionResult)) return directionResult
+      modifiedAst = directionResult.modifiedAst
+      directionExpr = [
+        createLabeledArg('direction', directionResult.generatedAxis),
+      ]
+    }
+  }
   const bidirectionalLengthExpr = bidirectionalLength
     ? [
         createLabeledArg(
@@ -241,6 +311,7 @@ export function addExtrude({
       ...lengthExpr,
       ...toExpr,
       ...symmetricExpr,
+      ...directionExpr,
       ...bidirectionalLengthExpr,
       ...tagStartExpr,
       ...tagEndExpr,
@@ -1120,4 +1191,220 @@ export function retrieveBodyTypeFromOpArg(
   }
 
   return new Error("Couldn't retrieve bodyType argument")
+}
+
+function getEdgeProfileExprsFromSelection({
+  selections,
+  modifiedAst,
+  artifactGraph,
+  wasmInstance,
+  nodeToEdit,
+}: {
+  selections: Selections
+  modifiedAst: Node<Program>
+  artifactGraph: ArtifactGraph
+  wasmInstance: ModuleType
+  nodeToEdit?: PathToNode
+}): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
+  const exprs: Expr[] = []
+  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
+  const unresolvedPrimitiveEdgeSelections: EnginePrimitiveSelection[] = []
+  const edgeSelections = selections.graphSelections.filter(
+    (selection) => selection.artifact?.type === 'sweepEdge'
+  )
+  for (const primitiveEdgeSelection of primitiveEdgeSelections) {
+    const artifact = artifactGraph.get(primitiveEdgeSelection.entityId)
+    if (artifact?.type !== 'sweepEdge') {
+      unresolvedPrimitiveEdgeSelections.push(primitiveEdgeSelection)
+      continue
+    }
+
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) {
+      unresolvedPrimitiveEdgeSelections.push(primitiveEdgeSelection)
+      continue
+    }
+
+    edgeSelections.push({
+      artifact,
+      codeRef,
+      engineEntityId: primitiveEdgeSelection.entityId,
+    })
+  }
+
+  for (const selection of edgeSelections) {
+    const edgeArtifact = selection.artifact
+    if (!edgeArtifact || edgeArtifact.type !== 'sweepEdge') {
+      return new Error('Extrude edge profiles must be sweep edge selections.')
+    }
+
+    const sourceSurfaceArtifact = getSweepArtifactFromSelection(
+      selection,
+      artifactGraph
+    )
+    if (err(sourceSurfaceArtifact)) return sourceSurfaceArtifact
+
+    const sourceSurfaceVars = getVariableExprsFromSelection(
+      {
+        graphSelections: [
+          {
+            artifact: sourceSurfaceArtifact as Artifact,
+            codeRef: sourceSurfaceArtifact.codeRef,
+          },
+        ],
+        otherSelections: [],
+      },
+      artifactGraph,
+      modifiedAst,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(sourceSurfaceVars)) return sourceSurfaceVars
+    if (sourceSurfaceVars.exprs.length !== 1) {
+      return new Error(
+        'Expected exactly one source surface for each selected edge.'
+      )
+    }
+    const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+
+    const sourceSurfaceNode = getNodeFromPath<
+      CallExpressionKw | VariableDeclaration
+    >(modifiedAst, sourceSurfaceArtifact.codeRef.pathToNode, wasmInstance, [
+      'CallExpressionKw',
+      'VariableDeclaration',
+    ])
+    const sourceSurfaceCall = err(sourceSurfaceNode)
+      ? null
+      : sourceSurfaceNode.node.type === 'CallExpressionKw'
+        ? sourceSurfaceNode.node
+        : sourceSurfaceNode.node.declaration.init.type === 'CallExpressionKw'
+          ? sourceSurfaceNode.node.declaration.init
+          : null
+    const sourceSurfaceInput = sourceSurfaceCall?.unlabeled
+    const sourceSurfaceInputIsEdgeExpr =
+      sourceSurfaceInput &&
+      (isCallExprWithName(sourceSurfaceInput, 'getOppositeEdge') ||
+        isCallExprWithName(sourceSurfaceInput, 'getNextAdjacentEdge') ||
+        isCallExprWithName(sourceSurfaceInput, 'edgeId'))
+
+    if (sourceSurfaceInputIsEdgeExpr) {
+      exprs.push(
+        getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
+      )
+      continue
+    }
+
+    if (sourceSurfaceInput?.type === 'Name') {
+      const variableDeclaration = modifiedAst.body.find(
+        (statement): statement is Node<VariableDeclaration> =>
+          statement.type === 'VariableDeclaration' &&
+          statement.declaration.id.name === sourceSurfaceInput.name.name
+      )
+      const variableInit = variableDeclaration?.declaration.init
+      if (
+        variableInit &&
+        (isCallExprWithName(variableInit, 'getOppositeEdge') ||
+          isCallExprWithName(variableInit, 'getNextAdjacentEdge') ||
+          isCallExprWithName(variableInit, 'edgeId'))
+      ) {
+        exprs.push(
+          getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
+        )
+        continue
+      }
+    }
+
+    let sketchSegmentName = getSketchSegmentNameFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      edgeArtifact,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (!sketchSegmentName) {
+      sketchSegmentName = getSketchSegmentName(
+        modifiedAst,
+        edgeArtifact.segId,
+        artifactGraph,
+        wasmInstance
+      )
+    }
+    const originalSegment = getOriginalSegmentArtifact(
+      edgeArtifact.segId,
+      artifactGraph
+    )
+    if (
+      !sketchSegmentName &&
+      originalSegment &&
+      originalSegment.id !== edgeArtifact.segId
+    ) {
+      sketchSegmentName = getSketchSegmentName(
+        modifiedAst,
+        originalSegment.id,
+        artifactGraph,
+        wasmInstance
+      )
+    }
+    if (sketchSegmentName) {
+      exprs.push(
+        getEdgeTagCall(
+          createSketchTagMemberExpression(sourceSurfaceExpr, sketchSegmentName),
+          edgeArtifact
+        )
+      )
+      continue
+    }
+
+    const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
+      sourceSurfaceArtifact as Artifact,
+      edgeArtifact,
+      artifactGraph,
+      modifiedAst,
+      wasmInstance
+    )
+    if (regionSketchTagExpr) {
+      exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
+      continue
+    }
+
+    const tagResult = modifyAstWithTagsForSelection(
+      modifiedAst,
+      selection,
+      artifactGraph,
+      wasmInstance,
+      ['oppositeAndAdjacentEdges']
+    )
+    if (err(tagResult)) return tagResult
+    modifiedAst = tagResult.modifiedAst
+
+    if (tagResult.exprs.length !== 1) {
+      return new Error("Couldn't retrieve edge profile expression.")
+    }
+
+    exprs.push(getEdgeTagCall(tagResult.exprs[0], edgeArtifact))
+  }
+
+  if (unresolvedPrimitiveEdgeSelections.length > 0) {
+    const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
+      {
+        primitiveEdgeSelections: unresolvedPrimitiveEdgeSelections,
+        bodies: new Map(),
+        modifiedAst,
+        artifactGraph,
+        wasmInstance,
+        nodeToEdit,
+      }
+    )
+    if (err(primitiveEdgeResult)) return primitiveEdgeResult
+
+    for (const { tagsExpr } of primitiveEdgeResult.bodies.values()) {
+      if (tagsExpr.type === 'ArrayExpression') {
+        exprs.push(...tagsExpr.elements)
+      } else {
+        exprs.push(tagsExpr)
+      }
+    }
+  }
+
+  return { modifiedAst, exprs }
 }
