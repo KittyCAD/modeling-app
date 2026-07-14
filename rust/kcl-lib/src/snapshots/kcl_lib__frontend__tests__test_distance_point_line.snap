@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  point1 = point(at = [var 0, var 5])
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([point1, line1], labelPosition = [10mm, 11mm]) == 5mm
+}
+
