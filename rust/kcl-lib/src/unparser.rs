@@ -492,6 +492,7 @@ impl CallExpressionKw {
             &self.callee,
             self.unlabeled.as_ref(),
             &self.arguments,
+            &self.non_code_meta,
             buf,
             options,
             indentation_level,
@@ -523,10 +524,12 @@ fn recast_args(
     arg_list
 }
 
+#[allow(clippy::too_many_arguments)]
 fn recast_call(
     callee: &Name,
     unlabeled: Option<&Expr>,
     arguments: &[LabeledArg],
+    non_code_meta: &NonCodeMeta,
     buf: &mut String,
     options: &FormatOptions,
     indentation_level: usize,
@@ -540,11 +543,14 @@ fn recast_call(
         return write!(buf, "{suggestion}").no_fail();
     }
 
+    let has_non_code = non_code_meta.non_code_nodes_len() > 0;
     let arg_list = recast_args(unlabeled, arguments, options, indentation_level, ctxt);
     let has_lots_of_args = arg_list.len() >= 4;
     let args = arg_list.join(", ");
     let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
-    let multiline = has_lots_of_args || some_arg_is_already_multiline;
+    // Comments between arguments need their own lines, so they force the
+    // multi-line layout.
+    let multiline = has_lots_of_args || some_arg_is_already_multiline || has_non_code;
     if multiline {
         let next_indent = indentation_level + 1;
         let inner_indentation = if ctxt.in_pipe() {
@@ -553,9 +559,6 @@ fn recast_call(
             options.get_indentation(next_indent)
         };
         let arg_list = recast_args(unlabeled, arguments, options, next_indent, ctxt);
-        let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
-        args.push(',');
-        let args = args;
         let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
@@ -567,9 +570,46 @@ fn recast_call(
         name.write_to(buf).no_fail();
         buf.push('(');
         buf.push('\n');
-        write!(buf, "{inner_indentation}").no_fail();
-        write!(buf, "{args}").no_fail();
-        buf.push('\n');
+
+        let mut arg_iter = arg_list.iter();
+        // The unlabeled argument is not part of the non-code index sequence;
+        // it always comes first.
+        if unlabeled.is_some()
+            && let Some(first_arg) = arg_iter.next()
+        {
+            writeln!(buf, "{inner_indentation}{first_arg},").no_fail();
+        }
+        // Reconstruct the order of labeled arguments and non-code items (e.g.
+        // comments). Non-code nodes are keyed by their position in the source
+        // argument sequence, the same scheme as ArrayExpression. Iterate enough
+        // slots that no argument or comment is dropped, even if AST edits left
+        // the indices inconsistent.
+        let num_items = arguments.len() + non_code_meta.non_code_nodes_len();
+        let num_slots = non_code_meta
+            .non_code_nodes
+            .keys()
+            .max()
+            .map_or(num_items, |max| num_items.max(max + 1));
+        for i in 0..num_slots {
+            if let Some(noncode) = non_code_meta.non_code_nodes.get(&i) {
+                for nc in noncode {
+                    match nc.value {
+                        NonCodeValue::NewLine => {
+                            // A blank line between arguments.
+                            buf.push('\n');
+                        }
+                        _ => {
+                            let comment = nc.recast(options, 0);
+                            buf.push_str(&inner_indentation);
+                            buf.push_str(comment.trim_end_matches('\n'));
+                            buf.push('\n');
+                        }
+                    }
+                }
+            } else if let Some(arg) = arg_iter.next() {
+                writeln!(buf, "{inner_indentation}{arg},").no_fail();
+            }
+        }
         write!(buf, "{end_indent}").no_fail();
         buf.push(')');
     } else {
@@ -1175,7 +1215,16 @@ impl SketchBlock {
             abs_path: false,
             digest: None,
         };
-        recast_call(&name, None, &self.arguments, buf, options, indentation_level, ctxt);
+        recast_call(
+            &name,
+            None,
+            &self.arguments,
+            &self.non_code_meta,
+            buf,
+            options,
+            indentation_level,
+            ctxt,
+        );
 
         // We don't want to end with a new line inside nested blocks.
         let mut new_options = options.clone();
@@ -2803,6 +2852,80 @@ fn ghi(part001) {
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_recast_comment_between_call_args() {
+        let some_program_string = r#"rounded = fillet(
+  body,
+  radius = 1mm,
+  // Keep this comment
+  tags = [tag1, tag2],
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_comments_in_call_args_force_multiline() {
+        let some_program_string = r#"rounded = fillet(body, radius = 1mm, /* mid */ tags = [tag1])
+edged = chamfer(
+  body,
+  // leading
+  length = 1mm,
+  tags = [tag1],
+  // trailing
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            recasted,
+            r#"rounded = fillet(
+  body,
+  radius = 1mm,
+  /* mid */
+  tags = [tag1],
+)
+edged = chamfer(
+  body,
+  // leading
+  length = 1mm,
+  tags = [tag1],
+  // trailing
+)
+"#
+        );
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_comment_in_call_args_in_pipe() {
+        let some_program_string = r#"part = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> fillet(
+       radius = 1,
+       // why
+       tags = [a],
+     )
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]
