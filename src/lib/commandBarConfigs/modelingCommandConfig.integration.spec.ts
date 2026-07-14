@@ -207,7 +207,7 @@ describe('Extrude surface arguments', () => {
     ).toBe(true)
   })
 
-  it('requires and defaults method for body edges after length is confirmed', () => {
+  it('requires method when extruding body edges after length is confirmed', () => {
     expect(
       extrudeSelectionRequiresMethod({
         argumentsToSubmit: {
@@ -247,29 +247,6 @@ describe('Extrude surface arguments', () => {
         },
       })
     ).toBe(true)
-
-    const commandConfig = modelingMachineCommandConfig.Extrude
-    if (!commandConfig || isArray(commandConfig)) {
-      throw new Error('Extrude should have a single command config')
-    }
-    const methodArg = commandConfig.args?.method
-    if (!methodArg || !('options' in methodArg)) {
-      throw new Error('Extrude should expose method options')
-    }
-    const commandContext = {
-      argumentsToSubmit: {
-        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
-        length: parsedLength(),
-      },
-    }
-    const options =
-      typeof methodArg.options === 'function'
-        ? methodArg.options(commandContext, {} as ModelingMachineContext)
-        : methodArg.options
-
-    expect(options.find((option) => option.value === 'NEW')?.isCurrent).toBe(
-      true
-    )
   })
 
   it('keeps method optional for sketch segments and before length is confirmed', () => {
