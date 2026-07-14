@@ -21,7 +21,7 @@ pub enum RuntimeFlag {
     Off,
 }
 
-/// Maps 1-1 to the KCL related flags added to the Admin portal and TS. 
+/// Maps 1-1 to the KCL related flags added to the Admin portal and TS.
 #[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
 pub struct KclRuntimeFlags {
     pub use_new_lexer_parser: RuntimeFlag,
