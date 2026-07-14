@@ -1005,11 +1005,12 @@ extrude002 = extrude(
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        'getOppositeEdge(getNextAdjacentEdge(extrude001.sketch.tags.line1))'
-      )
-      expect(newCode).toContain('method = NEW')
-      expect(newCode).not.toContain('method = MERGE')
+      expect(newCode).toContain(`extrude003 = extrude(
+  getOppositeEdge(getNextAdjacentEdge(extrude001.sketch.tags.line1)),
+  length = 5,
+  method = NEW,
+  bodyType = SURFACE,
+)`)
       expect(newCode).not.toContain('edgeId(extrude002')
     })
 
@@ -1110,10 +1111,12 @@ sketch002 = sketch(on = XZ) {
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain(
-        'direction = getNextAdjacentEdge(extrude001.sketch.tags.line1)'
-      )
-      expect(newCode).not.toContain('direction = getCommonEdge(')
+      expect(newCode).toContain(`extrude002 = extrude(
+  sketch002.line1,
+  length = 5,
+  direction = getNextAdjacentEdge(extrude001.sketch.tags.line1),
+  bodyType = SURFACE,
+)`)
     })
 
     it('should add an extrude call with bodyType "solid"', async () => {
