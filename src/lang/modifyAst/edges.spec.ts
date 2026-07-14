@@ -209,6 +209,7 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
+    // https://github.com/KittyCAD/modeling-app/issues/12421
     it('should add a fillet to an edge on a cloned body', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         clonedBody,
@@ -270,6 +271,7 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       expect(kclManagerInThisFile.errors).toEqual([])
     })
 
+    // https://github.com/KittyCAD/modeling-app/issues/12420
     it('should qualify an original body cap when a clone follows it', async () => {
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
         clonedBody,
