@@ -1,7 +1,6 @@
 import { Menu } from '@headlessui/react'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown } from '@codemirror/lang-markdown'
-import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language'
 import { searchKeymap } from '@codemirror/search'
 import { Compartment, EditorState } from '@codemirror/state'
 import {
@@ -16,7 +15,10 @@ import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
-import { editorTheme } from '@src/editor/plugins/theme'
+import {
+  editorMarkdownHighlight,
+  editorVisualTheme,
+} from '@src/editor/plugins/theme'
 import usePlatform from '@src/hooks/usePlatform'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
 import {
@@ -133,6 +135,23 @@ const textFileEditorTheme = EditorView.theme({
 const textThemeCompartment = new Compartment()
 
 /**
+ * The text editor's theme bundle: the visual (light/dark) theme plus, for
+ * Markdown files, a theme-aware Markdown highlight style. Both live in one
+ * compartment so a theme toggle swaps them together — the Markdown style has to
+ * follow the theme or dark mode renders unreadably (light-tuned colors on a
+ * dark background).
+ */
+function textEditorThemeExtensions(
+  theme: 'light' | 'dark',
+  isMarkdown: boolean
+) {
+  return [
+    editorVisualTheme[theme],
+    ...(isMarkdown ? [editorMarkdownHighlight[theme]] : []),
+  ]
+}
+
+/**
  * A lightweight, editable CodeMirror surface for non-KCL text files (Markdown /
  * plain text). It is deliberately independent of `KclManager` so editing these
  * files never triggers KCL execution, LSP, or WASM project loading. Edits are
@@ -157,18 +176,16 @@ function TextFileEditor({
       return
     }
     const path = activeTextFile.path
-    const languageExtension = path.toLowerCase().endsWith('.md')
-      ? [
-          markdown(),
-          syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-        ]
-      : []
+    const isMarkdown = path.toLowerCase().endsWith('.md')
+    const languageExtension = isMarkdown ? [markdown()] : []
 
     const view = new EditorView({
       state: EditorState.create({
         doc: activeTextFile.text,
         extensions: [
-          textThemeCompartment.of(editorTheme[resolvedTheme]),
+          textThemeCompartment.of(
+            textEditorThemeExtensions(resolvedTheme, isMarkdown)
+          ),
           textFileEditorTheme,
           ...languageExtension,
           EditorView.lineWrapping,
@@ -202,10 +219,13 @@ function TextFileEditor({
 
   // Reconfigure the theme in place — no recreation, no lost edits.
   useEffect(() => {
+    const isMarkdown = activeTextFile.path.toLowerCase().endsWith('.md')
     viewRef.current?.dispatch({
-      effects: textThemeCompartment.reconfigure(editorTheme[resolvedTheme]),
+      effects: textThemeCompartment.reconfigure(
+        textEditorThemeExtensions(resolvedTheme, isMarkdown)
+      ),
     })
-  }, [resolvedTheme])
+  }, [resolvedTheme, activeTextFile.path])
 
   if (activeTextFile.status === 'loading') {
     return (
