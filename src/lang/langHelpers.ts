@@ -1,6 +1,6 @@
 import type { Diagnostic } from '@codemirror/lint'
 import { lspCodeActionEvent } from '@kittycad/codemirror-lsp-client'
-import type { UserFeature } from '@kittycad/lib'
+import type { Feature } from '@kittycad/lib'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { KCLError, toUtf16 } from '@src/lang/errors'
@@ -32,7 +32,7 @@ const ENABLE_Z0006_LINT_FLAG = 'enable_z0006_lint'
 
 function userHasFeature(featureFlagId: string, defaultValue: boolean): boolean {
   return (
-    window.app?.userFeatures.has(featureFlagId as UserFeature, defaultValue) ??
+    window.app?.userFeatures.has(featureFlagId as Feature, defaultValue) ??
     defaultValue
   )
 }
