@@ -162,7 +162,7 @@ export interface SegmentOverlays {
 export interface EdgeCutInfo {
   type: 'edgeCut'
   tagName: string
-  subType: 'base' | 'opposite' | 'adjacent'
+  subType: 'base' | 'opposite' | 'adjacent' | 'previousAdjacent'
 }
 
 export interface CapInfo {

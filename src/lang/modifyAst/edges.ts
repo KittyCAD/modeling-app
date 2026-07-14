@@ -906,6 +906,15 @@ export function getEdgeTagCall(
     tagCall = createCallExpressionStdLibKw('getOppositeEdge', tagCall, [])
   } else if (artifact.type === 'sweepEdge' && artifact.subType === 'adjacent') {
     tagCall = createCallExpressionStdLibKw('getNextAdjacentEdge', tagCall, [])
+  } else if (
+    artifact.type === 'sweepEdge' &&
+    artifact.subType === 'previousAdjacent'
+  ) {
+    tagCall = createCallExpressionStdLibKw(
+      'getPreviousAdjacentEdge',
+      tagCall,
+      []
+    )
   }
   return tagCall
 }

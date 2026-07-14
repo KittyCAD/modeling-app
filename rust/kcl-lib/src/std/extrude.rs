@@ -1093,6 +1093,44 @@ pub(crate) async fn do_post_extrude<'a>(
                     ),
                 )
                 .await?;
+
+            // Aggregate adjacency omits the previous edge at the start of each open component.
+            if body_type == BodyType::Surface && sketch.is_closed == ProfileClosed::No {
+                let mut is_component_start = true;
+                for path in &sketch.paths {
+                    let path_id = path.get_id();
+                    if sketch.synthetic_jump_path_ids.contains(&path_id) {
+                        is_component_start = true;
+                        continue;
+                    }
+                    if !is_component_start {
+                        continue;
+                    }
+                    is_component_start = false;
+
+                    let source_edge_id = get_extrusion_info_edge_id(&sketch, path_id, clone_id_map);
+                    let Some(face_id) = face_infos.iter().find_map(|face| {
+                        (face.cap == ExtrusionFaceCapType::None && face.curve_id == Some(source_edge_id))
+                            .then_some(face.face_id)
+                            .flatten()
+                    }) else {
+                        continue;
+                    };
+
+                    exec_state
+                        .batch_modeling_cmd(
+                            ModelingCmdMeta::from_args(exec_state, args),
+                            ModelingCmd::from(
+                                mcmd::Solid3dGetPrevAdjacentEdge::builder()
+                                    .object_id(sketch_id)
+                                    .edge_id(source_edge_id)
+                                    .face_id(face_id)
+                                    .build(),
+                            ),
+                        )
+                        .await?;
+                }
+            }
         }
     }
 
