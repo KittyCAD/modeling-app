@@ -14,11 +14,15 @@ use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
+use crate::execution::Geometry;
 use crate::execution::GeometryWithImportedGeometry;
 use crate::execution::KclValue;
+use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Sketch;
 use crate::execution::Solid;
+use crate::execution::TagEngineInfo;
+use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
@@ -139,6 +143,7 @@ pub(super) async fn fix_tags_and_references(
         GeometryWithImportedGeometry::Solid(solid) => {
             let (start_tag, end_tag) = get_named_cap_tags(solid);
             let solid_value = solid.value.clone();
+            let old_face_tag_names = solid.faces.keys().cloned().collect::<Vec<_>>();
 
             // Make the sketch id the new geometry id.
             let sketch = solid.sketch_mut().ok_or_else(|| {
@@ -193,10 +198,66 @@ pub(super) async fn fix_tags_and_references(
             .await?;
 
             *solid = new_solid;
+
+            restore_face_tags(solid, &old_face_tag_names, exec_state);
         }
     }
 
     Ok(())
+}
+
+/// Rebuild the face tag map of a cloned solid from its new surfaces.
+///
+/// [`do_post_extrude`] leaves `faces` empty, and we can't reuse the sketch's
+/// tags like tagging at creation time does, because the cloned sketch still
+/// carries the original solid's face info. Build fresh tag identifiers from
+/// the new surfaces, which have the clone's face ids.
+fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &ExecState) {
+    let surfaces = solid.value.clone();
+    for surface in surfaces {
+        let Some(tag) = surface.get_tag() else {
+            continue;
+        };
+        if !face_tag_names.iter().any(|tag_name| tag_name == &tag.name) {
+            continue;
+        }
+
+        let mut solid_copy = solid.clone();
+        if let Some(sketch) = solid_copy.sketch_mut() {
+            // Avoid recursive tags.
+            sketch.tags.clear();
+        }
+        solid_copy.faces.clear();
+
+        let tag_id = TagIdentifier {
+            value: tag.name.clone(),
+            info: vec![(
+                exec_state.stack().current_epoch(),
+                TagEngineInfo {
+                    id: surface.get_id(),
+                    surface: Some(surface.clone()),
+                    path: None,
+                    geometry: Geometry::Solid(solid_copy),
+                },
+            )],
+            meta: vec![Metadata {
+                source_range: tag.clone().into(),
+            }],
+        };
+
+        match solid.faces.get_mut(&tag.name) {
+            Some(existing_tag) => existing_tag.merge_info(&tag_id),
+            None => {
+                solid.faces.insert(tag.name.clone(), tag_id);
+            }
+        }
+    }
+
+    for name in face_tag_names {
+        if !solid.faces.contains_key(name) {
+            crate::log::logln!("Failed to find new face for face tag: {name:?}");
+        }
+    }
 }
 
 async fn get_old_new_child_map(

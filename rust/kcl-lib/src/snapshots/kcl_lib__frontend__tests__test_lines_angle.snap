@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line1 = line(start = [var 0.9, var 2.36], end = [var 3.1, var 3.64])
+  line2 = line(start = [var 5.36, var 5.9], end = [var 6.64, var 8.1])
+  angle([line1, line2]) == 30deg
+}
+

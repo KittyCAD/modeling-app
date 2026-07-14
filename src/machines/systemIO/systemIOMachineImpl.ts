@@ -4,7 +4,11 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
-import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  FILE_EXT,
+  ZOOKEEPER_FILE_WRITE_TOAST_ID,
+} from '@src/lib/constants'
 import {
   canReadWriteDirectory,
   createNewProjectDirectory,
@@ -42,11 +46,11 @@ import type {
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
+  collectProjectFiles,
   NO_PROJECT_DIRECTORY,
+  normalizeKCLFileDeletePath,
   SystemIOMachineActors,
   SystemIOMachineEvents,
-  collectProjectFiles,
-  normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 
@@ -670,6 +674,12 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
+        if (!input.requestedProjectName) {
+          return Promise.reject(
+            new Error('Cannot delete a project without a project name')
+          )
+        }
+
         await fsZds.rm(
           fsZds.join(
             input.context.projectDirectoryPath,
@@ -927,6 +937,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               fileName: input.requestedFileNameWithExtension || '',
               subRoute: input.requestedSubRoute || '',
               shouldNavigate,
+              // Zookeeper streams cumulative edit patches, so one edit triggers
+              // several of these bulk writes back-to-back. Sharing a toast id
+              // collapses the otherwise-identical success toasts into one.
+              toastId: ZOOKEEPER_FILE_WRITE_TOAST_ID,
               ...(shouldNavigate && input.onSuccess
                 ? { onProjectLoaderComplete: input.onSuccess }
                 : {}),
