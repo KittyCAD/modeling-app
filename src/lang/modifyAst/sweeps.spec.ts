@@ -906,6 +906,7 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
         ast,
         sketches,
         length,
+        method: 'NEW',
         bodyType: 'SURFACE',
         artifactGraph,
         wasmInstance: instanceInThisFile,
@@ -919,9 +920,14 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
   method = NEW,
   bodyType = SURFACE,
 )`)
+      const error = await mockExecAstAndReportErrors(
+        result.modifiedAst,
+        rustContextInThisFile
+      )
+      expect(error).not.toBeInstanceOf(Error)
     })
 
-    it('should force method NEW and compose edge references for extruded edge profiles', async () => {
+    it('should preserve method and compose edge references for extruded edge profiles', async () => {
       const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
 
 sketch001 = sketch(on = XZ) {
@@ -995,7 +1001,18 @@ extrude002 = extrude(
       )
       const result = addExtrude({
         ast,
-        sketches: createSelectionFromArtifacts([sweepEdge], artifactGraph),
+        sketches: {
+          graphSelections: [],
+          otherSelections: [
+            {
+              type: 'enginePrimitive',
+              entityId: sweepEdge.id,
+              parentEntityId: sweep.id,
+              primitiveIndex: 2,
+              primitiveType: 'edge',
+            },
+          ],
+        },
         length,
         method: 'MERGE',
         bodyType: 'SURFACE',
@@ -1008,7 +1025,7 @@ extrude002 = extrude(
       expect(newCode).toContain(`extrude003 = extrude(
   getOppositeEdge(getNextAdjacentEdge(extrude001.sketch.tags.line1)),
   length = 5,
-  method = NEW,
+  method = MERGE,
   bodyType = SURFACE,
 )`)
       expect(newCode).not.toContain('edgeId(extrude002')

@@ -37,7 +37,6 @@ export type ModelingCodemod<CommandArgs> = {
     context: ModelingCodemodRunContext<CommandArgs>
   ) => MaybePromise<ModelingCodemodResult>
   enableExperimentalFeatures?: boolean | ((commandArgs: CommandArgs) => boolean)
-  skipMockExecution?: boolean | ((commandArgs: CommandArgs) => boolean)
   focusPath?:
     | false
     | ((
@@ -57,14 +56,6 @@ const shouldEnableExperimentalFeatures = <CommandArgs>(
   typeof codemod.enableExperimentalFeatures === 'function'
     ? codemod.enableExperimentalFeatures(commandArgs)
     : Boolean(codemod.enableExperimentalFeatures)
-
-const shouldSkipMockExecution = <CommandArgs>(
-  codemod: ModelingCodemod<CommandArgs>,
-  commandArgs: CommandArgs
-) =>
-  typeof codemod.skipMockExecution === 'function'
-    ? codemod.skipMockExecution(commandArgs)
-    : Boolean(codemod.skipMockExecution)
 
 const hasEngineConnection = (
   engineCommandManager: ConnectionManager
@@ -173,19 +164,12 @@ export function createModelingCodemodReviewValidation<CommandArgs>(
       return codemodResult
     }
 
-    if (
-      !shouldSkipMockExecution(
-        codemod,
-        context.argumentsToSubmit as CommandArgs
-      )
-    ) {
-      const execRes = await mockExecAstAndReportErrors(
-        codemodResult.modifiedAst,
-        rustContext
-      )
-      if (err(execRes)) {
-        return execRes
-      }
+    const execRes = await mockExecAstAndReportErrors(
+      codemodResult.modifiedAst,
+      rustContext
+    )
+    if (err(execRes)) {
+      return execRes
     }
   }
 }
@@ -225,7 +209,6 @@ export function createModelingCodemodActor<CommandArgs>(
       input.kclManager,
       {
         focusPath: normalizeFocusPath(codemod, codemodResult, input.data),
-        skipErrorsOnMockExecution: shouldSkipMockExecution(codemod, input.data),
       }
     )
   }

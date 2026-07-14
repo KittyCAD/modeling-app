@@ -66,29 +66,6 @@ function bodyTypeRequiredForCommand(
     : bodyTypeArg.required
 }
 
-function optionValuesForCommandArg(
-  commandName: 'Extrude',
-  argName: 'method',
-  argumentsToSubmit: Record<string, unknown>
-): unknown[] {
-  const commandConfig = modelingMachineCommandConfig[commandName]
-  if (!commandConfig || isArray(commandConfig)) {
-    throw new Error(`${commandName} should have a single command config`)
-  }
-
-  const arg = commandConfig.args?.[argName]
-  if (!arg || !('options' in arg)) {
-    throw new Error(`${commandName}.${argName} should expose options`)
-  }
-
-  const options =
-    typeof arg.options === 'function'
-      ? arg.options({ argumentsToSubmit }, {} as ModelingMachineContext)
-      : arg.options
-
-  return options.map((option) => option.value)
-}
-
 describe('GDT Datum Default Name', () => {
   it('should work with command bar when datum A already exists', async () => {
     // Test command bar integration with existing datum
@@ -207,39 +184,6 @@ describe('Extrude bodyType argument', () => {
         length: parsedLength(),
       })
     ).toBe(true)
-  })
-
-  it('skips codemod mock execution for edge extrusion profiles', () => {
-    const skipMockExecution = modelingCommandCodemods.Extrude?.skipMockExecution
-    if (typeof skipMockExecution !== 'function') {
-      throw new Error('Extrude should configure mock execution skipping')
-    }
-
-    expect(
-      skipMockExecution({
-        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
-      })
-    ).toBe(true)
-
-    expect(
-      skipMockExecution({
-        sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
-      })
-    ).toBe(false)
-  })
-
-  it('only allows method NEW for edge extrusion profiles', () => {
-    expect(
-      optionValuesForCommandArg('Extrude', 'method', {
-        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
-      })
-    ).toEqual(['NEW'])
-
-    expect(
-      optionValuesForCommandArg('Extrude', 'method', {
-        sketches: selectionsForArtifact({ type: 'solid2d' } as Artifact),
-      })
-    ).toEqual(['MERGE', 'NEW'])
   })
 
   it('requires bodyType when extruding engine edge selections after length is confirmed', () => {

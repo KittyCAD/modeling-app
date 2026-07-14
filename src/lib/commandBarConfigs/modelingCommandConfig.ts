@@ -42,7 +42,6 @@ import {
   KCL_PLANE_XZ,
   KCL_PLANE_YZ,
   KCL_PRELUDE_BODY_TYPE_VALUES,
-  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   KCL_PRELUDE_EXTRUDE_METHOD_VALUES,
 } from '@src/lib/constants'
 import type { components } from '@src/lib/machine-api'
@@ -174,19 +173,6 @@ export function extrudeSelectionRequiresBodyType(context: {
   }
 
   return profileSelectionRequiresBodyType(context)
-}
-
-function extrudeMethodOptions(commandContext: {
-  argumentsToSubmit: Record<string, unknown>
-}) {
-  const methodValues = profileSelectionRequiresBodyType(commandContext)
-    ? [KCL_PRELUDE_EXTRUDE_METHOD_NEW]
-    : KCL_PRELUDE_EXTRUDE_METHOD_VALUES
-
-  return methodValues.map((value) => ({
-    name: capitaliseFC(value.toLowerCase()),
-    value,
-  }))
 }
 
 // Edit flows pass this as hidden command-bar metadata, not as a KCL stdlib arg.
@@ -660,7 +646,10 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
           },
           method: {
             inputType: 'options',
-            options: extrudeMethodOptions,
+            options: KCL_PRELUDE_EXTRUDE_METHOD_VALUES.map((value) => ({
+              name: capitaliseFC(value.toLowerCase()),
+              value,
+            })),
           },
           bodyType: {
             inputType: 'options',

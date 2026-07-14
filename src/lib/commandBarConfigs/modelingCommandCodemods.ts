@@ -75,7 +75,6 @@ import {
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
-import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 
 type ModelingCodemodCommandSchema = {
@@ -114,23 +113,6 @@ type ModelingCodemodOptions<CommandName extends ModelingCodemodCommandName> =
     ModelingCommandCodemodConfig<CommandName>,
     'enableExperimentalFeatures' | 'run'
   >
-
-const extrudeUsesEdgeProfile = (
-  args: ModelingCodemodCommandSchema['Extrude']
-) =>
-  Boolean(
-    args.sketches?.graphSelections.some(
-      (selection) =>
-        selection.artifact?.type === 'segment' ||
-        selection.artifact?.type === 'sweepEdge' ||
-        selection.artifact?.type === 'primitiveEdge'
-    ) ||
-      args.sketches?.otherSelections.some(
-        (selection) =>
-          isEnginePrimitiveSelection(selection) &&
-          selection.primitiveType === 'edge'
-      )
-  )
 
 const withStdLibExperimentalFeatures = <
   CommandName extends ModelingCodemodCommandName,
@@ -242,10 +224,7 @@ const withGdtDefaults = <CommandName extends ModelingCodemodCommandName>(
   })
 
 export const modelingCommandCodemods = {
-  Extrude: withArtifactGraph('Extrude', addExtrude, {
-    // Surface edge extrudes make engine child-ID queries that mock execution cannot answer.
-    skipMockExecution: extrudeUsesEdgeProfile,
-  }),
+  Extrude: withArtifactGraph('Extrude', addExtrude),
   Sweep: withArtifactGraph('Sweep', addSweep),
   Loft: withArtifactGraph('Loft', addLoft),
   Revolve: withArtifactGraph('Revolve', addRevolve),

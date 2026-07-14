@@ -62,7 +62,6 @@ import {
   KCL_DEFAULT_CONSTANT_PREFIXES,
   KCL_PRELUDE_BODY_TYPE_SOLID,
   KCL_PRELUDE_BODY_TYPE_SURFACE,
-  KCL_PRELUDE_EXTRUDE_METHOD_NEW,
   type KclPreludeBodyType,
   type KclPreludeExtrudeMethod,
 } from '@src/lib/constants'
@@ -73,6 +72,7 @@ import {
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type {
+  EnginePrimitiveSelection,
   EngineRegionSelection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
@@ -291,21 +291,8 @@ export function addExtrude({
     if (err(twistCenterExpression)) return twistCenterExpression
     twistCenterExpr = [createLabeledArg('twistCenter', twistCenterExpression)]
   }
-  const effectiveMethod =
-    sketches.graphSelections.some(
-      (selection) =>
-        selection.artifact?.type === 'sweepEdge' ||
-        selection.artifact?.type === 'primitiveEdge'
-    ) ||
-    sketches.otherSelections.some(
-      (selection) =>
-        isEnginePrimitiveSelection(selection) &&
-        selection.primitiveType === 'edge'
-    )
-      ? KCL_PRELUDE_EXTRUDE_METHOD_NEW
-      : method
-  const methodExpr = effectiveMethod
-    ? [createLabeledArg('method', createLocalName(effectiveMethod))]
+  const methodExpr = method
+    ? [createLabeledArg('method', createLocalName(method))]
     : []
   const hideSeamsExpr =
     hideSeams !== undefined
@@ -1209,9 +1196,30 @@ function getEdgeProfileExprsFromSelection({
   nodeToEdit?: PathToNode
 }): Error | { modifiedAst: Node<Program>; exprs: Expr[] } {
   const exprs: Expr[] = []
+  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
+  const unresolvedPrimitiveEdgeSelections: EnginePrimitiveSelection[] = []
   const edgeSelections = selections.graphSelections.filter(
     (selection) => selection.artifact?.type === 'sweepEdge'
   )
+  for (const primitiveEdgeSelection of primitiveEdgeSelections) {
+    const artifact = artifactGraph.get(primitiveEdgeSelection.entityId)
+    if (artifact?.type !== 'sweepEdge') {
+      unresolvedPrimitiveEdgeSelections.push(primitiveEdgeSelection)
+      continue
+    }
+
+    const codeRef = getSweepEdgeCodeRef(artifact, artifactGraph)
+    if (err(codeRef)) {
+      unresolvedPrimitiveEdgeSelections.push(primitiveEdgeSelection)
+      continue
+    }
+
+    edgeSelections.push({
+      artifact,
+      codeRef,
+      engineEntityId: primitiveEdgeSelection.entityId,
+    })
+  }
 
   for (const selection of edgeSelections) {
     const edgeArtifact = selection.artifact
@@ -1365,11 +1373,10 @@ function getEdgeProfileExprsFromSelection({
     exprs.push(getEdgeTagCall(tagResult.exprs[0], edgeArtifact))
   }
 
-  const primitiveEdgeSelections = getPrimitiveEdgeSelections(selections)
-  if (primitiveEdgeSelections.length > 0) {
+  if (unresolvedPrimitiveEdgeSelections.length > 0) {
     const primitiveEdgeResult = insertPrimitiveEdgeVariablesAndOffsetPathToNode(
       {
-        primitiveEdgeSelections,
+        primitiveEdgeSelections: unresolvedPrimitiveEdgeSelections,
         bodies: new Map(),
         modifiedAst,
         artifactGraph,
