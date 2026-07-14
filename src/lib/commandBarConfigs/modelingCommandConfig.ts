@@ -814,11 +814,6 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
               { name: 'X Axis', isCurrent: true, value: 'X' },
               { name: 'Y Axis', isCurrent: false, value: 'Y' },
             ],
-            hidden: (context) =>
-              isEditingNode(context) ||
-              !['Axis'].includes(
-                context.argumentsToSubmit.axisOrEdge as string
-              ),
           },
           edge: {
             required: (context) =>
