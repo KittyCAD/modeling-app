@@ -536,6 +536,13 @@ pub struct MockConfig {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
     pub drag_anchors: Vec<SegmentDragAnchor>,
+    /// When true, we're not actually executing to produce a sketch or model.
+    /// Instead, simply check that the code makes sense, like by checking
+    /// function arguments. Currently, there are very few differences, like
+    /// ignoring many array index out of bounds errors. But we may change this
+    /// in the future to have more differences from regular execution. Used by
+    /// [`ExecutorContext::check`].
+    pub check_only: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Deserialize, Serialize, ts_rs::TS)]
@@ -555,6 +562,7 @@ impl Default for MockConfig {
             freedom_analysis: true,
             segment_ids_edited: AhashIndexSet::default(),
             drag_anchors: Vec::new(),
+            check_only: false,
         }
     }
 }
@@ -1289,6 +1297,39 @@ impl ExecutorContext {
         cache::write_old_memory(state).await;
 
         Ok(outcome)
+    }
+
+    /// Check a KCL program for problems by executing it without an engine.
+    ///
+    /// This is mock execution with extra leniency so that checking can get
+    /// further.
+    ///
+    /// List of differences from mock execution:
+    ///
+    /// 1. If a numeric index into an array is out of bounds, indexing falls
+    ///    back to the item at index 0 instead of producing an error. Indexing
+    ///    an empty array is still an error.
+    ///
+    /// Unlike [`Self::run_mock`], this neither reads nor writes the memory
+    /// cache shared with sketch mode and partial execution, so checking a
+    /// program cannot affect those.
+    pub async fn check(&self, program: &crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
+        assert!(
+            self.is_mock(),
+            "To use check, instantiate via ExecutorContext::new_mock, not ::new"
+        );
+
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            check_only: true,
+            ..Default::default()
+        };
+        let mut exec_state = ExecState::new_mock(self, &mock_config);
+        let result = self.run(program, &mut exec_state).await?;
+        exec_state
+            .into_exec_outcome(result.0, self)
+            .await
+            .map_err(KclErrorWithOutputs::no_outputs)
     }
 
     pub async fn run_with_caching(&self, program: crate::Program) -> Result<ExecOutcome, KclErrorWithOutputs> {
@@ -3680,6 +3721,70 @@ solid7 = extrude(r7, length = width)
         assert_eq!(ids, ids2, "Generated IDs should match");
         ctx.close().await;
         ctx2.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn check_index_out_of_bounds_falls_back_to_first_item() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(
+            "arr = [1, 2, 3]
+x = arr[5]",
+        )
+        .unwrap();
+        let outcome = ctx.check(&program).await.unwrap();
+        let Some(KclValueView::Number { value, .. }) = outcome.variables.get("x") else {
+            panic!("expected x to be a number, got {:?}", outcome.variables.get("x"));
+        };
+        assert_eq!(*value, 1.0);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn check_index_out_of_bounds_singleton_falls_back_to_itself() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(
+            "a = 42
+x = a[2]",
+        )
+        .unwrap();
+        let outcome = ctx.check(&program).await.unwrap();
+        let Some(KclValueView::Number { value, .. }) = outcome.variables.get("x") else {
+            panic!("expected x to be a number, got {:?}", outcome.variables.get("x"));
+        };
+        assert_eq!(*value, 42.0);
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn check_index_out_of_bounds_empty_array_error_mentions_original_index() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(
+            "arr = []
+x = arr[5]",
+        )
+        .unwrap();
+        let err = ctx.check(&program).await.unwrap_err();
+        assert_eq!(err.error.message(), "The array doesn't have any item at index 5");
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_index_out_of_bounds_is_still_an_error() {
+        // check() is the only way to opt into the index fallback. Mock
+        // execution through the existing API must keep erroring.
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(
+            "arr = [1, 2, 3]
+x = arr[5]",
+        )
+        .unwrap();
+        let mock_config = MockConfig {
+            use_prev_memory: false,
+            ..Default::default()
+        };
+        let err = ctx.run_mock(&program, &mock_config).await.unwrap_err();
+        assert_eq!(err.error.message(), "The array doesn't have any item at index 5");
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]

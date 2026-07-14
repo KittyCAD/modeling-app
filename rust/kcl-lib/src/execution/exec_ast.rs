@@ -3355,7 +3355,10 @@ impl Node<MemberExpression> {
                 )))
             }
             (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
-                let value_of_arr = arr.get(index);
+                let mut value_of_arr = arr.get(index);
+                if value_of_arr.is_none() && exec_state.global.check_only {
+                    value_of_arr = arr.first();
+                }
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned().continue_())
                 } else {
@@ -3371,6 +3374,10 @@ impl Node<MemberExpression> {
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
             // This is kind of a silly property, but it's possible it occurs in generic code or something.
             (obj, Property::UInt(0), _) => Ok(obj.continue_()),
+            // Since singletons are interchangeable with single-element arrays, an
+            // out-of-bounds index falls back to the singleton itself, the item at
+            // index 0.
+            (obj, Property::UInt(_), _) if exec_state.global.check_only => Ok(obj.continue_()),
             (KclValue::HomArray { .. }, p, _) => {
                 let t = p.type_name();
                 let article = article_for(t);

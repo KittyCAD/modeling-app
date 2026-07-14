@@ -29,8 +29,8 @@ import { type Context } from '@rust/kcl-wasm-lib/pkg/kcl_wasm_lib'
 import type { WebSocketResponse } from '@kittycad/lib'
 
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
-import type { ExecCallbacks, ExecState } from '@src/lang/wasm'
-import { errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
+import type { CheckOutcome, ExecCallbacks, ExecState } from '@src/lang/wasm'
+import { checkOutcomeFromExecState, errFromErrWithOutputs, execStateFromRust } from '@src/lang/wasm'
 import type ModelingAppFile from '@src/lib/modelingAppFile'
 import type { DefaultPlaneStr } from '@src/lib/planes'
 import { defaultPlaneStrToKey } from '@src/lib/planes'
@@ -195,6 +195,35 @@ export default class RustContext {
         usePrevMemory
       )
       return execStateFromRust(result)
+    } catch (e: any) {
+      return Promise.reject(errFromErrWithOutputs(e))
+    }
+  }
+
+  /**
+   * Check a program for problems by executing it without an engine.
+   *
+   * This is mock execution with extra leniency. Unlike `executeMock`, it
+   * doesn't read or write the memory cache shared with sketch mode.
+   */
+  async check(
+    node: Node<Program>,
+    settings: DeepPartial<Configuration>,
+    path?: string,
+    callbacks?: ExecCallbacks
+  ): Promise<CheckOutcome> {
+    const instance = await this._checkContextInstance()
+    const executionContext = callbacks
+      ? instance.cloneWithExecuteCallbacks(callbacks)
+      : instance
+
+    try {
+      const result = await executionContext.check(
+        JSON.stringify(node),
+        path,
+        JSON.stringify(settings)
+      )
+      return checkOutcomeFromExecState(execStateFromRust(result))
     } catch (e: any) {
       return Promise.reject(errFromErrWithOutputs(e))
     }
