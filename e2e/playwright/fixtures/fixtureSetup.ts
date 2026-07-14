@@ -1,4 +1,4 @@
-import type { UserFeature } from '@kittycad/lib'
+import type { Feature } from '@kittycad/lib'
 /* eslint-disable react-hooks/rules-of-hooks */
 import type {
   BrowserContext,
@@ -57,7 +57,7 @@ export class AuthenticatedApp {
     this.testInfo = testInfo
   }
 
-  async initialise(code = '', userFeatures: readonly UserFeature[] = []) {
+  async initialise(code = '', userFeatures: readonly Feature[] = []) {
     await setup(this.context, this.page, this.testInfo, userFeatures)
     const u = await getUtils(this.page)
 
@@ -153,7 +153,7 @@ export class ElectronZoo {
 
   async createInstanceIfMissing(
     testInfo: TestInfo,
-    userFeatures: readonly UserFeature[] = []
+    userFeatures: readonly Feature[] = []
   ) {
     // Create or otherwise clear the folder.
     this.projectDirName = testInfo.outputPath('electron-test-projects-dir')
@@ -387,7 +387,7 @@ const fixturesForWeb = {
     }: {
       page: Page
       context: BrowserContext
-      userFeatures: readonly UserFeature[]
+      userFeatures: readonly Feature[]
     },
     use: FnUse,
     testInfo: TestInfo
