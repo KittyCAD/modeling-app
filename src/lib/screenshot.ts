@@ -1,5 +1,42 @@
 import { writeProjectThumbnailFile } from '@src/lib/desktop'
+import { isModelingResponse } from '@src/lib/kcSdkGuards'
+import { uuidv4 } from '@src/lib/utils'
 import { getVisibleElementRect } from '@src/lib/viewportElement'
+import type { ConnectionManager } from '@src/network/connectionManager'
+
+const PNG_DATA_URL_PREFIX = 'data:image/png;base64,'
+
+type EngineSnapshotCommandManager = Pick<ConnectionManager, 'sendSceneCommand'>
+
+const unwrapJsonString = (contents: string): string => {
+  const trimmed = contents.trim()
+  if (!trimmed.startsWith('"') || !trimmed.endsWith('"')) {
+    return trimmed
+  }
+
+  try {
+    const parsed = JSON.parse(trimmed)
+    if (typeof parsed === 'string') {
+      return parsed
+    }
+  } catch {}
+
+  return trimmed.slice(1, -1)
+}
+
+const normalizeSnapshotPngContents = (contents: string): string => {
+  const unwrappedContents = unwrapJsonString(contents)
+  const pngContents = unwrappedContents.startsWith(PNG_DATA_URL_PREFIX)
+    ? unwrappedContents.slice(PNG_DATA_URL_PREFIX.length)
+    : unwrappedContents
+  const base64 = pngContents
+    .replace(/\s/g, '')
+    .replace(/-/g, '+')
+    .replace(/_/g, '/')
+  const paddingLength = (4 - (base64.length % 4)) % 4
+
+  return `${base64}${'='.repeat(paddingLength)}`
+}
 
 const getVisibleCanvasCrop = (canvas: HTMLCanvasElement) => {
   const canvasRect = canvas.getBoundingClientRect()
@@ -81,27 +118,6 @@ const drawVisibleVideoStream = (
   return crop
 }
 
-export function takeScreenshotOfVideoStreamCanvas() {
-  const canvas = document.querySelector('[data-engine]')
-  const video = document.getElementById('video-stream')
-  if (
-    canvas &&
-    video &&
-    canvas instanceof HTMLCanvasElement &&
-    video instanceof HTMLVideoElement
-  ) {
-    const videoCanvas = document.createElement('canvas')
-    const crop = drawVisibleVideoStream(video, canvas, videoCanvas)
-    if (!crop) {
-      return ''
-    }
-    const url = videoCanvas.toDataURL('image/png')
-    return url
-  } else {
-    return ''
-  }
-}
-
 /**
  * Captures the video stream canvas composited with the gizmo overlay,
  * matching what the user sees in the modeling viewport.
@@ -121,8 +137,12 @@ export function takeViewportScreenshot(): string {
   const compositeCanvas = document.createElement('canvas')
   const crop = drawVisibleVideoStream(video, canvas, compositeCanvas)
   const ctx = compositeCanvas.getContext('2d')
-  if (!crop) return ''
-  if (!ctx) return ''
+  if (!crop) {
+    return ''
+  }
+  if (!ctx) {
+    return ''
+  }
 
   // Draw the gizmo overlay if present
   const gizmoWrapper = document.querySelector(
@@ -159,18 +179,60 @@ export function dataUrlToFile(dataUrl: string, fileName: string): File | Error {
   return new File([buf], fileName, { type: mime })
 }
 
+export async function takeEngineSnapshot({
+  engineCommandManager,
+}: {
+  engineCommandManager: EngineSnapshotCommandManager
+}): Promise<string> {
+  const response = await engineCommandManager.sendSceneCommand({
+    type: 'modeling_cmd_req',
+    cmd_id: uuidv4(),
+    cmd: {
+      type: 'take_snapshot',
+      format: 'png',
+    },
+  })
+  const singleResponse = Array.isArray(response) ? response[0] : response
+
+  if (!singleResponse || !isModelingResponse(singleResponse)) {
+    return ''
+  }
+
+  const modelingResponse = singleResponse.resp.data.modeling_response
+  if (modelingResponse.type !== 'take_snapshot') {
+    return ''
+  }
+
+  const contents = modelingResponse.data?.contents
+  if (typeof contents !== 'string' || !contents) {
+    return ''
+  }
+
+  return `${PNG_DATA_URL_PREFIX}${normalizeSnapshotPngContents(contents)}`
+}
+
 export function createThumbnailPNGOnDesktop({
   projectDirectoryWithoutEndingSlash,
+  engineCommandManager,
 }: {
   projectDirectoryWithoutEndingSlash: string
+  engineCommandManager: EngineSnapshotCommandManager
 }) {
   setTimeout(() => {
     if (!projectDirectoryWithoutEndingSlash) {
       return
     }
-    const dataUrl: string = takeScreenshotOfVideoStreamCanvas()
-    // zoom to fit command does not wait, wait 500ms to see if zoom to fit finishes
-    writeProjectThumbnailFile(dataUrl, projectDirectoryWithoutEndingSlash)
+    // Wait for any pending camera/view updates from the triggering workflow.
+    takeEngineSnapshot({ engineCommandManager })
+      .then((dataUrl) => {
+        if (!dataUrl) {
+          throw new Error('Invalid engine snapshot response')
+        }
+        return writeProjectThumbnailFile(
+          dataUrl,
+          projectDirectoryWithoutEndingSlash
+        )
+      })
       .then(() => {})
       .catch((e) => {
         console.error(

@@ -248,6 +248,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             if (projectIORef && projectIORef.path) {
               createThumbnailPNGOnDesktop({
                 projectDirectoryWithoutEndingSlash: projectIORef.path,
+                engineCommandManager,
               })
             }
           })

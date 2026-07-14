@@ -2412,6 +2412,7 @@ export class KclManager extends File {
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
       createThumbnailPNGOnDesktop({
         projectDirectoryWithoutEndingSlash: projectFsManager.dir,
+        engineCommandManager: this.engineCommandManager,
       })
     }
   }
