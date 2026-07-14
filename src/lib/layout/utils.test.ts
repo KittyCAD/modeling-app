@@ -29,8 +29,8 @@ const basicSplitLayout: Layout = {
     {
       id: 'ttc',
       type: LayoutType.Simple,
-      areaType: AreaType.TTC,
-      label: 'TTC',
+      areaType: AreaType.Zookeeper,
+      label: 'Zookeeper',
     },
     {
       id: 'another',
@@ -94,10 +94,10 @@ describe('Layout utils', () => {
             splitOrientation: 'block',
             children: [
               {
-                id: DefaultLayoutPaneID.TTC,
+                id: DefaultLayoutPaneID.Zookeeper,
                 label: 'Zookeeper',
                 type: LayoutType.Simple,
-                areaType: AreaType.TTC,
+                areaType: AreaType.Zookeeper,
                 icon: 'sparkles',
               },
             ],
@@ -170,10 +170,10 @@ describe('Layout utils', () => {
             splitOrientation: 'block',
             children: [
               {
-                id: DefaultLayoutPaneID.TTC,
+                id: DefaultLayoutPaneID.Zookeeper,
                 label: 'Zookeeper',
                 type: LayoutType.Simple,
-                areaType: AreaType.TTC,
+                areaType: AreaType.Zookeeper,
                 icon: 'sparkles',
               },
             ],
@@ -421,8 +421,8 @@ describe('Layout utils', () => {
             {
               id: 'ttc',
               type: LayoutType.Simple,
-              areaType: AreaType.TTC,
-              label: 'TTC',
+              areaType: AreaType.Zookeeper,
+              label: 'Zookeeper',
             },
             {
               id: 'another',
@@ -491,7 +491,7 @@ describe('Layout utils', () => {
         transformationSets: [
           {
             matcher: (l) =>
-              l.type === LayoutType.Simple && l.areaType === AreaType.TTC,
+              l.type === LayoutType.Simple && l.areaType === AreaType.Zookeeper,
             transformations: [
               (l) => ({ ...l, areaType: AreaType.FeatureTree }),
             ],
@@ -546,10 +546,10 @@ describe('Layout utils', () => {
         newVersion: 'v2',
         transformationSets: [
           {
-            // Match on TTC, but only once so we don't loop
+            // Match on Zookeeper, but only once so we don't loop
             matcher: (l) =>
               l.type === LayoutType.Simple &&
-              l.areaType === AreaType.TTC &&
+              l.areaType === AreaType.Zookeeper &&
               !transformedOnce,
             transformations: [
               (l) => {
@@ -590,7 +590,7 @@ describe('Layout utils', () => {
       )
       expect(result).toHaveProperty(
         'layout.children[0].children[0].areaType',
-        AreaType.TTC
+        AreaType.Zookeeper
       )
       expect(result).toHaveProperty(
         'layout.children[0].children[1].areaType',
@@ -604,12 +604,13 @@ describe('Layout utils', () => {
         newVersion: 'v2',
         transformationSets: [
           {
-            // Matching on Split layouts that contain TTC areas
+            // Matching on Split layouts that contain Zookeeper areas
             matcher: (l) =>
               l.type === LayoutType.Splits &&
               l.children.find(
                 (c) =>
-                  c.type === LayoutType.Simple && c.areaType === AreaType.TTC
+                  c.type === LayoutType.Simple &&
+                  c.areaType === AreaType.Zookeeper
               ) !== undefined,
             transformations: [
               // First transformation: add a Debug split and add a dummy item to the sizes
@@ -631,14 +632,15 @@ describe('Layout utils', () => {
                   ],
                 }
               },
-              // Second transform: set the size of TTC, then split remainder among the others
+              // Second transform: set the size of Zookeeper, then split remainder among the others
               (l) => {
                 if (l.type !== LayoutType.Splits) {
                   return l
                 }
                 const ttcSplitIndex = l.children.findIndex(
                   (c) =>
-                    c.type === LayoutType.Simple && c.areaType === AreaType.TTC
+                    c.type === LayoutType.Simple &&
+                    c.areaType === AreaType.Zookeeper
                 )
                 const ttcSize = 70
                 const remainderSize = (100 - ttcSize) / (l.sizes.length - 1)
@@ -666,7 +668,10 @@ describe('Layout utils', () => {
         'layout.children[0].areaType',
         AreaType.Debug
       )
-      expect(result).toHaveProperty('layout.children[1].areaType', AreaType.TTC)
+      expect(result).toHaveProperty(
+        'layout.children[1].areaType',
+        AreaType.Zookeeper
+      )
     })
   })
 })

@@ -351,7 +351,9 @@ export type EnvironmentConfiguration = {
   domain: string // same name as the file development for development.json
   token: string // authentication token from signing in. Can be empty string
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
-  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  zookeeperWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  /** Legacy key accepted for existing environment files. */
+  mlephantWebSocketUrl?: string
 }
 
 /**
@@ -361,7 +363,9 @@ export type EnvironmentConfiguration = {
 export type EnvironmentConfigurationRuntime = {
   domain: string // same name as the file development for development.json
   kittycadWebSocketUrl?: string // optional override for Engine WebSocket URL
-  mlephantWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  zookeeperWebSocketUrl?: string // optional override for Zookeeper WebSocket URL
+  /** Legacy key accepted for existing environment files. */
+  mlephantWebSocketUrl?: string
 }
 
 export const ENVIRONMENT_CONFIGURATION_FOLDER = 'envs'
@@ -371,12 +375,13 @@ export const MAX_PROJECT_NAME_LENGTH = 240
 // It's so ugh that `uuid` package doesn't export this.
 export const REGEXP_UUIDV4 = /^[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}$/i
 
-export const LOCAL_STORAGE_ML_CONVERSATIONS = 'mlConversations'
-/** URL query param key we watch for prompt input
+export const LOCAL_STORAGE_ZOOKEEPER_CONVERSATIONS = 'mlConversations'
+/** URL query param key we watch for Zookeeper prompt input
  *  we should never set this search param from the app,
  *  only read and delete.
  */
-export const SEARCH_PARAM_ML_PROMPT_KEY = 'ttc-prompt'
+export const SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY = 'zookeeper-prompt'
+export const LEGACY_SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY = 'ttc-prompt'
 
 /**
  * Number of engine connection retries within a cycle before the application stops automatically trying

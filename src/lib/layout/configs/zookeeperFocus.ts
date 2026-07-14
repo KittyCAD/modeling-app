@@ -13,9 +13,9 @@ import {
  * This predefined layout is meant for users to
  * focus on the Zookeeper experience
  * with a 50/50 split between the modeling scene
- * and the TTC pane.
+ * and the Zookeeper pane.
  */
-export const textToCADFocusConfig: Layout = {
+export const zookeeperFocusConfig: Layout = {
   id: 'default',
   label: 'root',
   type: LayoutType.Splits,
@@ -104,10 +104,10 @@ export const textToCADFocusConfig: Layout = {
       splitOrientation: 'block',
       children: [
         {
-          id: DefaultLayoutPaneID.TTC,
+          id: DefaultLayoutPaneID.Zookeeper,
           label: 'Zookeeper',
           type: LayoutType.Simple,
-          areaType: AreaType.TTC,
+          areaType: AreaType.Zookeeper,
           icon: 'sparkles',
         },
       ],

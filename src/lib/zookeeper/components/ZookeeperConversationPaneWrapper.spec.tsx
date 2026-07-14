@@ -1,4 +1,4 @@
-import { MlEphantConversationPaneWrapper } from '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper'
+import { ZookeeperConversationPaneWrapper } from '@src/lib/zookeeper/components/ZookeeperConversationPaneWrapper'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import type * as SystemIOUtils from '@src/machines/systemIO/utils'
 import { render, waitFor } from '@testing-library/react'
@@ -6,8 +6,8 @@ import { describe, expect, test, vi } from 'vitest'
 
 const mocks = vi.hoisted(() => {
   const systemIOSend = vi.fn()
-  const useWatchForNewFileRequestsFromMlEphant = vi.fn()
-  const mlEphantSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
+  const useWatchForNewFileRequestsFromZookeeper = vi.fn()
+  const zookeeperSubscribe = vi.fn(() => ({ unsubscribe: vi.fn() }))
   const kclManager = {
     captureEditorHistoryState: vi.fn(() => ({
       doc: { toString: () => 'initial code' },
@@ -22,9 +22,9 @@ const mocks = vi.hoisted(() => {
 
   return {
     kclManager,
-    mlEphantSubscribe,
+    zookeeperSubscribe,
     systemIOSend,
-    useWatchForNewFileRequestsFromMlEphant,
+    useWatchForNewFileRequestsFromZookeeper,
     watchCallback: undefined as
       | ((props: {
           toolOutput: unknown
@@ -49,8 +49,8 @@ vi.mock('@src/components/layout/Panel/HeaderMenu', () => ({
   ),
 }))
 
-vi.mock('@src/lib/zookeeper/components/MlEphantConversationPane', () => ({
-  MlEphantConversationPane: () => null,
+vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPane', () => ({
+  ZookeeperConversationPane: () => null,
 }))
 
 vi.mock('@src/hooks/useModelingContext', () => ({
@@ -101,26 +101,26 @@ vi.mock('@src/lib/fs-zds', () => ({
   },
 }))
 
-vi.mock('@src/lib/zookeeper/mlEphantManagerMachine', () => ({
-  MlEphantConversationToMarkdown: vi.fn(() => ''),
-  MlEphantManagerReactContext: {
+vi.mock('@src/lib/zookeeper/zookeeperManagerMachine', () => ({
+  ZookeeperConversationToMarkdown: vi.fn(() => ''),
+  ZookeeperManagerReactContext: {
     Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
     useActorRef: () => ({
       getSnapshot: () => ({
         context: {},
       }),
       send: vi.fn(),
-      subscribe: mocks.mlEphantSubscribe,
+      subscribe: mocks.zookeeperSubscribe,
     }),
   },
 }))
 
-vi.mock('@src/lib/zookeeper/components/MlEphantConversationPaneHooks', () => ({
+vi.mock('@src/lib/zookeeper/components/ZookeeperConversationPaneHooks', () => ({
   useProjectIdToConversationId: vi.fn(),
-  useWatchForNewFileRequestsFromMlEphant: (
+  useWatchForNewFileRequestsFromZookeeper: (
     ...args: [unknown, unknown, NonNullable<typeof mocks.watchCallback>]
   ) => {
-    mocks.useWatchForNewFileRequestsFromMlEphant(...args)
+    mocks.useWatchForNewFileRequestsFromZookeeper(...args)
     mocks.watchCallback = args[2]
   },
 }))
@@ -178,16 +178,16 @@ async function flushQueuedWork() {
   await new Promise((resolve) => setTimeout(resolve, 0))
 }
 
-describe('MlEphantConversationPaneWrapper', () => {
+describe('ZookeeperConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
     mocks.watchCallback = undefined
 
     render(
-      <MlEphantConversationPaneWrapper
+      <ZookeeperConversationPaneWrapper
         areaConfig={{ hide: () => false }}
         layout={{
-          areaType: AreaType.TTC,
+          areaType: AreaType.Zookeeper,
           id: 'zookeeper',
           label: 'Zookeeper',
           type: LayoutType.Simple,

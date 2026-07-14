@@ -512,7 +512,7 @@ export type ModelingMachineEvent =
     }
   | { type: 'Spur Gear'; data?: ModelingCommandSchema['Spur Gear'] }
   | { type: 'Ring Gear'; data?: ModelingCommandSchema['Ring Gear'] }
-  | { type: 'Text-to-CAD' }
+  | { type: 'Zookeeper' }
   | { type: 'Prompt-to-edit'; data: ModelingCommandSchema['Prompt-to-edit'] }
   | {
       type: 'Delete selection'

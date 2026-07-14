@@ -3,7 +3,7 @@ import { oauth2, users } from '@kittycad/lib'
 import env, {
   updateEnvironment,
   updateEnvironmentKittycadWebSocketUrl,
-  updateEnvironmentMlephantWebSocketUrl,
+  updateEnvironmentZookeeperWebSocketUrl,
   generateDomainsFromBaseDomain,
 } from '@src/env'
 import {
@@ -16,7 +16,7 @@ import {
 } from '@src/lib/constants'
 import {
   readEnvironmentConfigurationKittycadWebSocketUrl,
-  readEnvironmentConfigurationMlephantWebSocketUrl,
+  readEnvironmentConfigurationZookeeperWebSocketUrl,
 } from '@src/lib/desktop'
 import {
   listAllEnvironments,
@@ -175,7 +175,7 @@ async function getUser(input: { token?: string }) {
         VITE_ZOO_BASE_DOMAIN: env().VITE_ZOO_BASE_DOMAIN,
         VITE_ZOO_API_BASE_URL: env().VITE_ZOO_API_BASE_URL,
         VITE_KITTYCAD_WEBSOCKET_URL: env().VITE_KITTYCAD_WEBSOCKET_URL,
-        VITE_MLEPHANT_WEBSOCKET_URL: env().VITE_MLEPHANT_WEBSOCKET_URL,
+        VITE_ZOOKEEPER_WEBSOCKET_URL: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
       },
     },
   })
@@ -191,12 +191,12 @@ async function getUser(input: { token?: string }) {
   }
 
   // Update the Zookeeper WebSocket URL override
-  const cachedMlephantWebSocketUrl =
-    await readEnvironmentConfigurationMlephantWebSocketUrl(environment)
-  if (cachedMlephantWebSocketUrl) {
-    updateEnvironmentMlephantWebSocketUrl(
+  const cachedZookeeperWebSocketUrl =
+    await readEnvironmentConfigurationZookeeperWebSocketUrl(environment)
+  if (cachedZookeeperWebSocketUrl) {
+    updateEnvironmentZookeeperWebSocketUrl(
       environment,
-      cachedMlephantWebSocketUrl
+      cachedZookeeperWebSocketUrl
     )
   }
 

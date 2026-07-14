@@ -3,21 +3,21 @@ import type { FileEntry } from '@src/lib/project'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
 import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
-import { type MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
+import { type ZookeeperManagerActor } from '@src/lib/zookeeper/zookeeperManagerMachine'
 import { type RequestedKCLFileDelete } from '@src/machines/systemIO/utils'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import { useEffect } from 'react'
 import { NIL as uuidNIL } from 'uuid'
 
 export const useProjectIdToConversationId = (
-  mlEphantManagerActor: MlEphantManagerActor,
+  zookeeperManagerActor: ZookeeperManagerActor,
   conversationStore: ZookeeperConversationStore,
   settings: SettingsType
 ) => {
   useEffect(() => {
     let lastConversationId =
-      mlEphantManagerActor.getSnapshot().context.conversationId
-    const subscription = mlEphantManagerActor.subscribe((next) => {
+      zookeeperManagerActor.getSnapshot().context.conversationId
+    const subscription = zookeeperManagerActor.subscribe((next) => {
       if (settings.meta.id.current === undefined) {
         return
       }
@@ -48,7 +48,7 @@ export const useProjectIdToConversationId = (
   }, [settings.meta.id.current, conversationStore])
 }
 
-export interface MlEphantNewFileRequestProps {
+export interface ZookeeperNewFileRequestProps {
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
@@ -56,15 +56,15 @@ export interface MlEphantNewFileRequestProps {
   exchangeId?: number
 }
 
-// Watch MlEphant for any responses that require files to be created.
-export const useWatchForNewFileRequestsFromMlEphant = (
-  mlEphantManagerActor: MlEphantManagerActor,
+// Watch Zookeeper for any responses that require files to be created.
+export const useWatchForNewFileRequestsFromZookeeper = (
+  zookeeperManagerActor: ZookeeperManagerActor,
   engineCommandManager: ConnectionManager,
-  fn: (props: MlEphantNewFileRequestProps) => void
+  fn: (props: ZookeeperNewFileRequestProps) => void
 ) => {
   useEffect(() => {
     let lastId: number | undefined = undefined
-    const subscription = mlEphantManagerActor.subscribe((next) => {
+    const subscription = zookeeperManagerActor.subscribe((next) => {
       if (next.context.lastMessageId === lastId) return
       lastId = next.context.lastMessageId
 

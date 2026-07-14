@@ -12,8 +12,8 @@ export function withKittycadWebSocketURL(qs: string): string {
   return mergeQueryString(env().VITE_KITTYCAD_WEBSOCKET_URL, qs)
 }
 
-export function withMlephantWebSocketURL(qs: string): string {
-  return mergeQueryString(env().VITE_MLEPHANT_WEBSOCKET_URL, qs)
+export function withZookeeperWebSocketURL(qs: string): string {
+  return mergeQueryString(env().VITE_ZOOKEEPER_WEBSOCKET_URL, qs)
 }
 
 function mergeQueryString(url: string | undefined, qs: string): string {

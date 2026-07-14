@@ -438,7 +438,7 @@ export class ToolbarFixture {
   }
 
   async fireTtcPrompt(prompt: string) {
-    await this.openPane(DefaultLayoutPaneID.TTC)
+    await this.openPane(DefaultLayoutPaneID.Zookeeper)
     await expect(
       this.page.getByTestId('ml-ephant-conversation-input')
     ).toBeVisible()

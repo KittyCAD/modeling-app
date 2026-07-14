@@ -12,7 +12,7 @@ import {
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
-import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
+import { getZookeeperProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
 import { useModelingContext } from '@src/hooks/useModelingContext'
@@ -134,11 +134,13 @@ export function OpenedProject() {
     if (systemIOState !== 'idle') {
       return
     }
-    if (kclManager.mlEphantManagerMachineBulkManipulatingFileSystem === false) {
+    if (
+      kclManager.zookeeperManagerMachineBulkManipulatingFileSystem === false
+    ) {
       return
     }
-    const reloadBehavior = getMlEphantProjectReloadBehavior(modelingState)
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = false
+    const reloadBehavior = getZookeeperProjectReloadBehavior(modelingState)
+    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = false
 
     if (reloadBehavior === 'exit-sketch-solve') {
       toast(

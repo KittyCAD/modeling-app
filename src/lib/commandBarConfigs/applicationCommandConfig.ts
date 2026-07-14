@@ -4,7 +4,7 @@ import type { App } from '@src/lib/app'
 import type { Command } from '@src/lib/commandTypes'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
-  writeEnvironmentConfigurationMlephantWebSocketUrl,
+  writeEnvironmentConfigurationZookeeperWebSocketUrl,
   writeEnvironmentFile,
 } from '@src/lib/desktop'
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
@@ -533,7 +533,7 @@ export function createApplicationCommands({
     onSubmit: (data) => {
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
       if (environmentName) {
-        writeEnvironmentConfigurationMlephantWebSocketUrl(
+        writeEnvironmentConfigurationZookeeperWebSocketUrl(
           environmentName,
           data?.url ?? ''
         )
@@ -552,7 +552,7 @@ export function createApplicationCommands({
           Locally-running Zookeeper: **ws://localhost:8080/ws/ml/copilot**
           Pull Requests: **wss://api.dev.zoo.dev/ws/ml/copilot?pr=NUMBER**
         `.trim(),
-        defaultValue: () => env().VITE_MLEPHANT_WEBSOCKET_URL ?? '',
+        defaultValue: () => env().VITE_ZOOKEEPER_WEBSOCKET_URL ?? '',
       },
     },
   }
@@ -598,8 +598,8 @@ export function createApplicationCommands({
             value: 'default',
           },
           {
-            name: 'Text-to-CAD focus',
-            value: 'ttc',
+            name: 'Zookeeper focus',
+            value: 'zookeeper',
           },
         ] satisfies { name: string; value: keyof typeof userLoadableLayouts }[],
       },

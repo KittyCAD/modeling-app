@@ -1,4 +1,4 @@
-import type { TextToCadMultiFileIterationBody } from '@kittycad/lib'
+import type { TextToCadMultiFileIterationBody as ZookeeperMultiFileIterationBody } from '@kittycad/lib'
 import type { ArtifactGraph } from '@src/lang/wasm'
 import type { FileMeta } from '@src/lib/types'
 import type { Selections } from '@src/machines/modelingSharedTypes'
@@ -10,7 +10,7 @@ export type KclFileMetaMap = {
 }
 
 export interface PromptToEditRequest {
-  body: TextToCadMultiFileIterationBody
+  body: ZookeeperMultiFileIterationBody
   files: KittyCadLibFile[]
   activeFile?: string
 }
