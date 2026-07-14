@@ -1101,8 +1101,6 @@ pub(crate) async fn do_post_extrude<'a>(
     if sketch.clone.is_some()
         && let Some(clone_id_map) = clone_id_map
     {
-        start_cap_id = start_cap_id.map(|id| clone_id_map.get(&id).copied().unwrap_or(id));
-        end_cap_id = end_cap_id.map(|id| clone_id_map.get(&id).copied().unwrap_or(id));
         face_id_map = face_id_map
             .into_iter()
             .filter_map(|(k, v)| {
