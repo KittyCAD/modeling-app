@@ -3,6 +3,7 @@ import { type Artifact, assertParse } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import {
   type ModelingCommandSchema,
+  extrudeSelectionRequiresMethod,
   extrudeSelectionRequiresBodyType,
   getDefaultGdtTolerance,
   modelingMachineCommandConfig,
@@ -150,7 +151,24 @@ describe('GDT tolerance defaults', () => {
   })
 })
 
-describe('Extrude bodyType argument', () => {
+describe('Extrude surface arguments', () => {
+  it('allows extrude profiles to include body edge selections', () => {
+    const commandConfig = modelingMachineCommandConfig.Extrude
+    if (!commandConfig || isArray(commandConfig)) {
+      throw new Error('Extrude should have a single command config')
+    }
+
+    expect(commandConfig.args?.sketches).toMatchObject({
+      inputType: 'selection',
+      selectionTypes: expect.arrayContaining([
+        'segment',
+        'sweepEdge',
+        'primitiveEdge',
+        'enginePrimitiveEdge',
+      ]),
+    })
+  })
+
   it('requires bodyType when extruding sketch segments after length is confirmed', () => {
     expect(
       bodyTypeRequiredForCommand('Extrude', {
@@ -158,6 +176,109 @@ describe('Extrude bodyType argument', () => {
         length: parsedLength(),
       })
     ).toBe(true)
+  })
+
+  it('requires bodyType when extruding sweep edges after length is confirmed', () => {
+    expect(
+      bodyTypeRequiredForCommand('Extrude', {
+        sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+        length: parsedLength(),
+      })
+    ).toBe(true)
+  })
+
+  it('requires bodyType when extruding engine edge selections after length is confirmed', () => {
+    expect(
+      bodyTypeRequiredForCommand('Extrude', {
+        sketches: {
+          graphSelections: [],
+          otherSelections: [
+            {
+              type: 'enginePrimitive',
+              entityId: 'edge-entity',
+              parentEntityId: 'body-entity',
+              primitiveIndex: 0,
+              primitiveType: 'edge',
+            },
+          ],
+        },
+        length: parsedLength(),
+      })
+    ).toBe(true)
+  })
+
+  it('requires method when extruding body edges after length is confirmed', () => {
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({
+            type: 'primitiveEdge',
+          } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: {
+            graphSelections: [],
+            otherSelections: [
+              {
+                type: 'enginePrimitive',
+                entityId: 'edge-entity',
+                parentEntityId: 'body-entity',
+                primitiveIndex: 0,
+                primitiveType: 'edge',
+              },
+            ],
+          },
+          length: parsedLength(),
+        },
+      })
+    ).toBe(true)
+  })
+
+  it('keeps method optional for sketch segments and before length is confirmed', () => {
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'segment' } as Artifact),
+          length: parsedLength(),
+        },
+      })
+    ).toBe(false)
+
+    expect(
+      extrudeSelectionRequiresMethod({
+        argumentsToSubmit: {
+          sketches: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+          length: '5',
+        },
+      })
+    ).toBe(false)
+  })
+
+  it('uses experimental features for explicit direction selections', () => {
+    expect(
+      modelingStdLibCommandUsesExperimentalFeatures('Extrude', {
+        direction: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
+      })
+    ).toBe(true)
+
+    expect(modelingStdLibCommandUsesExperimentalFeatures('Extrude', {})).toBe(
+      false
+    )
   })
 
   it('keeps bodyType optional for sketch segments before length is confirmed', () => {
@@ -304,7 +425,10 @@ describe('stdlib command arg derivation', () => {
       inputType: 'vector2d',
       required: false,
     })
-    expect('direction' in args).toBe(false)
+    expect(args.direction).toMatchObject({
+      required: false,
+      status: 'experimental',
+    })
   })
 
   it('derives command status from KCL stdlib metadata', () => {
@@ -321,7 +445,7 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
-      ['Extrude', { direction: selectionsForArtifact() }, false],
+      ['Extrude', { direction: selectionsForArtifact() }, true],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
       ['Helical Gear', {}, true],
