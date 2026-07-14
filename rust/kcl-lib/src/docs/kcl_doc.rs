@@ -136,7 +136,7 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                         )?),
                     };
                     if let Some(m) = m {
-                        let key = format!("M:{}", &m.qual_name);
+                        let key = format!("M:{}", m.qual_name);
                         let mut dd = DocData::Mod(m);
                         dd.with_meta(&import.outer_attrs);
                         result.children.insert(key, dd);
@@ -148,7 +148,7 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                 if !names.contains(var.name()) {
                     continue;
                 }
-                let qual = format!("{}::", &result.qual_name);
+                let qual = format!("{}::", result.qual_name);
                 let mut dd = match var.kind {
                     VariableKind::Fn => DocData::Fn(FnData::from_ast(var, qual, preferred_prefix, &result.name)),
                     VariableKind::Const => {
@@ -172,7 +172,7 @@ fn visit_module(name: &str, preferred_prefix: &str, names: WalkForNames) -> Resu
                 if !names.contains(ty.name()) {
                     continue;
                 }
-                let qual = format!("{}::", &result.qual_name);
+                let qual = format!("{}::", result.qual_name);
                 let mut dd = DocData::Ty(TyData::from_ast(ty, qual, preferred_prefix, &result.name));
                 let key = format!("T:{}", dd.qual_name());
                 if result.children.contains_key(&key) {

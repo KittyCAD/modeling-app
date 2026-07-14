@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 0, var 4])
+  line2 = line(start = [var 4, var 0], end = [var 4, var 4])
+  line3 = line(start = [var 2, var -1], end = [var 2, var 5])
+  symmetric([line1, line2], axis = line3)
+}
+
