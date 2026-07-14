@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/frontend/trim/tests.rs
-expression: "result_normalized"
+expression: result_normalized
 ---
 sketch(on = YZ) {
   arcToSplit = arc(start = [var 11.06mm, var 1.06mm], end = [var 3.54mm, var 5.28mm], center = [var 0.65mm, var -8.7mm])
@@ -8,7 +8,7 @@ sketch(on = YZ) {
   line2 = line(start = [var 4mm, var 8.5mm], end = [var 3mm, var 1.5mm])
   lineCoincidentWithArcCen = line(start = [var 0.65mm, var -8.7mm], end = [var 11.5mm, var -7.5mm])
   line4 = line(start = [var 11.06mm, var 1.06mm], end = [var 13.32mm, var 6.78mm])
-  line5 = line(start = [var 7.62mm, var 3.75mm], end = [var 10mm, var 8mm])
+  line5 = line(start = [var 7.63mm, var 3.75mm], end = [var 10mm, var 8mm])
   coincident([line5.start, arcToSplit])
   coincident([line4.start, arcToSplit.start])
   coincident([
@@ -16,7 +16,7 @@ sketch(on = YZ) {
     arcToSplit.center
   ])
   distance([arcToSplit.center, line4.end]) == 20mm
-  line3 = line(start = [var -0.92mm, var -6.93mm], end = [var 2.89mm, var -11.21mm])
+  line3 = line(start = [var -0.93mm, var -6.93mm], end = [var 2.88mm, var -11.21mm])
   coincident([arcToSplit.center, line3])
   arc1 = arc(start = [var -5.75mm, var 4.08mm], end = [var -10.37mm, var 0.39mm], center = [var 0.65mm, var -8.7mm])
   coincident([arcToSplit.end, line2])
