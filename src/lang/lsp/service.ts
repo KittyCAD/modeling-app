@@ -168,7 +168,7 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
 
   function reconcileRuntime() {
     const token = getAuthToken()
-    if (!kclManager || !token) {
+    if (!kclManager || !token || !canStartWorkerRuntime()) {
       stopRuntime()
       return
     }
@@ -179,6 +179,12 @@ export function createLspService({ getAuth }: CreateLspServiceOptions): {
 
     stopRuntime()
     startRuntime(token)
+  }
+
+  function canStartWorkerRuntime() {
+    // Vitest's happy-dom environment does not provide the Worker runtime that
+    // Vite's worker wrapper constructs.
+    return typeof globalThis.Worker !== 'undefined'
   }
 
   function startRuntime(token: string) {
