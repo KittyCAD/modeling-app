@@ -1,158 +1,35 @@
-import {
-  FromServer,
-  IntoServer,
-  LanguageServerClient,
-  LspWorkerEventType,
-} from '@kittycad/codemirror-lsp-client'
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react'
+import React, { createContext, useContext, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { attachKclLspToCodeMirror } from '@src/lang/lsp/codeMirror'
-import type { KclWorkerOptions } from '@src/lang/lsp/workerTypes'
-import { LspWorker } from '@src/lang/lsp/workerTypes'
-import Worker from '@src/lang/lsp/worker.ts?worker'
-import { wasmUrl } from '@src/lang/wasmUtils'
+import type { LspService } from '@src/lang/lsp/registry/contract'
+import { createLspService } from '@src/lang/lsp/service'
 import { useApp, useSingletons } from '@src/lib/boot'
-import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import type { FileEntry } from '@src/lib/project'
-import { err } from '@src/lib/trap'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 
-// an OS-agnostic way to get the basename of the path.
-export function projectBasename(filePath: string, projectPath: string): string {
-  const newPath = filePath.replace(projectPath, '')
-  // Trim any leading slashes.
-  let trimmedStr = newPath.replace(/^\/+/, '').replace(/^\\+/, '')
-  return trimmedStr
-}
-
-type LspContext = {
-  onProjectClose: (
-    file: FileEntry | null,
-    projectPath: string | null,
-    redirect: boolean
-  ) => void
-  onProjectOpen: (
-    project: { name: string | null; path: string | null } | null,
-    file: FileEntry | null
-  ) => void
-  onFileOpen: (filePath: string | null, projectPath: string | null) => void
-  onFileClose: (filePath: string | null, projectPath: string | null) => void
-  onFileCreate: (file: FileEntry, projectPath: string | null) => void
-  onFileRename: (
-    oldFile: FileEntry,
-    newFile: FileEntry,
-    projectPath: string | null
-  ) => void
-  onFileDelete: (file: FileEntry, projectPath: string | null) => void
-}
+type LspContext = Omit<LspService, 'attachKclManager'>
 
 export const LspStateContext = createContext({} as LspContext)
 export const LspProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = useApp()
   const { kclManager } = useSingletons()
-  const [isKclLspReady, setIsKclLspReady] = useState(false)
-
-  const token = auth.useToken()
   const navigate = useNavigate()
-
-  // So this is a bit weird, we need to initialize the lsp server and client.
-  // But the server happens async so we break this into two parts.
-  // Below is the client and server promise.
-  const { lspClient: kclLspClient } = useMemo(() => {
-    if (!token || token === '') {
-      return { lspClient: null }
-    }
-
-    const lspWorker = new Worker({ name: 'kcl' })
-    const initEvent: KclWorkerOptions = {
-      wasmUrl: wasmUrl(),
-      token,
-      apiBaseUrl: withAPIBaseURL(''),
-    }
-    lspWorker.postMessage({
-      worker: LspWorker.Kcl,
-      eventType: LspWorkerEventType.Init,
-      eventData: initEvent,
-    })
-    lspWorker.onmessage = (e) => {
-      if (err(fromServer)) {
-        return
-      }
-      fromServer.add(e.data)
-    }
-
-    const intoServer: IntoServer = new IntoServer(LspWorker.Kcl, lspWorker)
-    const fromServer: FromServer | Error = FromServer.create()
-    if (err(fromServer)) {
-      return { lspClient: null }
-    }
-
-    const lspClient = new LanguageServerClient({
-      name: LspWorker.Kcl,
-      fromServer,
-      intoServer,
-      initializedCallback: () => {
-        setIsKclLspReady(true)
-      },
-    })
-
-    return { lspClient }
-  }, [
-    // We need a token for authenticating the server.
-    token,
-  ])
-
-  useMemo(() => {
-    if (!window.electron && isKclLspReady && kclLspClient && kclManager.code) {
-      kclLspClient.textDocumentDidOpen({
-        textDocument: {
-          uri: `file:///${PROJECT_ENTRYPOINT}`,
-          languageId: 'kcl',
-          version: 1,
-          text: kclManager.code,
-        },
-      })
-    }
-  }, [kclLspClient, isKclLspReady, kclManager.code])
+  const lsp = useMemo(() => createLspService({ getAuth: () => auth }), [auth])
 
   useEffect(() => {
-    if (!isKclLspReady || !kclLspClient) {
-      return
+    const detach = lsp.service.attachKclManager(kclManager)
+    return () => {
+      detach()
+      lsp.dispose()
     }
-
-    return attachKclLspToCodeMirror(kclManager, kclLspClient)
-  }, [kclLspClient, isKclLspReady, kclManager])
-
-  const lspClients = useMemo(
-    () => (kclLspClient ? [kclLspClient] : []),
-    [kclLspClient]
-  )
+  }, [lsp, kclManager])
 
   const onProjectClose = (
     file: FileEntry | null,
     projectPath: string | null,
     redirect: boolean
   ) => {
-    const currentFilePath = projectBasename(
-      file?.path || PROJECT_ENTRYPOINT,
-      projectPath || ''
-    )
-    lspClients.forEach((lspClient) => {
-      lspClient.textDocumentDidClose({
-        textDocument: {
-          uri: `file:///${currentFilePath}`,
-        },
-      })
-    })
-    kclManager.clearGlobalHistory()
+    lsp.service.onProjectClose(file, projectPath, redirect)
 
     if (redirect) {
       void navigate(PATHS.HOME)
@@ -163,75 +40,19 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     project: { name: string | null; path: string | null } | null,
     file: FileEntry | null
   ) => {
-    const projectName = project?.name || 'ProjectRoot'
-    // Send that the workspace folders changed.
-    lspClients.forEach((lspClient) => {
-      lspClient.workspaceDidChangeWorkspaceFolders(
-        [{ uri: 'file://', name: projectName }],
-        []
-      )
-    })
-    if (file) {
-      // Send that the file was opened.
-      const filename = projectBasename(
-        file?.path || PROJECT_ENTRYPOINT,
-        project?.path || ''
-      )
-      lspClients.forEach((lspClient) => {
-        lspClient.textDocumentDidOpen({
-          textDocument: {
-            uri: `file:///${filename}`,
-            languageId: 'kcl',
-            version: 1,
-            text: '',
-          },
-        })
-      })
-    }
+    lsp.service.onProjectOpen(project, file)
   }
 
   const onFileOpen = (filePath: string | null, projectPath: string | null) => {
-    const currentFilePath = projectBasename(
-      filePath || PROJECT_ENTRYPOINT,
-      projectPath || ''
-    )
-    lspClients.forEach((lspClient) => {
-      lspClient.textDocumentDidOpen({
-        textDocument: {
-          uri: `file:///${currentFilePath}`,
-          languageId: 'kcl',
-          version: 1,
-          text: '',
-        },
-      })
-    })
+    lsp.service.onFileOpen(filePath, projectPath)
   }
 
   const onFileClose = (filePath: string | null, projectPath: string | null) => {
-    const currentFilePath = projectBasename(
-      filePath || PROJECT_ENTRYPOINT,
-      projectPath || ''
-    )
-    lspClients.forEach((lspClient) => {
-      lspClient.textDocumentDidClose({
-        textDocument: {
-          uri: `file:///${currentFilePath}`,
-        },
-      })
-    })
+    lsp.service.onFileClose(filePath, projectPath)
   }
 
   const onFileCreate = (file: FileEntry, projectPath: string | null) => {
-    const currentFilePath = projectBasename(file.path, projectPath || '')
-    lspClients.forEach((lspClient) => {
-      lspClient.workspaceDidCreateFiles({
-        files: [
-          {
-            uri: `file:///${currentFilePath}`,
-          },
-        ],
-      })
-    })
+    lsp.service.onFileCreate(file, projectPath)
   }
 
   const onFileRename = (
@@ -239,31 +60,11 @@ export const LspProvider = ({ children }: { children: React.ReactNode }) => {
     newFile: FileEntry,
     projectPath: string | null
   ) => {
-    const oldFilePath = projectBasename(oldFile.path, projectPath || '')
-    const newFilePath = projectBasename(newFile.path, projectPath || '')
-    lspClients.forEach((lspClient) => {
-      lspClient.workspaceDidRenameFiles({
-        files: [
-          {
-            oldUri: `file:///${oldFilePath}`,
-            newUri: `file:///${newFilePath}`,
-          },
-        ],
-      })
-    })
+    lsp.service.onFileRename(oldFile, newFile, projectPath)
   }
 
   const onFileDelete = (file: FileEntry, projectPath: string | null) => {
-    const currentFilePath = projectBasename(file.path, projectPath || '')
-    lspClients.forEach((lspClient) => {
-      lspClient.workspaceDidDeleteFiles({
-        files: [
-          {
-            uri: `file:///${currentFilePath}`,
-          },
-        ],
-      })
-    })
+    lsp.service.onFileDelete(file, projectPath)
   }
 
   return (
