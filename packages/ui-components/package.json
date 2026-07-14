@@ -34,11 +34,11 @@
   },
   "dependencies": {
     "@kittycad/lib": "^4.2.9",
-    "@tiptap/core": "^3.27.2",
-    "@tiptap/extension-link": "^3.27.2",
-    "@tiptap/markdown": "^3.27.2",
-    "@tiptap/react": "^3.27.2",
-    "@tiptap/starter-kit": "^3.27.2"
+    "@tiptap/core": "^3.27.3",
+    "@tiptap/extension-link": "^3.27.3",
+    "@tiptap/markdown": "^3.27.3",
+    "@tiptap/react": "^3.27.3",
+    "@tiptap/starter-kit": "^3.27.3"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.4.6",
@@ -49,13 +49,13 @@
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
-    "happy-dom": "^20.9.0",
+    "happy-dom": "^20.10.6",
     "msw": "^2.14.6",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "storybook": "^10.4.6",
     "typescript": "^6.0.3",
     "vite": "^8.0.16",
-    "vitest": "^4.1.9"
+    "vitest": "^4.1.10"
   }
 }
