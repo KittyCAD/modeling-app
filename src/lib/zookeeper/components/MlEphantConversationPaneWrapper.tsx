@@ -42,9 +42,6 @@ import {
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
-// Yea, feels bad, but literally every other pane is doing this.
-// TODO: Don't use CSS module for this? More generic module?
-import styles from '@src/components/layout/areas/KclEditorMenu.module.css'
 
 function getZookeeperPatchPreviousCode(
   patch: ZookeeperEditPatch,
@@ -1001,7 +998,7 @@ export const MlEphantConversationMenu = () => {
               ''
             )
           }}
-          className={styles.button}
+          className="menuButton"
         >
           <span>Export conversation</span>
         </button>
