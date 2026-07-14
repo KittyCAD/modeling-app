@@ -1,13 +1,35 @@
 import { Menu } from '@headlessui/react'
+import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
+import { markdown } from '@codemirror/lang-markdown'
+import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language'
+import { searchKeymap } from '@codemirror/search'
+import { Compartment, EditorState } from '@codemirror/state'
+import {
+  EditorView,
+  drawSelection,
+  highlightActiveLine,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+} from '@codemirror/view'
 import { useSignals } from '@preact/signals-react/runtime'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
+import { editorTheme } from '@src/editor/plugins/theme'
 import usePlatform from '@src/hooks/usePlatform'
 import { useConvertToVariable } from '@src/hooks/useToolbarGuards'
+import {
+  type ActiveTextFile,
+  activeTextFileSignal,
+  clearActiveTextFile,
+  flushActiveTextFileWrite,
+  scheduleActiveTextFileWrite,
+} from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
+import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection, trap } from '@src/lib/trap'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
 import {
@@ -52,14 +74,157 @@ export const KclEditorPane = (props: AreaTypeComponentProps) => {
 }
 
 export const KclEditorPaneContents = () => {
+  useSignals()
   const { kclManager } = useSingletons()
+  const activeTextFile = activeTextFileSignal.value
   const editorParent = useRef<HTMLDivElement>(null)
+
+  // When this pane unmounts (e.g. the Code pane is closed), stop showing the
+  // text file so a KCL file is shown again the next time it opens.
   useEffect(() => {
+    return () => {
+      clearActiveTextFile()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (activeTextFile) {
+      return
+    }
     editorParent.current?.appendChild(kclManager.editorView.dom)
-  }, [kclManager.editorView.dom])
+  }, [activeTextFile, kclManager.editorView.dom])
+
+  if (activeTextFile) {
+    return <TextFileEditor activeTextFile={activeTextFile} />
+  }
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
+      <div
+        id="code-mirror-override"
+        className="absolute inset-0 pr-1"
+        ref={editorParent}
+      />
+    </div>
+  )
+}
+
+const textFileEditorTheme = EditorView.theme({
+  '&': {
+    height: '100%',
+    color: 'inherit',
+  },
+  '.cm-scroller': {
+    fontFamily:
+      'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+  },
+  '.cm-content': {
+    paddingBlock: '0.5rem',
+  },
+  '.cm-line': {
+    paddingInline: '0.5rem',
+  },
+  '&.cm-focused': {
+    outline: 'none',
+  },
+})
+
+/** Compartment so theme changes reconfigure in place instead of recreating the view. */
+const textThemeCompartment = new Compartment()
+
+/**
+ * A lightweight, editable CodeMirror surface for non-KCL text files (Markdown /
+ * plain text). It is deliberately independent of `KclManager` so editing these
+ * files never triggers KCL execution, LSP, or WASM project loading. Edits are
+ * auto-saved to disk (debounced) via {@link scheduleActiveTextFileWrite}.
+ */
+function TextFileEditor({
+  activeTextFile,
+}: {
+  activeTextFile: ActiveTextFile
+}) {
+  const { settings } = useApp()
+  const settingsValues = settings.useSettings()
+  const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
+  const editorParent = useRef<HTMLDivElement>(null)
+  const viewRef = useRef<EditorView | null>(null)
+
+  // Create/destroy the editor only when the FILE changes (path/status) — never
+  // on keystroke or theme change, which would reset cursor/scroll and could
+  // drop un-flushed edits.
+  useEffect(() => {
+    if (!editorParent.current || activeTextFile.status !== 'ready') {
+      return
+    }
+    const path = activeTextFile.path
+    const languageExtension = path.toLowerCase().endsWith('.md')
+      ? [
+          markdown(),
+          syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+        ]
+      : []
+
+    const view = new EditorView({
+      state: EditorState.create({
+        doc: activeTextFile.text,
+        extensions: [
+          textThemeCompartment.of(editorTheme[resolvedTheme]),
+          textFileEditorTheme,
+          ...languageExtension,
+          EditorView.lineWrapping,
+          history(),
+          drawSelection(),
+          lineNumbers(),
+          highlightSpecialChars(),
+          highlightActiveLine(),
+          keymap.of([...defaultKeymap, ...historyKeymap, ...searchKeymap]),
+          EditorView.updateListener.of((update) => {
+            if (update.docChanged) {
+              scheduleActiveTextFileWrite(path, update.state.doc.toString())
+            }
+          }),
+        ],
+      }),
+      parent: editorParent.current,
+    })
+    viewRef.current = view
+
+    return () => {
+      view.destroy()
+      viewRef.current = null
+      // Persist edits typed within the debounce window before switching away.
+      flushActiveTextFileWrite().catch(reportRejection)
+    }
+    // resolvedTheme is intentionally omitted: theme changes are handled by the
+    // compartment effect below so the editor isn't recreated on every toggle.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTextFile.path, activeTextFile.status])
+
+  // Reconfigure the theme in place — no recreation, no lost edits.
+  useEffect(() => {
+    viewRef.current?.dispatch({
+      effects: textThemeCompartment.reconfigure(editorTheme[resolvedTheme]),
+    })
+  }, [resolvedTheme])
+
+  if (activeTextFile.status === 'loading') {
+    return (
+      <div className="h-full p-3 text-sm text-chalkboard-70 dark:text-chalkboard-30">
+        Loading {activeTextFile.name}...
+      </div>
+    )
+  }
+
+  if (activeTextFile.status === 'error') {
+    return (
+      <div className="h-full p-3 text-sm text-destroy-80">
+        Failed to open {activeTextFile.name}: {activeTextFile.error}
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative h-full">
       <div
         id="code-mirror-override"
         className="absolute inset-0 pr-1"
@@ -89,6 +254,16 @@ function copyKclCodeToClipboard(kclManager: Singletons['kclManager']) {
 }
 
 export const KclEditorMenu = () => {
+  useSignals()
+  // The KCL-specific menu items (format, convert to variable, KCL docs, add KCL
+  // file) don't apply when a plain text/markdown file is open in the pane.
+  if (activeTextFileSignal.value) {
+    return null
+  }
+  return <KclEditorKclMenu />
+}
+
+const KclEditorKclMenu = () => {
   useSignals()
   const app = useApp()
   const { commands, settings } = app

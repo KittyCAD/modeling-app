@@ -1,0 +1,11 @@
+---
+source: kcl-lib/src/frontend/trim/tests.rs
+expression: "result_normalized"
+---
+@settings(defaultLengthUnit = cm)
+
+sketch(on = YZ) {
+  line1 = line(start = [var -1cm, var 5cm], end = [var -1cm, var -5cm])
+  line2 = line(start = [var -1cm, var 0cm], end = [var 5cm, var 0cm])
+  coincident([line2.start, line1])
+}
