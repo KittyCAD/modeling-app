@@ -56,7 +56,7 @@ pub(crate) fn point_3d_to_mm(p: [TyF64; 3]) -> [f64; 3] {
 
 /// Get the distance between two points.
 pub(crate) fn distance(a: Coords2d, b: Coords2d) -> f64 {
-    vec2_len(vec2_sub(b, a))
+    ((b[0] - a[0]).squared() + (b[1] - a[1]).squared()).sqrt()
 }
 
 pub(crate) fn vec2_sub(a: Coords2d, b: Coords2d) -> Coords2d {
