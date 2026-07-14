@@ -1846,18 +1846,30 @@ function refactorGdtEdgesToEdgeSpecifiersInPlace(
     if (err(nodeResult)) continue
 
     const callNode = nodeResult.node
+    const oldEdgesArg = callNode.arguments?.find(
+      (a) => getLabelName(a) === 'edges'
+    )?.arg
     const existingEdgeRefs = getExistingEdgeRefsFromCall(callNode).filter(
       (expr) => expr.type === 'ObjectExpression'
     )
     const newArgs = (callNode.arguments ?? []).filter(
       (a) => getLabelName(a) !== 'edges'
     )
-    newArgs.push(
-      createLabeledArg(
-        'edges',
-        createArrayExpression([...edgeRefExprs, ...existingEdgeRefs])
-      )
-    )
+    const edgesArrayExpr = createArrayExpression([
+      ...edgeRefExprs,
+      ...existingEdgeRefs,
+    ])
+    // Carry comments between the old edges elements over to the new array.
+    // Re-appending existing edge refs reorders elements, so only copy when
+    // every element was converted in place.
+    if (
+      existingEdgeRefs.length === 0 &&
+      oldEdgesArg?.type === 'ArrayExpression' &&
+      oldEdgesArg.nonCodeMeta
+    ) {
+      edgesArrayExpr.nonCodeMeta = structuredClone(oldEdgesArg.nonCodeMeta)
+    }
+    newArgs.push(createLabeledArg('edges', edgesArrayExpr))
     callNode.arguments = newArgs
     modifiedAst = nextAst
   }
@@ -2009,13 +2021,30 @@ export function refactorZ0006Unified(
       edgeRefExprs.push(...getExistingEdgeRefsFromCall(callNode))
     }
     if (edgeRefExprs.length === 0) continue
+    const oldTagsArg = callNode.arguments?.find(
+      (a) => getLabelName(a) === 'tags'
+    )?.arg
     const newArgs = (callNode.arguments ?? []).filter(
       (a) =>
         getLabelName(a) !== 'tags' &&
         getLabelName(a) !== 'edges' &&
         getLabelName(a) !== 'edgeRefs'
     )
-    newArgs.push(createLabeledArg('edges', createArrayExpression(edgeRefExprs)))
+    const edgesArrayExpr = createArrayExpression(edgeRefExprs)
+    // Comments between the old tags elements live in the array's nonCodeMeta,
+    // keyed by element position. Carry them over so the refactor doesn't
+    // delete user comments. Mixing conversion kinds reorders elements, so only
+    // copy when the elements kept their positions.
+    const conversionKeptElementOrder =
+      orderedPayloads.length === 0 || orderedEdgeRefExprs.length === 0
+    if (
+      conversionKeptElementOrder &&
+      oldTagsArg?.type === 'ArrayExpression' &&
+      oldTagsArg.nonCodeMeta
+    ) {
+      edgesArrayExpr.nonCodeMeta = structuredClone(oldTagsArg.nonCodeMeta)
+    }
+    newArgs.push(createLabeledArg('edges', edgesArrayExpr))
     callNode.arguments = newArgs
     modifiedAst = nextAst
   }

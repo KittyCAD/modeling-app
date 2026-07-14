@@ -1285,6 +1285,46 @@ part = bracket()
       expect(n).not.toContain('getCommonEdge')
     })
 
+    it('preserves comments between arguments when refactoring fillet tags', () => {
+      const code = `body = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> xLine(length = 10, tag = $baseInside)
+  |> yLine(length = 10, tag = $hookInside)
+  |> close()
+  |> extrude(length = 5)
+
+rounded = fillet(
+  body,
+  radius = 1,
+  // Keep this comment
+  tags = [
+    // Keep this inner comment
+    getCommonEdge(faces = [baseInside, hookInside])
+  ],
+)
+`
+      const ast = assertParse(code, wasmInstance)
+      const graph: ArtifactGraph = defaultArtifactGraph()
+
+      const result = refactorZ0006Unified(ast, [], [], graph, wasmInstance)
+
+      expect(err(result)).toBe(false)
+      if (err(result)) throw result
+      expect(result).toContain('// Keep this comment')
+      // The comment stays where it was written: before the converted arg.
+      expect(result.indexOf('// Keep this comment')).toBeLessThan(
+        result.indexOf('edges = [')
+      )
+      // Comments between the old tags elements move to the new edges array.
+      expect(result).toContain('// Keep this inner comment')
+      expect(result.indexOf('// Keep this inner comment')).toBeLessThan(
+        result.indexOf('sideFaces')
+      )
+      const n = norm(result)
+      expect(n).toContain('sideFaces = [baseInside, hookInside]')
+      expect(n).not.toContain('getCommonEdge')
+    })
+
     it('does not migrate a nested fillet tag variable using a shadowed top-level edge helper', () => {
       const code = KCL_SHADOWED_EDGE_HELPER_VARIABLE
       const ast = assertParse(code, wasmInstance)
