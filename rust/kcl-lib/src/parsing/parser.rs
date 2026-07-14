@@ -2857,8 +2857,8 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
                                 "Define a function with `fn name()` instead of assigning the function to a variable",
                             )
                             .with_suggestion(
-                                format!("Use `fn {}`", &id.name),
-                                format!("fn {}", &id.name),
+                                format!("Use `fn {}`", id.name),
+                                format!("fn {}", id.name),
                                 Some(SourceRange::new(start, fn_end, id.module_id)),
                                 Tag::None,
                             ),
@@ -3868,7 +3868,7 @@ fn binding_name(i: &mut TokenSlice) -> ModalResult<Node<Identifier>> {
     if !is_safe_binding_name(&ident.name) {
         ParseContext::err(CompilationIssue::err(
             SourceRange::new(ident.start, ident.end, ident.module_id),
-            format!("`{}` is a reserved name and cannot be defined.", &ident.name),
+            format!("`{}` is a reserved name and cannot be defined.", ident.name),
         ));
     }
 

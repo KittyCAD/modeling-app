@@ -1,12 +1,15 @@
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { App } from '@src/lib/app'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
 describe('useOnPageMounted', () => {
   const singletons = App.fromProvided({
-    wasmPromise: Promise.resolve({} as ModuleType),
+    registryOverrides: [
+      createTestWasmRegistryItem(Promise.resolve({} as ModuleType)),
+    ],
   }).singletons
 
   describe('on mounted', () => {

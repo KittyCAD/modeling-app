@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  line1 = line(start = [var 2, var 3], end = [var 2, var 3])
+  line2 = line(start = [var 6, var 7], end = [var 6, var 7])
+  perpendicular([line1, line2])
+}
+

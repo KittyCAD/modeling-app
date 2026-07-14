@@ -105,70 +105,12 @@ import {
   startSketchOnDefault,
 } from '@src/lang/modifyAst'
 import {
-  addIntersect,
-  addSplit,
-  addSubtract,
-  addUnion,
-} from '@src/lang/modifyAst/boolean'
-import {
   deleteSelectionPromise,
   deletionErrorMessage,
 } from '@src/lang/modifyAst/deleteSelection'
-import { addBlend, addChamfer, addFillet } from '@src/lang/modifyAst/edges'
-import {
-  addDeleteFace,
-  addHole,
-  addOffsetPlane,
-  addShell,
-} from '@src/lang/modifyAst/faces'
-import {
-  addAngularityGdt,
-  addAnnotationGdt,
-  addCircularityGdt,
-  addConcentricityGdt,
-  addCylindricityGdt,
-  addDatumGdt,
-  addDistanceGdt,
-  addFlatnessGdt,
-  addNoteGdt,
-  addParallelismGdt,
-  addPerpendicularityGdt,
-  addPositionGdt,
-  addProfileGdt,
-  addRunoutGdt,
-  addStraightnessGdt,
-  addSymmetryGdt,
-} from '@src/lang/modifyAst/gdt'
-import {
-  addHelicalGear,
-  addHerringboneGear,
-  addRingGear,
-  addSpurGear,
-} from '@src/lang/modifyAst/gears'
-import { addHelix } from '@src/lang/modifyAst/geometry'
 import { sketchBlockOnExtrudedFace } from '@src/lang/modifyAst/legacySketchFace'
-import {
-  addPatternCircular3D,
-  addPatternLinear3D,
-} from '@src/lang/modifyAst/pattern3D'
-import { setExperimentalFeatures } from '@src/lang/modifyAst/settings'
-import { addFlipSurface, addJoinSurfaces } from '@src/lang/modifyAst/surfaces'
-import {
-  addExtrude,
-  addLoft,
-  addRevolve,
-  addSweep,
-} from '@src/lang/modifyAst/sweeps'
-import {
-  addAppearance,
-  addClone,
-  addDelete,
-  addHide,
-  addMirror3D,
-  addRotate,
-  addScale,
-  addTranslate,
-} from '@src/lang/modifyAst/transforms'
+import { createModelingCodemodActor } from '@src/lang/modifyAst/modelingCodemod'
+import { addHide } from '@src/lang/modifyAst/transforms'
 import {
   artifactIsPlaneWithPaths,
   doesSketchPipeNeedSplitting,
@@ -207,6 +149,7 @@ import type {
 } from '@src/lang/wasm'
 import { parse, recast, resultIsOk, sketchFromKclValue } from '@src/lang/wasm'
 import type { MachineManager } from '@src/lib/MachineManager'
+import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
 import type { ModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandConfig'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import {
@@ -218,7 +161,6 @@ import {
 } from '@src/lib/constants'
 import { exportMake } from '@src/lib/exportMake'
 import { exportSave } from '@src/lib/exportSave'
-import { withDefaultGdtFrameDefaults } from '@src/lib/gdtFramePosition'
 import { toPlaneName } from '@src/lib/planes'
 import type { Project } from '@src/lib/project'
 import type RustContext from '@src/lib/rustContext'
@@ -290,18 +232,10 @@ function findSceneObjectForPlaneSelection(
   if (plane.faceInfo.type === 'cap') {
     const capKind = plane.faceInfo.subType
     return sceneGraphObjects.find((object) => {
-      if (
-        object.kind.type !== 'Cap' ||
-        object.kind.kind !== capKind ||
-        object.source.type !== 'BackTrace'
-      ) {
+      if (object.kind.type !== 'Cap' || object.kind.kind !== capKind) {
         return false
       }
-      const sweepSource = object.source.ranges.at(-1)
-      return (
-        sweepSource !== undefined &&
-        sourceRangesEqual(sweepSource[0], sweepRange)
-      )
+      return sourceRangesEqual(object.kind.source.sweep.range, sweepRange)
     })
   }
 
@@ -313,16 +247,13 @@ function findSceneObjectForPlaneSelection(
   if (err(segmentRange)) return undefined
 
   return sceneGraphObjects.find((object) => {
-    if (object.kind.type !== 'Wall' || object.source.type !== 'BackTrace') {
+    if (object.kind.type !== 'Wall') {
       return false
     }
-    const sweepSource = object.source.ranges.at(-2)
-    const segmentSource = object.source.ranges.at(-1)
+
     return (
-      sweepSource !== undefined &&
-      segmentSource !== undefined &&
-      sourceRangesEqual(sweepSource[0], sweepRange) &&
-      sourceRangesEqual(segmentSource[0], segmentRange)
+      sourceRangesEqual(object.kind.source.sweep.range, sweepRange) &&
+      sourceRangesEqual(object.kind.source.segment.range, segmentRange)
     )
   })
 }
@@ -786,6 +717,9 @@ export const modelingMachine = setup({
     'should use sketch solve mode': ({ context }) => {
       return context.store.useSketchSolveMode?.current === true
     },
+    'Artifact graph is empty': ({ context }) => {
+      return context.kclManager.artifactGraph.size === 0
+    },
     'Selection is sketchBlock': ({
       context: { selectionRanges, kclManager },
       event,
@@ -1153,6 +1087,9 @@ export const modelingMachine = setup({
           up: { x: 0, y: 0, z: 1 },
         },
       })
+    },
+    'stop scene infra': ({ context }) => {
+      context.kclManager.sceneInfra.stop()
     },
     'set new sketch metadata': assign(({ event }) => {
       if (
@@ -1746,12 +1683,6 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(true)
-    },
-    'disable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(false)
-    },
     'Set selection': assign(
       ({
         context: {
@@ -4303,746 +4234,58 @@ export const modelingMachine = setup({
       }
     }),
     'submit-prompt-edit': fromPromise(
-      async ({}: {
-        input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
+      async ({}: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {}
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
      * trigger toastError on Error, and have the 'no kcl errors' guard yet */
     extrudeAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Extrude'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { artifactGraph } = input.kclManager
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-        let ast = input.kclManager.ast
-        if (
-          input.data.draftAngle &&
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const astWithNewSetting = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            wasmInstance
-          )
-          if (err(astWithNewSetting)) {
-            return Promise.reject(astWithNewSetting)
-          }
-
-          ast = astWithNewSetting
-        }
-
-        const astResult = addExtrude({
-          ast,
-          artifactGraph,
-          wasmInstance,
-          ...input.data,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Extrude)
     ),
     sweepAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Sweep'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph } = input.kclManager
-        const astResult = addSweep({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Sweep)
     ),
     loftAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Loft'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-        const { ast, artifactGraph } = input.kclManager
-        const astResult = addLoft({
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-          ...input.data,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Loft)
     ),
     revolveAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Revolve'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph } = input.kclManager
-        const astResult = addRevolve({
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-          ...input.data,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Revolve)
     ),
     offsetPlaneAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Offset plane'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph, variables } = input.kclManager
-        const astResult = addOffsetPlane({
-          ...input.data,
-          ast,
-          artifactGraph,
-          variables,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Offset plane'])
     ),
     helixAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Helix'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph } = input.kclManager
-        const astResult = addHelix({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Helix)
     ),
     helicalGearAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Helical Gear'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
-
-          astWithNewSetting = ast
-        }
-
-        const astResult = addHelicalGear({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Helical Gear'])
     ),
     herringboneGearAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Herringbone Gear'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
-
-          astWithNewSetting = ast
-        }
-
-        const astResult = addHerringboneGear({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Herringbone Gear'])
     ),
     spurGearAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Spur Gear'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
-
-          astWithNewSetting = ast
-        }
-
-        const astResult = addSpurGear({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Spur Gear'])
     ),
     ringGearAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Ring Gear'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        let astWithNewSetting: Node<Program> | undefined
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const ast = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(ast)) {
-            return Promise.reject(ast)
-          }
-
-          astWithNewSetting = ast
-        }
-
-        const astResult = addRingGear({
-          ...input.data,
-          ast: astWithNewSetting ?? input.kclManager.ast,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Ring Gear'])
     ),
     shellAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Shell'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph } = input.kclManager
-        const astResult = addShell({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Shell)
     ),
     deleteFaceAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Delete Face'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const astResult = addDeleteFace({
-          ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Delete Face'])
     ),
     holeAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Hole'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const astResult = addHole({
-          ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Hole)
     ),
     filletAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Fillet'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              engineCommandManager: ConnectionManager
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { artifactGraph } = input.kclManager
-        let ast = input.kclManager.ast
-        if (
-          input.data.version &&
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const astWithNewSetting = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            input.wasmInstance
-          )
-          if (err(astWithNewSetting)) {
-            return Promise.reject(astWithNewSetting)
-          }
-
-          ast = astWithNewSetting
-        }
-        const astResult = addFillet({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: pathToNode,
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Fillet)
     ),
     chamferAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Chamfer'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              engineCommandManager: ConnectionManager
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { artifactGraph } = input.kclManager
-        let ast = input.kclManager.ast
-        if (
-          input.data.version &&
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const astWithNewSetting = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            input.wasmInstance
-          )
-          if (err(astWithNewSetting)) {
-            return Promise.reject(astWithNewSetting)
-          }
-
-          ast = astWithNewSetting
-        }
-        const astResult = addChamfer({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: pathToNode,
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Chamfer)
     ),
     blendAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Blend'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph } = input.kclManager
-        const astResult = addBlend({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(astResult)) {
-          return Promise.reject(astResult)
-        }
-
-        const { modifiedAst, pathToNode } = astResult
-
-        await updateModelingState(
-          modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Blend)
     ),
     deleteSelectionAstMod: fromPromise(
       ({
@@ -5079,227 +4322,22 @@ export const modelingMachine = setup({
       }
     ),
     appearanceAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Appearance'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addAppearance({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Appearance)
     ),
     translateAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Translate'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addTranslate({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Translate)
     ),
     rotateAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Rotate'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addRotate({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Rotate)
     ),
     scaleAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Scale'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addScale({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Scale)
     ),
     cloneAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Clone'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addClone({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Clone)
     ),
     mirror3DAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Mirror 3D'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const { ast, artifactGraph, variables } = input.kclManager
-        const result = addMirror3D({
-          ...input.data,
-          ast,
-          artifactGraph,
-          variables,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Mirror 3D'])
     ),
     hideAstMod: fromPromise(
       async ({
@@ -5340,874 +4378,63 @@ export const modelingMachine = setup({
       }
     ),
     deleteAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data:
-                | {
-                    objects: Selections
-                  }
-                | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        let ast: Node<Program> = input.kclManager.ast
-        if (
-          input.kclManager.fileSettings.experimentalFeatures?.type !== 'Allow'
-        ) {
-          const astWithExperimentalFeatures = setExperimentalFeatures(
-            input.kclManager.code,
-            {
-              type: 'Allow',
-            },
-            await input.kclManager.wasmInstancePromise
-          )
-          if (err(astWithExperimentalFeatures)) {
-            return Promise.reject(astWithExperimentalFeatures)
-          }
-
-          ast = astWithExperimentalFeatures
-        }
-
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addDelete({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods.Delete)
     ),
     gdtFlatnessAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Flatness'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addFlatnessGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Flatness'])
     ),
     gdtStraightnessAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Straightness'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addStraightnessGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Straightness'])
     ),
     gdtCircularityAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Circularity'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addCircularityGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Circularity'])
     ),
     gdtCylindricityAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Cylindricity'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addCylindricityGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Cylindricity'])
     ),
     gdtDatumAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Datum'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addDatumGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Datum'])
     ),
     gdtProfileAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Profile'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addProfileGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Profile'])
     ),
     gdtPositionAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Position'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addPositionGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Position'])
     ),
     gdtDistanceAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Distance'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addDistanceGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Distance'])
     ),
     gdtPerpendicularityAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Perpendicularity'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addPerpendicularityGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(
+        modelingCommandCodemods['GDT Perpendicularity']
+      )
     ),
     gdtAngularityAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Angularity'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addAngularityGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Angularity'])
     ),
     gdtConcentricityAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Concentricity'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addConcentricityGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Concentricity'])
     ),
     gdtSymmetryAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Symmetry'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addSymmetryGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Symmetry'])
     ),
     gdtRunoutAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Runout'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addRunoutGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Runout'])
     ),
     gdtParallelismAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Parallelism'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addParallelismGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Parallelism'])
     ),
     gdtAnnotationAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Annotation'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const data = await withDefaultGdtFrameDefaults({
-          data: input.data,
-          engineCommandManager: input.kclManager.engineCommandManager,
-          ast: input.kclManager.ast,
-          sourceCode: input.kclManager.code,
-          outputUnit: input.kclManager.fileSettings.defaultLengthUnit,
-          wasmInstance,
-        })
-
-        const result = addAnnotationGdt({
-          ...data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Annotation'])
     ),
     gdtNoteAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['GDT Note'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const wasmInstance = await input.kclManager.wasmInstancePromise
-
-        const result = addNoteGdt({
-          ...input.data,
-          ast: input.kclManager.ast,
-          wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['GDT Note'])
     ),
     flipSurfaceAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Flip Surface'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const result = addFlipSurface({
-          ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Flip Surface'])
     ),
     joinSurfacesAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Join Surfaces'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const result = addJoinSurfaces({
-          ...input.data,
-          ast: input.kclManager.ast,
-          artifactGraph: input.kclManager.artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Join Surfaces'])
     ),
     exportFromEngine: fromPromise(
       async ({
@@ -6397,229 +4624,24 @@ export const modelingMachine = setup({
       }
     ),
     boolSubtractAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Boolean Subtract'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addSubtract({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Boolean Subtract'])
     ),
     boolUnionAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Boolean Union'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addUnion({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Boolean Union'])
     ),
     boolIntersectAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Boolean Intersect'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addIntersect({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Boolean Intersect'])
     ),
     boolSplitAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Boolean Split'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-              wasmInstance: ModuleType
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addSplit({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: input.wasmInstance,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Boolean Split'])
     ),
 
     patternCircular3dAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Pattern Circular 3D'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addPatternCircular3D({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Pattern Circular 3D'])
     ),
 
     patternLinear3dAstMod: fromPromise(
-      async ({
-        input,
-      }: {
-        input:
-          | {
-              data: ModelingCommandSchema['Pattern Linear 3D'] | undefined
-              kclManager: KclManager
-              rustContext: RustContext
-            }
-          | undefined
-      }) => {
-        if (!input || !input.data) {
-          return Promise.reject(new Error(NO_INPUT_PROVIDED_MESSAGE))
-        }
-
-        const ast = input.kclManager.ast
-        const artifactGraph = input.kclManager.artifactGraph
-        const result = addPatternLinear3D({
-          ...input.data,
-          ast,
-          artifactGraph,
-          wasmInstance: await input.kclManager.wasmInstancePromise,
-        })
-        if (err(result)) {
-          return Promise.reject(result)
-        }
-        await updateModelingState(
-          result.modifiedAst,
-          EXECUTION_TYPE_REAL,
-          input.kclManager,
-          {
-            focusPath: [result.pathToNode],
-          }
-        )
-      }
+      createModelingCodemodActor(modelingCommandCodemods['Pattern Linear 3D'])
     ),
 
     /* Pierre: looks like somewhat of a one-off */
@@ -8300,20 +6322,29 @@ export const modelingMachine = setup({
         },
       },
 
-      exit: ['enable copilot'],
-
       entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },
 
     'Sketch no face': {
       entry: [
-        'disable copilot',
         'show planes sketch no face',
         'set selection filter to faces only',
       ],
 
       exit: ['hide default planes', 'set selection filter to defaults'],
       on: {
+        Cancel: [
+          {
+            guard: 'Artifact graph is empty',
+            target: '#Modeling.idle.showPlanes',
+            actions: ['reset sketch metadata', 'stop scene infra'],
+          },
+          {
+            target: '#Modeling.idle.hidePlanes',
+            actions: ['reset sketch metadata', 'stop scene infra'],
+          },
+        ],
+
         'Select sketch plane': {
           target: 'animating to plane',
           actions: ['reset sketch metadata'],
@@ -8361,7 +6392,7 @@ export const modelingMachine = setup({
 
         onDone: {
           target: 'Sketch',
-          actions: ['disable copilot', 'set new sketch metadata'],
+          actions: ['set new sketch metadata'],
         },
 
         onError: 'idle',
@@ -9607,7 +7638,6 @@ export const modelingMachine = setup({
       // maybe cancel needs to have a guard for if else logic?
       actions: [
         'reset sketch metadata',
-        'enable copilot',
         ({ context }) => {
           context.kclManager.sceneInfra.stop()
         },

@@ -48,7 +48,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
       - name: Install Node.js
         uses: actions/setup-node@v6.4.0
         with:
@@ -105,7 +105,7 @@ jobs:
       RA_TARGET: ${{ matrix.target }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -113,7 +113,7 @@ jobs:
         run: |
           rm rust/rust-toolchain.toml
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: rust
           components: rust-src
@@ -221,7 +221,7 @@ jobs:
             nodejs \
             npm
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Use correct Rust toolchain
@@ -229,7 +229,7 @@ jobs:
         run: |
           rm rust/rust-toolchain.toml
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: rust
           components: rust-src
@@ -271,7 +271,7 @@ jobs:
       - run: echo "TAG=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       - run: 'echo "TAG: $TAG"'
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
         with:
           fetch-depth: ${{ env.FETCH_DEPTH }}
       - name: Install Nodejs

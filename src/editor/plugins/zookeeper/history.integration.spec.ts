@@ -14,7 +14,7 @@ import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
-import { loadWasm } from '@src/unitTestUtils'
+import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 
 const apps: App[] = []
 const historyDisposers: Array<() => void> = []
@@ -1378,7 +1378,9 @@ async function createProjectHarness(files: Record<string, string>) {
       children: null,
     })),
   }
-  const app = App.fromProvided({ wasmPromise: loadWasm() })
+  const app = App.fromProvided({
+    registryOverrides: [createTestWasmRegistryItem()],
+  })
   apps.push(app)
   const openedProject = await app.openProject(project)
   const kclManager = await openedProject.openEditor(

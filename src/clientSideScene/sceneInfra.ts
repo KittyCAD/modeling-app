@@ -793,6 +793,10 @@ export class SceneInfra {
   }
 
   onMouseDown = (event: MouseEvent) => {
+    if (event.button !== 0) {
+      return
+    }
+
     this.updateCurrentMouseVector(event)
 
     const mouseDownVector = this.currentMouseVector.clone()
@@ -842,6 +846,10 @@ export class SceneInfra {
   }
 
   onMouseUp = async (mouseEvent: MouseEvent) => {
+    if (mouseEvent.button !== 0) {
+      return
+    }
+
     const wasmInstance = await this.wasmInstancePromise
     this.updateCurrentMouseVector(mouseEvent)
     const planeIntersectPoint = this.getPlaneIntersectPoint()

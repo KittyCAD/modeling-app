@@ -146,14 +146,14 @@ input {
 }
 
 .mono {
-  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 code,
 #code-mirror-override .cm-content {
-  font-family: "Source Code VF", Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family:
+    "Source Code VF", Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
 #code-mirror-override {
@@ -359,11 +359,6 @@ code,
   word-wrap: break-word;
 }
 
-.cm-ghostText,
-.cm-ghostText * {
-  color: rgb(120, 120, 120, 0.8) !important;
-}
-
 .extra-segment-handle {
   position: absolute;
   pointer-events: auto;
@@ -375,8 +370,9 @@ code,
   font-size: 12px;
   opacity: 0;
   color: red;
-  background: #ffff00 url("/clientSideSceneAssets/extra-segment-texture.svg")
-    center / 10px 10px no-repeat;
+  background:
+    #ffff00 url("/clientSideSceneAssets/extra-segment-texture.svg") center /
+    10px 10px no-repeat;
   border-radius: 100%;
   background-size: 10px 10px;
 }
@@ -426,12 +422,17 @@ code,
     @apply group-hover/avatar:border-chalkboard-30 group-hover/avatar:dark:border-chalkboard-70;
   }
 
+  .toolbar-container {
+    box-sizing: border-box;
+    container-type: inline-size;
+    display: flex;
+    inline-size: 100%;
+    justify-content: center;
+    min-inline-size: 0;
+  }
+
   .toolbar {
     box-sizing: border-box;
-    :has(> &) {
-      container-type: inline-size;
-    }
-
     /** relate the values of cqi units (% container's inline size)
     and percentage (which uses child's inline-size) to get a percentage */
     --container-percentage-width: calc(100cqi - 100%);
@@ -620,7 +621,7 @@ code,
 }
 
 .animate-shimmer {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
   animation-duration: 1s;
   animation-iteration-count: infinite;
   animation-name: loading-shimmer;
@@ -629,7 +630,7 @@ code,
 }
 
 .animate-delta-in {
-  animation-delay: .5s;
+  animation-delay: 0.5s;
   animation-duration: 1.5s;
   animation-iteration-count: 1;
   animation-fill-mode: forwards;

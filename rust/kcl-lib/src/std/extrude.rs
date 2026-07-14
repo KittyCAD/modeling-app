@@ -556,13 +556,6 @@ async fn inner_extrude(
                         .build(),
                 )
             }
-            (None, None, None, None, Some(_), None) if is_edge => {
-                return Err(KclError::new_semantic(KclErrorDetails::new(
-                    "Extruding an edge with the `to` parameter isn't supported yet. Use an explicit length instead."
-                        .to_owned(),
-                    vec![args.source_range],
-                )));
-            }
             (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
@@ -693,7 +686,7 @@ async fn inner_extrude(
                     )
                 }
                 Point3dAxis3dOrGeometryReference::EdgeToReference(spec) => {
-                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, exec_state, &args).await?;
+                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
@@ -1100,8 +1093,8 @@ pub(crate) async fn do_post_extrude<'a>(
 
     let Faces {
         sides: mut face_id_map,
-        start_cap_id,
-        end_cap_id,
+        mut start_cap_id,
+        mut end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
 
     // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
@@ -1116,6 +1109,10 @@ pub(crate) async fn do_post_extrude<'a>(
                 Some((*fe_key, fe_value))
             })
             .collect::<HashMap<Uuid, Option<Uuid>>>();
+        // The face info above was queried using the original solid's id, so
+        // the cap ids belong to the original. Map them to the clone's ids.
+        start_cap_id = start_cap_id.and_then(|id| clone_id_map.get(&id).copied());
+        end_cap_id = end_cap_id.and_then(|id| clone_id_map.get(&id).copied());
     }
 
     // Iterate over the sketch.value array and add face_id to GeoMeta

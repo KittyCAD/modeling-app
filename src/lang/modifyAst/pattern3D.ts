@@ -17,6 +17,7 @@ import {
   valueOrVariable,
 } from '@src/lang/queryAst'
 import type { ArtifactGraph, PathToNode, Program } from '@src/lang/wasm'
+import { modelingStdLibCommandName } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { KCL_DEFAULT_CONSTANT_PREFIXES } from '@src/lib/constants'
 import { err } from '@src/lib/trap'
@@ -142,14 +143,18 @@ export function addPatternCircular3D({
       : []
 
   const solidsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('patternCircular3d', solidsExpr, [
-    createLabeledArg('instances', valueOrVariable(instances)),
-    createLabeledArg('axis', axisExpr),
-    createLabeledArg('center', centerExpr),
-    ...arcDegreesExpr,
-    ...rotateDuplicatesExpr,
-    ...useOriginalExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Pattern Circular 3D'),
+    solidsExpr,
+    [
+      createLabeledArg('instances', valueOrVariable(instances)),
+      createLabeledArg('axis', axisExpr),
+      createLabeledArg('center', centerExpr),
+      ...arcDegreesExpr,
+      ...rotateDuplicatesExpr,
+      ...useOriginalExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments only when we actually use the variable
   if ('variableName' in instances && instances.variableName) {
@@ -275,12 +280,16 @@ export function addPatternLinear3D({
       : []
 
   const solidsExpr = createVariableExpressionsArray(vars.exprs)
-  const call = createCallExpressionStdLibKw('patternLinear3d', solidsExpr, [
-    createLabeledArg('instances', valueOrVariable(instances)),
-    createLabeledArg('distance', valueOrVariable(distance)),
-    createLabeledArg('axis', axisExpr),
-    ...useOriginalExpr,
-  ])
+  const call = createCallExpressionStdLibKw(
+    modelingStdLibCommandName('Pattern Linear 3D'),
+    solidsExpr,
+    [
+      createLabeledArg('instances', valueOrVariable(instances)),
+      createLabeledArg('distance', valueOrVariable(distance)),
+      createLabeledArg('axis', axisExpr),
+      ...useOriginalExpr,
+    ]
+  )
 
   // Insert variables for labeled arguments only when we actually use the variable
   if ('variableName' in instances && instances.variableName) {

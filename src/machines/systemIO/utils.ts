@@ -1,6 +1,7 @@
+import type { MlToolResult } from '@kittycad/lib'
 import type { ExecState } from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
-import { FILE_EXT, PROJECT_ENTRYPOINT, REGEXP_UUIDV4 } from '@src/lib/constants'
+import { FILE_EXT, PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { getUniqueProjectName } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
@@ -11,7 +12,7 @@ import {
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import { getFilePathRelativeToProject, joinOSPaths } from '@src/lib/paths'
-import type { Project } from '@src/lib/project'
+import type { FileEntry, Project } from '@src/lib/project'
 import { isErr } from '@src/lib/trap'
 import type { FileMeta } from '@src/lib/types'
 import { isNonNullable } from '@src/lib/utils'
@@ -20,7 +21,6 @@ import {
   getZookeeperEditPatchFromToolOutput,
   isZookeeperProjectEntrypointPath,
 } from '@src/lib/zookeeperEditPatch'
-import type { MlEphantNewFileRequestProps } from '@src/machines/systemIO/hooks'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
@@ -57,8 +57,6 @@ export enum SystemIOMachineActors {
   moveRecursiveAndNavigate = 'move recursive and navigate',
   copyRecursive = 'copy recursive',
   moveRecursive = 'move recursive',
-  getMlEphantConversations = 'get ml-ephant conversations',
-  saveMlEphantConversations = 'save ml-ephant conversations',
 }
 
 export enum SystemIOMachineStates {
@@ -89,8 +87,6 @@ export enum SystemIOMachineStates {
   copyingRecursive = 'copying recursive',
   movingRecursive = 'moving recursive',
   movingRecursiveAndNavigate = 'moving recursive and navigate',
-  gettingMlEphantConversations = 'getting ml-ephant conversations',
-  savingMlEphantConversations = 'saving ml-ephant conversations',
 }
 
 export enum SystemIOMachineActions {
@@ -101,11 +97,11 @@ export enum SystemIOMachineActions {
   setDefaultProjectFolderName = 'set default project folder name',
   toastSuccess = 'toastSuccess',
   toastError = 'toastError',
+  toastErrorZookeeperFileWrite = 'toastErrorZookeeperFileWrite',
   setReadWriteProjectDirectory = 'set read write project directory',
   setRequestedTextToCadGeneration = 'set requested text to cad generation',
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
-  setMlEphantConversations = 'set ml-ephant conversations',
   deferSystemIOEvent = 'defer system IO event',
   flushDeferredSystemIOEvent = 'flush deferred system IO event',
 }
@@ -160,9 +156,6 @@ export type SystemIOContext = SystemIOInput & {
   deferredSystemIOEvent?: EventObject
   lastRecursiveMoveTarget?: string
   lastOperation: any
-
-  // A mapping between project id and conversation ids.
-  mlEphantConversations?: Map<string, string>
 }
 
 export type RequestedKCLFile = {
@@ -389,32 +382,11 @@ export const collectProjectFiles = async (args: {
   return projectFiles
 }
 
-export const jsonToMlConversations = (json: string) => {
-  const mlConversations = new Map<string, string>()
-  const untypedObject = JSON.parse(json)
-  for (let entry of Object.entries(untypedObject)) {
-    if (typeof entry[0] === 'string' && !REGEXP_UUIDV4.test(entry[0])) {
-      console.warn(
-        'Expected a project id string as a key (potentially bad format)'
-      )
-      continue
-    }
-    if (typeof entry[1] === 'string' && !REGEXP_UUIDV4.test(entry[1])) {
-      console.warn('Expected a conversation id string (potentially bad format)')
-      continue
-    }
-
-    if (typeof entry[0] === 'string' && typeof entry[1] === 'string') {
-      mlConversations.set(entry[0], entry[1])
-    }
-  }
-  return mlConversations
-}
-
-export const mlConversationsToJson = (
-  convos: SystemIOContext['mlEphantConversations']
-): string => {
-  return JSON.stringify(Object.fromEntries(convos ?? new Map<string, string>()))
+type MlEphantNewFileRequestProps = {
+  toolOutput: MlToolResult
+  projectNameCurrentlyOpened: string
+  fileFocusedOnInEditor?: FileEntry
+  filesToDelete?: RequestedKCLFileDelete[]
 }
 
 export const prepareMlEphantNewFileRequest = ({
