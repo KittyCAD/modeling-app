@@ -46,11 +46,11 @@ import type {
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
+  collectProjectFiles,
   NO_PROJECT_DIRECTORY,
+  normalizeKCLFileDeletePath,
   SystemIOMachineActors,
   SystemIOMachineEvents,
-  collectProjectFiles,
-  normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
 
@@ -674,6 +674,12 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
+        if (!input.requestedProjectName) {
+          return Promise.reject(
+            new Error('Cannot delete a project without a project name')
+          )
+        }
+
         await fsZds.rm(
           fsZds.join(
             input.context.projectDirectoryPath,
