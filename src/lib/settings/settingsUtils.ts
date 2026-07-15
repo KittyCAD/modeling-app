@@ -28,7 +28,12 @@ import {
   parseLayoutWithMigrations,
 } from '@src/lib/layout/utils'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
-import { isProjectLibrarySettings } from '@src/lib/projectLibraries'
+import {
+  getDefaultProjectLibrarySettings,
+  isProjectLibrarySettings,
+  mergeProjectLibrarySettings,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import {
   Setting,
   type SettingsType,
@@ -915,6 +920,7 @@ export async function loadAndValidateSettings(
   projectPathOrOptions:
     | string
     | {
+        defaultProjectLibraries?: readonly ProjectLibrarySetting[]
         extensionSettings?: ResolvedExtensionSettings
         projectPath?: string
       }
@@ -924,7 +930,11 @@ export async function loadAndValidateSettings(
     typeof projectPathOrOptions === 'string'
       ? { projectPath: projectPathOrOptions }
       : projectPathOrOptions
-  const { extensionSettings = {}, projectPath } = options
+  const {
+    defaultProjectLibraries = [],
+    extensionSettings = {},
+    projectPath,
+  } = options
   // Make sure we have wasm initialized.
   const wasmInstance = await initPromise
 
@@ -937,7 +947,12 @@ export async function loadAndValidateSettings(
 
   let settingsNext = createSettings(extensionSettings)
 
-  settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
+  const initialDefaultDir = await getInitialDefaultDir()
+  settingsNext.app.projectDirectory.default = initialDefaultDir
+  settingsNext.app.libraries.default = mergeProjectLibrarySettings(
+    getDefaultProjectLibrarySettings(initialDefaultDir),
+    defaultProjectLibraries
+  )
 
   settingsNext = setSettingsAtLevel(
     settingsNext,

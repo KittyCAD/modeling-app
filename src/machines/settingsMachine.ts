@@ -1,23 +1,11 @@
-import decamelize from 'decamelize'
-import toast from 'react-hot-toast'
-import type { ActorRefFrom, AnyActorRef } from 'xstate'
-import {
-  assertEvent,
-  assign,
-  fromCallback,
-  fromPromise,
-  sendTo,
-  setup,
-} from 'xstate'
-
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
-
 import {
   createSettingsCommand,
   settingsWithCommandConfigs,
 } from '@src/lib/commandBarConfigs/settingsCommandConfig'
 import type { Command } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
+import type { ProjectLibrarySetting } from '@src/lib/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { createSettings } from '@src/lib/settings/initialSettings'
@@ -35,17 +23,29 @@ import {
   saveSettings,
 } from '@src/lib/settings/settingsUtils'
 import {
-  Themes,
   darkModeMatcher,
   getSystemTheme,
   setThemeClass,
+  Themes,
 } from '@src/lib/theme'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
+import decamelize from 'decamelize'
+import toast from 'react-hot-toast'
+import type { ActorRefFrom, AnyActorRef } from 'xstate'
+import {
+  assertEvent,
+  assign,
+  fromCallback,
+  fromPromise,
+  sendTo,
+  setup,
+} from 'xstate'
 
 export type SettingsActorDepsType = {
   currentProject?: Project
   commandBarActor: ActorRefFrom<typeof commandBarMachine>
+  defaultProjectLibraries: readonly ProjectLibrarySetting[]
   extensionSettings: ResolvedExtensionSettings
   wasmInstancePromise: Promise<ModuleType>
 }
@@ -104,6 +104,7 @@ export const settingsMachine = setup({
         extensionSettings,
         wasmInstancePromise,
         commandBarActor: _c,
+        defaultProjectLibraries: _defaultProjectLibraries,
         ...settings
       } = input.context
 
@@ -121,6 +122,7 @@ export const settingsMachine = setup({
     loadUserSettings: fromPromise<
       SettingsType,
       {
+        defaultProjectLibraries: readonly ProjectLibrarySetting[]
         extensionSettings: ResolvedExtensionSettings
         wasmInstancePromise: Promise<ModuleType>
       }
@@ -128,6 +130,7 @@ export const settingsMachine = setup({
       const { settings } = await loadAndValidateSettings(
         input.wasmInstancePromise,
         {
+          defaultProjectLibraries: input.defaultProjectLibraries,
           extensionSettings: input.extensionSettings,
         }
       )
@@ -136,6 +139,7 @@ export const settingsMachine = setup({
     loadProjectSettings: fromPromise<
       SettingsType,
       {
+        defaultProjectLibraries: readonly ProjectLibrarySetting[]
         extensionSettings: ResolvedExtensionSettings
         project: Project
         settings: SettingsType
@@ -145,6 +149,7 @@ export const settingsMachine = setup({
       const { settings } = await loadAndValidateSettings(
         input.wasmInstancePromise,
         {
+          defaultProjectLibraries: input.defaultProjectLibraries,
           extensionSettings: input.extensionSettings,
           projectPath: input.project.path,
         }
@@ -155,6 +160,7 @@ export const settingsMachine = setup({
       SettingsType,
       {
         currentProject?: Project
+        defaultProjectLibraries: readonly ProjectLibrarySetting[]
         extensionSettings: ResolvedExtensionSettings
         wasmInstancePromise: Promise<ModuleType>
       }
@@ -162,6 +168,7 @@ export const settingsMachine = setup({
       const { settings } = await loadAndValidateSettings(
         input.wasmInstancePromise,
         {
+          defaultProjectLibraries: input.defaultProjectLibraries,
           extensionSettings: input.extensionSettings,
           projectPath: input.currentProject?.path,
         }
@@ -321,14 +328,14 @@ export const settingsMachine = setup({
         string,
       ]
 
-      // @ts-ignore
+      // @ts-expect-error
       context[category][setting][level] = value
 
       const newContext = {
         ...context,
         [category]: {
           ...context[category],
-          // @ts-ignore
+          // @ts-expect-error
           [setting]: context[category][setting],
         },
       }
@@ -388,6 +395,12 @@ export const settingsMachine = setup({
         },
 
         'set.app.namedViews': {
+          target: 'persisting settings',
+
+          actions: ['setSettingAtLevel'],
+        },
+
+        'set.app.libraries': {
           target: 'persisting settings',
 
           actions: ['setSettingAtLevel'],
@@ -561,6 +574,7 @@ export const settingsMachine = setup({
         },
         input: ({ context }) => ({
           currentProject: context.currentProject,
+          defaultProjectLibraries: context.defaultProjectLibraries,
           extensionSettings: context.extensionSettings,
           wasmInstancePromise: context.wasmInstancePromise,
         }),
@@ -610,6 +624,7 @@ export const settingsMachine = setup({
       invoke: {
         src: 'loadUserSettings',
         input: ({ context }) => ({
+          defaultProjectLibraries: context.defaultProjectLibraries,
           extensionSettings: context.extensionSettings,
           wasmInstancePromise: context.wasmInstancePromise,
         }),
@@ -659,6 +674,7 @@ export const settingsMachine = setup({
         input: ({ event, context }) => {
           assertEvent(event, 'load.project')
           return {
+            defaultProjectLibraries: context.defaultProjectLibraries,
             extensionSettings: context.extensionSettings,
             settings: getOnlySettingsFromContext(context),
             project: event.project,
@@ -676,6 +692,7 @@ export function getOnlySettingsFromContext(
   const {
     currentProject: _c,
     commandBarActor: _cba,
+    defaultProjectLibraries: _defaultProjectLibraries,
     extensionSettings: _extensionSettings,
     wasmInstancePromise: _w,
     ...settings

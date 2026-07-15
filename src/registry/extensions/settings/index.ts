@@ -20,6 +20,7 @@ import {
   settingsService,
   settingsValueSpec,
 } from '@src/registry/contracts/settings'
+import { projectLibrarySettingDefaultsValueSpec } from '@src/registry/contracts/projectLibraries'
 import { statusBarGlobalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { useSelector } from '@xstate/react'
@@ -41,10 +42,14 @@ export const settingsExtension = defineRegistryItemFactory((ctx) => {
 
     const commands = ctx.services.get(commandSystemService)
     const extensionSettings = ctx.valueSpecs.get(settingsValueSpec)
+    const defaultProjectLibraries = ctx.valueSpecs.get(
+      projectLibrarySettingDefaultsValueSpec
+    )
     const actor = createActor(settingsMachine, {
       input: {
         ...createSettings(extensionSettings),
         commandBarActor: commands.actor,
+        defaultProjectLibraries,
         extensionSettings,
         wasmInstancePromise: getWasmPromise(),
       },

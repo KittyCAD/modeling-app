@@ -2,6 +2,7 @@ import { isArray } from '@src/lib/utils'
 
 export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
 export const CLOUD_PROJECT_LIBRARY_ID = 'cloud'
+export const DEFAULT_CLOUD_PROJECT_LIBRARY_PATH = 'zoo://user/projects'
 
 export type ProjectLibraryType =
   | 'directory'
@@ -21,6 +22,41 @@ export interface ProjectLibrary extends ProjectLibrarySetting {
   order?: number
 }
 
+export function getDefaultProjectLibrarySettings(
+  projectDirectory: string
+): ProjectLibrarySetting[] {
+  return [
+    {
+      title: 'Default Projects Directory',
+      path: projectDirectory,
+      type: 'directory',
+    },
+  ]
+}
+
+export function getDefaultCloudProjectLibrarySetting(): ProjectLibrarySetting {
+  return {
+    title: 'Cloud',
+    path: DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+    type: 'cloud',
+  }
+}
+
+export function mergeProjectLibrarySettings(
+  ...libraryGroups: readonly (readonly ProjectLibrarySetting[] | undefined)[]
+) {
+  const librariesByKey = new Map<string, ProjectLibrarySetting>()
+
+  for (const library of libraryGroups.flatMap((libraries) => libraries ?? [])) {
+    librariesByKey.set(`${library.type}:${library.path}`, {
+      ...librariesByKey.get(`${library.type}:${library.path}`),
+      ...library,
+    })
+  }
+
+  return Array.from(librariesByKey.values())
+}
+
 function hashString(input: string) {
   let hash = 0
 
@@ -33,9 +69,7 @@ function hashString(input: string) {
 }
 
 export function getProjectLibraryIdFromSetting(library: ProjectLibrarySetting) {
-  return `${library.type}-${hashString(
-    `${library.type}:${library.path}:${library.title}`
-  )}`
+  return `${library.type}-${hashString(`${library.type}:${library.path}`)}`
 }
 
 export function isProjectLibrarySetting(
@@ -64,11 +98,20 @@ export function isProjectLibrarySettings(
 
 export function projectLibraryFromSetting(
   library: ProjectLibrarySetting,
-  index = 0
+  index = 0,
+  options: {
+    defaultProjectDirectory?: string
+  } = {}
 ): ProjectLibrary {
   return {
     ...library,
-    id: getProjectLibraryIdFromSetting(library),
+    id:
+      library.type === 'directory' &&
+      library.path === options.defaultProjectDirectory
+        ? DEFAULT_PROJECT_LIBRARY_ID
+        : library.type === 'cloud'
+          ? CLOUD_PROJECT_LIBRARY_ID
+          : getProjectLibraryIdFromSetting(library),
     order: index,
   }
 }
