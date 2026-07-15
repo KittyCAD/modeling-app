@@ -1141,6 +1141,96 @@ function getExistingEdgeRefsFromCall(call: Node<CallExpressionKw>): Expr[] {
   return edgeRefsArg.arg.elements ?? []
 }
 
+type CallArg = Node<CallExpressionKw>['arguments'][number]
+type CallNonCodeNodes = NonNullable<
+  Node<CallExpressionKw>['nonCodeMeta']
+>['nonCodeNodes']
+
+/**
+ * Replace one or more labeled arguments of a call with a single new argument,
+ * keeping comments between arguments attached to the arguments they precede.
+ *
+ * A call's `nonCodeMeta.nonCodeNodes` is keyed by position in the mixed
+ * sequence of labeled arguments and non-code nodes (comments/blank lines); the
+ * unlabeled argument is separate and not counted. Filtering out an argument and
+ * appending the replacement at the end leaves those keys pointing at the wrong
+ * argument, so a comment written before the converted argument jumps onto
+ * whatever argument now sits at the old position. Instead, rebuild the argument
+ * list and the non-code keys together: put the replacement where the first
+ * removed argument was, drop the other removed arguments, and re-key the
+ * comments. Comments that preceded a dropped argument are kept (they slide onto
+ * the following item), so no user comment is deleted.
+ */
+function replaceCallArgsPreservingComments(
+  call: Node<CallExpressionKw>,
+  removeLabels: readonly string[],
+  newArg: CallArg
+): void {
+  const args = call.arguments ?? []
+  const nonCodeNodes: CallNonCodeNodes = call.nonCodeMeta?.nonCodeNodes ?? {}
+
+  // Rebuild the mixed sequence of args and non-code nodes in source order.
+  type MixedItem =
+    | { kind: 'arg'; arg: CallArg }
+    | { kind: 'noncode'; nodes: CallNonCodeNodes[number] }
+  const mixed: MixedItem[] = []
+  let argIdx = 0
+  const numKeys = Object.keys(nonCodeNodes).length
+  const maxSlots = Object.keys(nonCodeNodes).reduce(
+    (max, key) => Math.max(max, Number(key) + 1),
+    args.length + numKeys
+  )
+  for (let i = 0; i < maxSlots; i++) {
+    const nodes = nonCodeNodes[i]
+    if (nodes) {
+      mixed.push({ kind: 'noncode', nodes })
+    } else if (argIdx < args.length) {
+      mixed.push({ kind: 'arg', arg: args[argIdx++] })
+    }
+  }
+  // Defensive: keep any args whose slot we didn't reach.
+  for (; argIdx < args.length; argIdx++) {
+    mixed.push({ kind: 'arg', arg: args[argIdx] })
+  }
+
+  // Replace the first removed arg with newArg; drop the rest.
+  let inserted = false
+  const rebuilt: MixedItem[] = []
+  for (const item of mixed) {
+    if (
+      item.kind === 'arg' &&
+      removeLabels.includes(getLabelName(item.arg) ?? '')
+    ) {
+      if (!inserted) {
+        rebuilt.push({ kind: 'arg', arg: newArg })
+        inserted = true
+      }
+      continue
+    }
+    rebuilt.push(item)
+  }
+  if (!inserted) {
+    rebuilt.push({ kind: 'arg', arg: newArg })
+  }
+
+  // Serialize back into arguments + re-keyed non-code nodes.
+  const newArguments: CallArg[] = []
+  const newNonCodeNodes: CallNonCodeNodes = {}
+  rebuilt.forEach((item, index) => {
+    if (item.kind === 'arg') {
+      newArguments.push(item.arg)
+    } else {
+      newNonCodeNodes[index] = item.nodes
+    }
+  })
+  call.arguments = newArguments
+  if (call.nonCodeMeta) {
+    call.nonCodeMeta.nonCodeNodes = newNonCodeNodes
+  } else if (Object.keys(newNonCodeNodes).length > 0) {
+    call.nonCodeMeta = { nonCodeNodes: newNonCodeNodes, startNodes: [] }
+  }
+}
+
 function getTagsBaseFromTagElement(el: Expr): Expr | null {
   const inner = getCallFromExpr(el)
   if (!inner) return null
@@ -1759,11 +1849,11 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
     )
     if (err(nodeResult)) continue
     const callNode = nodeResult.node
-    const newArgs = (callNode.arguments ?? []).filter(
-      (a) => getLabelName(a) !== 'axis'
+    replaceCallArgsPreservingComments(
+      callNode,
+      ['axis'],
+      createLabeledArg('axis', result.expr)
     )
-    newArgs.push(createLabeledArg('axis', result.expr))
-    callNode.arguments = newArgs
   }
   return modifiedAst
 }
@@ -1795,11 +1885,11 @@ function refactorExtrudeToToEdgeSpecifierInPlace(
     )
     if (err(nodeResult)) continue
     const callNode = nodeResult.node
-    const newArgs = (callNode.arguments ?? []).filter(
-      (a) => getLabelName(a) !== 'to'
+    replaceCallArgsPreservingComments(
+      callNode,
+      ['to'],
+      createLabeledArg('to', result.expr)
     )
-    newArgs.push(createLabeledArg('to', result.expr))
-    callNode.arguments = newArgs
   }
   return modifiedAst
 }
@@ -1852,9 +1942,6 @@ function refactorGdtEdgesToEdgeSpecifiersInPlace(
     const existingEdgeRefs = getExistingEdgeRefsFromCall(callNode).filter(
       (expr) => expr.type === 'ObjectExpression'
     )
-    const newArgs = (callNode.arguments ?? []).filter(
-      (a) => getLabelName(a) !== 'edges'
-    )
     const edgesArrayExpr = createArrayExpression([
       ...edgeRefExprs,
       ...existingEdgeRefs,
@@ -1869,8 +1956,13 @@ function refactorGdtEdgesToEdgeSpecifiersInPlace(
     ) {
       edgesArrayExpr.nonCodeMeta = structuredClone(oldEdgesArg.nonCodeMeta)
     }
-    newArgs.push(createLabeledArg('edges', edgesArrayExpr))
-    callNode.arguments = newArgs
+    // Replace edges in place so comments between arguments stay attached to
+    // the converted argument.
+    replaceCallArgsPreservingComments(
+      callNode,
+      ['edges'],
+      createLabeledArg('edges', edgesArrayExpr)
+    )
     modifiedAst = nextAst
   }
 
@@ -1919,14 +2011,15 @@ function refactorGdtDistanceEndpointsToEdgeSpecifiersInPlace(
     if (err(nodeResult)) continue
 
     const callNode = nodeResult.node
-    const replacedLabels = new Set(endpointExprs.map(({ label }) => label))
-    const newArgs = (callNode.arguments ?? []).filter(
-      (a) => !replacedLabels.has(getLabelName(a) as 'from' | 'to')
-    )
+    // Replace each endpoint (from/to) in place so comments between arguments
+    // stay attached to the converted argument.
     for (const endpointExpr of endpointExprs) {
-      newArgs.push(createLabeledArg(endpointExpr.label, endpointExpr.expr))
+      replaceCallArgsPreservingComments(
+        callNode,
+        [endpointExpr.label],
+        createLabeledArg(endpointExpr.label, endpointExpr.expr)
+      )
     }
-    callNode.arguments = newArgs
     modifiedAst = nextAst
   }
 
@@ -2024,12 +2117,6 @@ export function refactorZ0006Unified(
     const oldTagsArg = callNode.arguments?.find(
       (a) => getLabelName(a) === 'tags'
     )?.arg
-    const newArgs = (callNode.arguments ?? []).filter(
-      (a) =>
-        getLabelName(a) !== 'tags' &&
-        getLabelName(a) !== 'edges' &&
-        getLabelName(a) !== 'edgeRefs'
-    )
     const edgesArrayExpr = createArrayExpression(edgeRefExprs)
     // Comments between the old tags elements live in the array's nonCodeMeta,
     // keyed by element position. Carry them over so the refactor doesn't
@@ -2044,8 +2131,13 @@ export function refactorZ0006Unified(
     ) {
       edgesArrayExpr.nonCodeMeta = structuredClone(oldTagsArg.nonCodeMeta)
     }
-    newArgs.push(createLabeledArg('edges', edgesArrayExpr))
-    callNode.arguments = newArgs
+    // Replace tags (consolidating any existing edges/edgeRefs) in place so
+    // comments between arguments stay attached to the converted argument.
+    replaceCallArgsPreservingComments(
+      callNode,
+      ['tags', 'edges', 'edgeRefs'],
+      createLabeledArg('edges', edgesArrayExpr)
+    )
     modifiedAst = nextAst
   }
 
