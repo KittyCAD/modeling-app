@@ -96,11 +96,15 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         ctx.valueSpecs.get(layoutContributionsValueSpec)
       )
     const syncBodiesPaneFeatureLayout = () => {
-      if (!hasHydratedLayout || usePlaywrightLayout) {
+      if (usePlaywrightLayout) {
         return
       }
 
       const enabled = isBodiesPaneFeatureEnabled()
+      if (!hasHydratedLayout) {
+        return
+      }
+
       if (enabled === lastBodiesPaneFeatureEnabled) {
         return
       }

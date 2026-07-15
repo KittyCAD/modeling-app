@@ -5,8 +5,19 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { createSettings } from '@src/lib/settings/initialSettings'
+import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  DefaultLayoutPaneID,
+  defaultLayoutConfig,
+} from '@src/lib/layout/configs/default'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import type { Layout } from '@src/lib/layout/types'
+import { AreaType, LayoutType } from '@src/lib/layout/types'
+import {
+  createLayoutWithMetadata,
+  findLayoutChildNode,
+} from '@src/lib/layout/utils'
+import { createSettings } from '@src/lib/settings/initialSettings'
 import {
   type RuntimeInfo,
   runtimeService,
@@ -28,15 +39,38 @@ const playwrightRuntime: RuntimeInfo = {
   isPlaywright: true,
 }
 
-function createSettingsService() {
-  const settings = createSettings()
-  const snapshot = {
-    value: 'idle',
+const webRuntime: RuntimeInfo = {
+  ...playwrightRuntime,
+  isPlaywright: false,
+}
+
+type TestSettingsSnapshot = {
+  value: string
+  context: ReturnType<typeof createSettings>
+}
+
+type TestSettingsRegistryService = SettingsRegistryService & {
+  resolve: () => void
+}
+
+function createSettingsService({
+  settings = createSettings(),
+  initialValue = 'idle',
+}: {
+  settings?: ReturnType<typeof createSettings>
+  initialValue?: string
+} = {}): TestSettingsRegistryService {
+  let snapshot: TestSettingsSnapshot = {
+    value: initialValue,
     context: settings,
   }
+  const subscribers = new Set<(snapshot: TestSettingsSnapshot) => void>()
   const actor = {
     getSnapshot: () => snapshot,
-    subscribe: vi.fn(() => ({ unsubscribe: vi.fn() })),
+    subscribe: vi.fn((subscriber: (snapshot: TestSettingsSnapshot) => void) => {
+      subscribers.add(subscriber)
+      return { unsubscribe: vi.fn(() => subscribers.delete(subscriber)) }
+    }),
     send: vi.fn(),
   }
 
@@ -46,11 +80,20 @@ function createSettingsService() {
     get: () => settings,
     send: actor.send,
     useSettings: () => settings,
-  } as unknown as SettingsRegistryService
+    resolve: () => {
+      snapshot = {
+        value: 'idle',
+        context: settings,
+      }
+      for (const subscriber of subscribers) {
+        subscriber(snapshot)
+      }
+    },
+  } as unknown as TestSettingsRegistryService
 }
 
-function createRuntimeService() {
-  const current = signal(playwrightRuntime)
+function createRuntimeService(runtimeInfo = playwrightRuntime) {
+  const current = signal(runtimeInfo)
   return {
     current,
     get: () => current.value,
@@ -58,8 +101,12 @@ function createRuntimeService() {
   }
 }
 
-function createUserFeaturesService(): UserFeaturesRegistryService {
-  const context = signal({ featureIds: new Set<Feature>() })
+function createUserFeaturesService(
+  featureIds: readonly Feature[] = []
+): UserFeaturesRegistryService & {
+  setFeatureIds: (featureIds: readonly Feature[]) => void
+} {
+  const context = signal({ featureIds: new Set(featureIds) })
   const snapshot = {
     context: context.value,
     matches: () => true,
@@ -82,7 +129,27 @@ function createUserFeaturesService(): UserFeaturesRegistryService {
     has: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
     useContext: () => context.value,
     useHas: (_featureFlagId: Feature, defaultValue: boolean) => defaultValue,
-  } as unknown as UserFeaturesRegistryService
+    setFeatureIds: (nextFeatureIds: readonly Feature[]) => {
+      context.value = { featureIds: new Set(nextFeatureIds) }
+    },
+  } as unknown as UserFeaturesRegistryService & {
+    setFeatureIds: (featureIds: readonly Feature[]) => void
+  }
+}
+
+function hasBodiesPane(rootLayout: Layout) {
+  const featureTreePane = findLayoutChildNode({
+    rootLayout,
+    targetNodeId: DefaultLayoutPaneID.FeatureTree,
+  })
+
+  return (
+    featureTreePane?.type === LayoutType.Splits &&
+    featureTreePane.children.some(
+      (child) =>
+        child.type === LayoutType.Simple && child.areaType === AreaType.Bodies
+    )
+  )
 }
 
 describe('layout extension', () => {
@@ -124,5 +191,48 @@ describe('layout extension', () => {
     expect(layout).toMatchObject({
       applyContributions: expect.any(Function),
     })
+  })
+
+  it('syncs bodies pane when feature flags load after settings hydrate', () => {
+    const settings = createSettings()
+    settings.layout.configs.user = {
+      default: createLayoutWithMetadata(structuredClone(defaultLayoutConfig)),
+    }
+    const testSettingsService = createSettingsService({
+      settings,
+      initialValue: 'loadingUser',
+    })
+    const testUserFeaturesService = createUserFeaturesService()
+
+    registry = new Registry()
+    registry.configure([
+      defineRegistryItem({
+        id: 'test-runtime',
+        providesServices: [
+          provideService(runtimeService, createRuntimeService(webRuntime)),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test-settings',
+        providesServices: [
+          provideService(settingsService, testSettingsService),
+        ],
+      }),
+      defineRegistryItem({
+        id: 'test-user-features',
+        providesServices: [
+          provideService(userFeaturesService, testUserFeaturesService),
+        ],
+      }),
+      layoutRegistryItem,
+    ])
+
+    const layout = registry.get(layoutService)
+    testSettingsService.resolve()
+    expect(hasBodiesPane(layout.get())).toBe(false)
+
+    testUserFeaturesService.setFeatureIds([BODIES_PANE_FEATURE_FLAG])
+
+    expect(hasBodiesPane(layout.get())).toBe(true)
   })
 })
