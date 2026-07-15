@@ -2652,9 +2652,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.211"
+version = "0.2.213"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cb0aadfd54a7843e2dc5852c00dc5da84ae4c4292938fcb4e8f31c04a42b6422"
+checksum = "cbe49a08187e35a2ef6429c7eb9eae843334cfeff8f7879e4ad22ff4a0c360e3"
 dependencies = [
  "anyhow",
  "bon",
@@ -5219,7 +5219,7 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d8c27177b12a6399ffc08b98f76f7c9a1f4fe9fc967c784c5a071fa8d93cf7e1"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6243,7 +6243,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
