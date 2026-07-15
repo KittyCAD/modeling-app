@@ -38,7 +38,6 @@ import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -382,7 +381,6 @@ const Home = () => {
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
-          settings={settingsValues}
           readWriteProjectDir={readWriteProjectDir}
           projectSearchKeybinding={projectSearchKeybinding}
           className="col-start-2 -col-end-1"
@@ -592,7 +590,6 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: SettingsType
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
 }
@@ -603,7 +600,6 @@ function HomeHeader({
   setQuery,
   sort,
   setSearchParams,
-  settings,
   readWriteProjectDir,
   projectSearchKeybinding,
   ...rest
@@ -680,19 +676,7 @@ function HomeHeader({
         <p className="my-4 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30">
           {library.path}
         </p>
-      ) : (
-        <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-          Loaded from{' '}
-          <Link
-            data-testid="project-directory-settings-link"
-            to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-            className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-          >
-            {settings.app.projectDirectory.current}
-          </Link>
-          .
-        </p>
-      )}
+      ) : null}
       {!readWriteProjectDir.value && (
         <section>
           <div className="flex items-center select-none">
@@ -763,7 +747,7 @@ function ProjectLibraryOverview({
         library.id
       ).toSorted(getSortFunction(sort)),
     }))
-    .filter(({ projects }) => projects.length > 0)
+    .filter(({ projects }) => query.length === 0 || projects.length > 0)
   const loadingMore = isReadingFolders ? (
     <div className="py-4">
       <Loading isDummy={true}>Loading more projects...</Loading>
@@ -829,7 +813,6 @@ function ProjectLibraryPreviewRow({
     query.length > 0
       ? projects
       : projects.slice(0, PROJECT_LIBRARY_PREVIEW_LIMIT)
-  const hasMoreProjects = previewProjects.length < projects.length
 
   return (
     <section className="flex flex-col gap-3">
@@ -860,22 +843,23 @@ function ProjectLibraryPreviewRow({
           className="h-5 w-5 flex-none text-chalkboard-60 group-hover:text-primary"
         />
       </Link>
-      <ProjectCardList
-        projects={previewProjects}
-        projectStatuses={projectStatuses}
-        projectActions={projectActions}
-        showCloudSyncUi={showCloudSyncUi}
-        showSourceStatusBadges={false}
-        density="compact"
-        className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
-      />
-      {hasMoreProjects && (
-        <Link
-          to={getProjectLibraryRoute(library)}
-          className="self-start text-sm text-primary underline underline-offset-2"
+      {previewProjects.length > 0 ? (
+        <ProjectCardList
+          projects={previewProjects}
+          projectStatuses={projectStatuses}
+          projectActions={projectActions}
+          showCloudSyncUi={showCloudSyncUi}
+          showSourceStatusBadges={false}
+          density="compact"
+          className="grid w-full grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+        />
+      ) : (
+        <p
+          className="rounded-sm border border-dashed border-chalkboard-30 p-4 text-sm text-chalkboard-70 dark:border-chalkboard-70 dark:text-chalkboard-30"
+          data-testid="project-library-empty"
         >
-          View all {projectCountLabel(projects.length)}
-        </Link>
+          No projects
+        </p>
       )}
     </section>
   )
