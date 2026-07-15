@@ -22,9 +22,12 @@ import {
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/components/layout/areas/MlEphantConversationPaneWrapper', () => ({
-  MlEphantConversationPaneWrapper: () => null,
-}))
+vi.mock(
+  '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper',
+  () => ({
+    MlEphantConversationPaneWrapper: () => null,
+  })
+)
 
 vi.mock('@src/components/ZookeeperCreditsMenu', () => ({
   ZookeeperCreditsMenu: () => null,

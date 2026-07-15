@@ -2,7 +2,7 @@ import {
   type ZookeeperEditPatch,
   applyZookeeperEditPatch,
   mergeZookeeperEditPatches,
-} from '@src/editor/plugins/zookeeper'
+} from '@src/lib/zookeeper/editorPlugin'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import { createTwoFilesPatch } from 'diff'

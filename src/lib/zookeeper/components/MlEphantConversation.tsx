@@ -15,7 +15,7 @@ import type {
   Exchange,
   MlCopilotModeId,
   MlCopilotModeOption,
-} from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
 import type { Selections } from '@src/machines/modelingSharedTypes'
 import {
   activateZoodleRuntimeExtension,

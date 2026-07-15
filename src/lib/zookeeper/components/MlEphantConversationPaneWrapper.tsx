@@ -3,15 +3,15 @@ import { Menu } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
 import { HeaderMenu } from '@src/components/layout/Panel/HeaderMenu'
-import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
+import { MlEphantConversationPane } from '@src/lib/zookeeper/components/MlEphantConversationPane'
 import {
   useProjectIdToConversationId,
   useWatchForNewFileRequestsFromMlEphant,
-} from '@src/components/layout/areas/MlEphantConversationPaneHooks'
+} from '@src/lib/zookeeper/components/MlEphantConversationPaneHooks'
 import {
   type ZookeeperSnapshotFileReplay,
   zookeeperEditPatchHistoryEvent,
-} from '@src/editor/plugins/zookeeper'
+} from '@src/lib/zookeeper/editorPlugin'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { useApp, useSingletons } from '@src/lib/boot'
@@ -20,19 +20,19 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import type { AreaTypeComponentProps } from '@src/lib/layout'
-import { zookeeperConversationStore } from '@src/lib/zookeeperConversationStore'
+import { zookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import {
   type ZookeeperEditPatch,
   type ZookeeperEditPatchFile,
   mergeZookeeperEditPatches,
   normalizeZookeeperPatchPath,
-} from '@src/lib/zookeeperEditPatch'
+} from '@src/lib/zookeeper/zookeeperEditPatch'
 import { BillingTransition } from '@src/machines/billingMachine'
 import {
   MlEphantConversationToMarkdown,
   type MlEphantManagerActor,
   MlEphantManagerReactContext,
-} from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
   SystemIOMachineEvents,
   normalizeKCLFileDeletePath,
@@ -42,9 +42,6 @@ import {
 import { IS_STAGING_OR_DEBUG } from '@src/routes/utils'
 import { applyPatch, parsePatch, reversePatch } from 'diff'
 import { type MutableRefObject, useCallback, useEffect, useRef } from 'react'
-// Yea, feels bad, but literally every other pane is doing this.
-// TODO: Don't use CSS module for this? More generic module?
-import styles from './KclEditorMenu.module.css'
 
 function getZookeeperPatchPreviousCode(
   patch: ZookeeperEditPatch,
@@ -1001,7 +998,7 @@ export const MlEphantConversationMenu = () => {
               ''
             )
           }}
-          className={styles.button}
+          className="menuButton"
         >
           <span>Export conversation</span>
         </button>
