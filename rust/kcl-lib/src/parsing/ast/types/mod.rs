@@ -43,6 +43,93 @@ enum RenameTarget {
     Name(String),
     SketchMember { sketch_name: String, member_name: String },
 }
+
+struct RenameDeclarationsNamed<'a> {
+    old_name: &'a str,
+    new_name: &'a str,
+}
+
+impl crate::walk::VisitMut for RenameDeclarationsNamed<'_> {
+    type Error = std::convert::Infallible;
+
+    fn visit_node_mut(&mut self, node: crate::walk::NodeMut) -> Result<bool, Self::Error> {
+        if let crate::walk::NodeMut::VariableDeclaration(variable_declaration) = node
+            && variable_declaration.declaration.id.name == self.old_name
+        {
+            variable_declaration.declaration.id.name = self.new_name.to_string();
+        }
+
+        Ok(true)
+    }
+}
+
+struct RenameMemberReferences<'a> {
+    object_name: &'a str,
+    old_member_name: &'a str,
+    new_name: &'a str,
+}
+
+impl crate::walk::VisitMut for RenameMemberReferences<'_> {
+    type Error = std::convert::Infallible;
+
+    fn visit_node_mut(&mut self, node: crate::walk::NodeMut) -> Result<bool, Self::Error> {
+        if let crate::walk::NodeMut::MemberExpression(member_expression) = node {
+            member_expression.rename_member_reference(self.object_name, self.old_member_name, self.new_name);
+        }
+
+        Ok(true)
+    }
+}
+
+struct FindRenameTargetAt {
+    pos: usize,
+    target: RefCell<Option<RenameTarget>>,
+}
+
+impl<'tree> crate::walk::Visitor<'tree> for &FindRenameTargetAt {
+    type Error = std::convert::Infallible;
+
+    fn visit_node(&self, node: crate::walk::Node<'tree>) -> Result<bool, Self::Error> {
+        let Ok(source_range) = SourceRange::try_from(&node) else {
+            return Ok(true);
+        };
+        if !source_range.contains(self.pos) {
+            return Ok(true);
+        }
+
+        let target = match node {
+            crate::walk::Node::Name(name) => name.local_ident().and_then(|ident| {
+                SourceRange::from(&name.name)
+                    .contains(self.pos)
+                    .then(|| RenameTarget::Name(ident.inner.to_string()))
+            }),
+            crate::walk::Node::MemberExpression(member_expression) => member_expression.rename_target_at(self.pos),
+            _ => None,
+        };
+
+        if target.is_some() {
+            self.target.replace(target);
+            return Ok(false);
+        }
+
+        for child in node.children() {
+            if !child.visit(*self)? {
+                return Ok(false);
+            }
+        }
+
+        Ok(true)
+    }
+}
+
+fn find_rename_target_at(node: crate::walk::Node, pos: usize) -> Option<RenameTarget> {
+    let finder = FindRenameTargetAt {
+        pos,
+        target: RefCell::new(None),
+    };
+    let _ = node.visit(&finder);
+    finder.target.into_inner()
+}
 use crate::execution::annotations::VersionConstraint;
 use crate::execution::annotations::WarningLevel;
 use crate::execution::annotations::{self};
@@ -55,6 +142,7 @@ pub use crate::parsing::ast::types::condition::IfExpression;
 pub use crate::parsing::ast::types::literal_value::LiteralValue;
 pub use crate::parsing::ast::types::none::KclNone;
 use crate::parsing::token::NumericSuffix;
+use crate::walk::Visitable;
 
 mod condition;
 mod literal_value;
@@ -925,9 +1013,8 @@ impl Program {
     }
 
     fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
-        for item in &mut self.body {
-            item.rename_declarations_named(old_name, new_name);
-        }
+        let mut visitor = RenameDeclarationsNamed { old_name, new_name };
+        crate::walk::walk_mut(self, &mut visitor).unwrap();
     }
 
     fn rename_sketch_member(&mut self, sketch_name: &str, member_name: &str, new_name: &str) {
@@ -945,15 +1032,12 @@ impl Program {
     }
 
     fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
-        for item in &mut self.body {
-            item.rename_member_references(object_name, old_member_name, new_name);
-        }
-    }
-
-    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
-        self.get_body_item_for_position(pos)?
-            .get_expr_for_position(pos)?
-            .rename_target_at(pos)
+        let mut visitor = RenameMemberReferences {
+            object_name,
+            old_member_name,
+            new_name,
+        };
+        crate::walk::walk_mut(self, &mut visitor).unwrap();
     }
 
     /// Like `rename_identifiers` but a name is only excluded for body items that appear *after* the
@@ -1169,45 +1253,6 @@ impl BodyItem {
                     .argument
                     .rename_identifiers(old_name, new_name, excluded);
             }
-        }
-    }
-
-    fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
-        match self {
-            BodyItem::VariableDeclaration(variable_declaration) => {
-                if variable_declaration.declaration.id.name == old_name {
-                    variable_declaration.declaration.id.name = new_name.to_string();
-                }
-                variable_declaration
-                    .declaration
-                    .init
-                    .rename_declarations_named(old_name, new_name);
-            }
-            BodyItem::ExpressionStatement(expression_statement) => expression_statement
-                .expression
-                .rename_declarations_named(old_name, new_name),
-            BodyItem::ReturnStatement(return_statement) => {
-                return_statement.argument.rename_declarations_named(old_name, new_name);
-            }
-            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
-        }
-    }
-
-    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
-        match self {
-            BodyItem::ExpressionStatement(expression_statement) => expression_statement
-                .expression
-                .rename_member_references(object_name, old_member_name, new_name),
-            BodyItem::VariableDeclaration(variable_declaration) => variable_declaration
-                .declaration
-                .init
-                .rename_member_references(object_name, old_member_name, new_name),
-            BodyItem::ReturnStatement(return_statement) => {
-                return_statement
-                    .argument
-                    .rename_member_references(object_name, old_member_name, new_name)
-            }
-            BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => {}
         }
     }
 
@@ -1535,150 +1580,7 @@ impl Expr {
     }
 
     fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
-        if !SourceRange::from(self).contains(pos) {
-            return None;
-        }
-
-        match self {
-            Expr::Name(name) => name.local_ident().and_then(|ident| {
-                SourceRange::from(&name.name)
-                    .contains(pos)
-                    .then(|| RenameTarget::Name(ident.inner.to_string()))
-            }),
-            Expr::MemberExpression(member_expression) => member_expression.rename_target_at(pos),
-            Expr::CallExpressionKw(call_expression) => {
-                if let Some(unlabeled) = &call_expression.unlabeled
-                    && let Some(target) = unlabeled.rename_target_at(pos)
-                {
-                    return Some(target);
-                }
-                call_expression
-                    .arguments
-                    .iter()
-                    .find_map(|arg| arg.arg.rename_target_at(pos))
-            }
-            Expr::ArrayExpression(array_expression) => array_expression
-                .elements
-                .iter()
-                .find_map(|element| element.rename_target_at(pos)),
-            Expr::ArrayRangeExpression(array_range) => array_range
-                .start_element
-                .rename_target_at(pos)
-                .or_else(|| array_range.end_element.rename_target_at(pos)),
-            Expr::BinaryExpression(binary_expression) => binary_expression
-                .left
-                .rename_target_at(pos)
-                .or_else(|| binary_expression.right.rename_target_at(pos)),
-            Expr::UnaryExpression(unary_expression) => unary_expression.argument.rename_target_at(pos),
-            Expr::PipeExpression(pipe_expression) => {
-                pipe_expression.body.iter().find_map(|expr| expr.rename_target_at(pos))
-            }
-            Expr::LabelledExpression(labelled_expression) => labelled_expression.expr.rename_target_at(pos),
-            Expr::AscribedExpression(ascribed_expression) => ascribed_expression.expr.rename_target_at(pos),
-            Expr::SketchBlock(sketch_block) => sketch_block.body.rename_target_at(pos),
-            Expr::ObjectExpression(object_expression) => object_expression
-                .properties
-                .iter()
-                .find_map(|property| property.value.rename_target_at(pos)),
-            Expr::FunctionExpression(function_expression) => function_expression.body.rename_target_at(pos),
-            Expr::IfExpression(_)
-            | Expr::Literal(_)
-            | Expr::TagDeclarator(_)
-            | Expr::PipeSubstitution(_)
-            | Expr::SketchVar(_)
-            | Expr::None(_) => None,
-        }
-    }
-
-    fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
-        match self {
-            Expr::SketchBlock(sketch_block) => sketch_block.body.rename_declarations_named(old_name, new_name),
-            Expr::FunctionExpression(function_expression) => {
-                function_expression.body.rename_declarations_named(old_name, new_name);
-            }
-            _ => {}
-        }
-    }
-
-    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
-        match self {
-            Expr::MemberExpression(member_expression) => {
-                member_expression.rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::CallExpressionKw(call_expression) => {
-                if let Some(unlabeled) = &mut call_expression.unlabeled {
-                    unlabeled.rename_member_references(object_name, old_member_name, new_name);
-                }
-                for arg in &mut call_expression.arguments {
-                    arg.arg.rename_member_references(object_name, old_member_name, new_name);
-                }
-            }
-            Expr::ArrayExpression(array_expression) => {
-                for element in &mut array_expression.elements {
-                    element.rename_member_references(object_name, old_member_name, new_name);
-                }
-            }
-            Expr::ArrayRangeExpression(array_range) => {
-                array_range
-                    .start_element
-                    .rename_member_references(object_name, old_member_name, new_name);
-                array_range
-                    .end_element
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::BinaryExpression(binary_expression) => {
-                binary_expression
-                    .left
-                    .rename_member_references(object_name, old_member_name, new_name);
-                binary_expression
-                    .right
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::UnaryExpression(unary_expression) => {
-                unary_expression
-                    .argument
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::PipeExpression(pipe_expression) => {
-                for expr in &mut pipe_expression.body {
-                    expr.rename_member_references(object_name, old_member_name, new_name);
-                }
-            }
-            Expr::LabelledExpression(labelled_expression) => {
-                labelled_expression
-                    .expr
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::AscribedExpression(ascribed_expression) => {
-                ascribed_expression
-                    .expr
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::SketchBlock(sketch_block) => {
-                sketch_block
-                    .body
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::ObjectExpression(object_expression) => {
-                for property in &mut object_expression.properties {
-                    property
-                        .value
-                        .rename_member_references(object_name, old_member_name, new_name);
-                }
-            }
-            Expr::FunctionExpression(function_expression) => {
-                function_expression
-                    .body
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            Expr::IfExpression(_)
-            | Expr::Name(_)
-            | Expr::Literal(_)
-            | Expr::TagDeclarator(_)
-            | Expr::PipeSubstitution(_)
-            | Expr::SketchVar(_)
-            | Expr::None(_) => {}
-        }
+        find_rename_target_at(self.into(), pos)
     }
 
     pub fn start(&self) -> usize {
@@ -2149,27 +2051,14 @@ impl Block {
         old_name
     }
 
-    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
-        let item = self.items.iter().find(|item| SourceRange::from(*item).contains(pos))?;
-
-        item.get_expr_for_position(pos)?.rename_target_at(pos)
-    }
-
     fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
-        for item in &mut self.items {
-            item.rename_declarations_named(old_name, new_name);
-        }
+        let mut visitor = RenameDeclarationsNamed { old_name, new_name };
+        crate::walk::walk_block_mut(self, &mut visitor).unwrap();
     }
 
     fn rename_binding_and_identifiers(&mut self, old_name: &str, new_name: &str) {
         self.rename_declarations_named(old_name, new_name);
         self.rename_identifiers(old_name, new_name, &[]);
-    }
-
-    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
-        for item in &mut self.items {
-            item.rename_member_references(object_name, old_member_name, new_name);
-        }
     }
 
     /// Returns the body item that includes the given character position.
@@ -2350,106 +2239,6 @@ impl BinaryPart {
                 e.expr.rename_identifiers(old_name, new_name, excluded);
             }
             BinaryPart::SketchVar(_) => {}
-        }
-    }
-
-    fn rename_target_at(&self, pos: usize) -> Option<RenameTarget> {
-        if !SourceRange::from(self).contains(pos) {
-            return None;
-        }
-
-        match self {
-            BinaryPart::Name(name) => name.local_ident().and_then(|ident| {
-                SourceRange::from(&name.name)
-                    .contains(pos)
-                    .then(|| RenameTarget::Name(ident.inner.to_string()))
-            }),
-            BinaryPart::BinaryExpression(binary_expression) => binary_expression
-                .left
-                .rename_target_at(pos)
-                .or_else(|| binary_expression.right.rename_target_at(pos)),
-            BinaryPart::CallExpressionKw(call_expression) => {
-                if let Some(unlabeled) = &call_expression.unlabeled
-                    && let Some(target) = unlabeled.rename_target_at(pos)
-                {
-                    return Some(target);
-                }
-                call_expression
-                    .arguments
-                    .iter()
-                    .find_map(|arg| arg.arg.rename_target_at(pos))
-            }
-            BinaryPart::UnaryExpression(unary_expression) => unary_expression.argument.rename_target_at(pos),
-            BinaryPart::MemberExpression(member_expression) => member_expression.rename_target_at(pos),
-            BinaryPart::ArrayExpression(array_expression) => array_expression
-                .elements
-                .iter()
-                .find_map(|element| element.rename_target_at(pos)),
-            BinaryPart::ArrayRangeExpression(array_range) => array_range
-                .start_element
-                .rename_target_at(pos)
-                .or_else(|| array_range.end_element.rename_target_at(pos)),
-            BinaryPart::ObjectExpression(object_expression) => object_expression
-                .properties
-                .iter()
-                .find_map(|property| property.value.rename_target_at(pos)),
-            BinaryPart::AscribedExpression(ascribed_expression) => ascribed_expression.expr.rename_target_at(pos),
-            BinaryPart::IfExpression(_) | BinaryPart::Literal(_) | BinaryPart::SketchVar(_) => None,
-        }
-    }
-
-    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
-        match self {
-            BinaryPart::BinaryExpression(binary_expression) => {
-                binary_expression
-                    .left
-                    .rename_member_references(object_name, old_member_name, new_name);
-                binary_expression
-                    .right
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            BinaryPart::CallExpressionKw(call_expression) => {
-                if let Some(unlabeled) = &mut call_expression.unlabeled {
-                    unlabeled.rename_member_references(object_name, old_member_name, new_name);
-                }
-                for arg in &mut call_expression.arguments {
-                    arg.arg.rename_member_references(object_name, old_member_name, new_name);
-                }
-            }
-            BinaryPart::UnaryExpression(unary_expression) => {
-                unary_expression
-                    .argument
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            BinaryPart::MemberExpression(member_expression) => {
-                member_expression.rename_member_references(object_name, old_member_name, new_name);
-            }
-            BinaryPart::ArrayExpression(array_expression) => {
-                for element in &mut array_expression.elements {
-                    element.rename_member_references(object_name, old_member_name, new_name);
-                }
-            }
-            BinaryPart::ArrayRangeExpression(array_range) => {
-                array_range
-                    .start_element
-                    .rename_member_references(object_name, old_member_name, new_name);
-                array_range
-                    .end_element
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            BinaryPart::ObjectExpression(object_expression) => {
-                for property in &mut object_expression.properties {
-                    property
-                        .value
-                        .rename_member_references(object_name, old_member_name, new_name);
-                }
-            }
-            BinaryPart::AscribedExpression(ascribed_expression) => {
-                ascribed_expression
-                    .expr
-                    .rename_member_references(object_name, old_member_name, new_name);
-            }
-            BinaryPart::IfExpression(_) | BinaryPart::Name(_) | BinaryPart::Literal(_) | BinaryPart::SketchVar(_) => {}
         }
     }
 }
@@ -3992,12 +3781,8 @@ impl MemberExpression {
         })
     }
 
-    fn rename_member_references(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
-        self.object
-            .rename_member_references(object_name, old_member_name, new_name);
+    fn rename_member_reference(&mut self, object_name: &str, old_member_name: &str, new_name: &str) {
         if self.computed {
-            self.property
-                .rename_member_references(object_name, old_member_name, new_name);
             return;
         }
 
