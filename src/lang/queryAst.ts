@@ -1379,12 +1379,15 @@ function getPatternCopyExprFromSelection(
     return null
   }
 
+  const isWholePatternSelection =
+    selection.patternIndex === undefined &&
+    selection.engineEntityId === undefined
   const patternIndex =
     selection.patternIndex ??
     (selection.engineEntityId
       ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
       : -1)
-  if (patternIndex < 0) {
+  if (!isWholePatternSelection && patternIndex < 0) {
     return null
   }
 
@@ -1401,6 +1404,9 @@ function getPatternCopyExprFromSelection(
       wasmInstance
     )
     if (patternVariableName) {
+      if (isWholePatternSelection) {
+        return createLocalName(patternVariableName)
+      }
       return createMemberExpression(
         patternVariableName,
         createLiteral(patternIndex, wasmInstance),

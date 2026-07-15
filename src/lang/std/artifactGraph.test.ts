@@ -236,6 +236,64 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
+  it('preserves metadata and distinct selections for pattern copies', () => {
+    const artifactGraph: ArtifactGraph = new Map()
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceId: 'source-body',
+      copyIds: ['copy-1', 'copy-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    artifactGraph.set(pattern.id, pattern)
+
+    const firstCopy: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      engineEntityId: 'copy-1',
+      patternIndex: 1,
+    }
+    const secondCopy: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      patternIndex: 2,
+    }
+    const firstCopyByEntityId: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      engineEntityId: 'copy-1',
+    }
+    const firstCopyByIndex: Selection = {
+      artifact: pattern,
+      codeRef: { range: [0, 100, 0], pathToNode: [] },
+      patternIndex: 1,
+    }
+    const selections: Selections = {
+      graphSelections: [
+        firstCopy,
+        firstCopyByEntityId,
+        firstCopyByIndex,
+        secondCopy,
+        { ...secondCopy },
+      ],
+      otherSelections: [],
+    }
+
+    const result = coerceSelectionsToBody(selections, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.graphSelections).toEqual([firstCopy, secondCopy])
+    }
+  })
+
   it('should coerce edgeCut selection to parent path', () => {
     const artifactGraph: ArtifactGraph = new Map()
 

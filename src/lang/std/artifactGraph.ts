@@ -934,7 +934,7 @@ export function coerceSelectionsToBody(
   artifactGraph: ArtifactGraph
 ): Selections | Error {
   const bodySelections: Selection[] = []
-  const seenBodyIds = new Set<string>()
+  const seenBodyKeys = new Set<string>()
 
   for (const selection of selections.graphSelections) {
     if (!selection.artifact) {
@@ -954,12 +954,20 @@ export function coerceSelectionsToBody(
       selection.artifact.type === 'pattern' ||
       selection.artifact.type === 'path'
     ) {
-      if (!seenBodyIds.has(selection.artifact.id)) {
-        seenBodyIds.add(selection.artifact.id)
-        bodySelections.push({
-          artifact: selection.artifact,
-          codeRef: selection.codeRef,
-        })
+      let bodyKey = selection.artifact.id
+      if (selection.artifact.type === 'pattern') {
+        const patternIndex =
+          selection.patternIndex ??
+          (selection.engineEntityId !== undefined
+            ? selection.artifact.copyIds.indexOf(selection.engineEntityId) + 1
+            : undefined)
+        bodyKey = `pattern:${selection.artifact.id}:${
+          patternIndex === undefined ? 'all' : `index:${patternIndex}`
+        }`
+      }
+      if (!seenBodyKeys.has(bodyKey)) {
+        seenBodyKeys.add(bodyKey)
+        bodySelections.push(selection)
       }
     } else {
       // Get the parent body (sweep) from faces, edges, or edgeCuts
@@ -978,8 +986,8 @@ export function coerceSelectionsToBody(
       )
       if (!err(maybePath)) {
         // Successfully got the path from the sweep
-        if (!seenBodyIds.has(maybePath.id)) {
-          seenBodyIds.add(maybePath.id)
+        if (!seenBodyKeys.has(maybePath.id)) {
+          seenBodyKeys.add(maybePath.id)
           bodySelections.push({
             artifact: maybePath,
             codeRef: maybePath.codeRef,
@@ -991,8 +999,8 @@ export function coerceSelectionsToBody(
           { key: maybeSweep.id, types: ['sweep'] },
           artifactGraph
         )
-        if (!err(sweepWithType) && !seenBodyIds.has(sweepWithType.id)) {
-          seenBodyIds.add(sweepWithType.id)
+        if (!err(sweepWithType) && !seenBodyKeys.has(sweepWithType.id)) {
+          seenBodyKeys.add(sweepWithType.id)
           bodySelections.push({
             artifact: sweepWithType,
             codeRef: maybeSweep.codeRef,
