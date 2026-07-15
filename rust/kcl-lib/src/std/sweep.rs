@@ -266,20 +266,21 @@ async fn inner_sweep(
         }
     };
 
-    let projected_axis = if let Some(axis) = projected_axis {
-        match axis {
+    let projected_axis = match projected_axis {
+        None => None,
+        Some(axis) => match axis {
             Axis3dOrPoint3dOrEdgeReference::Axis { direction, .. } => Some(DirectionType::Axis {
                 direction: KPoint3d {
-                    x: direction[0].n,
-                    y: direction[1].n,
-                    z: direction[2].n,
+                    x: direction[0].to_mm(),
+                    y: direction[1].to_mm(),
+                    z: direction[2].to_mm(),
                 },
             }),
             Axis3dOrPoint3dOrEdgeReference::Point(point) => Some(DirectionType::Axis {
                 direction: KPoint3d {
-                    x: point[0].n,
-                    y: point[1].n,
-                    z: point[2].n,
+                    x: point[0].to_mm(),
+                    y: point[1].to_mm(),
+                    z: point[2].to_mm(),
                 },
             }),
             Axis3dOrPoint3dOrEdgeReference::Edge(edge) => match edge {
@@ -296,9 +297,7 @@ async fn inner_sweep(
                     },
                 }),
             },
-        }
-    } else {
-        None
+        },
     };
 
     let mut solids = Vec::new();
