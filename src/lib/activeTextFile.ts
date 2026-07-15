@@ -62,6 +62,7 @@ let latestOpenRequestId = 0
 let pendingWrite: { path: string; text: string } | null = null
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
 let inFlightWritePromise: Promise<void> | undefined
+let inFlightClearPromise: Promise<void> | undefined
 
 function schedulePendingWriteRetry() {
   if (pendingWriteTimeout !== undefined || !pendingWrite) {
@@ -182,7 +183,17 @@ export function scheduleActiveTextFileWrite(path: string, text: string): void {
 /** Clear the active text file, persisting any pending edits first. */
 export function clearActiveTextFile(): void {
   // Fire-and-forget so this stays synchronous for React cleanup callers.
-  void flushActiveTextFileWrite().catch(reportRejection)
+  const clearPromise = flushActiveTextFileWrite().catch((error) => {
+    if (!(error instanceof ProjectFilesystemMutationBusyError)) {
+      reportRejection(error)
+    }
+  })
+  inFlightClearPromise = clearPromise
+  void clearPromise.then(() => {
+    if (inFlightClearPromise === clearPromise) {
+      inFlightClearPromise = undefined
+    }
+  })
   latestOpenRequestId += 1
   activeTextFileSignal.value = null
 }
@@ -192,6 +203,7 @@ export function clearActiveTextFile(): void {
  * the previously-open file first, then reads the requested file from disk.
  */
 export async function openActiveTextFile(path: string): Promise<void> {
+  await inFlightClearPromise
   // Persist edits to the outgoing file before switching.
   await flushActiveTextFileWrite()
 

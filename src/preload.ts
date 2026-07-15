@@ -7,7 +7,10 @@ import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
 import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
-import { publishDirectory as publishDirectoryWithNodeFs } from '@src/lib/fs-zds/nodefs'
+import {
+  cp as copyWithNodeFs,
+  publishDirectory as publishDirectoryWithNodeFs,
+} from '@src/lib/fs-zds/nodefs'
 
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
@@ -141,6 +144,7 @@ const watchFileOff = (path: string, key: string) => {
 }
 const readFile = fs.readFile
 const rename = (prev: string, next: string) => fs.rename(prev, next)
+export const cp = copyWithNodeFs
 export const publishDirectory = publishDirectoryWithNodeFs
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
@@ -389,5 +393,5 @@ contextBridge.exposeInMainWorld('electron', {
   enableMenu,
   disableMenu,
   menuOn,
-  cp: fs.cp,
+  cp,
 })

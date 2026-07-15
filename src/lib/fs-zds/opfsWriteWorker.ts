@@ -14,12 +14,21 @@ type WorkerResponse =
 const walk = async (
   targetPath: string
 ): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
+  const resolvedTargetPath = path.resolve(targetPath)
+  const resolvedCwd = path.resolve()
+  const pathRoot = path.parse(resolvedTargetPath).root
+  const storageRootPath =
+    resolvedCwd === path.parse(resolvedCwd).root ||
+    resolvedTargetPath === resolvedCwd ||
+    resolvedTargetPath.startsWith(`${resolvedCwd}${path.sep}`)
+      ? resolvedCwd
+      : pathRoot
   let current = await navigator.storage.getDirectory()
-  let cwd = ''
+  let cwd = storageRootPath
   let looped = true
   let currentChanged = true
 
-  if (targetPath.split(path.sep).length === 2) {
+  if (resolvedTargetPath === storageRootPath) {
     return current
   }
 
@@ -31,11 +40,14 @@ const walk = async (
       looped = true
       const currentPath = path.resolve(cwd, name)
 
-      if (targetPath.startsWith(currentPath) === false) {
+      if (
+        resolvedTargetPath !== currentPath &&
+        !resolvedTargetPath.startsWith(`${currentPath}${path.sep}`)
+      ) {
         continue
       }
 
-      if (targetPath === currentPath) {
+      if (resolvedTargetPath === currentPath) {
         return handle
       }
 

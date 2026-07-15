@@ -112,13 +112,21 @@ const walk = async (
   targetPath: string,
   onTargetNode?: (part: string) => void
 ): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
+  const resolvedTargetPath = path.resolve(targetPath)
+  const resolvedCwd = path.resolve()
+  const pathRoot = path.parse(resolvedTargetPath).root
+  const storageRootPath =
+    resolvedCwd === path.parse(resolvedCwd).root ||
+    resolvedTargetPath === resolvedCwd ||
+    resolvedTargetPath.startsWith(`${resolvedCwd}${path.sep}`)
+      ? resolvedCwd
+      : pathRoot
   let current = await navigator.storage.getDirectory()
-  let cwd = ''
+  let cwd = storageRootPath
   let looped = true
   let currentChanged = true
 
-  // '/'.split('/').length === 2 always.
-  if (targetPath.split(path.sep).length === 2) {
+  if (resolvedTargetPath === storageRootPath) {
     return current
   }
 
@@ -130,7 +138,10 @@ const walk = async (
       looped = true
       const currentPath = path.resolve(cwd, name)
 
-      if (targetPath.startsWith(currentPath) === false) {
+      if (
+        resolvedTargetPath !== currentPath &&
+        !resolvedTargetPath.startsWith(`${currentPath}${path.sep}`)
+      ) {
         continue
       }
 
@@ -138,7 +149,7 @@ const walk = async (
         onTargetNode(name)
       }
 
-      if (targetPath === currentPath) {
+      if (resolvedTargetPath === currentPath) {
         return handle
       }
 
@@ -385,13 +396,13 @@ async function mkdirSingle(targetPath: string, allowExisting: boolean) {
   return undefined
 }
 
-const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
-  if (!options?.recursive) {
-    return runWithOPFSPathMutationLock(targetPath, () =>
-      mkdirSingle(targetPath, false)
-    )
-  }
-
+async function mkdirRecursive(
+  targetPath: string,
+  lockAlreadyHeldPath?: string
+) {
+  const resolvedLockAlreadyHeldPath = lockAlreadyHeldPath
+    ? path.resolve(lockAlreadyHeldPath)
+    : undefined
   const resolvedTargetPath = path.resolve(targetPath)
   const relativeParts = resolvedTargetPath
     .slice(path.parse(resolvedTargetPath).root.length)
@@ -400,11 +411,25 @@ const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
   let currentPath = path.parse(resolvedTargetPath).root
   for (const part of relativeParts) {
     currentPath = path.resolve(currentPath, part)
-    await runWithOPFSPathMutationLock(currentPath, () =>
-      mkdirSingle(currentPath, true)
-    )
+    if (currentPath === resolvedLockAlreadyHeldPath) {
+      await mkdirSingle(currentPath, true)
+    } else {
+      await runWithOPFSPathMutationLock(currentPath, () =>
+        mkdirSingle(currentPath, true)
+      )
+    }
   }
   return undefined
+}
+
+const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
+  if (!options?.recursive) {
+    return runWithOPFSPathMutationLock(targetPath, () =>
+      mkdirSingle(targetPath, false)
+    )
+  }
+
+  return mkdirRecursive(targetPath)
 }
 
 const rm = async (
@@ -532,11 +557,11 @@ const rename = async (
     if ((await walk(targetPath)) !== undefined) return Promise.reject('EEXIST')
 
     if (handle instanceof FileSystemFileHandle) {
-      await cp(sourcePath, targetPath)
+      await copy(sourcePath, targetPath, targetPath)
       await rm(sourcePath)
     } else {
       await mkdirSingle(targetPath, false)
-      await cp(sourcePath, targetPath)
+      await copy(sourcePath, targetPath, targetPath)
       await rm(sourcePath, { recursive: true })
     }
     return undefined
@@ -547,9 +572,10 @@ const rename = async (
 // OPFS takes a very minimal approach to its API surface via primitives.
 // cp is not a primitive, since you can implement `cp` with `read` and `write`.
 // https://chromestatus.com/feature/5640802622504960
-const cp = async (
+const copy = async (
   sourcePath: string,
-  targetPath: string
+  targetPath: string,
+  lockAlreadyHeldPath?: string
 ): Promise<undefined> => {
   const handleSource = await walk(sourcePath)
   if (handleSource === undefined) return Promise.reject('ENOENT')
@@ -577,7 +603,7 @@ const cp = async (
         handle[0]
       )
       if (handle[1] instanceof FileSystemDirectoryHandle) {
-        await mkdir(absolutePath)
+        await mkdirRecursive(absolutePath, lockAlreadyHeldPath)
       } else {
         const sourceFile = await handle[1].getFile()
         const data = await sourceFile.arrayBuffer()
@@ -588,12 +614,37 @@ const cp = async (
   return undefined
 }
 
+const cp = async (sourcePath: string, targetPath: string) =>
+  copy(sourcePath, targetPath)
+
 const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
   sourcePath,
   targetPath,
   evidence
 ) => {
   const operation = async () => {
+    const sourceHandle = await walk(sourcePath)
+    if (sourceHandle === undefined) {
+      return Promise.reject(
+        new Error('Duplicate publication source does not exist')
+      )
+    }
+    if (!(sourceHandle instanceof FileSystemDirectoryHandle)) {
+      return Promise.reject(
+        new Error('Duplicate publication source is not a directory')
+      )
+    }
+    const assertSourceOwnership = async () => {
+      const currentSource = await walk(sourcePath)
+      if (
+        !(currentSource instanceof FileSystemDirectoryHandle) ||
+        !(await sourceHandle.isSameEntry(currentSource))
+      ) {
+        return Promise.reject(
+          new Error('Duplicate publication source ownership was lost')
+        )
+      }
+    }
     const reservationPath = path.resolve(
       path.dirname(targetPath),
       evidence.reservationFileName
@@ -601,12 +652,34 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
     if ((await walk(reservationPath)) !== undefined) {
       return Promise.reject(PUBLISH_DIRECTORY_DESTINATION_EXISTS)
     }
-    await writeFile(reservationPath, evidence.reservationPrepared)
-    const reservationHandle = await walk(reservationPath)
-    if (!(reservationHandle instanceof FileSystemFileHandle)) {
+    const reservationParent = await walk(path.dirname(reservationPath))
+    if (!(reservationParent instanceof FileSystemDirectoryHandle)) {
       return Promise.reject(
-        new Error('Duplicate reservation ownership was lost')
+        new Error('Duplicate reservation parent is unavailable')
       )
+    }
+    let reservationHandle: FileSystemFileHandle | undefined
+    try {
+      reservationHandle = await reservationParent.getFileHandle(
+        path.basename(reservationPath),
+        { create: true }
+      )
+      await writeFile(reservationPath, evidence.reservationPrepared)
+    } catch (error) {
+      if (reservationHandle) {
+        try {
+          const currentReservation = await walk(reservationPath)
+          if (
+            currentReservation instanceof FileSystemFileHandle &&
+            (await reservationHandle.isSameEntry(currentReservation))
+          ) {
+            await rm(reservationPath, { recursive: false, force: true }).catch(
+              () => undefined
+            )
+          }
+        } catch {}
+      }
+      return Promise.reject(error)
     }
     const bytesEqual = (left: Uint8Array, right: Uint8Array) =>
       left.length === right.length &&
@@ -691,6 +764,11 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
         evidence.targetPublishing,
         evidence.reservationPrepared
       )
+      await writeFile(reservationPath, evidence.reservationReserved)
+      await assertOwnership(
+        evidence.targetPublishing,
+        evidence.reservationReserved
+      )
     } catch (error) {
       // Never delete by pathname after reservation: another renderer may have
       // replaced it. Copying has not started, so it is empty unless a marker
@@ -698,7 +776,7 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
       return Promise.reject(error)
     }
 
-    for (const entryName of await readdir(sourcePath)) {
+    for await (const [entryName] of sourceHandle.entries()) {
       // OPFS directory metadata is regenerated for the new target. More
       // importantly, never copy a stale publication marker from the source.
       if (entryName === evidence.markerName || entryName === META_FILE) {
@@ -707,8 +785,9 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
 
       await assertOwnership(
         evidence.targetPublishing,
-        evidence.reservationPrepared
+        evidence.reservationReserved
       )
+      await assertSourceOwnership()
 
       const sourceEntryPath = path.resolve(sourcePath, entryName)
       const targetEntryPath = path.resolve(targetPath, entryName)
@@ -727,12 +806,23 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
       if (sourceEntry instanceof FileSystemDirectoryHandle) {
         await mkdirSingle(targetEntryPath, false)
       }
-      await cp(sourceEntryPath, targetEntryPath)
+      await copy(sourceEntryPath, targetEntryPath, targetPath)
     }
 
     await assertOwnership(
       evidence.targetPublishing,
-      evidence.reservationPrepared
+      evidence.reservationReserved
+    )
+    await assertSourceOwnership()
+    await writeFile(markerPath, evidence.targetPublished)
+    await assertOwnership(
+      evidence.targetPublished,
+      evidence.reservationReserved
+    )
+    await writeFile(reservationPath, evidence.reservationPublished)
+    await assertOwnership(
+      evidence.targetPublished,
+      evidence.reservationPublished
     )
 
     return undefined

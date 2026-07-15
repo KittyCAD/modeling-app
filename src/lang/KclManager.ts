@@ -1096,6 +1096,7 @@ export class KclManager extends File {
   private timeoutWriter: ReturnType<typeof setTimeout> | undefined = undefined
   private pendingDelayedWrite:
     | {
+        path: string
         newCode: string
         requestedDocumentVersion: number
         options: { suppressConflictToast?: boolean }
@@ -1105,6 +1106,8 @@ export class KclManager extends File {
     | undefined
   private inFlightDelayedWrite: Promise<unknown> | undefined
   private timeoutRewatch: ReturnType<typeof setTimeout> | undefined = undefined
+  private isClosed = false
+  private inFlightClosePromise: Promise<void> | undefined
   private timeoutRecoverySnapshot: ReturnType<typeof setTimeout> | undefined =
     undefined
   private executionTimeoutId: ReturnType<typeof setTimeout> | undefined =
@@ -1971,6 +1974,7 @@ export class KclManager extends File {
     providedEditor?: KclManager,
     providedCode?: string
   ) {
+    await providedEditor?.inFlightClosePromise
     // Do not read or prepare the destination while an old-path write is
     // blocked. A second flush immediately before retargeting below closes the
     // window for edits made while this destination read is in flight.
@@ -1994,7 +1998,7 @@ export class KclManager extends File {
     // TODO: remove all this once the app can handle an undefined currently-executing editor
     // A debounced write is bound to the editor's current path. Finish it before
     // synchronously retargeting the singleton; a busy error aborts navigation
-    // while leaving the write queued for its retry.
+    // so the write cannot later land at a stale path.
     await providedEditor.flushPendingWriteToFile()
     providedEditor.flushRecoverySnapshot()
     providedEditor.editorStatesByPath.set(
@@ -2027,6 +2031,7 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
+    providedEditor.isClosed = false
     providedEditor.watch()
     return providedEditor
   }
@@ -2101,7 +2106,20 @@ export class KclManager extends File {
 
   /** Clean up listeners, watchers, etc */
   public close() {
-    void this.flushPendingWriteToFile().catch(reportRejection)
+    this.isClosed = true
+    const closePromise = this.flushPendingWriteToFile()
+      .catch((error) => {
+        if (!(error instanceof ProjectFilesystemMutationBusyError)) {
+          reportRejection(error)
+        }
+      })
+      .then(() => undefined)
+    this.inFlightClosePromise = closePromise
+    void closePromise.then(() => {
+      if (this.inFlightClosePromise === closePromise) {
+        this.inFlightClosePromise = undefined
+      }
+    })
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
     this.disposeGlobalHistorySubscription?.()
@@ -3616,13 +3634,14 @@ export class KclManager extends File {
       this.pendingDelayedWrite?.resolve(undefined)
       return new Promise((resolve, reject) => {
         this.pendingDelayedWrite = {
+          path: this.path,
           newCode,
           requestedDocumentVersion,
           options,
           resolve,
           reject,
         }
-        this.schedulePendingWriteRetry()
+        this.schedulePendingWrite()
       }).catch((err: unknown) => {
         if (isPathNotFoundError(err)) {
           return
@@ -3653,6 +3672,7 @@ export class KclManager extends File {
       if (!pendingWrite) continue
       this.pendingDelayedWrite = undefined
       const writePromise = this.performDelayedWriteToFile({
+        path: pendingWrite.path,
         newCode: pendingWrite.newCode,
         requestedDocumentVersion: pendingWrite.requestedDocumentVersion,
         options: pendingWrite.options,
@@ -3669,7 +3689,7 @@ export class KclManager extends File {
           } else {
             this.pendingDelayedWrite = pendingWrite
           }
-          this.schedulePendingWriteRetry()
+          this.schedulePendingWrite()
         } else {
           pendingWrite.reject(error)
         }
@@ -3683,7 +3703,7 @@ export class KclManager extends File {
     return latestResult
   }
 
-  private schedulePendingWriteRetry() {
+  private schedulePendingWrite() {
     if (this.timeoutWriter !== undefined || !this.pendingDelayedWrite) {
       return
     }
@@ -3699,18 +3719,23 @@ export class KclManager extends File {
    * version checks, conflict detection, and watcher re-arm behavior.
    */
   private async performDelayedWriteToFile({
+    path,
     newCode,
     requestedDocumentVersion,
     options,
     mutationLockAlreadyHeld = false,
   }: {
+    path: string
     newCode: string
     requestedDocumentVersion: number
     options: { suppressConflictToast?: boolean }
     mutationLockAlreadyHeld?: boolean
   }) {
-    if (!this.path) {
+    if (!path) {
       return Promise.reject(new Error('currentFilePath not set'))
+    }
+    if (this.path !== path) {
+      return Promise.reject(new Error('Editor path changed before file save'))
     }
     if (requestedDocumentVersion !== this._documentVersion) {
       return
@@ -3719,7 +3744,7 @@ export class KclManager extends File {
     let currentDiskCode: string | null = null
     try {
       currentDiskCode = normalizeLineEndings(
-        await File.ioImplementations.read(this.path)
+        await File.ioImplementations.read(path)
       )
     } catch (err: unknown) {
       if (isPathNotFoundError(err)) {
@@ -3750,7 +3775,11 @@ export class KclManager extends File {
           'File changed on disk since this editor last synced. Save was skipped to avoid overwriting newer contents.'
         )
       }
-      return
+      return Promise.reject(
+        new Error(
+          'File changed on disk since this editor last synced. Save was skipped.'
+        )
+      )
     }
 
     this.writeCausedByAppCheckedInFileTreeFileSystemWatcher = true
@@ -3758,18 +3787,27 @@ export class KclManager extends File {
 
     try {
       await (mutationLockAlreadyHeld
-        ? this.writeUnlocked(newCode)
-        : this.write(newCode))
+        ? File.ioImplementations.writeUnlocked(path, newCode)
+        : File.ioImplementations.write(path, newCode))
+      if (this.path !== path) {
+        return Promise.reject(
+          new Error('Editor path changed before file save completed')
+        )
+      }
       this.markFileCodeAsSynced(newCode)
 
       // After a cooldown, start watching this file again on disk.
-      this.timeoutRewatch = setTimeout(() => {
-        this.watch()
-        this.timeoutRewatch = undefined
-      }, 1_000)
+      if (!this.isClosed) {
+        this.timeoutRewatch = setTimeout(() => {
+          this.watch()
+          this.timeoutRewatch = undefined
+        }, 1_000)
+      }
     } catch (err: unknown) {
       if (err instanceof ProjectFilesystemMutationBusyError) {
-        this.watch()
+        if (!this.isClosed) {
+          this.watch()
+        }
         return Promise.reject(err)
       }
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)

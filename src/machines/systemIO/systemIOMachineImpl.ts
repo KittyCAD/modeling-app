@@ -4,7 +4,6 @@ import {
   cloudSyncStatus,
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
-  resetCloudSyncProjectIdentityForRecovery,
   runCloudSyncWriteTransaction,
 } from '@src/lib/cloudSync'
 import {
@@ -85,7 +84,6 @@ import {
 import { v4 } from 'uuid'
 import { fromPromise } from 'xstate'
 
-const OPFS_DIRECTORY_METADATA_FILE_NAME = '._meta'
 const activeDuplicateStagingPaths = new Set<string>()
 
 function getWebLockManager() {
@@ -491,13 +489,13 @@ async function recoverPublishedDuplicate(
   await runCloudSyncWriteTransaction(targetPath, async () => undefined, {
     freshProjectIdentity: true,
     afterFreshIdentityReset: async () => {
+      await finalizeDuplicateReservation(reservationPath, {
+        kind: 'reservation',
+        token,
+      })
       await finalizeDuplicateTargetMarker(markerPath, {
         kind: 'target',
         phase: 'published',
-        token,
-      })
-      await finalizeDuplicateReservation(reservationPath, {
-        kind: 'reservation',
         token,
       })
     },
@@ -533,6 +531,14 @@ async function cleanStaleDuplicateReservation(
   }
 
   if (reservation.phase === 'published' && !marker) {
+    if (await pathExists(targetPath)) {
+      await recoverPublishedDuplicate(
+        projectDirectoryPath,
+        reservation.targetName,
+        reservation.token
+      )
+      return
+    }
     await removeDuplicateEvidenceFileIfOwned(reservationPath, {
       kind: 'reservation',
       phase: 'published',
@@ -542,73 +548,11 @@ async function cleanStaleDuplicateReservation(
     return
   }
 
-  let targetSafelyRemoved = !(await pathExists(targetPath))
-  if (
-    (reservation.phase === 'prepared' || reservation.phase === 'reserved') &&
-    duplicateEvidenceMatches(marker, {
-      kind: 'target',
-      phase: 'publishing',
-      token: reservation.token,
-    })
-  ) {
-    // The publisher only copies content after atomically reserving the name
-    // and writing this token to the target. All in-app namespace writers use
-    // the same directory lease as this cleanup, so the matching reservation
-    // and marker prove that even a non-empty mid-copy target is ours.
-    const [markerBeforeRemoval, reservationBeforeRemoval] = await Promise.all([
-      readDuplicateOwnershipEvidence(markerPath),
-      readDuplicateOwnershipEvidence(reservationPath),
-    ])
-    if (
-      duplicateEvidenceMatches(markerBeforeRemoval, {
-        kind: 'target',
-        phase: 'publishing',
-        token: reservation.token,
-      }) &&
-      duplicateEvidenceMatches(reservationBeforeRemoval, {
-        kind: 'reservation',
-        phase: reservation.phase,
-        token: reservation.token,
-      }) &&
-      reservationBeforeRemoval?.kind === 'reservation' &&
-      normalizeProjectNameCollisionKey(reservationBeforeRemoval.targetName) ===
-        normalizeProjectNameCollisionKey(reservation.targetName)
-    ) {
-      await resetCloudSyncProjectIdentityForRecovery(targetPath)
-      await fsZds.rm(targetPath, { recursive: true, force: true })
-      targetSafelyRemoved = true
-    }
-  } else if (
-    !marker &&
-    (reservation.phase === 'prepared' || reservation.phase === 'reserved') &&
-    !targetSafelyRemoved
-  ) {
-    const targetEntries = await fsZds.readdir(targetPath).catch(() => undefined)
-    if (
-      targetEntries?.every(
-        (entryName) =>
-          entryName === OPFS_DIRECTORY_METADATA_FILE_NAME ||
-          entryName === DUPLICATE_IN_PROGRESS_FILE_NAME
-      )
-    ) {
-      const reservationBeforeRemoval =
-        await readDuplicateOwnershipEvidence(reservationPath)
-      if (
-        duplicateEvidenceMatches(reservationBeforeRemoval, {
-          kind: 'reservation',
-          phase: reservation.phase,
-          token: reservation.token,
-        })
-      ) {
-        await resetCloudSyncProjectIdentityForRecovery(targetPath)
-        await fsZds.rm(targetPath, { recursive: true, force: true })
-        targetSafelyRemoved = true
-      }
-    }
-  }
-
-  const markerFileStillPresent = await pathExists(markerPath)
-  if (targetSafelyRemoved || !markerFileStillPresent) {
+  // Evidence can prove that a complete target is safe to recover, but it
+  // cannot atomically prove that a pathname still refers to the same partial
+  // directory after a process restart. Keep partial targets quarantined rather
+  // than risk deleting an unrelated directory that replaced the path.
+  if (!(await pathExists(targetPath))) {
     await removeOwnedDuplicateStage(projectDirectoryPath, reservation.token)
     await finalizeDuplicateReservation(reservationPath, {
       kind: 'reservation',
@@ -743,11 +687,12 @@ async function copyProjectDirectoryContents(
   stagingPath: string
 ) {
   for (const entryName of await fsZds.readdir(sourceProjectPath)) {
-    // The staging directory already owns a valid marker at this path. A user
-    // file with the reserved name is never duplicate payload, even when its
-    // contents are not valid ownership evidence.
     if (entryName === DUPLICATE_IN_PROGRESS_FILE_NAME) {
-      continue
+      return Promise.reject(
+        new Error(
+          `Cannot duplicate a project containing the reserved file "${DUPLICATE_IN_PROGRESS_FILE_NAME}"`
+        )
+      )
     }
     await fsZds.cp(
       fsZds.join(sourceProjectPath, entryName),
@@ -756,6 +701,7 @@ async function copyProjectDirectoryContents(
         recursive: true,
         force: false,
         errorOnExist: true,
+        makeWritable: true,
         // Following the top-level project directory through readdir supports a
         // symlinked project root. Each nested symlink is still copied verbatim.
         verbatimSymlinks: true,
@@ -841,6 +787,7 @@ const prepareBulkProjectWrite = async ({
 
 const sharedBulkCreateWorkflow = async ({
   input,
+  afterFilesCreated,
 }: {
   input: {
     context: SystemIOContext
@@ -848,6 +795,7 @@ const sharedBulkCreateWorkflow = async ({
     wasmInstance: ModuleType
     override?: boolean
   }
+  afterFilesCreated?: () => Promise<void>
 }) => {
   const preparedProjectWrite = await prepareBulkProjectWrite({
     context: input.context,
@@ -856,58 +804,62 @@ const sharedBulkCreateWorkflow = async ({
   })
   const namespacePath = fsZds.resolve(preparedProjectWrite.projectDirectoryPath)
   return runWithProjectDirectoryNamespaceLock(namespacePath, () =>
-    runWithProjectFilesystemMutationLock(async () => {
-      // Name allocation has to happen while holding the same namespace lease
-      // as duplicate publication, project creation, and rename.
-      const {
-        configuration,
-        projectDirectoryPath,
-        projectName: newProjectName,
-        projectRoot,
-      } = await prepareBulkProjectWrite({
-        context: input.context,
-        requestedProjectName: input.files[0]?.requestedProjectName,
-        wasmInstance: input.wasmInstance,
-      })
-
-      for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
-        const file = input.files[fileIndex]
-        const requestedFileName = file.requestedFileName
-        const requestedCode = file.requestedCode
-
-        // If override is true, use the requested filename directly
-        const fileName = input.override
-          ? requestedFileName
-          : (
-              await getNextFileName({
-                entryName: requestedFileName,
-                baseDir: projectRoot,
-                wasmInstance: input.wasmInstance,
-              })
-            ).name
-
-        // Create the project around the file if newProject
-        await createNewProjectDirectory(
-          newProjectName,
-          input.wasmInstance,
-          requestedCode,
+    runWithProjectFilesystemMutationLock(
+      async () => {
+        // Name allocation has to happen while holding the same namespace lease
+        // as duplicate publication, project creation, and rename.
+        const {
           configuration,
-          fileName,
-          projectDirectoryPath
-        )
-      }
-      const numberOfFiles = input.files.length
-      const fileText = numberOfFiles > 1 ? 'files' : 'file'
-      const message = input.override
-        ? `Successfully overwrote ${numberOfFiles} ${fileText}`
-        : `Successfully created ${numberOfFiles} ${fileText}`
-      return {
-        message,
-        fileName: '',
-        projectName: newProjectName,
-        subRoute: 'subRoute' in input ? input.subRoute : '',
-      }
-    })
+          projectDirectoryPath,
+          projectName: newProjectName,
+          projectRoot,
+        } = await prepareBulkProjectWrite({
+          context: input.context,
+          requestedProjectName: input.files[0]?.requestedProjectName,
+          wasmInstance: input.wasmInstance,
+        })
+
+        for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
+          const file = input.files[fileIndex]
+          const requestedFileName = file.requestedFileName
+          const requestedCode = file.requestedCode
+
+          // If override is true, use the requested filename directly
+          const fileName = input.override
+            ? requestedFileName
+            : (
+                await getNextFileName({
+                  entryName: requestedFileName,
+                  baseDir: projectRoot,
+                  wasmInstance: input.wasmInstance,
+                })
+              ).name
+
+          // Create the project around the file if newProject
+          await createNewProjectDirectory(
+            newProjectName,
+            input.wasmInstance,
+            requestedCode,
+            configuration,
+            fileName,
+            projectDirectoryPath
+          )
+        }
+        await afterFilesCreated?.()
+        const numberOfFiles = input.files.length
+        const fileText = numberOfFiles > 1 ? 'files' : 'file'
+        const message = input.override
+          ? `Successfully overwrote ${numberOfFiles} ${fileText}`
+          : `Successfully created ${numberOfFiles} ${fileText}`
+        return {
+          message,
+          fileName: '',
+          projectName: newProjectName,
+          subRoute: 'subRoute' in input ? input.subRoute : '',
+        }
+      },
+      { mode: 'shared' }
+    )
   )
 }
 
@@ -958,6 +910,13 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     const namespacePath = fsZds.resolve(projectDirectoryPath)
     return runWithProjectDirectoryNamespaceLock(namespacePath, () =>
       runWithProjectFilesystemMutationLock(async () => {
+        if (await isProjectDirectoryQuarantined(projectRoot)) {
+          return Promise.reject(
+            new Error(
+              `Project ${projectName} is reserved by an incomplete duplication`
+            )
+          )
+        }
         await fsZds.mkdir(projectRoot, { recursive: true })
         for (const file of input.files) {
           const targetPath = fsZds.join(projectRoot, file.requestedFileName)
@@ -1001,6 +960,7 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
 
 const sharedBulkDeleteWorkflow = async ({
   input,
+  mutationLockAlreadyHeld = false,
 }: {
   input: {
     requestedProjectName: string
@@ -1009,6 +969,7 @@ const sharedBulkDeleteWorkflow = async ({
     filesToDelete?: RequestedKCLFileDelete[]
     wasmInstance: ModuleType
   }
+  mutationLockAlreadyHeld?: boolean
 }) => {
   if (!input.context.folders) {
     console.warn('no folders')
@@ -1049,10 +1010,13 @@ const sharedBulkDeleteWorkflow = async ({
       file.type === 'kcl'
         ? file.absPath
         : fsZds.join(project.path, file.relPath)
-    await runWithProjectFilesystemMutationLock(() => fsZds.rm(absPath), {
-      ifAvailable: true,
-      mode: 'shared',
-    })
+    const deleteFile = () => fsZds.rm(absPath)
+    await (mutationLockAlreadyHeld
+      ? deleteFile()
+      : runWithProjectFilesystemMutationLock(deleteFile, {
+          ifAvailable: true,
+          mode: 'shared',
+        }))
     totalDeleted += 1
   }
 
@@ -1482,6 +1446,14 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                               // This runs under the same project lock before
                               // the final cloud registration.
                               afterFreshIdentityReset: async () => {
+                                await finalizeDuplicateReservation(
+                                  reservationPath,
+                                  {
+                                    kind: 'reservation',
+                                    phase: 'published',
+                                    token: duplicateToken,
+                                  }
+                                )
                                 await finalizeDuplicateTargetMarker(
                                   fsZds.join(
                                     targetPath,
@@ -1489,15 +1461,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                                   ),
                                   {
                                     kind: 'target',
-                                    phase: 'publishing',
-                                    token: duplicateToken,
-                                  }
-                                )
-                                await finalizeDuplicateReservation(
-                                  reservationPath,
-                                  {
-                                    kind: 'reservation',
-                                    phase: 'prepared',
+                                    phase: 'published',
                                     token: duplicateToken,
                                   }
                                 )
@@ -1871,18 +1835,23 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }) => {
           try {
             const wasmInstance = await input.context.wasmInstancePromise
+            let totalDeleted = 0
             const message = await sharedBulkCreateWorkflow({
               input: {
                 ...input,
                 wasmInstance,
                 override: input.override,
               },
-            })
-            // We won't delete until everything's created / updated first.
-            const totalDeleted = await sharedBulkDeleteWorkflow({
-              input: {
-                ...input,
-                wasmInstance,
+              afterFilesCreated: async () => {
+                // We won't delete until everything's created / updated first.
+                totalDeleted =
+                  (await sharedBulkDeleteWorkflow({
+                    input: {
+                      ...input,
+                      wasmInstance,
+                    },
+                    mutationLockAlreadyHeld: true,
+                  })) ?? 0
               },
             })
 

@@ -25,6 +25,7 @@ import {
   getPublicProjectNameById,
 } from '@src/lib/downloadProject'
 import fsZds from '@src/lib/fs-zds'
+import { isProjectDirectoryQuarantined } from '@src/lib/fs-zds/duplicateQuarantine'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
 import {
@@ -248,21 +249,30 @@ export function useQueryParamEffects(kclManager: KclManager) {
         runWithProjectFilesystemMutationLock(
           async () => {
             const normalizedProjectName = projectName.normalize('NFC')
+            const unavailableProjectNames = new Set<string>()
             while (true) {
               const projectDirectoryEntries =
                 await fsZds.readdir(projectDirectoryPath)
               const requestedProjectName = getUniqueProjectName(
                 normalizedProjectName,
-                projectDirectoryEntries.map((name) => ({
-                  name: name.normalize('NFC'),
-                  path: fsZds.join(projectDirectoryPath, name),
-                  children: [],
-                }))
-              )
-              try {
-                await fsZds.mkdir(
-                  fsZds.join(projectDirectoryPath, requestedProjectName)
+                [...projectDirectoryEntries, ...unavailableProjectNames].map(
+                  (name) => ({
+                    name: name.normalize('NFC'),
+                    path: fsZds.join(projectDirectoryPath, name),
+                    children: [],
+                  })
                 )
+              )
+              const requestedProjectPath = fsZds.join(
+                projectDirectoryPath,
+                requestedProjectName
+              )
+              if (await isProjectDirectoryQuarantined(requestedProjectPath)) {
+                unavailableProjectNames.add(requestedProjectName)
+                continue
+              }
+              try {
+                await fsZds.mkdir(requestedProjectPath)
               } catch (error) {
                 // A separate desktop process does not share Web Locks. Its
                 // exclusive mkdir remains authoritative, so allocate again.

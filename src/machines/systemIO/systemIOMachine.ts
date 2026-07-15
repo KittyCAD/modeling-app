@@ -1020,6 +1020,10 @@ export const systemIOMachine = setup({
         ],
         [SystemIOMachineEvents.duplicateProject]: [
           {
+            guard: ({ context }) => !context.hasListedProjects,
+            actions: [SystemIOMachineActions.deferSystemIOEvent],
+          },
+          {
             guard: SystemIOMachineGuards.projectNameIsValidLength,
             target: SystemIOMachineStates.duplicatingProject,
           },

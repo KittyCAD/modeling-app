@@ -17,6 +17,7 @@ import {
   writeAppSettingsFile,
   writeProjectSettingsFileUnlocked,
 } from '@src/lib/desktop'
+import { isProjectDirectoryQuarantined } from '@src/lib/fs-zds/duplicateQuarantine'
 import { isDesktop } from '@src/lib/isDesktop'
 import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import type {
@@ -935,35 +936,43 @@ export async function loadAndValidateSettings(
 
   // Load the project settings if they exist
   if (projectPath) {
-    let projectSettings = await readProjectSettingsFile(
-      projectPath,
-      wasmInstance
+    const projectSettings = await runWithProjectFilesystemMutationLock(
+      async () => {
+        if (await isProjectDirectoryQuarantined(projectPath)) {
+          return Promise.reject(
+            new Error(
+              'Project cannot be opened while duplication is incomplete.'
+            )
+          )
+        }
+
+        let settings = await readProjectSettingsFile(projectPath, wasmInstance)
+        if (err(settings)) {
+          return Promise.reject(new Error('Invalid project settings'))
+        }
+
+        if (
+          !settings.settings?.meta?.id ||
+          settings.settings.meta.id === uuidNIL
+        ) {
+          settings = setProjectConfigurationId(settings, v4())
+          const projectTomlString = serializeProjectConfiguration(
+            settings,
+            wasmInstance
+          )
+          if (err(projectTomlString)) {
+            return Promise.reject(
+              new Error('Could not serialize project configuration')
+            )
+          }
+
+          await writeProjectSettingsFileUnlocked(projectPath, projectTomlString)
+        }
+
+        return settings
+      },
+      { ifAvailable: true, mode: 'shared' }
     )
-
-    if (err(projectSettings)) {
-      return Promise.reject(new Error('Invalid project settings'))
-    }
-
-    if (
-      !projectSettings.settings?.meta?.id ||
-      projectSettings.settings.meta.id === uuidNIL
-    ) {
-      projectSettings = setProjectConfigurationId(projectSettings, v4())
-      const projectTomlString = serializeProjectConfiguration(
-        projectSettings,
-        wasmInstance
-      )
-      if (err(projectTomlString)) {
-        return Promise.reject(
-          new Error('Could not serialize project configuration')
-        )
-      }
-
-      await runWithProjectFilesystemMutationLock(
-        () => writeProjectSettingsFileUnlocked(projectPath, projectTomlString),
-        { ifAvailable: true, mode: 'shared' }
-      )
-    }
 
     const projectSettingsPayload = projectSettings
     settingsNext = setSettingsAtLevel(
@@ -1065,31 +1074,47 @@ export async function saveSettings(
     return
   }
 
-  // Get the project settings.
-  const jsProjectSettings = getChangedSettingsAtLevel(allSettings, 'project')
-  const existingProjectSettings = await readProjectSettingsFile(
-    projectPath,
-    wasmInstance
-  )
-  if (err(existingProjectSettings)) {
-    return
-  }
-
-  const mergedProjectSettings = replaceProjectSettingsPreservingMetadata(
-    existingProjectSettings,
-    settingsPayloadToProjectConfiguration(jsProjectSettings, extensionSettings)
-  )
-  const projectTomlString = serializeProjectConfiguration(
-    mergedProjectSettings,
-    wasmInstance
-  )
-  if (err(projectTomlString)) {
-    return
-  }
-
-  // Write the project settings.
   await runWithProjectFilesystemMutationLock(
-    () => writeProjectSettingsFileUnlocked(projectPath, projectTomlString),
+    async () => {
+      if (await isProjectDirectoryQuarantined(projectPath)) {
+        return Promise.reject(
+          new Error(
+            'Project cannot be changed while duplication is incomplete.'
+          )
+        )
+      }
+
+      // Get the project settings.
+      const jsProjectSettings = getChangedSettingsAtLevel(
+        allSettings,
+        'project'
+      )
+      const existingProjectSettings = await readProjectSettingsFile(
+        projectPath,
+        wasmInstance
+      )
+      if (err(existingProjectSettings)) {
+        return
+      }
+
+      const mergedProjectSettings = replaceProjectSettingsPreservingMetadata(
+        existingProjectSettings,
+        settingsPayloadToProjectConfiguration(
+          jsProjectSettings,
+          extensionSettings
+        )
+      )
+      const projectTomlString = serializeProjectConfiguration(
+        mergedProjectSettings,
+        wasmInstance
+      )
+      if (err(projectTomlString)) {
+        return
+      }
+
+      // Write the project settings.
+      await writeProjectSettingsFileUnlocked(projectPath, projectTomlString)
+    },
     { ifAvailable: true, mode: 'shared' }
   )
 }

@@ -57,7 +57,7 @@ describe('publishDirectory', () => {
   let contents: Map<string, Uint8Array>
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
     contents = new Map()
     const createHandle = (filePath: string, identity: number) => {
       let handleContents = new Uint8Array()
@@ -177,7 +177,7 @@ describe('publishDirectory', () => {
 
 describe('move', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
     fsPromisesMock.stat.mockResolvedValue({
       isDirectory: () => false,
     })
@@ -253,7 +253,7 @@ describe('move', () => {
 
 describe('openExternal', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
   })
 
   it('invokes the main process with normalized http URLs', async () => {

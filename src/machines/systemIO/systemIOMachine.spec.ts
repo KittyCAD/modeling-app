@@ -423,6 +423,146 @@ describe('systemIOMachine - XState', () => {
         const context = actor.getSnapshot().context
         expect(context.folders).toStrictEqual([])
       })
+      it('defers an initial duplicate until folders are loaded', async () => {
+        const initialRead = deferred<Project[]>()
+        const projects = [mockProject('source')]
+        const duplicateFolders: (Project[] | undefined)[] = []
+        let readCount = 0
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => {
+                  readCount += 1
+                  return readCount === 1 ? initialRead.promise : projects
+                }),
+              [SystemIOMachineActors.duplicateProject]: fromPromise(
+                async ({ input }) => {
+                  duplicateFolders.push(input.context.folders)
+                  return {
+                    message: 'done',
+                    name: input.requestedProjectName,
+                  }
+                }
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: 'source',
+              requestedProjectName: 'source-copy',
+            },
+          })
+
+          expect(duplicateFolders).toHaveLength(0)
+          expect(actor.getSnapshot()).toMatchObject({
+            value: SystemIOMachineStates.readingFolders,
+          })
+
+          initialRead.resolve(projects)
+
+          await vi.waitFor(() => expect(duplicateFolders).toHaveLength(1))
+          expect(duplicateFolders[0]).toStrictEqual(projects)
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
+      it('keeps a duplicate deferred through a path permission check and folder read', async () => {
+        const checkReadWrite = deferred<{
+          value: boolean
+          error: unknown
+        }>()
+        const initialRead = deferred<Project[]>()
+        const projects = [mockProject('source')]
+        const duplicateFolders: (Project[] | undefined)[] = []
+        let readCount = 0
+        const actor = createActor(
+          systemIOMachine.provide({
+            actors: {
+              [SystemIOMachineActors.checkReadWrite]: fromPromise(
+                async () => checkReadWrite.promise
+              ),
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => {
+                  readCount += 1
+                  return readCount === 1 ? initialRead.promise : projects
+                }),
+              [SystemIOMachineActors.duplicateProject]: fromPromise(
+                async ({ input }) => {
+                  duplicateFolders.push(input.context.folders)
+                  return {
+                    message: 'done',
+                    name: input.requestedProjectName,
+                  }
+                }
+              ),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: '/projects' },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.checkingReadWrite)
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: 'source',
+              requestedProjectName: 'source-copy',
+            },
+          })
+          expect(duplicateFolders).toHaveLength(0)
+
+          checkReadWrite.resolve({ value: true, error: undefined })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.readingFolders)
+          )
+
+          expect(duplicateFolders).toHaveLength(0)
+          expect(actor.getSnapshot().context.folders).toBeUndefined()
+
+          initialRead.resolve(projects)
+
+          await vi.waitFor(() => expect(duplicateFolders).toHaveLength(1))
+          expect(duplicateFolders[0]).toStrictEqual(projects)
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+        } finally {
+          actor.stop()
+        }
+      })
       it('should accept project imports while reading folders', async () => {
         const actor = createActor(
           systemIOMachine.provide({
@@ -1379,6 +1519,187 @@ describe('systemIOMachine - XState', () => {
         }
       })
     })
+    describe('when bulk creating and deleting files', () => {
+      it('holds one shared filesystem mutation lease through both phases', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-bulk-create-delete-lock-')
+        )
+        const projectName = 'project'
+        const projectPath = path.join(projectDirectory, projectName)
+        const deleteTraversalStarted = deferred<undefined>()
+        const continueDeleteTraversal = deferred<undefined>()
+        const originalLocksDescriptor = Object.getOwnPropertyDescriptor(
+          globalThis.navigator,
+          'locks'
+        )
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+        let readdirSpy: { mockRestore: () => void } | undefined
+
+        try {
+          await mkdir(projectPath)
+          await writeFile(path.join(projectPath, 'main.kcl'), 'old = 1')
+          await writeFile(
+            path.join(projectPath, 'obsolete.kcl'),
+            'obsolete = 1'
+          )
+          await writeFile(
+            path.join(projectPath, 'project.toml'),
+            'title = "project"\ndefault_file = "main.kcl"\n'
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(
+            actor,
+            (state) =>
+              state.matches(SystemIOMachineStates.idle) &&
+              Boolean(
+                state.context.folders?.some(
+                  (folder) => folder.name === projectName
+                )
+              )
+          )
+
+          const originalReaddir = fsZds.readdir.bind(fsZds)
+          let pausedDeleteTraversal = false
+          readdirSpy = vi
+            .spyOn(fsZds, 'readdir')
+            .mockImplementation(async (requestedPath, options) => {
+              if (
+                !pausedDeleteTraversal &&
+                fsZds.resolve(requestedPath) === fsZds.resolve(projectPath)
+              ) {
+                pausedDeleteTraversal = true
+                deleteTraversalStarted.resolve(undefined)
+                await continueDeleteTraversal.promise
+              }
+              return originalReaddir(requestedPath, options)
+            })
+
+          const mutationLockName = 'zds:project-filesystem-mutation'
+          const exclusiveWaiters: (() => void)[] = []
+          let sharedMutationActive = false
+          const lockRequest = vi.fn(async (...args: unknown[]) => {
+            const lockName = args[0] as string
+            const options =
+              typeof args[1] === 'function'
+                ? {}
+                : (args[1] as { mode?: LockMode })
+            const callback = args.at(-1) as (
+              lock: Lock | null
+            ) => Promise<unknown>
+            const mode = options.mode ?? 'exclusive'
+
+            if (
+              lockName === mutationLockName &&
+              mode === 'exclusive' &&
+              sharedMutationActive
+            ) {
+              await new Promise<void>((resolve) => {
+                exclusiveWaiters.push(resolve)
+              })
+            }
+            if (lockName === mutationLockName && mode === 'shared') {
+              sharedMutationActive = true
+            }
+
+            try {
+              return await callback({ name: lockName, mode })
+            } finally {
+              if (lockName === mutationLockName && mode === 'shared') {
+                sharedMutationActive = false
+                exclusiveWaiters.splice(0).forEach((resolve) => {
+                  resolve()
+                })
+              }
+            }
+          })
+          Object.defineProperty(globalThis.navigator, 'locks', {
+            configurable: true,
+            value: { request: lockRequest },
+          })
+
+          actor.send({
+            type: SystemIOMachineEvents.bulkCreateAndDeleteKCLFilesAndNavigateToFile,
+            data: {
+              files: [
+                {
+                  requestedProjectName: projectName,
+                  requestedFileName: 'main.kcl',
+                  requestedCode: 'updated = 1',
+                },
+              ],
+              filesToDelete: [{ requestedFileName: 'obsolete.kcl' }],
+              requestedProjectName: projectName,
+              requestedFileNameWithExtension: 'main.kcl',
+              override: true,
+            },
+          })
+
+          await deleteTraversalStarted.promise
+          expect(sharedMutationActive).toBe(true)
+          const sharedMutationRequests = lockRequest.mock.calls.filter(
+            (args) =>
+              args[0] === mutationLockName &&
+              typeof args[1] !== 'function' &&
+              (args[1] as { mode?: LockMode }).mode === 'shared'
+          )
+          expect(sharedMutationRequests).toHaveLength(1)
+
+          let exclusiveEntered = false
+          const exclusiveRequest = globalThis.navigator.locks.request(
+            mutationLockName,
+            async () => {
+              exclusiveEntered = true
+            }
+          )
+          await Promise.resolve()
+          expect(exclusiveEntered).toBe(false)
+
+          continueDeleteTraversal.resolve(undefined)
+          await exclusiveRequest
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          await expect(
+            readFile(path.join(projectPath, 'main.kcl'), 'utf-8')
+          ).resolves.toContain('updated = 1')
+          await expect(
+            readFile(path.join(projectPath, 'obsolete.kcl'), 'utf-8')
+          ).rejects.toThrow()
+        } finally {
+          continueDeleteTraversal.resolve(undefined)
+          readdirSpy?.mockRestore()
+          if (originalLocksDescriptor) {
+            Object.defineProperty(
+              globalThis.navigator,
+              'locks',
+              originalLocksDescriptor
+            )
+          } else {
+            Reflect.deleteProperty(globalThis.navigator, 'locks')
+          }
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+    })
     describe('when duplicating projects', () => {
       it('copies project files under a unique title and resets project metadata', async () => {
         await moduleFsViaModuleImport({
@@ -1746,11 +2067,6 @@ project_id = "${oldCloudProjectId}"
             }
           }
         })
-        Object.defineProperty(globalThis.navigator, 'locks', {
-          configurable: true,
-          value: { request: lockRequest },
-        })
-
         try {
           await mkdir(sourceProject)
           await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
@@ -1776,6 +2092,10 @@ project_id = "${oldCloudProjectId}"
               )
             )
           )
+          Object.defineProperty(globalThis.navigator, 'locks', {
+            configurable: true,
+            value: { request: lockRequest },
+          })
 
           for (const actor of actors) {
             actor.send({
@@ -2154,7 +2474,109 @@ project_id = "${oldCloudProjectId}"
         }
       })
 
-      it('cleans a stale owned mid-copy target under the namespace lease', async () => {
+      it('keeps a markerless reserved target unavailable to rename and import', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-reserved-writer-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const targetProject = path.join(projectDirectory, 'reserved-copy')
+        const evidence = createDuplicatePublicationEvidence({
+          token: '56565656-5656-4565-8565-565656565656',
+          targetName: 'reserved-copy',
+        })
+        const reservationPath = path.join(
+          projectDirectory,
+          evidence.reservationFileName
+        )
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await writeFile(reservationPath, evidence.reservationPrepared)
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.matches(SystemIOMachineStates.idle) &&
+                state.context.folders?.some(
+                  (folder) => folder.name === 'source'
+                )
+            )
+          )
+
+          const renameStarted = waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.renamingProject)
+          )
+          actor.send({
+            type: SystemIOMachineEvents.renameProject,
+            data: {
+              projectName: 'source',
+              requestedProjectName: 'reserved-copy',
+              redirect: false,
+            },
+          })
+          await renameStarted
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          const importStarted = waitFor(actor, (state) =>
+            state.matches(
+              SystemIOMachineStates.bulkImportingProjectFilesAndNavigateToFile
+            )
+          )
+          actor.send({
+            type: SystemIOMachineEvents.bulkImportProjectFilesAndNavigateToFile,
+            data: {
+              requestedProjectName: 'reserved-copy',
+              requestedFileNameWithExtension: 'main.kcl',
+              files: [
+                {
+                  requestedProjectName: 'reserved-copy',
+                  requestedFileName: 'main.kcl',
+                  requestedData: new TextEncoder().encode('imported'),
+                },
+              ],
+            },
+          })
+          await importStarted
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          await expect(
+            readFile(path.join(sourceProject, 'main.kcl'), 'utf-8')
+          ).resolves.toBe('source')
+          await expect(lstat(targetProject)).rejects.toMatchObject({
+            code: 'ENOENT',
+          })
+          await expect(readFile(reservationPath)).resolves.toBeInstanceOf(
+            Buffer
+          )
+        } finally {
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('keeps a stale owned mid-copy target quarantined', async () => {
         await moduleFsViaModuleImport({
           type: StorageName.NodeFS,
           options: {},
@@ -2212,109 +2634,19 @@ project_id = "${oldCloudProjectId}"
             )
           )
 
-          await expect(readdir(partialProject)).rejects.toMatchObject({
-            code: 'ENOENT',
-          })
+          await expect(readdir(partialProject)).resolves.toEqual(
+            expect.arrayContaining([
+              'main.kcl',
+              DUPLICATE_IN_PROGRESS_FILE_NAME,
+            ])
+          )
           await expect(
             readFile(
               path.join(projectDirectory, evidence.reservationFileName),
               'utf-8'
             )
-          ).rejects.toMatchObject({ code: 'ENOENT' })
+          ).resolves.toContain('"phase":"reserved"')
         } finally {
-          Reflect.deleteProperty(globalThis.navigator, 'locks')
-          actor.stop()
-          await rm(projectDirectory, { recursive: true, force: true })
-          await moduleFsViaModuleImport({
-            type: StorageName.NoopFS,
-            options: {},
-          })
-        }
-      })
-
-      it('keeps listing healthy projects when stale duplicate cleanup fails', async () => {
-        await moduleFsViaModuleImport({
-          type: StorageName.NodeFS,
-          options: {},
-        })
-        const projectDirectory = await mkdtemp(
-          path.join(tmpdir(), 'zds-duplicate-cleanup-failure-')
-        )
-        const sourceProject = path.join(projectDirectory, 'source')
-        const partialProject = path.join(projectDirectory, 'partial-copy')
-        const evidence = createDuplicatePublicationEvidence({
-          token: '69696969-6969-4969-8969-696969696969',
-          targetName: 'partial-copy',
-          createdAt: Date.now() - DUPLICATE_ARTIFACT_STALE_MS - 1,
-        })
-        const actor = createActor(systemIOMachineImpl, {
-          input: {
-            wasmInstancePromise: Promise.resolve(instanceInThisFile),
-            app: appInstanceInThisFile,
-          },
-        }).start()
-        Object.defineProperty(globalThis.navigator, 'locks', {
-          configurable: true,
-          value: {
-            request: vi.fn(async (...args: unknown[]) => {
-              const callback = args.at(-1) as (
-                lock: Lock | null
-              ) => Promise<unknown>
-              return callback({ name: args[0] as string, mode: 'exclusive' })
-            }),
-          },
-        })
-        const originalRm = fsZds.rm.bind(fsZds)
-        const rmSpy = vi
-          .spyOn(fsZds, 'rm')
-          .mockImplementation((target, options) =>
-            fsZds.resolve(target) === fsZds.resolve(partialProject)
-              ? Promise.reject(new Error('simulated cleanup failure'))
-              : originalRm(target, options)
-          )
-        const consoleWarn = vi
-          .spyOn(console, 'warn')
-          .mockImplementation(() => undefined)
-
-        try {
-          await mkdir(sourceProject)
-          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
-          await mkdir(partialProject)
-          await writeFile(path.join(partialProject, 'main.kcl'), 'partial')
-          await writeFile(
-            path.join(partialProject, evidence.markerName),
-            evidence.targetPublishing
-          )
-          await writeFile(
-            path.join(projectDirectory, evidence.reservationFileName),
-            evidence.reservationPrepared
-          )
-
-          actor.send({
-            type: SystemIOMachineEvents.setProjectDirectoryPath,
-            data: { requestedProjectDirectoryPath: projectDirectory },
-          })
-          await waitFor(actor, (state) =>
-            Boolean(
-              state.matches(SystemIOMachineStates.idle) &&
-                state.context.folders?.some(
-                  (folder) => folder.name === 'source'
-                )
-            )
-          )
-
-          expect(
-            actor
-              .getSnapshot()
-              .context.folders?.some((folder) => folder.name === 'partial-copy')
-          ).toBe(false)
-          await expect(
-            readFile(path.join(partialProject, 'main.kcl'), 'utf-8')
-          ).resolves.toBe('partial')
-          expect(consoleWarn).toHaveBeenCalled()
-        } finally {
-          consoleWarn.mockRestore()
-          rmSpy.mockRestore()
           Reflect.deleteProperty(globalThis.navigator, 'locks')
           actor.stop()
           await rm(projectDirectory, { recursive: true, force: true })
@@ -2491,7 +2823,7 @@ project_id = "${oldCloudProjectId}"
         }
       })
 
-      it('does not quarantine a project for an invalid marker alone', async () => {
+      it('does not silently drop an invalid marker file from a duplicate', async () => {
         await moduleFsViaModuleImport({
           type: StorageName.NodeFS,
           options: {},
@@ -2539,6 +2871,9 @@ project_id = "${oldCloudProjectId}"
           expect(
             actor.getSnapshot().context.folders?.map((folder) => folder.name)
           ).toContain('partial-copy')
+          const duplicationStarted = waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.duplicatingProject)
+          )
           actor.send({
             type: SystemIOMachineEvents.duplicateProject,
             data: {
@@ -2546,27 +2881,12 @@ project_id = "${oldCloudProjectId}"
               requestedProjectName: 'partial-copy clone',
             },
           })
+          await duplicationStarted
           await waitFor(actor, (state) =>
-            Boolean(
-              state.matches(SystemIOMachineStates.idle) &&
-                state.context.requestedProjectName.name === 'partial-copy clone'
-            )
+            state.matches(SystemIOMachineStates.idle)
           )
           await expect(
-            readFile(
-              path.join(projectDirectory, 'partial-copy clone', 'notes.txt'),
-              'utf-8'
-            )
-          ).resolves.toBe('keep')
-          await expect(
-            readFile(
-              path.join(
-                projectDirectory,
-                'partial-copy clone',
-                DUPLICATE_IN_PROGRESS_FILE_NAME
-              ),
-              'utf-8'
-            )
+            lstat(path.join(projectDirectory, 'partial-copy clone'))
           ).rejects.toMatchObject({ code: 'ENOENT' })
           await expect(readdir(partialProject)).resolves.toEqual(
             expect.arrayContaining([

@@ -134,15 +134,6 @@ type ProjectMutationSuppression = {
 }
 
 const suppressedProjectMutations = new Map<string, ProjectMutationSuppression>()
-type ProjectReadLease = {
-  count: number
-  webLockReady: Promise<void>
-  resolveWebLockReady: () => void
-  readsComplete: Promise<void>
-  resolveReadsComplete: () => void
-}
-
-const activeProjectReadLeases = new Map<string, ProjectReadLease>()
 const localProjectLockTails = new Map<string, Promise<void>>()
 const quarantinedPartialProjectPaths = new Set<string>()
 
@@ -214,14 +205,8 @@ function isProjectMutationSuppressed(projectPath: string) {
   return suppressedProjectMutations.has(normalizePathForSync(projectPath))
 }
 
-function isProjectReadLeased(projectPath: string) {
-  return activeProjectReadLeases.has(normalizePathForSync(projectPath))
-}
-
 function isProjectCloudOperationDeferred(projectPath: string) {
-  return (
-    isProjectMutationSuppressed(projectPath) || isProjectReadLeased(projectPath)
-  )
+  return isProjectMutationSuppressed(projectPath)
 }
 
 function isPathNotFoundError(error: unknown) {
@@ -460,52 +445,6 @@ function releaseProjectMutationSuppression(
 ) {
   if (suppressedProjectMutations.get(projectPath) === suppression) {
     suppressedProjectMutations.delete(projectPath)
-  }
-}
-
-function leaseProjectForRead(projectPath: string) {
-  const normalizedProjectPath = normalizePathForSync(projectPath)
-  const existing = activeProjectReadLeases.get(normalizedProjectPath)
-  if (existing) {
-    existing.count += 1
-    return {
-      isOutermostRead: false,
-      normalizedProjectPath,
-      lease: existing,
-    }
-  }
-
-  const webLockReady = createVoidDeferred()
-  const readsComplete = createVoidDeferred()
-  const lease: ProjectReadLease = {
-    count: 1,
-    webLockReady: webLockReady.promise,
-    resolveWebLockReady: webLockReady.resolve,
-    readsComplete: readsComplete.promise,
-    resolveReadsComplete: readsComplete.resolve,
-  }
-  activeProjectReadLeases.set(normalizedProjectPath, lease)
-  return {
-    isOutermostRead: true,
-    normalizedProjectPath,
-    lease,
-  }
-}
-
-function finishProjectRead(projectPath: string, lease: ProjectReadLease) {
-  lease.count -= 1
-  if (lease.count === 0) {
-    // Stop admitting new readers before resolving the cohort. Otherwise a
-    // reader can join after this promise has settled but before the outer
-    // callback releases the project lock, and then outlive that lock.
-    releaseProjectReadLease(projectPath, lease)
-    lease.resolveReadsComplete()
-  }
-}
-
-function releaseProjectReadLease(projectPath: string, lease: ProjectReadLease) {
-  if (activeProjectReadLeases.get(projectPath) === lease) {
-    activeProjectReadLeases.delete(projectPath)
   }
 }
 
@@ -3185,88 +3124,11 @@ async function resetCloudSyncProjectIdentity(projectPath: string) {
   }
 }
 
-/**
- * Clears path-keyed cloud state before duplicate recovery removes an owned,
- * incomplete target. No local mutation is registered for the abandoned copy.
- */
-export async function resetCloudSyncProjectIdentityForRecovery(
-  projectPath: string
-) {
-  const normalizedProjectPath = normalizePathForSync(projectPath)
-  if (isProjectMutationSuppressed(normalizedProjectPath)) {
-    return Promise.reject(
-      projectWriteTransactionActiveError(normalizedProjectPath)
-    )
-  }
-
-  await withCloudSyncProjectLock(normalizedProjectPath, async () => {
-    if (isProjectMutationSuppressed(normalizedProjectPath)) {
-      return Promise.reject(
-        projectWriteTransactionActiveError(normalizedProjectPath)
-      )
-    }
-    await resetCloudSyncProjectIdentity(normalizedProjectPath)
-  })
-}
-
 export type CloudSyncWriteTransactionOptions = {
   /** Discards any prior path-keyed sync identity after a successful commit. */
   freshProjectIdentity?: boolean
   /** Finalizes the filesystem commit after its fresh cloud identity is safe. */
   afterFreshIdentityReset?: () => Promise<void>
-}
-
-/**
- * Holds the same project lock used by cloud hydration while a stable local
- * snapshot is read. Unlike a write transaction, this never suppresses observed
- * mutations or emits a final registration.
- */
-export async function runCloudSyncProjectReadTransaction<T>(
-  projectPath: string,
-  operation: () => Promise<T>
-) {
-  const { isOutermostRead, normalizedProjectPath, lease } =
-    leaseProjectForRead(projectPath)
-  const executeRead = async () => {
-    if (!isOutermostRead) {
-      await lease.webLockReady
-    }
-    try {
-      return await operation()
-    } finally {
-      finishProjectRead(normalizedProjectPath, lease)
-    }
-  }
-
-  if (!isOutermostRead) {
-    return executeRead()
-  }
-
-  try {
-    if (!hasCloudSyncProjectLocks()) {
-      const inProgressSync = activeCloudSyncRunCompletion
-      if (inProgressSync) {
-        await inProgressSync
-      }
-    }
-
-    return await withCloudSyncProjectLock(normalizedProjectPath, async () => {
-      lease.resolveWebLockReady()
-      try {
-        return await executeRead()
-      } finally {
-        await lease.readsComplete
-        releaseProjectReadLease(normalizedProjectPath, lease)
-      }
-    })
-  } finally {
-    releaseProjectReadLease(normalizedProjectPath, lease)
-    // A remote-index or conflict-copy repair pass can deliberately skip a
-    // read-leased project and still mark its global pass complete. Invalidate
-    // both completion markers and retry once the source snapshot is released.
-    conflictCopyRepairComplete = false
-    scheduleRemoteIndexSync(0)
-  }
 }
 
 /**

@@ -178,6 +178,11 @@ export async function renameProjectDirectory(
 
   // Make sure the new name does not exist.
   const newPath = fsZds.join(fsZds.dirname(projectPath), newName)
+  if (await isProjectDirectoryQuarantined(newPath)) {
+    return Promise.reject(
+      new Error(`Path ${newPath} is reserved by an incomplete duplication`)
+    )
+  }
   try {
     await fsZds.stat(newPath)
     // If we get here it means the stat succeeded and there's a file already
@@ -255,6 +260,13 @@ export async function createNewProjectDirectory(
     return Promise.reject(new Error('mainDir is falsey'))
   }
   const projectDir = fsZds.join(mainDir, projectName)
+  if (await isProjectDirectoryQuarantined(projectDir)) {
+    return Promise.reject(
+      new Error(
+        `Project ${projectName} is reserved by an incomplete duplication`
+      )
+    )
+  }
 
   try {
     await fsZds.stat(projectDir)
@@ -505,7 +517,7 @@ const collectAllFilesRecursiveFrom = async (
   return entry
 }
 
-export async function getDefaultKclFileForDir(
+async function getDefaultKclFileForDirUnlocked(
   projectDir: string,
   file: FileEntry,
   wasmInstance: ModuleType
@@ -528,7 +540,11 @@ export async function getDefaultKclFileForDir(
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDir(entry.path, entry, wasmInstance)
+            return getDefaultKclFileForDirUnlocked(
+              entry.path,
+              entry,
+              wasmInstance
+            )
           }
         }
         // If we didn't find a kcl file, create one.
@@ -545,13 +561,9 @@ export async function getDefaultKclFileForDir(
         if (err(codeToWrite)) {
           return Promise.reject(codeToWrite)
         }
-        await runWithProjectFilesystemMutationLock(
-          () =>
-            fsZds.writeFile(
-              defaultFilePath,
-              new TextEncoder().encode(codeToWrite)
-            ),
-          { ifAvailable: true, mode: 'shared' }
+        await fsZds.writeFile(
+          defaultFilePath,
+          new TextEncoder().encode(codeToWrite)
         )
         return defaultFilePath
       }
@@ -563,6 +575,17 @@ export async function getDefaultKclFileForDir(
   }
 
   return defaultFilePath
+}
+
+export async function getDefaultKclFileForDir(
+  projectDir: string,
+  file: FileEntry,
+  wasmInstance: ModuleType
+) {
+  return runWithProjectFilesystemMutationLock(
+    () => getDefaultKclFileForDirUnlocked(projectDir, file, wasmInstance),
+    { ifAvailable: true, mode: 'shared' }
+  )
 }
 
 const kclFileCount = (file: FileEntry) => {
@@ -596,7 +619,7 @@ const directoryCount = (file: FileEntry) => {
   return count
 }
 
-export async function getProjectInfo(
+async function getProjectInfoUnlocked(
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<Project> {
@@ -653,7 +676,7 @@ export async function getProjectInfo(
   let default_file = ''
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
-    default_file = await getDefaultKclFileForDir(
+    default_file = await getDefaultKclFileForDirUnlocked(
       projectPath,
       walked,
       wasmInstance
@@ -687,6 +710,16 @@ export async function getProjectInfo(
   }
 
   return project
+}
+
+export async function getProjectInfo(
+  projectPath: string,
+  wasmInstance: ModuleType
+): Promise<Project> {
+  return runWithProjectFilesystemMutationLock(
+    () => getProjectInfoUnlocked(projectPath, wasmInstance),
+    { ifAvailable: true, mode: 'shared' }
+  )
 }
 
 // Write project settings file.

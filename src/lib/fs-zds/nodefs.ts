@@ -20,6 +20,30 @@ const getPath: IZooDesignStudioFS['getPath'] = async (type) => {
   return path.sep + type
 }
 
+const makeCopiedPathWritable = async (targetPath: string): Promise<void> => {
+  const stat = await fs.lstat(targetPath)
+  if (stat.isSymbolicLink()) return
+
+  await fs.chmod(targetPath, stat.mode | (stat.isDirectory() ? 0o700 : 0o600))
+  if (!stat.isDirectory()) return
+
+  for (const entryName of await fs.readdir(targetPath)) {
+    await makeCopiedPathWritable(path.join(targetPath, entryName))
+  }
+}
+
+export const cp: IZooDesignStudioFS['cp'] = async (
+  sourcePath,
+  targetPath,
+  options
+) => {
+  const { makeWritable, ...copyOptions } = options ?? {}
+  await fs.cp(sourcePath, targetPath, copyOptions)
+  if (makeWritable === true) {
+    await makeCopiedPathWritable(targetPath)
+  }
+}
+
 export const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
   sourcePath,
   targetPath,
@@ -102,13 +126,47 @@ export const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
       return false
     }
   }
+  const fileIdentityStillAtPath = async (
+    filePath: string,
+    identity: FileIdentity | undefined
+  ) => {
+    if (!identity) return false
+    try {
+      const stat = await fs.lstat(filePath)
+      return (
+        stat.isFile() &&
+        !stat.isSymbolicLink() &&
+        stat.dev === identity.dev &&
+        stat.ino === identity.ino
+      )
+    } catch {
+      return false
+    }
+  }
 
   try {
     reservationHandle = await fs.open(reservationPath, 'wx+')
-    await writeEvidence(reservationHandle, evidence.reservationPrepared)
     reservationIdentity = await reservationHandle.stat()
+    await writeEvidence(reservationHandle, evidence.reservationPrepared)
   } catch (error) {
+    const ownsReservation = await fileIdentityStillAtPath(
+      reservationPath,
+      reservationIdentity
+    )
     await reservationHandle?.close().catch(() => undefined)
+    if (ownsReservation) {
+      const currentReservation = await fs
+        .lstat(reservationPath)
+        .catch(() => undefined)
+      if (
+        currentReservation?.isFile() &&
+        !currentReservation.isSymbolicLink() &&
+        currentReservation.dev === reservationIdentity?.dev &&
+        currentReservation.ino === reservationIdentity.ino
+      ) {
+        await fs.rm(reservationPath, { force: true })
+      }
+    }
     return Promise.reject(
       isAlreadyExistsError(error) ? PUBLISH_DIRECTORY_DESTINATION_EXISTS : error
     )
@@ -204,6 +262,11 @@ export const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
       evidence.targetPublishing,
       evidence.reservationPrepared
     )
+    await writeEvidence(reservationHandle, evidence.reservationReserved)
+    await assertOwnership(
+      evidence.targetPublishing,
+      evidence.reservationReserved
+    )
   } catch (error) {
     // Do not delete by pathname: another process could have replaced the
     // reservation after mkdir. No content copy starts without the marker, so
@@ -220,7 +283,7 @@ export const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
       }
       await assertOwnership(
         evidence.targetPublishing,
-        evidence.reservationPrepared
+        evidence.reservationReserved
       )
       await fs.cp(
         path.join(sourcePath, entryName),
@@ -235,7 +298,17 @@ export const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
     }
     await assertOwnership(
       evidence.targetPublishing,
-      evidence.reservationPrepared
+      evidence.reservationReserved
+    )
+    await writeEvidence(markerHandle, evidence.targetPublished)
+    await assertOwnership(
+      evidence.targetPublished,
+      evidence.reservationReserved
+    )
+    await writeEvidence(reservationHandle, evidence.reservationPublished)
+    await assertOwnership(
+      evidence.targetPublished,
+      evidence.reservationPublished
     )
   } finally {
     await markerHandle?.close().catch(() => undefined)
@@ -255,7 +328,7 @@ if (typeof process !== 'undefined' && process.title !== 'browser') {
     dirname: path.dirname.bind(path),
     getPath,
     access: fs.access,
-    cp: fs.cp,
+    cp,
     readFile: fs.readFile,
     rename: fs.rename,
     publishDirectory,

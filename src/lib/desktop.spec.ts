@@ -313,17 +313,33 @@ describe('desktop utilities', () => {
       const emptyProjectPath = `/test/projects/${emptyProjectName}`
       const mainPath = `${emptyProjectPath}/main.kcl`
       const defaultStat = mockElectron.stat.getMockImplementation()!
+      const originalNavigator = globalThis.navigator
       let mainCreated = false
+      let mutationLockHeld = false
+      const requestMutationLock = vi.fn(async (...args: unknown[]) => {
+        const callback = args.at(-1) as (lock: Lock) => Promise<unknown>
+        mutationLockHeld = true
+        try {
+          return await callback({} as Lock)
+        } finally {
+          mutationLockHeld = false
+        }
+      })
+      vi.stubGlobal('navigator', {
+        locks: { request: requestMutationLock },
+      })
       TEST_PROJECTS_DEFAULT.push(emptyProjectName)
       mockFileSystem[emptyProjectPath] = []
       mockElectron.stat.mockImplementation(async (path: string) => {
         if (path === mainPath && !mainCreated) {
+          expect(mutationLockHeld).toBe(true)
           throw Object.assign(new Error('missing'), { code: 'ENOENT' })
         }
         return defaultStat(path)
       })
       mockElectron.writeFile.mockImplementation(async (path: string) => {
         if (path === mainPath) {
+          expect(mutationLockHeld).toBe(true)
           mainCreated = true
           mockFileSystem[emptyProjectPath].push('main.kcl')
         }
@@ -340,7 +356,9 @@ describe('desktop utilities', () => {
           mainPath,
           expect.any(Uint8Array)
         )
+        expect(requestMutationLock).toHaveBeenCalled()
       } finally {
+        vi.stubGlobal('navigator', originalNavigator)
         TEST_PROJECTS_DEFAULT.splice(
           TEST_PROJECTS_DEFAULT.indexOf(emptyProjectName),
           1
