@@ -13,7 +13,7 @@ import {
   MlEphantManagerTransitions,
   mlEphantManagerMachine,
   parseMlCopilotModesResult,
-} from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { S } from '@src/machines/utils'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
