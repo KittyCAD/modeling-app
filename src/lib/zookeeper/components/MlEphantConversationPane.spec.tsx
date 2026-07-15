@@ -29,14 +29,14 @@ vi.mock('@src/lib/boot', () => ({
   }),
 }))
 
-import { MlEphantConversationPane } from '@src/components/layout/areas/MlEphantConversationPane'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeperConversationStore'
+import { MlEphantConversationPane } from '@src/lib/zookeeper/components/MlEphantConversationPane'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
 import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
-} from '@src/machines/mlEphantManagerMachine'
-import { MlEphantManagerTransitions } from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
+import { MlEphantManagerTransitions } from '@src/lib/zookeeper/mlEphantManagerMachine'
 
 const completedConversation: Conversation = {
   exchanges: [

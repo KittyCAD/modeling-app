@@ -151,6 +151,82 @@ export const editorTheme = {
   light: [lightTheme, syntaxHighlighting(baseKclHighlights)],
   dark: [darkTheme, syntaxHighlighting(darkKclHighlights)],
 }
+
+/**
+ * The visual (background/selection) theme only, without the KCL syntax
+ * highlighter. Non-KCL editors — e.g. the plain-text/Markdown code pane — want
+ * the light/dark look but must not register the KCL {@link HighlightStyle},
+ * because CodeMirror resolves highlighters all-or-nothing: a KCL "main"
+ * highlighter would suppress any other (e.g. Markdown) highlight style layered
+ * on top of it.
+ */
+export const editorVisualTheme = {
+  light: lightTheme,
+  dark: darkTheme,
+}
+
+// Markdown highlighting for the plain-text code pane. We can't reuse
+// CodeMirror's `defaultHighlightStyle` because its colors are tuned for a light
+// background and are unreadable on our dark theme. Instead, we mirror the KCL
+// theme's approach: palette-based colors with a dark override. A rule on the
+// base `heading` tag cascades to `heading1`–`heading6`.
+const baseMarkdownHighlights = HighlightStyle.define([
+  { tag: tags.heading, color: colors.primary.light, fontWeight: 'bold' },
+  { tag: tags.strong, color: colors.textDefault.light, fontWeight: 'bold' },
+  { tag: tags.emphasis, color: colors.textDefault.light, fontStyle: 'italic' },
+  { tag: tags.strikethrough, textDecoration: 'line-through' },
+  { tag: tags.link, color: colors.primary.light, textDecoration: 'underline' },
+  { tag: tags.url, color: colors.primary.light },
+  { tag: tags.monospace, color: colors.green.light },
+  { tag: tags.list, color: colors.orange.light },
+  { tag: tags.quote, color: colors.textFaded.light, fontStyle: 'italic' },
+  {
+    tag: tags.contentSeparator,
+    color: colors.textFaded.light,
+    fontWeight: 'bold',
+  },
+  {
+    tag: [tags.processingInstruction, tags.labelName],
+    color: colors.textFaded.light,
+  },
+  { tag: tags.comment, color: colors.textFaded.light, fontStyle: 'italic' },
+])
+
+const darkMarkdownHighlights = HighlightStyle.define(
+  [
+    ...baseMarkdownHighlights.specs,
+    { tag: tags.heading, color: colors.primary.dark, fontWeight: 'bold' },
+    { tag: tags.strong, color: colors.textDefault.dark, fontWeight: 'bold' },
+    { tag: tags.emphasis, color: colors.textDefault.dark, fontStyle: 'italic' },
+    { tag: tags.link, color: colors.primary.dark, textDecoration: 'underline' },
+    { tag: tags.url, color: colors.primary.dark },
+    { tag: tags.monospace, color: colors.green.dark },
+    { tag: tags.list, color: colors.orange.dark },
+    { tag: tags.quote, color: colors.textFaded.dark, fontStyle: 'italic' },
+    {
+      tag: tags.contentSeparator,
+      color: colors.textFaded.dark,
+      fontWeight: 'bold',
+    },
+    {
+      tag: [tags.processingInstruction, tags.labelName],
+      color: colors.textFaded.dark,
+    },
+    { tag: tags.comment, color: colors.textFaded.dark, fontStyle: 'italic' },
+  ],
+  { themeType: 'dark' }
+)
+
+/**
+ * Theme-aware Markdown highlight styles for {@link editorVisualTheme}. Keyed by
+ * resolved theme so the correct palette loads; the dark style is gated on
+ * `EditorView.darkTheme`, so it only takes effect when the dark visual theme is
+ * also active.
+ */
+export const editorMarkdownHighlight = {
+  light: syntaxHighlighting(baseMarkdownHighlights),
+  dark: syntaxHighlighting(darkMarkdownHighlights),
+}
 /** Compartment to allow us to reconfigure CodeMirror's theme dynamically outside of React */
 export const themeCompartment = new Compartment()
 

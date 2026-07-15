@@ -15,7 +15,7 @@ import {
   type ZookeeperModifiedPatchFile,
   isZookeeperProjectEntrypointPath,
   normalizeZookeeperPatchPath,
-} from '@src/lib/zookeeperEditPatch'
+} from '@src/lib/zookeeper/zookeeperEditPatch'
 import { EditorView } from 'codemirror'
 import {
   type StructuredPatch,
@@ -30,11 +30,11 @@ export {
   isZookeeperProjectEntrypointPath,
   mergeZookeeperEditPatches,
   normalizeZookeeperPatchPath,
-} from '@src/lib/zookeeperEditPatch'
+} from '@src/lib/zookeeper/zookeeperEditPatch'
 export type {
   ZookeeperEditPatch,
   ZookeeperEditPatchFile,
-} from '@src/lib/zookeeperEditPatch'
+} from '@src/lib/zookeeper/zookeeperEditPatch'
 
 type ZookeeperPatchReplayDirection = 'undo' | 'redo'
 

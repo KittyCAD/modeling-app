@@ -20,7 +20,7 @@ import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import {
   getZookeeperEditPatchFromToolOutput,
   isZookeeperProjectEntrypointPath,
-} from '@src/lib/zookeeperEditPatch'
+} from '@src/lib/zookeeper/zookeeperEditPatch'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import toast from 'react-hot-toast'
