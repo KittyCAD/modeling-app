@@ -77,6 +77,29 @@ describe('project command config', () => {
     ])
   })
 
+  it('creates project directories from project titles', () => {
+    const systemIOActor = createSystemIOActor()
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+    })
+    const createCommand = commands.find(
+      (command) => command.name === 'Create project'
+    )
+
+    createCommand?.onSubmit({
+      name: ' My Cool Project! ',
+    })
+
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.createProject,
+      data: {
+        requestedProjectName: 'my-cool-project',
+        requestedProjectTitle: 'My Cool Project!',
+      },
+    })
+  })
+
   it('labels existing project options by title while submitting directory names', () => {
     const systemIOActor = createSystemIOActor([
       createProject({

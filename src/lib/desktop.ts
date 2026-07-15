@@ -232,7 +232,8 @@ export async function createNewProjectDirectory(
   initialCode?: string,
   configuration?: DeepPartial<Configuration> | Error,
   initialFileName?: string,
-  overrideApplicationProjectDirectory?: string
+  overrideApplicationProjectDirectory?: string,
+  projectTitle = projectName
 ): Promise<Project> {
   if (!configuration) {
     configuration = await readAppSettingsFile(wasmInstance)
@@ -283,7 +284,7 @@ export async function createNewProjectDirectory(
   await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
   await ensureProjectTomlTitle({
     projectPath: projectDir,
-    title: projectName,
+    title: projectTitle,
     defaultFile: kclFileName,
   })
   let metadata: FileMetadata | null = null
@@ -303,7 +304,7 @@ export async function createNewProjectDirectory(
   return {
     path: projectDir,
     name: projectName,
-    title: projectName,
+    title: projectTitle,
     // We don't need to recursively get all files in the project directory.
     // Because we just created it and it's empty.
     children: null,

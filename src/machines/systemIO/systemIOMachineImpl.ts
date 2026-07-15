@@ -529,9 +529,15 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async ({
         input,
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedProjectTitle?: string
+        }
       }) => {
         const requestedProjectName = input.requestedProjectName
+        const requestedProjectTitle =
+          input.requestedProjectTitle ?? requestedProjectName
         const projectDirectoryPath =
           input.context.projectDirectoryPath &&
           input.context.projectDirectoryPath !== NO_PROJECT_DIRECTORY
@@ -548,10 +554,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           undefined,
           undefined,
           undefined,
-          projectDirectoryPath
+          projectDirectoryPath,
+          requestedProjectTitle
         )
         return {
-          message: `Successfully created "${uniqueName}"`,
+          message: `Successfully created "${requestedProjectTitle}"`,
           name: uniqueName,
         }
       }

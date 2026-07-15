@@ -60,6 +60,36 @@ describe('createNewProjectDirectory', () => {
     expect(projectToml).toContain('title = "Human Project"')
   })
 
+  it('can create project directories with separate project titles', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+
+    const project = await createNewProjectDirectory(
+      'human-project',
+      wasmInstance,
+      undefined,
+      {
+        settings: {
+          project: {
+            directory: projectDirectoryPath,
+          },
+        },
+      },
+      undefined,
+      undefined,
+      'Human Project'
+    )
+
+    const projectToml = await fsZds.readFile(
+      fsZds.join(project.path, PROJECT_SETTINGS_FILE_NAME),
+      { encoding: 'utf-8' }
+    )
+
+    expect(project.name).toBe('human-project')
+    expect(project.title).toBe('Human Project')
+    expect(projectToml).toContain('title = "Human Project"')
+  })
+
   it('treats serialized ENOENT strings as missing project.toml metadata', async () => {
     const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
     createdProjectDirectoryPaths.push(projectDirectoryPath)

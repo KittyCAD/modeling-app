@@ -7,6 +7,7 @@ import {
   getProjectDisplayName,
   getProjectOptionNameFromDirectoryName,
 } from '@src/lib/projectDisplayName'
+import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -89,14 +90,23 @@ export function createProjectCommands({
     needsReview: false,
     onSubmit: (record) => {
       if (record) {
+        const requestedProjectTitle =
+          String(record.name ?? '').trim() || defaultProjectFolderNameSnapshot()
         systemIOActor.send({
           type: SystemIOMachineEvents.createProject,
-          data: { requestedProjectName: record.name },
+          data: {
+            requestedProjectName: getProjectDirectoryNameFromTitle(
+              requestedProjectTitle,
+              defaultProjectFolderNameSnapshot()
+            ),
+            requestedProjectTitle,
+          },
         })
       }
     },
     args: {
       name: {
+        displayName: 'Title',
         required: true,
         inputType: 'string',
         defaultValue: defaultProjectFolderNameSnapshot,

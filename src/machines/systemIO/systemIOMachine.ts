@@ -80,7 +80,12 @@ export const systemIOMachine = setup({
         }
       | {
           type: SystemIOMachineEvents.createProject
-          data: { requestedProjectName: string }
+          data: {
+            /** Local project directory name used as the stable identifier. */
+            requestedProjectName: string
+            /** Human-facing project title to write to project.toml. */
+            requestedProjectTitle?: string
+          }
         }
       | {
           type: SystemIOMachineEvents.renameProject
@@ -482,9 +487,13 @@ export const systemIOMachine = setup({
     ),
     [SystemIOMachineActors.createProject]: fromPromise(
       async ({
-        input: { context, requestedProjectName },
+        input: { context, requestedProjectName, requestedProjectTitle },
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedProjectTitle?: string
+        }
       }) => {
         return { message: '', name: '' }
       }
@@ -1100,6 +1109,7 @@ export const systemIOMachine = setup({
           return {
             context,
             requestedProjectName: event.data.requestedProjectName,
+            requestedProjectTitle: event.data.requestedProjectTitle,
           }
         },
         onDone: {
