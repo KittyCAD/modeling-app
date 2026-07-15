@@ -18,3 +18,27 @@ export function getProjectDirectoryNameFromTitle(
 
   return normalized || fallback
 }
+
+export function getProjectTitleFromUniqueDirectoryName({
+  requestedProjectTitle,
+  requestedProjectDirectoryName,
+  uniqueProjectDirectoryName,
+}: {
+  requestedProjectTitle: string
+  requestedProjectDirectoryName: string
+  uniqueProjectDirectoryName: string
+}) {
+  if (uniqueProjectDirectoryName === requestedProjectDirectoryName) {
+    return requestedProjectTitle
+  }
+
+  if (
+    !uniqueProjectDirectoryName.startsWith(`${requestedProjectDirectoryName}-`)
+  ) {
+    return requestedProjectTitle
+  }
+
+  return `${requestedProjectTitle}${uniqueProjectDirectoryName.slice(
+    requestedProjectDirectoryName.length
+  )}`
+}

@@ -34,6 +34,7 @@ import {
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -548,6 +549,11 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName,
           projectDirectoryPath,
         })
+        const uniqueProjectTitle = getProjectTitleFromUniqueDirectoryName({
+          requestedProjectTitle,
+          requestedProjectDirectoryName: requestedProjectName,
+          uniqueProjectDirectoryName: uniqueName,
+        })
         await createNewProjectDirectory(
           uniqueName,
           await input.context.wasmInstancePromise,
@@ -555,10 +561,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           undefined,
           undefined,
           projectDirectoryPath,
-          requestedProjectTitle
+          uniqueProjectTitle
         )
         return {
-          message: `Successfully created "${requestedProjectTitle}"`,
+          message: `Successfully created "${uniqueProjectTitle}"`,
           name: uniqueName,
         }
       }
