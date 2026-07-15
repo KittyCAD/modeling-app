@@ -85,7 +85,9 @@ export const systemIOMachine = setup({
       | {
           type: SystemIOMachineEvents.renameProject
           data: {
+            /** New human-facing project title to write to project.toml. */
             requestedProjectName: string
+            /** Existing local project directory name used as the stable identifier. */
             projectName: string
             redirect: boolean
           }
