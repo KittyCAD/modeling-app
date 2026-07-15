@@ -367,9 +367,8 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
     },
@@ -390,9 +389,8 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
     },
@@ -413,9 +411,8 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
     },
@@ -436,9 +433,8 @@ description: Artifact commands bracket-with-slot.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
     },
