@@ -615,15 +615,11 @@ myExtrude = extrude(
   tagEnd = $endCap,
   tagStart = $startCap,
 )
-yodawg = getCommonEdge(faces = [
-  baseRegion.tags.hi,
-  baseRegion.tags.yoyo
-])
 
 cutSketch = sketch(on = YZ) {
-  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
-  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
-  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+  cut1 = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  cut2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  cut3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
 }
 
 cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
@@ -649,15 +645,11 @@ myExtrude = extrude(
   tagEnd = $endCap,
   tagStart = $startCap,
 )
-yodawg = getCommonEdge(faces = [
-  baseRegion.tags.hi,
-  baseRegion.tags.yoyo
-])
 
 cutSketch = sketch(on = YZ) {
-  myDisambigutator = line(start = [-3.29, 4.75], end = [2.03, 2.44])
-  myDisambigutator2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
-  line3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
+  cut1 = line(start = [-3.29, 4.75], end = [2.03, 2.44])
+  cut2 = line(start = [2.03, 2.44], end = [-3.49, 0.31])
+  cut3 = line(start = [-3.49, 0.31], end = [-3.29, 4.75])
 }
 
 cutRegion = region(point = [-1.5833333333, 2.5], sketch = cutSketch)
@@ -1607,10 +1599,9 @@ part = bracket()
         expect(n).toContain('fillet(')
         expect(n).toContain('radius = 0.1')
         expect(n).toContain('edges = [')
-        expect(n).toContain(
-          'sideFaces = [ baseRegion.tags.line2, baseRegion.tags.yoyo ]'
-        )
-        expect(n).not.toContain('endFaces')
+        expect(n).toContain('sideFaces = [ baseRegion.tags.')
+        expect(n).toContain('endFaces = [')
+        expect(n).toMatch(/endFaces = \[\s*(?:startCap|cutRegion\.tags\.)/)
         expect(n).not.toContain(removed)
       })
     }

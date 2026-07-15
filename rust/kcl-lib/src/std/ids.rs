@@ -11,7 +11,6 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
-use crate::execution::EdgeRefactorMeta;
 use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
@@ -174,15 +173,16 @@ async fn inner_edge_id(
         };
         let edge_id = inner_resp.edge_id;
 
-        if let Ok(face_ids) = edge::get_face_ids_for_edge(exec_state, body.id, edge_id, &args).await
-            && let [a, b] = face_ids.as_slice()
+        if let Ok(meta) = edge::get_refactor_meta_for_edge(
+            exec_state,
+            edge_id,
+            &args,
+            args.source_range,
+            EdgeRefactorStdlibFn::EdgeId,
+        )
+        .await
         {
-            exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
-                edge_id,
-                face_ids: [*a, *b],
-                source_range: args.source_range,
-                stdlib_fn: EdgeRefactorStdlibFn::EdgeId,
-            });
+            exec_state.record_edge_refactor_meta(meta);
         }
 
         edge_id
@@ -237,15 +237,16 @@ async fn inner_edge_id_by_point(
             )));
         };
 
-        if let Ok(face_ids) = edge::get_face_ids_for_edge(exec_state, body.id, edge_id, &args).await
-            && let [a, b] = face_ids.as_slice()
+        if let Ok(meta) = edge::get_refactor_meta_for_edge(
+            exec_state,
+            edge_id,
+            &args,
+            args.source_range,
+            EdgeRefactorStdlibFn::EdgeId,
+        )
+        .await
         {
-            exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
-                edge_id,
-                face_ids: [*a, *b],
-                source_range: args.source_range,
-                stdlib_fn: EdgeRefactorStdlibFn::EdgeId,
-            });
+            exec_state.record_edge_refactor_meta(meta);
         }
 
         edge_id

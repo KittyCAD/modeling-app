@@ -1316,6 +1316,15 @@ function hasFaceIds(
   return isArray(meta?.faceIds) && meta.faceIds.length === 2
 }
 
+function edgeRefactorMetaToPayload(
+  meta: EdgeRefactorMeta & { faceIds: [string, string] }
+): FilletEdgeRefPayload {
+  return {
+    side_faces: meta.faceIds,
+    end_faces: meta.endFaceIds?.length ? meta.endFaceIds : undefined,
+  }
+}
+
 type Z0006SourceRange = [number, number, number]
 
 function sourceRangesOverlap(
@@ -1401,9 +1410,7 @@ function findFilletChamferCallsToFixUnified(
                 sourceRangeMatch(m, inner.start, inner.end, inner.moduleId)
               )
               if (hasFaceIds(meta)) {
-                orderedPayloads.push({
-                  side_faces: meta.faceIds,
-                })
+                orderedPayloads.push(edgeRefactorMetaToPayload(meta))
               } else {
                 hasUnconvertedTagsElement = true
               }
@@ -1451,9 +1458,7 @@ function findFilletChamferCallsToFixUnified(
                 )
               )
               if (hasFaceIds(meta)) {
-                orderedPayloads.push({
-                  side_faces: meta.faceIds,
-                })
+                orderedPayloads.push(edgeRefactorMetaToPayload(meta))
               } else {
                 hasUnconvertedTagsElement = true
               }
@@ -1656,9 +1661,7 @@ export function findGdtEdgesCallsToFix(
           continue
         }
 
-        orderedPayloads.push({
-          side_faces: meta.faceIds,
-        })
+        orderedPayloads.push(edgeRefactorMetaToPayload(meta))
       }
 
       if (hasUnconvertedEdgesElement || orderedPayloads.length === 0) return
@@ -1712,9 +1715,7 @@ export function findGdtDistanceEndpointCallsToFix(
 
         endpoints.push({
           label,
-          payload: {
-            side_faces: meta.faceIds,
-          },
+          payload: edgeRefactorMetaToPayload(meta),
         })
       }
 

@@ -161,6 +161,8 @@ pub enum EdgeRefactorStdlibFn {
 pub struct EdgeRefactorMeta {
     pub edge_id: Uuid,
     pub face_ids: [Uuid; 2],
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub end_face_ids: Vec<Uuid>,
     pub source_range: SourceRange,
     pub stdlib_fn: EdgeRefactorStdlibFn,
 }
@@ -937,6 +939,7 @@ impl ExecState {
         self.record_edge_refactor_meta(EdgeRefactorMeta {
             edge_id,
             face_ids,
+            end_face_ids: Vec::new(),
             source_range: pending_meta.source_range,
             stdlib_fn: pending_meta.stdlib_fn,
         });
