@@ -192,7 +192,7 @@ export type EdgeSelectionContext = {
   selectedBodyExpr: Expr
   bodyKey: string
   pathIfPipe?: PathToNode
-  cloneVariableName?: string
+  isClone?: boolean
 }
 
 export type ModifyAstWithTagsOptions = {
@@ -267,16 +267,12 @@ export function resolveEdgeSelectionContext(
           return new Error('Could not resolve the selected clone body')
         }
         const selectedBodyExpr = cloneVariable.exprs[0]
-        const cloneVariableName = getExprName(selectedBodyExpr)
-        if (!cloneVariableName) {
-          return new Error('Could not resolve the selected clone variable')
-        }
         return {
           sourceSweep,
           selectedBodyExpr,
           bodyKey: getEdgeBodyKey(selectedBodyExpr, cloneVariable.pathIfPipe),
           pathIfPipe: cloneVariable.pathIfPipe,
-          cloneVariableName,
+          isClone: true,
         }
       }
     }
@@ -502,7 +498,7 @@ function modifyAstWithTagsForEdgeSelection(
       )
     if (err(edgeContext)) return edgeContext
 
-    const sourceFaces = edgeContext.cloneVariableName
+    const sourceFaces = edgeContext.isClone
       ? [
           ...getArtifactsOfTypes(
             {
@@ -515,7 +511,7 @@ function modifyAstWithTagsForEdgeSelection(
       : selectedFaces
 
     for (const selectedFace of selectedFaces) {
-      const sourceFace = edgeContext.cloneVariableName
+      const sourceFace = edgeContext.isClone
         ? getOriginalFaceForCopiedEdge(selectedFace, sourceFaces, artifactGraph)
         : selectedFace
       if (err(sourceFace)) return sourceFace
@@ -552,7 +548,7 @@ function modifyAstWithTagsForEdgeSelection(
             tagName
           )
         )
-      } else if (edgeContext.cloneVariableName) {
+      } else if (edgeContext.isClone) {
         const tagName = getExprName(expr)
         if (!tagName) {
           return new Error(

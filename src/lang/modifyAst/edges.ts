@@ -453,7 +453,7 @@ function buildEdgeExpr(
     ast,
     wasmInstance
   )
-  if (regionSketchTagExpr && !edgeContext.cloneVariableName) {
+  if (regionSketchTagExpr && !edgeContext.isClone) {
     const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
 
     return {
@@ -593,7 +593,9 @@ export function groupSelectionsByBodyAndAddTags(
     }
 
     bodies.set(bodyKey, {
-      solidsExpr: edgeContext.selectedBodyExpr,
+      solidsExpr: createVariableExpressionsArray([
+        edgeContext.selectedBodyExpr,
+      ]),
       tagsExpr,
       pathIfPipe: edgeContext.pathIfPipe,
     })
@@ -604,8 +606,7 @@ export function groupSelectionsByBodyAndAddTags(
 
 /**
  * Groups edge selections by their parent editable body.
- * Uses each body's pathToNode as a unique key, or the clone variable name when
- * the selected geometry belongs to a clone.
+ * Uses the resolved body expression and pipe path as a stable grouping key.
  *
  * @param selections - Edge selections to group by body
  * @param artifactGraph - Graph mapping artifacts to AST nodes
@@ -734,7 +735,7 @@ function getTagsExprsFromSelection(
       { nodeToEdit }
     )
     if (err(result)) {
-      console.warn('Failed to resolve edge faces', result)
+      console.warn('Failed to add tag for edge selection', result)
       continue
     }
 

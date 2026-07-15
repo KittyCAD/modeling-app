@@ -1260,14 +1260,14 @@ function getEdgeProfileExprsFromSelection({
         isCallExprWithName(sourceSurfaceInput, 'getNextAdjacentEdge') ||
         isCallExprWithName(sourceSurfaceInput, 'edgeId'))
 
-    if (!edgeContext.cloneVariableName && sourceSurfaceInputIsEdgeExpr) {
+    if (!edgeContext.isClone && sourceSurfaceInputIsEdgeExpr) {
       exprs.push(
         getEdgeTagCall(structuredClone(sourceSurfaceInput), edgeArtifact)
       )
       continue
     }
 
-    if (!edgeContext.cloneVariableName && sourceSurfaceInput?.type === 'Name') {
+    if (!edgeContext.isClone && sourceSurfaceInput?.type === 'Name') {
       const variableDeclaration = modifiedAst.body.find(
         (statement): statement is Node<VariableDeclaration> =>
           statement.type === 'VariableDeclaration' &&
@@ -1335,7 +1335,7 @@ function getEdgeProfileExprsFromSelection({
       modifiedAst,
       wasmInstance
     )
-    if (regionSketchTagExpr && !edgeContext.cloneVariableName) {
+    if (regionSketchTagExpr && !edgeContext.isClone) {
       exprs.push(getEdgeTagCall(regionSketchTagExpr, edgeArtifact))
       continue
     }
