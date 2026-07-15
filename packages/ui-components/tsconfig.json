@@ -7,8 +7,7 @@
     "moduleResolution": "Bundler",
     "ignoreDeprecations": "6.0",
     "paths": {
-      "@kittycad/ui-components": ["./src/index.ts"],
-      "*": ["./*"]
+      "@kittycad/ui-components": ["./src/index.ts"]
     },
     "allowImportingTsExtensions": false,
     "resolveJsonModule": true,
