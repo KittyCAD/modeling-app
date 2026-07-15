@@ -226,10 +226,14 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       if (err(newCode)) {
         throw newCode
       }
-      expect(newCode).toContain('fillet001 = fillet(\n  cube2,')
-      expect(newCode).toContain('cube2.sketch.tags.')
-      expect(newCode).toContain('cube2.faces.capEnd001')
-      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain(`fillet001 = fillet(
+  cube2,
+  tags = getCommonEdge(faces = [
+    cube2.sketch.tags.line2,
+    cube2.faces.capEnd001
+  ]),
+  radius = 1,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
       await getAstAndArtifactGraph(
         newCode,
@@ -286,8 +290,14 @@ extrude002 = extrude([sketch002.line1, sketch002.line2], length = 5, bodyType = 
       if (err(newCode)) {
         throw newCode
       }
-      expect(newCode).toContain('cube1.faces.capEnd001')
-      expect(newCode).toContain('tagEnd = $capEnd001')
+      expect(newCode).toContain(`fillet001 = fillet(
+  cube1,
+  tags = getCommonEdge(faces = [
+    region001.tags.line2,
+    cube1.faces.capEnd001
+  ]),
+  radius = 1,
+)`)
       await getAstAndArtifactGraph(
         newCode,
         instanceInThisFile,
@@ -1309,8 +1319,10 @@ ${extrudedTriangle}`
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
-      expect(newCode.match(/getBoundedEdge\(cube2,/g)?.length).toBe(2)
-      expect(newCode).toContain('cube2.sketch.tags.')
+      expect(newCode).toContain(`blend001 = blend([
+  getBoundedEdge(cube2, edge = getOppositeEdge(cube2.sketch.tags.line2)),
+  getBoundedEdge(cube2, edge = getNextAdjacentEdge(cube2.sketch.tags.line2))
+])`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 

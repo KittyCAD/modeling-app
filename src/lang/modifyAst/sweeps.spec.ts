@@ -959,8 +959,12 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       if (err(result)) throw result
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
-      expect(newCode).toContain('cube2.sketch.tags.')
-      expect(newCode).toMatch(/extrude001 = extrude\(\s*get\w+Edge\(cube2\./)
+      expect(newCode).toContain(`extrude001 = extrude(
+  getOppositeEdge(cube2.sketch.tags.line2),
+  length = 2,
+  method = NEW,
+  bodyType = SURFACE,
+)`)
       const error = await mockExecAstAndReportErrors(
         result.modifiedAst,
         rustContextInThisFile

@@ -1127,8 +1127,15 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
 
       const newCode = recast(result.modifiedAst, instanceInThisFile)
       if (err(newCode)) throw newCode
-      expect(newCode).toContain('cube2.sketch.tags.')
-      expect(newCode).toContain('cube2.faces.capEnd001')
+      expect(newCode).toContain(`gdt::profileLine(
+  edges = [
+    getCommonEdge(faces = [
+      cube2.sketch.tags.line2,
+      cube2.faces.capEnd001
+    ])
+  ],
+  tolerance = 0.1mm,
+)`)
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
 
