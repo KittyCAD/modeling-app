@@ -1233,7 +1233,7 @@ profile001 = ${circleCode}`
   |> close()
 extrude001 = extrude(sketch001, length = -12)
 `
-    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,extrude001.faces.capEnd001]), radius=5,)`
+    const firstFilletDeclaration = `fillet001 = fillet(extrude001, tags=getCommonEdge(faces=[seg01,extrude001.faces.capEnd001]), radius=5)`
 
     // Setup
     await test.step(`Initial test setup`, async () => {

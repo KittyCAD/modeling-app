@@ -2219,7 +2219,7 @@ sketch002 = sketch(on = face001) {
 hidden001 = hide(sketch002)
 region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
     // TODO: replace region line above with topological selection, see https://kittycadworkspace.slack.com/archives/C09CJ6XPY1Y/p1775311720628419?thread_ts=1775157918.840339&cid=C09CJ6XPY1Y
-    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, extrude001.faces.capEnd001]))`
+    const newCodeToFind = `revolve001 = revolve(region002, angle = 360deg, axis = getCommonEdge(faces = [region001.tags.line1, extrude001.faces.capEnd001]),)`
 
     await context.addInitScript((initialCode) => {
       localStorage.setItem('persistCode', initialCode)
@@ -2305,7 +2305,9 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       })
       await cmdBar.submit()
 
-      await editor.expectEditor.toContain(newCodeToFind)
+      await editor.expectEditor.toContain(newCodeToFind, {
+        shouldNormalise: true,
+      })
     })
 
     await test.step('Edit revolve feature via feature tree selection', async () => {
@@ -2343,7 +2345,8 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind.replace('angle = 360deg', 'angle = angle001')
+        newCodeToFind.replace('angle = 360deg', 'angle = angle001'),
+        { shouldNormalise: true }
       )
     })
   })
