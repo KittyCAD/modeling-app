@@ -931,7 +931,7 @@ impl Program {
 
         if let Some(old_name) = old_name {
             // Now rename all the identifiers in the rest of the program.
-            self.rename_identifiers(&old_name, new_name, &[]);
+            self.rename_identifiers_order_aware(&old_name, new_name, &[]);
         } else {
             // Okay so this was not a top level variable declaration.
             // But it might be a variable declaration inside a function or function params.
@@ -967,11 +967,23 @@ impl Program {
                 }
             }
 
-            if let Some(value) = &mut value
-                && let Some(old_name) = value.rename_symbol(new_name, pos)
-            {
-                self.rename_identifiers(&old_name, new_name, &[]);
-                return;
+            if let Some(value) = &mut value {
+                if let Some(old_name) = value.rename_symbol(new_name, pos) {
+                    let sketch_name = match item {
+                        BodyItem::VariableDeclaration(variable_declaration)
+                            if matches!(variable_declaration.declaration.init, Expr::SketchBlock(_)) =>
+                        {
+                            Some(variable_declaration.declaration.id.name.clone())
+                        }
+                        _ => None,
+                    };
+                    if let Some(sketch_name) = sketch_name {
+                        self.rename_member_references(&sketch_name, &old_name, new_name);
+                    } else {
+                        self.rename_identifiers_order_aware(&old_name, new_name, &[]);
+                    }
+                    return;
+                }
             }
 
             let rename_target = value.as_ref().and_then(|value| value.rename_target_at(pos));
@@ -1034,26 +1046,7 @@ impl Program {
     /// covered (variable declarations, TagDeclarators, LabelledExpression labels, optional function
     /// names, etc.).
     fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
-        let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
-        for item in &mut self.body {
-            let names_in_this = body_item_defined_names(&*item);
-            let shadowed_here = names_in_this.iter().any(|name| name == old_name);
-            let excluded_for_this: Vec<&str> = match item {
-                BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
-                _ => {
-                    let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
-                    for n in &names_in_this {
-                        v.push(n.as_str());
-                    }
-                    v
-                }
-            };
-            item.rename_identifiers(old_name, new_name, &excluded_for_this);
-            excluded_owned.extend(names_in_this);
-            if shadowed_here {
-                break;
-            }
-        }
+        rename_body_items_order_aware(&mut self.body, old_name, new_name, excluded);
     }
 
     /// Replace a variable declaration with the given name with a new one.
@@ -1319,6 +1312,29 @@ fn body_item_defined_names(item: &BodyItem) -> Vec<String> {
         }
     }
     out
+}
+
+fn rename_body_items_order_aware(items: &mut Vec<BodyItem>, old_name: &str, new_name: &str, excluded: &[&str]) {
+    let mut excluded_owned: Vec<String> = excluded.iter().map(|s| s.to_string()).collect();
+    for item in items {
+        let names_in_this = body_item_defined_names(&*item);
+        let shadowed_here = names_in_this.iter().any(|name| name == old_name);
+        let excluded_for_this: Vec<&str> = match item {
+            BodyItem::VariableDeclaration(_) => excluded_owned.iter().map(String::as_str).collect(),
+            _ => {
+                let mut v: Vec<&str> = excluded_owned.iter().map(String::as_str).collect();
+                for n in &names_in_this {
+                    v.push(n.as_str());
+                }
+                v
+            }
+        };
+        item.rename_identifiers(old_name, new_name, &excluded_for_this);
+        excluded_owned.extend(names_in_this);
+        if shadowed_here {
+            break;
+        }
+    }
 }
 
 /// Collect all names defined (bound) in an expression: TagDeclarator, LabelledExpression label,
@@ -1944,7 +1960,7 @@ impl SketchBlock {
             arg.arg.rename_identifiers(old_name, new_name, excluded);
         }
 
-        self.body.rename_identifiers(old_name, new_name, excluded);
+        self.body.rename_identifiers_order_aware(old_name, new_name, excluded);
     }
 
     fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
@@ -2009,20 +2025,30 @@ impl Block {
         }
     }
 
+    fn rename_identifiers_order_aware(&mut self, old_name: &str, new_name: &str, excluded: &[&str]) {
+        rename_body_items_order_aware(&mut self.items, old_name, new_name, excluded);
+    }
+
     fn rename_symbol(&mut self, new_name: &str, pos: usize) -> Option<String> {
         let item = self
             .items
             .iter_mut()
             .find(|item| SourceRange::from(&**item).contains(pos))?;
 
-        match item {
+        let old_name = match item {
             BodyItem::VariableDeclaration(variable_declaration) => variable_declaration.rename_symbol(new_name, pos),
             BodyItem::ExpressionStatement(expression_statement) => {
                 expression_statement.expression.rename_symbol(new_name, pos)
             }
             BodyItem::ReturnStatement(return_statement) => return_statement.argument.rename_symbol(new_name, pos),
             BodyItem::ImportStatement(_) | BodyItem::TypeDeclaration(_) => None,
+        };
+
+        if let Some(old_name) = &old_name {
+            self.rename_identifiers_order_aware(old_name, new_name, &[]);
         }
+
+        old_name
     }
 
     fn rename_declarations_named(&mut self, old_name: &str, new_name: &str) {
@@ -5593,6 +5619,66 @@ r = region(segments = [s.line1, s.line2])
 }
 
 r = region(segments = [s.line1Prime, s.line2])
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_top_level_declaration_does_not_rename_shadowing_sketch_block_declaration() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.rfind("line1 = 99").unwrap() + 1;
+
+        program.rename_symbol("topLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+topLine = 99
+result = topLine
+"#
+        );
+    }
+
+    #[test]
+    fn test_rename_sketch_block_declaration_does_not_rename_same_named_top_level_declaration() {
+        let code = r#"s = sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([line1.end, line1.start])
+}
+
+r = region(segments = [s.line1])
+line1 = 99
+result = line1
+"#;
+        let mut program = parse(code);
+        let pos = code.find("line1 = line").unwrap() + 1;
+
+        program.rename_symbol("sketchLine", pos);
+
+        let formatted = program.recast_top(&Default::default(), 0);
+        assert_eq!(
+            formatted,
+            r#"s = sketch(on = XY) {
+  sketchLine = line(start = [var 0, var 0], end = [var 10, var 0])
+  coincident([sketchLine.end, sketchLine.start])
+}
+
+r = region(segments = [s.sketchLine])
+line1 = 99
+result = line1
 "#
         );
     }

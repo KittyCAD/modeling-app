@@ -1831,6 +1831,16 @@ impl Node<SketchBlock> {
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
+                if solved
+                    .final_values()
+                    .iter()
+                    .any(|number| number.is_infinite() || number.is_nan())
+                {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        "KCL's 2D constraint solver returned an invalid number".to_owned(),
+                        vec![SourceRange::from(self)],
+                    )));
+                }
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
                 if !outcome.converged {
                     exec_state.warn(
@@ -1876,14 +1886,14 @@ impl Node<SketchBlock> {
                             &format!("Internal error from constraint solver: {}", &failure.error).into(),
                         );
                         return Err(internal_err(
-                            format!("Internal error from constraint solver: {}", &failure.error),
+                            format!("Internal error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
                     _ => {
                         // Catch all error case so that it's not a breaking change to publish new errors.
                         return Err(internal_err(
-                            format!("Error from constraint solver: {}", &failure.error),
+                            format!("Error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
@@ -1893,9 +1903,9 @@ impl Node<SketchBlock> {
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
-                format!("{}; constraint index {}", &warning.content, index)
+                format!("{}; constraint index {}", warning.content, index)
             } else {
-                format!("{}", &warning.content)
+                format!("{}", warning.content)
             };
             exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
         }
@@ -1984,7 +1994,7 @@ impl Node<SketchBlock> {
             debug_assert!(
                 false,
                 "{}; scene_objects={:#?}",
-                &message, &exec_state.mod_local.artifacts.scene_objects
+                message, exec_state.mod_local.artifacts.scene_objects
             );
             return Err(internal_err(message, range));
         };

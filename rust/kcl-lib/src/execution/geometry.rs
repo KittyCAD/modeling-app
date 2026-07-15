@@ -409,15 +409,48 @@ impl From<SolidOrImportedGeometry> for crate::execution::KclValue {
     }
 }
 
-impl SolidOrImportedGeometry {
+/// Something that you can change the color of.
+#[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
+#[ts(export)]
+#[serde(tag = "type", rename_all = "camelCase")]
+#[allow(clippy::vec_box)]
+pub enum HasAppearance {
+    ImportedGeometry(Box<ImportedGeometry>),
+    SolidSet(Vec<Solid>),
+    Plane(Box<Plane>),
+}
+
+impl From<HasAppearance> for KclValue {
+    fn from(value: HasAppearance) -> Self {
+        match value {
+            HasAppearance::Plane(p) => KclValue::Plane { value: p },
+            HasAppearance::ImportedGeometry(s) => KclValue::ImportedGeometry(*s),
+            HasAppearance::SolidSet(mut s) => {
+                if s.len() == 1
+                    && let Some(s) = s.pop()
+                {
+                    KclValue::Solid { value: Box::new(s) }
+                } else {
+                    KclValue::HomArray {
+                        value: s.into_iter().map(|s| KclValue::Solid { value: Box::new(s) }).collect(),
+                        ty: crate::execution::types::RuntimeType::solid(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+impl HasAppearance {
     pub(crate) async fn ids(&mut self, ctx: &ExecutorContext) -> Result<Vec<uuid::Uuid>, KclError> {
         match self {
-            SolidOrImportedGeometry::ImportedGeometry(s) => {
+            HasAppearance::Plane(p) => Ok(vec![p.id]),
+            HasAppearance::ImportedGeometry(s) => {
                 let id = s.id(ctx).await?;
 
                 Ok(vec![id])
             }
-            SolidOrImportedGeometry::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
+            HasAppearance::SolidSet(s) => Ok(s.iter().map(|s| s.id).collect()),
         }
     }
 }

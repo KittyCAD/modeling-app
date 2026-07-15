@@ -1,4 +1,4 @@
-import type { UserFeature, WebSocketResponse } from '@kittycad/lib'
+import type { Feature, WebSocketResponse } from '@kittycad/lib'
 
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
@@ -24,13 +24,19 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+/**
+ * Non-KCL text files that can be opened and edited directly in the code pane.
+ * Lowercased, with leading dot. Add extensions here to broaden support.
+ */
+export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const DEFAULT_KCL_VERSION = '2.0'
-export const BODIES_PANE_FEATURE_FLAG: UserFeature = 'bodies_pane'
-export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
+export const BODIES_PANE_FEATURE_FLAG: Feature = 'bodies_pane'
+export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
-export const OPFS_CLOUD_FEATURE_FLAG: UserFeature = 'web_app_file_browser'
-export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: UserFeature =
+export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
+export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
   'segments_based_regions'
+export const KCL_NEW_LEXER_PARSER_FEATURE_FLAG: Feature = 'kcl_new_lexer_parser'
 /** Default file to open when a project is opened */
 export const PROJECT_ENTRYPOINT = `main${FILE_EXT}` as const
 /** Thumbnail file name */
@@ -218,6 +224,9 @@ export const WASM_INIT_FAILED_TOAST_ID = 'wasm-init-failed-toast'
 /** Toast id for the changes requested banner */
 export const CHANGES_REQUESTED_TOAST_ID = 'changes-requested-toast'
 
+/** Toast id for Zookeeper bulk file writes */
+export const ZOOKEEPER_FILE_WRITE_TOAST_ID = 'zookeeper-file-write-toast'
+
 /** Local sketch axis values in KCL for operations, it could either be 'X' or 'Y' */
 export const KCL_AXIS_X = 'X'
 export const KCL_AXIS_Y = 'Y'
@@ -401,8 +410,8 @@ export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
 export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
 export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
 export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
-  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
 ]
 
 export const ARCHIVE_DIR = 'archive'

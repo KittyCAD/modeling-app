@@ -1,0 +1,10 @@
+---
+source: kcl-lib/src/frontend.rs
+expression: "src_delta.text.as_str()"
+---
+sketch(on = XY) {
+  point1 = point(at = [var 2.33, var 1.67])
+  line1 = line(start = [var -0.67, var -0.33], end = [var 5.33, var 3.67])
+  midpoint(line1, point = point1)
+}
+

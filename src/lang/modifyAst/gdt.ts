@@ -18,6 +18,7 @@ import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement
 import { traverse } from '@src/lang/queryAst'
 import { valueOrVariable } from '@src/lang/queryAst'
 import type { ArtifactGraph, Expr, PathToNode, Program } from '@src/lang/wasm'
+import { modelingStdLibCall } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
 import type { KclCommandValue } from '@src/lib/commandTypes'
 import { err } from '@src/lib/trap'
 import { isArray } from '@src/lib/utils'
@@ -28,6 +29,16 @@ function isProfileEdgeArtifact(
   artifact: Selections['graphSelections'][number]['artifact']
 ): boolean {
   return artifact?.type === 'segment' || artifact?.type === 'sweepEdge'
+}
+
+function modelingStdLibCallWithModulePath(
+  commandName: Parameters<typeof modelingStdLibCall>[0]
+) {
+  const stdLibCall = modelingStdLibCall(commandName)
+  return {
+    name: stdLibCall.name,
+    modulePath: stdLibCall.path.map(createIdentifier),
+  }
 }
 
 export type ProfileGdtFunction = 'profile' | 'profileLine' | 'profileSurface'
@@ -149,6 +160,7 @@ export function addFlatnessGdt({
 
   // Create one gdt::flatness call for each unique face
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Flatness')
 
   for (const faceExpr of uniqueFacesExprs) {
     const facesArray = createArrayExpression([faceExpr])
@@ -172,13 +184,12 @@ export function addFlatnessGdt({
     // Create the gdt::flatness call
     // Using null for unlabeled args since all args are labeled
     const nonCodeMeta = undefined
-    const modulePath = [createIdentifier('gdt')]
     const call = createCallExpressionStdLibKw(
-      'flatness',
+      stdLibCall.name,
       null,
       labeledArgs,
       nonCodeMeta,
-      modulePath
+      stdLibCall.modulePath
     )
 
     // Insert the function call into the AST at the appropriate location
@@ -323,6 +334,7 @@ export function addStraightnessGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Straightness')
 
   const createStraightnessCall = (
     targetArgName: 'faces' | 'edges',
@@ -342,11 +354,11 @@ export function addStraightnessGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'straightness',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
@@ -504,6 +516,7 @@ export function addCircularityGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Circularity')
 
   const createCircularityCall = (
     targetArgName: 'faces' | 'edges',
@@ -523,11 +536,11 @@ export function addCircularityGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'circularity',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
@@ -685,6 +698,7 @@ export function addCylindricityGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Cylindricity')
 
   const createCylindricityCall = (
     targetArgName: 'faces' | 'edges',
@@ -704,11 +718,11 @@ export function addCylindricityGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'cylindricity',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
@@ -866,6 +880,7 @@ export function addPositionGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Position')
   const createPositionCall = (
     targetArgName: 'faces' | 'edges',
     targetExpr: Expr
@@ -888,11 +903,11 @@ export function addPositionGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'position',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
@@ -1316,13 +1331,14 @@ export function addDistanceGdt({
   }
 
   labeledArgs.push(...styleResult.labeledArgs)
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Distance')
 
   const call = createCallExpressionStdLibKw(
-    'distance',
+    stdLibCall.name,
     null,
     labeledArgs,
     undefined,
-    [createIdentifier('gdt')]
+    stdLibCall.modulePath
   )
 
   const pathToNode = setCallInAst({
@@ -1457,6 +1473,7 @@ export function addPerpendicularityGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Perpendicularity')
 
   const createPerpendicularityCall = (
     targetArgName: 'faces' | 'edges',
@@ -1480,11 +1497,11 @@ export function addPerpendicularityGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'perpendicularity',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
@@ -1642,6 +1659,7 @@ export function addAngularityGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Angularity')
 
   const createAngularityCall = (
     targetArgName: 'faces' | 'edges',
@@ -1665,11 +1683,11 @@ export function addAngularityGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'angularity',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
@@ -2373,6 +2391,7 @@ export function addParallelismGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Parallelism')
 
   const createParallelismCall = (
     targetArgName: 'faces' | 'edges',
@@ -2396,11 +2415,11 @@ export function addParallelismGdt({
     labeledArgs.push(...styleResult.labeledArgs)
 
     return createCallExpressionStdLibKw(
-      'parallelism',
+      stdLibCall.name,
       null,
       labeledArgs,
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
   }
 
@@ -2544,12 +2563,13 @@ export function addAnnotationGdt({
   }
 
   let lastPathToNode: PathToNode | undefined
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Annotation')
   const createAnnotationCall = (
     targetArgName: 'faces' | 'edges',
     targetExpr: Expr
   ) =>
     createCallExpressionStdLibKw(
-      'annotation',
+      stdLibCall.name,
       null,
       [
         createLabeledArg(targetArgName, createArrayExpression([targetExpr])),
@@ -2557,7 +2577,7 @@ export function addAnnotationGdt({
         ...styleResult.labeledArgs,
       ],
       undefined,
-      [createIdentifier('gdt')]
+      stdLibCall.modulePath
     )
 
   for (const faceExpr of uniqueFaceExprs) {
@@ -2788,13 +2808,13 @@ export function addDatumGdt({
 
   // Create the gdt::datum call
   const nonCodeMeta = undefined
-  const modulePath = [createIdentifier('gdt')]
+  const stdLibCall = modelingStdLibCallWithModulePath('GDT Datum')
   const call = createCallExpressionStdLibKw(
-    'datum',
+    stdLibCall.name,
     null,
     labeledArgs,
     nonCodeMeta,
-    modulePath
+    stdLibCall.modulePath
   )
 
   // Insert the function call into the AST at the appropriate location

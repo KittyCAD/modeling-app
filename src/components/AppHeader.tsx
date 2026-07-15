@@ -41,7 +41,7 @@ export const AppHeader = ({
   const absoluteFilePath = executingPath
     ? PATHS.FILE + '/' + encodeURIComponent(executingPath)
     : undefined
-  const hasOpfsCloudFeature = app.userFeatures.useHas(
+  const hasCloudSyncFeature = app.userFeatures.useHas(
     OPFS_CLOUD_FEATURE_FLAG,
     false
   )
@@ -65,7 +65,7 @@ export const AppHeader = ({
         project={project}
         file={file}
         absoluteFilePath={absoluteFilePath}
-        hasOpfsCloudFeature={hasOpfsCloudFeature}
+        hasCloudSyncFeature={hasCloudSyncFeature}
         onProjectClose={onProjectClose}
         onHomeNavigate={() => {
           kclManager.switchedFiles = true

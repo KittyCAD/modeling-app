@@ -62,7 +62,7 @@ import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
 import { err } from '@src/lib/trap'
-import { isArray, isNonNullable, stripQuotes } from '@src/lib/utils'
+import { isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
 import type { modelingMachine } from '@src/machines/modelingMachine'
@@ -262,17 +262,60 @@ function extractStringArgument(
     : undefined
 }
 
+function extractRequiredStringArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string
+): string | { error: string } {
+  const arg = operation.labeledArgs?.[argName]
+  if (!arg?.sourceRange) {
+    return { error: `Missing or invalid ${argName} argument` }
+  }
+
+  const value = code.slice(...arg.sourceRange.map((r) => toUtf16(r, code)))
+  if (!value) {
+    return { error: `Couldn't retrieve ${argName} argument` }
+  }
+
+  return value
+}
+
 async function extractOptionalKclArrayArgument(
   code: string,
   operation: StdLibCallOp,
   argName: string,
   rustContext: RustContext
 ): Promise<KclCommandValue | undefined | { error: string }> {
+  return extractOptionalKclArgument(
+    code,
+    operation,
+    argName,
+    rustContext,
+    true,
+    true
+  )
+}
+
+async function extractOptionalKclArgument(
+  code: string,
+  operation: StdLibCallOp,
+  argName: string,
+  rustContext: RustContext,
+  isArray?: boolean,
+  allowStringArrays?: boolean
+): Promise<KclCommandValue | undefined | { error: string }> {
   if (!operation.labeledArgs?.[argName]?.sourceRange) {
     return undefined
   }
 
-  return extractKclArgument(code, operation, argName, rustContext, true, true)
+  return extractKclArgument(
+    code,
+    operation,
+    argName,
+    rustContext,
+    isArray,
+    allowStringArrays
+  )
 }
 
 /**
@@ -383,6 +426,18 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
       code.slice(
         ...operation.labeledArgs.symmetric.sourceRange.map(boundToUtf16)
       ) === 'true'
+  }
+
+  let direction: ModelingCommandSchema['Extrude']['direction'] | undefined
+  if ('direction' in operation.labeledArgs && operation.labeledArgs.direction) {
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      operation.labeledArgs.direction,
+      artifactGraph
+    )
+    if (err(axisEdgeSelection) || !axisEdgeSelection.edge) {
+      return { reason: 'Missing or invalid direction edge selection' }
+    }
+    direction = axisEdgeSelection.edge
   }
 
   // bidirectionalLength argument from a string to a KCL expression
@@ -527,6 +582,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     length,
     to,
     symmetric,
+    direction,
     bidirectionalLength,
     tagStart,
     tagEnd,
@@ -629,6 +685,17 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     baseCurveIndex = result
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   // tagStart and tagEnd arguments
   let tagStart: string | undefined
   let tagEnd: string | undefined
@@ -658,6 +725,7 @@ const prepareToEditLoft: PrepareToEditCallback = async ({
     vDegree,
     bezApproximateRational,
     baseCurveIndex,
+    tolerance,
     tagStart,
     tagEnd,
     bodyType,
@@ -708,6 +776,16 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   if ('error' in radius) return { reason: radius.error }
 
   const tag = extractStringArgument(code, operation, 'tag')
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
   const versionResult = await extractKclArgument(
     code,
     operation,
@@ -722,6 +800,7 @@ const prepareToEditFillet: PrepareToEditCallback = async ({
   const argDefaultValues: ModelingCommandSchema['Fillet'] = {
     selection,
     radius,
+    tolerance,
     tag,
     version,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
@@ -1324,6 +1403,17 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
       ) === 'true'
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   let translateProfileToPath: boolean | undefined
   if (
     'translateProfileToPath' in operation.labeledArgs &&
@@ -1409,6 +1499,7 @@ const prepareToEditSweep: PrepareToEditCallback = async ({
     sketches,
     path,
     sectional,
+    tolerance,
     relativeTo,
     translateProfileToPath,
     orientProfilePerpendicular,
@@ -1623,6 +1714,17 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     return { reason: 'Error in angle argument retrieval' }
   }
 
+  const toleranceResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'tolerance',
+    rustContext
+  )
+  if (toleranceResult && 'error' in toleranceResult) {
+    return { reason: toleranceResult.error }
+  }
+  const tolerance = toleranceResult
+
   // symmetric argument from a string to boolean
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
@@ -1683,6 +1785,7 @@ const prepareToEditRevolve: PrepareToEditCallback = async ({
     axis,
     edge,
     angle,
+    tolerance,
     symmetric,
     bidirectionalAngle,
     tagStart,
@@ -1746,15 +1849,11 @@ const prepareToEditPatternCircular3d: PrepareToEditCallback = async ({
 
   // 3. Convert the axis argument from a string to a string value
   // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisArg = operation.labeledArgs?.['axis']
-  if (!axisArg || !axisArg.sourceRange) {
-    return { reason: 'Missing or invalid axis argument' }
+  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
+  if (typeof axisResult !== 'string') {
+    return { reason: axisResult.error }
   }
-
-  const axisString = code.slice(...axisArg.sourceRange.map(boundToUtf16))
-  if (!axisString) {
-    return { reason: "Couldn't retrieve axis argument" }
-  }
+  const axisString = axisResult
 
   // 4. Convert the center argument from a string to a KCL expression
   const centerArg = operation.labeledArgs?.['center']
@@ -1894,17 +1993,11 @@ const prepareToEditPatternLinear3d: PrepareToEditCallback = async ({
 
   // 4. Convert the axis argument from a string to a string value
   // Axis is configured as 'options' inputType, so it should be a string, not a KCL expression
-  const axisArg = operation.labeledArgs?.['axis']
-  if (!axisArg || !axisArg.sourceRange) {
-    return { reason: 'Missing or invalid axis argument' }
+  const axisResult = extractRequiredStringArgument(code, operation, 'axis')
+  if (typeof axisResult !== 'string') {
+    return { reason: axisResult.error }
   }
-
-  const axisString = code.slice(
-    ...axisArg.sourceRange.map((r) => toUtf16(r, code))
-  )
-  if (!axisString) {
-    return { reason: "Couldn't retrieve axis argument" }
-  }
+  const axisString = axisResult
 
   // 5. Convert the useOriginal argument from a string to a boolean
   const useOriginalArg = operation.labeledArgs?.['useOriginal']
@@ -3751,152 +3844,11 @@ export function getOperationLabel(op: Operation): string {
   }
 }
 
-export type NestedOpList = (Operation | Operation[])[]
-
-type GroupBeginOperation = Extract<Operation, { type: 'GroupBegin' }>
-
-function getGroupBeginSignature(operation: GroupBeginOperation): string {
-  return JSON.stringify({
-    group: operation.group,
-    nodePath: operation.nodePath,
-    sourceRange: operation.sourceRange,
-  })
-}
-
-/**
- * Given an operations list, group streaks of provided types
- * into arrays if they are of a given minimum length
- */
-export function groupOperationTypeStreaks(
-  opList: Operation[],
-  typesToGroup: Operation['type'][],
-  minLength = 5
-): NestedOpList {
-  const result: NestedOpList = []
-
-  let currentType: Operation['type'] | null = null
-  let currentStreak: Operation[] = []
-
-  const flushStreak = () => {
-    if (currentStreak.length === 0) return
-    const shouldGroup =
-      currentType !== null &&
-      typesToGroup.includes(currentType) &&
-      currentStreak.length >= minLength
-    if (shouldGroup) {
-      result.push([...currentStreak])
-    } else {
-      for (const op of currentStreak) result.push(op)
-    }
-    currentStreak = []
-    currentType = null
-  }
-
-  for (const op of opList) {
-    if (currentType === null) {
-      currentType = op.type
-      currentStreak.push(op)
-      continue
-    }
-    if (op.type === currentType) {
-      currentStreak.push(op)
-    } else {
-      // Type changed; flush the previous streak and start anew
-      flushStreak()
-      currentType = op.type
-      currentStreak.push(op)
-    }
-  }
-
-  // Flush any remaining streak
-  flushStreak()
-
-  return result
-}
-
-/**
- * Given a filtered operation list and the original operation stream, replace
- * top-level GroupBegin operations with their full nested operation groups.
- *
- * This is generic over group type and allows callers to opt in to grouping any
- * subset of GroupBegin operations.
- */
-export function groupNestedOperations(
-  opList: NestedOpList,
-  allOperations: Operation[],
-  shouldGroup: (groupBegin: GroupBeginOperation) => boolean
-): NestedOpList {
-  const groupOperationsByKey = new Map<string, Operation[]>()
-  const keyByGroupBegin = new Map<GroupBeginOperation, string>()
-  const seenSignatureCounts = new Map<string, number>()
-  const stack: {
-    begin: GroupBeginOperation
-    key: string
-    items: Operation[]
-  }[] = []
-
-  for (const operation of allOperations) {
-    if (operation.type === 'GroupBegin') {
-      const signature = getGroupBeginSignature(operation)
-      const ordinal = seenSignatureCounts.get(signature) ?? 0
-      seenSignatureCounts.set(signature, ordinal + 1)
-      const key = `${signature}#${ordinal}`
-      keyByGroupBegin.set(operation, key)
-      stack.push({ begin: operation, key, items: [operation] })
-      continue
-    }
-
-    if (operation.type === 'GroupEnd') {
-      const current = stack.pop()
-      if (!current) {
-        console.assert(
-          false,
-          'Unbalanced GroupBegin and GroupEnd; too many ends while grouping'
-        )
-        continue
-      }
-
-      current.items.push(operation)
-      groupOperationsByKey.set(current.key, current.items)
-
-      if (stack.length > 0) {
-        stack[stack.length - 1].items.push(...current.items)
-      }
-      continue
-    }
-
-    if (stack.length > 0) {
-      stack[stack.length - 1].items.push(operation)
-    }
-  }
-
-  const result: NestedOpList = []
-  const requestedSignatureCounts = new Map<string, number>()
-  for (const item of opList) {
-    if (isArray(item)) {
-      result.push(item)
-      continue
-    }
-
-    if (item.type !== 'GroupBegin' || !shouldGroup(item)) {
-      result.push(item)
-      continue
-    }
-
-    let key = keyByGroupBegin.get(item)
-    if (!key) {
-      const signature = getGroupBeginSignature(item)
-      const ordinal = requestedSignatureCounts.get(signature) ?? 0
-      requestedSignatureCounts.set(signature, ordinal + 1)
-      key = `${signature}#${ordinal}`
-    }
-    result.push(
-      key !== undefined ? (groupOperationsByKey.get(key) ?? item) : item
-    )
-  }
-
-  return result
-}
+export {
+  filterOperations,
+  groupNestedOperations,
+  groupOperationTypeStreaks,
+} from '@src/lib/operationGrouping'
 
 /**
  * Return a more human-readable operation type label
@@ -4021,96 +3973,6 @@ export function getOperationVariableName(
 
   // Otherwise, this is a StdLibCall or a function call and we need to find the node then the variable
   return getVariableNameFromNodePath(pathToNode, program, wasmInstance)
-}
-
-/**
- * Apply all filters to a list of operations.
- */
-export function filterOperations(operations: Operation[]): Operation[] {
-  return operationFilters.reduce((ops, filterFn) => filterFn(ops), operations)
-}
-
-/**
- * The filters to apply to a list of operations
- * for use in the feature tree UI
- */
-const operationFilters = [
-  isNotUserFunctionWithNoOperations,
-  isNotInsideGroup,
-  isNotGroupEnd,
-  isNotHideOperation,
-]
-
-/**
- * A filter to exclude everything that occurs inside a GroupBegin and its
- * corresponding GroupEnd from a list of operations. This works even when there
- * are nested function calls and module instances.
- */
-function isNotInsideGroup(operations: Operation[]): Operation[] {
-  const ops: Operation[] = []
-  let depth = 0
-  for (const op of operations) {
-    if (depth === 0) {
-      ops.push(op)
-    }
-    if (op.type === 'GroupBegin') {
-      depth++
-    }
-    if (op.type === 'GroupEnd') {
-      depth--
-      console.assert(
-        depth >= 0,
-        'Unbalanced GroupBegin and GroupEnd; too many ends'
-      )
-    }
-  }
-  // Depth could be non-zero here if there was an error in execution.
-  return ops
-}
-
-/**
- * A filter to exclude GroupBegin operations and their corresponding GroupEnd
- * that don't have any operations inside them from a list of operations, if it's
- * a function call.
- */
-function isNotUserFunctionWithNoOperations(
-  operations: Operation[]
-): Operation[] {
-  return operations.filter((op, index) => {
-    if (
-      op.type === 'GroupBegin' &&
-      op.group.type === 'FunctionCall' &&
-      // If this is a "begin" at the end of the array, it's preserved.
-      index < operations.length - 1 &&
-      operations[index + 1].type === 'GroupEnd'
-    )
-      return false
-    const previousOp = index > 0 ? operations[index - 1] : undefined
-    if (
-      op.type === 'GroupEnd' &&
-      // If this is an "end" at the beginning of the array, it's preserved.
-      previousOp !== undefined &&
-      previousOp.type === 'GroupBegin' &&
-      previousOp.group.type === 'FunctionCall'
-    )
-      return false
-
-    return true
-  })
-}
-
-/**
- * A filter to exclude GroupEnd operations from a list of operations.
- */
-function isNotGroupEnd(ops: Operation[]): Operation[] {
-  return ops.filter((op) => op.type !== 'GroupEnd')
-}
-
-/**
- * A filter to exclude `hide()` operations from a list of operations.
- */
-function isNotHideOperation(ops: Operation[]): Operation[] {
-  return ops.filter((op) => !(op.type === 'StdLibCall' && op.name === 'hide'))
 }
 
 /**
@@ -4273,6 +4135,18 @@ async function prepareToEditTranslate({
     z = result
   }
 
+  const xyzResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'xyz',
+    rustContext,
+    true
+  )
+  if (xyzResult && 'error' in xyzResult) {
+    return { reason: xyzResult.error }
+  }
+  const xyz = xyzResult
+
   if (operation.labeledArgs.global) {
     global =
       code.slice(
@@ -4289,6 +4163,7 @@ async function prepareToEditTranslate({
     y,
     z,
     global,
+    xyz,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }
   return {
@@ -4456,6 +4331,19 @@ async function prepareToEditRotate({
     yaw = result
   }
 
+  const axis = extractStringArgument(code, operation, 'axis')
+
+  const angleResult = await extractOptionalKclArgument(
+    code,
+    operation,
+    'angle',
+    rustContext
+  )
+  if (angleResult && 'error' in angleResult) {
+    return { reason: angleResult.error }
+  }
+  const angle = angleResult
+
   if (operation.labeledArgs.global) {
     global =
       code.slice(
@@ -4471,6 +4359,8 @@ async function prepareToEditRotate({
     roll,
     pitch,
     yaw,
+    axis,
+    angle,
     global,
     nodeToEdit: pathToNodeFromRustNodePath(operation.nodePath),
   }

@@ -48,9 +48,4 @@ export enum SystemIOMachineEvents {
   moveRecursive = 'move recursive',
   moveRecursiveAndNavigate = 'move recursive and navigate',
   done_moveRecursiveAndNavigate = donePrefix + 'move recursive and navigate',
-  getMlEphantConversations = 'get ml-ephant conversations',
-  done_getMlEphantConversations = donePrefix + 'get ml-ephant conversations',
-  saveMlEphantConversations = 'save ml-ephant conversations',
-  done_saveMlEphantConversations = donePrefix + 'save ml-ephant conversations',
-  deleteMlEphantConversation = 'delete ml-ephant conversation',
 }
