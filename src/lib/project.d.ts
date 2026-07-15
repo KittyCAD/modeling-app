@@ -26,6 +26,7 @@ export type FileMetadata = {
  * Information about a file or directory.
  */
 export type FileEntry = {
+  metadata?: FileMetadata | null
   /**
    * Absolute path
    * /home/kevin/Documents/zoo-design-studio-projects/level1/main.kcl
@@ -42,7 +43,7 @@ export type FileEntry = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
 }
 
 /**
@@ -83,6 +84,6 @@ export type Project = {
    * children : [FileEntry, ...] is a folder
    * children : null is a file
    */
-  children: Array<FileEntry> | null
+  children: FileEntry[] | null
   readWriteAccess: boolean
 }

@@ -4,12 +4,15 @@ import {
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
 } from '@src/lib/cloudSync'
-import { DEFAULT_DEFAULT_LENGTH_UNIT, FILE_EXT } from '@src/lib/constants'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  FILE_EXT,
+  ZOOKEEPER_FILE_WRITE_TOAST_ID,
+} from '@src/lib/constants'
 import {
   canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
-  getAppSettingsFilePath,
   getProjectInfo,
   mkdirOrNOOP,
   readAppSettingsFile,
@@ -43,17 +46,13 @@ import type {
   SystemIOContext,
 } from '@src/machines/systemIO/utils'
 import {
+  collectProjectFiles,
   NO_PROJECT_DIRECTORY,
+  normalizeKCLFileDeletePath,
   SystemIOMachineActors,
   SystemIOMachineEvents,
-  collectProjectFiles,
-  jsonToMlConversations,
-  mlConversationsToJson,
-  normalizeKCLFileDeletePath,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
-
-const ML_CONVERSATIONS_FILE_NAME = 'ml-conversations.json'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -411,8 +410,14 @@ const sharedBulkDeleteWorkflow = async ({
 
   let totalDeleted = 0
   for (const file of filesToDelete) {
-    if (file.type === 'other') continue
-    await fsZds.rm(file.absPath)
+    // 'kcl' files carry an absolute path; 'other' files (e.g. Markdown) only
+    // carry a project-relative path, so reconstruct the absolute path from the
+    // project root. Both kinds are deletable when explicitly requested.
+    const absPath =
+      file.type === 'kcl'
+        ? file.absPath
+        : fsZds.join(project.path, file.relPath)
+    await fsZds.rm(absPath)
     totalDeleted += 1
   }
 
@@ -669,6 +674,12 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       }: {
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
+        if (!input.requestedProjectName) {
+          return Promise.reject(
+            new Error('Cannot delete a project without a project name')
+          )
+        }
+
         await fsZds.rm(
           fsZds.join(
             input.context.projectDirectoryPath,
@@ -926,6 +937,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               fileName: input.requestedFileNameWithExtension || '',
               subRoute: input.requestedSubRoute || '',
               shouldNavigate,
+              // Zookeeper streams cumulative edit patches, so one edit triggers
+              // several of these bulk writes back-to-back. Sharing a toast id
+              // collapses the otherwise-identical success toasts into one.
+              toastId: ZOOKEEPER_FILE_WRITE_TOAST_ID,
               ...(shouldNavigate && input.onSuccess
                 ? { onProjectLoaderComplete: input.onSuccess }
                 : {}),
@@ -1235,71 +1250,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName: input.requestedProjectName || '',
           target: input.target,
         }
-      }
-    ),
-    [SystemIOMachineActors.getMlEphantConversations]: fromPromise(async () => {
-      // In the future we can add cache behavior but it's really pointless
-      // for the amount of data and frequency we're dealing with.
-
-      // We need the settings path to find the sibling `ml-conversations.json`
-      try {
-        const json = await fsZds.readFile(
-          fsZds.join(
-            fsZds.dirname(await getAppSettingsFilePath()),
-            ML_CONVERSATIONS_FILE_NAME
-          ),
-          { encoding: 'utf-8' }
-        )
-        return jsonToMlConversations(json ?? '')
-      } catch (e) {
-        console.warn('Cannot get conversations', e)
-        return new Map()
-      }
-    }),
-    [SystemIOMachineActors.saveMlEphantConversations]: fromPromise(
-      async (args: {
-        input: {
-          context: SystemIOContext
-          event:
-            | {
-                type: SystemIOMachineEvents.saveMlEphantConversations
-                data: {
-                  projectId: string
-                  conversationId: string
-                }
-              }
-            | {
-                type: SystemIOMachineEvents.deleteMlEphantConversation
-                data: {
-                  projectId: string
-                }
-              }
-        }
-      }) => {
-        const next = new Map<string, string>(
-          args.input.context.mlEphantConversations
-        )
-        if (
-          args.input.event.type ===
-          SystemIOMachineEvents.deleteMlEphantConversation
-        ) {
-          next.delete(args.input.event.data.projectId)
-        } else {
-          next.set(
-            args.input.event.data.projectId,
-            args.input.event.data.conversationId
-          )
-        }
-        const json = mlConversationsToJson(next)
-        const te = new TextEncoder()
-        await fsZds.writeFile(
-          fsZds.join(
-            fsZds.dirname(await getAppSettingsFilePath()),
-            ML_CONVERSATIONS_FILE_NAME
-          ),
-          te.encode(json)
-        )
-        return next
       }
     ),
   },

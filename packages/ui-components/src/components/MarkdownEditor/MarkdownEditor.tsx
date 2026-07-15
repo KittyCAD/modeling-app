@@ -1,8 +1,9 @@
+import { Extension } from '@tiptap/core'
 import { Link } from '@tiptap/extension-link'
 import { Markdown, MarkdownManager } from '@tiptap/markdown'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { StarterKit } from '@tiptap/starter-kit'
-import { type ReactNode, useEffect, useMemo } from 'react'
+import { type ReactNode, useCallback, useEffect, useMemo } from 'react'
 import './MarkdownEditor.css'
 
 export type MarkdownEditorFeature =
@@ -17,6 +18,19 @@ export type MarkdownEditorNormalizeLinkHref = (
   value: string | undefined
 ) => string | null
 
+export type MarkdownEditorActionName =
+  | 'toggleBold'
+  | 'toggleItalic'
+  | 'setLink'
+  | 'toggleBulletList'
+  | 'toggleOrderedList'
+  | 'undo'
+  | 'redo'
+
+export type MarkdownEditorActions = {
+  [ActionName in MarkdownEditorActionName]: () => boolean
+}
+
 export interface MarkdownEditorProps {
   id: string
   value: string
@@ -29,9 +43,12 @@ export interface MarkdownEditorProps {
   invalid?: boolean
   labelledBy?: string
   normalizeLinkHref?: MarkdownEditorNormalizeLinkHref
+  onActionsChange?: (actions: MarkdownEditorActions | null) => void
+  onFocusChange?: (isFocused: boolean) => void
   placeholder?: string
   promptForLink?: (currentHref: string) => string | null
   required?: boolean
+  suppressDefaultKeyboardShortcuts?: boolean
   testId?: string
 }
 
@@ -51,6 +68,25 @@ const MARKDOWN_OPTIONS = {
     gfm: true,
   },
 }
+const MarkdownEditorShortcutSuppressor = Extension.create({
+  name: 'markdownEditorShortcutSuppressor',
+  priority: 1000,
+  addKeyboardShortcuts() {
+    return {
+      'Mod-b': () => true,
+      'Mod-B': () => true,
+      'Mod-i': () => true,
+      'Mod-I': () => true,
+      'Mod-Shift-8': () => true,
+      'Mod-Shift-7': () => true,
+      'Mod-z': () => true,
+      'Mod-я': () => true,
+      'Shift-Mod-z': () => true,
+      'Mod-y': () => true,
+      'Shift-Mod-я': () => true,
+    }
+  },
+})
 
 export function MarkdownEditor({
   id,
@@ -64,9 +100,12 @@ export function MarkdownEditor({
   invalid = false,
   labelledBy,
   normalizeLinkHref = defaultNormalizeMarkdownLinkHref,
+  onActionsChange,
+  onFocusChange,
   placeholder = '',
   promptForLink,
   required = false,
+  suppressDefaultKeyboardShortcuts = false,
   testId = 'markdown-editor',
 }: MarkdownEditorProps) {
   const featureKey = useMemo(() => [...features].sort().join('|'), [features])
@@ -105,10 +144,11 @@ export function MarkdownEditor({
       ...createMarkdownEditorBaseExtensions({
         features: normalizedFeatures,
         normalizeLinkHref,
+        suppressDefaultKeyboardShortcuts,
       }),
       Markdown.configure(MARKDOWN_OPTIONS),
     ],
-    [normalizedFeatures, normalizeLinkHref]
+    [normalizedFeatures, normalizeLinkHref, suppressDefaultKeyboardShortcuts]
   )
 
   const editor = useEditor(
@@ -117,6 +157,16 @@ export function MarkdownEditor({
       contentType: 'markdown',
       editorProps: {
         attributes: editorAttributes,
+        handleDOMEvents: {
+          focus: () => {
+            onFocusChange?.(true)
+            return false
+          },
+          blur: () => {
+            onFocusChange?.(false)
+            return false
+          },
+        },
       },
       extensions,
       immediatelyRender: true,
@@ -147,9 +197,25 @@ export function MarkdownEditor({
     })
   }, [editor, value])
 
-  function setLink() {
-    if (!editor) {
-      return
+  const toggleBold = useCallback(() => {
+    if (!editor || !enabledFeatures.has('bold')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleBold().run()
+  }, [editor, enabledFeatures])
+
+  const toggleItalic = useCallback(() => {
+    if (!editor || !enabledFeatures.has('italic')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleItalic().run()
+  }, [editor, enabledFeatures])
+
+  const setLink = useCallback(() => {
+    if (!editor || !hasLink) {
+      return false
     }
 
     const currentHref = editor.getAttributes('link').href
@@ -161,17 +227,17 @@ export function MarkdownEditor({
         )
 
     if (rawHref === null) {
-      return
+      return true
     }
 
     if (!rawHref.trim()) {
       editor.chain().focus().extendMarkRange('link').unsetLink().run()
-      return
+      return true
     }
 
     const safeHref = normalizeLinkHref(rawHref)
     if (!safeHref) {
-      return
+      return true
     }
 
     if (editor.state.selection.empty && !editor.isActive('link')) {
@@ -182,7 +248,7 @@ export function MarkdownEditor({
           contentType: 'markdown',
         })
         .run()
-      return
+      return true
     }
 
     editor
@@ -191,7 +257,68 @@ export function MarkdownEditor({
       .extendMarkRange('link')
       .setLink({ href: safeHref })
       .run()
-  }
+    return true
+  }, [editor, hasLink, normalizeLinkHref, promptForLink])
+
+  const toggleBulletList = useCallback(() => {
+    if (!editor || !enabledFeatures.has('bulletList')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleBulletList().run()
+  }, [editor, enabledFeatures])
+
+  const toggleOrderedList = useCallback(() => {
+    if (!editor || !enabledFeatures.has('orderedList')) {
+      return false
+    }
+
+    return editor.chain().focus().toggleOrderedList().run()
+  }, [editor, enabledFeatures])
+
+  const undo = useCallback(() => {
+    if (!editor || !hasUndoRedo || !editor.can().undo()) {
+      return false
+    }
+
+    return editor.chain().focus().undo().run()
+  }, [editor, hasUndoRedo])
+
+  const redo = useCallback(() => {
+    if (!editor || !hasUndoRedo || !editor.can().redo()) {
+      return false
+    }
+
+    return editor.chain().focus().redo().run()
+  }, [editor, hasUndoRedo])
+
+  const actions = useMemo<MarkdownEditorActions>(
+    () => ({
+      toggleBold,
+      toggleItalic,
+      setLink,
+      toggleBulletList,
+      toggleOrderedList,
+      undo,
+      redo,
+    }),
+    [
+      toggleBold,
+      toggleItalic,
+      setLink,
+      toggleBulletList,
+      toggleOrderedList,
+      undo,
+      redo,
+    ]
+  )
+
+  useEffect(() => {
+    onActionsChange?.(actions)
+    return () => {
+      onActionsChange?.(null)
+    }
+  }, [actions, onActionsChange])
 
   return (
     <div
@@ -207,7 +334,7 @@ export function MarkdownEditor({
             label="Bold"
             pressed={editor?.isActive('bold') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleBold().run()}
+            onClick={toggleBold}
           >
             <BoldIcon />
           </EditorToolbarButton>
@@ -217,7 +344,7 @@ export function MarkdownEditor({
             label="Italic"
             pressed={editor?.isActive('italic') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleItalic().run()}
+            onClick={toggleItalic}
           >
             <ItalicIcon />
           </EditorToolbarButton>
@@ -240,7 +367,7 @@ export function MarkdownEditor({
             label="Bulleted list"
             pressed={editor?.isActive('bulletList') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleBulletList().run()}
+            onClick={toggleBulletList}
           >
             <ListIcon ordered={false} />
           </EditorToolbarButton>
@@ -250,7 +377,7 @@ export function MarkdownEditor({
             label="Numbered list"
             pressed={editor?.isActive('orderedList') ?? false}
             disabled={!editor}
-            onClick={() => editor?.chain().focus().toggleOrderedList().run()}
+            onClick={toggleOrderedList}
           >
             <ListIcon ordered={true} />
           </EditorToolbarButton>
@@ -262,7 +389,7 @@ export function MarkdownEditor({
           <EditorToolbarButton
             label="Undo"
             disabled={!editor?.can().undo()}
-            onClick={() => editor?.chain().focus().undo().run()}
+            onClick={undo}
           >
             <UndoIcon />
           </EditorToolbarButton>
@@ -271,7 +398,7 @@ export function MarkdownEditor({
           <EditorToolbarButton
             label="Redo"
             disabled={!editor?.can().redo()}
-            onClick={() => editor?.chain().focus().redo().run()}
+            onClick={redo}
           >
             <RedoIcon />
           </EditorToolbarButton>
@@ -333,9 +460,11 @@ function serializeMarkdownOrFallback<T>(serialize: () => string, fallback: T) {
 function createMarkdownEditorBaseExtensions({
   features,
   normalizeLinkHref,
+  suppressDefaultKeyboardShortcuts = false,
 }: {
   features: readonly MarkdownEditorFeature[]
   normalizeLinkHref: MarkdownEditorNormalizeLinkHref
+  suppressDefaultKeyboardShortcuts?: boolean
 }) {
   const enabledFeatures = new Set(features)
   const hasLists =
@@ -361,6 +490,9 @@ function createMarkdownEditorBaseExtensions({
       underline: false,
       undoRedo: hasUndoRedo ? undefined : false,
     }),
+    ...(suppressDefaultKeyboardShortcuts
+      ? [MarkdownEditorShortcutSuppressor]
+      : []),
     ...(hasLink
       ? [
           createSafeLinkExtension(normalizeLinkHref).configure({
@@ -424,8 +556,8 @@ function EditorToolbarButton({
       onClick={onClick}
       className={`m-0 flex h-7 w-7 items-center justify-center rounded border px-0 text-xs leading-none transition-colors focus-visible:outline-appForeground disabled:opacity-50 ${
         pressed
-          ? 'border-chalkboard-50 bg-chalkboard-20 text-chalkboard-100 dark:border-chalkboard-50 dark:bg-chalkboard-70 dark:text-chalkboard-10'
-          : 'border-transparent bg-transparent text-chalkboard-70 hover:border-chalkboard-20 hover:bg-chalkboard-20/60 hover:text-chalkboard-100 dark:text-chalkboard-30 dark:hover:border-chalkboard-70 dark:hover:bg-chalkboard-80/70 dark:hover:text-chalkboard-10'
+          ? 'border-chalkboard-50 bg-chalkboard-20 text-chalkboard-100 dark:border-transparent dark:bg-chalkboard-70 dark:text-chalkboard-10'
+          : 'border-transparent bg-transparent text-chalkboard-70 hover:border-chalkboard-20 hover:bg-chalkboard-20/60 hover:text-chalkboard-100 dark:border-transparent dark:text-chalkboard-30 dark:hover:border-transparent dark:hover:bg-chalkboard-80/70 dark:hover:text-chalkboard-10'
       }`}
     >
       {children}

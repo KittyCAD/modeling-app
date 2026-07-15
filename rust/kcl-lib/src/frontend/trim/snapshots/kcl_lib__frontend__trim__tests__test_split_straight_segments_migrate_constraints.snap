@@ -1,0 +1,38 @@
+---
+source: kcl-lib/src/frontend/trim/tests.rs
+expression: "result_normalized"
+---
+sketch(on = YZ) {
+  segmentToBeTrimmedAndSplit = line(start = [var -6mm, var 0mm], end = [var -2mm, var 0mm])
+  startSideCoincidentWithTrimSegStart = line(start = [var -6mm, var 3mm], end = [var -6mm, var -3mm])
+  startSideEndPointCoincidentWithTrimSeg = line(start = [var -4mm, var 0mm], end = [var -4mm, var 3mm])
+  startSideIntersectionTrimTermination = line(start = [var -2mm, var 3mm], end = [var -2mm, var -3mm])
+  endSideIntersectionTrimTermination = line(start = [var 2mm, var 3mm], end = [var 2mm, var -3mm])
+  endSideEndPointCoincidentWithTrimSeg = line(start = [var 4mm, var -3mm], end = [var 4mm, var 0mm])
+  endSideCoincidentWithTrimSegStart = line(start = [var 0.67mm, var 3mm], end = [var 0.67mm, var -3mm])
+  coincident([
+    segmentToBeTrimmedAndSplit.start,
+    startSideCoincidentWithTrimSegStart
+  ])
+  coincident([
+    startSideEndPointCoincidentWithTrimSeg.start,
+    segmentToBeTrimmedAndSplit
+  ])
+  line1 = line(start = [var 2mm, var 0mm], end = [var 0.67mm, var 0mm])
+  coincident([
+    segmentToBeTrimmedAndSplit.end,
+    startSideIntersectionTrimTermination
+  ])
+  coincident([
+    line1.start,
+    endSideIntersectionTrimTermination
+  ])
+  coincident([
+    line1.end,
+    endSideCoincidentWithTrimSegStart
+  ])
+  coincident([
+    endSideEndPointCoincidentWithTrimSeg.end,
+    line1
+  ])
+}

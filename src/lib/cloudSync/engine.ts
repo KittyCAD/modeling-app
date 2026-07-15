@@ -6,12 +6,13 @@ import {
   deleteRemoteProject,
   downloadRemoteProjectArchive,
   getRemoteProject,
+  getRemoteProjectThumbnailUrl,
   listRemoteProjects,
   updateRemoteProject,
 } from '@src/lib/cloudSync/cloudApi'
 import {
-  INTERNAL_OPFS_META_FILE,
   getCloudSyncProjectRoot,
+  INTERNAL_OPFS_META_FILE,
   isCloudSyncProjectDirectoryPath,
   isProjectRootPath,
   normalizePathForSync,
@@ -45,16 +46,17 @@ import type {
   ProjectManifest,
   ProjectMetadata,
   RemoteProject,
+  RemoteProjectSummary,
   Revision,
 } from '@src/lib/cloudSync/types'
 import { PROJECT_FOLDER, PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
 import opfs from '@src/lib/fs-zds/opfs'
 import {
-  type GitignoreStackEntry,
   appendGitignoreForDirectoryWithFs,
   createGitignoreStackFromFiles,
   createInitialGitignoreStackWithFs,
+  type GitignoreStackEntry,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
 import { webSafePathSplit } from '@src/lib/pathUtils'
@@ -67,25 +69,26 @@ import {
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 
-export type {
-  CloudSyncState,
-  CloudSyncStatus,
-  CloudSyncLocalProject,
-  CloudSyncProjectMetadataIndexEntry,
-  OutboxEntry,
-  ProjectArchiveFile,
-  ProjectManifest,
-  ProjectMetadata,
-} from '@src/lib/cloudSync/types'
-export {
-  getCloudSyncProjectMetadata,
-  getCloudSyncProjectMetadataIndex,
-} from '@src/lib/cloudSync/syncDb'
 export { getCloudSyncProjectRoot } from '@src/lib/cloudSync/paths'
 export {
   prepareProjectFilesForCloudUpload,
   projectManifestsEqual,
 } from '@src/lib/cloudSync/projectArchive'
+export {
+  getCloudSyncProjectMetadata,
+  getCloudSyncProjectMetadataIndex,
+} from '@src/lib/cloudSync/syncDb'
+export type {
+  CloudSyncLocalProject,
+  CloudSyncProjectMetadataIndexEntry,
+  CloudSyncState,
+  CloudSyncStatus,
+  OutboxEntry,
+  ProjectArchiveFile,
+  ProjectManifest,
+  ProjectMetadata,
+  RemoteProjectSummary,
+} from '@src/lib/cloudSync/types'
 
 export type CloudSyncConflictResolution = 'local' | 'cloud'
 
@@ -112,6 +115,7 @@ export const cloudSyncStatus = signal<CloudSyncStatus>({
   state: 'disabled',
   pendingCount: 0,
 })
+export const cloudSyncRemoteProjects = signal<RemoteProjectSummary[]>([])
 
 function updateStatus(next: Partial<CloudSyncStatus>) {
   cloudSyncStatus.value = {
@@ -890,6 +894,16 @@ export async function ensureCloudProjectLocallySynced(
   )
 }
 
+export async function getCloudSyncRemoteProjectThumbnailUrl(
+  remoteProject: RemoteProjectSummary
+) {
+  if (!isConfiguredForCloud()) {
+    return undefined
+  }
+
+  return getRemoteProjectThumbnailUrl(config, remoteProject)
+}
+
 async function readProjectTomlCloudProjectId(projectPath: string) {
   const environmentName = getEnvironmentName()
   const projectTomlPath = localFs.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
@@ -1410,7 +1424,7 @@ export type CloudSyncRemoteIndexAction =
   | 'skip'
   | 'sync-known-local'
   | 'adopt-matching-local'
-  | 'clone-remote'
+  | 'index-remote'
 
 export function getCloudSyncRemoteIndexAction({
   hasRemoteProjectId,
@@ -1432,7 +1446,7 @@ export function getCloudSyncRemoteIndexAction({
   if (hasMatchingLocalProject) {
     return 'adopt-matching-local'
   }
-  return 'clone-remote'
+  return 'index-remote'
 }
 
 export type CloudSyncKnownLocalRemoteIndexAction =
@@ -1781,6 +1795,7 @@ async function syncRemoteIndex() {
   await localFs.mkdir(projectDirectory, { recursive: true })
 
   const remoteProjects = await listRemoteProjects(config)
+  cloudSyncRemoteProjects.value = remoteProjects
   const remoteProjectIds = new Set(
     remoteProjects.map((remoteProject) => remoteProject.id).filter(Boolean)
   )
@@ -1875,17 +1890,6 @@ async function syncRemoteIndex() {
         if (!knownLocalPathIsCurrent) {
           await deleteProjectMetadata(knownLocalMetadata.localProjectPath)
           metadata = metadata.filter((entry) => entry !== knownLocalMetadata)
-          const clonedProject = await cloneRemoteProjectToLocal(
-            remoteProject,
-            projectDirectory,
-            knownLocalProjectPath
-          )
-          const clonedMetadata = await getProjectMetadata(
-            clonedProject.projectPath
-          )
-          if (clonedMetadata) {
-            upsertMetadata(clonedMetadata)
-          }
           continue
         }
 
@@ -1957,12 +1961,6 @@ async function syncRemoteIndex() {
         remoteProject.id,
         projectName
       )
-      const existingLocalAction = getCloudSyncRemoteIndexAction({
-        hasRemoteProjectId: Boolean(remoteProject.id),
-        isRemoteProjectTombstoned: false,
-        hasKnownLocalMetadata: false,
-        hasMatchingLocalProject: Boolean(existingProjectPath),
-      })
       if (existingProjectPath) {
         const nextMetadata = {
           ...(await getOrCreateProjectMetadata(existingProjectPath)),
@@ -1976,20 +1974,6 @@ async function syncRemoteIndex() {
         if (syncedMetadata) {
           upsertMetadata(syncedMetadata)
         }
-        continue
-      }
-
-      if (existingLocalAction !== 'clone-remote') {
-        continue
-      }
-
-      const clonedProject = await cloneRemoteProjectToLocal(
-        remoteProject,
-        projectDirectory
-      )
-      const clonedMetadata = await getProjectMetadata(clonedProject.projectPath)
-      if (clonedMetadata) {
-        upsertMetadata(clonedMetadata)
       }
     } catch (error) {
       failures.push(error)
@@ -2197,6 +2181,145 @@ export function setCloudSyncProjectScope(projectPath?: string) {
   scheduleSync(0)
 }
 
+/**
+ * User-initiated project enrollment. This bypasses the automatic enrollment
+ * policy so local-only projects can be opted into cloud sync one at a time.
+ */
+export async function startCloudSyncProject(projectPath: string) {
+  if (!isConfiguredForCloud()) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync is not enabled.')
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const stat = await localFs.stat(normalizedProjectPath)
+  if (!statIsDirectory(stat)) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync can only start from a project directory.')
+  }
+
+  const metadata = await bindRemoteProjectIdFromToml(
+    await getOrCreateProjectMetadata(normalizedProjectPath)
+  )
+
+  await clearOutboxEntriesForProject(normalizedProjectPath)
+  await putProjectMetadata({
+    ...metadata,
+    localProjectPath: normalizedProjectPath,
+    projectName: projectNameFromPath(normalizedProjectPath),
+    tombstone: false,
+    syncExcluded: undefined,
+    conflict: undefined,
+    lastFailure: undefined,
+  })
+  await appendOutboxEntry({
+    projectPath: normalizedProjectPath,
+    kind: 'upsert',
+    targetPath: normalizedProjectPath,
+    createdAt: nowIso(),
+  })
+  updateStatus({
+    state: 'idle',
+    activeProjectPath: undefined,
+    lastFailure: undefined,
+    lastFailureAt: undefined,
+  })
+  scheduleSync(0)
+}
+
+/**
+ * User-initiated disconnect. Local metadata is detached before remote deletion
+ * so a concurrent remote-index sync cannot mirror the remote delete into a
+ * local directory delete.
+ */
+export async function disconnectCloudSyncProject(projectPath: string) {
+  if (!isConfiguredForCloud()) {
+    // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+    throw new Error('Cloud sync is not enabled.')
+  }
+
+  const normalizedProjectPath = normalizePathForSync(projectPath)
+  const metadata = await bindRemoteProjectIdFromToml(
+    await getOrCreateProjectMetadata(normalizedProjectPath)
+  )
+  const remoteProjectId = metadata.remoteProjectId
+  const disconnectedAt = nowIso()
+
+  await removeLocalProjectCloudProjectId(normalizedProjectPath)
+  await putProjectMetadata({
+    ...metadata,
+    localProjectPath: normalizedProjectPath,
+    projectName: projectNameFromPath(normalizedProjectPath),
+    remoteProjectId: undefined,
+    remoteRevision: undefined,
+    remoteUpdatedAt: undefined,
+    baseManifest: undefined,
+    tombstone: false,
+    conflict: undefined,
+    lastFailure: undefined,
+    lastSyncedAt: undefined,
+    syncExcluded: {
+      reason: 'user-disconnected',
+      remoteProjectId,
+      createdAt: disconnectedAt,
+    },
+  })
+
+  if (remoteProjectId) {
+    try {
+      await deleteRemoteProject(config, remoteProjectId)
+    } catch (error) {
+      if (!(error instanceof CloudApiError && error.status === 404)) {
+        await putProjectMetadata({
+          ...metadata,
+          localProjectPath: normalizedProjectPath,
+          projectName: projectNameFromPath(normalizedProjectPath),
+          syncExcluded: undefined,
+        })
+        await writeLocalProjectCloudProjectId(
+          normalizedProjectPath,
+          remoteProjectId
+        ).catch(markCloudMetadataFailure)
+        // eslint-disable-next-line suggest-no-throw/suggest-no-throw
+        throw error
+      }
+    }
+  }
+
+  await clearOutboxEntriesForProject(normalizedProjectPath)
+  await putProjectMetadata({
+    ...metadata,
+    localProjectPath: normalizedProjectPath,
+    projectName: projectNameFromPath(normalizedProjectPath),
+    remoteProjectId: undefined,
+    remoteRevision: undefined,
+    remoteUpdatedAt: undefined,
+    baseManifest: undefined,
+    tombstone: false,
+    conflict: undefined,
+    lastFailure: undefined,
+    lastSyncedAt: undefined,
+    syncExcluded: {
+      reason: 'user-disconnected',
+      remoteProjectId,
+      createdAt: disconnectedAt,
+    },
+  })
+  if (remoteProjectId) {
+    cloudSyncRemoteProjects.value = cloudSyncRemoteProjects.value.filter(
+      (project) => project.id !== remoteProjectId
+    )
+  }
+  updateStatus({
+    state: 'idle',
+    activeProjectPath: undefined,
+    lastFailure: undefined,
+    lastFailureAt: undefined,
+    lastSyncedAt: disconnectedAt,
+  })
+  scheduleRemoteIndexSync(0)
+}
+
 function attachVisibilityChangeListener() {
   if (
     detachVisibilityChangeListener ||
@@ -2379,6 +2502,7 @@ export function configureCloudSyncEngine(nextConfig: CloudSyncConfig) {
     initialLocalScanComplete = false
     conflictCopyRepairComplete = false
     lastRemoteIndexSyncAt = 0
+    cloudSyncRemoteProjects.value = []
     updateStatus({
       enabled: false,
       state: 'disabled',
