@@ -1829,7 +1829,7 @@ export fn sweep(
   /// Defaults to false.
   orientProfilePerpendicular?: bool = false,
   /// COMMENT HERE
-  projectedAxis?: Point3d | Axis3d,
+  projectedAxis?: Point3d | Axis3d | Edge | TaggedEdge | Segment,
   /// A named tag for the face at the start of the sweep, i.e. the original sketch.
   tagStart?: TagDecl,
   /// A named tag for the face at the end of the sweep.

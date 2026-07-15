@@ -245,3 +245,43 @@ pub enum Point3dAxis3dOrGeometryReference {
     /// Extrude-to edge: `{ sideFaces = [...], endFaces = [...], index? }` (face tags or UUIDs).
     EdgeToReference(super::edge::UnresolvedEdgeSpecifier),
 }
+
+/// A 3D axis a point 3D or tagged edge.
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Clone, PartialEq)]
+pub enum Axis3dOrPoint3dOrEdgeReference {
+    /// 3D axis and origin.
+    Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
+    /// 3D point
+    Point([TyF64; 3]),
+    /// Tagged edge
+    Edge(EdgeReference),
+}
+
+impl Axis3dOrPoint3dOrEdgeReference {
+    pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
+        match &segment.kind {
+            SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
+            SegmentKind::Point { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a point as an axis".to_owned(),
+            })),
+            SegmentKind::Arc { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use an arc as an axis".to_owned(),
+            })),
+            SegmentKind::Circle { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a circle as an axis".to_owned(),
+            })),
+            SegmentKind::ControlPointSpline { .. } => Err(KclError::new_type(KclErrorDetails {
+                source_ranges: segment.meta.iter().map(|meta| meta.source_range).collect(),
+                backtrace: Default::default(),
+                message: "Cannot use a control point spline as an axis".to_owned(),
+            })),
+        }
+    }
+}
