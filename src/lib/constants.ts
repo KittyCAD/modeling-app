@@ -168,6 +168,10 @@ export const SETTINGS_FILE_NAME = 'settings.toml'
 export const KEYMAP_FILE_NAME = 'keymap.toml'
 export const PROJECT_SETTINGS_FILE_NAME = 'project.toml'
 export const DUPLICATE_IN_PROGRESS_FILE_NAME = '.zds-duplicate-in-progress'
+export const DUPLICATE_STAGING_PREFIX = '.zds-duplicate-'
+export const DUPLICATE_STAGING_NAME_REGEXP =
+  /^\.zds-duplicate-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+export const DUPLICATE_RESERVATION_FILE_PREFIX = '.zds-duplicate-reservation-'
 export const LEGACY_COOKIE_NAME = '__Secure-next-auth.session-token'
 export const COOKIE_NAME_PREFIX = '__Secure-session-token-'
 export const TELEMETRY_FILE_NAME = 'boot.txt'

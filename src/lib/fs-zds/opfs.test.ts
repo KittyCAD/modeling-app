@@ -1,5 +1,7 @@
 import path from 'path'
 import { PUBLISH_DIRECTORY_DESTINATION_EXISTS } from '@src/lib/fs-zds/errors'
+import { DUPLICATE_IN_PROGRESS_FILE_NAME } from '@src/lib/constants'
+import { createDuplicatePublicationEvidence } from '@src/lib/fs-zds/duplicateReservations'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds/opfsWriteWorker.ts?worker', () => ({
@@ -34,6 +36,10 @@ class MockFileSystemFileHandle {
     } as File
   }
 
+  async isSameEntry(other: FileSystemHandle) {
+    return other === (this as unknown as FileSystemHandle)
+  }
+
   async createWritable() {
     return {
       write: async (blob: Blob) => {
@@ -52,6 +58,10 @@ class MockFileSystemDirectoryHandle {
   >()
 
   constructor(public name: string) {}
+
+  async isSameEntry(other: FileSystemHandle) {
+    return other === (this as unknown as FileSystemHandle)
+  }
 
   async *entries() {
     for (const entry of this.children) {
@@ -114,6 +124,11 @@ class MockFileSystemDirectoryHandle {
 
 describe('opfs', () => {
   let root: MockFileSystemDirectoryHandle
+  const publicationEvidence = createDuplicatePublicationEvidence({
+    token: '11111111-1111-4111-8111-111111111111',
+    targetName: 'target',
+    createdAt: 1,
+  })
   const projectPath = path.resolve('projects', 'project')
   const metaPath = path.resolve(projectPath, '._meta')
 
@@ -204,10 +219,10 @@ describe('opfs', () => {
     const nested = source.addDirectory('nested')
     const deeper = nested.addDirectory('deeper')
     deeper.addFile('part.kcl', 'nested part')
+    nested.addDirectory('empty')
     const opfs = await getOpfs()
     const targetPath = path.resolve('projects', 'duplicate')
 
-    await opfs.impl.mkdir(targetPath)
     await opfs.impl.cp(path.resolve('projects', 'source'), targetPath, {
       recursive: true,
     })
@@ -217,6 +232,9 @@ describe('opfs', () => {
         encoding: 'utf-8',
       })
     ).resolves.toBe('nested part')
+    await expect(
+      opfs.impl.readdir(path.resolve(targetPath, 'nested/empty'))
+    ).resolves.toEqual([])
   })
 
   test('does not create a directory over an existing path', async () => {
@@ -269,7 +287,7 @@ describe('opfs', () => {
     const targetPath = path.resolve('projects', 'target')
 
     await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, '.in-progress')
+      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
     ).rejects.toBe(PUBLISH_DIRECTORY_DESTINATION_EXISTS)
 
     expect(projects.children.get('target')).toBe(target)
@@ -303,7 +321,7 @@ describe('opfs', () => {
     const targetPath = path.resolve('projects', 'target')
 
     await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, '.in-progress')
+      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
     ).rejects.toThrow('simulated marker failure')
 
     expect(projects.children.get('target')).toBeInstanceOf(
@@ -325,7 +343,7 @@ describe('opfs', () => {
     const targetPath = path.resolve('projects', 'target')
 
     await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, '.in-progress')
+      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
     ).rejects.toThrow('simulated read failure')
 
     expect(projects.children.get('source')).toBe(source)
@@ -333,10 +351,13 @@ describe('opfs', () => {
       MockFileSystemDirectoryHandle
     )
     await expect(
-      opfs.impl.readFile(path.resolve(targetPath, '.in-progress'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('')
+      opfs.impl.readFile(
+        path.resolve(targetPath, DUPLICATE_IN_PROGRESS_FILE_NAME),
+        {
+          encoding: 'utf-8',
+        }
+      )
+    ).resolves.toContain('"phase":"publishing"')
   })
 
   test('leaves the marker for transactional finalization after a complete publication', async () => {
@@ -347,7 +368,11 @@ describe('opfs', () => {
     const sourcePath = path.resolve('projects', 'source')
     const targetPath = path.resolve('projects', 'target')
 
-    await opfs.impl.publishDirectory(sourcePath, targetPath, '.in-progress')
+    await opfs.impl.publishDirectory(
+      sourcePath,
+      targetPath,
+      publicationEvidence
+    )
 
     await expect(
       opfs.impl.readFile(path.resolve(targetPath, 'source.kcl'), {
@@ -355,10 +380,13 @@ describe('opfs', () => {
       })
     ).resolves.toBe('source')
     await expect(
-      opfs.impl.readFile(path.resolve(targetPath, '.in-progress'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('')
+      opfs.impl.readFile(
+        path.resolve(targetPath, DUPLICATE_IN_PROGRESS_FILE_NAME),
+        {
+          encoding: 'utf-8',
+        }
+      )
+    ).resolves.toContain('"phase":"publishing"')
     await expect(
       opfs.impl.readFile(path.resolve(sourcePath, 'source.kcl'), {
         encoding: 'utf-8',

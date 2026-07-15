@@ -1,5 +1,6 @@
 import type { UnitLength } from '@rust/kcl-lib/bindings/ModelingCmd'
 import fsZds from '@src/lib/fs-zds'
+import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 
 import { changeDefaultUnits, changeKclVersion } from '@src/lang/wasm'
 import {
@@ -45,10 +46,15 @@ export async function projectSkeletonCreate(
   defaultLengthUnit: UnitLength,
   wasmInstance: ModuleType
 ) {
-  await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
-  const codeToWrite = newKclFile(undefined, defaultLengthUnit, wasmInstance)
-  if (err(codeToWrite)) {
-    return Promise.reject(codeToWrite)
-  }
-  await fsZds.writeFile(targetPath, new TextEncoder().encode(codeToWrite))
+  return runWithProjectFilesystemMutationLock(
+    async () => {
+      await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
+      const codeToWrite = newKclFile(undefined, defaultLengthUnit, wasmInstance)
+      if (err(codeToWrite)) {
+        return Promise.reject(codeToWrite)
+      }
+      await fsZds.writeFile(targetPath, new TextEncoder().encode(codeToWrite))
+    },
+    { ifAvailable: true, mode: 'shared' }
+  )
 }

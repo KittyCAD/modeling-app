@@ -3,6 +3,7 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { projectHasReadAccess } from '@src/lib/projectPermissions'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -112,12 +113,19 @@ export function createProjectCommands({
     },
   }
 
+  // createProjectCommands only needs an actor ref, while the older command
+  // type still asks for XState's concrete Actor class. The production value is
+  // a concrete actor; keep the cast contained until that shared type is relaxed.
+  const duplicateProjectMachineActor = systemIOActor as unknown as NonNullable<
+    Command['machineActor']
+  >
   const duplicateProjectCommand: Command = {
     icon: 'clone',
     name: 'Duplicate project',
     displayName: 'Duplicate project',
     description: 'Duplicate a project',
     groupId: 'projects',
+    machineActor: duplicateProjectMachineActor,
     needsReview: false,
     onSubmit: (record) => {
       if (record) {
@@ -134,14 +142,20 @@ export function createProjectCommands({
       name: {
         inputType: 'options',
         required: true,
-        options: () => {
-          const folders = folderSnapshot()
+        machineActor: duplicateProjectMachineActor,
+        options: (_commandContext, machineContext) => {
+          const systemIOContext =
+            (machineContext as
+              | ContextFrom<typeof systemIOMachine>
+              | undefined) ?? systemIOActor.getSnapshot().context
+          const folders = systemIOContext.folders
           const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
+          if (!folders || !systemIOContext.canReadWriteProjectDirectory.value) {
+            return options
+          }
 
-          const currentProjectName =
-            systemIOActor.getSnapshot().context.requestedProjectName.name
-          folders.forEach((folder) => {
+          const currentProjectName = systemIOContext.requestedProjectName.name
+          folders.filter(projectHasReadAccess).forEach((folder) => {
             const displayName = getProjectDisplayName(folder)
             options.push({
               name:

@@ -58,6 +58,7 @@ export function homeProjectEntryFromProject(
     defaultFile: project.default_file,
     kclFileCount: project.kcl_file_count,
     directoryCount: project.directory_count,
+    readAccess: project.readAccess ?? project.readWriteAccess,
     readWriteAccess: project.readWriteAccess,
     thumbnail: {
       type: 'local',

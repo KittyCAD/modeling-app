@@ -3,6 +3,7 @@ import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import {
   isAlreadyExistsError,
+  isPublishDirectoryDestinationExists,
   PUBLISH_DIRECTORY_DESTINATION_EXISTS,
 } from '@src/lib/fs-zds/errors'
 // The Origin Private File System. Used for browser environments.
@@ -562,6 +563,12 @@ const cp = async (
       await writeFile(targetPath, Uint8Array.from(data))
     }
   } else {
+    const targetHandle = await walk(targetPath)
+    if (targetHandle === undefined) {
+      await mkdir(targetPath)
+    } else if (targetHandle instanceof FileSystemFileHandle) {
+      return Promise.reject('ENOTDIR')
+    }
     await scan(sourcePath, async (cwd, handle) => {
       const relativePathToSourcePath = path.relative(sourcePath, cwd)
       const absolutePath = path.resolve(
@@ -584,15 +591,57 @@ const cp = async (
 const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
   sourcePath,
   targetPath,
-  inProgressMarkerName
+  evidence
 ) => {
   const operation = async () => {
+    const reservationPath = path.resolve(
+      path.dirname(targetPath),
+      evidence.reservationFileName
+    )
+    if ((await walk(reservationPath)) !== undefined) {
+      return Promise.reject(PUBLISH_DIRECTORY_DESTINATION_EXISTS)
+    }
+    await writeFile(reservationPath, evidence.reservationPrepared)
+    const reservationHandle = await walk(reservationPath)
+    if (!(reservationHandle instanceof FileSystemFileHandle)) {
+      return Promise.reject(
+        new Error('Duplicate reservation ownership was lost')
+      )
+    }
+    const bytesEqual = (left: Uint8Array, right: Uint8Array) =>
+      left.length === right.length &&
+      left.every((byte, index) => byte === right[index])
+    const fileStillOwned = async (
+      filePath: string,
+      originalHandle: FileSystemFileHandle,
+      expected: Uint8Array
+    ) => {
+      const currentHandle = await walk(filePath)
+      if (
+        !(currentHandle instanceof FileSystemFileHandle) ||
+        !(await originalHandle.isSameEntry(currentHandle))
+      ) {
+        return false
+      }
+      const contents = await readFile(filePath)
+      return typeof contents !== 'string' && bytesEqual(contents, expected)
+    }
+
     // The destination path lock is shared with mkdir. Creating the target
     // while holding it gives cooperating renderers a single no-clobber
     // reservation for the whole publication.
     try {
       await mkdirSingle(targetPath, false)
     } catch (error) {
+      if (
+        await fileStillOwned(
+          reservationPath,
+          reservationHandle,
+          evidence.reservationPrepared
+        )
+      ) {
+        await rm(reservationPath, { recursive: false, force: true })
+      }
       return Promise.reject(
         isAlreadyExistsError(error)
           ? PUBLISH_DIRECTORY_DESTINATION_EXISTS
@@ -600,9 +649,48 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
       )
     }
 
-    const markerPath = path.resolve(targetPath, inProgressMarkerName)
+    const targetHandle = await walk(targetPath)
+    if (!(targetHandle instanceof FileSystemDirectoryHandle)) {
+      return Promise.reject(new Error('Duplicate target ownership was lost'))
+    }
+    const markerPath = path.resolve(targetPath, evidence.markerName)
+    const assertOwnership = async (
+      expectedMarker: Uint8Array,
+      expectedReservation: Uint8Array
+    ) => {
+      const currentTarget = await walk(targetPath)
+      if (
+        !(currentTarget instanceof FileSystemDirectoryHandle) ||
+        !(await targetHandle.isSameEntry(currentTarget)) ||
+        !(await fileStillOwned(
+          reservationPath,
+          reservationHandle,
+          expectedReservation
+        ))
+      ) {
+        return Promise.reject(
+          new Error('Duplicate publication ownership was lost')
+        )
+      }
+      const markerHandle = await walk(markerPath)
+      if (
+        !(markerHandle instanceof FileSystemFileHandle) ||
+        !(await readFile(markerPath).then(
+          (contents) =>
+            typeof contents !== 'string' && bytesEqual(contents, expectedMarker)
+        ))
+      ) {
+        return Promise.reject(
+          new Error('Duplicate publication ownership was lost')
+        )
+      }
+    }
     try {
-      await writeFile(markerPath, new Uint8Array())
+      await writeFile(markerPath, evidence.targetPublishing)
+      await assertOwnership(
+        evidence.targetPublishing,
+        evidence.reservationPrepared
+      )
     } catch (error) {
       // Never delete by pathname after reservation: another renderer may have
       // replaced it. Copying has not started, so it is empty unless a marker
@@ -613,19 +701,28 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
     for (const entryName of await readdir(sourcePath)) {
       // OPFS directory metadata is regenerated for the new target. More
       // importantly, never copy a stale publication marker from the source.
-      if (entryName === inProgressMarkerName || entryName === META_FILE) {
+      if (entryName === evidence.markerName || entryName === META_FILE) {
         continue
       }
+
+      await assertOwnership(
+        evidence.targetPublishing,
+        evidence.reservationPrepared
+      )
 
       const sourceEntryPath = path.resolve(sourcePath, entryName)
       const targetEntryPath = path.resolve(targetPath, entryName)
       if ((await walk(targetEntryPath)) !== undefined) {
-        return Promise.reject('EEXIST')
+        return Promise.reject(
+          new Error('A duplicate target entry already exists')
+        )
       }
 
       const sourceEntry = await walk(sourceEntryPath)
       if (sourceEntry === undefined) {
-        return Promise.reject('ENOENT')
+        return Promise.reject(
+          new Error('A duplicate staging entry disappeared during publication')
+        )
       }
       if (sourceEntry instanceof FileSystemDirectoryHandle) {
         await mkdirSingle(targetEntryPath, false)
@@ -633,12 +730,30 @@ const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
       await cp(sourceEntryPath, targetEntryPath)
     }
 
+    await assertOwnership(
+      evidence.targetPublishing,
+      evidence.reservationPrepared
+    )
+
     return undefined
   }
 
   // Without Web Locks, OPFS has no atomic create-if-absent operation exposed
   // across renderers. Refuse publication instead of risking a merge.
-  return runWithOPFSPathMutationLock(targetPath, operation, true)
+  try {
+    return await runWithOPFSPathMutationLock(targetPath, operation, true)
+  } catch (error) {
+    // Keep the typed collision sentinel for the actor's retry loop. All other
+    // publication failures reach UI error handling as readable Error objects.
+    if (isPublishDirectoryDestinationExists(error) || error instanceof Error) {
+      return Promise.reject(error)
+    }
+    const message =
+      error === 'OPFS_PATH_LOCK_UNAVAILABLE'
+        ? 'Cannot safely publish the duplicate because the browser path lock is unavailable'
+        : `Duplicate publication failed: ${String(error)}`
+    return Promise.reject(new Error(message))
+  }
 }
 
 const impl: IZooDesignStudioFS = {

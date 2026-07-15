@@ -116,8 +116,12 @@ describe('ProjectCard', () => {
 
   test('duplicates a local project from its card action', async () => {
     const { projectActions } = renderProjectCard()
+    const duplicateButton = screen.getByRole('button', {
+      name: 'Duplicate project',
+    })
 
-    fireEvent.click(screen.getByText('Duplicate project').closest('button')!)
+    expect(duplicateButton).toHaveAttribute('tabindex', '0')
+    fireEvent.click(duplicateButton)
 
     await waitFor(() =>
       expect(projectActions.duplicate).toHaveBeenCalledWith(cloudProject)

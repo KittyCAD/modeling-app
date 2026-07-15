@@ -272,6 +272,7 @@ function AppProjectCard({
   const actions = (
     <>
       <ActionButton
+        aria-label="Duplicate project"
         disabled={!canDuplicate}
         Element="button"
         iconStart={{
@@ -285,6 +286,7 @@ function AppProjectCard({
           void projectActions.duplicate(project).catch(reportRejection)
         }}
         className="!p-0"
+        tabIndex={0}
       >
         <Tooltip position="top-right">Duplicate project</Tooltip>
       </ActionButton>

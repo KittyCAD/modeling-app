@@ -49,9 +49,10 @@ function CommandArgOptionInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const formRef = useRef<HTMLFormElement>(null)
   const shouldSubmitOnChange = useRef(false)
-  const [selectedOption, setSelectedOption] = useState<
-    CommandArgumentOption<unknown>
-  >(currentOption || resolvedOptions[0])
+  const [selectedOption, setSelectedOption] =
+    useState<CommandArgumentOption<unknown> | null>(
+      currentOption || resolvedOptions[0] || null
+    )
   // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   const initialQuery = useMemo(() => '', [arg.options, argName])
   const [query, setQuery] = useState(initialQuery)
@@ -69,12 +70,31 @@ function CommandArgOptionInput({
     [argName, resolvedOptions]
   )
 
-  // Reset the query and selected option when the argName changes
+  // Reset the query when the command advances to another argument.
   useEffect(() => {
     setQuery(initialQuery)
-    setSelectedOption(currentOption || resolvedOptions[0])
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [argName])
+
+  // Options can arrive asynchronously after this input mounts. Preserve a
+  // still-valid selection, otherwise select the configured/default first
+  // option so the form never stays stuck on an earlier empty result.
+  useEffect(() => {
+    setSelectedOption((selection) => {
+      const refreshedSelection =
+        selection &&
+        resolvedOptions.find((option) =>
+          Object.is(option.value, selection.value)
+        )
+      if (refreshedSelection) {
+        // Headless UI compares option objects by identity by default. Keep the
+        // same logical selection while adopting the object from the refreshed
+        // options array so the rendered option remains selected.
+        return refreshedSelection
+      }
+      return currentOption || resolvedOptions[0] || null
+    })
+  }, [currentOption, resolvedOptions])
 
   // Auto focus and select the input when the component mounts
   useEffect(() => {
@@ -114,8 +134,16 @@ function CommandArgOptionInput({
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
+    const availableSelectedOption = resolvedOptions.find(
+      (option) =>
+        !option.disabled && Object.is(option.value, selectedOption?.value)
+    )
+    if (!availableSelectedOption) {
+      return
+    }
+
     // We submit the value of the selected option, not the whole object
-    onSubmit(selectedOption.value)
+    onSubmit(availableSelectedOption.value)
   }
 
   return (

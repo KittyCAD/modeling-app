@@ -8,13 +8,15 @@ import {
 import { effect, signal } from '@preact/signals-core'
 import {
   getProjectInfo,
-  writeProjectTitleToProjectToml,
+  writeProjectTitleToProjectTomlUnlocked,
 } from '@src/lib/desktop'
+import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import {
   getHomeProjectDisplayName,
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
+import { canDuplicateLocalProject } from '@src/lib/projectPermissions'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { commandSystemService } from '@src/registry/contracts/commands'
@@ -68,10 +70,10 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           project.remoteProjectId
       ),
     canDuplicate: (project) =>
-      Boolean(
-        project.localProjectName &&
-          project.localProjectPath &&
-          project.readWriteAccess
+      canDuplicateLocalProject(
+        project,
+        systemIO.value?.actor.getSnapshot().context.canReadWriteProjectDirectory
+          .value === true
       ),
     canRename: (project) =>
       Boolean(project.localProjectPath && project.readWriteAccess),
@@ -123,6 +125,7 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       if (!serviceImpl.canRename(project) || !project.localProjectPath) {
         return
       }
+      const localProjectPath = project.localProjectPath
 
       if (
         homeProjectDisplayNameExists({
@@ -136,9 +139,13 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return Promise.reject(new Error(message))
       }
 
-      await writeProjectTitleToProjectToml(
-        project.localProjectPath,
-        requestedName
+      await runWithProjectFilesystemMutationLock(
+        () =>
+          writeProjectTitleToProjectTomlUnlocked(
+            localProjectPath,
+            requestedName
+          ),
+        { ifAvailable: true, mode: 'shared' }
       )
       toast.success(
         `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`

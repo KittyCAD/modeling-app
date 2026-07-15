@@ -85,5 +85,7 @@ export type Project = {
    * children : null is a file
    */
   children: FileEntry[] | null
+  /** Whether the project directory can be read and traversed. */
+  readAccess?: boolean
   readWriteAccess: boolean
 }

@@ -1,19 +1,25 @@
 import { newKclFile } from '@src/lang/project'
+import { flushActiveTextFileWrite } from '@src/lib/activeTextFile'
 import {
   cloudSyncStatus,
   getCloudSyncProjectMetadataIndex,
   getCloudSyncProjectModifiedTime,
+  resetCloudSyncProjectIdentityForRecovery,
   runCloudSyncWriteTransaction,
 } from '@src/lib/cloudSync'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DUPLICATE_IN_PROGRESS_FILE_NAME,
+  DUPLICATE_RESERVATION_FILE_PREFIX,
+  DUPLICATE_STAGING_NAME_REGEXP,
+  DUPLICATE_STAGING_PREFIX,
   FILE_EXT,
   MAX_PROJECT_NAME_LENGTH,
   PROJECT_SETTINGS_FILE_NAME,
   ZOOKEEPER_FILE_WRITE_TOAST_ID,
 } from '@src/lib/constants'
 import {
+  canReadDirectory,
   canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
@@ -21,8 +27,8 @@ import {
   mkdirOrNOOP,
   readAppSettingsFile,
   renameProjectDirectory,
-  writeProjectSettingsFile,
-  writeProjectTitleToProjectToml,
+  writeProjectSettingsFileUnlocked,
+  writeProjectTitleToProjectTomlUnlocked,
 } from '@src/lib/desktop'
 import {
   doesProjectNameNeedInterpolated,
@@ -33,6 +39,17 @@ import {
 } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import {
+  createDuplicatePublicationEvidence,
+  DUPLICATE_ARTIFACT_STALE_MS,
+  DUPLICATE_OWNERSHIP_VERSION,
+  type DuplicateOwnershipEvidence,
+  duplicateEvidenceMatches,
+  getDuplicateReservationFileName,
+  parseDuplicateOwnershipEvidence,
+  serializeDuplicateOwnershipEvidence,
+} from '@src/lib/fs-zds/duplicateReservations'
+import { isProjectDirectoryQuarantined } from '@src/lib/fs-zds/duplicateQuarantine'
 import { isPublishDirectoryDestinationExists } from '@src/lib/fs-zds/errors'
 import {
   getProjectDirectoryFromKCLFilePath,
@@ -40,6 +57,11 @@ import {
   parentPathRelativeToProject,
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
+import {
+  getProjectDirectoryNamespaceLockName,
+  runWithProjectDirectoryNamespaceLock,
+  runWithProjectFilesystemMutationLock,
+} from '@src/lib/projectDirectoryNamespaceLock'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { sanitizeProjectName } from '@src/lib/projectName'
 import { getProjectTomlContents } from '@src/lib/projectToml'
@@ -63,9 +85,6 @@ import {
 import { v4 } from 'uuid'
 import { fromPromise } from 'xstate'
 
-const DUPLICATE_STAGING_PREFIX = '.zds-duplicate-'
-const DUPLICATE_STAGING_NAME_REGEXP =
-  /^\.zds-duplicate-[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 const OPFS_DIRECTORY_METADATA_FILE_NAME = '._meta'
 const activeDuplicateStagingPaths = new Set<string>()
 
@@ -73,10 +92,7 @@ function getWebLockManager() {
   return typeof navigator !== 'undefined' ? navigator.locks : undefined
 }
 
-function duplicateWebLockName(
-  kind: 'directory' | 'staging',
-  targetPath: string
-) {
+function duplicateWebLockName(kind: 'staging', targetPath: string) {
   return `zds:duplicate:${kind}:${targetPath.replaceAll('\\', '/')}`
 }
 
@@ -139,34 +155,80 @@ async function pathExists(targetPath: string) {
   }
 }
 
-async function hasDuplicateInProgressMarker(projectPath: string) {
+async function readDuplicateOwnershipEvidence(targetPath: string) {
   try {
-    await fsZds.stat(fsZds.join(projectPath, DUPLICATE_IN_PROGRESS_FILE_NAME))
-    return true
-  } catch (error) {
-    // If the marker cannot be inspected, hiding the project is safer than
-    // exposing a potentially partial copy.
-    return !isPathNotFoundError(error)
+    return parseDuplicateOwnershipEvidence(
+      await fsZds.readFile(targetPath, { encoding: 'utf-8' })
+    )
+  } catch {
+    return undefined
   }
 }
 
-async function isProjectDirectoryQuarantined(projectPath: string) {
-  try {
-    const entries = await fsZds.readdir(projectPath)
-    // The marker can appear after the stat in
-    // hasDuplicateInProgressMarker. Treat the directory snapshot as a second
-    // authoritative check before any project inspection can mutate it.
-    if (entries.includes(DUPLICATE_IN_PROGRESS_FILE_NAME)) {
-      return true
-    }
-    return entries.every(
-      (entryName) => entryName === OPFS_DIRECTORY_METADATA_FILE_NAME
+async function removeDuplicateEvidenceFileIfOwned(
+  targetPath: string,
+  expected: Pick<DuplicateOwnershipEvidence, 'kind' | 'token'> & {
+    phase?: DuplicateOwnershipEvidence['phase']
+  }
+) {
+  if (
+    duplicateEvidenceMatches(
+      await readDuplicateOwnershipEvidence(targetPath),
+      expected
     )
-  } catch {
-    // Do not let project inspection mutate a directory whose contents cannot
-    // be established safely.
+  ) {
+    await fsZds.rm(targetPath, { force: true })
     return true
   }
+  return false
+}
+
+async function finalizeDuplicateEvidenceFile(
+  targetPath: string,
+  expected: Pick<DuplicateOwnershipEvidence, 'kind' | 'token'> & {
+    phase?: DuplicateOwnershipEvidence['phase']
+  },
+  ownershipErrorMessage: string
+) {
+  const evidence = await readDuplicateOwnershipEvidence(targetPath)
+  if (duplicateEvidenceMatches(evidence, expected)) {
+    await fsZds.rm(targetPath)
+    if (await pathExists(targetPath)) {
+      return Promise.reject(new Error(ownershipErrorMessage))
+    }
+    return
+  }
+  if (!(await pathExists(targetPath))) {
+    // A previous recovery/finalization attempt already completed this step.
+    return
+  }
+  return Promise.reject(new Error(ownershipErrorMessage))
+}
+
+async function finalizeDuplicateTargetMarker(
+  targetPath: string,
+  expected: Pick<DuplicateOwnershipEvidence, 'kind' | 'token'> & {
+    phase?: DuplicateOwnershipEvidence['phase']
+  }
+) {
+  return finalizeDuplicateEvidenceFile(
+    targetPath,
+    expected,
+    'Duplicate target marker ownership could not be verified'
+  )
+}
+
+async function finalizeDuplicateReservation(
+  reservationPath: string,
+  expected: Pick<DuplicateOwnershipEvidence, 'kind' | 'token'> & {
+    phase?: DuplicateOwnershipEvidence['phase']
+  }
+) {
+  return finalizeDuplicateEvidenceFile(
+    reservationPath,
+    expected,
+    'Duplicate reservation ownership could not be verified'
+  )
 }
 
 async function moveRecursivePath({
@@ -216,19 +278,36 @@ async function getUniqueProjectNameForCreate({
     projectDirectoryPath
   )) {
     knownProjectNames.add(entryName)
+    if (
+      projectDirectoryPath &&
+      entryName.startsWith(DUPLICATE_RESERVATION_FILE_PREFIX)
+    ) {
+      const reservation = await readDuplicateOwnershipEvidence(
+        fsZds.join(projectDirectoryPath, entryName)
+      )
+      if (
+        reservation?.kind === 'reservation' &&
+        entryName === getDuplicateReservationFileName(reservation.targetName)
+      ) {
+        knownProjectNames.add(reservation.targetName)
+      }
+    }
   }
 
   const existingEntries: FileEntry[] = Array.from(
     knownProjectNames,
     (name) => ({
-      name,
+      name: name.normalize('NFC'),
       path: projectDirectoryPath
         ? fsZds.join(projectDirectoryPath, name)
         : name,
       children: [],
     })
   )
-  return getUniqueProjectName(requestedProjectName, existingEntries)
+  return getUniqueProjectName(
+    requestedProjectName.normalize('NFC'),
+    existingEntries
+  )
 }
 
 async function getUniqueDuplicateProjectName({
@@ -236,11 +315,13 @@ async function getUniqueDuplicateProjectName({
   requestedProjectName,
   fallbackProjectName,
   projectDirectoryPath,
+  rejectedNames,
 }: {
   context: SystemIOContext
   requestedProjectName: string
   fallbackProjectName: string
   projectDirectoryPath: string
+  rejectedNames?: ReadonlySet<string>
 }) {
   const reservedNames = new Set<string>()
   for (const folder of context.folders ?? []) {
@@ -274,16 +355,22 @@ async function getUniqueDuplicateProjectName({
   }
 
   const normalizedReservedNames = new Set(
-    Array.from(reservedNames, (name) => name.toLowerCase())
+    Array.from(reservedNames, normalizeProjectNameCollisionKey)
   )
+  for (const rejectedName of rejectedNames ?? []) {
+    normalizedReservedNames.add(normalizeProjectNameCollisionKey(rejectedName))
+  }
   const sanitizedBaseName = sanitizeProjectName(
     requestedProjectName,
     fallbackProjectName
   )
-  const safeBaseName = sanitizedBaseName
-    .slice(0, MAX_PROJECT_NAME_LENGTH)
-    .replace(/[. ]+$/g, '')
-  if (!normalizedReservedNames.has(safeBaseName.toLowerCase())) {
+  const safeBaseName = truncateProjectNameWithoutSplittingCodePoint(
+    sanitizedBaseName,
+    MAX_PROJECT_NAME_LENGTH
+  ).replace(/[. ]+$/g, '')
+  if (
+    !normalizedReservedNames.has(normalizeProjectNameCollisionKey(safeBaseName))
+  ) {
     return safeBaseName
   }
 
@@ -302,67 +389,312 @@ async function getUniqueDuplicateProjectName({
       index = 1n
       suffix = '-1'
     }
-    const candidate = `${stem.slice(
-      0,
+    const candidate = `${truncateProjectNameWithoutSplittingCodePoint(
+      stem,
       MAX_PROJECT_NAME_LENGTH - suffix.length
     )}${suffix}`
-    if (!normalizedReservedNames.has(candidate.toLowerCase())) {
+    if (
+      !normalizedReservedNames.has(normalizeProjectNameCollisionKey(candidate))
+    ) {
       return candidate
     }
     index += 1n
   }
 }
 
-async function cleanupStaleDuplicateStagingDirectories(
-  projectDirectoryPath: string
+export function normalizeProjectNameCollisionKey(name: string) {
+  return name.normalize('NFC').toLowerCase().normalize('NFC')
+}
+
+export function truncateProjectNameWithoutSplittingCodePoint(
+  name: string,
+  maxLength: number
+) {
+  if (name.length <= maxLength) {
+    return name
+  }
+
+  const truncated = name.slice(0, Math.max(0, maxLength))
+  const finalCodeUnit = truncated.charCodeAt(truncated.length - 1)
+  return finalCodeUnit >= 0xd800 && finalCodeUnit <= 0xdbff
+    ? truncated.slice(0, -1)
+    : truncated
+}
+
+function isStaleDuplicateEvidence(evidence: DuplicateOwnershipEvidence) {
+  return Date.now() - evidence.createdAt >= DUPLICATE_ARTIFACT_STALE_MS
+}
+
+async function runDuplicateCleanupWithAvailableLock(
+  lockName: string,
+  cleanup: () => Promise<void>
 ) {
   const lockManager = getWebLockManager()
-  for (const entryName of await getProjectDirectoryEntryNames(
-    projectDirectoryPath
-  )) {
-    if (!DUPLICATE_STAGING_NAME_REGEXP.test(entryName)) {
-      continue
+  if (!lockManager) return
+  let cleanupStarted = false
+  try {
+    await lockManager.request(lockName, { ifAvailable: true }, async (lock) => {
+      if (lock) {
+        cleanupStarted = true
+        await cleanup()
+      }
+    })
+  } catch (error) {
+    if (cleanupStarted) {
+      return Promise.reject(error)
     }
+    // A partial Web Locks implementation is not proof of cleanup ownership.
+  }
+}
 
-    const stagingPath = fsZds.join(projectDirectoryPath, entryName)
-    if (activeDuplicateStagingPaths.has(stagingPath)) {
-      continue
+async function removeOwnedDuplicateStage(
+  projectDirectoryPath: string,
+  token: string
+) {
+  const stagingPath = fsZds.join(
+    projectDirectoryPath,
+    `${DUPLICATE_STAGING_PREFIX}${token}`
+  )
+  if (activeDuplicateStagingPaths.has(stagingPath)) return
+  await runDuplicateCleanupWithAvailableLock(
+    duplicateWebLockName('staging', stagingPath),
+    async () => {
+      const markerPath = fsZds.join(
+        stagingPath,
+        DUPLICATE_IN_PROGRESS_FILE_NAME
+      )
+      const evidence = await readDuplicateOwnershipEvidence(markerPath)
+      if (
+        evidence?.kind !== 'stage' ||
+        evidence.token !== token ||
+        !isStaleDuplicateEvidence(evidence)
+      ) {
+        return
+      }
+      await fsZds.rm(stagingPath, { recursive: true, force: true })
     }
+  )
+}
 
-    const cleanup = async () => {
-      try {
-        const stagingStat = await fsZds.stat(stagingPath)
-        if (!(stagingStat.mode & fsZdsConstants.S_IFDIR)) {
-          return
-        }
-        await fsZds.rm(stagingPath, { recursive: true, force: true })
-      } catch (error) {
-        if (!isPathNotFoundError(error)) {
-          console.error('Failed to clean up stale duplicated project', error)
-        }
+async function recoverPublishedDuplicate(
+  projectDirectoryPath: string,
+  targetName: string,
+  token: string
+) {
+  const targetPath = fsZds.resolve(projectDirectoryPath, targetName)
+  if (fsZds.dirname(targetPath) !== projectDirectoryPath) return
+  const markerPath = fsZds.join(targetPath, DUPLICATE_IN_PROGRESS_FILE_NAME)
+  const reservationPath = fsZds.join(
+    projectDirectoryPath,
+    getDuplicateReservationFileName(targetName)
+  )
+  await runCloudSyncWriteTransaction(targetPath, async () => undefined, {
+    freshProjectIdentity: true,
+    afterFreshIdentityReset: async () => {
+      await finalizeDuplicateTargetMarker(markerPath, {
+        kind: 'target',
+        phase: 'published',
+        token,
+      })
+      await finalizeDuplicateReservation(reservationPath, {
+        kind: 'reservation',
+        token,
+      })
+    },
+  })
+  await removeOwnedDuplicateStage(projectDirectoryPath, token)
+}
+
+async function cleanStaleDuplicateReservation(
+  projectDirectoryPath: string,
+  reservationPath: string,
+  reservation: DuplicateOwnershipEvidence & { kind: 'reservation' }
+) {
+  if (!isStaleDuplicateEvidence(reservation)) return
+  const targetPath = fsZds.resolve(projectDirectoryPath, reservation.targetName)
+  if (fsZds.dirname(targetPath) !== projectDirectoryPath) return
+  const markerPath = fsZds.join(targetPath, DUPLICATE_IN_PROGRESS_FILE_NAME)
+  const marker = await readDuplicateOwnershipEvidence(markerPath)
+
+  if (
+    duplicateEvidenceMatches(marker, {
+      kind: 'target',
+      phase: 'published',
+      token: reservation.token,
+    }) &&
+    (await pathExists(targetPath))
+  ) {
+    await recoverPublishedDuplicate(
+      projectDirectoryPath,
+      reservation.targetName,
+      reservation.token
+    )
+    return
+  }
+
+  if (reservation.phase === 'published' && !marker) {
+    await removeDuplicateEvidenceFileIfOwned(reservationPath, {
+      kind: 'reservation',
+      phase: 'published',
+      token: reservation.token,
+    })
+    await removeOwnedDuplicateStage(projectDirectoryPath, reservation.token)
+    return
+  }
+
+  let targetSafelyRemoved = !(await pathExists(targetPath))
+  if (
+    (reservation.phase === 'prepared' || reservation.phase === 'reserved') &&
+    duplicateEvidenceMatches(marker, {
+      kind: 'target',
+      phase: 'publishing',
+      token: reservation.token,
+    })
+  ) {
+    // The publisher only copies content after atomically reserving the name
+    // and writing this token to the target. All in-app namespace writers use
+    // the same directory lease as this cleanup, so the matching reservation
+    // and marker prove that even a non-empty mid-copy target is ours.
+    const [markerBeforeRemoval, reservationBeforeRemoval] = await Promise.all([
+      readDuplicateOwnershipEvidence(markerPath),
+      readDuplicateOwnershipEvidence(reservationPath),
+    ])
+    if (
+      duplicateEvidenceMatches(markerBeforeRemoval, {
+        kind: 'target',
+        phase: 'publishing',
+        token: reservation.token,
+      }) &&
+      duplicateEvidenceMatches(reservationBeforeRemoval, {
+        kind: 'reservation',
+        phase: reservation.phase,
+        token: reservation.token,
+      }) &&
+      reservationBeforeRemoval?.kind === 'reservation' &&
+      normalizeProjectNameCollisionKey(reservationBeforeRemoval.targetName) ===
+        normalizeProjectNameCollisionKey(reservation.targetName)
+    ) {
+      await resetCloudSyncProjectIdentityForRecovery(targetPath)
+      await fsZds.rm(targetPath, { recursive: true, force: true })
+      targetSafelyRemoved = true
+    }
+  } else if (
+    !marker &&
+    (reservation.phase === 'prepared' || reservation.phase === 'reserved') &&
+    !targetSafelyRemoved
+  ) {
+    const targetEntries = await fsZds.readdir(targetPath).catch(() => undefined)
+    if (
+      targetEntries?.every(
+        (entryName) =>
+          entryName === OPFS_DIRECTORY_METADATA_FILE_NAME ||
+          entryName === DUPLICATE_IN_PROGRESS_FILE_NAME
+      )
+    ) {
+      const reservationBeforeRemoval =
+        await readDuplicateOwnershipEvidence(reservationPath)
+      if (
+        duplicateEvidenceMatches(reservationBeforeRemoval, {
+          kind: 'reservation',
+          phase: reservation.phase,
+          token: reservation.token,
+        })
+      ) {
+        await resetCloudSyncProjectIdentityForRecovery(targetPath)
+        await fsZds.rm(targetPath, { recursive: true, force: true })
+        targetSafelyRemoved = true
       }
     }
+  }
 
-    if (!lockManager) {
-      // Without a cross-renderer lease there is no safe way to distinguish a
-      // crashed stage from another renderer's active copy. Leave it alone.
-      continue
-    }
+  const markerFileStillPresent = await pathExists(markerPath)
+  if (targetSafelyRemoved || !markerFileStillPresent) {
+    await removeOwnedDuplicateStage(projectDirectoryPath, reservation.token)
+    await finalizeDuplicateReservation(reservationPath, {
+      kind: 'reservation',
+      token: reservation.token,
+      phase: reservation.phase,
+    })
+  }
+}
 
-    const lockName = duplicateWebLockName('staging', stagingPath)
+async function cleanupStaleDuplicateArtifacts(projectDirectoryPath: string) {
+  const entryNames = await getProjectDirectoryEntryNames(projectDirectoryPath)
+  for (const entryName of entryNames) {
     try {
-      await lockManager.request(
-        lockName,
-        { ifAvailable: true },
-        async (lock) => {
-          if (lock) {
-            await cleanup()
-          }
+      if (DUPLICATE_STAGING_NAME_REGEXP.test(entryName)) {
+        const token = entryName.slice(DUPLICATE_STAGING_PREFIX.length)
+        const evidence = await readDuplicateOwnershipEvidence(
+          fsZds.join(
+            projectDirectoryPath,
+            entryName,
+            DUPLICATE_IN_PROGRESS_FILE_NAME
+          )
+        )
+        if (
+          evidence?.kind === 'stage' &&
+          evidence.token === token &&
+          isStaleDuplicateEvidence(evidence)
+        ) {
+          await removeOwnedDuplicateStage(projectDirectoryPath, token)
         }
+        continue
+      }
+
+      if (entryName.startsWith(DUPLICATE_RESERVATION_FILE_PREFIX)) {
+        const reservationPath = fsZds.join(projectDirectoryPath, entryName)
+        const reservation =
+          await readDuplicateOwnershipEvidence(reservationPath)
+        if (
+          reservation?.kind !== 'reservation' ||
+          entryName !== getDuplicateReservationFileName(reservation.targetName)
+        ) {
+          continue
+        }
+        await runDuplicateCleanupWithAvailableLock(
+          getProjectDirectoryNamespaceLockName(projectDirectoryPath),
+          () =>
+            runWithProjectFilesystemMutationLock(() =>
+              cleanStaleDuplicateReservation(
+                projectDirectoryPath,
+                reservationPath,
+                reservation
+              )
+            )
+        )
+        continue
+      }
+
+      if (entryName.startsWith('.')) continue
+      const marker = await readDuplicateOwnershipEvidence(
+        fsZds.join(
+          projectDirectoryPath,
+          entryName,
+          DUPLICATE_IN_PROGRESS_FILE_NAME
+        )
       )
-    } catch {
-      // A partial Web Locks implementation is not sufficient proof that this
-      // renderer owns cleanup rights, so preserve the staging directory.
+      if (
+        marker?.kind === 'target' &&
+        marker.phase === 'published' &&
+        isStaleDuplicateEvidence(marker)
+      ) {
+        await runDuplicateCleanupWithAvailableLock(
+          getProjectDirectoryNamespaceLockName(projectDirectoryPath),
+          () =>
+            runWithProjectFilesystemMutationLock(() =>
+              recoverPublishedDuplicate(
+                projectDirectoryPath,
+                entryName,
+                marker.token
+              )
+            )
+        )
+      }
+    } catch (error) {
+      console.warn(
+        `Unable to recover stale duplicate artifact "${entryName}"`,
+        error
+      )
     }
   }
 }
@@ -403,7 +735,33 @@ async function resetDuplicatedProjectSettings({
       return Promise.reject(error)
     }
   }
-  await writeProjectSettingsFile(projectPath, duplicatedProjectToml)
+  await writeProjectSettingsFileUnlocked(projectPath, duplicatedProjectToml)
+}
+
+async function copyProjectDirectoryContents(
+  sourceProjectPath: string,
+  stagingPath: string
+) {
+  for (const entryName of await fsZds.readdir(sourceProjectPath)) {
+    // The staging directory already owns a valid marker at this path. A user
+    // file with the reserved name is never duplicate payload, even when its
+    // contents are not valid ownership evidence.
+    if (entryName === DUPLICATE_IN_PROGRESS_FILE_NAME) {
+      continue
+    }
+    await fsZds.cp(
+      fsZds.join(sourceProjectPath, entryName),
+      fsZds.join(stagingPath, entryName),
+      {
+        recursive: true,
+        force: false,
+        errorOnExist: true,
+        // Following the top-level project directory through readdir supports a
+        // symlinked project root. Each nested symlink is still copied verbatim.
+        verbatimSymlinks: true,
+      }
+    )
+  }
 }
 
 export function shouldSendProjectFolderReadProgress(
@@ -458,14 +816,17 @@ const prepareBulkProjectWrite = async ({
 
   const targetProjectName =
     requestedProjectName || context.defaultProjectFolderName
-  let projectName =
-    useReservedProjectName || requestedProjectName
-      ? targetProjectName
-      : getUniqueProjectName(targetProjectName, context.folders ?? [])
-
-  if (!useReservedProjectName && doesProjectNameNeedInterpolated(projectName)) {
-    const nextIndex = getNextProjectIndex(projectName, context.folders ?? [])
-    projectName = interpolateProjectNameWithIndex(projectName, nextIndex)
+  let projectName = targetProjectName
+  if (
+    !useReservedProjectName &&
+    (!requestedProjectName ||
+      doesProjectNameNeedInterpolated(targetProjectName))
+  ) {
+    projectName = await getUniqueProjectNameForCreate({
+      context,
+      requestedProjectName: targetProjectName,
+      projectDirectoryPath,
+    })
   }
 
   const projectRoot = fsZds.join(projectDirectoryPath, projectName)
@@ -488,54 +849,66 @@ const sharedBulkCreateWorkflow = async ({
     override?: boolean
   }
 }) => {
-  const {
-    configuration,
-    projectDirectoryPath,
-    projectName: newProjectName,
-    projectRoot,
-  } = await prepareBulkProjectWrite({
+  const preparedProjectWrite = await prepareBulkProjectWrite({
     context: input.context,
     requestedProjectName: input.files[0]?.requestedProjectName,
     wasmInstance: input.wasmInstance,
   })
+  const namespacePath = fsZds.resolve(preparedProjectWrite.projectDirectoryPath)
+  return runWithProjectDirectoryNamespaceLock(namespacePath, () =>
+    runWithProjectFilesystemMutationLock(async () => {
+      // Name allocation has to happen while holding the same namespace lease
+      // as duplicate publication, project creation, and rename.
+      const {
+        configuration,
+        projectDirectoryPath,
+        projectName: newProjectName,
+        projectRoot,
+      } = await prepareBulkProjectWrite({
+        context: input.context,
+        requestedProjectName: input.files[0]?.requestedProjectName,
+        wasmInstance: input.wasmInstance,
+      })
 
-  for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
-    const file = input.files[fileIndex]
-    const requestedFileName = file.requestedFileName
-    const requestedCode = file.requestedCode
+      for (let fileIndex = 0; fileIndex < input.files.length; fileIndex++) {
+        const file = input.files[fileIndex]
+        const requestedFileName = file.requestedFileName
+        const requestedCode = file.requestedCode
 
-    // If override is true, use the requested filename directly
-    const fileName = input.override
-      ? requestedFileName
-      : (
-          await getNextFileName({
-            entryName: requestedFileName,
-            baseDir: projectRoot,
-            wasmInstance: input.wasmInstance,
-          })
-        ).name
+        // If override is true, use the requested filename directly
+        const fileName = input.override
+          ? requestedFileName
+          : (
+              await getNextFileName({
+                entryName: requestedFileName,
+                baseDir: projectRoot,
+                wasmInstance: input.wasmInstance,
+              })
+            ).name
 
-    // Create the project around the file if newProject
-    await createNewProjectDirectory(
-      newProjectName,
-      input.wasmInstance,
-      requestedCode,
-      configuration,
-      fileName,
-      projectDirectoryPath
-    )
-  }
-  const numberOfFiles = input.files.length
-  const fileText = numberOfFiles > 1 ? 'files' : 'file'
-  const message = input.override
-    ? `Successfully overwrote ${numberOfFiles} ${fileText}`
-    : `Successfully created ${numberOfFiles} ${fileText}`
-  return {
-    message,
-    fileName: '',
-    projectName: newProjectName,
-    subRoute: 'subRoute' in input ? input.subRoute : '',
-  }
+        // Create the project around the file if newProject
+        await createNewProjectDirectory(
+          newProjectName,
+          input.wasmInstance,
+          requestedCode,
+          configuration,
+          fileName,
+          projectDirectoryPath
+        )
+      }
+      const numberOfFiles = input.files.length
+      const fileText = numberOfFiles > 1 ? 'files' : 'file'
+      const message = input.override
+        ? `Successfully overwrote ${numberOfFiles} ${fileText}`
+        : `Successfully created ${numberOfFiles} ${fileText}`
+      return {
+        message,
+        fileName: '',
+        projectName: newProjectName,
+        subRoute: 'subRoute' in input ? input.subRoute : '',
+      }
+    })
+  )
 }
 
 const sharedBulkWriteImportedProjectFilesWorkflow = async ({
@@ -558,13 +931,14 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
     }
 
     const wasmInstance = await input.context.wasmInstancePromise
-    const { projectName, projectRoot } = await prepareBulkProjectWrite({
-      context: input.context,
-      requestedProjectName: input.requestedProjectName,
-      wasmInstance,
-      useReservedProjectName: true,
-      useSettingsProjectDirectoryFallback: true,
-    })
+    const { projectDirectoryPath, projectName, projectRoot } =
+      await prepareBulkProjectWrite({
+        context: input.context,
+        requestedProjectName: input.requestedProjectName,
+        wasmInstance,
+        useReservedProjectName: true,
+        useSettingsProjectDirectoryFallback: true,
+      })
     const requestedFileNameWithExtension =
       input.requestedFileNameWithExtension || ''
 
@@ -581,36 +955,41 @@ const sharedBulkWriteImportedProjectFilesWorkflow = async ({
       )
     }
 
-    await fsZds.mkdir(projectRoot, { recursive: true })
-    for (const file of input.files) {
-      const targetPath = fsZds.join(projectRoot, file.requestedFileName)
-      await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
-      await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
-    }
+    const namespacePath = fsZds.resolve(projectDirectoryPath)
+    return runWithProjectDirectoryNamespaceLock(namespacePath, () =>
+      runWithProjectFilesystemMutationLock(async () => {
+        await fsZds.mkdir(projectRoot, { recursive: true })
+        for (const file of input.files) {
+          const targetPath = fsZds.join(projectRoot, file.requestedFileName)
+          await fsZds.mkdir(fsZds.dirname(targetPath), { recursive: true })
+          await fsZds.writeFile(targetPath, Uint8Array.from(file.requestedData))
+        }
 
-    if (requestedFileNameWithExtension) {
-      const entrypointPath = fsZds.join(
-        projectRoot,
-        requestedFileNameWithExtension
-      )
-      try {
-        await fsZds.stat(entrypointPath)
-      } catch (error) {
-        return Promise.reject(
-          new Error(
-            `The shared project entry file "${requestedFileNameWithExtension}" was not written successfully.`,
-            { cause: error }
+        if (requestedFileNameWithExtension) {
+          const entrypointPath = fsZds.join(
+            projectRoot,
+            requestedFileNameWithExtension
           )
-        )
-      }
-    }
+          try {
+            await fsZds.stat(entrypointPath)
+          } catch (error) {
+            return Promise.reject(
+              new Error(
+                `The shared project entry file "${requestedFileNameWithExtension}" was not written successfully.`,
+                { cause: error }
+              )
+            )
+          }
+        }
 
-    return {
-      message: `Successfully imported project within "${projectName}"`,
-      fileName: requestedFileNameWithExtension,
-      projectName,
-      subRoute: '',
-    }
+        return {
+          message: `Successfully imported project within "${projectName}"`,
+          fileName: requestedFileNameWithExtension,
+          projectName,
+          subRoute: '',
+        }
+      })
+    )
   } catch (error) {
     return Promise.reject(
       isErr(error)
@@ -670,7 +1049,10 @@ const sharedBulkDeleteWorkflow = async ({
       file.type === 'kcl'
         ? file.absPath
         : fsZds.join(project.path, file.relPath)
-    await fsZds.rm(absPath)
+    await runWithProjectFilesystemMutationLock(() => fsZds.rm(absPath), {
+      ifAvailable: true,
+      mode: 'shared',
+    })
     totalDeleted += 1
   }
 
@@ -713,7 +1095,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async ({ input: context, signal }) => {
         const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
         const projects: Project[] = []
-        const projectDirectoryPath = context.projectDirectoryPath
+        const projectDirectoryPath =
+          context.projectDirectoryPath === NO_PROJECT_DIRECTORY
+            ? NO_PROJECT_DIRECTORY
+            : fsZds.resolve(context.projectDirectoryPath)
         const canSendProgress = shouldSendProjectFolderReadProgress(
           context.folders
         )
@@ -731,7 +1116,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         await mkdirOrNOOP(projectDirectoryPath)
-        await cleanupStaleDuplicateStagingDirectories(projectDirectoryPath)
+        await cleanupStaleDuplicateArtifacts(projectDirectoryPath)
         const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
           ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
           : new Map()
@@ -750,9 +1135,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             continue
           }
           if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
-            continue
-          }
-          if (await hasDuplicateInProgressMarker(projectPath)) {
             continue
           }
           // getProjectInfo may initialize an empty writable directory with a
@@ -783,18 +1165,32 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           if (signal.aborted) {
             return projects
           }
-          if (await hasDuplicateInProgressMarker(entry.path)) {
-            continue
-          }
           if (await isProjectDirectoryQuarantined(entry.path)) {
             continue
           }
-          const project: Project = await getProjectInfo(
+          let project: Project = await getProjectInfo(
             entry.path,
             await context.wasmInstancePromise
           )
-          if (await hasDuplicateInProgressMarker(entry.path)) {
+          if (await isProjectDirectoryQuarantined(entry.path)) {
             continue
+          }
+          if (
+            project.kcl_file_count === 0 &&
+            project.readWriteAccess &&
+            canReadWriteProjectDirectory
+          ) {
+            // getProjectInfo initializes a writable empty directory's default
+            // file after its first tree walk. Refresh once so a legitimate
+            // empty project appears immediately; ownership evidence above
+            // keeps duplicate reservations out of this path.
+            project = await getProjectInfo(
+              entry.path,
+              await context.wasmInstancePromise
+            )
+            if (project.kcl_file_count === 0) {
+              continue
+            }
           }
           const cloudMetadata = cloudProjectMetadataByPath.get(
             normalizeProjectPathForCloudMetadata(entry.path)
@@ -806,13 +1202,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               cloudMetadata,
               project.metadata.modified
             )
-          }
-          if (
-            project.kcl_file_count === 0 &&
-            project.readWriteAccess &&
-            canReadWriteProjectDirectory
-          ) {
-            continue
           }
           projects.push(project)
           if (
@@ -833,28 +1222,43 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         input: { context: SystemIOContext; requestedProjectName: string }
       }) => {
         const requestedProjectName = input.requestedProjectName
-        const projectDirectoryPath =
+        const configuredProjectDirectoryPath =
           input.context.projectDirectoryPath &&
           input.context.projectDirectoryPath !== NO_PROJECT_DIRECTORY
             ? input.context.projectDirectoryPath
             : undefined
-        const uniqueName = await getUniqueProjectNameForCreate({
-          context: input.context,
-          requestedProjectName,
-          projectDirectoryPath,
-        })
-        await createNewProjectDirectory(
-          uniqueName,
-          await input.context.wasmInstancePromise,
-          undefined,
-          undefined,
-          undefined,
-          projectDirectoryPath
-        )
-        return {
-          message: `Successfully created "${uniqueName}"`,
-          name: uniqueName,
+        const wasmInstance = await input.context.wasmInstancePromise
+        const configuration = await readAppSettingsFile(wasmInstance)
+        const rawProjectDirectoryPath =
+          configuredProjectDirectoryPath ??
+          (await ensureProjectDirectoryExists(configuration))
+        if (!rawProjectDirectoryPath) {
+          return Promise.reject(
+            new Error('Unable to determine the project directory.')
+          )
         }
+        const projectDirectoryPath = fsZds.resolve(rawProjectDirectoryPath)
+        return runWithProjectDirectoryNamespaceLock(projectDirectoryPath, () =>
+          runWithProjectFilesystemMutationLock(async () => {
+            const uniqueName = await getUniqueProjectNameForCreate({
+              context: input.context,
+              requestedProjectName,
+              projectDirectoryPath,
+            })
+            await createNewProjectDirectory(
+              uniqueName,
+              wasmInstance,
+              undefined,
+              configuration,
+              undefined,
+              projectDirectoryPath
+            )
+            return {
+              message: `Successfully created "${uniqueName}"`,
+              name: uniqueName,
+            }
+          })
+        )
       }
     ),
     [SystemIOMachineActors.duplicateProject]: fromPromise(
@@ -885,7 +1289,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             new Error(`Project "${input.projectName}" does not exist`)
           )
         }
-        if (!project.readWriteAccess) {
+        const { value: canReadSourceProject } = await canReadDirectory(
+          project.path
+        )
+        if (!canReadSourceProject) {
           return Promise.reject(
             new Error(
               `Project "${getProjectDisplayName(project)}" cannot be read`
@@ -898,9 +1305,18 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         const projectDirectoryPath = fsZds.resolve(
           input.context.projectDirectoryPath
         )
+        const { value: canWriteProjectDirectory } =
+          await canReadWriteDirectory(projectDirectoryPath)
+        if (!canWriteProjectDirectory) {
+          return Promise.reject(
+            new Error('The project directory cannot be written to.')
+          )
+        }
+        const duplicateToken = v4()
+        const duplicateCreatedAt = Date.now()
         const stagingPath = fsZds.join(
           projectDirectoryPath,
-          `${DUPLICATE_STAGING_PREFIX}${v4()}`
+          `${DUPLICATE_STAGING_PREFIX}${duplicateToken}`
         )
         activeDuplicateStagingPaths.add(stagingPath)
         try {
@@ -911,15 +1327,79 @@ export const systemIOMachineImpl = systemIOMachine.provide({
               try {
                 await fsZds.mkdir(stagingPath)
                 ownsStagingProject = true
-                await fsZds.cp(project.path, stagingPath, {
-                  recursive: true,
-                  force: false,
-                  verbatimSymlinks: true,
+                await fsZds.writeFile(
+                  fsZds.join(stagingPath, DUPLICATE_IN_PROGRESS_FILE_NAME),
+                  serializeDuplicateOwnershipEvidence({
+                    version: DUPLICATE_OWNERSHIP_VERSION,
+                    kind: 'stage',
+                    phase: 'copying',
+                    token: duplicateToken,
+                    createdAt: duplicateCreatedAt,
+                  })
+                )
+                await runWithProjectFilesystemMutationLock(async () => {
+                  let snapshotFailed = false
+                  let snapshotError: unknown
+                  await runCloudSyncWriteTransaction(project.path, async () => {
+                    if (
+                      input.context.app.project &&
+                      fsZds.resolve(input.context.app.project.path) ===
+                        fsZds.resolve(project.path)
+                    ) {
+                      const flushes = Array.from(
+                        input.context.app.project.editors.values(),
+                        (editor) =>
+                          Promise.resolve().then(() =>
+                            editor.flushPendingWriteToFile({
+                              mutationLockAlreadyHeld: true,
+                            })
+                          )
+                      )
+                      flushes.push(
+                        Promise.resolve().then(() =>
+                          flushActiveTextFileWrite({
+                            mutationLockAlreadyHeld: true,
+                          })
+                        )
+                      )
+                      const rejectedFlushes = (
+                        await Promise.allSettled(flushes)
+                      ).filter(
+                        (result): result is PromiseRejectedResult =>
+                          result.status === 'rejected'
+                      )
+                      if (rejectedFlushes.length > 0) {
+                        snapshotFailed = true
+                        snapshotError =
+                          rejectedFlushes.length === 1
+                            ? rejectedFlushes[0].reason
+                            : new AggregateError(
+                                rejectedFlushes.map((result) => result.reason),
+                                'Failed to flush project edits before duplicating'
+                              )
+                      }
+                    }
+                    if (!snapshotFailed) {
+                      try {
+                        await copyProjectDirectoryContents(
+                          project.path,
+                          stagingPath
+                        )
+                      } catch (error) {
+                        snapshotFailed = true
+                        snapshotError = error
+                      }
+                    }
+                  })
+                  if (snapshotFailed) {
+                    return Promise.reject(snapshotError)
+                  }
                 })
 
                 let duplicateName = ''
-                await runWithWebLock(
-                  duplicateWebLockName('directory', projectDirectoryPath),
+                const rejectedDuplicateNames = new Set<string>()
+                await runWithProjectDirectoryNamespaceLock(
+                  projectDirectoryPath,
                   async () => {
                     while (ownsStagingProject) {
                       duplicateName = await getUniqueDuplicateProjectName({
@@ -927,6 +1407,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                         requestedProjectName,
                         fallbackProjectName: project.name,
                         projectDirectoryPath,
+                        rejectedNames: rejectedDuplicateNames,
                       })
                       if (duplicateName.length > MAX_PROJECT_NAME_LENGTH) {
                         return Promise.reject(
@@ -954,49 +1435,75 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                         wasmInstance: await input.context.wasmInstancePromise,
                       })
 
+                      const publicationEvidence =
+                        createDuplicatePublicationEvidence({
+                          token: duplicateToken,
+                          targetName: duplicateName,
+                          createdAt: duplicateCreatedAt,
+                        })
+                      const reservationPath = fsZds.join(
+                        projectDirectoryPath,
+                        publicationEvidence.reservationFileName
+                      )
+
                       let published = false
                       try {
-                        await runCloudSyncWriteTransaction(
-                          targetPath,
-                          async () => {
-                            await fsZds.publishDirectory(
-                              stagingPath,
-                              targetPath,
-                              DUPLICATE_IN_PROGRESS_FILE_NAME
-                            )
-                            // Publication copies rather than renames so the
-                            // destination can be reserved without clobbering
-                            // an empty directory on Node/macOS. From here on,
-                            // the complete target is independent of staging.
-                            ownsStagingProject = false
-                            published = true
-                            await fsZds
-                              .rm(stagingPath, {
-                                recursive: true,
-                                force: true,
-                              })
-                              .catch((cleanupError) => {
-                                console.error(
-                                  'Failed to clean up published duplicate staging directory',
-                                  cleanupError
-                                )
-                              })
-                          },
-                          {
-                            freshProjectIdentity: true,
-                            // Keep the complete copy quarantined until stale
-                            // path-keyed cloud identity has been cleared.
-                            // This runs under the same project lock before
-                            // the final cloud registration.
-                            afterFreshIdentityReset: async () => {
-                              await fsZds.rm(
-                                fsZds.join(
-                                  targetPath,
-                                  DUPLICATE_IN_PROGRESS_FILE_NAME
-                                )
+                        await runWithProjectFilesystemMutationLock(() =>
+                          runCloudSyncWriteTransaction(
+                            targetPath,
+                            async () => {
+                              await fsZds.publishDirectory(
+                                stagingPath,
+                                targetPath,
+                                publicationEvidence
                               )
+                              // Publication copies rather than renames so the
+                              // destination can be reserved without clobbering
+                              // an empty directory on Node/macOS. From here on,
+                              // the complete target is independent of staging.
+                              ownsStagingProject = false
+                              published = true
+                              await fsZds
+                                .rm(stagingPath, {
+                                  recursive: true,
+                                  force: true,
+                                })
+                                .catch((cleanupError) => {
+                                  console.error(
+                                    'Failed to clean up published duplicate staging directory',
+                                    cleanupError
+                                  )
+                                })
                             },
-                          }
+                            {
+                              freshProjectIdentity: true,
+                              // Keep the complete copy quarantined until stale
+                              // path-keyed cloud identity has been cleared.
+                              // This runs under the same project lock before
+                              // the final cloud registration.
+                              afterFreshIdentityReset: async () => {
+                                await finalizeDuplicateTargetMarker(
+                                  fsZds.join(
+                                    targetPath,
+                                    DUPLICATE_IN_PROGRESS_FILE_NAME
+                                  ),
+                                  {
+                                    kind: 'target',
+                                    phase: 'publishing',
+                                    token: duplicateToken,
+                                  }
+                                )
+                                await finalizeDuplicateReservation(
+                                  reservationPath,
+                                  {
+                                    kind: 'reservation',
+                                    phase: 'prepared',
+                                    token: duplicateToken,
+                                  }
+                                )
+                              },
+                            }
+                          )
                         )
                       } catch (error) {
                         // A destination can appear after name selection. Its
@@ -1006,6 +1513,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
                           !published &&
                           isPublishDirectoryDestinationExists(error)
                         ) {
+                          rejectedDuplicateNames.add(duplicateName)
                           continue
                         }
                         return Promise.reject(error)
@@ -1054,71 +1562,83 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return Promise.reject(new Error('no folders'))
         }
 
-        const requestedProjectName = input.requestedProjectName
-        const projectName = input.projectName
-        const project = folders.find((p) => p.name === projectName)
-        const existingDisplayName = project
-          ? getProjectDisplayName(project)
-          : projectName
-        if (project?.cloudProjectId) {
-          const currentProjectPath = fsZds.join(
-            input.context.projectDirectoryPath,
-            projectName
-          )
-          await writeProjectTitleToProjectToml(
-            currentProjectPath,
-            requestedProjectName
-          )
-
-          const newProjectName = getCloudProjectFolderRenameName({
-            title: requestedProjectName,
-            currentName: projectName,
-            folders,
-          })
-          let renamedProjectName = projectName
-          if (newProjectName !== projectName) {
-            await renameProjectDirectory(currentProjectPath, newProjectName)
-              .then(() => {
-                renamedProjectName = newProjectName
-              })
-              .catch(() => undefined)
-          }
-
-          return {
-            message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectName}"`,
-            oldName: projectName,
-            newName: renamedProjectName,
-            redirect: input.redirect,
-          }
-        }
-
-        let newProjectName: string = requestedProjectName
-        if (doesProjectNameNeedInterpolated(requestedProjectName)) {
-          const nextIndex = getNextProjectIndex(requestedProjectName, folders)
-          newProjectName = interpolateProjectNameWithIndex(
-            requestedProjectName,
-            nextIndex
-          )
-        }
-
-        // Toast an error if the project name is taken
-        if (folders.find((p) => p.name === newProjectName)) {
-          return Promise.reject(
-            new Error(`Project with name "${newProjectName}" already exists`)
-          )
-        }
-
-        await renameProjectDirectory(
-          fsZds.join(input.context.projectDirectoryPath, projectName),
-          newProjectName
+        const projectDirectoryPath = fsZds.resolve(
+          input.context.projectDirectoryPath
         )
+        return runWithProjectDirectoryNamespaceLock(projectDirectoryPath, () =>
+          runWithProjectFilesystemMutationLock(async () => {
+            const requestedProjectName = input.requestedProjectName
+            const projectName = input.projectName
+            const project = folders.find((p) => p.name === projectName)
+            const existingDisplayName = project
+              ? getProjectDisplayName(project)
+              : projectName
+            if (project?.cloudProjectId) {
+              const currentProjectPath = fsZds.join(
+                projectDirectoryPath,
+                projectName
+              )
+              await writeProjectTitleToProjectTomlUnlocked(
+                currentProjectPath,
+                requestedProjectName
+              )
 
-        return {
-          message: `Successfully renamed "${existingDisplayName}" to "${newProjectName}"`,
-          oldName: projectName,
-          newName: newProjectName,
-          redirect: input.redirect,
-        }
+              const newProjectName = getCloudProjectFolderRenameName({
+                title: requestedProjectName,
+                currentName: projectName,
+                folders,
+              })
+              let renamedProjectName = projectName
+              if (newProjectName !== projectName) {
+                await renameProjectDirectory(currentProjectPath, newProjectName)
+                  .then(() => {
+                    renamedProjectName = newProjectName
+                  })
+                  .catch(() => undefined)
+              }
+
+              return {
+                message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectName}"`,
+                oldName: projectName,
+                newName: renamedProjectName,
+                redirect: input.redirect,
+              }
+            }
+
+            let newProjectName: string = requestedProjectName
+            if (doesProjectNameNeedInterpolated(requestedProjectName)) {
+              const nextIndex = getNextProjectIndex(
+                requestedProjectName,
+                folders
+              )
+              newProjectName = interpolateProjectNameWithIndex(
+                requestedProjectName,
+                nextIndex
+              )
+            }
+
+            // Toast an error if the project name is taken
+            if (folders.find((p) => p.name === newProjectName)) {
+              return Promise.reject(
+                new Error(
+                  `Project with name "${newProjectName}" already exists`
+                )
+              )
+            }
+
+            await renameProjectDirectory(
+              fsZds.join(projectDirectoryPath, projectName),
+              newProjectName
+            )
+
+            return {
+              message: `Successfully renamed "${existingDisplayName}" to "${newProjectName}"`,
+              oldName: projectName,
+              newName: newProjectName,
+              redirect: input.redirect,
+            }
+          })
+        )
       }
     ),
     [SystemIOMachineActors.deleteProject]: fromPromise(
@@ -1133,14 +1653,18 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           )
         }
 
-        await fsZds.rm(
-          fsZds.join(
-            input.context.projectDirectoryPath,
-            input.requestedProjectName
-          ),
-          {
-            recursive: true,
-          }
+        await runWithProjectFilesystemMutationLock(
+          () =>
+            fsZds.rm(
+              fsZds.join(
+                input.context.projectDirectoryPath,
+                input.requestedProjectName
+              ),
+              {
+                recursive: true,
+              }
+            ),
+          { ifAvailable: true, mode: 'shared' }
         )
 
         return {
@@ -1160,54 +1684,54 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         return Promise.reject(new Error('no folders'))
       }
 
-      let newProjectName = requestedProjectName
-
-      if (!newProjectName) {
-        newProjectName = getUniqueProjectName(
-          input.context.defaultProjectFolderName,
-          folders
-        )
-      }
-
-      const needsInterpolated = doesProjectNameNeedInterpolated(newProjectName)
-      if (needsInterpolated) {
-        const nextIndex = getNextProjectIndex(newProjectName, folders)
-        newProjectName = interpolateProjectNameWithIndex(
-          newProjectName,
-          nextIndex
-        )
-      }
-
-      const wasmInstance = await input.app.wasmPromise
-
-      const baseDir = fsZds.join(
-        input.context.projectDirectoryPath,
-        newProjectName
-      )
-      const { name: newFileName } = await getNextFileName({
-        entryName: requestedFileNameWithExtension,
-        baseDir,
-        wasmInstance,
-      })
-
-      const configuration = await readAppSettingsFile(wasmInstance)
-
-      // Create the project around the file if newProject
-      await createNewProjectDirectory(
-        newProjectName,
-        wasmInstance,
-        requestedCode,
-        configuration,
-        newFileName,
+      const projectDirectoryPath = fsZds.resolve(
         input.context.projectDirectoryPath
       )
+      return runWithProjectDirectoryNamespaceLock(projectDirectoryPath, () =>
+        runWithProjectFilesystemMutationLock(async () => {
+          let newProjectName = requestedProjectName
 
-      return {
-        message: 'Successfully created file.',
-        fileName: newFileName,
-        projectName: newProjectName,
-        subRoute: input.requestedSubRoute || '',
-      }
+          if (
+            !newProjectName ||
+            doesProjectNameNeedInterpolated(newProjectName)
+          ) {
+            newProjectName = await getUniqueProjectNameForCreate({
+              context: input.context,
+              requestedProjectName:
+                newProjectName || input.context.defaultProjectFolderName,
+              projectDirectoryPath,
+            })
+          }
+
+          const wasmInstance = await input.app.wasmPromise
+
+          const baseDir = fsZds.join(projectDirectoryPath, newProjectName)
+          const { name: newFileName } = await getNextFileName({
+            entryName: requestedFileNameWithExtension,
+            baseDir,
+            wasmInstance,
+          })
+
+          const configuration = await readAppSettingsFile(wasmInstance)
+
+          // Create the project around the file if newProject
+          await createNewProjectDirectory(
+            newProjectName,
+            wasmInstance,
+            requestedCode,
+            configuration,
+            newFileName,
+            projectDirectoryPath
+          )
+
+          return {
+            message: 'Successfully created file.',
+            fileName: newFileName,
+            projectName: newProjectName,
+            subRoute: input.requestedSubRoute || '',
+          }
+        })
+      )
     }),
     [SystemIOMachineActors.checkReadWrite]: fromPromise(
       async ({
@@ -1241,7 +1765,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.requestedProjectName,
           input.requestedFileName
         )
-        await fsZds.rm(path)
+        await runWithProjectFilesystemMutationLock(() => fsZds.rm(path), {
+          ifAvailable: true,
+          mode: 'shared',
+        })
         return {
           message: 'File deleted successfully',
           projectName: input.requestedProjectName,
@@ -1466,7 +1993,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
 
-      await fsZds.rename(oldPath, newPath)
+      await runWithProjectFilesystemMutationLock(
+        () => fsZds.rename(oldPath, newPath),
+        { ifAvailable: true, mode: 'shared' }
+      )
 
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
@@ -1533,7 +2063,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }
 
-      await fsZds.rename(oldPath, newPath)
+      await runWithProjectFilesystemMutationLock(
+        () => fsZds.rename(oldPath, newPath),
+        { ifAvailable: true, mode: 'shared' }
+      )
 
       // TODO: remove duplicate state, make `app.project` the source of truth,
       // migrate systemIOMachine into a system that operates on that.
@@ -1563,7 +2096,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName?: string | undefined
         }
       }) => {
-        await fsZds.rm(input.requestedPath, { recursive: true })
+        await runWithProjectFilesystemMutationLock(
+          () => fsZds.rm(input.requestedPath, { recursive: true }),
+          { ifAvailable: true, mode: 'shared' }
+        )
         let response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -1612,7 +2148,10 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           }
           fileContents = new TextEncoder().encode(codeToWrite)
         }
-        await fsZds.writeFile(input.requestedAbsolutePath, fileContents)
+        await runWithProjectFilesystemMutationLock(
+          () => fsZds.writeFile(input.requestedAbsolutePath, fileContents),
+          { ifAvailable: true, mode: 'shared' }
+        )
         return {
           message: `File ${fileNameWithExtension} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -1648,9 +2187,13 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             console.error(e)
           }
         }
-        await fsZds.mkdir(input.requestedAbsolutePath, {
-          recursive: true,
-        })
+        await runWithProjectFilesystemMutationLock(
+          () =>
+            fsZds.mkdir(input.requestedAbsolutePath, {
+              recursive: true,
+            }),
+          { ifAvailable: true, mode: 'shared' }
+        )
         return {
           message: `Folder ${folderName} written successfully`,
           requestedAbsolutePath: input.requestedAbsolutePath,
@@ -1667,10 +2210,14 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           target: string
         }
       }) => {
-        await fsZds.cp(input.src, input.target, {
-          recursive: true,
-          force: false,
-        })
+        await runWithProjectFilesystemMutationLock(
+          async () =>
+            fsZds.cp(input.src, input.target, {
+              recursive: true,
+              force: false,
+            }),
+          { ifAvailable: true, mode: 'shared' }
+        )
         return {
           message: 'Copied successfully',
           requestedAbsolutePath: '',
@@ -1693,10 +2240,14 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         // really used in our archive/restore workflow. We should make
         // dedicated archive/restore code paths for that if we need cases
         // where we want to check with the user before going through with forcing.
-        await moveRecursivePath({
-          src: input.src,
-          target: input.target,
-        })
+        await runWithProjectFilesystemMutationLock(
+          () =>
+            moveRecursivePath({
+              src: input.src,
+              target: input.target,
+            }),
+          { ifAvailable: true, mode: 'shared' }
+        )
         return {
           message: input.successMessage || 'Moved successfully',
           requestedAbsolutePath: '',

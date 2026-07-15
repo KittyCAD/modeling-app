@@ -3,6 +3,10 @@ import { signal } from '@preact/signals-core'
 import { EDITABLE_TEXT_FILE_EXTENSIONS } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
+import {
+  ProjectFilesystemMutationBusyError,
+  runWithProjectFilesystemMutationLock,
+} from '@src/lib/projectDirectoryNamespaceLock'
 import { reportRejection } from '@src/lib/trap'
 
 /**
@@ -57,6 +61,21 @@ let latestOpenRequestId = 0
  */
 let pendingWrite: { path: string; text: string } | null = null
 let pendingWriteTimeout: ReturnType<typeof setTimeout> | undefined
+let inFlightWritePromise: Promise<void> | undefined
+
+function schedulePendingWriteRetry() {
+  if (pendingWriteTimeout !== undefined || !pendingWrite) {
+    return
+  }
+  pendingWriteTimeout = setTimeout(() => {
+    pendingWriteTimeout = undefined
+    void flushActiveTextFileWrite().catch((error) => {
+      if (!(error instanceof ProjectFilesystemMutationBusyError)) {
+        reportRejection(error)
+      }
+    })
+  }, WRITE_DEBOUNCE_MS)
+}
 
 /** Whether a file at `path` can be opened + edited as plain text in the code pane. */
 export function isEditableTextFile(path: string): boolean {
@@ -64,18 +83,26 @@ export function isEditableTextFile(path: string): boolean {
   return EDITABLE_TEXT_FILE_EXTENSIONS.some((ext) => lower.endsWith(ext))
 }
 
-async function performWrite(path: string, text: string): Promise<void> {
+async function performWrite(
+  path: string,
+  text: string,
+  mutationLockAlreadyHeld = false
+): Promise<void> {
   try {
-    await fsZds.writeFile(path, encoder.encode(text))
+    const write = () => fsZds.writeFile(path, encoder.encode(text))
+    await (mutationLockAlreadyHeld
+      ? write()
+      : runWithProjectFilesystemMutationLock(write, {
+          ifAvailable: true,
+          mode: 'shared',
+        }))
   } catch (error) {
     // The file may have been deleted/moved out from under us (e.g. via the
     // file tree). Don't recreate it or surface a scary error in that case.
     if (isPathNotFoundError(error)) {
       return
     }
-    // Surface (but never throw) so a transient auto-save failure can't turn into
-    // an unhandled rejection.
-    reportRejection(error)
+    return Promise.reject(error)
   }
 }
 
@@ -84,15 +111,47 @@ async function performWrite(path: string, text: string): Promise<void> {
  * different file (or clearing) so edits typed within the debounce window aren't
  * lost. Writes to the pending write's own path, not the currently-active file.
  */
-export async function flushActiveTextFileWrite(): Promise<void> {
+export async function flushActiveTextFileWrite(
+  options: { mutationLockAlreadyHeld?: boolean } = {}
+): Promise<void> {
   if (pendingWriteTimeout !== undefined) {
     clearTimeout(pendingWriteTimeout)
     pendingWriteTimeout = undefined
   }
-  const write = pendingWrite
-  pendingWrite = null
-  if (write) {
-    await performWrite(write.path, write.text)
+  while (inFlightWritePromise || pendingWrite) {
+    if (inFlightWritePromise) {
+      const activeWrite = inFlightWritePromise
+      await activeWrite
+      if (inFlightWritePromise === activeWrite) {
+        inFlightWritePromise = undefined
+      }
+      continue
+    }
+
+    const write = pendingWrite
+    if (!write) {
+      continue
+    }
+    pendingWrite = null
+    const writePromise = performWrite(
+      write.path,
+      write.text,
+      options.mutationLockAlreadyHeld
+    )
+    inFlightWritePromise = writePromise
+    try {
+      await writePromise
+    } catch (error) {
+      if (error instanceof ProjectFilesystemMutationBusyError) {
+        pendingWrite ??= write
+        schedulePendingWriteRetry()
+      }
+      return Promise.reject(error)
+    } finally {
+      if (inFlightWritePromise === writePromise) {
+        inFlightWritePromise = undefined
+      }
+    }
   }
 }
 
@@ -112,18 +171,18 @@ export function scheduleActiveTextFileWrite(path: string, text: string): void {
   }
   pendingWriteTimeout = setTimeout(() => {
     pendingWriteTimeout = undefined
-    const write = pendingWrite
-    pendingWrite = null
-    if (write) {
-      void performWrite(write.path, write.text)
-    }
+    void flushActiveTextFileWrite().catch((error) => {
+      if (!(error instanceof ProjectFilesystemMutationBusyError)) {
+        reportRejection(error)
+      }
+    })
   }, WRITE_DEBOUNCE_MS)
 }
 
 /** Clear the active text file, persisting any pending edits first. */
 export function clearActiveTextFile(): void {
   // Fire-and-forget so this stays synchronous for React cleanup callers.
-  void flushActiveTextFileWrite()
+  void flushActiveTextFileWrite().catch(reportRejection)
   latestOpenRequestId += 1
   activeTextFileSignal.value = null
 }

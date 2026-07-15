@@ -27,9 +27,12 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
+import {
+  runWithProjectDirectoryNamespaceLock,
+  runWithProjectFilesystemMutationLock,
+} from '@src/lib/projectDirectoryNamespaceLock'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
-import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
 import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
@@ -43,6 +46,16 @@ export type CreateFileSchemaMethodOptional = Omit<
   'method'
 > & {
   method?: 'newProject' | 'existingProject'
+}
+
+function isAlreadyExistsError(error: unknown) {
+  return (
+    error === 'EEXIST' ||
+    (typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      error.code === 'EEXIST')
+  )
 }
 
 /**
@@ -225,56 +238,83 @@ export function useQueryParamEffects(kclManager: KclManager) {
 
     await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
-    const systemIOContext = app.systemIOActor.getSnapshot().context
     const projectDirectoryPath = app.settings.get().app.projectDirectory.current
     if (!projectDirectoryPath) {
       return new Error('Unable to determine the project directory.')
     }
 
     if (isDesktop()) {
-      const projectDirectoryEntries = await fsZds.readdir(projectDirectoryPath)
-      const requestedProjectName = getUniqueProjectName(
-        projectName,
-        projectDirectoryEntries.map((name) => ({
-          name,
-          path: fsZds.join(projectDirectoryPath, name),
-          children: [],
-        }))
+      return runWithProjectDirectoryNamespaceLock(projectDirectoryPath, () =>
+        runWithProjectFilesystemMutationLock(
+          async () => {
+            const normalizedProjectName = projectName.normalize('NFC')
+            while (true) {
+              const projectDirectoryEntries =
+                await fsZds.readdir(projectDirectoryPath)
+              const requestedProjectName = getUniqueProjectName(
+                normalizedProjectName,
+                projectDirectoryEntries.map((name) => ({
+                  name: name.normalize('NFC'),
+                  path: fsZds.join(projectDirectoryPath, name),
+                  children: [],
+                }))
+              )
+              try {
+                await fsZds.mkdir(
+                  fsZds.join(projectDirectoryPath, requestedProjectName)
+                )
+              } catch (error) {
+                // A separate desktop process does not share Web Locks. Its
+                // exclusive mkdir remains authoritative, so allocate again.
+                if (isAlreadyExistsError(error)) continue
+                return Promise.reject(error)
+              }
+              return {
+                requestedProjectName,
+                requestedSubDirectoryName: projectName,
+              }
+            }
+          },
+          { ifAvailable: true, mode: 'shared' }
+        )
       )
-      await fsZds.mkdir(
-        fsZds.join(projectDirectoryPath, requestedProjectName),
-        {
-          recursive: true,
-        }
-      )
-      return {
-        requestedProjectName,
-        requestedSubDirectoryName: projectName,
-      }
     }
 
     const requestedProjectName =
       app.settings.actor.getSnapshot().context.currentProject?.name ??
       DEFAULT_WEB_PROJECT_NAME
-    const requestedSubDirectoryName = getUniqueProjectName(
-      projectName,
-      getAllSubDirectoriesAtProjectRoot(systemIOContext, {
-        projectFolderName: requestedProjectName,
-      })
+    const projectRoot = fsZds.join(projectDirectoryPath, requestedProjectName)
+    return runWithProjectDirectoryNamespaceLock(projectRoot, () =>
+      runWithProjectFilesystemMutationLock(
+        async () => {
+          const normalizedProjectName = projectName.normalize('NFC')
+          while (true) {
+            const projectEntries = await fsZds.readdir(projectRoot)
+            const requestedSubDirectoryName = getUniqueProjectName(
+              normalizedProjectName,
+              projectEntries.map((name) => ({
+                name: name.normalize('NFC'),
+                path: fsZds.join(projectRoot, name),
+                children: [],
+              }))
+            )
+            try {
+              await fsZds.mkdir(
+                fsZds.join(projectRoot, requestedSubDirectoryName)
+              )
+            } catch (error) {
+              if (isAlreadyExistsError(error)) continue
+              return Promise.reject(error)
+            }
+            return {
+              requestedProjectName,
+              requestedSubDirectoryName,
+            }
+          }
+        },
+        { ifAvailable: true, mode: 'shared' }
+      )
     )
-    await fsZds.mkdir(
-      fsZds.join(
-        projectDirectoryPath,
-        requestedProjectName,
-        requestedSubDirectoryName
-      ),
-      { recursive: true }
-    )
-
-    return {
-      requestedProjectName,
-      requestedSubDirectoryName,
-    }
   }
 
   /**

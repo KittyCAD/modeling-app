@@ -16,7 +16,7 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
   const { commands } = useApp()
   const commandBarState = commands.useState()
   const {
-    context: { currentArgument },
+    context: { currentArgument, selectedCommand },
   } = commandBarState
 
   function onSubmit(data: unknown) {
@@ -45,6 +45,13 @@ function CommandBarArgument({ stepBack }: { stepBack: () => void }) {
     currentArgument && (
       <CommandBarHeaderFooter stepBack={stepBack} clear={clear}>
         <ArgumentInput
+          key={JSON.stringify([
+            selectedCommand?.id,
+            selectedCommand?.groupId,
+            selectedCommand?.name,
+            currentArgument.name,
+            currentArgument.inputType,
+          ])}
           arg={currentArgument}
           stepBack={stepBack}
           onSubmit={onSubmit}

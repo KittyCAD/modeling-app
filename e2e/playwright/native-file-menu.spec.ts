@@ -245,6 +245,7 @@ test.describe(
     test('Modeling page', async ({
       tronApp,
       cmdBar,
+      fs,
       nativeMenu,
       page,
       homePage,
@@ -254,10 +255,25 @@ test.describe(
         throwTronAppMissing()
         return
       }
-      await homePage.goToModelingScene()
+      const sourceProjectName = 'native-menu-duplicate-source'
+      const duplicateProjectName = 'native-menu-duplicate-copy'
+      const proofContents = 'nested duplicate proof'
+      await homePage.goToModelingScene(sourceProjectName)
       await scene.settled()
       await scene.connectionEstablished()
       await scene.isNativeFileMenuCreated()
+
+      const sourceProofDirectory = await fs.join(
+        tronApp.projectDirName,
+        sourceProjectName,
+        'source',
+        'nested'
+      )
+      await fs.mkdir(sourceProofDirectory, { recursive: true })
+      await fs.writeFile(
+        await fs.join(sourceProofDirectory, 'copy-proof.txt'),
+        new TextEncoder().encode(proofContents)
+      )
 
       await test.step('Modeling.File.New window', async () => {
         await expectNewWindowMenuItem(nativeMenu)
@@ -272,6 +288,28 @@ test.describe(
         await page.waitForTimeout(250)
         await nativeMenu.click('File.Duplicate project')
         await cmdBar.expectCommandName('Duplicate project')
+        await cmdBar.expectArgValue(sourceProjectName)
+        await cmdBar.argumentInput.fill(duplicateProjectName)
+        await cmdBar.progressCmdBar()
+        await cmdBar.toBeClosed()
+        await expect(page.getByTestId('app-header-project-name')).toHaveText(
+          duplicateProjectName
+        )
+
+        const duplicateProofPath = await fs.join(
+          tronApp.projectDirName,
+          duplicateProjectName,
+          'source',
+          'nested',
+          'copy-proof.txt'
+        )
+        await expect
+          .poll(async () =>
+            fs
+              .readFile(duplicateProofPath, { encoding: 'utf-8' })
+              .catch(() => undefined)
+          )
+          .toBe(proofContents)
       })
       await test.step('Modeling.File.Open project', async () => {
         await page.waitForTimeout(250)

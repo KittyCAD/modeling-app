@@ -4,6 +4,7 @@ import type { Stats } from 'fs'
 import type fs from 'node:fs/promises'
 import type path from 'path'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
+import type { DuplicatePublicationEvidence } from '@src/lib/fs-zds/duplicateReservations'
 import type { PluginIpcChannel } from '@src/registry/pluginIpc'
 import type { dialog, shell } from 'electron'
 import type { WebContentSendPayload } from 'menu/channels'
@@ -66,7 +67,7 @@ export interface IElectronAPI {
   publishDirectory: (
     sourcePath: string,
     targetPath: string,
-    inProgressMarkerName: string
+    evidence: DuplicatePublicationEvidence
   ) => Promise<void>
   // No such thing as fs.mv, but our function will use fs.cp as a fallback
   move: (

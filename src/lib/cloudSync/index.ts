@@ -113,12 +113,12 @@ export function installCloudSyncFileSystemObserver(
   const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
     sourcePath,
     targetPath,
-    inProgressMarkerName
+    evidence
   ) => {
     const result = await localFs.publishDirectory(
       sourcePath,
       targetPath,
-      inProgressMarkerName
+      evidence
     )
     await notifyCloudSyncWriteLikeMutation(targetPath)
     return result

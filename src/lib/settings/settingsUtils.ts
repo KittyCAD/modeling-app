@@ -15,9 +15,10 @@ import {
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
-  writeProjectSettingsFile,
+  writeProjectSettingsFileUnlocked,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
+import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import type {
   LayoutWithMetadata,
   LayoutsWithMetadata,
@@ -958,7 +959,10 @@ export async function loadAndValidateSettings(
         )
       }
 
-      await writeProjectSettingsFile(projectPath, projectTomlString)
+      await runWithProjectFilesystemMutationLock(
+        () => writeProjectSettingsFileUnlocked(projectPath, projectTomlString),
+        { ifAvailable: true, mode: 'shared' }
+      )
     }
 
     const projectSettingsPayload = projectSettings
@@ -1084,7 +1088,10 @@ export async function saveSettings(
   }
 
   // Write the project settings.
-  await writeProjectSettingsFile(projectPath, projectTomlString)
+  await runWithProjectFilesystemMutationLock(
+    () => writeProjectSettingsFileUnlocked(projectPath, projectTomlString),
+    { ifAvailable: true, mode: 'shared' }
+  )
 }
 
 export function getChangedSettingsAtLevel(

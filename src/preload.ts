@@ -7,10 +7,7 @@ import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
 import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
-import {
-  isAlreadyExistsError,
-  PUBLISH_DIRECTORY_DESTINATION_EXISTS,
-} from '@src/lib/fs-zds/errors'
+import { publishDirectory as publishDirectoryWithNodeFs } from '@src/lib/fs-zds/nodefs'
 
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
@@ -144,47 +141,7 @@ const watchFileOff = (path: string, key: string) => {
 }
 const readFile = fs.readFile
 const rename = (prev: string, next: string) => fs.rename(prev, next)
-export const publishDirectory = async (
-  sourcePath: string,
-  targetPath: string,
-  inProgressMarkerName: string
-) => {
-  // Reserve the destination without relying on rename: Node replaces an
-  // existing empty directory on some platforms (including macOS).
-  try {
-    await fs.mkdir(targetPath)
-  } catch (error) {
-    return Promise.reject(
-      isAlreadyExistsError(error) ? PUBLISH_DIRECTORY_DESTINATION_EXISTS : error
-    )
-  }
-
-  const markerPath = path.join(targetPath, inProgressMarkerName)
-  try {
-    await fs.writeFile(markerPath, new Uint8Array(), { flag: 'wx' })
-  } catch (error) {
-    // Do not delete by pathname: another process could have replaced the
-    // reservation after mkdir. No content copy starts without the marker, so
-    // a markerless failure can leave only an empty quarantined directory.
-    return Promise.reject(error)
-  }
-
-  for (const entryName of await fs.readdir(sourcePath)) {
-    if (entryName === inProgressMarkerName) {
-      continue
-    }
-    await fs.cp(
-      path.join(sourcePath, entryName),
-      path.join(targetPath, entryName),
-      {
-        recursive: true,
-        force: false,
-        errorOnExist: true,
-        verbatimSymlinks: true,
-      }
-    )
-  }
-}
+export const publishDirectory = publishDirectoryWithNodeFs
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')

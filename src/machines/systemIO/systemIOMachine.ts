@@ -830,6 +830,21 @@ export const systemIOMachine = setup({
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
+  // A duplicate request can arrive from several surfaces while another
+  // filesystem actor is still running. Keep one request queued instead of
+  // silently dropping it; the idle entry below replays it once the active
+  // operation and any required folder refresh have completed.
+  on: {
+    [SystemIOMachineEvents.duplicateProject]: [
+      {
+        guard: SystemIOMachineGuards.projectNameIsValidLength,
+        actions: [SystemIOMachineActions.deferSystemIOEvent],
+      },
+      {
+        actions: [SystemIOMachineActions.toastProjectNameTooLong],
+      },
+    ],
+  },
   // Remember, this machine and change its projectDirectory at any point
   // '' will be no project directory, aka clear this machine out!
   // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
@@ -861,6 +876,7 @@ export const systemIOMachine = setup({
   }),
   states: {
     [SystemIOMachineStates.idle]: {
+      entry: [SystemIOMachineActions.flushDeferredSystemIOEvent],
       on: {
         // on can be an action
         [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
@@ -1471,7 +1487,10 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [SystemIOMachineActions.flushDeferredSystemIOEvent],
+          actions: [
+            SystemIOMachineActions.setReadWriteProjectDirectory,
+            SystemIOMachineActions.flushDeferredSystemIOEvent,
+          ],
         },
         onError: {
           target: SystemIOMachineStates.readingFolders,

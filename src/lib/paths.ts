@@ -111,22 +111,37 @@ export function parseProjectRoute(
   let currentFileName = null
   let currentFilePath = null
   const projectDirectory = getProjectDirectorySetting(configuration)
-  if (projectDirectory && id.startsWith(projectDirectory)) {
-    const relativeToRoot = fsZds.relative(projectDirectory, id)
+  const resolvedId = fsZds.resolve(id)
+  const resolvedProjectDirectory = projectDirectory
+    ? fsZds.resolve(projectDirectory)
+    : undefined
+  const comparisonKey = (value: string) =>
+    fsZds.sep === '\\' ? value.toLowerCase() : value
+  const resolvedIdKey = comparisonKey(resolvedId)
+  const resolvedProjectDirectoryKey = resolvedProjectDirectory
+    ? comparisonKey(resolvedProjectDirectory)
+    : undefined
+  const idIsInProjectDirectory = Boolean(
+    resolvedProjectDirectoryKey &&
+      (resolvedIdKey === resolvedProjectDirectoryKey ||
+        resolvedIdKey.startsWith(`${resolvedProjectDirectoryKey}${fsZds.sep}`))
+  )
+  if (resolvedProjectDirectory && idIsInProjectDirectory) {
+    const relativeToRoot = fsZds.relative(resolvedProjectDirectory, resolvedId)
     projectName = relativeToRoot.split(fsZds.sep)[0]
-    projectPath = fsZds.join(projectDirectory, projectName)
+    projectPath = fsZds.join(resolvedProjectDirectory, projectName)
     projectName = projectName === '' ? null : projectName
   } else {
-    projectPath = id
-    if (fsZds.extname(id) === '.kcl') {
-      projectPath = fsZds.dirname(id)
+    projectPath = resolvedId
+    if (fsZds.extname(resolvedId) === '.kcl') {
+      projectPath = fsZds.dirname(resolvedId)
     }
     projectName = fsZds.basename(projectPath)
   }
 
-  if (projectPath !== id) {
-    currentFileName = fsZds.basename(id)
-    currentFilePath = id
+  if (projectPath !== resolvedId) {
+    currentFileName = fsZds.basename(resolvedId)
+    currentFilePath = resolvedId
   }
 
   return {

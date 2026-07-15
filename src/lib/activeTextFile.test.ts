@@ -46,6 +46,7 @@ beforeEach(async () => {
 
 afterEach(() => {
   vi.useRealTimers()
+  vi.unstubAllGlobals()
 })
 
 describe('isEditableTextFile', () => {
@@ -203,6 +204,61 @@ describe('flushActiveTextFileWrite', () => {
     // The debounce timer must not fire a second (duplicate) write.
     await vi.advanceTimersByTimeAsync(1000)
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
+  })
+
+  it('awaits an in-flight timer write and then persists the latest edit once', async () => {
+    vi.useFakeTimers()
+    mocks.readFile.mockResolvedValueOnce('initial')
+    await mod.openActiveTextFile('/proj/readme.md')
+    let finishFirstWrite!: () => void
+    mocks.writeFile.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finishFirstWrite = resolve
+        })
+    )
+
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'first')
+    await vi.advanceTimersByTimeAsync(1000)
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'latest')
+    const flush = mod.flushActiveTextFileWrite()
+    await flushMicrotasks()
+    expect(mocks.writeFile).toHaveBeenCalledTimes(1)
+
+    finishFirstWrite()
+    await flush
+    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
+    expect(decode(mocks.writeFile.mock.calls[1][1])).toBe('latest')
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
+  })
+
+  it('retries a busy write and preserves a newer pending edit', async () => {
+    vi.useFakeTimers()
+    mocks.readFile.mockResolvedValueOnce('initial')
+    await mod.openActiveTextFile('/proj/readme.md')
+    let lockAvailable = false
+    const request = vi.fn(
+      async (
+        _name: string,
+        _options: LockOptions,
+        callback: (lock: Lock | null) => Promise<void>
+      ) => callback(lockAvailable ? ({} as Lock) : null)
+    )
+    vi.stubGlobal('navigator', { locks: { request } })
+
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'blocked')
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mocks.writeFile).not.toHaveBeenCalled()
+
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'latest')
+    lockAvailable = true
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(mocks.writeFile).toHaveBeenCalledTimes(1)
+    expect(decode(mocks.writeFile.mock.calls[0][1])).toBe('latest')
+    expect(request).toHaveBeenCalledTimes(2)
   })
 })
 

@@ -15,6 +15,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import { projectHasReadAccess } from '@src/lib/projectPermissions'
 import type { IndexLoaderData } from '@src/lib/types'
 import {
   findKeymapItemForCommand,
@@ -237,6 +238,10 @@ function ProjectMenuPopover({
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
+  const canWriteProjectDirectory = useSelector(
+    app.systemIOActor,
+    (state) => state.context.canReadWriteProjectDirectory.value
+  )
   const projectPath = project?.path
   const contributedProjectMenuItems = app.registry.signal(
     projectExplorerProjectMenuItemsValueSpec
@@ -301,7 +306,9 @@ function ProjectMenuPopover({
                   Duplicate project
                 </span>
               ),
-              disabled: !project.readWriteAccess,
+              disabled:
+                !projectHasReadAccess(project) || !canWriteProjectDirectory,
+              tabIndex: 0,
               onClick: () => {
                 commands.send({
                   type: 'Find and select command',
@@ -309,6 +316,7 @@ function ProjectMenuPopover({
                     ...duplicateProjectCommandInfo,
                     argDefaultValues: {
                       name: project.name,
+                      newName: getProjectDisplayName(project),
                     },
                   },
                 })
@@ -496,6 +504,7 @@ function ProjectMenuPopover({
       navigate,
       projectSettingsKeybinding,
       settings.actor,
+      canWriteProjectDirectory,
     ]
   )
 

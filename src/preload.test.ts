@@ -1,9 +1,12 @@
 import path from 'node:path'
+import { createDuplicatePublicationEvidence } from '@src/lib/fs-zds/duplicateReservations'
 import { PUBLISH_DIRECTORY_DESTINATION_EXISTS } from '@src/lib/fs-zds/errors'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const fsPromisesMock = vi.hoisted(() => ({
   rename: vi.fn(),
+  open: vi.fn(),
+  lstat: vi.fn(),
   stat: vi.fn(),
   mkdir: vi.fn(),
   cp: vi.fn(),
@@ -44,13 +47,64 @@ vi.mock('chokidar', () => ({
 import { move, openExternal, publishDirectory } from '@src/preload'
 
 describe('publishDirectory', () => {
+  const evidence = createDuplicatePublicationEvidence({
+    token: '11111111-1111-4111-8111-111111111111',
+    targetName: 'destination',
+    createdAt: 1,
+  })
+  const reservationPath = evidence.reservationFileName
+  const markerPath = path.join('destination', evidence.markerName)
+  let contents: Map<string, Uint8Array>
+
   beforeEach(() => {
     vi.clearAllMocks()
+    contents = new Map()
+    const createHandle = (filePath: string, identity: number) => {
+      let handleContents = new Uint8Array()
+      return {
+        truncate: vi.fn(async (size = 0) => {
+          const resized = new Uint8Array(size)
+          resized.set(handleContents.subarray(0, size))
+          handleContents = resized
+          contents.set(filePath, handleContents)
+        }),
+        write: vi.fn(async (data: Uint8Array) => {
+          handleContents = Uint8Array.from(data)
+          contents.set(filePath, handleContents)
+          return { bytesWritten: data.byteLength, buffer: data }
+        }),
+        read: vi.fn(async (buffer: Uint8Array) => {
+          buffer.set(handleContents)
+          return { bytesRead: handleContents.byteLength, buffer }
+        }),
+        sync: vi.fn(async () => undefined),
+        stat: vi.fn(async () => ({
+          dev: 1,
+          ino: identity,
+          size: handleContents.byteLength,
+        })),
+        close: vi.fn(async () => undefined),
+      }
+    }
+    fsPromisesMock.open.mockImplementation(async (filePath: string) =>
+      createHandle(filePath, filePath === reservationPath ? 1 : 2)
+    )
+    fsPromisesMock.lstat.mockImplementation(async (filePath: string) => {
+      const isTarget = filePath === 'destination'
+      return {
+        dev: 1,
+        ino: isTarget ? 3 : filePath === reservationPath ? 1 : 2,
+        isDirectory: () => isTarget,
+        isFile: () => !isTarget,
+        isSymbolicLink: () => false,
+      }
+    })
     fsPromisesMock.mkdir.mockResolvedValue(undefined)
-    fsPromisesMock.writeFile.mockResolvedValue(undefined)
     fsPromisesMock.readdir.mockResolvedValue(['first.kcl', 'second.kcl'])
     fsPromisesMock.cp.mockResolvedValue(undefined)
-    fsPromisesMock.rm.mockResolvedValue(undefined)
+    fsPromisesMock.rm.mockImplementation(async (filePath: string) => {
+      contents.delete(filePath)
+    })
   })
 
   it('does not modify an existing empty destination', async () => {
@@ -60,12 +114,13 @@ describe('publishDirectory', () => {
     fsPromisesMock.mkdir.mockRejectedValueOnce(collision)
 
     await expect(
-      publishDirectory('staging', 'destination', '.in-progress')
+      publishDirectory('staging', 'destination', evidence)
     ).rejects.toBe(PUBLISH_DIRECTORY_DESTINATION_EXISTS)
 
-    expect(fsPromisesMock.writeFile).not.toHaveBeenCalled()
     expect(fsPromisesMock.cp).not.toHaveBeenCalled()
-    expect(fsPromisesMock.rm).not.toHaveBeenCalled()
+    expect(fsPromisesMock.rm).toHaveBeenCalledWith(reservationPath, {
+      force: true,
+    })
   })
 
   it('leaves its marker and destination intact when copying fails', async () => {
@@ -75,14 +130,10 @@ describe('publishDirectory', () => {
       .mockRejectedValueOnce(copyFailure)
 
     await expect(
-      publishDirectory('staging', 'destination', '.in-progress')
+      publishDirectory('staging', 'destination', evidence)
     ).rejects.toBe(copyFailure)
 
-    expect(fsPromisesMock.writeFile).toHaveBeenCalledWith(
-      path.join('destination', '.in-progress'),
-      expect.any(Uint8Array),
-      { flag: 'wx' }
-    )
+    expect(fsPromisesMock.open).toHaveBeenCalledWith(markerPath, 'wx+')
     expect(fsPromisesMock.cp).toHaveBeenNthCalledWith(
       1,
       path.join('staging', 'first.kcl'),
@@ -99,10 +150,13 @@ describe('publishDirectory', () => {
 
   it('preserves its reservation when marker creation fails', async () => {
     const markerFailure = new Error('simulated marker failure')
-    fsPromisesMock.writeFile.mockRejectedValueOnce(markerFailure)
+    const openFile = fsPromisesMock.open.getMockImplementation()
+    fsPromisesMock.open
+      .mockImplementationOnce(openFile!)
+      .mockRejectedValueOnce(markerFailure)
 
     await expect(
-      publishDirectory('staging', 'destination', '.in-progress')
+      publishDirectory('staging', 'destination', evidence)
     ).rejects.toBe(markerFailure)
 
     expect(fsPromisesMock.readdir).not.toHaveBeenCalled()
@@ -111,10 +165,10 @@ describe('publishDirectory', () => {
   })
 
   it('keeps the marker after a complete copy for transaction finalization', async () => {
-    await publishDirectory('staging', 'destination', '.in-progress')
+    await publishDirectory('staging', 'destination', evidence)
 
     expect(fsPromisesMock.cp).toHaveBeenCalledTimes(2)
-    expect(fsPromisesMock.writeFile.mock.invocationCallOrder[0]).toBeLessThan(
+    expect(fsPromisesMock.open.mock.invocationCallOrder[0]).toBeLessThan(
       fsPromisesMock.cp.mock.invocationCallOrder[0]
     )
     expect(fsPromisesMock.rm).not.toHaveBeenCalled()

@@ -37,6 +37,7 @@ export interface HomeProjectEntry {
   defaultFile?: string
   kclFileCount?: number
   directoryCount?: number
+  readAccess?: boolean
   readWriteAccess: boolean
   thumbnail?: HomeProjectThumbnail
   conflict?: unknown
@@ -129,6 +130,7 @@ function mergeHomeProjectEntries(
     conflict,
     modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
     thumbnail: local.thumbnail ?? remote.thumbnail,
+    readAccess: local.readAccess ?? local.readWriteAccess,
     readWriteAccess: local.readWriteAccess,
   }
 }

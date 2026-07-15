@@ -5,6 +5,7 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
+import { ProjectFilesystemMutationBusyError } from '@src/lib/projectDirectoryNamespaceLock'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import {
@@ -575,6 +576,47 @@ describe('KclManager diagnostics', () => {
 
     readSpy.mockRestore()
     watchSpy.mockRestore()
+  })
+
+  it('persists a busy pending write before retargeting the singleton editor', async () => {
+    vi.useFakeTimers()
+    const sourcePath = '/tmp/source/main.kcl'
+    const duplicatePath = '/tmp/source copy/main.kcl'
+    const { kclManager } = createKclManagerTestHarness('source base')
+    const systemDeps = (kclManager as any).systemDeps
+    kclManager.path = sourcePath
+    ;(kclManager as any).markFileCodeAsSynced('source base')
+    let writeIsBusy = true
+    const writes: { path: string; code: string }[] = []
+    vi.spyOn(File.ioImplementations, 'read').mockImplementation(async (path) =>
+      path === sourcePath ? 'source base' : 'duplicate base'
+    )
+    vi.spyOn(File.ioImplementations, 'write').mockImplementation(
+      async (path, code) => {
+        if (writeIsBusy) {
+          return Promise.reject(new ProjectFilesystemMutationBusyError())
+        }
+        writes.push({ path, code })
+      }
+    )
+
+    const pendingWrite = kclManager.writeToFile('source edit')
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(writes).toEqual([])
+
+    writeIsBusy = false
+    await KclManager.fromFile(
+      new File(duplicatePath, 2),
+      systemDeps,
+      kclManager,
+      'duplicate base'
+    )
+    await pendingWrite
+
+    expect(writes).toEqual([{ path: sourcePath, code: 'source edit' }])
+    expect(kclManager.path).toBe(duplicatePath)
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(writes).toHaveLength(1)
   })
 
   it('refreshes derived state when restoring cached editor state for a reopened file', async () => {
