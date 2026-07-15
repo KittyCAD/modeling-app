@@ -626,7 +626,7 @@ solid001 = subtract(extrude001, tools = extrude002)`
     })
 
     it('should add a deleteFace call with region wall and cap expressions', async () => {
-      const sketchBlockExtrude = `@settings(experimentalFeatures = allow)
+      const sketchBlockExtrude = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = YZ) {
   line1 = line(start = [var -3.08mm, var 1.16mm], end = [var 3.41mm, var 1.16mm])
@@ -701,7 +701,7 @@ extrude001 = extrude(region001, length = 5)`
     })
 
     it('should add a deleteFace call on a chamfer edgeCut face from sketch block code', async () => {
-      const chamferEdgeCutCode = `@settings(experimentalFeatures = allow)
+      const chamferEdgeCutCode = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0.52mm, var 0.57mm], end = [var 3.88mm, var 0.77mm])

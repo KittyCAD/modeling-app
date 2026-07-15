@@ -1438,7 +1438,7 @@ baseExtrusion = extrude(sketch001, length = width)
 
 #[tokio::test(flavor = "multi_thread")]
 async fn kcl_test_delete_face_on_chamfer_edgecut() {
-    let code = r#"@settings(experimentalFeatures = allow)
+    let code = r#"@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0.52mm, var 0.57mm], end = [var 3.88mm, var 0.77mm])
