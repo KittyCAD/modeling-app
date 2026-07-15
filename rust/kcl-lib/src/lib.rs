@@ -71,6 +71,7 @@ mod lsp;
 mod modules;
 mod parsing;
 mod project;
+mod runtime_flags;
 mod settings;
 #[cfg(test)]
 mod simulation_tests;
@@ -141,6 +142,10 @@ pub use parsing::ast::types::NodePath;
 pub use parsing::ast::types::NodePathExt;
 pub use parsing::ast::types::Step as NodePathStep;
 pub use project::ProjectManager;
+pub use runtime_flags::KclRuntimeFlags;
+pub use runtime_flags::RuntimeFlag;
+pub use runtime_flags::kcl_runtime_flags;
+pub use runtime_flags::set_kcl_runtime_flags;
 pub use settings::types::Configuration;
 pub use settings::types::project::ProjectConfiguration;
 #[cfg(not(target_arch = "wasm32"))]
