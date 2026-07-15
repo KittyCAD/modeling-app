@@ -203,8 +203,7 @@ export const modelingCommandStdLibDriftConfig = {
   Extrude: {
     stdLibName: 'extrude',
     editFlow: true,
-    flowArgOrder: ['sketches', 'length', 'bodyType'],
-    omittedStdLibArgs: ['direction'],
+    flowArgOrder: ['sketches', 'length', 'bodyType', 'method'],
   },
   Sweep: {
     stdLibName: 'sweep',

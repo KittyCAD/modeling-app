@@ -1,6 +1,7 @@
 import { APP_NAME } from '@src/lib/constants'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import {
+  fileNameHasExtension,
   getFilePathRelativeToProject,
   getProjectRelativeFilePath,
   getRouterSearchFromRequestUrl,
@@ -180,5 +181,26 @@ describe('testing getRouterSearchFromRequestUrl', () => {
         true
       )
     ).toEqual('?debug=true')
+  })
+})
+
+describe('testing fileNameHasExtension', () => {
+  it('returns true when a real extension is present', () => {
+    expect(fileNameHasExtension('notes.txt')).toBe(true)
+    expect(fileNameHasExtension('readme.md')).toBe(true)
+    expect(fileNameHasExtension('part.kcl')).toBe(true)
+    expect(fileNameHasExtension('archive.tar.gz')).toBe(true)
+    expect(fileNameHasExtension('data.JSON')).toBe(true)
+  })
+
+  it('returns false for names without an extension', () => {
+    expect(fileNameHasExtension('bracket')).toBe(false)
+    expect(fileNameHasExtension('my-part')).toBe(false)
+  })
+
+  it('treats a leading dot (dotfile) and a trailing dot as no extension', () => {
+    expect(fileNameHasExtension('.gitignore')).toBe(false)
+    expect(fileNameHasExtension('bracket.')).toBe(false)
+    expect(fileNameHasExtension('')).toBe(false)
   })
 })

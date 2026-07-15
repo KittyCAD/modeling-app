@@ -20,11 +20,11 @@ import {
   createCallExpressionStdLibKw,
   createLabeledArg,
   createLocalName,
-  createMemberExpression,
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
 import {
+  createSketchTagMemberExpression,
   getEdgeCutMeta,
   getNodeFromPath,
   getRegionTagExprFromSegmentId,
@@ -589,14 +589,8 @@ function getSketchSolveSurfaceTagExprForWallFace(
     return null
   }
 
-  return createMemberExpression(
-    createMemberExpression(
-      createMemberExpression(
-        structuredClone(sourceSurfaceVars.exprs[0]),
-        'sketch'
-      ),
-      'tags'
-    ),
+  return createSketchTagMemberExpression(
+    sourceSurfaceVars.exprs[0],
     sketchSegmentName
   )
 }
