@@ -50,7 +50,6 @@ use crate::execution::SketchSurface;
 use crate::execution::Solid;
 use crate::execution::SolidCreator;
 use crate::execution::annotations;
-use crate::execution::types::ArrayLen;
 use crate::execution::types::PrimitiveType;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
@@ -63,21 +62,7 @@ use crate::std::solver::create_segments_in_engine;
 
 /// Extrudes by a given amount.
 pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
-    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg(
-        "sketches",
-        &RuntimeType::Array(
-            Box::new(RuntimeType::Union(vec![
-                RuntimeType::sketch(),
-                RuntimeType::face(),
-                RuntimeType::tagged_face(),
-                RuntimeType::tagged_edge(),
-                RuntimeType::Primitive(PrimitiveType::Edge),
-                RuntimeType::segment(),
-            ])),
-            ArrayLen::Minimum(1),
-        ),
-        exec_state,
-    )?;
+    let sketch_values: Vec<KclValue> = args.get_unlabeled_kw_arg("sketches", &RuntimeType::any_array(), exec_state)?;
 
     let length: Option<TyF64> = args.get_kw_arg_opt("length", &RuntimeType::length(), exec_state)?;
     let to_raw = args.get_kw_arg_opt(
@@ -124,16 +109,23 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
     let symmetric = args.get_kw_arg_opt("symmetric", &RuntimeType::bool(), exec_state)?;
     let bidirectional_length: Option<TyF64> =
         args.get_kw_arg_opt("bidirectionalLength", &RuntimeType::length(), exec_state)?;
-    let direction = args.get_kw_arg_opt(
-        "direction",
-        &RuntimeType::Union(vec![
-            RuntimeType::point3d(),
-            RuntimeType::Primitive(PrimitiveType::Edge),
-            RuntimeType::tagged_edge(),
-            RuntimeType::segment(),
-        ]),
-        exec_state,
-    )?;
+    let direction_raw = args.get_kw_arg_opt("direction", &RuntimeType::any(), exec_state)?;
+    let direction = match direction_raw {
+        None => None,
+        Some(v) => {
+            let inner = if edge::is_edge_specifier_object(&v) {
+                Point3dOrEdgeReference::EdgeSpecifier(edge::parse_edge_specifier_value(&v, &args)?)
+            } else {
+                Point3dOrEdgeReference::from_kcl_val(&v).ok_or_else(|| {
+                    KclError::new_type(KclErrorDetails::new(
+                        "Invalid value for `direction`".to_owned(),
+                        vec![args.source_range],
+                    ))
+                })?
+            };
+            Some(inner)
+        }
+    };
     let tag_start = args.get_kw_arg_opt("tagStart", &RuntimeType::tag_decl(), exec_state)?;
     let tag_end = args.get_kw_arg_opt("tagEnd", &RuntimeType::tag_decl(), exec_state)?;
     let draft_angle: Option<TyF64> = args.get_kw_arg_opt("draftAngle", &RuntimeType::degrees(), exec_state)?;
@@ -198,6 +190,14 @@ pub async fn coerce_extrude_targets(
             continue;
         }
 
+        if edge::is_edge_specifier_object(&value) {
+            extrudables.push(Extrudable::EdgeSpecifier(edge::parse_edge_specifier_value_at(
+                &value,
+                source_range,
+            )?));
+            continue;
+        }
+
         let Some(extrudable) = Extrudable::from_kcl_val(&value) else {
             return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected sketches, faces, tagged faces, or solved sketch segments for extrusion.".to_owned(),
@@ -245,13 +245,19 @@ pub async fn coerce_extrude_targets(
     // don't create caps, and they can't be mixed with sketches or faces. Enforce
     // the same rules so these cases fail loudly instead of silently producing a
     // surface (or silently ignoring `tagStart`/`tagEnd`).
-    let has_edge = extrudables
-        .iter()
-        .any(|e| matches!(e, Extrudable::Edge(_) | Extrudable::EdgeTag(_)));
+    let has_edge = extrudables.iter().any(|e| {
+        matches!(
+            e,
+            Extrudable::Edge(_) | Extrudable::EdgeTag(_) | Extrudable::EdgeSpecifier(_)
+        )
+    });
     if has_edge {
-        let has_non_edge = extrudables
-            .iter()
-            .any(|e| !matches!(e, Extrudable::Edge(_) | Extrudable::EdgeTag(_)));
+        let has_non_edge = extrudables.iter().any(|e| {
+            !matches!(
+                e,
+                Extrudable::Edge(_) | Extrudable::EdgeTag(_) | Extrudable::EdgeSpecifier(_)
+            )
+        });
         if has_non_edge {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot extrude edges together with sketches or faces in the same call. Use separate `extrude()` calls.".to_owned(),
@@ -468,9 +474,17 @@ async fn inner_extrude(
             Extrudable::Face(_) => false,
             Extrudable::EdgeTag(_) => true,
             Extrudable::Edge(_) => true,
+            Extrudable::EdgeSpecifier(_) => true,
         };
         let extrude_cmd_id = exec_state.next_uuid();
-        let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
+        let (sketch_or_face_id, target_reference) = match extrudable {
+            Extrudable::EdgeSpecifier(spec) => (
+                None,
+                Some(edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?),
+            ),
+            _ => (Some(extrudable.id_to_extrude(exec_state, &args, false).await?), None),
+        };
+        let legacy_target = sketch_or_face_id.unwrap_or(extrude_cmd_id);
         let cmd = match (
             &twist_angle,
             &twist_angle_step,
@@ -490,7 +504,16 @@ async fn inner_extrude(
                 );
                 ModelingCmd::from(
                     mcmd::TwistExtrude::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(
+                            sketch_or_face_id
+                                .ok_or_else(|| {
+                                    KclError::new_semantic(KclErrorDetails::new(
+                                        "Edge specifiers cannot be used with twist extrusion".to_owned(),
+                                        vec![args.source_range],
+                                    ))
+                                })?
+                                .into(),
+                        )
                         .distance(LengthUnit(length.to_mm()))
                         .center_2d(center)
                         .total_rotation_angle(total_rotation_angle)
@@ -502,7 +525,8 @@ async fn inner_extrude(
             }
             (None, None, None, Some(length), None, None) => ModelingCmd::from(
                 mcmd::Extrude::builder()
-                    .target(sketch_or_face_id.into())
+                    .maybe_target(sketch_or_face_id.map(Into::into))
+                    .maybe_target_reference(target_reference.clone())
                     .distance(LengthUnit(length.to_mm()))
                     .opposite(opposite.clone())
                     .maybe_draft_angle(
@@ -517,14 +541,14 @@ async fn inner_extrude(
             ),
             (None, None, None, Some(length), None, Some(dir)) => {
                 let direction3d = match dir {
-                    Point3dOrEdgeReference::Point(p) => DirectionType::Axis {
+                    Point3dOrEdgeReference::Point(p) => Some(DirectionType::Axis {
                         direction: KPoint3d {
                             x: p[0].n,
                             y: p[1].n,
                             z: p[2].n,
                         },
-                    },
-                    Point3dOrEdgeReference::Edge(edge) => match edge {
+                    }),
+                    Point3dOrEdgeReference::Edge(edge) => Some(match edge {
                         crate::std::fillet::EdgeReference::Uuid(uuid) => DirectionType::Edge { id: *uuid },
                         crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge {
                             id: match tag.get_cur_info() {
@@ -537,11 +561,19 @@ async fn inner_extrude(
                                 }
                             },
                         },
-                    },
+                    }),
+                    Point3dOrEdgeReference::EdgeSpecifier(_) => None,
+                };
+                let direction_reference = match dir {
+                    Point3dOrEdgeReference::EdgeSpecifier(spec) => {
+                        Some(edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?)
+                    }
+                    _ => None,
                 };
                 ModelingCmd::from(
                     mcmd::Extrude::builder()
-                        .target(sketch_or_face_id.into())
+                        .maybe_target(sketch_or_face_id.map(Into::into))
+                        .maybe_target_reference(target_reference.clone())
                         .distance(LengthUnit(length.to_mm()))
                         .opposite(opposite.clone())
                         .maybe_draft_angle(
@@ -552,14 +584,24 @@ async fn inner_extrude(
                         .extrude_method(extrude_method)
                         .body_type(body_type)
                         .maybe_merge_coplanar_faces(hide_seams)
-                        .direction(direction3d)
+                        .maybe_direction(direction3d)
+                        .maybe_direction_reference(direction_reference)
                         .build(),
                 )
             }
             (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(
+                            sketch_or_face_id
+                                .ok_or_else(|| {
+                                    KclError::new_semantic(KclErrorDetails::new(
+                                        "Edge specifiers cannot be extruded to a reference".to_owned(),
+                                        vec![args.source_range],
+                                    ))
+                                })?
+                                .into(),
+                        )
                         .reference(ExtrudeReference::Point {
                             point: KPoint3d {
                                 x: LengthUnit(point[0].to_mm()),
@@ -573,7 +615,16 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(
+                            sketch_or_face_id
+                                .ok_or_else(|| {
+                                    KclError::new_semantic(KclErrorDetails::new(
+                                        "Edge specifiers cannot be extruded to a reference".to_owned(),
+                                        vec![args.source_range],
+                                    ))
+                                })?
+                                .into(),
+                        )
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
                                 x: direction[0].to_mm(),
@@ -610,7 +661,7 @@ async fn inner_extrude(
                     };
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(legacy_target.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(plane_id),
                                 entity_reference: None,
@@ -624,7 +675,7 @@ async fn inner_extrude(
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(legacy_target.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(edge_id),
                                 entity_reference: None,
@@ -638,7 +689,7 @@ async fn inner_extrude(
                     let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(legacy_target.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(face_id),
                                 entity_reference: None,
@@ -650,7 +701,7 @@ async fn inner_extrude(
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(legacy_target.into())
                         .reference(ExtrudeReference::EntityReference {
                             entity_id: Some(sketch_ref.id),
                             entity_reference: None,
@@ -661,7 +712,7 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(sketch_or_face_id.into())
+                        .target(legacy_target.into())
                         .reference(ExtrudeReference::EntityReference {
                             entity_id: Some(solid.id),
                             entity_reference: None,
@@ -675,7 +726,7 @@ async fn inner_extrude(
                     let tagged_edge_or_face_id = tagged_edge_or_face.id;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(legacy_target.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(tagged_edge_or_face_id),
                                 entity_reference: None,
@@ -689,7 +740,7 @@ async fn inner_extrude(
                     let inner = edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(sketch_or_face_id.into())
+                            .target(legacy_target.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: None,
                                 entity_reference: Some(EntityReference::Edge {
@@ -732,7 +783,7 @@ async fn inner_extrude(
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
             Extrudable::FaceTag(face_tag) => {
-                let face_id = sketch_or_face_id;
+                let face_id = legacy_target;
                 let solid_id = match face_tag.geometry() {
                     Some(crate::execution::Geometry::Solid(solid)) => solid.id,
                     Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
@@ -749,6 +800,7 @@ async fn inner_extrude(
             },
             Extrudable::EdgeTag(_) => BeingExtruded::Edge,
             Extrudable::Edge(_) => BeingExtruded::Edge,
+            Extrudable::EdgeSpecifier(_) => BeingExtruded::Edge,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
@@ -811,6 +863,7 @@ async fn inner_extrude(
                 Extrudable::Face(_) => None,
                 Extrudable::EdgeTag(tag) => Some(TagDeclarator::new(&tag.value)),
                 Extrudable::Edge(_) => None,
+                Extrudable::EdgeSpecifier(_) => None,
             };
             solids.push(after_surface_creation(extrude_cmd_id.into(), edge_tag, exec_state, &args).await?);
         } else {

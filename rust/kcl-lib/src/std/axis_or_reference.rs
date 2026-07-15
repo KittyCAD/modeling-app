@@ -11,6 +11,7 @@ use crate::execution::SegmentKind;
 use crate::execution::Sketch;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
+use crate::std::edge::UnresolvedEdgeSpecifier;
 use crate::std::fillet::EdgeReference;
 use crate::std::sketch::FaceTag;
 
@@ -146,6 +147,8 @@ pub enum Point3dOrEdgeReference {
     Point([TyF64; 3]),
     /// Tagged edge.
     Edge(EdgeReference),
+    /// Edge specifier with side faces, end faces, and index.
+    EdgeSpecifier(UnresolvedEdgeSpecifier),
 }
 
 impl Point3dOrEdgeReference {

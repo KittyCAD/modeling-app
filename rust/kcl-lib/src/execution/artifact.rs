@@ -2177,11 +2177,25 @@ fn artifacts_to_update(
 
             return Ok(cloned_artifacts);
         }
-        ModelingCmd::Extrude(kcmc::Extrude { target, .. })
-        | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
-        | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
-        | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
+        ModelingCmd::Extrude(_)
+        | ModelingCmd::TwistExtrude(_)
+        | ModelingCmd::Revolve(_)
+        | ModelingCmd::RevolveAboutEdge(_)
+        | ModelingCmd::ExtrudeToReference(_) => {
+            let target = match cmd {
+                ModelingCmd::Extrude(kcmc::Extrude {
+                    target: Some(target), ..
+                }) => target,
+                // An edge-reference extrusion has no stable path UUID until the
+                // engine resolves the topology payload, so there is no source
+                // path artifact to mark as consumed here.
+                ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
+                ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
+                | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
+                | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => target,
+                _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
+            };
             // Determine the resulting method from the specific command, if provided
             let method = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude { extrude_method, .. }) => *extrude_method,
