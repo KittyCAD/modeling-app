@@ -809,7 +809,7 @@ export fn ellipse(
 /// ```kcl,sketchSolve
 /// @settings(kclVersion = 2.0, experimentalFeatures = allow)
 ///
-/// // The direction parameter can apply to sketches or edges
+/// // The direction parameter can apply to sketches, segments, or edges
 /// // Directions can be specified by an axis, a sketch segment, or a body's edge.
 /// sketch001 = sketch(on = XY) {
 ///   point1 = point(at = [var -3.75mm, var 4.46mm])
@@ -862,10 +862,34 @@ export fn ellipse(
 /// }
 /// extrude003 = extrude(sketch003.arc1, length = 5, bodyType = SURFACE, direction = [1, -1, 1])
 /// ```
+/// ```kcl,sketchSolve
+/// @settings(kclVersion = 2.0)
+///
+/// // Extruding edges can infer a direction or accept a custom direction
+/// sketch001 = sketch(on = XY) {
+///   circle1 = circle(start = [var 1.84mm, var -0.32mm], center = [var -1.32mm, var 0mm])
+///   horizontal([circle1.center, ORIGIN])
+///   circle2 = circle(start = [var 3.37mm, var 2.21mm], center = [var 0mm, var 1.52mm])
+///   vertical([circle2.center, ORIGIN])
+///   line1 = line(start = [var -6.36mm, var -3.01mm], end = [var 3.61mm, var 6.24mm])
+/// }
+/// hidden001 = hide(sketch001)
+/// region001 = region(point = [1.6952577mm, -0.9901244mm], sketch = sketch001)
+/// extrude001 = extrude(region001, length = 5, bodyType = SURFACE)
+/// sketch002 = sketch(on = XY) {
+///   line1 = line(start = [var -9.26mm, var 4.04mm], end = [var -3.48mm, var 5.98mm])
+/// }
+/// 
+/// a = extrude001.sketch.tags.line1
+/// // b = getPreviousAdjacentEdge(a)
+/// b = getOppositeEdge(a)
+/// 
+/// extrude002 = extrude(b, length = 6.7, bodyType = SURFACE, method = NEW)
+/// ```
 @(impl = std_rust, feature_tree = true)
 export fn extrude(
   /// Which sketch or sketches should be extruded.
-  @sketches: [Sketch | Face | TaggedFace | Segment; 1+],
+  @sketches: [Sketch | Face | TaggedFace | TaggedEdge | Edge | Segment; 1+],
   /// How far to extrude the given sketches. Incompatible with `to`.
   length?: number(Length),
   /// Reference to extrude to. Incompatible with `length` and `twistAngle`.
@@ -873,7 +897,8 @@ export fn extrude(
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   /// If true, the extrusion will happen symmetrically around the sketch. Otherwise, the extrusion will happen on only one side of the sketch.
   symmetric?: bool,
-  /// If specified, will extrude in this direction instead of the sketch plane normal
+  /// If specified, will extrude in this direction instead of the sketch plane normal.
+  /// If an edge is being extruded, this defaults to halfway between the faces on either side of the edge.
   @(experimental = true) direction?: Point3d | Edge | TaggedEdge | Segment,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
   bidirectionalLength?: number(Length),

@@ -18,11 +18,11 @@ jobs:
         shell: bash -eux {0}
     steps:
       - name: Checkout the repo
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.0
         with:
           submodules: recursive
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v6.3.0
         with:
           python-version: "3.x"
       - name: Install toolchain + maturin

@@ -116,6 +116,20 @@ const reasoning = (): Extract<MlCopilotServerMessage, { reasoning: any }> => {
       file_name: stringRand(ALPHA, 30) + '.kcl',
       type: 'deleted_kcl_file' as const,
     },
+    {
+      content: stringRand(ALPHA.concat('\n'), 200),
+      file_name: stringRand(ALPHA, 30) + '.md',
+      type: 'created_project_file' as const,
+    },
+    {
+      content: stringRand(ALPHA.concat('\n'), 200),
+      file_name: stringRand(ALPHA, 30) + '.md',
+      type: 'updated_project_file' as const,
+    },
+    {
+      file_name: stringRand(ALPHA, 30) + '.md',
+      type: 'deleted_project_file' as const,
+    },
   ]
 
   return {

@@ -23,8 +23,6 @@ import {
 } from '@src/registry/contracts/keymap'
 import { APP_COMMAND_IDS } from '@src/registry/extensions/commands/appCommands'
 
-const PLUGINS_FEATURE_FLAG = 'plugins'
-
 type SettingsTab = SettingsLevel | 'keybindings' | 'plugins'
 
 function isSettingsTab(tab: string | null): tab is SettingsTab {
@@ -42,7 +40,6 @@ export const Settings = () => {
   const keymap = app.registry.optional(keymapService)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
-  const showPluginsTab = app.userFeatures.useHas(PLUGINS_FEATURE_FLAG, false)
   const close = () => {
     // This makes sure input texts are saved before closing the dialog (eg. default project name).
     if (document.activeElement instanceof HTMLInputElement) {
@@ -52,15 +49,41 @@ export const Settings = () => {
   }
   const location = useLocation()
   const isFileSettings = location.pathname.includes(PATHS.FILE)
-  const defaultTab: SettingsLevel = isFileSettings ? 'project' : 'user'
+  const hasOpenProject = app.project !== undefined
+  const defaultTab: SettingsLevel =
+    isFileSettings && hasOpenProject ? 'project' : 'user'
   const requestedTab = searchParams.get('tab')
-  const requestedSettingsTab = isSettingsTab(requestedTab)
-    ? requestedTab
-    : defaultTab
-  const searchParamTab =
-    requestedSettingsTab === 'plugins' && !showPluginsTab
-      ? defaultTab
-      : requestedSettingsTab
+  const requestedSettingsTab =
+    requestedTab === 'project' && !hasOpenProject
+      ? 'user'
+      : isSettingsTab(requestedTab)
+        ? requestedTab
+        : defaultTab
+  const searchParamTab = requestedSettingsTab
+
+  useEffect(() => {
+    if (requestedTab !== 'project' || hasOpenProject) {
+      return
+    }
+
+    const nextSearchParams = new URLSearchParams(searchParams)
+    nextSearchParams.set('tab', 'user')
+    void navigate(
+      {
+        pathname: location.pathname,
+        search: `?${nextSearchParams.toString()}`,
+        hash: location.hash,
+      },
+      { replace: true }
+    )
+  }, [
+    hasOpenProject,
+    location.hash,
+    location.pathname,
+    navigate,
+    requestedTab,
+    searchParams,
+  ])
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const settingsSearchKeybinding = keymapKeystrokesDisplay(
@@ -142,8 +165,8 @@ export const Settings = () => {
               <h1 className="text-2xl font-bold">Settings</h1>
               <div className="flex gap-4 items-start">
                 <SettingsSearchBar
-                  showPlugins={showPluginsTab}
                   keybinding={settingsSearchKeybinding}
+                  hasOpenProject={hasOpenProject}
                 />
                 <button
                   type="button"
@@ -159,7 +182,6 @@ export const Settings = () => {
               value={searchParamTab}
               onChange={(v) => setSearchParams((p) => ({ ...p, tab: v }))}
               showProjectTab={isFileSettings}
-              showPluginsTab={showPluginsTab}
             />
             <div
               className="flex-1 grid items-stretch pl-4 pr-5 pb-5 gap-2 overflow-hidden"
@@ -176,18 +198,16 @@ export const Settings = () => {
                   <SettingsSectionsList
                     searchParamTab={searchParamTab}
                     scrollRef={scrollRef}
-                    showPlugins={showPluginsTab}
                   />
                   <AllSettingsFields
                     searchParamTab={searchParamTab}
                     isFileSettings={isFileSettings}
-                    showPlugins={showPluginsTab}
                     ref={scrollRef}
                   />
                 </>
               ) : searchParamTab === 'keybindings' ? (
                 <AllKeybindingsFields ref={scrollRef} />
-              ) : searchParamTab === 'plugins' && showPluginsTab ? (
+              ) : searchParamTab === 'plugins' ? (
                 <PluginsList
                   ref={scrollRef}
                   registry={app.registry}

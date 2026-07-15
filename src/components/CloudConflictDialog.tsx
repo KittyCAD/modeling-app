@@ -5,13 +5,13 @@ import toast from 'react-hot-toast'
 
 import { ActionButton } from '@src/components/ActionButton'
 import {
-  type OpfsCloudConflictResolution,
-  type ProjectMetadata,
-  getOpfsCloudProjectMetadata,
-  getOpfsCloudProjectMetadataIndex,
-  opfsCloudSyncStatus,
-  resolveOpfsCloudProjectConflict,
-} from '@src/lib/fs-zds/opfsCloud'
+  type CloudSyncConflictResolution,
+  type CloudSyncProjectMetadata,
+  cloudSyncStatus,
+  getCloudSyncProjectMetadata,
+  getCloudSyncProjectMetadataIndex,
+  resolveCloudSyncProjectConflict,
+} from '@src/lib/cloudSync'
 import { reportRejection } from '@src/lib/trap'
 
 type CloudConflictDialogProps = {
@@ -25,10 +25,12 @@ function messageFromError(error: unknown) {
   return error instanceof Error ? error.message : String(error)
 }
 
-export function useOpfsCloudProjectConflict(projectPath?: string) {
+export function useCloudSyncProjectConflict(projectPath?: string) {
   useSignals()
-  const status = opfsCloudSyncStatus.value
-  const [metadata, setMetadata] = useState<ProjectMetadata | undefined>()
+  const status = cloudSyncStatus.value
+  const [metadata, setMetadata] = useState<
+    CloudSyncProjectMetadata | undefined
+  >()
 
   useEffect(() => {
     let cancelled = false
@@ -38,7 +40,7 @@ export function useOpfsCloudProjectConflict(projectPath?: string) {
       return
     }
 
-    getOpfsCloudProjectMetadata(projectPath)
+    getCloudSyncProjectMetadata(projectPath)
       .then((nextMetadata) => {
         if (!cancelled) {
           setMetadata(nextMetadata?.conflict ? nextMetadata : undefined)
@@ -66,10 +68,12 @@ export function useOpfsCloudProjectConflict(projectPath?: string) {
   return metadata
 }
 
-export function useOpfsCloudProjectConflicts() {
+export function useCloudSyncProjectConflicts() {
   useSignals()
-  const status = opfsCloudSyncStatus.value
-  const [metadata, setMetadata] = useState<ProjectMetadata[] | undefined>()
+  const status = cloudSyncStatus.value
+  const [metadata, setMetadata] = useState<
+    CloudSyncProjectMetadata[] | undefined
+  >()
 
   useEffect(() => {
     let cancelled = false
@@ -80,7 +84,7 @@ export function useOpfsCloudProjectConflicts() {
     }
 
     setMetadata(undefined)
-    getOpfsCloudProjectMetadataIndex()
+    getCloudSyncProjectMetadataIndex()
       .then((metadataIndex) => {
         if (cancelled) {
           return
@@ -122,12 +126,12 @@ export function CloudConflictDialog({
   onResolved,
 }: CloudConflictDialogProps) {
   const [resolving, setResolving] =
-    useState<OpfsCloudConflictResolution | null>(null)
+    useState<CloudSyncConflictResolution | null>(null)
 
-  async function resolveConflict(resolution: OpfsCloudConflictResolution) {
+  async function resolveConflict(resolution: CloudSyncConflictResolution) {
     setResolving(resolution)
     try {
-      await resolveOpfsCloudProjectConflict(projectPath, resolution)
+      await resolveCloudSyncProjectConflict(projectPath, resolution)
       toast.success('Cloud conflict resolved.')
       onResolved?.()
       onDismiss()

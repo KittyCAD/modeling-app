@@ -1,3 +1,4 @@
+import { useSignals } from '@preact/signals-react/runtime'
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { FileExplorer, StatusDot } from '@src/components/Explorer/FileExplorer'
 import {
@@ -26,6 +27,7 @@ import {
   desktopSafePathJoin,
   desktopSafePathSplit,
   enforceFileEXT,
+  fileNameHasExtension,
   getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
@@ -45,6 +47,7 @@ import {
   PROJECT_EXPLORER_RENAMING_KEYMAP_SCOPE,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import { projectExplorerRowContextMenuItemsValueSpec } from '@src/registry/contracts/projectExplorer'
 import { PROJECT_EXPLORER_COMMAND_IDS } from '@src/registry/extensions/keymap/defaultKeymap'
 import { useSelector } from '@xstate/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -191,8 +194,12 @@ export const ProjectExplorer = ({
   canNavigate: boolean
   overrideApplicationProjectDirectory?: string
 }) => {
+  useSignals()
   const { commands, registry, settings, systemIOActor } = useApp()
   const keymap = registry.optional(keymapService)
+  const rowContextMenuItems = registry.signal(
+    projectExplorerRowContextMenuItemsValueSpec
+  ).value
   const { kclManager } = useSingletons()
   const isSystemIOIdle = useSelector(systemIOActor, (state) =>
     state.matches(SystemIOMachineStates.idle)
@@ -1270,6 +1277,43 @@ export const ProjectExplorer = ({
                   }
                 }
               }
+            } else if (row.isFake) {
+              // create a new file. Respect a user-typed extension, otherwise
+              // assume the file is KCL.
+              const fileName = fileNameHasExtension(requestedName)
+                ? requestedName
+                : requestedName + FILE_EXT
+              const requestedAbsolutePath = joinOSPaths(
+                getParentAbsolutePath(row.path),
+                fileName
+              )
+
+              if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
+                // Create the KCL file and navigate to (open) it in the editor.
+                const pathRelativeToParent = parentPathRelativeToProject(
+                  requestedAbsolutePath,
+                  overrideApplicationProjectDirectory ||
+                    applicationProjectDirectory
+                )
+                sendFileTreeMutationEvent({
+                  type: SystemIOMachineEvents.importFileFromURL,
+                  data: {
+                    requestedCode: '',
+                    requestedProjectName: project.name,
+                    requestedFileNameWithExtension: pathRelativeToParent,
+                  },
+                })
+              } else {
+                // Create a blank file. The actor seeds default KCL content only
+                // for .kcl files and writes an empty file for everything else,
+                // so non-KCL files (.md, .txt, ...) don't get KCL boilerplate.
+                sendFileTreeMutationEvent({
+                  type: SystemIOMachineEvents.createBlankFile,
+                  data: {
+                    requestedAbsolutePath,
+                  },
+                })
+              }
             } else {
               // rename a file
               const originalExt = getEXTWithPeriod(name)
@@ -1282,62 +1326,27 @@ export const ProjectExplorer = ({
                 return
               }
 
-              const pathRelativeToParent = parentPathRelativeToProject(
-                joinOSPaths(
-                  getParentAbsolutePath(row.path),
-                  fileNameForcedWithOriginalExt
-                ),
-                overrideApplicationProjectDirectory ||
-                  applicationProjectDirectory
+              const requestedAbsoluteFilePathWithExtension = joinOSPaths(
+                getParentAbsolutePath(row.path),
+                name
               )
-
-              if (row.isFake) {
-                // create a file if it is fake and navigate to that file!
-                if (file && canNavigate) {
-                  sendFileTreeMutationEvent({
-                    type: SystemIOMachineEvents.importFileFromURL,
-                    data: {
-                      requestedCode: '',
-                      requestedProjectName: project.name,
-                      requestedFileNameWithExtension: pathRelativeToParent,
-                    },
-                  })
-                } else {
-                  const requestedAbsolutePath = joinOSPaths(
-                    getParentAbsolutePath(row.path),
-                    fileNameForcedWithOriginalExt
-                  )
-                  sendFileTreeMutationEvent({
-                    type: SystemIOMachineEvents.createBlankFile,
-                    data: {
-                      requestedAbsolutePath,
-                    },
-                  })
-                }
-              } else {
-                const requestedAbsoluteFilePathWithExtension = joinOSPaths(
-                  getParentAbsolutePath(row.path),
-                  name
-                )
-                // If your router loader is within the file you are renaming then reroute to the new path on disk
-                // If you are renaming a file you are not loaded into, do not reload!
-                const shouldWeNavigate =
-                  requestedAbsoluteFilePathWithExtension === file?.path &&
-                  canNavigate
-                sendFileTreeMutationEvent({
-                  type: shouldWeNavigate
-                    ? SystemIOMachineEvents.renameFileAndNavigateToFile
-                    : SystemIOMachineEvents.renameFile,
-                  data: {
-                    requestedFileNameWithExtension:
-                      fileNameForcedWithOriginalExt,
-                    fileNameWithExtension: name,
-                    absolutePathToParentDirectory: getParentAbsolutePath(
-                      row.path
-                    ),
-                  },
-                })
-              }
+              // If your router loader is within the file you are renaming then reroute to the new path on disk
+              // If you are renaming a file you are not loaded into, do not reload!
+              const shouldWeNavigate =
+                requestedAbsoluteFilePathWithExtension === file?.path &&
+                canNavigate
+              sendFileTreeMutationEvent({
+                type: shouldWeNavigate
+                  ? SystemIOMachineEvents.renameFileAndNavigateToFile
+                  : SystemIOMachineEvents.renameFile,
+                data: {
+                  requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
+                  fileNameWithExtension: name,
+                  absolutePathToParentDirectory: getParentAbsolutePath(
+                    row.path
+                  ),
+                },
+              })
             }
           },
         }
@@ -1586,6 +1595,7 @@ export const ProjectExplorer = ({
             isInteractionDisabled={isFileTreeInteractionDisabled}
             isExternalDragOver={isExternalDragOver}
             highlightedEntry={highlightedEntry}
+            rowContextMenuItems={rowContextMenuItems}
             onDeleteEnd={() => {
               setIsDeleting(false)
             }}

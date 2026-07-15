@@ -1,11 +1,16 @@
 import { FileExplorerHeaderActions } from '@src/components/Explorer/FileExplorerHeaderActions'
 import { ProjectExplorer } from '@src/components/Explorer/ProjectExplorer'
 import type { FileExplorerEntry } from '@src/components/Explorer/utils'
-import { addPlaceHoldersForNewFileAndFolder } from '@src/components/Explorer/utils'
 import { ToastInsert } from '@src/components/ToastInsert'
 import { LayoutPanel, LayoutPanelHeader } from '@src/components/layout/Panel'
+import { getProjectExplorerProjectWithPlaceholders } from '@src/components/layout/areas/ProjectExplorerPane.utils'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
+import {
+  clearActiveTextFile,
+  isEditableTextFile,
+  openActiveTextFile,
+} from '@src/lib/activeTextFile'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { FILE_EXT, INSERT_FOREIGN_TOAST_ID } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
@@ -48,29 +53,25 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
   useEffect(() => {
     // Have no idea why the project loader data doesn't have the children from the ls on disk
     // That means it is a different object or cached incorrectly?
-    if (!project || !file || !projects) {
+    if (!project || !file) {
       return
     }
 
+    const loadedProject = project.projectIORefSignal.value
     if (projects === undefined) {
       systemIOActor.send({
         type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
       })
-      return
     }
 
-    // You need to find the real project in the storage from the loader information since the loader Project is not hydrated
-    const foundProject = projects.find((p) => {
-      return p.name === project?.name
+    const duplicated = getProjectExplorerProjectWithPlaceholders({
+      loadedProject,
+      projects,
     })
 
-    if (!foundProject) {
+    if (!duplicated) {
       return
     }
-
-    // Duplicate the state to not edit the raw data
-    const duplicated = structuredClone(foundProject)
-    addPlaceHoldersForNewFileAndFolder(duplicated.children, foundProject.path)
     setTheProject(duplicated)
   }, [file, projects, project, systemIOActor])
 
@@ -108,7 +109,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       if (
         !projectRef.current?.value.name ||
         entry.children != null ||
-        !entry.path.endsWith(FILE_EXT)
+        (!entry.path.endsWith(FILE_EXT) && !isEditableTextFile(entry.path))
       ) {
         return
       }
@@ -142,6 +143,8 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
         entry.children == null &&
         entry.path.endsWith(FILE_EXT)
       ) {
+        // Leaving any open text file for the KCL editor.
+        clearActiveTextFile()
         const name = projectRef.current.value.name.slice()
 
         const navigateHelper = () => {
@@ -171,6 +174,16 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
           // immediately navigate
           navigateHelper()
         }
+      } else if (
+        projectRef.current?.value.name &&
+        entry.children == null &&
+        isEditableTextFile(entry.path)
+      ) {
+        // Open text/markdown files directly in the code editor pane. This must
+        // be checked before the "relevant file" branch below because some text
+        // extensions (e.g. .md) are also importable.
+        openCodeEditorPaneIfClosed()
+        openActiveTextFile(entry.path).catch(reportRejection)
       } else if (isRelevantFile(entry.path) && projectRef.current?.value.path) {
         // Allow insert if it is a importable file
         toast.custom(
@@ -200,6 +213,7 @@ export function ProjectExplorerPane(props: AreaTypeComponentProps) {
       modelingActor,
       modelingMachineState,
       modelingSend,
+      openCodeEditorPaneIfClosed,
       projectDirectoryPath,
       systemIOActor,
       wasmInstance,

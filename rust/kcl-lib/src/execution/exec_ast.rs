@@ -52,6 +52,7 @@ use crate::execution::control_continue;
 use crate::execution::early_return;
 use crate::execution::fn_call::Arg;
 use crate::execution::fn_call::Args;
+use crate::execution::fn_call::unexpected_kw_arg_message;
 use crate::execution::kcl_value::FunctionSource;
 use crate::execution::kcl_value::KclFunctionSourceParams;
 use crate::execution::kcl_value::KclObjectKind;
@@ -1830,6 +1831,16 @@ impl Node<SketchBlock> {
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
+                if solved
+                    .final_values()
+                    .iter()
+                    .any(|number| number.is_infinite() || number.is_nan())
+                {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        "KCL's 2D constraint solver returned an invalid number".to_owned(),
+                        vec![SourceRange::from(self)],
+                    )));
+                }
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
                 if !outcome.converged {
                     exec_state.warn(
@@ -1875,14 +1886,14 @@ impl Node<SketchBlock> {
                             &format!("Internal error from constraint solver: {}", &failure.error).into(),
                         );
                         return Err(internal_err(
-                            format!("Internal error from constraint solver: {}", &failure.error),
+                            format!("Internal error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
                     _ => {
                         // Catch all error case so that it's not a breaking change to publish new errors.
                         return Err(internal_err(
-                            format!("Error from constraint solver: {}", &failure.error),
+                            format!("Error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
@@ -1892,9 +1903,9 @@ impl Node<SketchBlock> {
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
-                format!("{}; constraint index {}", &warning.content, index)
+                format!("{}; constraint index {}", warning.content, index)
             } else {
-                format!("{}", &warning.content)
+                format!("{}", warning.content)
             };
             exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
         }
@@ -1983,7 +1994,7 @@ impl Node<SketchBlock> {
             debug_assert!(
                 false,
                 "{}; scene_objects={:#?}",
-                &message, &exec_state.mod_local.artifacts.scene_objects
+                message, exec_state.mod_local.artifacts.scene_objects
             );
             return Err(internal_err(message, range));
         };
@@ -2097,9 +2108,18 @@ impl Node<SketchBlock> {
                 range,
                 self.node_path.clone(),
                 ctx.clone(),
-                Some("sketch block".to_owned()),
+                Some(SketchBlock::CALLEE_NAME.to_owned()),
             );
             args.labeled = labeled;
+
+            // Report any arguments that aren't valid sketch block parameters.
+            // This is non-fatal so that the rest of the block still executes,
+            // matching how unexpected keyword arguments are handled for
+            // function calls.
+            //
+            // Checking arguments should be done after evaluating them, the same
+            // order as if we were calling a function.
+            self.check_for_unexpected_arguments(&args, exec_state)?;
 
             let arg_on_value: KclValue =
                 args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
@@ -2173,6 +2193,29 @@ impl Node<SketchBlock> {
 
             Ok((sketch_id, sketch_surface))
         }
+    }
+
+    /// Report a non-fatal error for each argument that isn't a valid sketch
+    /// block parameter. Currently, the only valid parameter is `on`.
+    fn check_for_unexpected_arguments(&self, args: &Args, exec_state: &mut ExecState) -> Result<(), KclError> {
+        if !args.unlabeled.is_empty() {
+            let message = "Sketch block doesn't support unlabeled arguments; argument shorthand should have already been desugared";
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message.to_owned(),
+                vec![args.source_range],
+            )));
+        }
+        for (label, arg) in &args.labeled {
+            if label == SKETCH_BLOCK_PARAM_ON {
+                continue;
+            }
+            exec_state.err(CompilationIssue::err(
+                arg.source_range,
+                unexpected_kw_arg_message(label, Some(SketchBlock::CALLEE_NAME)),
+            ));
+        }
+        Ok(())
     }
 
     async fn load_sketch2_into_current_scope(
@@ -5997,7 +6040,7 @@ d = b + c
         let exec_ctxt = ExecutorContext {
             engine: Arc::new(engine_manager::EngineManager::new_mock()),
             engine_batch: crate::engine::EngineBatchContext::default(),
-            fs: Arc::new(crate::fs::FileManager::new()),
+            fs: crate::fs::new_file_system_handle(crate::fs::FileManager::new()),
             settings: ExecutorSettings {
                 project_directory: Some(crate::TypedPath(tmpdir.path().into())),
                 ..Default::default()

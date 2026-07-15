@@ -87,7 +87,9 @@ export const billingMachine = setup({
     [BillingTransition.Update]: fromPromise(
       async ({
         input,
-      }: { input: { context: BillingContext; apiToken: string } }) => {
+      }: {
+        input: { context: BillingContext; apiToken: string }
+      }) => {
         // Rate limit on the client side to 1 request per second.
         if (
           input.context.lastFetch &&

@@ -1,16 +1,8 @@
 import { Popover, Transition } from '@headlessui/react'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useSelector } from '@xstate/react'
-import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import type { SnapshotFrom } from 'xstate'
-
 import type { ActionButtonProps } from '@src/components/ActionButton'
 import { ActionButton } from '@src/components/ActionButton'
-import {
-  CloudConflictDialog,
-  useOpfsCloudProjectConflict,
-} from '@src/components/CloudConflictDialog'
+import { useCloudSyncProjectConflict } from '@src/components/CloudConflictDialog'
 import { CustomIcon } from '@src/components/CustomIcon'
 import { Logo } from '@src/components/Logo'
 import Tooltip from '@src/components/Tooltip'
@@ -20,7 +12,7 @@ import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBa
 import { APP_NAME } from '@src/lib/constants'
 import { hotkeyDisplay } from '@src/lib/hotkeys'
 import { isDesktop } from '@src/lib/isDesktop'
-import { PATHS, getProjectRelativeFilePath } from '@src/lib/paths'
+import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type { IndexLoaderData } from '@src/lib/types'
@@ -30,12 +22,28 @@ import {
   keymapScopesValueSpec,
   keymapService,
 } from '@src/registry/contracts/keymap'
+import {
+  type ProjectExplorerProjectMenuItem,
+  type ProjectExplorerProjectMenuItemContext,
+  projectExplorerProjectMenuItemsValueSpec,
+} from '@src/registry/contracts/projectExplorer'
+import { useSelector } from '@xstate/react'
+import {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import type { SnapshotFrom } from 'xstate'
 
 interface ProjectSidebarMenuProps extends React.PropsWithChildren {
   enableMenu?: boolean
   project?: Project
   file?: FileEntry
-  hasOpfsCloudFeature?: boolean
+  hasCloudSyncFeature?: boolean
   app?: App
   absoluteFilePath?: string
   onProjectClose?: ProjectCloseHandler
@@ -47,26 +55,51 @@ type ProjectCloseHandler = (
   projectPath: string | null,
   redirect: boolean
 ) => void
-type ProjectMenuItem = ActionButtonProps | 'break' | null
+type ProjectMenuItem =
+  | ActionButtonProps
+  | {
+      kind: 'contributed'
+      item: ProjectExplorerProjectMenuItem
+      context: ProjectExplorerProjectMenuItemContext
+    }
+  | {
+      kind: 'break'
+      id: string
+    }
+  | null
+
+function isContributedProjectMenuItem(
+  item: Exclude<ProjectMenuItem, null>
+): item is Extract<Exclude<ProjectMenuItem, null>, { kind: 'contributed' }> {
+  return (
+    typeof item === 'object' && 'kind' in item && item.kind === 'contributed'
+  )
+}
+
+function isProjectMenuBreak(
+  item: Exclude<ProjectMenuItem, null>
+): item is Extract<Exclude<ProjectMenuItem, null>, { kind: 'break' }> {
+  return typeof item === 'object' && 'kind' in item && item.kind === 'break'
+}
 
 const noopProjectClose: ProjectCloseHandler = () => undefined
 const noopHomeNavigate = () => undefined
 
 export function canNavigateHome({
   isDesktopApp,
-  hasOpfsCloudFeature,
+  hasCloudSyncFeature,
 }: {
   isDesktopApp: boolean
-  hasOpfsCloudFeature: boolean
+  hasCloudSyncFeature: boolean
 }) {
-  return isDesktopApp || hasOpfsCloudFeature
+  return isDesktopApp || hasCloudSyncFeature
 }
 
 const ProjectSidebarMenu = ({
   project,
   file,
   enableMenu = false,
-  hasOpfsCloudFeature = false,
+  hasCloudSyncFeature = false,
   app,
   absoluteFilePath,
   onProjectClose = noopProjectClose,
@@ -75,16 +108,15 @@ const ProjectSidebarMenu = ({
 }: ProjectSidebarMenuProps) => {
   // Make room for traffic lights on desktop left side.
   // TODO: make sure this doesn't look like shit on Linux or Windows
-  const trafficLightsOffset =
-    window.electron && window.electron.os.isMac ? 'ml-20' : ''
+  const trafficLightsOffset = window.electron?.os.isMac ? 'ml-20' : ''
   const homeNavigationEnabled = canNavigateHome({
     isDesktopApp: isDesktop(),
-    hasOpfsCloudFeature,
+    hasCloudSyncFeature,
   })
   const projectDisplayName = project ? getProjectDisplayName(project) : APP_NAME
 
   return (
-    <div className={'!no-underline flex min-w-0 gap-2 ' + trafficLightsOffset}>
+    <div className={`!no-underline flex min-w-0 gap-2 ${trafficLightsOffset}`}>
       <div className="relative group/home">
         <AppLogoLink
           project={project}
@@ -159,7 +191,7 @@ function AppLogoLink({
         onHomeNavigate()
       }}
       to={PATHS.HOME}
-      className={wrapperClassName + ' hover:before:brightness-110'}
+      className={`${wrapperClassName} hover:before:brightness-110`}
     >
       <Logo data-onboarding-id="app-logo" className={logoClassName} />
       <span className="sr-only">{APP_NAME}</span>
@@ -201,11 +233,14 @@ function ProjectMenuPopover({
       : [`mod+${isDesktop() ? '' : 'shift'}+,`],
     platform
   )
-  const cloudConflictMetadata = useOpfsCloudProjectConflict(project?.path)
-  const [isInspectingConflict, setIsInspectingConflict] = useState(false)
+  const cloudConflictMetadata = useCloudSyncProjectConflict(project?.path)
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
+  const projectPath = project?.path
+  const contributedProjectMenuItems = app.registry.signal(
+    projectExplorerProjectMenuItemsValueSpec
+  ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
   const exportProjectZipCommandInfo = {
@@ -213,39 +248,24 @@ function ProjectMenuPopover({
     groupId: 'application',
   }
   const makeCommandInfo = { name: 'Make', groupId: 'modeling' }
-  const findCommand = (obj: { name: string; groupId: string }) =>
-    Boolean(
-      commandList.find((c) => c.name === obj.name && c.groupId === obj.groupId)
-    )
+  const findCommand = useCallback(
+    (obj: { name: string; groupId: string }) =>
+      Boolean(
+        commandList.find(
+          (c) => c.name === obj.name && c.groupId === obj.groupId
+        )
+      ),
+    [commandList]
+  )
   const machineCount = machineManager.machines.length
 
   // We filter this memoized list so that no orphan "break" elements are rendered.
-  const projectMenuItems = useMemo<(ActionButtonProps | 'break')[]>(
+  const projectMenuItems = useMemo<Exclude<ProjectMenuItem, null>[]>(
     () => {
       const items: ProjectMenuItem[] = [
-        cloudConflictMetadata
-          ? {
-              id: 'inspect-cloud-conflicts',
-              Element: 'button',
-              iconStart: {
-                icon: 'triangleExclamation',
-                bgClassName: '!bg-transparent dark:!bg-transparent',
-                iconClassName: '!text-warn-80 dark:!text-warn-10',
-              },
-              className:
-                'bg-warn-10/50 text-warn-90 hover:!bg-warn-20 focus:!bg-warn-20 dark:bg-warn-80/20 dark:text-warn-10 dark:hover:!bg-warn-80/30 dark:focus:!bg-warn-80/30',
-              children: (
-                <span className="flex-1" data-testid="inspect-cloud-conflicts">
-                  Inspect Conflicts
-                </span>
-              ),
-              onClick: () => setIsInspectingConflict(true),
-            }
-          : null,
-        cloudConflictMetadata ? 'break' : null,
         {
           id: 'settings',
-          Element: 'button',
+          Element: 'button' as const,
           children: (
             <>
               <span className="flex-1" data-testid="project-settings">
@@ -264,10 +284,54 @@ function ProjectMenuPopover({
             void navigate(targetPath)
           },
         },
-        'break',
+        { kind: 'break', id: 'after-settings' },
+        ...contributedProjectMenuItems.flatMap<ProjectMenuItem>((item) => {
+          if (!projectPath || !project) {
+            return []
+          }
+
+          const context = { projectPath, project }
+          if (item.Component) {
+            return [{ kind: 'contributed' as const, item, context }]
+          }
+
+          if (item.isVisible && !item.isVisible(context)) {
+            return []
+          }
+
+          const disabled =
+            typeof item.disabled === 'function'
+              ? item.disabled(context)
+              : item.disabled
+          const label =
+            typeof item.label === 'function' ? item.label(context) : item.label
+          const dataTestId =
+            typeof item.dataTestId === 'function'
+              ? item.dataTestId(context)
+              : item.dataTestId
+          const className =
+            typeof item.className === 'function'
+              ? item.className(context)
+              : item.className
+
+          return [
+            {
+              id: item.id,
+              Element: 'button' as const,
+              className,
+              children: (
+                <span className="flex-1" data-testid={dataTestId}>
+                  {label}
+                </span>
+              ),
+              disabled,
+              onClick: () => item.onSelect?.(context),
+            },
+          ]
+        }),
         {
           id: 'importFile',
-          Element: 'button',
+          Element: 'button' as const,
           children: (
             <>
               <span className="flex-1">Add file to project</span>
@@ -284,7 +348,7 @@ function ProjectMenuPopover({
         },
         {
           id: 'export',
-          Element: 'button',
+          Element: 'button' as const,
           children: (
             <>
               <span className="flex-1">Export current part</span>
@@ -310,7 +374,7 @@ function ProjectMenuPopover({
         },
         {
           id: 'download-project-zip',
-          Element: 'button',
+          Element: 'button' as const,
           className: isDesktop() ? 'hidden' : '',
           children: (
             <>
@@ -334,7 +398,7 @@ function ProjectMenuPopover({
         },
         {
           id: 'make',
-          Element: 'button',
+          Element: 'button' as const,
           className: !isDesktop() || !machineApiEnabled ? 'hidden' : '',
           children: (
             <>
@@ -357,10 +421,10 @@ function ProjectMenuPopover({
             })
           },
         },
-        'break',
+        { kind: 'break', id: 'before-go-home' },
         {
           id: 'go-home',
-          Element: 'button',
+          Element: 'button' as const,
           children: 'Go to Home',
           className: !homeNavigationEnabled ? 'hidden' : '',
           onClick: () => {
@@ -369,11 +433,14 @@ function ProjectMenuPopover({
           },
         },
       ]
-      return items.filter((props): props is ActionButtonProps | 'break' => {
+      return items.filter((props): props is Exclude<ProjectMenuItem, null> => {
         if (!props) {
           return false
         }
-        if (props === 'break') {
+        if (isProjectMenuBreak(props)) {
+          return true
+        }
+        if (isContributedProjectMenuItem(props)) {
           return true
         }
         return !props.className?.includes('hidden')
@@ -388,75 +455,85 @@ function ProjectMenuPopover({
       commands.send,
       onHomeNavigate,
       onProjectClose,
-      isDesktop,
       homeNavigationEnabled,
-      cloudConflictMetadata,
+      projectPath,
+      project,
+      contributedProjectMenuItems,
+      commands.actor,
+      file,
+      filePath,
+      machineCount,
+      navigate,
+      projectSettingsKeybinding,
+      settings.actor,
     ]
   )
 
-  return (
-    <>
-      <Popover className="relative min-w-0">
-        <ProjectBreadcrumbButton
-          project={project}
-          file={file}
-          hasCloudConflict={Boolean(cloudConflictMetadata)}
-        />
+  const menuItemClassName =
+    'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left '
 
-        <Transition
-          enter="duration-100 ease-out"
-          enterFrom="opacity-0 -translate-y-2"
-          enterTo="opacity-100 translate-y-0"
-          as={Fragment}
-        >
-          <Popover.Panel
-            className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
+  return (
+    <Popover className="relative min-w-0">
+      <ProjectBreadcrumbButton
+        project={project}
+        file={file}
+        hasCloudConflict={Boolean(cloudConflictMetadata)}
+      />
+
+      <Transition
+        enter="duration-100 ease-out"
+        enterFrom="opacity-0 -translate-y-2"
+        enterTo="opacity-100 translate-y-0"
+        as={Fragment}
+      >
+        <Popover.Panel
+          className={`z-10 absolute top-full left-0 mt-1 pb-1 w-52 bg-chalkboard-10 dark:bg-chalkboard-90
           border border-solid border-chalkboard-20 dark:border-chalkboard-90 rounded
           shadow-lg`}
-          >
-            {({ close }) => (
-              <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
-                {projectMenuItems.map((props, index) => {
-                  if (props === 'break') {
-                    return index !== projectMenuItems.length - 1 ? (
-                      <li key={`break-${index}`} className="contents">
-                        <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
-                      </li>
-                    ) : null
-                  }
-
-                  const { id, className, children, ...rest } = props
-                  return (
-                    <li key={id} className="contents">
-                      <ActionButton
-                        {...rest}
-                        className={
-                          'relative !font-sans flex items-center gap-2 rounded-sm py-1.5 px-2 cursor-pointer hover:bg-chalkboard-20 dark:hover:bg-chalkboard-80 border-none text-left ' +
-                          className
-                        }
-                        onMouseUp={() => {
-                          close()
-                        }}
-                      >
-                        {children}
-                      </ActionButton>
+        >
+          {({ close }) => (
+            <ul className="relative flex flex-col items-stretch content-stretch p-0.5">
+              {projectMenuItems.map((props, index) => {
+                if (isProjectMenuBreak(props)) {
+                  return index !== projectMenuItems.length - 1 ? (
+                    <li key={props.id} className="contents">
+                      <hr className="border-chalkboard-20 dark:border-chalkboard-80" />
                     </li>
-                  )
-                })}
-              </ul>
-            )}
-          </Popover.Panel>
-        </Transition>
-      </Popover>
-      {isInspectingConflict && project && (
-        <CloudConflictDialog
-          projectPath={project.path}
-          projectName={getProjectDisplayName(project)}
-          onDismiss={() => setIsInspectingConflict(false)}
-          onResolved={() => setIsInspectingConflict(false)}
-        />
-      )}
-    </>
+                  ) : null
+                }
+
+                if (isContributedProjectMenuItem(props)) {
+                  const Component = props.item.Component
+                  return Component ? (
+                    <Component
+                      key={props.item.id}
+                      context={props.context}
+                      className={menuItemClassName}
+                      close={close}
+                    />
+                  ) : null
+                }
+
+                const { id, className, children, ...rest } = props
+                return (
+                  <li key={id} className="contents">
+                    <ActionButton
+                      {...rest}
+                      className={menuItemClassName + (className ?? '')}
+                      onMouseUp={() => {
+                        close()
+                      }}
+                    >
+                      {children}
+                    </ActionButton>
+                  </li>
+                )
+              })}
+            </ul>
+          )}
+        </Popover.Panel>
+      </Transition>
+    </Popover>
   )
 }
 
@@ -515,7 +592,7 @@ export function ProjectBreadcrumbButton({
       resizeObserver?.disconnect()
       window.removeEventListener('resize', updateTruncatedState)
     }
-  }, [breadCrumb.filePath, breadCrumb.projectName])
+  })
 
   return (
     <Popover.Button

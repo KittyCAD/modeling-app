@@ -28,8 +28,8 @@ import {
 type ExtendedSettingsLevel = SettingsLevel | 'keybindings'
 
 interface SettingsSearchBarProps {
-  showPlugins: boolean
   keybinding?: string
+  hasOpenProject: boolean
 }
 
 export type SettingsSearchItem = {
@@ -41,8 +41,8 @@ export type SettingsSearchItem = {
 }
 
 export function SettingsSearchBar({
-  showPlugins,
   keybinding,
+  hasOpenProject,
 }: SettingsSearchBarProps) {
   useSignals()
   const { settings, registry } = useApp()
@@ -72,12 +72,15 @@ export function SettingsSearchBar({
   const settingsValues = settings.useSettings()
   const settingsAsSearchable: SettingsSearchItem[] = useMemo(
     () => [
-      ...Object.entries(settingsValues)
-        .filter(([category]) => showPlugins || category !== 'plugins')
-        .flatMap(([category, categorySettings]) =>
+      ...Object.entries(settingsValues).flatMap(
+        ([category, categorySettings]) =>
           Object.entries(categorySettings).flatMap(([settingName, setting]) => {
             const s = setting
-            return (['project', 'user'] satisfies SettingsLevel[])
+            return (
+              hasOpenProject
+                ? (['project', 'user'] satisfies SettingsLevel[])
+                : (['user'] satisfies SettingsLevel[])
+            )
               .filter(
                 (l) => s.hideOnLevel !== l && !hiddenOnPlatform(s, isDesktop())
               )
@@ -89,7 +92,7 @@ export function SettingsSearchBar({
                 level: l,
               }))
           })
-        ),
+      ),
       ...keybindingRows.map(
         (keybinding) =>
           ({
@@ -104,7 +107,7 @@ export function SettingsSearchBar({
           }) satisfies SettingsSearchItem
       ),
     ],
-    [settingsValues, keybindingRows, keymapScopes, showPlugins]
+    [settingsValues, keybindingRows, keymapScopes, hasOpenProject]
   )
   const fuse = useMemo(
     () =>

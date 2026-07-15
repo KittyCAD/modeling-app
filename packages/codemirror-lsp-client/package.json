@@ -18,7 +18,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "@codemirror/autocomplete": "6.20.2",
+    "@codemirror/autocomplete": "6.20.3",
     "@codemirror/language": "^6.12.3",
     "@codemirror/state": "^6.5.4",
     "@lezer/highlight": "^1.2.1",
@@ -29,7 +29,7 @@
     "vscode-uri": "^3.1.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.1",
+    "@types/node": "^26.0.1",
     "ts-node": "^10.9.2"
   }
 }

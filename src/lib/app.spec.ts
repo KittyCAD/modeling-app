@@ -1,11 +1,11 @@
-import type { UserFeature } from '@kittycad/lib'
+import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
-import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
+import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -14,7 +14,10 @@ import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
-import { loadWasm } from '@src/unitTestUtils'
+import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
+import { createTestWasmRegistryItem } from '@src/unitTestUtils'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 const mockProject: Project = {
@@ -95,6 +98,7 @@ function disposeApp(app: App) {
   app.auth.actor.stop()
   app.billing.actor.stop()
   app.userFeatures.actor.stop()
+  app.registry[Symbol.dispose]()
 }
 
 function createUserFeaturesForTest(
@@ -107,6 +111,8 @@ function createUserFeaturesForTest(
     context: contextSignal.value,
     matches: (state: string) => state === UserFeaturesState.Ready,
   }
+  const stateSignal = signal(snapshot)
+  const readySignal = signal(true)
   const listeners = new Set<(nextSnapshot: typeof snapshot) => void>()
 
   const userFeatures = {
@@ -121,11 +127,14 @@ function createUserFeaturesForTest(
       stop: vi.fn(),
     },
     send: vi.fn(),
+    state: stateSignal,
+    context: contextSignal,
     contextSignal,
-    has: (featureFlagId: UserFeature, defaultValue: boolean) =>
+    ready: readySignal,
+    has: (featureFlagId: Feature, defaultValue: boolean) =>
       contextSignal.value.featureIds.has(featureFlagId) ? true : defaultValue,
     useContext: () => contextSignal.value,
-    useHas: (featureFlagId: UserFeature, defaultValue: boolean) =>
+    useHas: (featureFlagId: Feature, defaultValue: boolean) =>
       userFeatures.has(featureFlagId, defaultValue),
     setFeatureIds: (nextFeatureIds: UserFeaturesContext['featureIds']) => {
       contextSignal.value = {
@@ -135,6 +144,7 @@ function createUserFeaturesForTest(
         context: contextSignal.value,
         matches: snapshot.matches,
       }
+      stateSignal.value = snapshot
       for (const listener of listeners) {
         listener(snapshot)
       }
@@ -161,11 +171,44 @@ async function waitForHistoryIdle(kclManager: KclManager) {
   throw new Error('History operation did not settle')
 }
 
+function createAppForTest(
+  provided: Parameters<typeof App.fromProvided>[0] = {}
+) {
+  return App.fromProvided({
+    ...provided,
+    registryOverrides: [
+      ...(provided.registryOverrides ?? []),
+      createTestWasmRegistryItem(),
+    ],
+  })
+}
+
 describe('project system', () => {
+  it('uses registry runtime dependencies by default', () => {
+    const app = createAppForTest()
+
+    try {
+      const registryUserFeatures = app.registry.get(userFeaturesService)
+      const registryMachineManager = app.registry.get(machineManagerService)
+
+      expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
+      expect(app.machineManager).toBe(registryMachineManager.manager)
+      expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
+    } finally {
+      disposeApp(app)
+    }
+  })
+
   it('syncs plugin settings into plugin activation and only persists overrides', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const previousElectron = window.electron
+    const syncActivePlugins = vi.fn().mockResolvedValue(undefined)
+    window.electron = {
+      pluginIpc: {
+        invoke: vi.fn(),
+        syncActivePlugins,
+      },
+    } as unknown as typeof window.electron
+    const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
@@ -178,6 +221,9 @@ describe('project system', () => {
 
       const pluginToggle = app.registry.get(plugin!.service)
       expect(pluginToggle.active.value).toBe(true)
+      expect(syncActivePlugins).toHaveBeenCalledWith(
+        expect.arrayContaining([pluginId])
+      )
 
       app.settings.actor.send({
         type: `set.plugins.${pluginId}`,
@@ -191,6 +237,7 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       expect(pluginToggle.active.value).toBe(false)
+      expect(syncActivePlugins.mock.calls.at(-1)?.[0]).not.toContain(pluginId)
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins
       ).toEqual({
@@ -209,6 +256,7 @@ describe('project system', () => {
       await waitForSettingsIdle(app)
 
       expect(pluginToggle.active.value).toBe(true)
+      expect(syncActivePlugins.mock.calls.at(-1)?.[0]).toContain(pluginId)
       expect(
         getChangedSettingsAtLevel(app.settings.get(), 'user').plugins?.[
           pluginId
@@ -216,13 +264,13 @@ describe('project system', () => {
       ).toBeUndefined()
     } finally {
       disposeApp(app)
+      window.electron = previousElectron
     }
   })
 
   it('selects the create project command from the app command system', async () => {
     const userFeatures = createUserFeaturesForTest(new Set())
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
+    const app = createAppForTest({
       userFeatures,
     })
 
@@ -277,9 +325,7 @@ describe('project system', () => {
   })
 
   it('loads the code editor automatically render plugin setting enabled by default', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
@@ -294,7 +340,6 @@ describe('project system', () => {
         expect.arrayContaining([
           'command-bar.open',
           'code-editor.render',
-          'share.open',
           'publish.open',
         ])
       )
@@ -316,9 +361,7 @@ describe('project system', () => {
   })
 
   it('reloads settings without dropping extension-backed plugin settings', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await waitForSettingsIdle(app)
@@ -340,59 +383,11 @@ describe('project system', () => {
     }
   })
 
-  it('syncs a declared plugin activation setting after reload', async () => {
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
-
-    try {
-      await waitForSettingsIdle(app)
-
-      const executionIndicatorPlugin = app.registry
-        .get(pluginsValueSpec)
-        .find((plugin) => plugin.id === 'execution-indicator')
-      expect(executionIndicatorPlugin).toBeDefined()
-
-      app.settings.actor.send({ type: 'reload.settings' } as never)
-
-      await waitForSettingsIdle(app)
-
-      const modelingSettings = app.settings.get().modeling as Record<
-        string,
-        { current: unknown }
-      >
-      expect(modelingSettings.executionIndicator.current).toBe(false)
-      expect(app.settings.get().plugins['execution-indicator']).toBeUndefined()
-      expect(
-        app.registry.get(executionIndicatorPlugin!.service).active.value
-      ).toBe(false)
-
-      app.settings.actor.send({
-        type: 'set.modeling.executionIndicator',
-        data: {
-          level: 'user',
-          value: true,
-        },
-        doNotPersist: true,
-      } as never)
-
-      await waitForSettingsIdle(app)
-
-      expect(
-        app.registry.get(executionIndicatorPlugin!.service).active.value
-      ).toBe(true)
-    } finally {
-      disposeApp(app)
-    }
-  })
-
   it('refreshes project folders after Zookeeper undo and redo changes the file set', async () => {
     const projectPath = `/tmp/app-zookeeper-folder-refresh-${crypto.randomUUID()}`
     const mainPath = fsZds.join(projectPath, 'main.kcl')
     const createdPath = fsZds.join(projectPath, 'created.kcl')
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       await writeText(mainPath, 'main = true\n')
@@ -462,9 +457,7 @@ describe('project system', () => {
     File.ioImplementations.read = () => Promise.resolve('')
     File.ioImplementations.write = () => Promise.resolve()
 
-    const app = App.fromProvided({
-      wasmPromise: loadWasm(),
-    })
+    const app = createAppForTest()
 
     try {
       const project = await app.openProject(mockProject)

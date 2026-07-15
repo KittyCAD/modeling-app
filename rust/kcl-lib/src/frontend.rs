@@ -49,6 +49,7 @@ use crate::front::Perpendicular;
 use crate::front::PointCtor;
 use crate::front::Symmetric;
 use crate::front::Tangent;
+use crate::frontend::api::CapSource;
 use crate::frontend::api::Expr;
 use crate::frontend::api::FileId;
 use crate::frontend::api::Number;
@@ -62,7 +63,9 @@ use crate::frontend::api::SceneGraphDelta;
 use crate::frontend::api::SketchCheckpointId;
 use crate::frontend::api::SourceDelta;
 use crate::frontend::api::SourceRef;
+use crate::frontend::api::SourceRefRange;
 use crate::frontend::api::Version;
+use crate::frontend::api::WallSource;
 use crate::frontend::modify::find_defined_names;
 use crate::frontend::modify::next_free_name;
 use crate::frontend::modify::next_free_name_with_padding;
@@ -638,18 +641,11 @@ impl SketchApi for FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding sketch: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding sketch".to_owned(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding sketch",
+            "No AST produced after adding sketch",
+        )?;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -1462,12 +1458,16 @@ impl SketchApi for FrontendState {
         let mut new_ast = self.program.ast.clone();
 
         // Parse the expression string into an AST node.
-        let (parsed, errors) = Program::parse(&value_expression)
-            .map_err(|e| KclErrorWithOutputs::no_outputs(KclError::refactor(e.to_string())))?;
+        let (parsed, errors) = Program::parse(&value_expression).map_err(|e| {
+            KclErrorWithOutputs::no_outputs(KclError::refactor(format_kcl_error_message(
+                "Invalid constraint value",
+                &e,
+            )))
+        })?;
         if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing value expression: {errors:?}"
-            ))));
+            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+                format_compilation_issues("Invalid constraint value", &errors),
+            )));
         }
         let mut parsed = parsed.ok_or_else(|| {
             KclErrorWithOutputs::no_outputs(KclError::refactor("No AST produced from value expression".to_string()))
@@ -2000,18 +2000,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding point: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding point".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding point",
+            "No AST produced after adding point",
+        )?;
 
         let point_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2136,18 +2129,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding line: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding line".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding line",
+            "No AST produced after adding line",
+        )?;
 
         let line_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2277,18 +2263,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding arc: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding arc".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding arc",
+            "No AST produced after adding arc",
+        )?;
 
         let arc_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2416,18 +2395,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(&new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding circle: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding circle".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding circle",
+            "No AST produced after adding circle",
+        )?;
 
         let circle_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -2541,18 +2513,11 @@ impl FrontendState {
             )
             .map_err(KclErrorWithOutputs::no_outputs)?;
         let new_source = source_from_ast(&new_ast);
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding controlPointSpline: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding controlPointSpline".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding controlPointSpline",
+            "No AST produced after adding controlPointSpline",
+        )?;
 
         let spline_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
@@ -3294,26 +3259,16 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after editing: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after editing".to_string(),
-            )));
-        };
-
-        // TODO: sketch-api: make sure to only set this if there are no errors.
-        self.program = new_program.clone();
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after editing",
+            "No AST produced after editing",
+        )?;
 
         // Truncate after the sketch block for mock execution.
         let is_delete = edit_kind.is_delete();
         let truncated_program = {
-            let mut truncated_program = new_program;
+            let mut truncated_program = new_program.clone();
             only_sketch_block(
                 &mut truncated_program.ast,
                 &sketch_block_ref,
@@ -3333,6 +3288,9 @@ impl FrontendState {
             ..Default::default()
         };
         let outcome = ctx.run_mock(&truncated_program, &mock_config).await?;
+
+        // Only now, after execution has succeeded, update self.program.
+        self.program = new_program;
 
         // Uses freedom_analysis: is_delete
         let outcome = self.update_state_after_exec(outcome, is_delete);
@@ -3359,18 +3317,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after editing: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after editing".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after editing",
+            "No AST produced after editing",
+        )?;
 
         // Make sure to only set this if there are no errors.
         self.program = new_program.clone();
@@ -4641,18 +4592,11 @@ impl FrontendState {
         // Convert to string source to create real source ranges.
         let new_source = source_from_ast(new_ast);
         // Parse the new KCL source.
-        let (new_program, errors) = Program::parse(&new_source)
-            .map_err(|err| KclErrorWithOutputs::no_outputs(KclError::refactor(err.to_string())))?;
-        if !errors.is_empty() {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
-                "Error parsing KCL source after adding constraint: {errors:?}"
-            ))));
-        }
-        let Some(new_program) = new_program else {
-            return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
-                "No AST produced after adding constraint".to_string(),
-            )));
-        };
+        let new_program = parse_frontend_mutation_source(
+            &new_source,
+            "Error parsing KCL source after adding constraint",
+            "No AST produced after adding constraint",
+        )?;
         let constraint_node_ref = find_sketch_block_added_item(&new_program.ast, &sketch_block_ref).map_err(|err| {
             KclErrorWithOutputs::no_outputs(KclError::refactor(format!(
                 "Source range of new constraint not found in sketch block: {sketch_block_ref:?}; {err:?}"
@@ -5191,29 +5135,11 @@ fn sketch_face_of_scene_object_ast_expr(
     ast: &mut ast::Node<ast::Program>,
     on_object: &crate::front::Object,
 ) -> Result<Option<ast::Expr>, KclError> {
-    let SourceRef::BackTrace { ranges } = &on_object.source else {
-        return Ok(None);
-    };
-
     match &on_object.kind {
-        ObjectKind::Wall(_) => {
-            let (solid_range, sweep_range, segment_range) = match ranges.as_slice() {
-                [sweep_range, segment_range] => (sweep_range, sweep_range, segment_range),
-                [solid_range, sweep_range, segment_range] => (solid_range, sweep_range, segment_range),
-                _ => {
-                    return Err(KclError::refactor(format!(
-                        "Expected wall source metadata to have 2 or 3 ranges, got {}; artifact_id={:?}",
-                        ranges.len(),
-                        on_object.artifact_id
-                    )));
-                }
-            };
+        ObjectKind::Wall(wall) => {
             let solid_ref = get_or_insert_ast_reference(
                 ast,
-                &SourceRef::Simple {
-                    range: solid_range.0,
-                    node_path: solid_range.1.clone(),
-                },
+                &source_ref_from_source_ref_range(&wall.source.solid),
                 "solid",
                 None,
             )?;
@@ -5223,13 +5149,13 @@ fn sketch_face_of_scene_object_ast_expr(
                     on_object.artifact_id
                 )));
             };
-            let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
+            let solid_expr = indexed_solid_expr_for_sweep_output(
+                ast_name_expr(solid_name_expr.name.name.clone()),
+                wall.solid_output_index,
+            );
             let sweep_ref = get_or_insert_ast_reference(
                 ast,
-                &SourceRef::Simple {
-                    range: sweep_range.0,
-                    node_path: sweep_range.1.clone(),
-                },
+                &source_ref_from_source_ref_range(&wall.source.sweep),
                 "solid",
                 None,
             )?;
@@ -5242,15 +5168,17 @@ fn sketch_face_of_scene_object_ast_expr(
             let sweep_name = sweep_name_expr.name.name.clone();
             let segment_ref = get_or_insert_ast_reference(
                 ast,
-                &SourceRef::Simple {
-                    range: segment_range.0,
-                    node_path: segment_range.1.clone(),
-                },
+                &source_ref_from_source_ref_range(&wall.source.segment),
                 LINE_VARIABLE,
                 None,
             )?;
 
-            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name) {
+            let face_expr = if let Some(region_name) = region_name_from_sweep_variable(ast, &sweep_name).or_else(|| {
+                wall.source
+                    .path
+                    .as_ref()
+                    .and_then(|path_source| region_name_from_path_source(ast, path_source))
+            }) {
                 let ast::Expr::Name(segment_name_expr) = segment_ref else {
                     return Err(KclError::refactor(format!(
                         "Could not resolve source segment reference for selected region wall: artifact_id={:?}",
@@ -5268,32 +5196,18 @@ fn sketch_face_of_scene_object_ast_expr(
             Ok(Some(create_face_of_ast(solid_expr, face_expr)))
         }
         ObjectKind::Cap(cap) => {
-            let solid_range = match ranges.as_slice() {
-                [solid_range] | [solid_range, _] => solid_range,
-                _ => {
-                    return Err(KclError::refactor(format!(
-                        "Expected cap source metadata to have 1 or 2 ranges, got {}; artifact_id={:?}",
-                        ranges.len(),
-                        on_object.artifact_id
-                    )));
-                }
-            };
-            let solid_ref = get_or_insert_ast_reference(
-                ast,
-                &SourceRef::Simple {
-                    range: solid_range.0,
-                    node_path: solid_range.1.clone(),
-                },
-                "solid",
-                None,
-            )?;
+            let solid_ref =
+                get_or_insert_ast_reference(ast, &source_ref_from_source_ref_range(&cap.source.solid), "solid", None)?;
             let ast::Expr::Name(solid_name_expr) = solid_ref else {
                 return Err(KclError::refactor(format!(
                     "Could not resolve solid reference for selected cap: artifact_id={:?}",
                     on_object.artifact_id
                 )));
             };
-            let solid_expr = ast_name_expr(solid_name_expr.name.name.clone());
+            let solid_expr = indexed_solid_expr_for_sweep_output(
+                ast_name_expr(solid_name_expr.name.name.clone()),
+                cap.solid_output_index,
+            );
             // TODO: change this to explicit tag references with tagStart/tagEnd mutations
             let face_expr = match cap.kind {
                 crate::frontend::api::CapKind::Start => ast_name_expr("START".to_owned()),
@@ -5304,6 +5218,35 @@ fn sketch_face_of_scene_object_ast_expr(
         }
         _ => Ok(None),
     }
+}
+
+fn indexed_solid_expr_for_sweep_output(solid_expr: ast::Expr, solid_output_index: Option<usize>) -> ast::Expr {
+    match solid_output_index {
+        Some(output_index) => create_index_expression(solid_expr, output_index),
+        None => solid_expr,
+    }
+}
+
+fn source_ref_from_source_ref_range(source: &SourceRefRange) -> SourceRef {
+    SourceRef::Simple {
+        range: source.range,
+        node_path: source.node_path.clone(),
+    }
+}
+
+fn region_name_from_path_source(ast: &ast::Node<ast::Program>, path_source: &SourceRefRange) -> Option<String> {
+    let source_ref = source_ref_from_source_ref_range(path_source);
+    let candidate = variable_name_containing_source_ref(ast, &source_ref)?;
+    let ast::Definition::Variable(region_decl) = ast.get_variable(&candidate)? else {
+        return None;
+    };
+    let ast::Expr::CallExpressionKw(region_call) = &region_decl.init else {
+        return None;
+    };
+    if region_call.callee.name.name != "region" {
+        return None;
+    }
+    Some(candidate)
 }
 
 fn downstream_composite_code_ref_for_source(artifact_graph: &ArtifactGraph, source_id: ArtifactId) -> Option<&CodeRef> {
@@ -5380,9 +5323,39 @@ fn composite_contains_input(solid_ids: &[ArtifactId], tool_ids: &[ArtifactId], i
     solid_ids.contains(&input_id) || tool_ids.contains(&input_id)
 }
 
-fn code_ref_source_ref_range(code_ref: &CodeRef) -> (SourceRange, Option<crate::NodePath>) {
+fn code_ref_source_ref_range(code_ref: &CodeRef) -> SourceRefRange {
     let node_path = (!code_ref.node_path.is_empty()).then(|| code_ref.node_path.clone());
-    (code_ref.range, node_path)
+    SourceRefRange {
+        range: code_ref.range,
+        node_path,
+    }
+}
+
+fn solid_output_index_for_sweep(
+    artifact_graph: &ArtifactGraph,
+    sweep_id: ArtifactId,
+    sweep_code_ref: &CodeRef,
+) -> Option<usize> {
+    let sibling_sweeps = artifact_graph
+        .values()
+        .filter_map(|artifact| match artifact {
+            Artifact::Sweep(sweep)
+                if sweep.code_ref.range == sweep_code_ref.range
+                    && sweep.code_ref.node_path == sweep_code_ref.node_path =>
+            {
+                Some(sweep)
+            }
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+
+    if sibling_sweeps.len() <= 1 {
+        return None;
+    }
+
+    sibling_sweeps
+        .iter()
+        .position(|sibling_sweep| sibling_sweep.id == sweep_id)
 }
 
 fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, artifact_graph: &ArtifactGraph) {
@@ -5420,21 +5393,36 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                     .unwrap_or(segment);
                 let solid_code_ref =
                     downstream_composite_code_ref_for_source(artifact_graph, wall.sweep_id).unwrap_or(&sweep.code_ref);
-                let mut ranges = Vec::new();
-                if solid_code_ref.range != sweep.code_ref.range || solid_code_ref.node_path != sweep.code_ref.node_path
-                {
-                    ranges.push(code_ref_source_ref_range(solid_code_ref));
-                }
-                ranges.push(code_ref_source_ref_range(&sweep.code_ref));
-                ranges.push(code_ref_source_ref_range(&source_segment.code_ref));
+                let path_code_ref = artifact_graph
+                    .get(&segment.path_id)
+                    .or_else(|| artifact_graph.get(&sweep.path_id))
+                    .and_then(|artifact| match artifact {
+                        Artifact::Path(path) => Some(&path.code_ref),
+                        _ => None,
+                    });
+                let source = WallSource {
+                    solid: code_ref_source_ref_range(solid_code_ref),
+                    sweep: code_ref_source_ref_range(&sweep.code_ref),
+                    path: path_code_ref.map(code_ref_source_ref_range),
+                    segment: code_ref_source_ref_range(&source_segment.code_ref),
+                };
+                let solid_output_index = (solid_code_ref.range == sweep.code_ref.range
+                    && solid_code_ref.node_path == sweep.code_ref.node_path)
+                    .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
+                    .flatten();
+                let object_source = source_ref_from_source_ref_range(&source.solid);
                 let id = ObjectId(scene_objects.len());
                 scene_objects.push(crate::front::Object {
                     id,
-                    kind: ObjectKind::Wall(crate::frontend::api::Wall { id }),
+                    kind: ObjectKind::Wall(crate::frontend::api::Wall {
+                        id,
+                        source,
+                        solid_output_index,
+                    }),
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: wall.id,
-                    source: SourceRef::BackTrace { ranges },
+                    source: object_source,
                 });
                 existing_artifact_ids.insert(wall.id);
             }
@@ -5456,19 +5444,27 @@ fn add_wall_and_cap_face_objects(scene_objects: &mut Vec<crate::front::Object>, 
                 };
                 let solid_code_ref =
                     downstream_composite_code_ref_for_source(artifact_graph, cap.sweep_id).unwrap_or(&sweep.code_ref);
-                let mut ranges = Vec::new();
-                if solid_code_ref.range != sweep.code_ref.range || solid_code_ref.node_path != sweep.code_ref.node_path
-                {
-                    ranges.push(code_ref_source_ref_range(solid_code_ref));
-                }
-                ranges.push(code_ref_source_ref_range(&sweep.code_ref));
+                let source = CapSource {
+                    solid: code_ref_source_ref_range(solid_code_ref),
+                    sweep: code_ref_source_ref_range(&sweep.code_ref),
+                };
+                let solid_output_index = (solid_code_ref.range == sweep.code_ref.range
+                    && solid_code_ref.node_path == sweep.code_ref.node_path)
+                    .then(|| solid_output_index_for_sweep(artifact_graph, sweep.id, &sweep.code_ref))
+                    .flatten();
+                let object_source = source_ref_from_source_ref_range(&source.solid);
                 scene_objects.push(crate::front::Object {
                     id,
-                    kind: ObjectKind::Cap(crate::frontend::api::Cap { id, kind }),
+                    kind: ObjectKind::Cap(crate::frontend::api::Cap {
+                        id,
+                        kind,
+                        source,
+                        solid_output_index,
+                    }),
                     label: Default::default(),
                     comments: Default::default(),
                     artifact_id: cap.id,
-                    source: SourceRef::BackTrace { ranges },
+                    source: object_source,
                 });
                 existing_artifact_ids.insert(cap.id);
             }
@@ -6404,6 +6400,53 @@ fn find_sketch_block_added_item(
     }
 }
 
+fn format_kcl_error_message(prefix: &str, error: &KclError) -> String {
+    let message = error.message().trim();
+    let message = if message.is_empty() {
+        "unknown parse error"
+    } else {
+        message
+    };
+
+    format!("{prefix}: {message}")
+}
+
+fn parse_frontend_mutation_source(source: &str, parse_error_prefix: &str, no_ast_message: &str) -> ExecResult<Program> {
+    let (program, errors) = Program::parse(source).map_err(|err| {
+        KclErrorWithOutputs::no_outputs(KclError::refactor(format_kcl_error_message(parse_error_prefix, &err)))
+    })?;
+    if !errors.is_empty() {
+        return Err(KclErrorWithOutputs::no_outputs(KclError::refactor(
+            format_compilation_issues(parse_error_prefix, &errors),
+        )));
+    }
+
+    program.ok_or_else(|| KclErrorWithOutputs::no_outputs(KclError::refactor(no_ast_message.to_owned())))
+}
+
+fn format_compilation_issues(prefix: &str, issues: &[CompilationIssue]) -> String {
+    let Some(first_issue) = issues
+        .iter()
+        .find(|issue| issue.severity.is_err())
+        .or_else(|| issues.first())
+    else {
+        return prefix.to_owned();
+    };
+
+    let message = first_issue.message.trim();
+    let message = if message.is_empty() {
+        "unknown parse error"
+    } else {
+        message
+    };
+
+    if issues.len() > 1 {
+        format!("{prefix}: {message} (+{} more)", issues.len() - 1)
+    } else {
+        format!("{prefix}: {message}")
+    }
+}
+
 fn source_from_ast(ast: &ast::Node<ast::Program>) -> String {
     // TODO: Don't duplicate this from lib.rs Program.
     ast.recast_top(&Default::default(), 0)
@@ -7031,6 +7074,20 @@ mod tests {
         None
     }
 
+    fn find_cap_object_id_with_solid_output_index(
+        scene_graph: &SceneGraph,
+        cap_kind: crate::frontend::api::CapKind,
+        solid_output_index: usize,
+    ) -> Option<ObjectId> {
+        for object in &scene_graph.objects {
+            if matches!(&object.kind, ObjectKind::Cap(cap) if cap.kind == cap_kind && cap.solid_output_index == Some(solid_output_index))
+            {
+                return Some(object.id);
+            }
+        }
+        None
+    }
+
     #[test]
     fn test_region_name_from_sweep_variable_supports_sweep_kinds() {
         let source = "\
@@ -7165,6 +7222,104 @@ not_sweep001 = shell(extrude001, faces = [], thickness = 1)
         frontend.program = program.clone();
         let outcome = mock_ctx.run_mock(program, &MockConfig::default()).await.unwrap();
         frontend.update_state_after_exec(outcome, true);
+    }
+
+    #[test]
+    fn test_parse_frontend_mutation_source_error_messages_are_user_facing() {
+        for (source, expected_message) in [
+            ("**", "Error parsing KCL source after editing: Unexpected token: *"),
+            ("3'", "Error parsing KCL source after editing: found unknown token '''"),
+        ] {
+            let err = parse_frontend_mutation_source(
+                source,
+                "Error parsing KCL source after editing",
+                "No AST produced after editing",
+            )
+            .expect_err("expected invalid KCL source to fail");
+            let message = err.error.message();
+
+            assert_eq!(message, expected_message);
+            assert!(!message.contains("CompilationIssue"));
+            assert!(!message.contains("KclErrorDetails"));
+            assert!(!message.contains("source_range"));
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_constraint_parse_error_messages_are_user_facing() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([line1.start, line1.end]) == 10
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
+
+        for (value, expected_message) in [
+            ("**", "Invalid constraint value: Unexpected token: *"),
+            ("3'", "Invalid constraint value: found unknown token '''"),
+        ] {
+            let err = frontend
+                .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, value.to_owned())
+                .await
+                .expect_err("expected invalid constraint expression to fail");
+            let message = err.error.message();
+
+            assert_eq!(message, expected_message);
+            assert!(!message.contains("CompilationIssue"));
+            assert!(!message.contains("KclErrorDetails"));
+            assert!(!message.contains("source_range"));
+        }
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_failed_edit_constraint_does_not_update_program() {
+        let initial_source = "\
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([line1.start, line1.end]) == 10
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let original_source = program.original_file_contents.clone();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
+
+        frontend
+            .edit_constraint(
+                &mock_ctx,
+                version,
+                sketch_id,
+                constraint_id,
+                "unknownDistance".to_owned(),
+            )
+            .await
+            .expect_err("expected invalid constraint value to fail execution");
+
+        assert_eq!(frontend.program.original_file_contents, original_source);
+        assert!(!frontend.program.original_file_contents.contains("unknownDistance"));
+
+        mock_ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -7503,13 +7658,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  point(at = [1in, 2in])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_point_edit_point_1", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
@@ -7538,13 +7687,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  point(at = [3in, 4in])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_point_edit_point_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
 
@@ -7615,13 +7758,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  line(start = [0mm, 0mm], end = [10mm, 10mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_line_edit_line_1", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
         for (i, scene_object) in scene_delta.new_graph.objects.iter().enumerate() {
@@ -7662,13 +7799,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  line(start = [1mm, 2mm], end = [13mm, 14mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_line_edit_line_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -7749,13 +7880,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  arc(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm], center = [var 10mm, var 0mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_arc_edit_arc_1", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_objects,
             vec![ObjectId(2), ObjectId(3), ObjectId(4), ObjectId(5)]
@@ -7809,13 +7934,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  arc(start = [var 1mm, var 2mm], end = [var 13mm, var 14mm], center = [var 13mm, var 2mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_arc_edit_arc_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 6);
 
@@ -7871,13 +7990,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_circle_edit_circle_1", src_delta.text.as_str());
         // The new objects are start, center, and then the circle segment.
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
@@ -7916,13 +8029,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  circle1 = circle(start = [var 10mm, var 0mm], center = [var 3mm, var 4mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_circle_edit_circle_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -7958,12 +8065,7 @@ bad = missing_name
             .delete_objects(&mock_ctx, version, sketch_id, vec![], vec![circle_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_circle", src_delta.text.as_str());
         let new_sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let new_sketch = expect_sketch(new_sketch_object);
         assert_eq!(new_sketch.segments.len(), 0);
@@ -8034,13 +8136,7 @@ bad = missing_name
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  circle(start = [var 7mm, var 1mm], center = [var 0mm, var 0mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_circle_via_point", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -8091,13 +8187,7 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "s = sketch(on = XY) {
-  line(start = [0mm, 0mm], end = [10mm, 10mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_line_when_sketch_block_uses_variable", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2), ObjectId(3), ObjectId(4)]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -8168,17 +8258,11 @@ bad = missing_name
             .add_segment(&mock_ctx, version, sketch_id, segment, None)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "sketch001 = sketch(on = XY) {
-  line(start = [0mm, 0mm], end = [10mm, 10mm])
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_add_line_delete_sketch_1", src_delta.text.as_str());
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
-        assert_eq!(src_delta.text.as_str(), "");
+        insta::assert_snapshot!("test_new_sketch_add_line_delete_sketch_2", src_delta.text.as_str());
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -8202,7 +8286,10 @@ bad = missing_name
         let sketch_id = sketch_object.id;
 
         let (src_delta, scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
-        assert_eq!(src_delta.text.as_str(), "");
+        insta::assert_snapshot!(
+            "test_delete_sketch_when_sketch_block_uses_variable",
+            src_delta.text.as_str()
+        );
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -8242,7 +8329,7 @@ sketch001 = sketch(on = XZ) {
             src_delta.text
         );
         // The leading line comment must survive deletion.
-        assert_eq!(src_delta.text.as_str(), "// test 1\n");
+        insta::assert_snapshot!("test_delete_sketch_after_comment", src_delta.text.as_str());
         assert_eq!(scene_delta.new_graph.objects.len(), 0);
 
         ctx.close().await;
@@ -8275,7 +8362,10 @@ foo = 1
 
         let (src_delta, _scene_delta) = frontend.delete_sketch(&ctx, version, sketch_id).await.unwrap();
         // The leading comment should remain, now attached to the following body item.
-        assert_eq!(src_delta.text.as_str(), "// keep me\nfoo = 1\n");
+        insta::assert_snapshot!(
+            "test_delete_sketch_preserves_pre_comment_when_followed_by_code",
+            src_delta.text.as_str()
+        );
 
         ctx.close().await;
     }
@@ -8311,16 +8401,7 @@ sketch(on = XY) {
             .unwrap();
         // The line comment on the line above the deleted point must be preserved.
         // It is reattached to the next surviving body item.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  // describe the middle point
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_segment_preserves_pre_comment", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -8356,14 +8437,9 @@ sketch(on = XY) {
             .unwrap();
         // No following item to attach to; the comment is kept inside the sketch
         // block as trailing non-code metadata so the user does not lose it.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  // describe the trailing point
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_last_segment_preserves_pre_comment",
+            src_delta.text.as_str()
         );
 
         ctx.close().await;
@@ -8454,16 +8530,9 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  /* above first - moves to middle */
-  /* above middle - stays */
-  point(at = [var 3, var 4])
-  /* above last - moves to trailing meta */
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_segments_preserves_block_comments_across_positions",
+            src_delta.text.as_str()
         );
 
         ctx.close().await;
@@ -8513,14 +8582,7 @@ sketch(on = XY) {
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line(start = [var 5in, var 6in], end = [var 3, var 4])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_line_when_editing_its_start_point", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -8570,14 +8632,7 @@ sketch(on = XY) {
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line(start = [var 1, var 2], end = [var 5in, var 6in])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_line_when_editing_its_end_point", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -8635,18 +8690,7 @@ sketch(on = XY) {
             .edit_segments(&mock_ctx, version, sketch_id, segments)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 4.14, var 5.32])
-  line2 = line(start = [var 4.14, var 5.32], end = [var 9, var 10])
-  fixed([line1.start, [0, 0]])
-  coincident([line1.end, line2.start])
-  equalLength([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_line_with_coincident_feedback", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             11,
@@ -9039,13 +9083,9 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert_eq!(
-            source_delta.text,
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 25mm, var 0])
-}
-",
+        insta::assert_snapshot!(
+            "test_commit_var_solution_by_node_path_updates_sketch_var",
+            source_delta.text
         );
     }
 
@@ -9103,16 +9143,9 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert_eq!(
-            source_delta.text,
-            "\
-// added comment
-// added comment
-
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 30mm, var 0])
-}
-",
+        insta::assert_snapshot!(
+            "test_commit_var_solution_survives_whitespace_shift_earlier_in_file",
+            source_delta.text
         );
     }
 
@@ -9152,13 +9185,9 @@ sketch(on = XY) {
 
         let source_delta = frontend.commit_var_solutions_to_program(&outcome, "testing").unwrap();
 
-        assert_eq!(
-            source_delta.text,
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 33mm, var 0mm], end = [var 20mm, var 0mm])
-}
-",
+        insta::assert_snapshot!(
+            "test_commit_var_solution_node_path_wins_when_source_range_points_at_wrong_var",
+            source_delta.text
         );
     }
 
@@ -9205,16 +9234,7 @@ sketch(on = XY) {
         // Default length unit (mm; no `@settings(defaultLengthUnit = …)`) is
         // written as an explicit suffix so the bare var commits with units.
         // The recast adds a blank line after the `@settings` annotation.
-        assert_eq!(
-            source_delta.text,
-            "\
-@settings(experimentalFeatures = allow, kclVersion = 2.0)
-
-sketch(on = XY) {
-  line1 = line(start = [var 7mm, var 0mm], end = [var 10mm, var 0])
-}
-",
-        );
+        insta::assert_snapshot!("test_commit_var_solution_writes_back_into_bare_var", source_delta.text);
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -9246,15 +9266,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_point_without_var", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
@@ -9291,15 +9303,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 1, var 2])
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_point_with_var", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 4);
 
@@ -9338,14 +9342,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point1_id, point2_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_multiple_points", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 3);
 
@@ -9383,16 +9380,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
-  point(at = [var 5, var 6])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_coincident_constraint", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 5);
 
@@ -9428,13 +9416,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_cascades_to_coincident_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9475,13 +9459,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_cascades_to_distance_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9523,13 +9503,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![point2_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_point_cascades_to_horizontal_distance_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9570,14 +9546,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line1_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_line_cascades_to_fixed_constraint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -9617,13 +9586,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line1_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_cascades_to_midpoint_constraint",
+            src_delta.text.as_str()
         );
         assert_eq!(
             scene_delta.new_graph.objects.len(),
@@ -9728,15 +9693,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  equalLength([line1, line2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_preserves_multiline_equal_length_constraint",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -9954,13 +9913,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line2_id, line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_lines_removes_multiline_equal_length_constraint_below_minimum",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -10000,15 +9955,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  parallel([line1, line2])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_line_preserves_multiline_parallel_constraint",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -10058,13 +10007,9 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, Vec::new(), vec![line2_id, line3_id])
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-}
-"
+        insta::assert_snapshot!(
+            "test_delete_lines_removes_multiline_parallel_constraint_below_minimum",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -10104,15 +10049,7 @@ sketch(on = XY) {
             .delete_objects(&mock_ctx, version, sketch_id, vec![coincident_id], Vec::new())
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-}
-"
-        );
+        insta::assert_snapshot!("test_delete_line_line_coincident_constraint", src_delta.text.as_str());
         assert_eq!(scene_delta.new_objects, vec![]);
         assert_eq!(scene_delta.new_graph.objects.len(), 8);
 
@@ -10151,16 +10088,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 3, var 4])
-  point2 = point(at = [3, 4])
-  coincident([point1, point2])
-}
-"
-        );
+        insta::assert_snapshot!("test_two_points_coincident", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -10210,17 +10138,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 3, var 4])
-  point2 = point(at = [var 3, var 4])
-  point3 = point(at = [var 3, var 4])
-  coincident([point1, point2, point3])
-}
-"
-        );
+        insta::assert_snapshot!("test_three_points_coincident", src_delta.text.as_str());
 
         let constraint_object = scene_delta
             .new_graph
@@ -10296,25 +10214,9 @@ sketch(on = XY) {
 }
 ";
 
-        for (origin_first, expected_source) in [
-            (
-                true,
-                "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 0])
-  coincident([ORIGIN, point1])
-}
-",
-            ),
-            (
-                false,
-                "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 0])
-  coincident([point1, ORIGIN])
-}
-",
-            ),
+        for (origin_first, snapshot_name) in [
+            (true, "test_point_origin_coincident_preserves_order_origin_first"),
+            (false, "test_point_origin_coincident_preserves_order_point_first"),
         ] {
             let program = Program::parse(initial_source).unwrap().0.unwrap();
 
@@ -10342,7 +10244,7 @@ sketch(on = XY) {
                 .add_constraint(&mock_ctx, version, sketch_id, constraint)
                 .await
                 .unwrap();
-            assert_eq!(src_delta.text.as_str(), expected_source);
+            insta::assert_snapshot!(snapshot_name, src_delta.text.as_str());
 
             let constraint_object = scene_delta
                 .new_graph
@@ -10393,16 +10295,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 4, var 5])
-  line2 = line(start = [var 4, var 5], end = [var 7, var 8])
-  coincident([line1.end, line2.start])
-}
-"
-        );
+        insta::assert_snapshot!("test_coincident_of_line_end_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -10474,15 +10367,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  circle1 = circle(start = [var 7.02mm, var 0mm], center = [var -0.01mm, var 0.22mm])
-  line1 = line(start = [var 7mm, var 0.78mm], end = [var 10mm, var 2mm])
-  coincident([line1.start, circle1])
-}
-"
+        insta::assert_snapshot!(
+            "test_coincident_of_line_point_and_circle_segment",
+            src_delta.text.as_str()
         );
 
         mock_ctx.close().await;
@@ -10680,17 +10567,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1.29, var 2.29])
-  point2 = point(at = [var 2.71, var 3.71])
-  distance([point1, point2]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_two_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -10750,16 +10627,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1.29, var 2.29])
-  point2 = point(at = [var 2.71, var 3.71])
-  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_two_points_with_label", src_delta.text.as_str());
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
@@ -10838,16 +10706,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 2])
-  distance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_distance_constraint_label_position", src_delta.text.as_str());
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -11000,16 +10859,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 5])
-  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
-  distance([point1, line1], labelPosition = [10mm, 11mm]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_point_line", src_delta.text.as_str());
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
         let constraint_object = scene_delta.new_graph.objects.get(sketch.constraints[0].0).unwrap();
@@ -11073,16 +10923,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 0, var 8])
-  arc1 = arc(start = [var 5, var 0], end = [var 0, var 5], center = [var 0, var 0])
-  distance([point1, arc1]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_point_arc", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11135,15 +10976,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  arc1 = arc(start = [var -4.16mm, var -0.43mm], end = [var -3.53mm, var 3.28mm], center = [var -4.91mm, var 1.61mm])
-  distance([arc1, ORIGIN]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_arc_origin", src_delta.text.as_str());
 
         mock_ctx.close().await;
     }
@@ -11195,15 +11028,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 5, var 0], end = [var 5, var 10])
-  distance([ORIGIN, line1]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_line_origin", src_delta.text.as_str());
 
         mock_ctx.close().await;
     }
@@ -11267,16 +11092,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var -10, var 8], end = [var 10, var 8])
-  circle1 = circle(start = [var 5, var 0], center = [var 0, var 0])
-  distance([line1, circle1]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_line_circle", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11341,16 +11157,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  circle1 = circle(start = [var 4.33, var 0], center = [var -0.34, var -0.09])
-  arc1 = arc(start = [var 15.33, var -0.01], end = [var 10.01, var 4.33], center = [var 11.34, var 0.53])
-  distance([circle1, arc1]) == 3mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_circle_arc", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11404,16 +11211,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
-  line2 = line(start = [var 0, var 5], end = [var 10, var 5])
-  distance([line1, line2]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_distance_parallel_lines", src_delta.text.as_str());
 
         ctx.close().await;
         mock_ctx.close().await;
@@ -11467,15 +11265,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 4.98, var -0.07], end = [var 4.98, var 0.14])
-  line2 = line(start = [var 0.02, var 4.3], end = [var 0.03, var 5.65])
-  distance([line1, line2]) == 5mm
-}
-"
+        insta::assert_snapshot!(
+            "test_distance_non_parallel_lines_lowers_to_distance",
+            src_delta.text.as_str()
         );
 
         ctx.close().await;
@@ -11530,17 +11322,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
-  horizontalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_horizontal_distance_two_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -11609,16 +11391,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  radius(arc1) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_radius_single_arc_segment", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7, // Plane (0) + Sketch (1) + Start point (2) + End point (3) + Center point (4) + Arc (5) + Constraint (6)
@@ -11686,14 +11459,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
-}
-"
+        insta::assert_snapshot!(
+            "test_radius_single_arc_segment_with_label_position",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -11753,15 +11521,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
-  radius(arc1, labelPosition = [10mm, 11mm]) == 5mm
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_radius_constraint_label_position", src_delta.text.as_str());
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -11823,17 +11583,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 1, var 2])
-  point2 = point(at = [var 3, var 4])
-  verticalDistance([point1, point2], labelPosition = [10mm, 11mm]) == 2mm
-}
-"
-        );
+        insta::assert_snapshot!("test_vertical_distance_two_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -11899,15 +11649,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 2, var 3])
-  fixed([point1, [2mm, 3mm]])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_fixed_standalone_point", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             4,
@@ -11981,17 +11723,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 2, var 3])
-  point2 = point(at = [var 4, var 5])
-  fixed([point1, [2mm, 3mm]])
-  fixed([point2, [4mm, 5mm]])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_fixed_multiple_points", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -12048,15 +11780,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 2, var 3], end = [var 3, var 4])
-  fixed([line1.start, [2mm, 3mm]])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_fixed_owned_point", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -12182,16 +11906,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  diameter(arc1) == 10mm
-}
-"
-        );
+        insta::assert_snapshot!("test_diameter_single_arc_segment", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7, // Plane (0) + Sketch (1) + Start point (2) + End point (3) + Center point (4) + Arc (5) + Constraint (6)
@@ -12259,14 +11974,9 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 1.83, var 3.62], end = [var 2.42, var 3.3], center = [var -0.25, var -0.92])
-  diameter(arc1, labelPosition = [10mm, 11mm]) == 10mm
-}
-"
+        insta::assert_snapshot!(
+            "test_diameter_single_arc_segment_with_label_position",
+            src_delta.text.as_str()
         );
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
@@ -12326,15 +12036,7 @@ sketch(on = XY) {
             )
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 5mm, var 0mm], end = [var 0mm, var 5mm], center = [var 0mm, var 0mm])
-  diameter(arc1, labelPosition = [10mm, 11mm]) == 10mm
-}
-"
-        );
+        insta::assert_snapshot!("test_edit_diameter_constraint_label_position", src_delta.text.as_str());
 
         let constraint_object = scene_delta.new_graph.objects.get(constraint_id.0).unwrap();
         let ObjectKind::Constraint { constraint } = &constraint_object.kind else {
@@ -12441,15 +12143,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 3], end = [var 3, var 3])
-  horizontal(line1)
-}
-"
-        );
+        insta::assert_snapshot!("test_line_horizontal", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -12836,15 +12530,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 2, var 2], end = [var 2, var 4])
-  vertical(line1)
-}
-"
-        );
+        insta::assert_snapshot!("test_line_vertical", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -12889,16 +12575,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  p0 = point(at = [var 4mm, var 3.1mm])
-  pf = point(at = [4, 4])
-  vertical([p0, pf])
-}
-"
-        );
+        insta::assert_snapshot!("test_points_vertical", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -12943,16 +12620,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 4mm])
-  pf = point(at = [4, 4])
-  horizontal([p0, pf])
-}
-"
-        );
+        insta::assert_snapshot!("test_points_horizontal", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             5,
@@ -12993,15 +12661,7 @@ sketch001 = sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch001 = sketch(on = XY) {
-  p0 = point(at = [var -2.23mm, var 0mm])
-  horizontal([p0, ORIGIN])
-}
-"
-        );
+        insta::assert_snapshot!("test_point_horizontal_with_origin", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             4,
@@ -13044,16 +12704,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  equalLength([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_equal_length", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13097,17 +12748,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
-  equalLength([line1, line2, line3])
-}
-"
-        );
+        insta::assert_snapshot!("test_add_constraint_multi_line_equal_length", src_delta.text.as_str());
         let constraints = scene_delta
             .new_graph
             .objects
@@ -13161,16 +12802,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  parallel([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_parallel", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13215,17 +12847,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 1, var 2], end = [var 3, var 4])
-  line2 = line(start = [var 5, var 6], end = [var 7, var 8])
-  line3 = line(start = [var 9, var 10], end = [var 11, var 12])
-  parallel([line1, line2, line3])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_parallel_multiline", src_delta.text.as_str());
 
         let sketch_object = find_first_sketch_object(&scene_delta.new_graph).unwrap();
         let sketch = expect_sketch(sketch_object);
@@ -13275,16 +12897,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 2, var 3], end = [var 2, var 3])
-  line2 = line(start = [var 6, var 7], end = [var 6, var 7])
-  perpendicular([line1, line2])
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_perpendicular", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13332,17 +12945,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            // The lack indentation is a formatter bug.
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0.9, var 2.36], end = [var 3.1, var 3.64])
-  line2 = line(start = [var 5.36, var 5.9], end = [var 6.64, var 8.1])
-  angle([line1, line2]) == 30deg
-}
-"
-        );
+        insta::assert_snapshot!("test_lines_angle", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             9,
@@ -13385,16 +12988,7 @@ sketch(on = XY) {
             .add_constraint(&mock_ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0.84, var 2.13], end = [var 3.82, var 3.27])
-  arc1 = arc(start = [var 4.51, var 2.03], end = [var 7.05, var 2.02], center = [var 5.78, var 2.55])
-  tangent([line1, arc1])
-}
-"
-        );
+        insta::assert_snapshot!("test_segments_tangent", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             10,
@@ -13439,16 +13033,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 2.33, var 1.67])
-  line1 = line(start = [var -0.67, var -0.33], end = [var 5.33, var 3.67])
-  midpoint(line1, point = point1)
-}
-"
-        );
+        insta::assert_snapshot!("test_point_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7,
@@ -13494,17 +13079,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var 0, var 0], end = [var 0, var 4])
-  line2 = line(start = [var 4, var 0], end = [var 4, var 4])
-  line3 = line(start = [var 2, var -1], end = [var 2, var 5])
-  symmetric([line1, line2], axis = line3)
-}
-"
-        );
+        insta::assert_snapshot!("test_segments_symmetric", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             12,
@@ -13548,16 +13123,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  point1 = point(at = [var 6, var 2.35])
-  arc1 = arc(start = [var 6, var 2.35], end = [var 6, var 2.35], center = [var 6, var 1.94])
-  midpoint(arc1, point = point1)
-}
-"
-        );
+        insta::assert_snapshot!("test_point_arc_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             8,
@@ -13599,15 +13165,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  line1 = line(start = [var -3, var -2], end = [var 3, var 2])
-  midpoint(line1, point = ORIGIN)
-}
-"
-        );
+        insta::assert_snapshot!("test_origin_line_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             6,
@@ -13649,15 +13207,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var 0.35, var 2.24], end = [var 1.62, var -1.58], center = [var 2.34, var 0.78])
-  midpoint(arc1, point = ORIGIN)
-}
-"
-        );
+        insta::assert_snapshot!("test_origin_arc_midpoint", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             7,
@@ -13703,17 +13253,7 @@ sketch(on = XY) {
             .add_constraint(&ctx, version, sketch_id, constraint)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch(on = XY) {
-  arc1 = arc(start = [var -14.46, var 0], end = [var -10, var 4.65], center = [var -10.14, var 0.31])
-  arc2 = arc(start = [var 5.49, var 2.26], end = [var 11.58, var -3.47], center = [var 9.34, var 0.25])
-  line1 = line(start = [var -0.44, var -10], end = [var -0.37, var 10])
-  symmetric([arc1, arc2], axis = line1)
-}
-"
-        );
+        insta::assert_snapshot!("test_segments_symmetric_arcs", src_delta.text.as_str());
         assert_eq!(
             scene_delta.new_graph.objects.len(),
             14,
@@ -13856,6 +13396,134 @@ extrude001 = extrude(region001, length = 5)
         ctx.close().await;
     }
 
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_multi_region_extrude_cap_indexes_selected_solid() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  circle1 = circle(start = [var -1.51mm, var 1.31mm], center = [var -1.98mm, var 1.03mm])
+  circle2 = circle(start = [var 2.98mm, var 2.37mm], center = [var 2.66mm, var 1.46mm])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.circle2])
+region002 = region(segments = [sketch001.circle1])
+extrude001 = extrude([region001, region002], length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        for (solid_output_index, expected_face) in [
+            (0, "faceOf(extrude001[0], face = END)"),
+            (1, "faceOf(extrude001[1], face = END)"),
+        ] {
+            let mut frontend = FrontendState::new();
+            frontend.hack_set_program(&ctx, program.clone()).await.unwrap();
+            let cap_object_id = find_cap_object_id_with_solid_output_index(
+                &frontend.scene_graph,
+                crate::frontend::api::CapKind::End,
+                solid_output_index,
+            )
+            .unwrap_or_else(|| panic!("expected an end cap object for solid output index {solid_output_index}"));
+
+            let sketch_args = SketchCtor {
+                on: Plane::Object(cap_object_id),
+            };
+            let (src_delta, _scene_delta, _sketch_id) = frontend
+                .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+                .await
+                .unwrap();
+
+            assert!(
+                src_delta.text.contains(expected_face),
+                "expected `{expected_face}` in:\n{}",
+                src_delta.text
+            );
+            assert!(!src_delta.text.contains("faceOf(extrude001, face = END)"));
+        }
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_multi_region_extrude_wall_indexes_selected_solid() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  rect1Line1 = line(start = [0, 0], end = [1, 0])
+  rect1Line2 = line(start = [1, 0], end = [1, 1])
+  rect1Line3 = line(start = [1, 1], end = [0, 1])
+  rect1Line4 = line(start = [0, 1], end = [0, 0])
+  rect2Line1 = line(start = [3, 0], end = [4, 0])
+  rect2Line2 = line(start = [4, 0], end = [4, 1])
+  rect2Line3 = line(start = [4, 1], end = [3, 1])
+  rect2Line4 = line(start = [3, 1], end = [3, 0])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [
+  sketch001.rect1Line4,
+  sketch001.rect1Line1
+])
+region002 = region(segments = [
+  sketch001.rect2Line4,
+  sketch001.rect2Line1
+])
+extrude001 = extrude([region001, region002], length = 5)
+";
+
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+        let mut frontend = FrontendState::new();
+        let ctx = ExecutorContext::new_with_default_client().await.unwrap();
+        let version = Version(0);
+
+        frontend.hack_set_program(&ctx, program).await.unwrap();
+        let region_call = "\
+region(segments = [
+  sketch001.rect1Line4,
+  sketch001.rect1Line1
+])";
+        let region_call_start = initial_source.find(region_call).unwrap();
+        let region_range = [region_call_start, region_call_start + region_call.len(), 0].into();
+        let segment_call = "line(start = [0, 0], end = [1, 0])";
+        let segment_call_start = initial_source.find(segment_call).unwrap();
+        let segment_range = [segment_call_start, segment_call_start + segment_call.len(), 0].into();
+        let wall_object_id = frontend
+            .scene_graph
+            .objects
+            .iter()
+            .find_map(|object| match &object.kind {
+                ObjectKind::Wall(wall)
+                    if wall.source.path.as_ref().is_some_and(|path| path.range == region_range)
+                        && wall.source.segment.range == segment_range =>
+                {
+                    Some(object.id)
+                }
+                _ => None,
+            })
+            .expect("expected a wall object for region001.tags.rect1Line1");
+
+        let sketch_args = SketchCtor {
+            on: Plane::Object(wall_object_id),
+        };
+        let (src_delta, _scene_delta, _sketch_id) = frontend
+            .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
+            .await
+            .unwrap();
+
+        let expected_face = "faceOf(extrude001[0], face = region001.tags.rect1Line1)";
+        assert!(
+            src_delta.text.contains(expected_face),
+            "expected `{expected_face}` in:\n{}",
+            src_delta.text
+        );
+        assert!(!src_delta.text.contains("faceOf(extrude001, face ="));
+
+        ctx.close().await;
+    }
+
     #[test]
     fn test_enclosing_variable_fallback_skips_nested_sketch_items() {
         let source = "\
@@ -13928,15 +13596,12 @@ part = subtract(boxSolid, tools = [cutSolid])
             .iter()
             .find(|object| {
                 matches!(
-                    object.kind,
+                    &object.kind,
                     ObjectKind::Cap(crate::frontend::api::Cap {
                         kind: crate::frontend::api::CapKind::End,
+                        source,
                         ..
-                    })
-                ) && matches!(
-                    &object.source,
-                    SourceRef::BackTrace { ranges }
-                        if ranges.len() == 2 && ranges[0].0 == composite_range && ranges[1].0 == sweep_range
+                    }) if source.solid.range == composite_range && source.sweep.range == sweep_range
                 )
             })
             .expect("expected end cap object to trace through subtract and original extrude");
@@ -14014,24 +13679,7 @@ plane = planeOf(cube, face = side)
             .new_sketch(&ctx, ProjectId(0), FileId(0), version, sketch_args)
             .await
             .unwrap();
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-len = 2mm
-cube = startSketchOn(XY)
-  |> startProfile(at = [0, 0])
-  |> line(end = [len, 0], tag = $side)
-  |> line(end = [0, len])
-  |> line(end = [-len, 0])
-  |> line(end = [0, -len])
-  |> close()
-  |> extrude(length = len)
-
-plane = planeOf(cube, face = side)
-sketch001 = sketch(on = plane) {
-}
-"
-        );
+        insta::assert_snapshot!("test_sketch_on_plane_incremental", src_delta.text.as_str());
         assert_eq!(sketch_id, ObjectId(2));
         assert_eq!(scene_delta.new_objects, vec![ObjectId(2)]);
         let sketch_object = &scene_delta.new_graph.objects[2];
@@ -14080,15 +13728,7 @@ sketch1 = sketch(on = XY) {
             .await
             .unwrap();
 
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch1 = sketch(on = XY) {
-}
-sketch001 = sketch(on = YZ) {
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_uses_unique_variable_name", src_delta.text.as_str());
 
         ctx.close().await;
     }
@@ -14116,15 +13756,7 @@ sketch1 = sketch(on = XY) {
             .await
             .unwrap();
 
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-sketch1 = sketch(on = XY) {
-}
-sketch001 = sketch(on = XY) {
-}
-"
-        );
+        insta::assert_snapshot!("test_new_sketch_twice_using_same_plane", src_delta.text.as_str());
 
         ctx.close().await;
     }
@@ -14272,43 +13904,7 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the first sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
-  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 0.14mm, var 0.86mm], end = [var 1.283mm, var -0.781mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        insta::assert_snapshot!("test_multiple_sketch_blocks_1", src_delta.text.as_str());
         let edited_sketch1_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
@@ -14364,43 +13960,7 @@ sketch2 = sketch(on = XY) {
             .await
             .unwrap();
         // Only the second sketch block changes.
-        assert_eq!(
-            src_delta.text.as_str(),
-            "\
-// Cube that requires the engine.
-width = 2
-sketch001 = startSketchOn(XY)
-profile001 = startProfile(sketch001, at = [0, 0])
-  |> yLine(length = width, tag = $seg1)
-  |> xLine(length = width)
-  |> yLine(length = -width)
-  |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
-  |> close()
-extrude001 = extrude(profile001, length = width)
-
-// Get a value that requires the engine.
-x = segLen(seg1)
-
-// Triangle with side length 2*x.
-sketch(on = XY) {
-  line1 = line(start = [var 1mm, var 2mm], end = [var 2.32mm, var -1.78mm])
-  line2 = line(start = [var 2.32mm, var -1.78mm], end = [var -1.61mm, var -1.03mm])
-  coincident([line1.end, line2.start])
-  line3 = line(start = [var -1.61mm, var -1.03mm], end = [var 1mm, var 2mm])
-  coincident([line2.end, line3.start])
-  coincident([line3.end, line1.start])
-  equalLength([line3, line1])
-  equalLength([line1, line2])
-  distance([line1.start, line1.end]) == 2 * x
-}
-
-// Line segment with length x.
-sketch2 = sketch(on = XY) {
-  line1 = line(start = [var 3mm, var 4mm], end = [var 2.32mm, var 2.12mm])
-  distance([line1.start, line1.end]) == x
-}
-"
-        );
+        insta::assert_snapshot!("test_multiple_sketch_blocks_2", src_delta.text.as_str());
         let edited_sketch2_source = src_delta.text.clone();
 
         // Execute mock to simulate drag end.
@@ -14481,8 +14041,6 @@ sketch002 = sketch(on = XY) {
         // Extra newlines after @settings line - this shifts all source ranges.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 sketch001 = sketch(on = XY) {
   point(at = [1in, 2in])
 }
@@ -14556,8 +14114,6 @@ sketch001 = sketch(on = XY) {
         // Extra newlines after @settings, with an empty sketch block.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 s = sketch(on = XY) {}
 ";
 
@@ -14616,7 +14172,6 @@ s = sketch(on = XY) {}
     async fn test_extra_newlines_between_operations_edit_line() {
         // Extra newlines between @settings and sketch, and inside the sketch block.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
 
 sketch001 = sketch(on = XY) {
 
@@ -14709,8 +14264,6 @@ sketch001 = sketch(on = XY) {
         // Extra whitespace before and after the sketch block.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 sketch001 = sketch(on = XY) {
   circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
 }
@@ -14754,9 +14307,6 @@ sketch001 = sketch(on = XY) {
     async fn test_unformatted_source_add_arc() {
         // Source with inconsistent whitespace - tabs, extra spaces, multiple blank lines.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
-
-
 
 sketch001 = sketch(on = XY) {
 }
@@ -14829,8 +14379,6 @@ sketch001 = sketch(on = XY) {
         // Extra blank lines between settings and sketch.
         let initial_source = "@settings(defaultLengthUnit = mm)
 
-
-
 sketch001 = sketch(on = XY) {
 }
 ";
@@ -14891,8 +14439,6 @@ sketch001 = sketch(on = XY) {
     async fn test_extra_newlines_add_constraint() {
         // Extra newlines with a sketch containing two lines - add a coincident constraint.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
-
 
 sketch001 = sketch(on = XY) {
   line1 = line(start = [var 0mm, var 0mm], end = [var 10mm, var 10mm])
@@ -14973,8 +14519,6 @@ sketch001 = sketch(on = XY) {
     async fn test_extra_newlines_add_line_then_edit_line() {
         // Extra newlines after @settings - add a line, then edit it.
         let initial_source = "@settings(defaultLengthUnit = mm)
-
-
 
 sketch001 = sketch(on = XY) {
 }

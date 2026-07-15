@@ -33,6 +33,11 @@ fn representative_sources_match_old_scanner() {
         "\"with escaped \\\" quote\" 'with escaped \\\' quote'",
         r#""a\q""#,
         concat!("\"a\\", "\n", "\""),
+        // Multiline strings: a closed string spanning raw newlines is one String
+        // token in both lexers.
+        "\"line one\nline two\"",
+        "'multi\nline string'",
+        "\"// a comment\nstill in the string\"",
         "\"unterminated",
         "'unterminated",
         "\"a",
@@ -59,22 +64,6 @@ fn representative_sources_match_old_scanner() {
     }
 }
 
-#[test]
-fn fixture_kcl_inputs_match_old_scanner() {
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests");
-    for entry in walkdir::WalkDir::new(root).into_iter().filter_map(Result::ok) {
-        let path = entry.path();
-        if !path.is_file() || path.extension().is_none_or(|extension| extension != "kcl") {
-            continue;
-        }
-
-        let source = std::fs::read_to_string(path).unwrap_or_else(|err| {
-            panic!("failed to read fixture {}: {err}", path.display());
-        });
-        assert_matches_old_scanner(&source);
-    }
-}
-
 proptest! {
     #![proptest_config(ProptestConfig {
         failure_persistence: None,
@@ -88,35 +77,136 @@ proptest! {
 }
 
 fn assert_matches_old_scanner(source: &str) {
+    if let Err(divergence) = check_matches_old_scanner(source) {
+        panic!("source:\n{source}\n{divergence}");
+    }
+}
+
+/// How the new and old scanners agreed for one input.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum MatchKind {
+    /// Token-for-token identical (the strong case).
+    Strict,
+    /// New scanner emitted a recovery token; only lossless reconstruction is required.
+    Recovery,
+    /// The intentional `import(` policy divergence (old: Word, new: Keyword).
+    ImportPolicy,
+    /// Old scanner rejected the source; new scanner reconstructs it losslessly.
+    OldError,
+}
+
+/// Compare the new lexer against the old scanner for `source`. Returns `Ok(kind)`
+/// when they agree or when the difference is an intentionally-tolerated case
+/// (`kind` says which), and `Err(description)` for a real, untolerated divergence.
+/// Non-panicking so a corpus scan can collect divergences and tally how much
+/// matched strictly vs. was tolerated, in a single pass.
+fn check_matches_old_scanner(source: &str) -> Result<MatchKind, String> {
     let new_tokens = new_tokens(source);
+    let reconstructed = || new_tokens.iter().map(|(_, text, _)| text.as_str()).collect::<String>();
+
     match old_tokens(source) {
         Ok(_) if has_recovery_token(&new_tokens) => {
-            let reconstructed = new_tokens.iter().map(|(_, text, _)| text.as_str()).collect::<String>();
-            assert_eq!(
-                reconstructed, source,
-                "new scanner should preserve text when intentionally recovering from lexical error:\n{source}"
-            );
+            if reconstructed() == source {
+                Ok(MatchKind::Recovery)
+            } else {
+                Err("new scanner did not preserve text while recovering from a lexical error".to_owned())
+            }
         }
         Ok(old_tokens) if has_import_policy_divergence(&old_tokens, &new_tokens) => {
-            let reconstructed = new_tokens.iter().map(|(_, text, _)| text.as_str()).collect::<String>();
-            assert_eq!(
-                reconstructed, source,
-                "new scanner should preserve text when intentionally classifying import by text:\n{source}"
-            );
-            assert_ne!(
-                old_tokens, new_tokens,
-                "import policy case should be an intentional old scanner divergence:\n{source}"
-            );
+            if reconstructed() != source {
+                Err("new scanner did not preserve text in the import-policy case".to_owned())
+            } else if old_tokens == new_tokens {
+                Err("import-policy case expected a divergence but tokens matched".to_owned())
+            } else {
+                Ok(MatchKind::ImportPolicy)
+            }
         }
-        Ok(old_tokens) => assert_eq!(old_tokens, new_tokens, "source:\n{source}"),
+        Ok(old_tokens) => {
+            if old_tokens == new_tokens {
+                Ok(MatchKind::Strict)
+            } else {
+                Err(format!("token mismatch:\n  old: {old_tokens:?}\n  new: {new_tokens:?}"))
+            }
+        }
         Err(old_error) => {
-            let reconstructed = new_tokens.iter().map(|(_, text, _)| text.as_str()).collect::<String>();
-            assert_eq!(
-                reconstructed, source,
-                "new scanner should preserve text when old scanner rejects source:\n{source}\nold error:\n{old_error:?}"
-            );
+            if reconstructed() == source {
+                Ok(MatchKind::OldError)
+            } else {
+                Err(format!(
+                    "old scanner rejected the source but the new scanner did not reconstruct it losslessly; old error:\n{old_error:?}"
+                ))
+            }
         }
     }
+}
+
+/// Runs the new-vs-old comparison over the whole in-repo `.kcl` corpus (far
+/// beyond `kcl-lib/tests`), plus an external corpus when `KCL_CORPUS_DIR` is set,
+/// reporting every divergence in one pass.
+#[test]
+fn corpus_matches_old_scanner() {
+    let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
+    let repo_root = manifest.join("..").join("..");
+
+    let mut roots = vec![
+        manifest.to_path_buf(),
+        repo_root.join("public").join("kcl-samples"),
+        repo_root.join("public").join("kcl-samples-legacy"),
+        repo_root.join("rust").join("kcl-python-bindings"),
+    ];
+    if let Ok(external) = std::env::var("KCL_CORPUS_DIR") {
+        roots.push(std::path::PathBuf::from(external));
+    }
+
+    let mut checked = 0usize;
+    let mut strict = 0usize;
+    let mut recovery = 0usize;
+    let mut import_policy = 0usize;
+    let mut old_error = 0usize;
+    let mut divergences: Vec<(String, String)> = Vec::new();
+
+    for root in &roots {
+        if !root.exists() {
+            continue;
+        }
+        for entry in walkdir::WalkDir::new(root).into_iter().filter_map(Result::ok) {
+            let path = entry.path();
+            if !path.is_file() || path.extension().is_none_or(|extension| extension != "kcl") {
+                continue;
+            }
+            let Ok(source) = std::fs::read_to_string(path) else {
+                continue;
+            };
+            checked += 1;
+            match check_matches_old_scanner(&source) {
+                Ok(MatchKind::Strict) => strict += 1,
+                Ok(MatchKind::Recovery) => recovery += 1,
+                Ok(MatchKind::ImportPolicy) => import_policy += 1,
+                Ok(MatchKind::OldError) => old_error += 1,
+                Err(divergence) => divergences.push((path.display().to_string(), divergence)),
+            }
+        }
+    }
+
+    eprintln!(
+        "[corpus] checked {checked} .kcl file(s): strict={strict} recovery={recovery} import={import_policy} old_error={old_error}; {} untolerated divergence(s)",
+        divergences.len()
+    );
+    for (path, divergence) in divergences.iter().take(50) {
+        eprintln!("[corpus] DIVERGENCE {path}\n{divergence}\n");
+    }
+    if divergences.len() > 50 {
+        eprintln!(
+            "[corpus] ... and {} more divergence(s) not shown",
+            divergences.len() - 50
+        );
+    }
+
+    assert!(
+        divergences.is_empty(),
+        "{} corpus divergence(s); see stderr above",
+        divergences.len()
+    );
 }
 
 fn has_import_policy_divergence(
@@ -163,7 +253,9 @@ fn is_unterminated_string_text(text: &str) -> bool {
 }
 
 fn old_tokens(source: &str) -> Result<Vec<(TokenType, String, Range<usize>)>, crate::errors::KclError> {
-    super::lex(source, ModuleId::default()).map(|tokens| {
+    // Pin to the legacy tokeniser regardless of the ambient `KCL_LEXER` mode, so
+    // this stays the "old" side of the comparison even under `KCL_LEXER=new`.
+    super::lex_legacy(source, ModuleId::default()).map(|tokens| {
         tokens
             .tokens
             .into_iter()
@@ -173,91 +265,20 @@ fn old_tokens(source: &str) -> Result<Vec<(TokenType, String, Range<usize>)>, cr
 }
 
 fn new_tokens(source: &str) -> Vec<(TokenType, String, Range<usize>)> {
+    // Uses the production mapping so the compat comparison and the new lexer's
+    // adapter can never drift. Recovery kinds (unterminated string/block comment)
+    // map to `Unknown` here; those inputs hit the recovery arm of
+    // `assert_matches_old_scanner`, so the mapped type is not compared directly.
     kcl_syntax::lexer::lex(source)
         .into_iter()
-        .map(|token| (old_token_type(token.kind()), token.text().to_owned(), token.range()))
+        .map(|token| {
+            (
+                super::adapter::syntax_kind_to_token_type(token.kind()),
+                token.text().to_owned(),
+                token.range(),
+            )
+        })
         .collect()
-}
-
-fn old_token_type(kind: kcl_syntax::syntax_kind::SyntaxKind) -> TokenType {
-    match kind {
-        kcl_syntax::syntax_kind::SyntaxKind::Number => TokenType::Number,
-        kcl_syntax::syntax_kind::SyntaxKind::Word => TokenType::Word,
-        kcl_syntax::syntax_kind::SyntaxKind::GtEq
-        | kcl_syntax::syntax_kind::SyntaxKind::LtEq
-        | kcl_syntax::syntax_kind::SyntaxKind::EqEq
-        | kcl_syntax::syntax_kind::SyntaxKind::FatArrow
-        | kcl_syntax::syntax_kind::SyntaxKind::BangEq
-        | kcl_syntax::syntax_kind::SyntaxKind::PipeGt
-        | kcl_syntax::syntax_kind::SyntaxKind::Star
-        | kcl_syntax::syntax_kind::SyntaxKind::Plus
-        | kcl_syntax::syntax_kind::SyntaxKind::Minus
-        | kcl_syntax::syntax_kind::SyntaxKind::Slash
-        | kcl_syntax::syntax_kind::SyntaxKind::Percent
-        | kcl_syntax::syntax_kind::SyntaxKind::Eq
-        | kcl_syntax::syntax_kind::SyntaxKind::Lt
-        | kcl_syntax::syntax_kind::SyntaxKind::Gt
-        | kcl_syntax::syntax_kind::SyntaxKind::Backslash
-        | kcl_syntax::syntax_kind::SyntaxKind::Caret
-        | kcl_syntax::syntax_kind::SyntaxKind::PipePipe
-        | kcl_syntax::syntax_kind::SyntaxKind::AmpAmp
-        | kcl_syntax::syntax_kind::SyntaxKind::Pipe
-        | kcl_syntax::syntax_kind::SyntaxKind::Amp => TokenType::Operator,
-        kcl_syntax::syntax_kind::SyntaxKind::String => TokenType::String,
-        kcl_syntax::syntax_kind::SyntaxKind::UnterminatedString => TokenType::Unknown,
-        kcl_syntax::syntax_kind::SyntaxKind::IfKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ElseKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ForKw
-        | kcl_syntax::syntax_kind::SyntaxKind::WhileKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ReturnKw
-        | kcl_syntax::syntax_kind::SyntaxKind::BreakKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ContinueKw
-        | kcl_syntax::syntax_kind::SyntaxKind::FnKw
-        | kcl_syntax::syntax_kind::SyntaxKind::LetKw
-        | kcl_syntax::syntax_kind::SyntaxKind::MutKw
-        | kcl_syntax::syntax_kind::SyntaxKind::AsKw
-        | kcl_syntax::syntax_kind::SyntaxKind::LoopKw
-        | kcl_syntax::syntax_kind::SyntaxKind::TrueKw
-        | kcl_syntax::syntax_kind::SyntaxKind::FalseKw
-        | kcl_syntax::syntax_kind::SyntaxKind::NilKw
-        | kcl_syntax::syntax_kind::SyntaxKind::AndKw
-        | kcl_syntax::syntax_kind::SyntaxKind::OrKw
-        | kcl_syntax::syntax_kind::SyntaxKind::NotKw
-        | kcl_syntax::syntax_kind::SyntaxKind::VarKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ConstKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ImportKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ExportKw
-        | kcl_syntax::syntax_kind::SyntaxKind::TypeKw
-        | kcl_syntax::syntax_kind::SyntaxKind::InterfaceKw
-        | kcl_syntax::syntax_kind::SyntaxKind::NewKw
-        | kcl_syntax::syntax_kind::SyntaxKind::SelfKw
-        | kcl_syntax::syntax_kind::SyntaxKind::RecordKw
-        | kcl_syntax::syntax_kind::SyntaxKind::StructKw
-        | kcl_syntax::syntax_kind::SyntaxKind::ObjectKw => TokenType::Keyword,
-        kcl_syntax::syntax_kind::SyntaxKind::OpenParen
-        | kcl_syntax::syntax_kind::SyntaxKind::CloseParen
-        | kcl_syntax::syntax_kind::SyntaxKind::OpenBrace
-        | kcl_syntax::syntax_kind::SyntaxKind::CloseBrace
-        | kcl_syntax::syntax_kind::SyntaxKind::OpenBracket
-        | kcl_syntax::syntax_kind::SyntaxKind::CloseBracket => TokenType::Brace,
-        kcl_syntax::syntax_kind::SyntaxKind::Hash => TokenType::Hash,
-        kcl_syntax::syntax_kind::SyntaxKind::Bang => TokenType::Bang,
-        kcl_syntax::syntax_kind::SyntaxKind::Dollar => TokenType::Dollar,
-        kcl_syntax::syntax_kind::SyntaxKind::Whitespace => TokenType::Whitespace,
-        kcl_syntax::syntax_kind::SyntaxKind::Comma => TokenType::Comma,
-        kcl_syntax::syntax_kind::SyntaxKind::Colon => TokenType::Colon,
-        kcl_syntax::syntax_kind::SyntaxKind::DoubleColon => TokenType::DoubleColon,
-        kcl_syntax::syntax_kind::SyntaxKind::Period => TokenType::Period,
-        kcl_syntax::syntax_kind::SyntaxKind::DoublePeriod => TokenType::DoublePeriod,
-        kcl_syntax::syntax_kind::SyntaxKind::DoublePeriodLessThan => TokenType::DoublePeriodLessThan,
-        kcl_syntax::syntax_kind::SyntaxKind::LineComment => TokenType::LineComment,
-        kcl_syntax::syntax_kind::SyntaxKind::BlockComment => TokenType::BlockComment,
-        kcl_syntax::syntax_kind::SyntaxKind::UnterminatedBlockComment => TokenType::BlockComment,
-        kcl_syntax::syntax_kind::SyntaxKind::Unknown => TokenType::Unknown,
-        kcl_syntax::syntax_kind::SyntaxKind::QuestionMark => TokenType::QuestionMark,
-        kcl_syntax::syntax_kind::SyntaxKind::At => TokenType::At,
-        kcl_syntax::syntax_kind::SyntaxKind::SemiColon => TokenType::SemiColon,
-    }
 }
 
 fn kclish_source() -> impl Strategy<Value = String> {

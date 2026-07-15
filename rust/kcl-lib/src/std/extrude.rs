@@ -31,10 +31,12 @@ use super::utils::point_to_mm;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::ArtifactId;
+use crate::execution::CreatorEdge;
 use crate::execution::CreatorFace;
 use crate::execution::ExecState;
 use crate::execution::ExecutorContext;
 use crate::execution::Extrudable;
+use crate::execution::ExtrudePlane;
 use crate::execution::ExtrudeSurface;
 use crate::execution::GeoMeta;
 use crate::execution::KclValue;
@@ -68,6 +70,8 @@ pub async fn extrude(exec_state: &mut ExecState, args: Args) -> Result<KclValue,
                 RuntimeType::sketch(),
                 RuntimeType::face(),
                 RuntimeType::tagged_face(),
+                RuntimeType::tagged_edge(),
+                RuntimeType::Primitive(PrimitiveType::Edge),
                 RuntimeType::segment(),
             ])),
             ArrayLen::Minimum(1),
@@ -235,6 +239,47 @@ pub async fn coerce_extrude_targets(
 
         let synthetic_sketch = build_segment_surface_sketch(segments, exec_state, ctx, source_range).await?;
         return Ok(vec![Extrudable::from(synthetic_sketch)]);
+    }
+
+    // Edges behave like sketch segments: they can only be surface-extruded, they
+    // don't create caps, and they can't be mixed with sketches or faces. Enforce
+    // the same rules so these cases fail loudly instead of silently producing a
+    // surface (or silently ignoring `tagStart`/`tagEnd`).
+    let has_edge = extrudables
+        .iter()
+        .any(|e| matches!(e, Extrudable::Edge(_) | Extrudable::EdgeTag(_)));
+    if has_edge {
+        let has_non_edge = extrudables
+            .iter()
+            .any(|e| !matches!(e, Extrudable::Edge(_) | Extrudable::EdgeTag(_)));
+        if has_non_edge {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Cannot extrude edges together with sketches or faces in the same call. Use separate `extrude()` calls.".to_owned(),
+                vec![source_range],
+            )));
+        }
+
+        if !matches!(body_type, BodyType::Surface) {
+            let kind_of_extrude = match body_type {
+                BodyType::Solid => "solid extrude",
+                BodyType::Surface => "surface extrude",
+                _ => "non-surface extrude",
+            };
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                format!(
+                    "You're trying to perform a {kind_of_extrude} on an edge, but edges can only be extruded with surface extrudes. To do a solid extrude, select a closed sketch region instead. To extrude these edges, do a surface extrude by using `bodyType = SURFACE` instead."
+                ),
+                vec![source_range],
+            )));
+        }
+
+        if tag_start.is_some() || tag_end.is_some() {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "`tagStart` and `tagEnd` are not supported when extruding edges. Edge surface extrudes do not create start or end caps."
+                    .to_owned(),
+                vec![source_range],
+            )));
+        }
     }
 
     Ok(extrudables)
@@ -417,6 +462,13 @@ async fn inner_extrude(
     };
 
     for extrudable in &extrudables {
+        let is_edge = match extrudable {
+            Extrudable::Sketch(..) => false,
+            Extrudable::FaceTag(_) => false,
+            Extrudable::Face(_) => false,
+            Extrudable::EdgeTag(_) => true,
+            Extrudable::Edge(_) => true,
+        };
         let extrude_cmd_id = exec_state.next_uuid();
         let sketch_or_face_id = extrudable.id_to_extrude(exec_state, &args, false).await?;
         let cmd = match (
@@ -634,7 +686,7 @@ async fn inner_extrude(
                     )
                 }
                 Point3dAxis3dOrGeometryReference::EdgeToReference(spec) => {
-                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, exec_state, &args).await?;
+                    let inner = edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
                             .target(sketch_or_face_id.into())
@@ -695,6 +747,8 @@ async fn inner_extrude(
                 face_id: face.id,
                 solid_id: face.parent_solid.solid_id,
             },
+            Extrudable::EdgeTag(_) => BeingExtruded::Edge,
+            Extrudable::Edge(_) => BeingExtruded::Edge,
         };
         if let Some(post_extr_sketch) = extrudable.as_sketch() {
             let cmds = post_extr_sketch.build_sketch_mode_cmds(
@@ -726,6 +780,39 @@ async fn inner_extrude(
                 )
                 .await?,
             );
+        } else if is_edge {
+            // Ensure that edges do not use the MERGE method.
+            match extrude_method {
+                ExtrudeMethod::New => {
+                    // This is expected.
+                }
+                ExtrudeMethod::Merge => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "Cannot use method MERGE with surface extrude of an edge".to_owned(),
+                        vec![args.source_range],
+                    )));
+                }
+                _ => {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        format!("Unknown extrude method: {extrude_method:?}"),
+                        vec![args.source_range],
+                    )));
+                }
+            }
+
+            // Surface-extrude an edge.
+            exec_state
+                .batch_modeling_cmd(ModelingCmdMeta::from_args_id(exec_state, &args, extrude_cmd_id), cmd)
+                .await?;
+            // Extract the edge tag.
+            let edge_tag = match extrudable {
+                Extrudable::Sketch(_) => None,
+                Extrudable::FaceTag(_) => None,
+                Extrudable::Face(_) => None,
+                Extrudable::EdgeTag(tag) => Some(TagDeclarator::new(&tag.value)),
+                Extrudable::Edge(_) => None,
+            };
+            solids.push(after_surface_creation(extrude_cmd_id.into(), edge_tag, exec_state, &args).await?);
         } else {
             return Err(KclError::new_type(KclErrorDetails::new(
                 "Expected a sketch for extrusion".to_owned(),
@@ -747,6 +834,7 @@ pub(crate) struct NamedCapTags<'a> {
 pub enum BeingExtruded {
     Sketch,
     Face { face_id: Uuid, solid_id: Uuid },
+    Edge,
 }
 
 /// Which edge should we use for querying Solid3dGetExtrusionInfo and GetAdjacencyInfo?
@@ -782,6 +870,91 @@ fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: 
     // Probably will fail in the engine because it means the clone map was built wrong,
     // or KCL and the engine disagree about what geometry exists.
     any_edge_id
+}
+
+/// This is similar to [`do_post_extrude()`], but for surfaces where a sketch
+/// isn't available.
+pub(crate) async fn after_surface_creation(
+    extrude_cmd_id: ArtifactId,
+    edge_tag: Option<crate::parsing::ast::types::Node<TagDeclarator>>,
+    exec_state: &mut ExecState,
+    args: &Args,
+) -> Result<Solid, KclError> {
+    let body_id = extrude_cmd_id.into();
+
+    // Bring the object to the front of the scene.
+    // See: https://github.com/KittyCAD/modeling-app/issues/806
+
+    exec_state
+        .batch_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(mcmd::ObjectBringToFront::builder().object_id(body_id).build()),
+        )
+        .await?;
+
+    let (face_id, edge_id) = if args.ctx.no_engine_commands().await {
+        (exec_state.next_uuid(), exec_state.next_uuid())
+    } else {
+        // Get the body entity ids.
+        let response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                ModelingCmd::from(mcmd::EntityGetAllChildUuids::builder().entity_id(body_id).build()),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(ref all_child_ids_resp),
+        } = response
+        else {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+        let entity_ids = &all_child_ids_resp.entity_ids;
+        let Some(face_id) = entity_ids.first().copied() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Expected EntityGetAllChildUuids response to have at least 1 ID: {response:?}",),
+                vec![args.source_range],
+            )));
+        };
+        let Some(edge_id) = entity_ids.get(1).copied() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                format!("Expected EntityGetAllChildUuids response to have at least 2 IDs: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+        (face_id, edge_id)
+    };
+
+    // TODO: Do we need to use ExtrudeArc?
+    let extrude_surface = ExtrudeSurface::ExtrudePlane(ExtrudePlane {
+        face_id,
+        tag: edge_tag,
+        geo_meta: GeoMeta {
+            id: face_id,
+            metadata: args.source_range.into(),
+        },
+    });
+    let new_value = vec![extrude_surface];
+
+    Ok(Solid {
+        id: body_id,
+        value_id: body_id,
+        artifact_id: extrude_cmd_id,
+        value: new_value,
+        faces: Default::default(),
+        meta: vec![args.source_range.into()],
+        // Normally, we would propagate the units of the sketch. But an edge
+        // doesn't have units. We also don't seem to use this field anywhere.
+        units: kcl_api::UnitLength::Millimeters,
+        sectional: false,
+        creator: SolidCreator::Edge(CreatorEdge { edge_id, body_id }),
+        start_cap_id: None,
+        end_cap_id: None,
+        edge_cuts: Vec::new(),
+        pending_edge_cut_ids: Vec::new(),
+    })
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -925,8 +1098,8 @@ pub(crate) async fn do_post_extrude<'a>(
 
     let Faces {
         sides: mut face_id_map,
-        start_cap_id,
-        end_cap_id,
+        mut start_cap_id,
+        mut end_cap_id,
     } = analyze_faces(exec_state, args, face_infos).await;
 
     // If this is a clone, we will use the clone_id_map to map the face info from the original sketch to the clone sketch.
@@ -941,6 +1114,10 @@ pub(crate) async fn do_post_extrude<'a>(
                 Some((*fe_key, fe_value))
             })
             .collect::<HashMap<Uuid, Option<Uuid>>>();
+        // The face info above was queried using the original solid's id, so
+        // the cap ids belong to the original. Map them to the clone's ids.
+        start_cap_id = start_cap_id.and_then(|id| clone_id_map.get(&id).copied());
+        end_cap_id = end_cap_id.and_then(|id| clone_id_map.get(&id).copied());
     }
 
     // Iterate over the sketch.value array and add face_id to GeoMeta
@@ -1058,6 +1235,14 @@ pub(crate) async fn do_post_extrude<'a>(
             solid_id,
             sketch,
         }),
+        BeingExtruded::Edge => {
+            let message = "Expected an edge to have been extruded via another code path";
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                message.to_owned(),
+                vec![args.source_range],
+            )));
+        }
     };
 
     Ok(Solid {
@@ -1307,6 +1492,26 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_succeeds_in_mock_exec() {
+        let code = r#"
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [0mm, 0mm], end = [1mm, 0mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+extrude(
+  getOppositeEdge(extrude001.sketch.tags.line1),
+  length = 1,
+  method = NEW,
+  bodyType = SURFACE,
+)
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn segment_extrude_rejects_cap_tags() {
         let ctx = ExecutorContext::new_mock(None).await;
         let mut exec_state = ExecState::new(&ctx);
@@ -1325,6 +1530,95 @@ extrude(profile001, length = 1, bidirectionalLength = -1)
         assert!(
             err.message()
                 .contains("`tagStart` and `tagEnd` are not supported when extruding sketch segments"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
+
+    /// `getOppositeEdge()` and the other edge getters return a raw edge as
+    /// `KclValue::Uuid`, which coerces to `Extrudable::Edge`.
+    fn edge_value(exec_state: &mut ExecState) -> KclValue {
+        KclValue::Uuid {
+            value: exec_state.next_uuid(),
+            meta: vec![],
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_rejects_solid_body_type() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let edge = edge_value(&mut exec_state);
+        let err = coerce_extrude_targets(
+            vec![edge],
+            BodyType::Solid,
+            None,
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("edges can only be extruded with surface extrudes"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_rejects_cap_tags() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let edge = edge_value(&mut exec_state);
+        let err = coerce_extrude_targets(
+            vec![edge],
+            BodyType::Surface,
+            Some(&TagDeclarator::new("cap_start")),
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("`tagStart` and `tagEnd` are not supported when extruding edges"),
+            "{err:?}"
+        );
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn edge_extrude_rejects_mixing_with_face() {
+        let ctx = ExecutorContext::new_mock(None).await;
+        let mut exec_state = ExecState::new(&ctx);
+        let edge = edge_value(&mut exec_state);
+        // The string "START" coerces to a `FaceTag`, i.e. a non-edge extrudable.
+        let face = KclValue::String {
+            value: "START".to_owned(),
+            meta: vec![],
+        };
+        let err = coerce_extrude_targets(
+            vec![edge, face],
+            BodyType::Surface,
+            None,
+            None,
+            &mut exec_state,
+            &ctx,
+            crate::SourceRange::default(),
+        )
+        .await
+        .unwrap_err();
+
+        assert!(
+            err.message()
+                .contains("Cannot extrude edges together with sketches or faces"),
             "{err:?}"
         );
         ctx.close().await;

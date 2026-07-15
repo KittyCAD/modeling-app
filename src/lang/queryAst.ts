@@ -1633,6 +1633,8 @@ export function retrieveSelectionsFromOpArg(
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'Segment') {
     artifactIds = [opArg.value.artifact_id]
+  } else if (opArg.value.type === 'Uuid') {
+    artifactIds = [opArg.value.value]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
@@ -1642,6 +1644,9 @@ export function retrieveSelectionsFromOpArg(
       }
       if (v.type === 'Segment') {
         return [v.artifact_id]
+      }
+      if (v.type === 'Uuid') {
+        return [v.value]
       }
       if (v.type === 'TagIdentifier' && v.artifact_id) {
         return [v.artifact_id]
@@ -2245,6 +2250,19 @@ export function getSketchSegmentName(
   }
 
   return null
+}
+
+export function createSketchTagMemberExpression(
+  sourceSurfaceExpr: Expr,
+  segmentName: string
+): Expr {
+  return createMemberExpression(
+    createMemberExpression(
+      createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
+      'tags'
+    ),
+    segmentName
+  )
 }
 
 export function getSketchSegmentNameFromSourceSurface(

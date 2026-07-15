@@ -1,14 +1,8 @@
 import type { UserResponse } from '@kittycad/lib'
 import { users } from '@kittycad/lib'
-import fsZds from '@src/lib/fs-zds'
-import { fsZdsConstants } from '@src/lib/fs-zds/constants'
-import { type IStat } from '@src/lib/fs-zds/interface'
-import { createKCClient, kcCall } from '@src/lib/kcClient'
-
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
-
 import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { newKclFile } from '@src/lang/project'
 import {
@@ -30,12 +24,16 @@ import {
   TELEMETRY_FILE_NAME,
   TELEMETRY_RAW_FILE_NAME,
 } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
+import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import type { IStat } from '@src/lib/fs-zds/interface'
 import {
-  type GitignoreStackEntry,
   appendGitignoreForDirectory,
   createInitialGitignoreStack,
+  type GitignoreStackEntry,
   isPathIgnoredByGitignore,
 } from '@src/lib/gitignore'
+import { createKCClient, kcCall } from '@src/lib/kcClient'
 import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import {
   getCloudProjectIdFromProjectTomlContents,
@@ -84,13 +82,14 @@ const convertIStatToFileMetadata = (
   }
 }
 
-function isPathNotFoundError(error: unknown) {
+export function isPathNotFoundError(error: unknown) {
   return (
     error === 'ENOENT' ||
     (typeof error === 'string' && error.startsWith('ENOENT')) ||
     (typeof error === 'object' &&
       error !== null &&
       (('code' in error && error.code === 'ENOENT') ||
+        ('cause' in error && error.cause === 'ENOENT') ||
         ('message' in error &&
           typeof error.message === 'string' &&
           error.message.startsWith('ENOENT'))))
@@ -239,7 +238,9 @@ export async function createNewProjectDirectory(
     configuration = await readAppSettingsFile(wasmInstance)
   }
 
-  if (err(configuration)) return Promise.reject(configuration)
+  if (err(configuration)) {
+    return Promise.reject(configuration)
+  }
   const mainDir =
     overrideApplicationProjectDirectory ||
     (await ensureProjectDirectoryExists(configuration))
@@ -276,7 +277,9 @@ export async function createNewProjectDirectory(
     configuration?.settings?.modeling?.base_unit ?? DEFAULT_DEFAULT_LENGTH_UNIT,
     wasmInstance
   )
-  if (err(codeToWrite)) return Promise.reject(codeToWrite)
+  if (err(codeToWrite)) {
+    return Promise.reject(codeToWrite)
+  }
   await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
   await ensureProjectTomlTitle({
     projectPath: projectDir,
@@ -331,10 +334,14 @@ export async function listProjects(
     })
   }
 
-  if (err(configuration) || !configuration) return Promise.reject(configuration)
+  if (err(configuration) || !configuration) {
+    return Promise.reject(configuration)
+  }
   const projectDir = await ensureProjectDirectoryExists(configuration)
   const projects = []
-  if (!projectDir) return Promise.reject(new Error('projectDir was falsey'))
+  if (!projectDir) {
+    return Promise.reject(new Error('projectDir was falsey'))
+  }
 
   // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
   const entries = await fsZds.readdir(projectDir)
@@ -342,7 +349,7 @@ export async function listProjects(
   const { value: canReadWriteProjectDirectory } =
     await canReadWriteDirectory(projectDir)
 
-  for (let entry of entries) {
+  for (const entry of entries) {
     // Skip directories that start with a dot
     if (entry.startsWith('.')) {
       continue
@@ -386,13 +393,15 @@ const collectAllFilesRecursiveFrom = async (
     PROJECT_SETTINGS_FILE_NAME,
   ])
 
+  let stats: IStat
   // Make sure the filesystem object exists.
   try {
-    await fsZds.stat(targetPath)
+    stats = await fsZds.stat(targetPath)
   } catch (e) {
     if (e === 'ENOENT') {
       return Promise.reject(new Error(`Directory ${targetPath} does not exist`))
     }
+    return Promise.reject(e)
   }
 
   // Make sure the path is a directory.
@@ -403,9 +412,10 @@ const collectAllFilesRecursiveFrom = async (
 
   const name = fsZds.basename(targetPath)
 
-  let entry: FileEntry = {
+  const entry: FileEntry = {
     name: name,
     path: targetPath,
+    metadata: convertIStatToFileMetadata(stats),
     children: [],
   }
 
@@ -430,14 +440,20 @@ const collectAllFilesRecursiveFrom = async (
     return 0
   })
 
-  for (let e of entries) {
+  for (const e of entries) {
     // ignore hidden files and directories (starting with a dot)
     if (!showAllFiles && e.indexOf('.') === 0) {
       continue
     }
 
     const ePath = fsZds.join(targetPath, e)
-    const isEDir = await statIsDirectory(ePath)
+    let eStats: IStat
+    try {
+      eStats = await fsZds.stat(ePath)
+    } catch {
+      continue
+    }
+    const isEDir = Boolean(eStats.mode & fsZdsConstants.S_IFDIR)
     const relativePath = fsZds.relative(projectRoot, ePath).replace(/\\/g, '/')
 
     if (isPathIgnoredByGitignore(gitignoreStack, relativePath, isEDir)) {
@@ -466,6 +482,7 @@ const collectAllFilesRecursiveFrom = async (
         /* FileEntry */ {
           name: e,
           path: ePath,
+          metadata: convertIStatToFileMetadata(eStats),
           children: null,
         }
       )
@@ -489,14 +506,14 @@ export async function getDefaultKclFileForDir(
     return Promise.reject(new Error(`Path ${projectDir} is not a directory`))
   }
 
-  let defaultFilePath = fsZds.join(projectDir, PROJECT_ENTRYPOINT)
+  const defaultFilePath = fsZds.join(projectDir, PROJECT_ENTRYPOINT)
   try {
     await fsZds.stat(defaultFilePath)
   } catch (e) {
     if (e === 'ENOENT') {
       // Find a kcl file in the directory.
       if (file.children) {
-        for (let entry of file.children) {
+        for (const entry of file.children) {
           if (entry.name.endsWith('.kcl')) {
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
@@ -537,7 +554,7 @@ export async function getDefaultKclFileForDir(
 const kclFileCount = (file: FileEntry) => {
   let count = 0
   if (file.children) {
-    for (let entry of file.children) {
+    for (const entry of file.children) {
       if (entry.name.endsWith('.kcl')) {
         count += 1
       } else {
@@ -553,7 +570,7 @@ const kclFileCount = (file: FileEntry) => {
 const directoryCount = (file: FileEntry) => {
   let count = 0
   if (file.children) {
-    for (let entry of file.children) {
+    for (const entry of file.children) {
       // We only want to count FileEntries with children, e.g. folders
       if (entry.children !== null) {
         count += 1
@@ -600,7 +617,7 @@ export async function getProjectInfo(
   const gitignoreStack = await createInitialGitignoreStack(projectPath)
 
   // Return walked early if canReadWriteProjectPath is false
-  let walked = await collectAllFilesRecursiveFrom(
+  const walked = await collectAllFilesRecursiveFrom(
     projectPath,
     projectPath,
     canReadWriteProjectPath,
@@ -622,7 +639,7 @@ export async function getProjectInfo(
     ? await readProjectTomlMetadata(projectPath)
     : { title: undefined, cloudProjectId: undefined }
 
-  let project = {
+  const project = {
     ...walked,
     ...projectTomlMetadata,
     metadata: convertIStatToFileMetadata(stats ?? null),
@@ -647,7 +664,9 @@ export async function writeProjectSettingsFile(
   tomlStr: string
 ): Promise<void> {
   const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
-  if (err(tomlStr)) return Promise.reject(tomlStr)
+  if (err(tomlStr)) {
+    return Promise.reject(tomlStr)
+  }
   return fsZds.writeFile(
     projectSettingsFilePath,
     new TextEncoder().encode(tomlStr)
@@ -758,7 +777,7 @@ export const getEnvironmentConfigurationPath = async (
     }
   }
   // /envs/<subdomain>.json e.g. /envs/dev.zoo.dev.json
-  return fsZds.join(fullPath, environmentName + '.json')
+  return fsZds.join(fullPath, `${environmentName}.json`)
 }
 
 export const getEnvironmentFilePath = async () => {
@@ -870,7 +889,7 @@ export const readProjectSettingsFile = async (
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<ProjectConfiguration>> => {
-  let settingsPath = await getProjectSettingsFilePath(projectPath)
+  const settingsPath = await getProjectSettingsFilePath(projectPath)
 
   // Check if this file exists.
   try {
@@ -897,7 +916,7 @@ export const readProjectSettingsFile = async (
 export const readAppSettingsFile = async (
   wasmInstance: ModuleType
 ): Promise<DeepPartial<Configuration>> => {
-  let settingsPath = await getAppSettingsFilePath()
+  const settingsPath = await getAppSettingsFilePath()
   const initialProjectDirConfig: { [key: string]: JsonValue } = {
     directory: await getInitialDefaultDir(),
   }
@@ -961,7 +980,9 @@ export const readAppSettingsFile = async (
 
 export const writeAppSettingsFile = async (tomlStr: string) => {
   const appSettingsFilePath = await getAppSettingsFilePath()
-  if (err(tomlStr)) return Promise.reject(tomlStr)
+  if (err(tomlStr)) {
+    return Promise.reject(tomlStr)
+  }
   return fsZds.writeFile(appSettingsFilePath, new TextEncoder().encode(tomlStr))
 }
 
@@ -974,7 +995,9 @@ export const readEnvironmentConfigurationFile = async (
     const configurationJSON: string = await fsZds.readFile(path, {
       encoding: 'utf-8',
     })
-    if (!configurationJSON) return null
+    if (!configurationJSON) {
+      return null
+    }
     return JSON.parse(configurationJSON)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_e: unknown) {
@@ -1038,7 +1061,9 @@ export const readEnvironmentConfigurationToken = async (
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
-  if (!environmentConfiguration?.token) return ''
+  if (!environmentConfiguration?.token) {
+    return ''
+  }
   return environmentConfiguration.token.trim()
 }
 
@@ -1047,7 +1072,9 @@ export const readEnvironmentConfigurationKittycadWebSocketUrl = async (
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
-  if (!environmentConfiguration?.kittycadWebSocketUrl) return ''
+  if (!environmentConfiguration?.kittycadWebSocketUrl) {
+    return ''
+  }
   return environmentConfiguration.kittycadWebSocketUrl.trim()
 }
 
@@ -1074,12 +1101,14 @@ export const readEnvironmentConfigurationMlephantWebSocketUrl = async (
 ) => {
   const environmentConfiguration =
     await readEnvironmentConfigurationFile(environmentName)
-  if (!environmentConfiguration?.mlephantWebSocketUrl) return ''
+  if (!environmentConfiguration?.mlephantWebSocketUrl) {
+    return ''
+  }
   return environmentConfiguration.mlephantWebSocketUrl.trim()
 }
 
 export const readEnvironmentFile = async () => {
-  let environmentFilePath = await getEnvironmentFilePath()
+  const environmentFilePath = await getEnvironmentFilePath()
   console.log(readEnvironmentFile)
 
   try {
@@ -1087,7 +1116,9 @@ export const readEnvironmentFile = async () => {
     const environment: string = await fsZds.readFile(environmentFilePath, {
       encoding: 'utf-8',
     })
-    if (!environment) return ''
+    if (!environment) {
+      return ''
+    }
     return environment.trim()
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_e: unknown) {
@@ -1102,7 +1133,9 @@ export const readEnvironmentFile = async () => {
 export const writeEnvironmentFile = async (environment: string) => {
   environment = environment.trim()
   const environmentFilePath = await getEnvironmentFilePath()
-  if (err(environment)) return Promise.reject(environment)
+  if (err(environment)) {
+    return Promise.reject(environment)
+  }
   const result = await fsZds.writeFile(
     environmentFilePath,
     new TextEncoder().encode(environment)
@@ -1139,20 +1172,24 @@ export const listAllEnvironmentsWithTokens = async () => {
 
 export const writeTelemetryFile = async (content: string) => {
   const telemetryFilePath = await getTelemetryFilePath()
-  if (err(content)) return Promise.reject(content)
+  if (err(content)) {
+    return Promise.reject(content)
+  }
   return fsZds.writeFile(telemetryFilePath, new TextEncoder().encode(content))
 }
 
 export const writeRawTelemetryFile = async (content: string) => {
   const rawTelemetryFilePath = await getRawTelemetryFilePath()
-  if (err(content)) return Promise.reject(content)
+  if (err(content)) {
+    return Promise.reject(content)
+  }
   return fsZds.writeFile(
     rawTelemetryFilePath,
     new TextEncoder().encode(content)
   )
 }
 
-let appStateStore: Project | undefined = undefined
+let appStateStore: Project | undefined
 
 export const getState = async (): Promise<Project | undefined> => {
   return Promise.resolve(appStateStore)
@@ -1165,7 +1202,9 @@ export const setState = async (state: Project | undefined): Promise<void> => {
 export const getUser = async (token: string): Promise<UserResponse> => {
   const client = createKCClient(token)
   const res = await kcCall(() => users.get_user_self({ client }))
-  if (res instanceof Error) return Promise.reject(res)
+  if (res instanceof Error) {
+    return Promise.reject(res)
+  }
   return res
 }
 
