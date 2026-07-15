@@ -16,6 +16,7 @@ sweep(
   relativeTo?: string,
   translateProfileToPath?: bool,
   orientProfilePerpendicular?: bool,
+  projectedAxis?: Point3d | Axis3d | Edge | TaggedEdge | Segment,
   tagStart?: TagDecl,
   tagEnd?: TagDecl,
   bodyType?: string,
@@ -43,6 +44,7 @@ swept along the same path.
 | `relativeTo` | [`string`](/docs/kcl-std/types/std-types-string) | **Deprecated.** Use 'translateProfileToPath' and 'orientProfilePerpendicular' instead. What is the sweep relative to? Can be either 'sketchPlane' or 'trajectoryCurve'. | No |
 | `translateProfileToPath` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, the profile being swept will be moved to the path being swept along, before the sweep starts. If false, the profile stays where it is, and the sweep starts from there. Defaults to false. | No |
 | `orientProfilePerpendicular` | [`bool`](/docs/kcl-std/types/std-types-bool) | If true, before the sweep starts, the profile will be re-oriented so that it is perpendicular to the path being swept along. If false, the profile is left in its current orientation. Defaults to false. | No |
+| `projectedAxis` | [`Point3d`](/docs/kcl-std/types/std-types-Point3d) or [`Axis3d`](/docs/kcl-std/types/std-types-Axis3d) or [`Edge`](/docs/kcl-std/types/std-types-Edge) or [`TaggedEdge`](/docs/kcl-std/types/std-types-TaggedEdge) or [`Segment`](/docs/kcl-std/types/std-types-Segment) | COMMENT HERE | No |
 | `tagStart` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the start of the sweep, i.e. the original sketch. | No |
 | `tagEnd` | [`TagDecl`](/docs/kcl-std/types/std-types-TagDecl) | A named tag for the face at the end of the sweep. | No |
 | `bodyType` | [`string`](/docs/kcl-std/types/std-types-string) | What type of body to produce (solid or surface). Defaults to "solid". | No |
