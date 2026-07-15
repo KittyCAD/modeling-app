@@ -7,7 +7,6 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
   findUniqueName,
@@ -19,24 +18,22 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { getFacesExprsFromSelection } from '@src/lang/modifyAst/faces'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  resolveEdgeSelectionContext,
+} from '@src/lang/modifyAst/tagManagement'
 import {
   createSketchTagMemberExpression,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentNameFromSourceSurface,
   getVariableExprsFromSelection,
-  isCallExprWithName,
   locateVariableWithCallOrPipe,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
-  getArtifactsOfTypes,
   getCodeRefsByArtifactId,
-  getCommonFacesForEdge,
-  getOriginalSegmentArtifact,
   getSweepArtifactFromSelection,
 } from '@src/lang/std/artifactGraph'
 import type {
@@ -436,43 +433,27 @@ function buildEdgeExpr(
     )
   }
 
-  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    graphEdgeSelection,
-    artifactGraph
-  )
-  if (err(sourceSurfaceArtifact)) {
-    return sourceSurfaceArtifact
-  }
-
-  const sourceSurfaceVars = getVariableExprsFromSelection(
-    {
-      graphSelections: [
-        {
-          artifact: sourceSurfaceArtifact as Artifact,
-          codeRef: sourceSurfaceArtifact.codeRef,
-        },
-      ],
-      otherSelections: [],
-    },
-    artifactGraph,
+  const edgeContext = resolveEdgeSelectionContext(
     ast,
-    wasmInstance
+    graphEdgeSelection,
+    artifactGraph,
+    wasmInstance,
+    undefined,
+    false
   )
-  if (err(sourceSurfaceVars)) return sourceSurfaceVars
-  if (sourceSurfaceVars.exprs.length !== 1) {
-    return new Error('Expected exactly one source surface for each blend edge.')
-  }
-  const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+  if (err(edgeContext)) return edgeContext
+  const sourceSurfaceArtifact = edgeContext.sourceSweep
+  const sourceSurfaceExpr = edgeContext.selectedBodyExpr
 
   // Region-based sketch-solve surface case: building region###.tags.line#.
   const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-    sourceSurfaceArtifact as Artifact,
+    sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
     wasmInstance
   )
-  if (regionSketchTagExpr) {
+  if (regionSketchTagExpr && !edgeContext.cloneVariableName) {
     const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
 
     return {
@@ -487,7 +468,7 @@ function buildEdgeExpr(
 
   // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression.
   const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
-    sourceSurfaceArtifact as Artifact,
+    sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
@@ -515,7 +496,8 @@ function buildEdgeExpr(
     ast,
     graphEdgeSelection,
     artifactGraph,
-    wasmInstance
+    wasmInstance,
+    { edgeContext }
   )
   if (err(tagResult)) return tagResult
   if (tagResult.exprs.length === 0) {
@@ -572,7 +554,8 @@ export function groupSelectionsByBodyAndAddTags(
     selections,
     artifactGraph,
     ast,
-    wasmInstance
+    wasmInstance,
+    nodeToEdit
   )
   if (err(selectionsByBody)) return selectionsByBody
 
@@ -581,65 +564,22 @@ export function groupSelectionsByBodyAndAddTags(
 
   for (const [bodyKey, bodySelections] of selectionsByBody.entries()) {
     const firstSelection = bodySelections.graphSelections[0]
-    const cloneContext = firstSelection
-      ? getCloneEdgeContext(
-          firstSelection,
-          artifactGraph,
-          modifiedAst,
-          wasmInstance
-        )
-      : null
-    let solidsExpr: Expr | null
-    let faceOwnerExpr: Expr | null
-    let pathIfPipe: PathToNode | undefined
-    if (cloneContext) {
-      solidsExpr = createLocalName(cloneContext.variableName)
-      faceOwnerExpr = structuredClone(solidsExpr)
-    } else {
-      let bodySelectionForSolids: Selection | undefined
-      if (firstSelection) {
-        const sweep = getSweepArtifactFromSelection(
-          firstSelection,
-          artifactGraph
-        )
-        if (err(sweep)) return sweep
-        bodySelectionForSolids = {
-          artifact: sweep as Artifact,
-          codeRef: sweep.codeRef,
-        }
-      }
+    if (!firstSelection) continue
+    const edgeContext = resolveEdgeSelectionContext(
+      modifiedAst,
+      firstSelection,
+      artifactGraph,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(edgeContext)) return edgeContext
 
-      // Build solids expression
-      const solids: Selections = {
-        graphSelections: bodySelectionForSolids ? [bodySelectionForSolids] : [],
-        otherSelections: [],
-      }
-
-      const vars = getVariableExprsFromSelection(
-        solids,
-        artifactGraph,
-        modifiedAst,
-        wasmInstance,
-        nodeToEdit,
-        {
-          lastChildLookup: true,
-          artifactTypeFilter: ['compositeSolid', 'sweep'],
-        }
-      )
-      if (err(vars)) return vars
-
-      solidsExpr = createVariableExpressionsArray(vars.exprs)
-      faceOwnerExpr = vars.exprs.length === 1 ? vars.exprs[0] : solidsExpr
-      pathIfPipe = vars.pathIfPipe
-    }
-
-    // Add tags after resolving the body so cap references can be qualified.
     const { tagsExprs, modifiedAst: taggedAst } = getTagsExprsFromSelection(
       modifiedAst,
       bodySelections,
       artifactGraph,
       wasmInstance,
-      faceOwnerExpr
+      nodeToEdit
     )
     modifiedAst = taggedAst
 
@@ -653,9 +593,9 @@ export function groupSelectionsByBodyAndAddTags(
     }
 
     bodies.set(bodyKey, {
-      solidsExpr,
+      solidsExpr: edgeContext.selectedBodyExpr,
       tagsExpr,
-      pathIfPipe,
+      pathIfPipe: edgeContext.pathIfPipe,
     })
   }
 
@@ -675,26 +615,21 @@ function groupSelectionsByBody(
   selections: Selections,
   artifactGraph: ArtifactGraph,
   ast: Node<Program>,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
 ): Map<string, Selections> | Error {
   const bodyToSelections = new Map<string, Selection[]>()
 
   for (const selection of selections.graphSelections) {
-    const sweepArtifact = getSweepArtifactFromSelection(
-      selection,
-      artifactGraph
-    )
-    if (err(sweepArtifact)) return sweepArtifact
-
-    const cloneContext = getCloneEdgeContext(
+    const edgeContext = resolveEdgeSelectionContext(
+      ast,
       selection,
       artifactGraph,
-      ast,
-      wasmInstance
+      wasmInstance,
+      nodeToEdit
     )
-    const bodyKey = cloneContext
-      ? cloneContext.variableName
-      : JSON.stringify(sweepArtifact.codeRef.pathToNode)
+    if (err(edgeContext)) return edgeContext
+    const bodyKey = edgeContext.bodyKey
     if (bodyToSelections.has(bodyKey)) {
       bodyToSelections.get(bodyKey)?.push(selection)
     } else {
@@ -756,13 +691,12 @@ export function buildSolidsAndTagsExprs(
 
   const pathIfPipe = vars.pathIfPipe
   const solidsExpr = createVariableExpressionsArray(vars.exprs)
-  const faceOwnerExpr = vars.exprs.length === 1 ? vars.exprs[0] : solidsExpr
   const { tagsExprs, modifiedAst } = getTagsExprsFromSelection(
     ast,
     faces,
     artifactGraph,
     wasmInstance,
-    faceOwnerExpr
+    nodeToEdit
   )
   const tagsExpr = createVariableExpressionsArray(tagsExprs)
   if (!tagsExpr) {
@@ -777,7 +711,7 @@ function getTagsExprsFromSelection(
   edges: Selections,
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType,
-  bodyExpr?: Expr | null
+  nodeToEdit?: PathToNode
 ) {
   const tagsExprs: Expr[] = []
   let modifiedAst = ast
@@ -792,12 +726,12 @@ function getTagsExprsFromSelection(
       tagsExprs.push(createLocalName(variable.variableDeclarator.id.name))
     }
 
-    const result = getEdgeFaceExprs(
+    const result = modifyAstWithTagsForSelection(
       modifiedAst,
       edge,
       artifactGraph,
       wasmInstance,
-      bodyExpr
+      { nodeToEdit }
     )
     if (err(result)) {
       console.warn('Failed to resolve edge faces', result)
@@ -813,220 +747,6 @@ function getTagsExprsFromSelection(
     modifiedAst = result.modifiedAst
   }
   return { tagsExprs, modifiedAst }
-}
-
-function getEdgeFaceExprs(
-  ast: Node<Program>,
-  edge: Selection,
-  artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType,
-  bodyExpr: Expr | null | undefined
-): { modifiedAst: Node<Program>; exprs: Expr[] } | Error {
-  if (
-    edge.artifact?.type !== 'sweepEdge' &&
-    edge.artifact?.type !== 'segment'
-  ) {
-    return new Error('Expected a sweep edge or segment selection')
-  }
-
-  const commonFaces = getCommonFacesForEdge(edge.artifact, artifactGraph)
-  if (err(commonFaces)) {
-    return commonFaces
-  }
-  const cloneContext = getCloneEdgeContext(
-    edge,
-    artifactGraph,
-    ast,
-    wasmInstance
-  )
-  const faceOwnerExpr = cloneContext?.variableName ?? bodyExpr
-  const sourceFaces = cloneContext
-    ? [
-        ...getArtifactsOfTypes(
-          {
-            keys: cloneContext.sourceSweep.surfaceIds,
-            types: ['wall', 'cap'],
-          },
-          artifactGraph
-        ).values(),
-      ]
-    : commonFaces
-
-  const faceSelections: Selection[] = []
-  for (const commonFace of commonFaces) {
-    const sourceFace = cloneContext
-      ? getOriginalFaceForClone(commonFace, sourceFaces, artifactGraph)
-      : commonFace
-    if (err(sourceFace)) return sourceFace
-    faceSelections.push({ ...edge, artifact: sourceFace })
-  }
-
-  // Preserve the selected-face order while tagging the corresponding source
-  // faces. Artifact graph order can differ between a clone and its source.
-  const tagResult = getFacesExprsFromSelection(
-    ast,
-    {
-      graphSelections: faceSelections,
-      otherSelections: [],
-    },
-    artifactGraph,
-    wasmInstance
-  )
-  if (err(tagResult)) return tagResult
-
-  const exprs: Expr[] = []
-  for (const [index, commonFace] of commonFaces.entries()) {
-    const tagExpr = tagResult.exprs[index]
-    if (!tagExpr) {
-      return new Error('Could not resolve a face tag for the selected edge')
-    }
-
-    if (commonFace.type === 'cap') {
-      if (!faceOwnerExpr) {
-        return new Error('Could not resolve the body for an edge cap')
-      }
-      const tagName = getTagName(tagExpr)
-      if (!tagName) {
-        return new Error('Could not resolve the cap tag for the selected edge')
-      }
-      exprs.push(
-        createMemberExpression(
-          createMemberExpression(
-            typeof faceOwnerExpr === 'string'
-              ? faceOwnerExpr
-              : structuredClone(faceOwnerExpr),
-            'faces'
-          ),
-          tagName
-        )
-      )
-    } else if (cloneContext) {
-      const tagName = getTagName(tagExpr)
-      if (!tagName) {
-        return new Error(
-          'Could not resolve the source wall tag for cloned edge'
-        )
-      }
-      exprs.push(
-        createSketchTagMemberExpression(
-          createLocalName(cloneContext.variableName),
-          tagName
-        )
-      )
-    } else {
-      exprs.push(tagExpr)
-    }
-  }
-
-  return { modifiedAst: tagResult.modifiedAst, exprs }
-}
-
-type CloneEdgeContext = {
-  sourceSweep: Extract<Artifact, { type: 'sweep' }>
-  variableName: string
-}
-
-function getCloneEdgeContext(
-  edge: Selection,
-  artifactGraph: ArtifactGraph,
-  ast: Node<Program>,
-  wasmInstance: ModuleType
-): CloneEdgeContext | null {
-  if (
-    edge.artifact?.type !== 'sweepEdge' &&
-    edge.artifact?.type !== 'segment'
-  ) {
-    return null
-  }
-
-  const segment =
-    edge.artifact.type === 'segment'
-      ? edge.artifact
-      : getArtifactOfTypes(
-          { key: edge.artifact.segId, types: ['segment'] },
-          artifactGraph
-        )
-  if (err(segment)) {
-    return null
-  }
-  const clonePath = getArtifactOfTypes(
-    { key: segment.pathId, types: ['path'] },
-    artifactGraph
-  )
-  if (err(clonePath)) {
-    return null
-  }
-  const sourceSweep = getSweepArtifactFromSelection(edge, artifactGraph)
-  if (err(sourceSweep) || clonePath.id === sourceSweep.pathId) {
-    return null
-  }
-
-  const cloneCall = getNodeFromPath<CallExpressionKw>(
-    ast,
-    clonePath.codeRef.pathToNode,
-    wasmInstance,
-    'CallExpressionKw'
-  )
-  if (err(cloneCall) || !isCallExprWithName(cloneCall.node, 'clone')) {
-    return null
-  }
-
-  const cloneVariable = locateVariableWithCallOrPipe(
-    ast,
-    clonePath.codeRef.pathToNode,
-    wasmInstance
-  )
-  if (err(cloneVariable)) {
-    return null
-  }
-
-  return {
-    sourceSweep: sourceSweep as Extract<Artifact, { type: 'sweep' }>,
-    variableName: cloneVariable.variableDeclarator.id.name,
-  }
-}
-
-function getOriginalFaceForClone(
-  selectedFace: Extract<Artifact, { type: 'wall' | 'cap' }>,
-  sourceFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[],
-  artifactGraph: ArtifactGraph
-): Extract<Artifact, { type: 'wall' | 'cap' }> | Error {
-  if (selectedFace.type === 'cap') {
-    const sourceCap = sourceFaces.find(
-      (face) => face.type === 'cap' && face.subType === selectedFace.subType
-    )
-    return sourceCap ?? new Error('Could not map cloned cap to its source cap')
-  }
-
-  const originalSegment = getOriginalSegmentArtifact(
-    selectedFace.segId,
-    artifactGraph
-  )
-  if (!originalSegment) {
-    return new Error('Could not resolve cloned wall segment')
-  }
-  // Region paths do not always populate segIds. The cloned and source-region
-  // segments still point back to the same original sketch segment, though.
-  const sourceWall = sourceFaces.find((face) => {
-    if (face.type !== 'wall') return false
-    const sourceSegment = getOriginalSegmentArtifact(face.segId, artifactGraph)
-    return sourceSegment?.id === originalSegment.id
-  })
-  return sourceWall ?? new Error('Could not map cloned wall to its source wall')
-}
-
-function getTagName(expr: Expr): string | null {
-  if (expr.type === 'Name') {
-    return expr.name.name
-  }
-  if (
-    expr.type === 'MemberExpression' &&
-    !expr.computed &&
-    expr.property.type === 'Name'
-  ) {
-    return expr.property.name.name
-  }
-  return null
 }
 
 // Sort of an opposite of getTagsExprsFromSelection above, used for edit flows
