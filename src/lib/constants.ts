@@ -30,7 +30,7 @@ export const FILE_EXT = '.kcl'
  */
 export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const DEFAULT_KCL_VERSION = '2.0'
-export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: UserFeature =
+export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
   'sketch_experimental_features'
 export const OPFS_CLOUD_FEATURE_FLAG: Feature = 'web_app_file_browser'
 export const SEGMENTS_BASED_REGIONS_FEATURE_FLAG: Feature =
