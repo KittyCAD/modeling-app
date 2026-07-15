@@ -1,8 +1,8 @@
 import {
   MlEphantConversation,
   type QueuedMessage,
-} from '@src/components/MlEphantConversation'
-import { MlEphantConversationWelcome } from '@src/components/MlEphantConversationWelcome'
+} from '@src/lib/zookeeper/components/MlEphantConversation'
+import { MlEphantConversationWelcome } from '@src/lib/zookeeper/components/MlEphantConversationWelcome'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
@@ -10,13 +10,13 @@ import type { FileEntry, Project } from '@src/lib/project'
 import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
-import type { ZookeeperConversationStore } from '@src/lib/zookeeperConversationStore'
-import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import type { ZookeeperConversationStore } from '@src/lib/zookeeper/zookeeperConversationStore'
+import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
   MlEphantManagerStates,
   MlEphantManagerTransitions,
-} from '@src/machines/mlEphantManagerMachine'
-import type { MlCopilotModeId } from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
+import type { MlCopilotModeId } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import type { ModelingMachineContext } from '@src/machines/modelingSharedTypes'
 import { collectProjectFiles } from '@src/machines/systemIO/utils'
 import { S } from '@src/machines/utils'
