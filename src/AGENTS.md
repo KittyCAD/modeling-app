@@ -32,6 +32,19 @@ This file applies to TypeScript and React development under `src/`. It complemen
 - Preserve deliberate test import ordering. Some tests call `vi.mock(...)` before importing the component under test because the mocked modules have import-time side effects.
 - Prefer local, boring fixes over new abstractions. Add helpers only when they remove real duplication or match an existing local pattern.
 
+## Reviewing code
+
+- Treat KCL, engine behavior, generated artifacts, selections, constraints, and API changes as compatibility-sensitive. Ask whether old KCL, samples, or customer-like projects could now produce different geometry, no geometry, or subtly wrong geometry. Breaking changes need versioning, migration behavior, a feature flag, or clear rollout notes.
+- Treat project loading, filesystem state, cloud/local storage, editor state, Zookeeper, and app/project context as data-integrity risks. Look for one clear source of truth, synchronization rules, and coverage for reloads, large projects, nested files, project switching, web, and desktop.
+- Check async ownership where state changes, not just where work starts. Background jobs, websocket callbacks, Zookeeper runs, queues, and handoffs must not create stale state.
+- For sketch, constraint, region, solver/frontend, and point-and-click changes, simple happy-path sketches are not enough. Look for validation on arcs, tangent constraints, partially constrained sketches and hidden support geometry.
+- Review Zookeeper changes as file-editing and state-sync changes, not just chat UI. Verify current project/file context, actual writes, stale context handling, reconnect behavior, nested or missing files, cloud/local projects, large directories, stuck states, and usage/billing stops.
+- Require whole-flow validation for user-critical paths such as sign-in, billing, onboarding, install/update, import/export, project creation, and share links. Unit tests are not enough when failures depend on deployed URLs, external services, packaged artifacts, or production-like environments.
+- Ask whether failures are loud, recoverable, and observable. Silent no-ops, data loss, wrong-project edits, stale renders, stuck usage, broken onboarding, and wrong geometry need clear errors or safe stops plus enough logging or reporting to debug.
+- Increase scrutiny under deadline pressure or for hot paths. Ask about feature flags, staged rollout, rollback paths, and whether the exact demo, workshop, enterprise, or release workflow has been tested.
+
+After reviewing, tell the human what should be smoke tested and whether the PR's tests cover the risk. Prefer regression tests that encode the bug over tests that only prove the new implementation works once. A useful test would have failed before the fix.
+
 ## Code style
 
 - Format with Biome and lint with ESLint, both covered by `make check`.

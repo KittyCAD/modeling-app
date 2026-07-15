@@ -51,7 +51,7 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
 import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { MlEphantConversation } from '@src/components/MlEphantConversation'
+import { MlEphantConversation } from '@src/lib/zookeeper/components/MlEphantConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -59,7 +59,7 @@ import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
-} from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
   type EngineSceneExtensionContext,
   engineSceneRuntimeExtensionsSlot,
