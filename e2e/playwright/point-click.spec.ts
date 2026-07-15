@@ -2366,12 +2366,7 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
       await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
       await editor.expectEditor.toContain('angle001 = ' + newAngle)
       await editor.expectEditor.toContain(
-        newCodeToFind
-          .replace('angle = 360deg', 'angle = angle001')
-          .replace(
-            'axis = getCommonEdge(faces = [region001.tags.line1, capEnd001])',
-            'axis = X'
-          ),
+        'revolve001 = revolve(region002, angle = angle001, axis = X)',
         { shouldNormalise: true }
       )
     })
