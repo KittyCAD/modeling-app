@@ -34,11 +34,14 @@ import {
 } from '@src/lib/cloudSync'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
+import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
   CLOUD_PROJECT_LIBRARY_ID,
+  DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+  getDefaultCloudProjectLibrarySetting,
+  mergeProjectLibrarySettings,
   type ProjectLibrary,
 } from '@src/lib/projectLibraries'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { reportRejection } from '@src/lib/trap'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
@@ -49,11 +52,12 @@ import {
   type HomeProjectEntryContribution,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
-import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
 import {
   type ProjectExplorerProjectMenuItemComponentProps,
   projectExplorerProjectMenuItemsValueSpec,
 } from '@src/registry/contracts/projectExplorer'
+import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
+import { settingsService } from '@src/registry/contracts/settings'
 import {
   nullableStatusBarItem,
   statusBarGlobalItemsValueSpec,
@@ -850,29 +854,117 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   'cloud-sync.remote-home-project-entries'
 )
 
-const cloudSyncProjectLibraryContribution = defineRegistryItem({
-  id: 'cloud-sync.project-library',
-  provides: [
-    provide(
-      projectLibrariesValueSpec,
-      computed(() =>
-        cloudSyncStatus.value.enabled
-          ? [
-              {
-                id: CLOUD_PROJECT_LIBRARY_ID,
-                title: 'Cloud',
-                path: 'zoo://user/projects',
-                type: 'cloud',
-                icon: 'network',
-                order: 10,
-              } satisfies ProjectLibrary,
-            ]
-          : []
-      ),
-      { key: 'cloud-sync.project-library' }
-    ),
-  ],
-})
+const cloudSyncProjectLibraryContribution = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const libraries = computed<ProjectLibrary[]>(() => {
+    if (!cloudSyncStatus.value.enabled) {
+      return []
+    }
+
+    const configuredLibrary =
+      settings.value?.current.value.app.libraries.current.find(
+        (library) => library.type === 'cloud'
+      )
+
+    return [
+      {
+        id: CLOUD_PROJECT_LIBRARY_ID,
+        title: configuredLibrary?.title ?? 'Cloud',
+        path: configuredLibrary?.path ?? DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+        type: 'cloud',
+        icon: 'network',
+        order: 10,
+      },
+    ]
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'cloud-sync.project-library',
+      provides: [
+        provide(projectLibrariesValueSpec, libraries, {
+          key: 'cloud-sync.project-library',
+        }),
+      ],
+    }),
+  }
+}, 'cloud-sync.project-library')
+
+const cloudSyncProjectLibrarySettingLifecycle = defineRegistryItemFactory(
+  (ctx) => {
+    const settings = ctx.services.signal(settingsService)
+    let disposed = false
+    let didReconcile = false
+    let disposeEffect: (() => void) | undefined
+
+    queueMicrotask(() => {
+      if (disposed) {
+        return
+      }
+
+      disposeEffect = effect(() => {
+        const service = settings.value
+        if (!service || didReconcile) {
+          return
+        }
+
+        const currentSettings = service.current.value
+        if (!service.actor.getSnapshot().matches('idle')) {
+          return
+        }
+
+        didReconcile = true
+        const currentLibraries = currentSettings.app.libraries.current
+        const defaultCloudLibrary = getDefaultCloudProjectLibrarySetting()
+        const hasDefaultCloudLibrary = currentLibraries.some(
+          (library) =>
+            library.type === defaultCloudLibrary.type &&
+            library.path === defaultCloudLibrary.path
+        )
+        // Activation owns the default Cloud library membership, but type/path
+        // identifies the library so a renamed entry is not duplicated.
+        const nextLibraries = mergeProjectLibrarySettings(
+          currentLibraries,
+          hasDefaultCloudLibrary ? [] : [defaultCloudLibrary]
+        )
+
+        if (
+          nextLibraries.length === currentLibraries.length &&
+          nextLibraries.every((library, index) => {
+            const currentLibrary = currentLibraries[index]
+            return (
+              currentLibrary &&
+              library.title === currentLibrary.title &&
+              library.path === currentLibrary.path &&
+              library.type === currentLibrary.type
+            )
+          })
+        ) {
+          return
+        }
+
+        service.send({
+          type: 'set.app.libraries',
+          data: {
+            level: 'user',
+            value: nextLibraries,
+          },
+        })
+      })
+    })
+
+    return {
+      item: defineRuntimeRegistryItem({
+        id: 'cloud-sync.project-library-setting-lifecycle',
+        dispose: () => {
+          disposed = true
+          disposeEffect?.()
+        },
+      }),
+    }
+  },
+  'cloud-sync.project-library-setting-lifecycle'
+)
 
 export const cloudSyncPlugin = createZdsPlugin({
   id: 'cloud-sync',
@@ -881,6 +973,7 @@ export const cloudSyncPlugin = createZdsPlugin({
   items: [
     cloudSyncStatusBarItemContribution,
     cloudSyncProjectMenuItem,
+    cloudSyncProjectLibrarySettingLifecycle,
     cloudSyncProjectLibraryContribution,
     cloudSyncRemoteHomeProjectEntryContribution,
   ],

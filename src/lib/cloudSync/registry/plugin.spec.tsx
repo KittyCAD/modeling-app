@@ -8,12 +8,23 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
 import { cloudSyncPlugin } from '@src/lib/cloudSync/registry/plugin'
-import { CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import type { Project } from '@src/lib/project'
+import {
+  CLOUD_PROJECT_LIBRARY_ID,
+  DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+  getDefaultProjectLibrarySettings,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
+import {
+  createSettings,
+  type SettingsType,
+} from '@src/lib/settings/initialSettings'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
 import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
+import type { SettingsRegistryService } from '@src/registry/contracts/settings'
+import { settingsService } from '@src/registry/contracts/settings'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
@@ -79,6 +90,46 @@ function createCloudSyncService(): CloudSyncRegistryService {
     getProjectModifiedTime: vi.fn((_metadata, localModified) => localModified),
     resolveProjectConflict: vi.fn().mockResolvedValue(undefined),
   }
+}
+
+function createSettingsRegistryService(settings = createSettings()) {
+  const current = signal<SettingsType>(settings)
+  const send = vi.fn(
+    (event: Parameters<SettingsRegistryService['send']>[0]) => {
+      if (event.type !== 'set.app.libraries') {
+        return
+      }
+
+      current.value.app.libraries.user = event.data
+        .value as ProjectLibrarySetting[]
+      current.value = {
+        ...current.value,
+        app: {
+          ...current.value.app,
+        },
+      }
+    }
+  )
+  const service = {
+    actor: {
+      getSnapshot: () => ({
+        matches: (state: string) => state === 'idle',
+      }),
+    },
+    current,
+    get: () => current.value,
+    send,
+    useSettings: () => current.value,
+  } as unknown as SettingsRegistryService
+
+  return { service, send }
+}
+
+function createSettingsServiceExtension(settings: SettingsRegistryService) {
+  return defineRegistryItem({
+    id: 'test-settings-service',
+    providesServices: [provideService(settingsService, settings)],
+  })
 }
 
 function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
@@ -192,6 +243,131 @@ describe('cloud sync project menu item', () => {
       ).toHaveTextContent('Stop syncing...')
     } finally {
       dispose()
+    }
+  })
+})
+
+describe('cloud sync library settings lifecycle', () => {
+  test('adds the default cloud library when library settings have not been customized', async () => {
+    const settingsSnapshot = createSettings()
+    settingsSnapshot.app.libraries.default =
+      getDefaultProjectLibrarySettings('/projects')
+    const { service: settings, send } =
+      createSettingsRegistryService(settingsSnapshot)
+    const cloudSync = createCloudSyncService()
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([
+      cloudSyncServiceExtension,
+      createSettingsServiceExtension(settings),
+      cloudSyncPlugin,
+    ])
+    registry.inspect()
+
+    try {
+      await waitFor(() =>
+        expect(send).toHaveBeenCalledWith({
+          type: 'set.app.libraries',
+          data: {
+            level: 'user',
+            value: [
+              {
+                title: 'Default Projects Directory',
+                path: '/projects',
+                type: 'directory',
+              },
+              {
+                title: 'Cloud',
+                path: DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+                type: 'cloud',
+              },
+            ],
+          },
+        })
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('adds the default cloud library after library settings have been customized', async () => {
+    const settingsSnapshot = createSettings()
+    settingsSnapshot.app.libraries.default =
+      getDefaultProjectLibrarySettings('/projects')
+    settingsSnapshot.app.libraries.user = []
+    const { service: settings, send } =
+      createSettingsRegistryService(settingsSnapshot)
+    const cloudSync = createCloudSyncService()
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([
+      cloudSyncServiceExtension,
+      createSettingsServiceExtension(settings),
+      cloudSyncPlugin,
+    ])
+    registry.inspect()
+
+    try {
+      await waitFor(() =>
+        expect(send).toHaveBeenCalledWith({
+          type: 'set.app.libraries',
+          data: {
+            level: 'user',
+            value: [
+              {
+                title: 'Cloud',
+                path: DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+                type: 'cloud',
+              },
+            ],
+          },
+        })
+      )
+    } finally {
+      registry[Symbol.dispose]()
+    }
+  })
+
+  test('does not duplicate an existing cloud library with the same type and path', async () => {
+    const settingsSnapshot = createSettings()
+    settingsSnapshot.app.libraries.default =
+      getDefaultProjectLibrarySettings('/projects')
+    settingsSnapshot.app.libraries.user = [
+      {
+        title: 'Renamed Cloud',
+        path: DEFAULT_CLOUD_PROJECT_LIBRARY_PATH,
+        type: 'cloud',
+      },
+    ]
+    const { service: settings, send } =
+      createSettingsRegistryService(settingsSnapshot)
+    const cloudSync = createCloudSyncService()
+    const registry = new Registry()
+    const cloudSyncServiceExtension = defineRegistryItem({
+      id: 'test-cloud-sync-service',
+      providesServices: [provideService(cloudSyncService, cloudSync)],
+    })
+
+    registry.configure([
+      cloudSyncServiceExtension,
+      createSettingsServiceExtension(settings),
+      cloudSyncPlugin,
+    ])
+    registry.inspect()
+
+    try {
+      await new Promise<void>((resolve) => queueMicrotask(resolve))
+      expect(send).not.toHaveBeenCalled()
+    } finally {
+      registry[Symbol.dispose]()
     }
   })
 })

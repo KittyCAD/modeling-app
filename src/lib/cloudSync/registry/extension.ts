@@ -1,6 +1,7 @@
 import {
   defineRegistryItemFactory,
   defineRuntimeRegistryItem,
+  provide,
   provideService,
 } from '@kittycad/registry'
 import { effect, signal, untracked } from '@preact/signals-core'
@@ -23,6 +24,10 @@ import {
   type CloudSyncRegistryService,
   cloudSyncService,
 } from '@src/lib/cloudSync/registry/contract'
+import {
+  type ProjectLibraryTypeContribution,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
 
 const CLOUD_SYNC_PLUGIN_ID = 'cloud-sync'
@@ -80,6 +85,17 @@ export const cloudSyncExtension = defineRegistryItemFactory((ctx) => {
   return {
     item: defineRuntimeRegistryItem({
       id: 'cloud-sync-extension',
+      provides: [
+        provide(
+          projectLibraryTypesValueSpec,
+          {
+            type: 'cloud',
+            title: 'Cloud',
+            icon: 'network',
+          } satisfies ProjectLibraryTypeContribution,
+          { key: 'cloud-sync.project-library-type' }
+        ),
+      ],
       providesServices: [provideService(cloudSyncService, serviceImpl)],
       dispose: () => {
         stopSettingsSync?.()

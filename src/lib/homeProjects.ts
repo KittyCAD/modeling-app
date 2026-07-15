@@ -1,6 +1,7 @@
 import { FILE_EXT, PROJECT_IMAGE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry, Project } from '@src/lib/project'
+import { CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import type {
   HomeProjectEntry,
@@ -49,6 +50,7 @@ export function homeProjectEntryFromProject(
   return {
     source: 'local',
     status: homeProjectEntryStatusFromProject(project),
+    libraryIds: project.cloudProjectId ? [CLOUD_PROJECT_LIBRARY_ID] : undefined,
     name: project.name,
     title: getProjectDisplayName(project),
     localProjectPath: project.path,

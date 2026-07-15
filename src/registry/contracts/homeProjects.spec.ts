@@ -57,6 +57,8 @@ describe('coalesceHomeProjectEntries', () => {
       coalesceHomeProjectEntries([
         {
           source: 'local',
+          libraryId: DEFAULT_PROJECT_LIBRARY_ID,
+          libraryIds: [CLOUD_PROJECT_LIBRARY_ID],
           status: 'synced',
           name: 'local-project',
           localProjectPath: '/projects/local-project',
@@ -72,6 +74,7 @@ describe('coalesceHomeProjectEntries', () => {
         source: 'local',
         status: 'synced',
         remoteProjectId: 'remote-123',
+        libraryIds: [DEFAULT_PROJECT_LIBRARY_ID, CLOUD_PROJECT_LIBRARY_ID],
       }),
     ])
   })

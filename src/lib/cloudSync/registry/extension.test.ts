@@ -5,6 +5,7 @@ import {
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -70,6 +71,14 @@ describe('cloud sync extension', () => {
 
     registry = new Registry()
     registry.configure([settingsRegistryItem, cloudSyncExtension])
+
+    expect(registry.get(projectLibraryTypesValueSpec).get('cloud')).toEqual(
+      expect.objectContaining({
+        type: 'cloud',
+        title: 'Cloud',
+        icon: 'network',
+      })
+    )
 
     registry.get(cloudSyncService).configure({
       enabled: true,
