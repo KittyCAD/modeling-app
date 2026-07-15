@@ -1,8 +1,12 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
-import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type { Command } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { getProjectDisplayName } from '@src/lib/projectDisplayName'
+import {
+  getProjectDirectoryOptions,
+  getProjectDisplayName,
+  getProjectOptionNameFromDirectoryName,
+} from '@src/lib/projectDisplayName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -63,22 +67,7 @@ export function createProjectCommands({
         required: true,
         inputType: 'options',
         options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            const displayName = getProjectDisplayName(folder)
-            options.push({
-              name:
-                displayName === folder.name
-                  ? displayName
-                  : `${displayName} (${folder.name})`,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
+          return getProjectDirectoryOptions(folderSnapshot())
         },
       },
     },
@@ -126,25 +115,19 @@ export function createProjectCommands({
     reviewMessage: ({ argumentsToSubmit }) =>
       CommandBarOverwriteWarning({
         heading: 'Are you sure you want to delete?',
-        message: `This will permanently delete the project "${argumentsToSubmit.name}" and all its contents.`,
+        message: `This will permanently delete the project "${getProjectOptionNameFromDirectoryName(
+          {
+            projects: folderSnapshot(),
+            directoryName: String(argumentsToSubmit.name ?? ''),
+          }
+        )}" and all its contents.`,
       }),
     args: {
       name: {
         inputType: 'options',
         required: true,
         options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
+          return getProjectDirectoryOptions(folderSnapshot())
         },
       },
     },
@@ -177,35 +160,31 @@ export function createProjectCommands({
     },
     args: {
       oldName: {
+        displayName: 'Project',
+        description:
+          'Project to retitle. The value submitted to system IO is the project directory name.',
         inputType: 'options',
         required: true,
         options: () => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
+          return getProjectDirectoryOptions(folderSnapshot())
         },
       },
       newName: {
+        displayName: 'New title',
+        description:
+          'Human-facing project title. This updates project.toml and does not rename the project directory.',
         inputType: 'string',
         required: true,
         defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
-          // Prefill with the old project name if it's already selected
-          const oldName = context.argumentsToSubmit.oldName as
+          const projectDirectoryName = context.argumentsToSubmit.oldName as
             | string
             | undefined
-          const folder = folderSnapshot()?.find((item) => item.name === oldName)
+          const folder = folderSnapshot()?.find(
+            (item) => item.name === projectDirectoryName
+          )
           return folder
             ? getProjectDisplayName(folder)
-            : oldName || defaultProjectFolderNameSnapshot()
+            : projectDirectoryName || defaultProjectFolderNameSnapshot()
         },
       },
     },
@@ -257,18 +236,7 @@ export function createProjectCommands({
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
         options: (_, _context) => {
-          const folders = folderSnapshot()
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
+          return getProjectDirectoryOptions(folderSnapshot())
         },
       },
       name: {

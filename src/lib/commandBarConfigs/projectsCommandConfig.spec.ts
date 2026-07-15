@@ -1,18 +1,53 @@
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
+import type { CommandArgumentOption } from '@src/lib/commandTypes'
+import type { Project } from '@src/lib/project'
+import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { describe, expect, it, vi } from 'vitest'
-import type { ActorRefFrom } from 'xstate'
+import type { ActorRefFrom, ContextFrom } from 'xstate'
 
-function createSystemIOActor() {
+function createProject({
+  name,
+  title,
+}: {
+  name: string
+  title?: string
+}): Project {
+  return {
+    name,
+    title,
+    path: `/projects/${name}`,
+    children: [],
+    readWriteAccess: true,
+    metadata: null,
+    kcl_file_count: 1,
+    directory_count: 0,
+    default_file: `/projects/${name}/main.kcl`,
+  }
+}
+
+function createSystemIOActor(folders: Project[] = []) {
   return {
     getSnapshot: () => ({
       context: {
         defaultProjectFolderName: 'untitled',
-        folders: [],
+        folders,
       },
     }),
     send: vi.fn(),
   } as unknown as ActorRefFrom<typeof systemIOMachine>
+}
+
+function projectOptions(
+  command: ReturnType<typeof createProjectCommands>[number],
+  argName: string
+) {
+  return (
+    command.args?.[argName] as unknown as {
+      options: () => CommandArgumentOption<string>[]
+    }
+  ).options()
 }
 
 describe('project command config', () => {
@@ -40,5 +75,94 @@ describe('project command config', () => {
       'Rename project',
       'Import file from URL',
     ])
+  })
+
+  it('labels existing project options by title while submitting directory names', () => {
+    const systemIOActor = createSystemIOActor([
+      createProject({
+        name: 'bracket-directory',
+        title: 'Display Bracket',
+      }),
+    ])
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+    })
+
+    const openCommand = commands.find(
+      (command) => command.name === 'Open project'
+    )
+    const deleteCommand = commands.find(
+      (command) => command.name === 'Delete project'
+    )
+    const renameCommand = commands.find(
+      (command) => command.name === 'Rename project'
+    )
+
+    expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
+      {
+        name: 'Display Bracket (bracket-directory)',
+        value: 'bracket-directory',
+        isCurrent: false,
+      },
+    ])
+    expect(deleteCommand && projectOptions(deleteCommand, 'name')).toEqual([
+      {
+        name: 'Display Bracket (bracket-directory)',
+        value: 'bracket-directory',
+        isCurrent: false,
+      },
+    ])
+    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
+      {
+        name: 'Display Bracket (bracket-directory)',
+        value: 'bracket-directory',
+        isCurrent: false,
+      },
+    ])
+  })
+
+  it('renames project titles without replacing the project directory identifier', () => {
+    const systemIOActor = createSystemIOActor([
+      createProject({
+        name: 'bracket-directory',
+        title: 'Display Bracket',
+      }),
+    ])
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+    })
+    const renameCommand = commands.find(
+      (command) => command.name === 'Rename project'
+    )
+    expect(renameCommand).toBeDefined()
+    const newTitleArg = renameCommand?.args?.newName as unknown as {
+      defaultValue: (
+        context: ContextFrom<typeof commandBarMachine>
+      ) => string | undefined
+    }
+
+    expect(
+      newTitleArg.defaultValue({
+        argumentsToSubmit: {
+          oldName: 'bracket-directory',
+        },
+      } as unknown as ContextFrom<typeof commandBarMachine>)
+    ).toBe('Display Bracket')
+
+    renameCommand?.onSubmit({
+      oldName: 'bracket-directory',
+      newName: 'Retitled Bracket',
+    })
+
+    expect(systemIOActor.send).toHaveBeenCalledWith({
+      type: SystemIOMachineEvents.renameProject,
+      data: {
+        projectName: 'bracket-directory',
+        requestedProjectName: 'Retitled Bracket',
+        redirect: true,
+      },
+    })
   })
 })
