@@ -38,6 +38,7 @@ import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  preserveProjectTomlMetadataInProjectSettingsContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { err } from '@src/lib/trap'
@@ -668,9 +669,23 @@ export async function writeProjectSettingsFile(
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
+  let projectToml = tomlStr
+  try {
+    const existingProjectToml = await fsZds.readFile(projectSettingsFilePath, {
+      encoding: 'utf-8',
+    })
+    projectToml = preserveProjectTomlMetadataInProjectSettingsContents(
+      existingProjectToml,
+      tomlStr
+    )
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
   return fsZds.writeFile(
     projectSettingsFilePath,
-    new TextEncoder().encode(tomlStr)
+    new TextEncoder().encode(projectToml)
   )
 }
 
