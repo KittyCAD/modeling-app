@@ -492,6 +492,7 @@ impl CallExpressionKw {
             &self.callee,
             self.unlabeled.as_ref(),
             &self.arguments,
+            &self.non_code_meta,
             buf,
             options,
             indentation_level,
@@ -523,10 +524,12 @@ fn recast_args(
     arg_list
 }
 
+#[allow(clippy::too_many_arguments)]
 fn recast_call(
     callee: &Name,
     unlabeled: Option<&Expr>,
     arguments: &[LabeledArg],
+    non_code_meta: &NonCodeMeta,
     buf: &mut String,
     options: &FormatOptions,
     indentation_level: usize,
@@ -540,11 +543,93 @@ fn recast_call(
         return write!(buf, "{suggestion}").no_fail();
     }
 
-    let arg_list = recast_args(unlabeled, arguments, options, indentation_level, ctxt);
-    let has_lots_of_args = arg_list.len() >= 4;
-    let args = arg_list.join(", ");
-    let some_arg_is_already_multiline = arg_list.len() > 1 && arg_list.iter().any(|arg| arg.contains('\n'));
-    let multiline = has_lots_of_args || some_arg_is_already_multiline;
+    // An item is an argument (possibly with block comments glued before it),
+    // or a comment that needs its own line.
+    struct FormatItem {
+        text: String,
+        is_arg: bool,
+    }
+
+    // Reconstruct the order of arguments and non-code items (e.g. comments).
+    // Non-code nodes are keyed by their position in the source argument
+    // sequence, the same scheme as ArrayExpression. The unlabeled argument is
+    // not part of that sequence; it always comes first. Iterate enough slots
+    // that no argument or comment is dropped, even if AST edits left the
+    // indices inconsistent.
+    let build_items = |arg_indent: usize| -> Vec<FormatItem> {
+        let arg_list = recast_args(unlabeled, arguments, options, arg_indent, ctxt);
+        let mut arg_iter = arg_list.into_iter();
+        let mut items = Vec::with_capacity(arguments.len() + non_code_meta.non_code_nodes_len() + 1);
+        if unlabeled.is_some()
+            && let Some(first_arg) = arg_iter.next()
+        {
+            items.push(FormatItem {
+                text: first_arg,
+                is_arg: true,
+            });
+        }
+        let num_items = arguments.len() + non_code_meta.non_code_nodes_len();
+        let num_slots = non_code_meta
+            .non_code_nodes
+            .keys()
+            .max()
+            .map_or(num_items, |max| num_items.max(max + 1));
+        // Block comments don't need a line break, so they glue to whatever
+        // comes next instead of getting their own line.
+        let mut pending_block_comments = String::new();
+        for i in 0..num_slots {
+            if let Some(noncode) = non_code_meta.non_code_nodes.get(&i) {
+                for nc in noncode {
+                    match &nc.value {
+                        NonCodeValue::BlockComment {
+                            style: CommentStyle::Block,
+                            ..
+                        }
+                        | NonCodeValue::InlineComment {
+                            style: CommentStyle::Block,
+                            ..
+                        } => {
+                            pending_block_comments.push_str(nc.recast(options, 0).trim());
+                            pending_block_comments.push(' ');
+                        }
+                        _ => {
+                            // Line comments (and blank lines) need their own
+                            // line.
+                            let mut text = std::mem::take(&mut pending_block_comments);
+                            text.push_str(nc.recast(options, 0).trim_end_matches('\n'));
+                            items.push(FormatItem {
+                                text: text.trim().to_owned(),
+                                is_arg: false,
+                            });
+                        }
+                    }
+                }
+            } else if let Some(arg) = arg_iter.next() {
+                let mut text = std::mem::take(&mut pending_block_comments);
+                text.push_str(&arg);
+                items.push(FormatItem { text, is_arg: true });
+            }
+        }
+        items.extend(arg_iter.map(|arg| FormatItem {
+            text: arg,
+            is_arg: true,
+        }));
+        // Trailing block comments have no argument to glue to.
+        if !pending_block_comments.is_empty() {
+            items.push(FormatItem {
+                text: pending_block_comments.trim_end().to_owned(),
+                is_arg: false,
+            });
+        }
+        items
+    };
+
+    let items = build_items(indentation_level);
+    let has_lots_of_args = items.iter().filter(|item| item.is_arg).count() >= 4;
+    // Comments which need their own line force the multi-line layout.
+    let has_own_line_comment = items.iter().any(|item| !item.is_arg);
+    let some_arg_is_already_multiline = items.len() > 1 && items.iter().any(|item| item.text.contains('\n'));
+    let multiline = has_lots_of_args || some_arg_is_already_multiline || has_own_line_comment;
     if multiline {
         let next_indent = indentation_level + 1;
         let inner_indentation = if ctxt.in_pipe() {
@@ -552,10 +637,7 @@ fn recast_call(
         } else {
             options.get_indentation(next_indent)
         };
-        let arg_list = recast_args(unlabeled, arguments, options, next_indent, ctxt);
-        let mut args = arg_list.join(&format!(",\n{inner_indentation}"));
-        args.push(',');
-        let args = args;
+        let items = build_items(next_indent);
         let end_indent = if ctxt.in_pipe() {
             options.get_indentation_offset_pipe(indentation_level)
         } else {
@@ -567,9 +649,16 @@ fn recast_call(
         name.write_to(buf).no_fail();
         buf.push('(');
         buf.push('\n');
-        write!(buf, "{inner_indentation}").no_fail();
-        write!(buf, "{args}").no_fail();
-        buf.push('\n');
+        for item in items {
+            if item.is_arg {
+                writeln!(buf, "{inner_indentation}{},", item.text).no_fail();
+            } else if item.text.is_empty() {
+                // A blank line between arguments.
+                buf.push('\n');
+            } else {
+                writeln!(buf, "{inner_indentation}{}", item.text).no_fail();
+            }
+        }
         write!(buf, "{end_indent}").no_fail();
         buf.push(')');
     } else {
@@ -578,6 +667,11 @@ fn recast_call(
         }
         name.write_to(buf).no_fail();
         buf.push('(');
+        let args = items
+            .iter()
+            .map(|item| item.text.as_str())
+            .collect::<Vec<_>>()
+            .join(", ");
         write!(buf, "{args}").no_fail();
         buf.push(')');
     }
@@ -1175,7 +1269,16 @@ impl SketchBlock {
             abs_path: false,
             digest: None,
         };
-        recast_call(&name, None, &self.arguments, buf, options, indentation_level, ctxt);
+        recast_call(
+            &name,
+            None,
+            &self.arguments,
+            &self.non_code_meta,
+            buf,
+            options,
+            indentation_level,
+            ctxt,
+        );
 
         // We don't want to end with a new line inside nested blocks.
         let mut new_options = options.clone();
@@ -1490,6 +1593,29 @@ sketch(on) {
         let program = crate::parsing::top_level_parse(input).unwrap();
         let output = program.recast_top(&Default::default(), 0);
         assert_eq!(output, input);
+    }
+
+    #[test]
+    fn test_recast_sketch_block_with_arg_shorthand_and_comment() {
+        // The comment stays after the shorthand argument: the parser moves the
+        // shorthand `on` from the unlabeled slot into the argument list, which
+        // must also shift the comment positions.
+        let input = r#"on = XY
+sketch(
+  on,
+  // plane
+) {
+  return 0
+}
+"#;
+        let program = crate::parsing::top_level_parse(input).unwrap();
+        let output = program.recast_top(&Default::default(), 0);
+        assert_eq!(output, input);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&output).unwrap();
+        let output2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(output2, output);
     }
 
     #[test]
@@ -2803,6 +2929,101 @@ fn ghi(part001) {
 }
 "#
         );
+    }
+
+    #[test]
+    fn test_recast_comment_between_call_args() {
+        let some_program_string = r#"rounded = fillet(
+  body,
+  radius = 1mm,
+  // Keep this comment
+  tags = [tag1, tag2],
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_line_comments_in_call_args_force_multiline() {
+        let some_program_string = r#"edged = chamfer(
+  body,
+  // leading
+  length = 1mm,
+  tags = [tag1],
+  // trailing
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_block_comment_in_call_args_stays_inline() {
+        // A block comment shouldn't force the call onto multiple lines.
+        let some_program_string = r#"rounded = fillet(body, radius = 1mm, /* mid */ tags = [tag1])
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_block_comment_in_multiline_call_args_stays_inline() {
+        // In a call that's multi-line anyway, a block comment stays glued to
+        // the argument it precedes.
+        let some_program_string = r#"rounded = fillet(
+  body,
+  radius = 1mm,
+  /* mid */ tags = [tag1],
+  tag = $x,
+)
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
+
+        // Check idempotency.
+        let program = crate::parsing::top_level_parse(&recasted).unwrap();
+        let recasted2 = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted2, recasted);
+    }
+
+    #[test]
+    fn test_recast_comment_in_call_args_in_pipe() {
+        let some_program_string = r#"part = startSketchOn(XY)
+  |> startProfile(at = [0, 0])
+  |> fillet(
+       radius = 1,
+       // why
+       tags = [a],
+     )
+"#;
+        let program = crate::parsing::top_level_parse(some_program_string).unwrap();
+
+        let recasted = program.recast_top(&Default::default(), 0);
+        assert_eq!(recasted, some_program_string);
     }
 
     #[test]
