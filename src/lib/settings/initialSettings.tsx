@@ -8,6 +8,7 @@ import { useRef } from 'react'
 import { NIL as uuidNIL } from 'uuid'
 
 import { CustomIcon } from '@src/components/CustomIcon'
+import { ProjectLibrariesSettingInput } from '@src/components/Settings/ProjectLibrariesSettingInput'
 import Tooltip from '@src/components/Tooltip'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
@@ -303,8 +304,8 @@ function createCoreSettings() {
         defaultValue: [],
         description: 'Project libraries shown on the home page.',
         hideOnLevel: 'project',
-        hideOnPlatform: 'both',
         validate: isProjectLibrarySettings,
+        Component: ProjectLibrariesSettingInput,
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
