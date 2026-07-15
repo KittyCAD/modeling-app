@@ -34,6 +34,10 @@ import {
 } from '@src/lib/cloudSync'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
+import {
+  CLOUD_PROJECT_LIBRARY_ID,
+  type ProjectLibrary,
+} from '@src/lib/projectLibraries'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { reportRejection } from '@src/lib/trap'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
@@ -45,6 +49,7 @@ import {
   type HomeProjectEntryContribution,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
 import {
   type ProjectExplorerProjectMenuItemComponentProps,
   projectExplorerProjectMenuItemsValueSpec,
@@ -701,6 +706,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
 
           return {
             source: 'remote',
+            libraryId: CLOUD_PROJECT_LIBRARY_ID,
             ...homeProjectEntryConflictFields(metadata),
             name,
             title: metadata?.projectName || project.title,
@@ -728,6 +734,7 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
           (metadata) =>
             ({
               source: 'remote',
+              libraryId: CLOUD_PROJECT_LIBRARY_ID,
               status: 'conflicted',
               name: metadata.projectName,
               title: metadata.projectName,
@@ -843,6 +850,30 @@ const cloudSyncRemoteHomeProjectEntryContribution = defineRegistryItemFactory(
   'cloud-sync.remote-home-project-entries'
 )
 
+const cloudSyncProjectLibraryContribution = defineRegistryItem({
+  id: 'cloud-sync.project-library',
+  provides: [
+    provide(
+      projectLibrariesValueSpec,
+      computed(() =>
+        cloudSyncStatus.value.enabled
+          ? [
+              {
+                id: CLOUD_PROJECT_LIBRARY_ID,
+                title: 'Cloud',
+                path: 'zoo://user/projects',
+                type: 'cloud',
+                icon: 'network',
+                order: 10,
+              } satisfies ProjectLibrary,
+            ]
+          : []
+      ),
+      { key: 'cloud-sync.project-library' }
+    ),
+  ],
+})
+
 export const cloudSyncPlugin = createZdsPlugin({
   id: 'cloud-sync',
   title: 'Cloud sync',
@@ -850,6 +881,7 @@ export const cloudSyncPlugin = createZdsPlugin({
   items: [
     cloudSyncStatusBarItemContribution,
     cloudSyncProjectMenuItem,
+    cloudSyncProjectLibraryContribution,
     cloudSyncRemoteHomeProjectEntryContribution,
   ],
   defaultSetting: 'core',

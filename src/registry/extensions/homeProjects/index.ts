@@ -5,7 +5,7 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { effect, signal } from '@preact/signals-core'
+import { computed, effect, signal } from '@preact/signals-core'
 import {
   getProjectInfo,
   writeProjectTitleToProjectToml,
@@ -15,6 +15,10 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
+import {
+  DEFAULT_PROJECT_LIBRARY_ID,
+  type ProjectLibrary,
+} from '@src/lib/projectLibraries'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
@@ -24,14 +28,22 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
+import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
+import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
 
 function localHomeProjectEntriesFromProjects(
-  projects: readonly Project[] | undefined
+  projects: readonly Project[] | undefined,
+  libraryId: string
 ): HomeProjectEntryContribution[] {
-  return projects?.map(homeProjectEntryFromProject) ?? []
+  return (
+    projects?.map((project) => ({
+      ...homeProjectEntryFromProject(project),
+      libraryId,
+    })) ?? []
+  )
 }
 
 function homeProjectDisplayNameExists({
@@ -171,7 +183,8 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
 
       const updateEntries = () => {
         entries.value = localHomeProjectEntriesFromProjects(
-          service.actor.getSnapshot().context.folders
+          service.actor.getSnapshot().context.folders,
+          DEFAULT_PROJECT_LIBRARY_ID
         )
       }
 
@@ -197,9 +210,39 @@ const systemIOLocalHomeProjectEntries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.system-io-local-projects')
 
+const defaultProjectDirectoryLibrary = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const library = computed(
+    () =>
+      ({
+        id: DEFAULT_PROJECT_LIBRARY_ID,
+        title: 'Default Projects Directory',
+        path: settings.value?.current.value.app.projectDirectory.current ?? '',
+        type: 'directory',
+        icon: 'folder',
+        order: 0,
+      }) satisfies ProjectLibrary
+  )
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.default-project-directory-library',
+      provides: [
+        provide(projectLibrariesValueSpec, library, {
+          key: 'home-projects.default-project-directory-library',
+        }),
+      ],
+    }),
+  }
+}, 'home-projects.default-project-directory-library')
+
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
-  uses: [homeProjectActions, systemIOLocalHomeProjectEntries],
+  uses: [
+    defaultProjectDirectoryLibrary,
+    homeProjectActions,
+    systemIOLocalHomeProjectEntries,
+  ],
 })
 
 export default homeProjectsExtension

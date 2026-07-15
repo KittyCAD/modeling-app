@@ -8,10 +8,12 @@ import ProjectSidebarMenu from '@src/components/ProjectSidebarMenu'
 import type { App } from '@src/lib/app'
 import { cloudSyncRemoteProjects, cloudSyncStatus } from '@src/lib/cloudSync'
 import { cloudSyncPlugin } from '@src/lib/cloudSync/registry/plugin'
+import { CLOUD_PROJECT_LIBRARY_ID } from '@src/lib/projectLibraries'
 import type { Project } from '@src/lib/project'
 import type { CloudSyncRegistryService } from '@src/registry/contracts/cloudSync'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import { homeProjectEntriesValueSpec } from '@src/registry/contracts/homeProjects'
+import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { BrowserRouter } from 'react-router-dom'
@@ -222,6 +224,13 @@ describe('cloud sync home project entries', () => {
     registry.configure([cloudSyncServiceExtension, cloudSyncPlugin])
 
     try {
+      expect(registry.get(projectLibrariesValueSpec)).toEqual([
+        expect.objectContaining({
+          id: CLOUD_PROJECT_LIBRARY_ID,
+          title: 'Cloud',
+        }),
+      ])
+
       await waitFor(() =>
         expect(registry.get(homeProjectEntriesValueSpec)).toEqual([
           expect.objectContaining({

@@ -1,4 +1,8 @@
 import { coalesceHomeProjectEntries } from '@src/registry/contracts/homeProjects'
+import {
+  CLOUD_PROJECT_LIBRARY_ID,
+  DEFAULT_PROJECT_LIBRARY_ID,
+} from '@src/lib/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
 describe('coalesceHomeProjectEntries', () => {
@@ -77,6 +81,7 @@ describe('coalesceHomeProjectEntries', () => {
       coalesceHomeProjectEntries([
         {
           source: 'remote',
+          libraryId: CLOUD_PROJECT_LIBRARY_ID,
           status: 'cloud-only',
           name: 'remote-name',
           title: 'Remote title',
@@ -86,6 +91,7 @@ describe('coalesceHomeProjectEntries', () => {
         },
         {
           source: 'local',
+          libraryId: DEFAULT_PROJECT_LIBRARY_ID,
           status: 'synced',
           name: 'local-name',
           title: 'Local title',
@@ -106,6 +112,7 @@ describe('coalesceHomeProjectEntries', () => {
         modified: 20,
         localProjectPath: '/projects/local-name',
         remoteProjectId: 'remote-123',
+        libraryIds: [DEFAULT_PROJECT_LIBRARY_ID, CLOUD_PROJECT_LIBRARY_ID],
       }),
     ])
   })
