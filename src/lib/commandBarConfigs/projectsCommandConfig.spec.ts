@@ -101,21 +101,21 @@ describe('project command config', () => {
 
     expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
       {
-        name: 'Display Bracket (bracket-directory)',
+        name: 'Display Bracket',
         value: 'bracket-directory',
         isCurrent: false,
       },
     ])
     expect(deleteCommand && projectOptions(deleteCommand, 'name')).toEqual([
       {
-        name: 'Display Bracket (bracket-directory)',
+        name: 'Display Bracket',
         value: 'bracket-directory',
         isCurrent: false,
       },
     ])
     expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
       {
-        name: 'Display Bracket (bracket-directory)',
+        name: 'Display Bracket',
         value: 'bracket-directory',
         isCurrent: false,
       },
@@ -164,5 +164,39 @@ describe('project command config', () => {
         redirect: true,
       },
     })
+  })
+
+  it('marks the current project directory option as current', () => {
+    const systemIOActor = createSystemIOActor([
+      createProject({
+        name: 'bracket-directory',
+        title: 'Display Bracket',
+      }),
+      createProject({
+        name: 'other-directory',
+        title: 'Other Project',
+      }),
+    ])
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+      getCurrentProjectDirectoryName: () => 'bracket-directory',
+    })
+    const renameCommand = commands.find(
+      (command) => command.name === 'Rename project'
+    )
+
+    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
+      {
+        name: 'Display Bracket',
+        value: 'bracket-directory',
+        isCurrent: true,
+      },
+      {
+        name: 'Other Project',
+        value: 'other-directory',
+        isCurrent: false,
+      },
+    ])
   })
 })

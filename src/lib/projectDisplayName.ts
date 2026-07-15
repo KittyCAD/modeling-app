@@ -9,21 +9,19 @@ export function getProjectDisplayName(project: Project) {
   return project.title?.trim() || project.name || 'project'
 }
 
-export function getProjectOptionName(project: Project) {
-  const displayName = getProjectDisplayName(project)
-  return displayName === project.name
-    ? displayName
-    : `${displayName} (${project.name})`
-}
-
 export function getProjectDirectoryOptions(
-  projects: readonly Project[] | undefined
+  projects: readonly Project[] | undefined,
+  {
+    defaultValue,
+  }: {
+    defaultValue?: string
+  } = {}
 ) {
   return (
     projects?.map((project) => ({
-      name: getProjectOptionName(project),
+      name: getProjectDisplayName(project),
       value: project.name,
-      isCurrent: false,
+      isCurrent: project.name === defaultValue,
     })) ?? []
   )
 }
@@ -36,5 +34,5 @@ export function getProjectOptionNameFromDirectoryName({
   directoryName: string
 }) {
   const project = projects?.find((folder) => folder.name === directoryName)
-  return project ? getProjectOptionName(project) : directoryName
+  return project ? getProjectDisplayName(project) : directoryName
 }

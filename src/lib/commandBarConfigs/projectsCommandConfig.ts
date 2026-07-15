@@ -27,9 +27,11 @@ function defaultEnableProjectDirectoryCommands() {
 export function createProjectCommands({
   systemIOActor,
   enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
+  getCurrentProjectDirectoryName,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   enableProjectDirectoryCommands?: boolean
+  getCurrentProjectDirectoryName?: () => string | undefined
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -46,6 +48,9 @@ export function createProjectCommands({
     const { defaultProjectFolderName } = systemIOActor.getSnapshot().context
     return defaultProjectFolderName
   }
+
+  const currentProjectDirectoryNameSnapshot = () =>
+    getCurrentProjectDirectoryName?.()
 
   const openProjectCommand: Command = {
     icon: 'folder',
@@ -67,7 +72,9 @@ export function createProjectCommands({
         required: true,
         inputType: 'options',
         options: () => {
-          return getProjectDirectoryOptions(folderSnapshot())
+          return getProjectDirectoryOptions(folderSnapshot(), {
+            defaultValue: currentProjectDirectoryNameSnapshot(),
+          })
         },
       },
     },
@@ -127,7 +134,9 @@ export function createProjectCommands({
         inputType: 'options',
         required: true,
         options: () => {
-          return getProjectDirectoryOptions(folderSnapshot())
+          return getProjectDirectoryOptions(folderSnapshot(), {
+            defaultValue: currentProjectDirectoryNameSnapshot(),
+          })
         },
       },
     },
@@ -166,13 +175,13 @@ export function createProjectCommands({
         inputType: 'options',
         required: true,
         options: () => {
-          return getProjectDirectoryOptions(folderSnapshot())
+          return getProjectDirectoryOptions(folderSnapshot(), {
+            defaultValue: currentProjectDirectoryNameSnapshot(),
+          })
         },
       },
       newName: {
         displayName: 'New title',
-        description:
-          'Human-facing project title. This updates project.toml and does not rename the project directory.',
         inputType: 'string',
         required: true,
         defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
@@ -236,7 +245,9 @@ export function createProjectCommands({
           commandsContext.argumentsToSubmit.method === 'existingProject',
         skip: true,
         options: (_, _context) => {
-          return getProjectDirectoryOptions(folderSnapshot())
+          return getProjectDirectoryOptions(folderSnapshot(), {
+            defaultValue: currentProjectDirectoryNameSnapshot(),
+          })
         },
       },
       name: {
