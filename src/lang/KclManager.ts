@@ -35,6 +35,7 @@ import {
   getSketchCheckpointLimit,
   parse,
   recast,
+  resultIsOk,
 } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
 import { buildArtifactIndex } from '@src/lib/artifactIndex'
@@ -1268,6 +1269,9 @@ export class KclManager extends File {
   syncSketchSolveOutcome(code: string, sceneGraphDelta: SceneGraphDelta): void {
     const execState = execStateFromRust(sceneGraphDelta.exec_outcome)
 
+    this.diagnostics = []
+    void this.refreshSketchSolveLintDiagnostics(code, execState)
+
     this.execState = execState
     this.lastSuccessfulVariables = execState.variables
     this.lastSuccessfulOperations = execState.operations
@@ -1281,6 +1285,30 @@ export class KclManager extends File {
       })
     )
     void this.updateArtifactGraph(execState.artifactGraph)
+  }
+
+  private async refreshSketchSolveLintDiagnostics(
+    code: string,
+    execState: ExecState
+  ): Promise<void> {
+    const instance = await this.systemDeps.wasmInstancePromise
+    const parseResult = parse(code, instance)
+    if (err(parseResult) || !resultIsOk(parseResult)) {
+      return
+    }
+
+    const diagnostics = await lintAst({
+      ast: parseResult.program,
+      sourceCode: code,
+      instance,
+      rustContext: this.rustContext,
+      legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+    })
+
+    if (this.code !== code) {
+      return
+    }
+    this.addDiagnostics(diagnostics)
   }
 
   hasErrors(): boolean {
