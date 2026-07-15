@@ -3,6 +3,7 @@ import { ActionButton } from '@src/components/ActionButton'
 import { ActionIcon } from '@src/components/ActionIcon'
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import Tooltip, { type TooltipProps } from '@src/components/Tooltip'
+import { LazyRegistryComponent } from '@src/registry/lazyComponent'
 import { useLocation } from 'react-router-dom'
 import { Fragment } from 'react/jsx-runtime'
 
@@ -55,6 +56,16 @@ function StatusBarItem(
   // If the consumer used `component`, just render that
   if ('component' in props) {
     return props.component({})
+  }
+
+  if ('loadComponent' in props) {
+    return (
+      <LazyRegistryComponent
+        loadComponent={props.loadComponent}
+        componentProps={props.componentProps}
+        fallback={props.fallback}
+      />
+    )
   }
 
   switch (props.element) {

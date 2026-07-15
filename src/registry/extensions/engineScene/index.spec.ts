@@ -123,6 +123,29 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
     ).toEqual([['file'], ['file'], ['file'], ['file'], ['file']])
+
+    const statusBarItems = registry.get(statusBarLocalItemsValueSpec)
+    expect(statusBarItems.map((item) => 'loadComponent' in item)).toEqual([
+      true,
+      true,
+      true,
+      true,
+      true,
+    ])
+    expect(statusBarItems.some((item) => 'component' in item)).toBe(false)
+
+    const selectionItem = statusBarItems.find((item) => item.id === 'selection')
+    expect(selectionItem && 'loadComponent' in selectionItem).toBe(true)
+    if (selectionItem && 'loadComponent' in selectionItem) {
+      expect(selectionItem.componentProps).toMatchObject({
+        label: 'No selection',
+        popoverSections: [
+          {
+            id: 'selection-references',
+          },
+        ],
+      })
+    }
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {
@@ -202,12 +225,21 @@ describe('engineScene extension', () => {
       registry.get(engineSceneViewExtensionsValueSpec).map((extension) => ({
         id: extension.id,
         zone: extension.zone,
+        lazy: 'loadComponent' in extension,
       }))
     ).toEqual([
-      { id: 'engine-scene.toolbar', zone: 'top' },
-      { id: 'engine-scene.sketch-background-opacity', zone: 'bottom-left' },
-      { id: 'engine-scene.sketch-constraints-toggle', zone: 'bottom-left' },
-      { id: 'engine-scene.gizmo', zone: 'bottom-right' },
+      { id: 'engine-scene.toolbar', zone: 'top', lazy: true },
+      {
+        id: 'engine-scene.sketch-background-opacity',
+        zone: 'bottom-left',
+        lazy: false,
+      },
+      {
+        id: 'engine-scene.sketch-constraints-toggle',
+        zone: 'bottom-left',
+        lazy: false,
+      },
+      { id: 'engine-scene.gizmo', zone: 'bottom-right', lazy: true },
     ])
   })
 

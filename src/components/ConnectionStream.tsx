@@ -36,6 +36,7 @@ import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
+import { EngineSceneContributionComponent } from '@src/registry/contracts/engineScene'
 import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 
@@ -535,7 +536,11 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
             className={`absolute inset-0 ${layer.wrapperClassName ?? ''}`}
             data-engine-scene-stream-layer-id={layer.id}
           >
-            <layer.Component {...props.streamLayerProps} />
+            <EngineSceneContributionComponent
+              Component={layer.Component}
+              loadComponent={layer.loadComponent}
+              props={props.streamLayerProps}
+            />
           </div>
         )
       })}

@@ -1,34 +1,5 @@
 import { CustomIcon } from '@src/components/CustomIcon'
 import type { EngineSceneViewExtensionProps } from '@src/registry/contracts/engineScene'
-import { Suspense, lazy } from 'react'
-
-const Toolbar = lazy(async () => {
-  const { Toolbar } = await import('@src/Toolbar')
-  return { default: Toolbar }
-})
-
-const Gizmo = lazy(async () => {
-  const { default: Gizmo } = await import('@src/components/gizmo/Gizmo')
-  return { default: Gizmo }
-})
-
-export function EngineSceneToolbarViewExtension() {
-  return (
-    <div className="toolbar-container">
-      <Suspense fallback={null}>
-        <Toolbar />
-      </Suspense>
-    </div>
-  )
-}
-
-export function EngineSceneGizmoViewExtension() {
-  return (
-    <Suspense fallback={null}>
-      <Gizmo />
-    </Suspense>
-  )
-}
 
 export function SketchBackgroundOpacityViewExtension({
   sketchSolveStreamDimming,

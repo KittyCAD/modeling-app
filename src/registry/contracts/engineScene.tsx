@@ -1,5 +1,7 @@
 import { Slot, defineContract, defineValueSpec } from '@kittycad/registry'
 import type { modelingMachine } from '@src/machines/modelingMachine'
+import { LazyRegistryComponent } from '@src/registry/lazyComponent'
+import type { RegistryComponentLoader } from '@src/registry/lazyComponent'
 import type { ComponentType, Dispatch, SetStateAction } from 'react'
 import { twMerge } from 'tailwind-merge'
 import type { EventFrom, StateFrom } from 'xstate'
@@ -31,14 +33,23 @@ export type EngineSceneExtensionContext = {
 export type EngineSceneViewExtensionProps = EngineSceneExtensionContext
 export type EngineSceneStreamLayerProps = EngineSceneExtensionContext
 
+type EngineSceneComponentContribution<Props extends object> =
+  | {
+      Component: ComponentType<Props>
+      loadComponent?: never
+    }
+  | {
+      Component?: never
+      loadComponent: RegistryComponentLoader<Props>
+    }
+
 export type EngineSceneViewExtension = {
   id: string
   zone: EngineSceneViewExtensionZone
   order?: number
-  Component: ComponentType<EngineSceneViewExtensionProps>
   wrapperClassName?: string
   shouldRegister?: (context: EngineSceneExtensionContext) => boolean
-}
+} & EngineSceneComponentContribution<EngineSceneViewExtensionProps>
 
 export type EngineSceneStreamClassName = {
   id: string
@@ -49,9 +60,8 @@ export type EngineSceneStreamClassName = {
 export type EngineSceneStreamLayer = {
   id: string
   order?: number
-  Component: ComponentType<EngineSceneStreamLayerProps>
   wrapperClassName?: string
-}
+} & EngineSceneComponentContribution<EngineSceneStreamLayerProps>
 
 const zoneOrder = Object.fromEntries(
   engineSceneViewExtensionZones.map((zone, index) => [zone, index])
@@ -127,6 +137,32 @@ export function resolveEngineSceneViewExtensions(
   )
 }
 
+export function EngineSceneContributionComponent({
+  Component,
+  loadComponent,
+  props,
+}: {
+  Component?: ComponentType<EngineSceneExtensionContext>
+  loadComponent?: RegistryComponentLoader<EngineSceneExtensionContext>
+  props: EngineSceneExtensionContext
+}) {
+  if (loadComponent) {
+    return (
+      <LazyRegistryComponent
+        loadComponent={loadComponent}
+        componentProps={props}
+        fallback={null}
+      />
+    )
+  }
+
+  if (!Component) {
+    return null
+  }
+
+  return <Component {...props} />
+}
+
 const zoneClassNames: Record<EngineSceneViewExtensionZone, string> = {
   'top-left': 'absolute top-2 left-2 flex items-start justify-start gap-2',
   top: 'absolute top-0 left-2 right-2 flex items-start justify-center gap-2',
@@ -175,7 +211,6 @@ export function EngineSceneViewExtensionOverlay({
             data-engine-scene-view-extension-zone={zone}
           >
             {zoneExtensions.map((extension) => {
-              const Component = extension.Component
               const wrapperClassName = `max-w-full pointer-events-auto ${extension.wrapperClassName ?? ''}`
 
               return (
@@ -184,7 +219,11 @@ export function EngineSceneViewExtensionOverlay({
                   className={wrapperClassName}
                   data-engine-scene-view-extension-id={extension.id}
                 >
-                  <Component {...context} />
+                  <EngineSceneContributionComponent
+                    Component={extension.Component}
+                    loadComponent={extension.loadComponent}
+                    props={context}
+                  />
                 </div>
               )
             })}
