@@ -1937,21 +1937,12 @@ fn artifacts_to_update(
                     "Expected to find an existing path for the origin path of CreateRegion or CreateRegionFromQueryPoint command, but found none: origin_path={origin_path:?}, cmd={cmd:?}"
                 );
             };
-            // If we have a response, we can also create the segments in the
-            // region.
-            let Some(
-                OkModelingCmdResponse::CreateRegion(kcmc::output::CreateRegion { region_mapping, .. })
-                | OkModelingCmdResponse::CreateRegionFromQueryPoint(kcmc::output::CreateRegionFromQueryPoint {
-                    region_mapping,
-                    ..
-                }),
-            ) = response
-            else {
-                return_arr.push(Artifact::Path(Path {
+            let region_path = |seg_ids, code_ref| {
+                Artifact::Path(Path {
                     id,
                     sub_type: PathSubType::Region,
                     plane_id: path.plane_id,
-                    seg_ids: Vec::new(),
+                    seg_ids,
                     consumed: false,
                     sweep_id: None,
                     trajectory_sweep_id: None,
@@ -1963,7 +1954,19 @@ fn artifacts_to_update(
                     inner_path_id: None,
                     outer_path_id: None,
                     pattern_ids: Vec::new(),
-                }));
+                })
+            };
+            // If we have a response, we can also create the segments in the
+            // region.
+            let Some(
+                OkModelingCmdResponse::CreateRegion(kcmc::output::CreateRegion { region_mapping, .. })
+                | OkModelingCmdResponse::CreateRegionFromQueryPoint(kcmc::output::CreateRegionFromQueryPoint {
+                    region_mapping,
+                    ..
+                }),
+            ) = response
+            else {
+                return_arr.push(region_path(Vec::new(), code_ref));
                 return Ok(return_arr);
             };
             // Each key is a segment in the region. The value is the segment in
@@ -1975,23 +1978,7 @@ fn artifacts_to_update(
                 .flat_map(|region_segment_ids| region_segment_ids.iter().copied())
                 .map(ArtifactId::new)
                 .collect::<Vec<_>>();
-            return_arr.push(Artifact::Path(Path {
-                id,
-                sub_type: PathSubType::Region,
-                plane_id: path.plane_id,
-                seg_ids: region_segment_ids,
-                consumed: false,
-                sweep_id: None,
-                trajectory_sweep_id: None,
-                solid2d_id: None,
-                code_ref: code_ref.clone(),
-                composite_solid_id: None,
-                sketch_block_id: None,
-                origin_path_id: Some(ArtifactId::new(*origin_path_id)),
-                inner_path_id: None,
-                outer_path_id: None,
-                pattern_ids: Vec::new(),
-            }));
+            return_arr.push(region_path(region_segment_ids, code_ref.clone()));
             for (original_segment_id, region_segment_ids) in reverse.iter() {
                 for segment_id in region_segment_ids {
                     return_arr.push(Artifact::Segment(Segment {
