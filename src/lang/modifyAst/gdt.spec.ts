@@ -23,9 +23,11 @@ import { type ArtifactGraph, assertParse, recast } from '@src/lang/wasm'
 import { stringToKclExpression } from '@src/lib/kclHelpers'
 import type RustContext from '@src/lib/rustContext'
 import {
+  clonedRegionBody,
   createSelectionFromArtifacts,
   enginelessExecutor,
   getCapFromCylinder,
+  getSweepEdgesForBody,
 } from '@src/lib/testHelpers'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -1092,6 +1094,51 @@ extrude001 = extrude(profile001, length = 10, tagEnd = $capEnd001)
   })
 
   describe('Testing addProfileGdt', () => {
+    it('should reference faces on a cloned body for a selected edge', async () => {
+      const { artifactGraph, ast } = await executeCode(
+        clonedRegionBody,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const edge = getSweepEdgesForBody(
+        clonedRegionBody,
+        'cube2',
+        artifactGraph
+      ).find((artifact) =>
+        artifact.commonSurfaceIds.some(
+          (id) => artifactGraph.get(id)?.type === 'cap'
+        )
+      )
+      if (!edge) throw new Error('Expected a cloned sweep edge')
+
+      const tolerance = await getKclCommandValue(
+        '0.1mm',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addProfileGdt({
+        ast,
+        artifactGraph,
+        objects: createSelectionFromArtifacts([edge], artifactGraph),
+        tolerance,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      if (err(newCode)) throw newCode
+      expect(newCode).toContain(`gdt::profileLine(
+  edges = [
+    getCommonEdge(faces = [
+      cube2.sketch.tags.line2,
+      cube2.faces.capEnd001
+    ])
+  ],
+  tolerance = 0.1mm,
+)`)
+      await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
+    })
+
     it('should add a profile line annotation to a selected edge', async () => {
       const { artifactGraph, ast } = await executeCode(
         box,
