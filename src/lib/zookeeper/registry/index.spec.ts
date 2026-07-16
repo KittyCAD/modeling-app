@@ -1,21 +1,33 @@
-import { Registry, pluginsValueSpec } from '@kittycad/registry'
-import { signal } from '@preact/signals-core'
 import {
-  createLayoutService,
-  createLayoutServiceRegistryItem,
-} from '@src/lib/layout'
+  Registry,
+  defineRegistryItem,
+  pluginsValueSpec,
+  provideService,
+} from '@kittycad/registry'
+import { type Signal, signal } from '@preact/signals-core'
 import {
   DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
 } from '@src/lib/layout/configs/default'
-import { AreaType, type Layout, LayoutType } from '@src/lib/layout/types'
-import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import {
+  AreaType,
+  type Layout,
+  type LayoutService,
+  LayoutType,
+} from '@src/lib/layout/types'
+import {
+  layoutAreaLibraryValueSpec,
+  layoutService,
+} from '@src/registry/contracts/layout'
 import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 
-vi.mock('@src/components/layout/areas/MlEphantConversationPaneWrapper', () => ({
-  MlEphantConversationPaneWrapper: () => null,
-}))
+vi.mock(
+  '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper',
+  () => ({
+    MlEphantConversationPaneWrapper: () => null,
+  })
+)
 
 vi.mock('@src/components/ZookeeperCreditsMenu', () => ({
   ZookeeperCreditsMenu: () => null,
@@ -42,6 +54,23 @@ function zookeeperPaneLayout(activeIndices: number[] = [0]): Layout {
   }
 }
 
+function createTestLayoutServiceRegistryItem(layoutSignal: Signal<Layout>) {
+  const testLayoutService: LayoutService = {
+    signal: layoutSignal,
+    get: () => layoutSignal.value,
+    set: (layout) => {
+      layoutSignal.value = layout
+    },
+    reset: () => undefined,
+    applyContributions: () => [],
+  }
+
+  return defineRegistryItem({
+    id: 'test.layout-service',
+    providesServices: [provideService(layoutService, testLayoutService)],
+  })
+}
+
 describe('zookeeper plugin', () => {
   it('contributes the conversation pane and credits status item', async () => {
     const { default: zookeeper } = await import('.')
@@ -50,7 +79,7 @@ describe('zookeeper plugin', () => {
 
     registry.configure([
       zookeeper,
-      createLayoutServiceRegistryItem(createLayoutService(layoutSignal)),
+      createTestLayoutServiceRegistryItem(layoutSignal),
     ])
 
     const plugin = registry
@@ -81,7 +110,7 @@ describe('zookeeper plugin', () => {
 
     registry.configure([
       zookeeper,
-      createLayoutServiceRegistryItem(createLayoutService(layoutSignal)),
+      createTestLayoutServiceRegistryItem(layoutSignal),
     ])
 
     const plugin = registry

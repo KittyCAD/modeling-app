@@ -8,29 +8,15 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import {
-  buildZookeeperHistoryExtension,
-  type PreparedZookeeperPatchFileReplay,
-} from '@src/editor/plugins/zookeeper'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { isPlaywright } from '@src/lib/isPlaywright'
-import {
-  createLayoutService,
-  createLayoutServiceRegistryItem,
-  createLayoutWithMetadata,
-  defaultLayout,
-  type Layout,
-  type LayoutService,
-  loadLayout,
-  saveLayout,
-  setLayoutSaveHandler,
-} from '@src/lib/layout'
-import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
+import { layoutService } from '@src/lib/layout/registry/contract'
+import type { LayoutService } from '@src/lib/layout/types'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
@@ -39,15 +25,20 @@ import {
   getAllCurrentSettings,
   jsAppSettings,
 } from '@src/lib/settings/settingsUtils'
-import { err, reportRejection } from '@src/lib/trap'
+import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import {
+  buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
+} from '@src/lib/zookeeper/editorPlugin'
+import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -72,7 +63,6 @@ import {
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
-import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
   type SettingsRegistryService,
@@ -99,8 +89,6 @@ import type {
 } from 'xstate'
 import { createActor } from 'xstate'
 
-const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
-const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
 
 type AppRegistryOptions = {
@@ -127,10 +115,6 @@ function getZookeeperReplayFallbackFilePath(
   ].filter((path, index, paths) => paths.indexOf(path) === index)
 
   return candidates.find((path) => path && !deletedPaths.has(path))
-}
-
-function isPlaywrightRuntime() {
-  return typeof window !== 'undefined' && isPlaywright()
 }
 
 // We set some of our singletons on the window for debugging and E2E tests
@@ -163,14 +147,7 @@ export type AppBillingSystem = {
 
 export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
-export type AppLayoutSystem = {
-  signal: Signal<Layout>
-  get: () => Layout
-  set: (l: Layout) => void
-  reset: () => void
-  service: LayoutService
-  saveEffectUnsubscribeFn: ReturnType<typeof effect>
-}
+export type AppLayoutSystem = LayoutService
 
 export type AppRegistrySystem = Registry
 
@@ -239,6 +216,8 @@ export class App implements AppSubsystems {
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
+  private activeWasmInstance: ModuleType | undefined
+  private unsubscribeFromActiveWasmInstance: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -268,6 +247,13 @@ export class App implements AppSubsystems {
     this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
+    this.userFeatures.actor.subscribe(this.syncKclRuntimeFlags)
+    this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
+      this.setActiveWasmInstance
+    )
+    void this.wasmPromise
+      .then(this.setActiveWasmInstance)
+      .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
     this.syncCloudSyncRuntimePolicy()
 
@@ -303,6 +289,8 @@ export class App implements AppSubsystems {
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
     const settingsActor = settings.actor
+    const layout = appRegistry.get(layoutService)
+    layout.get()
     const engineCommandManager = new ConnectionManager({
       settingsActor,
     })
@@ -323,93 +311,6 @@ export class App implements AppSubsystems {
       send: billingActor.send.bind(App),
       useContext: () => useSelector(billingActor, ({ context }) => context),
     }
-
-    const usePlaywrightLayout = isPlaywrightRuntime()
-    const layoutConfigName = usePlaywrightLayout
-      ? PLAYWRIGHT_LAYOUT_CONFIG_NAME
-      : DEFAULT_LAYOUT_CONFIG_NAME
-    const runtimeDefaultLayout = usePlaywrightLayout
-      ? playwrightLayoutConfig
-      : defaultLayout
-    const layoutSignal = signal<Layout>(runtimeDefaultLayout)
-    const layoutService = createLayoutService(layoutSignal)
-    const layout: AppLayoutSystem = {
-      signal: layoutSignal,
-      get: () => layoutSignal.value,
-      set: (l: Layout) => {
-        layoutSignal.value = structuredClone(l)
-      },
-      reset: () => {
-        layoutSignal.value = structuredClone(runtimeDefaultLayout)
-      },
-      service: layoutService,
-      saveEffectUnsubscribeFn: effect(() =>
-        saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
-      ),
-    }
-    appRegistry.reconfigure(appRegistryServicesSlot, [
-      createLayoutServiceRegistryItem(layoutService),
-    ])
-
-    let hasHydratedLayout = false
-    const applyRegistryLayoutContributions = () =>
-      layoutService.applyContributions(
-        appRegistry.get(layoutContributionsValueSpec)
-      )
-    const hydrateLayoutFromSettings = (
-      snapshot: SnapshotFrom<typeof settingsActor>
-    ) => {
-      if (hasHydratedLayout || snapshot.value !== 'idle') {
-        return
-      }
-
-      setLayoutSaveHandler(({ layout, layoutName }) => {
-        const currentLayouts = getOnlySettingsFromContext(
-          settingsActor.getSnapshot().context
-        ).layout.configs.current
-
-        settingsActor.send({
-          type: 'set.layout.configs',
-          data: {
-            level: 'user',
-            value: {
-              ...currentLayouts,
-              [layoutName ?? 'default']: createLayoutWithMetadata(layout),
-            },
-          },
-        })
-      })
-
-      const settingsSnapshot = getOnlySettingsFromContext(snapshot.context)
-      const settingsLayout =
-        settingsSnapshot.layout.configs.current[layoutConfigName] ??
-        settingsSnapshot.layout.configs.current.default
-      if (settingsLayout) {
-        layoutSignal.value = structuredClone(settingsLayout.layout)
-      } else {
-        const legacyLayout = loadLayout(layoutConfigName)
-        const fallbackLegacyLayout =
-          err(legacyLayout) && layoutConfigName !== DEFAULT_LAYOUT_CONFIG_NAME
-            ? loadLayout(DEFAULT_LAYOUT_CONFIG_NAME)
-            : legacyLayout
-        if (!err(fallbackLegacyLayout)) {
-          layoutSignal.value = structuredClone(fallbackLegacyLayout)
-        }
-      }
-
-      hasHydratedLayout = true
-      applyRegistryLayoutContributions()
-    }
-    settingsActor.subscribe(hydrateLayoutFromSettings)
-    hydrateLayoutFromSettings(settingsActor.getSnapshot())
-    effect(() => {
-      const contributions = appRegistry.signal(
-        layoutContributionsValueSpec
-      ).value
-      if (hasHydratedLayout) {
-        layoutService.applyContributions(contributions)
-      }
-    })
 
     return {
       wasmPromise,
@@ -524,6 +425,19 @@ export class App implements AppSubsystems {
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
+  dispose() {
+    this.closeProject()
+    this.unsubscribeFromActiveWasmInstance?.()
+    this.unsubscribeFromActiveWasmInstance = undefined
+    this.systemIOActor.stop()
+    this.settings.actor.stop()
+    this.commands.actor.stop()
+    this.auth.actor.stop()
+    this.billing.actor.stop()
+    this.userFeatures.actor.stop()
+    this.registry[Symbol.dispose]()
+  }
+
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
@@ -573,6 +487,19 @@ export class App implements AppSubsystems {
     })
   }
 
+  setActiveWasmInstance = (wasmInstance: ModuleType) => {
+    this.activeWasmInstance = wasmInstance
+    this.syncKclRuntimeFlags()
+  }
+
+  syncKclRuntimeFlags = () => {
+    if (!this.activeWasmInstance) {
+      return
+    }
+
+    setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
+  }
+
   syncAppCommands = () => {
     const enableProjectDirectoryCommands =
       typeof window !== 'undefined' &&
@@ -593,6 +520,8 @@ export class App implements AppSubsystems {
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
             enableProjectDirectoryCommands,
+            getCurrentProjectDirectoryName: () =>
+              this.settings.actor.getSnapshot().context.currentProject?.name,
           }).map(provideCommand),
         ],
       }),

@@ -30,7 +30,7 @@ const LAYOUT_TOOLBAR_IDS = new Set(['left-toolbar', 'right-toolbar'])
 // in boot.ts through components that use the global app context.
 const MlEphantConversationPaneWrapper = lazy(async () => {
   const { MlEphantConversationPaneWrapper } = await import(
-    '@src/components/layout/areas/MlEphantConversationPaneWrapper'
+    '@src/lib/zookeeper/components/MlEphantConversationPaneWrapper'
   )
   return { default: MlEphantConversationPaneWrapper }
 })
@@ -107,7 +107,7 @@ const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
 
     return nullableStatusBarItem(
       layoutSystem &&
-        hasOpenToolbarPane(layoutSystem.current.value, ZOOKEEPER_PANE_ID)
+        hasOpenToolbarPane(layoutSystem.signal.value, ZOOKEEPER_PANE_ID)
         ? {
             id: 'zookeeper-credits',
             scopes: ['file'],
