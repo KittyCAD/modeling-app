@@ -1,5 +1,4 @@
 import { ARG_END, ARG_END_ABSOLUTE } from '@src/lang/constants'
-import type { ToolTip } from '@src/lang/langHelpers'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import {
   fnNameToTooltip,
@@ -17,6 +16,7 @@ import {
   transformAstSketchLines,
   transformSecondarySketchLinesTagFirst,
 } from '@src/lang/std/sketchcombos'
+import type { ToolTip } from '@src/lang/toolTips'
 import { findKwArg, topLevelRange } from '@src/lang/util'
 import type { Expr, Program } from '@src/lang/wasm'
 import { assertParse, recast } from '@src/lang/wasm'
