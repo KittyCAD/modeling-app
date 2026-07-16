@@ -4,6 +4,7 @@ import type { FileMeta } from '@src/lib/types'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  appendReplayMessagesToExchanges,
   type Conversation,
   type MlCopilotModeOption,
   MlEphantConversationToMarkdown,
@@ -143,6 +144,49 @@ describe('mlEphantManagerMachine', () => {
           },
         })
       ).toStrictEqual({ defaultMode: 'standard', modeOptions: [] })
+    })
+  })
+
+  describe('appendReplayMessagesToExchanges', () => {
+    it('restores start times by request order across replay-only exchanges', () => {
+      const firstStartedAt = new Date('2026-07-15T12:00:00.000Z')
+      const secondStartedAt = new Date('2026-07-15T12:10:00.000Z')
+      const exchanges: Conversation['exchanges'] = []
+
+      appendReplayMessagesToExchanges(
+        exchanges,
+        [
+          { type: 'user', content: 'First request' },
+          {
+            end_of_stream: {
+              whole_response: 'First response',
+            },
+          },
+          { info: { text: 'Replay-only notice' } },
+          { type: 'user', content: 'Second request' },
+          {
+            reasoning: {
+              type: 'text',
+              content: 'Still working',
+            },
+          },
+        ],
+        [firstStartedAt, secondStartedAt]
+      )
+
+      expect(
+        exchanges
+          .filter((exchange) => exchange.request)
+          .map((exchange) => exchange.startedAt)
+      ).toStrictEqual([firstStartedAt, secondStartedAt])
+      expect(exchanges.at(-1)?.responses).toStrictEqual([
+        {
+          reasoning: {
+            type: 'text',
+            content: 'Still working',
+          },
+        },
+      ])
     })
   })
 

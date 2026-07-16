@@ -560,6 +560,55 @@ function isMlCopilotServerMessage(
   return true
 }
 
+export function appendReplayMessagesToExchanges(
+  exchanges: Exchange[],
+  replayMessages: readonly unknown[],
+  exchangeStartedAts: readonly (Date | undefined)[] = []
+) {
+  let replayedRequestIndex = exchanges.filter((exchange) =>
+    isMlCopilotUserRequest(exchange.request)
+  ).length
+
+  for (const responseReplay of replayMessages) {
+    if (!isMlCopilotServerMessage(responseReplay)) continue
+
+    // Don't show deltas because they are aggregated in the end_of_stream.
+    if ('delta' in responseReplay) continue
+
+    if ('type' in responseReplay && responseReplay.type === 'user') {
+      if (isMlCopilotUserRequest(responseReplay)) {
+        exchanges.push({
+          request: responseReplay,
+          responses: [],
+          deltasAggregated: '',
+          startedAt: exchangeStartedAts[replayedRequestIndex],
+        })
+        replayedRequestIndex += 1
+      }
+      continue
+    }
+
+    if ('error' in responseReplay || 'info' in responseReplay) {
+      exchanges.push({
+        responses: [responseReplay],
+        deltasAggregated: '',
+      })
+      continue
+    }
+
+    const lastExchange = exchanges.slice(-1)[0] ?? {
+      responses: [],
+    }
+
+    // Instead we transform an end_of_stream into a delta.
+    if ('end_of_stream' in responseReplay) {
+      lastExchange.deltasAggregated =
+        responseReplay.end_of_stream.whole_response ?? ''
+    }
+    lastExchange.responses.push(responseReplay)
+  }
+}
+
 const hasBeenInterruptedOnLast = (exchanges: Exchange[]) => {
   const lastExchange = exchanges.slice(-1)[0]
   const lastResponse = lastExchange?.responses.slice(-1)[0]
@@ -726,7 +775,6 @@ export const mlEphantManagerMachine = setup({
       })
 
       let maybeReplayedExchanges: Exchange[] = []
-      let replayedRequestIndex = 0
       let maybeModeOptions: MlCopilotModeOption[] | undefined
       let maybeDefaultMode: MlCopilotModeId | undefined
       let setupResolved = false
@@ -876,57 +924,20 @@ export const mlEphantManagerMachine = setup({
             // If it's a replay, we'll unravel it and process as if they are real
             // messages being sent from the server.
             if ('replay' in response) {
+              const replayMessages: unknown[] = []
               for (let byteMessage of response.replay.messages) {
                 const data: Uint8Array = Uint8Array.from(
                   Object.values(byteMessage)
                 )
-                const responseReplay: unknown = Object.freeze(
-                  JSON.parse(new TextDecoder().decode(data))
+                replayMessages.push(
+                  Object.freeze(JSON.parse(new TextDecoder().decode(data)))
                 )
-                if (!isMlCopilotServerMessage(responseReplay)) continue
-
-                // Don't show deltas because they are aggregated in the end_of_stream
-                if ('delta' in responseReplay) continue
-
-                if (
-                  'type' in responseReplay &&
-                  responseReplay.type === 'user'
-                ) {
-                  if (isMlCopilotUserRequest(responseReplay)) {
-                    const startedAt =
-                      args.input.context.cachedSetup?.exchangeStartedAts?.[
-                        replayedRequestIndex
-                      ]
-                    maybeReplayedExchanges.push({
-                      request: responseReplay,
-                      responses: [],
-                      deltasAggregated: '',
-                      startedAt,
-                    })
-                    replayedRequestIndex += 1
-                  }
-                  continue
-                }
-
-                if ('error' in responseReplay || 'info' in responseReplay) {
-                  maybeReplayedExchanges.push({
-                    responses: [responseReplay],
-                    deltasAggregated: '',
-                  })
-                  continue
-                }
-
-                const lastExchange = maybeReplayedExchanges.slice(-1)[0] ?? {
-                  responses: [],
-                }
-
-                // Instead we transform a end_of_stream into a delta!
-                if ('end_of_stream' in responseReplay) {
-                  lastExchange.deltasAggregated =
-                    responseReplay.end_of_stream.whole_response ?? ''
-                }
-                lastExchange.responses.push(responseReplay)
               }
+              appendReplayMessagesToExchanges(
+                maybeReplayedExchanges,
+                replayMessages,
+                args.input.context.cachedSetup?.exchangeStartedAts
+              )
             }
 
             // We're only considered setup when a conversation_id is assigned
