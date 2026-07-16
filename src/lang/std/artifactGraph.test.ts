@@ -17,24 +17,25 @@ const codeRef = {
   nodePath: { steps: [] },
 }
 
-function createSourceSegmentGraph(): {
+function createSourceSegmentGraph(suffix = ''): {
   artifactGraph: ArtifactGraph
   sourceSegment: Extract<Artifact, { type: 'segment' }>
 } {
   const artifactGraph: ArtifactGraph = new Map()
+  const idSuffix = suffix ? `-${suffix}` : ''
   const sourceSegment: Extract<Artifact, { type: 'segment' }> = {
     type: 'segment',
-    id: 'source-segment',
-    pathId: 'source-path',
+    id: `source-segment${idSuffix}`,
+    pathId: `source-path${idSuffix}`,
     edgeIds: [],
     commonSurfaceIds: [],
     codeRef,
   }
   artifactGraph.set(sourceSegment.id, sourceSegment)
-  artifactGraph.set('source-path', {
+  artifactGraph.set(sourceSegment.pathId, {
     type: 'path',
     subType: 'sketch',
-    id: 'source-path',
+    id: sourceSegment.pathId,
     codeRef,
     planeId: 'plane-1',
     segIds: [sourceSegment.id],
@@ -48,12 +49,15 @@ function addMappedRegion(
   artifactGraph: ArtifactGraph,
   sourceSegment: Extract<Artifact, { type: 'segment' }>,
   suffix: string,
-  withFaces = false
+  withFaces = false,
+  targetSuffix = suffix
 ) {
   const generatedSegmentId = `generated-segment-${suffix}`
   const regionPathId = `region-path-${suffix}`
-  const sweepId = `sweep-${suffix}`
-  const commonSurfaceIds = withFaces ? [`wall-${suffix}`, `cap-${suffix}`] : []
+  const sweepId = `sweep-${targetSuffix}`
+  const commonSurfaceIds = withFaces
+    ? [`wall-${targetSuffix}`, `cap-${targetSuffix}`]
+    : []
 
   artifactGraph.set(generatedSegmentId, {
     ...sourceSegment,
@@ -87,24 +91,24 @@ function addMappedRegion(
   })
 
   if (withFaces) {
-    artifactGraph.set(`wall-${suffix}`, {
+    artifactGraph.set(`wall-${targetSuffix}`, {
       type: 'wall',
-      id: `wall-${suffix}`,
+      id: `wall-${targetSuffix}`,
       segId: generatedSegmentId,
       sweepId,
       pathIds: [],
       edgeCutEdgeIds: [],
-      cmdId: `cmd-${suffix}`,
+      cmdId: `cmd-${targetSuffix}`,
       faceCodeRef: codeRef,
     })
-    artifactGraph.set(`cap-${suffix}`, {
+    artifactGraph.set(`cap-${targetSuffix}`, {
       type: 'cap',
-      id: `cap-${suffix}`,
+      id: `cap-${targetSuffix}`,
       subType: 'end',
       sweepId,
       pathIds: [],
       edgeCutEdgeIds: [],
-      cmdId: `cmd-${suffix}`,
+      cmdId: `cmd-${targetSuffix}`,
       faceCodeRef: codeRef,
     })
   }
@@ -287,6 +291,34 @@ describe('getSweepArtifactFromSelection', () => {
       new Error('Segment maps to more than one swept region')
     )
   })
+
+  it('resolves two original hole segments independently', () => {
+    const left = createSourceSegmentGraph('left')
+    const right = createSourceSegmentGraph('right')
+    for (const artifact of right.artifactGraph.values()) {
+      left.artifactGraph.set(artifact.id, artifact)
+    }
+    addMappedRegion(left.artifactGraph, left.sourceSegment, 'left')
+    addMappedRegion(left.artifactGraph, right.sourceSegment, 'right')
+
+    for (const [sourceSegment, expectedSweepId] of [
+      [left.sourceSegment, 'sweep-left'],
+      [right.sourceSegment, 'sweep-right'],
+    ] as const) {
+      const result = getSweepArtifactFromSelection(
+        {
+          artifact: sourceSegment,
+          codeRef: { range: [0, 0, 0], pathToNode: [] },
+        },
+        left.artifactGraph
+      )
+
+      expect(result).not.toBeInstanceOf(Error)
+      if (!(result instanceof Error)) {
+        expect(result.id).toBe(expectedSweepId)
+      }
+    }
+  })
 })
 
 describe('getCommonFacesForEdge', () => {
@@ -306,6 +338,19 @@ describe('getCommonFacesForEdge', () => {
     expect(getCommonFacesForEdge(sourceSegment, artifactGraph)).toEqual(
       new Error('Segment maps to more than one set of common faces')
     )
+  })
+
+  it('accepts multiple generated segments resolving to the same faces', () => {
+    const { artifactGraph, sourceSegment } = createSourceSegmentGraph()
+    addMappedRegion(artifactGraph, sourceSegment, '1', true)
+    addMappedRegion(artifactGraph, sourceSegment, '2', true, '1')
+
+    const result = getCommonFacesForEdge(sourceSegment, artifactGraph)
+
+    expect(result).not.toBeInstanceOf(Error)
+    if (!(result instanceof Error)) {
+      expect(result.map(({ id }) => id).sort()).toEqual(['cap-1', 'wall-1'])
+    }
   })
 })
 
