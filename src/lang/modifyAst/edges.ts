@@ -18,7 +18,10 @@ import {
   setCallInAst,
 } from '@src/lang/modifyAst'
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
-import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
+import {
+  modifyAstWithTagsForSelection,
+  resolveEdgeSelectionContext,
+} from '@src/lang/modifyAst/tagManagement'
 import {
   createSketchTagMemberExpression,
   getNodeFromPath,
@@ -430,43 +433,27 @@ function buildEdgeExpr(
     )
   }
 
-  const sourceSurfaceArtifact = getSweepArtifactFromSelection(
-    graphEdgeSelection,
-    artifactGraph
-  )
-  if (err(sourceSurfaceArtifact)) {
-    return sourceSurfaceArtifact
-  }
-
-  const sourceSurfaceVars = getVariableExprsFromSelection(
-    {
-      graphSelections: [
-        {
-          artifact: sourceSurfaceArtifact as Artifact,
-          codeRef: sourceSurfaceArtifact.codeRef,
-        },
-      ],
-      otherSelections: [],
-    },
-    artifactGraph,
+  const edgeContext = resolveEdgeSelectionContext(
     ast,
-    wasmInstance
+    graphEdgeSelection,
+    artifactGraph,
+    wasmInstance,
+    undefined,
+    false
   )
-  if (err(sourceSurfaceVars)) return sourceSurfaceVars
-  if (sourceSurfaceVars.exprs.length !== 1) {
-    return new Error('Expected exactly one source surface for each blend edge.')
-  }
-  const sourceSurfaceExpr = sourceSurfaceVars.exprs[0]
+  if (err(edgeContext)) return edgeContext
+  const sourceSurfaceArtifact = edgeContext.sourceSweep
+  const sourceSurfaceExpr = edgeContext.selectedBodyExpr
 
   // Region-based sketch-solve surface case: building region###.tags.line#.
   const regionSketchTagExpr = getRegionSketchTagExprFromSourceSurface(
-    sourceSurfaceArtifact as Artifact,
+    sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
     wasmInstance
   )
-  if (regionSketchTagExpr) {
+  if (regionSketchTagExpr && !edgeContext.isClone) {
     const edgeExpr = getEdgeTagCall(regionSketchTagExpr, edgeArtifact)
 
     return {
@@ -481,7 +468,7 @@ function buildEdgeExpr(
 
   // Sketch-solve surface case: building a sweep###.sketch.tags.line# expression.
   const sketchSegmentName = getSketchSegmentNameFromSourceSurface(
-    sourceSurfaceArtifact as Artifact,
+    sourceSurfaceArtifact,
     edgeArtifact,
     artifactGraph,
     ast,
@@ -509,7 +496,8 @@ function buildEdgeExpr(
     ast,
     graphEdgeSelection,
     artifactGraph,
-    wasmInstance
+    wasmInstance,
+    { edgeContext }
   )
   if (err(tagResult)) return tagResult
   if (tagResult.exprs.length === 0) {
@@ -562,55 +550,38 @@ export function groupSelectionsByBodyAndAddTags(
       bodies: Map<string, BodySelectionData>
     }
   | Error {
-  const selectionsByBody = groupSelectionsByBody(selections, artifactGraph)
+  const selectionsByBody = groupSelectionsByBody(
+    selections,
+    artifactGraph,
+    ast,
+    wasmInstance,
+    nodeToEdit
+  )
   if (err(selectionsByBody)) return selectionsByBody
 
   let modifiedAst = ast
   const bodies = new Map<string, BodySelectionData>()
 
   for (const [bodyKey, bodySelections] of selectionsByBody.entries()) {
-    // Add tags for graph selections in this body
+    const firstSelection = bodySelections.graphSelections[0]
+    if (!firstSelection) continue
+    const edgeContext = resolveEdgeSelectionContext(
+      modifiedAst,
+      firstSelection,
+      artifactGraph,
+      wasmInstance,
+      nodeToEdit
+    )
+    if (err(edgeContext)) return edgeContext
+
     const { tagsExprs, modifiedAst: taggedAst } = getTagsExprsFromSelection(
       modifiedAst,
       bodySelections,
       artifactGraph,
-      wasmInstance
+      wasmInstance,
+      nodeToEdit
     )
     modifiedAst = taggedAst
-
-    let bodySelectionForSolids: Selection | undefined
-    if (bodySelections.graphSelections.length > 0) {
-      const sweep = getSweepArtifactFromSelection(
-        bodySelections.graphSelections[0],
-        artifactGraph
-      )
-      if (err(sweep)) return sweep
-      bodySelectionForSolids = {
-        artifact: sweep as Artifact,
-        codeRef: sweep.codeRef,
-      }
-    }
-
-    // Build solids expression
-    const solids: Selections = {
-      graphSelections: bodySelectionForSolids ? [bodySelectionForSolids] : [],
-      otherSelections: [],
-    }
-
-    const vars = getVariableExprsFromSelection(
-      solids,
-      artifactGraph,
-      modifiedAst,
-      wasmInstance,
-      nodeToEdit,
-      {
-        lastChildLookup: true,
-        artifactTypeFilter: ['compositeSolid', 'sweep'],
-      }
-    )
-    if (err(vars)) return vars
-
-    const solidsExpr = createVariableExpressionsArray(vars.exprs)
 
     if (tagsExprs.length === 0) {
       return new Error('No edges found in the selection')
@@ -622,9 +593,11 @@ export function groupSelectionsByBodyAndAddTags(
     }
 
     bodies.set(bodyKey, {
-      solidsExpr,
+      solidsExpr: createVariableExpressionsArray([
+        edgeContext.selectedBodyExpr,
+      ]),
       tagsExpr,
-      pathIfPipe: vars.pathIfPipe,
+      pathIfPipe: edgeContext.pathIfPipe,
     })
   }
 
@@ -633,7 +606,7 @@ export function groupSelectionsByBodyAndAddTags(
 
 /**
  * Groups edge selections by their parent editable body.
- * Uses each body's pathToNode as a unique key.
+ * Uses the resolved body expression and pipe path as a stable grouping key.
  *
  * @param selections - Edge selections to group by body
  * @param artifactGraph - Graph mapping artifacts to AST nodes
@@ -641,18 +614,23 @@ export function groupSelectionsByBodyAndAddTags(
  */
 function groupSelectionsByBody(
   selections: Selections,
-  artifactGraph: ArtifactGraph
+  artifactGraph: ArtifactGraph,
+  ast: Node<Program>,
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
 ): Map<string, Selections> | Error {
   const bodyToSelections = new Map<string, Selection[]>()
 
   for (const selection of selections.graphSelections) {
-    const sweepArtifact = getSweepArtifactFromSelection(
+    const edgeContext = resolveEdgeSelectionContext(
+      ast,
       selection,
-      artifactGraph
+      artifactGraph,
+      wasmInstance,
+      nodeToEdit
     )
-    if (err(sweepArtifact)) return sweepArtifact
-
-    const bodyKey = JSON.stringify(sweepArtifact.codeRef.pathToNode)
+    if (err(edgeContext)) return edgeContext
+    const bodyKey = edgeContext.bodyKey
     if (bodyToSelections.has(bodyKey)) {
       bodyToSelections.get(bodyKey)?.push(selection)
     } else {
@@ -718,7 +696,8 @@ export function buildSolidsAndTagsExprs(
     ast,
     faces,
     artifactGraph,
-    wasmInstance
+    wasmInstance,
+    nodeToEdit
   )
   const tagsExpr = createVariableExpressionsArray(tagsExprs)
   if (!tagsExpr) {
@@ -732,7 +711,8 @@ function getTagsExprsFromSelection(
   ast: Node<Program>,
   edges: Selections,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  nodeToEdit?: PathToNode
 ) {
   const tagsExprs: Expr[] = []
   let modifiedAst = ast
@@ -751,7 +731,8 @@ function getTagsExprsFromSelection(
       modifiedAst,
       edge,
       artifactGraph,
-      wasmInstance
+      wasmInstance,
+      { nodeToEdit }
     )
     if (err(result)) {
       console.warn('Failed to add tag for edge selection', result)
