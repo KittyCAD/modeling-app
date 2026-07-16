@@ -1,14 +1,29 @@
 import {
   type Artifact,
+  BODY_ARTIFACT_TYPES,
   coerceSelectionsToBody,
   getBodiesFromArtifactGraph,
   getSketchBlockForArtifact,
   getSweepArtifactFromSelection,
+  isBodyArtifactType,
   isFaceFromLegacySketch,
 } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, PathToNode } from '@src/lang/wasm'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import { describe, expect, it } from 'vitest'
+
+describe('body artifact types', () => {
+  it('includes patterns in the shared body classification', () => {
+    expect(BODY_ARTIFACT_TYPES).toEqual([
+      'path',
+      'sweep',
+      'compositeSolid',
+      'pattern',
+    ])
+    expect(isBodyArtifactType('pattern')).toBe(true)
+    expect(isBodyArtifactType('wall')).toBe(false)
+  })
+})
 
 describe('getSweepArtifactFromSelection', () => {
   it('should return sweep from edgeCut -> segment selection', () => {

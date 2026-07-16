@@ -33,6 +33,19 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
+export const BODY_ARTIFACT_TYPES = [
+  'path',
+  'sweep',
+  'compositeSolid',
+  'pattern',
+] as const satisfies readonly Artifact['type'][]
+
+export type BodyArtifactType = (typeof BODY_ARTIFACT_TYPES)[number]
+
+export function isBodyArtifactType(type: unknown): type is BodyArtifactType {
+  return BODY_ARTIFACT_TYPES.some((bodyType) => bodyType === type)
+}
+
 export function defaultArtifactGraph(): ArtifactGraph {
   return new Map()
 }
@@ -980,12 +993,7 @@ export function coerceSelectionsToBody(
     }
 
     // If it's already a body type, use it directly
-    if (
-      selection.artifact.type === 'sweep' ||
-      selection.artifact.type === 'compositeSolid' ||
-      selection.artifact.type === 'pattern' ||
-      selection.artifact.type === 'path'
-    ) {
+    if (isBodyArtifactType(selection.artifact.type)) {
       let bodyKey = selection.artifact.id
       if (selection.artifact.type === 'pattern') {
         const patternIndex = getPatternSelectionIndex({
