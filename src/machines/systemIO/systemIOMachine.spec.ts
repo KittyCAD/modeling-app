@@ -1486,8 +1486,14 @@ describe('systemIOMachine - XState', () => {
           path.join(tmpdir(), 'zds-duplicate-project-')
         )
         const sourceFolderName = '550e8400-e29b-41d4-a716-446655440000'
+        const sourceProjectTitle = 'Simple $n Box'
+        const duplicateFolderName = 'simple-n-box-2'
+        const duplicateProjectTitle = 'Simple $n Box-2'
         const sourceProject = path.join(projectDirectory, sourceFolderName)
-        const reservedProjectPath = path.join(projectDirectory, 'Simple Box-1')
+        const reservedProjectPath = path.join(
+          projectDirectory,
+          'simple-n-box-1'
+        )
         const oldLocalProjectId = '11111111-1111-4111-8111-111111111111'
         const oldCloudProjectId = '22222222-2222-4222-8222-222222222222'
         const originalProject = appInstanceInThisFile.project
@@ -1526,7 +1532,7 @@ describe('systemIOMachine - XState', () => {
           await chmod(path.join(sourceProject, 'nested', 'part.kcl'), 0o400)
           await writeFile(
             path.join(sourceProject, 'project.toml'),
-            `title = "Simple Box"
+            `title = "${sourceProjectTitle}"
 default_file = "nested/part.kcl"
 
 [settings.meta]
@@ -1543,7 +1549,7 @@ project_id = "${oldCloudProjectId}"
           await putProjectMetadata({
             schemaVersion: 1,
             localProjectPath: reservedProjectPath,
-            projectName: 'Simple Box-1',
+            projectName: 'simple-n-box-1',
             tombstone: true,
           })
 
@@ -1575,7 +1581,7 @@ project_id = "${oldCloudProjectId}"
             type: SystemIOMachineEvents.duplicateProject,
             data: {
               projectName: sourceFolderName,
-              requestedProjectName: 'Simple Box',
+              requestedProjectName: sourceProjectTitle,
             },
           })
           await settingsWaitStarted.promise
@@ -1585,12 +1591,17 @@ project_id = "${oldCloudProjectId}"
             actor,
             (state) =>
               state.matches(SystemIOMachineStates.idle) &&
-              state.context.requestedProjectName.name === 'Simple Box-2'
+              state.context.requestedProjectName.name === duplicateFolderName
           )
 
           await expect(
             readFile(
-              path.join(projectDirectory, 'Simple Box-2', 'nested', 'part.kcl'),
+              path.join(
+                projectDirectory,
+                duplicateFolderName,
+                'nested',
+                'part.kcl'
+              ),
               'utf-8'
             )
           ).resolves.toBe('nested')
@@ -1599,7 +1610,7 @@ project_id = "${oldCloudProjectId}"
               await stat(
                 path.join(
                   projectDirectory,
-                  'Simple Box-2',
+                  duplicateFolderName,
                   'nested',
                   'part.kcl'
                 )
@@ -1608,16 +1619,18 @@ project_id = "${oldCloudProjectId}"
           ).toBe(0o200)
           await expect(
             readFile(
-              path.join(projectDirectory, 'Simple Box-2', 'main.kcl'),
+              path.join(projectDirectory, duplicateFolderName, 'main.kcl'),
               'utf-8'
             )
           ).resolves.toBe('pending edit')
           expect(flushPendingWriteToFile).toHaveBeenCalledOnce()
           const duplicatedProjectToml = await readFile(
-            path.join(projectDirectory, 'Simple Box-2', 'project.toml'),
+            path.join(projectDirectory, duplicateFolderName, 'project.toml'),
             'utf-8'
           )
-          expect(duplicatedProjectToml).toContain('title = "Simple Box-2"')
+          expect(duplicatedProjectToml).toContain(
+            `title = "${duplicateProjectTitle}"`
+          )
           expect(duplicatedProjectToml).toContain(
             'default_file = "nested/part.kcl"'
           )

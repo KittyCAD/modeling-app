@@ -3,6 +3,7 @@ import { reportClientError } from '@src/lib/clientErrors'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 // The Origin Private File System. Used for browser environments.
 import type { IStat, IZooDesignStudioFS } from '@src/lib/fs-zds/interface'
+import { getOPFSStorageRootPath } from '@src/lib/fs-zds/opfsPath'
 import OPFSWriteWorker from '@src/lib/fs-zds/opfsWriteWorker.ts?worker'
 
 // Holds onto directory metadata that is not stored by the File System API.
@@ -108,14 +109,7 @@ const walk = async (
   onTargetNode?: (part: string) => void
 ): Promise<undefined | FileSystemDirectoryHandle | FileSystemFileHandle> => {
   const resolvedTargetPath = path.resolve(targetPath)
-  const resolvedCwd = path.resolve()
-  const pathRoot = path.parse(resolvedTargetPath).root
-  const storageRootPath =
-    resolvedCwd === path.parse(resolvedCwd).root ||
-    resolvedTargetPath === resolvedCwd ||
-    resolvedTargetPath.startsWith(`${resolvedCwd}${path.sep}`)
-      ? resolvedCwd
-      : pathRoot
+  const storageRootPath = getOPFSStorageRootPath(resolvedTargetPath)
   let current = await navigator.storage.getDirectory()
   let cwd = storageRootPath
   let looped = true
@@ -340,13 +334,7 @@ const readFile = async <T extends ReadFileOptions>(
 
 const mkdir = async (targetPath: string, options?: { recursive: boolean }) => {
   const resolvedTargetPath = path.resolve(targetPath)
-  const resolvedCwd = path.resolve()
-  const storageRootPath =
-    resolvedCwd === path.parse(resolvedCwd).root ||
-    resolvedTargetPath === resolvedCwd ||
-    resolvedTargetPath.startsWith(`${resolvedCwd}${path.sep}`)
-      ? resolvedCwd
-      : path.parse(resolvedTargetPath).root
+  const storageRootPath = getOPFSStorageRootPath(resolvedTargetPath)
 
   if (options?.recursive === true) {
     const relativeParts = path

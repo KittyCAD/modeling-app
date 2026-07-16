@@ -38,6 +38,7 @@ import {
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import {
+  getProjectDirectoryNameFromTitle,
   getProjectTitleFromUniqueDirectoryName,
   sanitizeProjectName,
 } from '@src/lib/projectName'
@@ -129,47 +130,23 @@ async function moveRecursivePath({
   await fsZds.rm(src, { recursive: true })
 }
 
-async function getAvailableProjectName({
+async function getUniqueProjectNameForCreate({
   context,
   requestedProjectName,
   projectDirectoryPath,
-  includeProjectDisplayNames = false,
-  includeCloudMetadata = false,
-  maxLength,
 }: {
   context: SystemIOContext
   requestedProjectName: string
   projectDirectoryPath?: string
-  includeProjectDisplayNames?: boolean
-  includeCloudMetadata?: boolean
-  maxLength?: number
 }) {
   const knownProjectNames = new Set<string>()
   for (const folder of context.folders ?? []) {
     knownProjectNames.add(folder.name)
-    if (includeProjectDisplayNames) {
-      knownProjectNames.add(getProjectDisplayName(folder))
-    }
   }
   for (const entryName of await getProjectDirectoryEntryNames(
     projectDirectoryPath
   )) {
     knownProjectNames.add(entryName)
-  }
-
-  if (includeCloudMetadata && projectDirectoryPath) {
-    const projectDirectoryPrefix = `${normalizeProjectPathForCloudMetadata(
-      projectDirectoryPath
-    )}/`
-    const cloudProjectMetadataByPath = await getCloudSyncProjectMetadataIndex()
-    for (const metadataPath of cloudProjectMetadataByPath.keys()) {
-      const normalizedPath = normalizeProjectPathForCloudMetadata(metadataPath)
-      if (!normalizedPath.startsWith(projectDirectoryPrefix)) continue
-      const relativePath = normalizedPath.slice(projectDirectoryPrefix.length)
-      if (relativePath && !relativePath.includes('/')) {
-        knownProjectNames.add(relativePath)
-      }
-    }
   }
 
   const existingEntries: FileEntry[] = Array.from(
@@ -182,23 +159,65 @@ async function getAvailableProjectName({
       children: [],
     })
   )
-  const uniqueName = getUniqueProjectName(requestedProjectName, existingEntries)
-  if (!maxLength || uniqueName.length <= maxLength) {
-    return uniqueName
+  return getUniqueProjectName(requestedProjectName, existingEntries)
+}
+
+async function getAvailableDuplicateProjectNames({
+  context,
+  requestedProjectTitle,
+  fallbackProjectDirectoryName,
+  projectDirectoryPath,
+}: {
+  context: SystemIOContext
+  requestedProjectTitle: string
+  fallbackProjectDirectoryName: string
+  projectDirectoryPath: string
+}) {
+  const unavailableTitles = new Set(
+    (context.folders ?? []).map((folder) =>
+      getProjectDisplayName(folder).toLowerCase()
+    )
+  )
+  const unavailableDirectoryNames = new Set(
+    (context.folders ?? []).map((folder) => folder.name.toLowerCase())
+  )
+  for (const entryName of await getProjectDirectoryEntryNames(
+    projectDirectoryPath
+  )) {
+    unavailableDirectoryNames.add(entryName.toLowerCase())
   }
+
+  const projectDirectoryPrefix = `${normalizeProjectPathForCloudMetadata(
+    projectDirectoryPath
+  )}/`
+  const cloudProjectMetadataByPath = await getCloudSyncProjectMetadataIndex()
+  for (const metadataPath of cloudProjectMetadataByPath.keys()) {
+    const normalizedPath = normalizeProjectPathForCloudMetadata(metadataPath)
+    if (!normalizedPath.startsWith(projectDirectoryPrefix)) continue
+    const relativePath = normalizedPath.slice(projectDirectoryPrefix.length)
+    if (relativePath && !relativePath.includes('/')) {
+      unavailableDirectoryNames.add(relativePath.toLowerCase())
+    }
+  }
+
+  const requestedProjectDirectoryName = getDuplicateProjectBaseName(
+    getProjectDirectoryNameFromTitle(
+      requestedProjectTitle,
+      fallbackProjectDirectoryName
+    ),
+    fallbackProjectDirectoryName
+  )
 
   for (let index = 1; ; index += 1) {
     const suffix = `-${index}`
-    const candidate = `${requestedProjectName.slice(
-      0,
-      maxLength - suffix.length
-    )}${suffix}`
+    const baseLength = MAX_PROJECT_NAME_LENGTH - suffix.length
+    const title = `${requestedProjectTitle.slice(0, baseLength)}${suffix}`
+    const name = `${requestedProjectDirectoryName.slice(0, baseLength)}${suffix}`
     if (
-      !existingEntries.some(
-        (entry) => entry.name.toLowerCase() === candidate.toLowerCase()
-      )
+      !unavailableTitles.has(title.toLowerCase()) &&
+      !unavailableDirectoryNames.has(name.toLowerCase())
     ) {
-      return candidate
+      return { name, title }
     }
   }
 }
@@ -630,7 +649,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.context.projectDirectoryPath !== NO_PROJECT_DIRECTORY
             ? input.context.projectDirectoryPath
             : undefined
-        const uniqueName = await getAvailableProjectName({
+        const uniqueName = await getUniqueProjectNameForCreate({
           context: input.context,
           requestedProjectName,
           projectDirectoryPath,
@@ -736,18 +755,15 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           await flushActiveTextFileWrite({ throwOnError: true })
         }
 
-        const duplicateBaseName = getDuplicateProjectBaseName(
-          input.requestedProjectName,
-          project.name
-        )
-        const duplicateName = await getAvailableProjectName({
+        const requestedProjectTitle =
+          input.requestedProjectName.trim() || getProjectDisplayName(project)
+        const duplicateProjectNames = await getAvailableDuplicateProjectNames({
           context: input.context,
-          requestedProjectName: duplicateBaseName,
+          requestedProjectTitle,
+          fallbackProjectDirectoryName: project.name,
           projectDirectoryPath,
-          includeProjectDisplayNames: true,
-          includeCloudMetadata: true,
-          maxLength: MAX_PROJECT_NAME_LENGTH,
         })
+        const duplicateName = duplicateProjectNames.name
         const targetPath = fsZds.resolve(projectDirectoryPath, duplicateName)
         if (
           fsZds.dirname(targetPath) !== projectDirectoryPath ||
@@ -768,7 +784,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
         const duplicatedProjectToml = prepareProjectTomlForDuplication(
           projectToml,
-          duplicateName,
+          duplicateProjectNames.title,
           v4()
         )
         if (isErr(duplicatedProjectToml)) {
@@ -810,7 +826,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
 
         return {
-          message: `Successfully duplicated "${getProjectDisplayName(project)}" as "${duplicateName}"`,
+          message: `Successfully duplicated "${getProjectDisplayName(project)}" as "${duplicateProjectNames.title}"`,
           name: duplicateName,
         }
       }
