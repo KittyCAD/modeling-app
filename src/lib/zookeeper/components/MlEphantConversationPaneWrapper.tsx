@@ -181,9 +181,8 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
           normalizeKCLFileDeletePath(file.requestedFileName) ===
           activeRelativePath
       )
-      const shouldRefreshActiveEditorAfterPlainOutput = Boolean(
-        !shouldRecordZookeeperHistory &&
-          !activeFileDeleted &&
+      const shouldRefreshActiveEditor = Boolean(
+        !activeFileDeleted &&
           activeFileOutput &&
           project?.name === payload.requestedProjectName &&
           activeFilePath === kclManager.path
@@ -315,28 +314,25 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                       settleRequest()
                     },
                     ...(shouldRecordZookeeperHistory ||
-                    (shouldRefreshActiveEditorAfterPlainOutput &&
-                      activeFileOutput)
+                    shouldRefreshActiveEditor
                       ? {
                           onSuccess: () => {
-                            if (shouldRecordZookeeperHistory) {
-                              postWriteCompleted = true
-                              settleRequest()
-                              return
-                            }
-                            if (!activeFileOutput) return
-                            if (kclManager.path !== activeFilePath) return
                             if (
+                              shouldRefreshActiveEditor &&
+                              activeFileOutput &&
+                              kclManager.path === activeFilePath &&
                               kclManager.code !== activeFileOutput.requestedCode
                             ) {
                               kclManager.updateCodeEditor(
                                 activeFileOutput.requestedCode,
                                 {
                                   shouldAddToHistory: false,
-                                  shouldClearHistory: true,
+                                  shouldClearHistory:
+                                    !shouldRecordZookeeperHistory,
                                   shouldExecute: true,
                                   shouldResetCamera: true,
-                                  shouldWriteToDisk: true,
+                                  shouldWriteToDisk:
+                                    !shouldRecordZookeeperHistory,
                                 }
                               )
                             }

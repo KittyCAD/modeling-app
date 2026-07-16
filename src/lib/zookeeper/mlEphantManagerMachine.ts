@@ -1152,6 +1152,7 @@ export const mlEphantManagerMachine = setup({
 
       return {
         awaitingResponse: true,
+        projectNameCurrentlyOpened: event.projectName,
       }
     }),
     [MlEphantManagerTransitions.Cancel]: fromPromise(async function (
@@ -1315,6 +1316,12 @@ export const mlEphantManagerMachine = setup({
             assign({
               awaitingResponse({ event }) {
                 return event.output.awaitingResponse ?? false
+              },
+              projectNameCurrentlyOpened({ context, event }) {
+                return (
+                  event.output.projectNameCurrentlyOpened ??
+                  context.projectNameCurrentlyOpened
+                )
               },
             }),
           ],
