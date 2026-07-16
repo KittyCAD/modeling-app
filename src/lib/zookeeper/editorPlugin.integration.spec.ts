@@ -32,7 +32,7 @@ afterEach(async () => {
     disposeHistory()
   }
   for (const app of apps.splice(0)) {
-    await disposeApp(app)
+    app.dispose()
   }
 })
 
@@ -1598,21 +1598,6 @@ async function waitForHistoryIdle(kclManager: KclManager) {
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
   throw new Error('History operation did not settle')
-}
-
-async function disposeApp(app: App) {
-  const projectPath = app.project?.path
-  app.closeProject()
-  app.registry[Symbol.dispose]()
-  app.systemIOActor.stop()
-  app.settings.actor.stop()
-  app.commands.actor.stop()
-  app.auth.actor.stop()
-  app.billing.actor.stop()
-  app.userFeatures.actor.stop()
-  if (projectPath) {
-    await fsZds.rm(projectPath, { recursive: true, force: true })
-  }
 }
 
 function getZookeeperReplayFallbackFilePath(

@@ -20,6 +20,7 @@ import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
+import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
@@ -31,6 +32,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import {
   BILLING_CONTEXT_DEFAULTS,
@@ -214,6 +216,8 @@ export class App implements AppSubsystems {
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
+  private activeWasmInstance: ModuleType | undefined
+  private unsubscribeFromActiveWasmInstance: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -243,6 +247,13 @@ export class App implements AppSubsystems {
     this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
+    this.userFeatures.actor.subscribe(this.syncKclRuntimeFlags)
+    this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
+      this.setActiveWasmInstance
+    )
+    void this.wasmPromise
+      .then(this.setActiveWasmInstance)
+      .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
     this.syncCloudSyncRuntimePolicy()
 
@@ -414,6 +425,19 @@ export class App implements AppSubsystems {
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
+  dispose() {
+    this.closeProject()
+    this.unsubscribeFromActiveWasmInstance?.()
+    this.unsubscribeFromActiveWasmInstance = undefined
+    this.systemIOActor.stop()
+    this.settings.actor.stop()
+    this.commands.actor.stop()
+    this.auth.actor.stop()
+    this.billing.actor.stop()
+    this.userFeatures.actor.stop()
+    this.registry[Symbol.dispose]()
+  }
+
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
@@ -461,6 +485,19 @@ export class App implements AppSubsystems {
       token,
       syncExistingLocalProjects: !window.electron,
     })
+  }
+
+  setActiveWasmInstance = (wasmInstance: ModuleType) => {
+    this.activeWasmInstance = wasmInstance
+    this.syncKclRuntimeFlags()
+  }
+
+  syncKclRuntimeFlags = () => {
+    if (!this.activeWasmInstance) {
+      return
+    }
+
+    setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
   }
 
   syncAppCommands = () => {
