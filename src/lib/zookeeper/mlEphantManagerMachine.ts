@@ -267,6 +267,11 @@ export interface Exchange {
   // BELOW:
   // An optimization. `delta` messages will be appended here.
   deltasAggregated: string
+
+  // Client-side wall-clock time for an in-progress response. The server only
+  // provides its authoritative start time with `end_of_stream`, so this must
+  // survive reconnect replay while a response is still running.
+  startedAt?: Date
 }
 
 export type Conversation = {
@@ -292,6 +297,7 @@ export interface MlEphantManagerContext {
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
+    exchangeStartedAts?: Array<Date | undefined>
   }
 }
 
@@ -673,24 +679,6 @@ export const mlEphantManagerMachine = setup({
         context.ws?.close()
       }
     },
-    cacheSetup: assign({
-      conversationId: ({ event }) => {
-        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
-
-        if (event.conversationId) {
-          return event.conversationId
-        }
-
-        return undefined
-      },
-      cachedSetup: ({ event }) => {
-        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
-        return {
-          refParentSend: event.refParentSend,
-          conversationId: event.conversationId,
-        }
-      },
-    }),
     clearCacheSetup: assign({
       cachedSetup: undefined,
     }),
@@ -738,6 +726,7 @@ export const mlEphantManagerMachine = setup({
       })
 
       let maybeReplayedExchanges: Exchange[] = []
+      let replayedRequestIndex = 0
       let maybeModeOptions: MlCopilotModeOption[] | undefined
       let maybeDefaultMode: MlCopilotModeId | undefined
       let setupResolved = false
@@ -904,11 +893,17 @@ export const mlEphantManagerMachine = setup({
                   responseReplay.type === 'user'
                 ) {
                   if (isMlCopilotUserRequest(responseReplay)) {
+                    const startedAt =
+                      args.input.context.cachedSetup?.exchangeStartedAts?.[
+                        replayedRequestIndex
+                      ]
                     maybeReplayedExchanges.push({
                       request: responseReplay,
                       responses: [],
                       deltasAggregated: '',
+                      startedAt,
                     })
+                    replayedRequestIndex += 1
                   }
                   continue
                 }
@@ -1064,6 +1059,7 @@ export const mlEphantManagerMachine = setup({
         request,
         responses: [],
         deltasAggregated: '',
+        startedAt: new Date(),
       })
 
       return {
@@ -1188,19 +1184,36 @@ export const mlEphantManagerMachine = setup({
         [MlEphantManagerTransitions.CacheSetupAndConnect]: {
           target: MlEphantManagerStates.Setup,
           actions: [
-            assign({
-              abruptlyClosed: false,
-              lastMessageId: undefined,
-              lastMessageType: undefined,
-              conversation: undefined,
-              conversationId: undefined,
-              defaultMode: undefined,
-              modeOptions: undefined,
-              awaitingResponse: false,
-              attachmentsLoadedForCurrentPrompt: true,
-              pendingBackendShutdown: false,
+            assign(({ context, event }) => {
+              assertEvent(
+                event,
+                MlEphantManagerTransitions.CacheSetupAndConnect
+              )
+
+              const exchangeStartedAts = context.abruptlyClosed
+                ? context.conversation?.exchanges.flatMap((exchange) =>
+                    exchange.request ? [exchange.startedAt] : []
+                  )
+                : undefined
+
+              return {
+                abruptlyClosed: false,
+                lastMessageId: undefined,
+                lastMessageType: undefined,
+                conversation: undefined,
+                conversationId: event.conversationId,
+                defaultMode: undefined,
+                modeOptions: undefined,
+                awaitingResponse: false,
+                attachmentsLoadedForCurrentPrompt: true,
+                pendingBackendShutdown: false,
+                cachedSetup: {
+                  refParentSend: event.refParentSend,
+                  conversationId: event.conversationId,
+                  exchangeStartedAts,
+                },
+              }
             }),
-            'cacheSetup',
           ],
         },
         ...transitions([MlEphantManagerStates.Setup]),
@@ -1256,6 +1269,7 @@ export const mlEphantManagerMachine = setup({
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
+                    exchangeStartedAts: context.cachedSetup?.exchangeStartedAts,
                   },
                 }
               }
@@ -1265,6 +1279,7 @@ export const mlEphantManagerMachine = setup({
                 cachedSetup: {
                   refParentSend: context.cachedSetup?.refParentSend,
                   conversationId: context.cachedSetup?.conversationId,
+                  exchangeStartedAts: context.cachedSetup?.exchangeStartedAts,
                 },
               }
             }),

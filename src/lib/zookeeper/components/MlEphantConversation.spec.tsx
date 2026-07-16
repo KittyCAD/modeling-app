@@ -575,6 +575,69 @@ describe('MlEphantConversation', () => {
     }
   )
 
+  test('preserves active reasoning time when reconnect remounts the conversation', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-15T12:20:00.000Z'))
+
+    const conversation: Conversation = {
+      exchanges: [
+        {
+          request: {
+            type: 'user',
+            content: 'Render a detailed assembly',
+          },
+          responses: [
+            {
+              reasoning: {
+                type: 'text',
+                content: 'Checking the assembly constraints...',
+              },
+            },
+          ],
+          deltasAggregated: '',
+          startedAt: new Date('2026-07-15T12:00:00.000Z'),
+        },
+      ],
+    }
+    const renderConversation = (needsReconnect: boolean) => (
+      <MlEphantConversation
+        isLoading={false}
+        conversation={conversation}
+        onProcess={vi.fn()}
+        onClickClearChat={() => {}}
+        onReconnect={() => {}}
+        onCancel={() => {}}
+        needsReconnect={needsReconnect}
+        disabled={needsReconnect}
+        hasPromptCompleted={false}
+        contexts={[]}
+        isProcessing={true}
+        queue={[]}
+        onRemoveFromQueue={() => {}}
+        onSteer={() => {}}
+      />
+    )
+
+    try {
+      const { rerender } = render(renderConversation(false))
+
+      expect(screen.getByText('Reasoned for 20 minutes')).toBeInTheDocument()
+
+      rerender(renderConversation(true))
+      expect(
+        screen.queryByText('Reasoned for 20 minutes')
+      ).not.toBeInTheDocument()
+
+      vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
+      rerender(renderConversation(false))
+
+      expect(screen.getByText('Reasoned for 21 minutes')).toBeInTheDocument()
+    } finally {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
+
   test('hides the immediate thought when end_of_stream is followed by another response', () => {
     const finalResponse = 'Rendered.'
 
