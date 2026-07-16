@@ -53,6 +53,7 @@ type SetupActorInput = {
   context: MlEphantManagerContext
 }
 
+const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 const completedConversation: Conversation = {
   exchanges: [
     {
@@ -68,6 +69,7 @@ const completedConversation: Conversation = {
           },
         },
       ],
+      startedAt: completedConversationStartedAt,
     },
   ],
 }
@@ -350,28 +352,17 @@ describe('mlEphantManagerMachine', () => {
     it('keeps recoverable context after an abrupt close', async () => {
       const { fetchMock } = stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
-      const startedAt = new Date('2026-07-15T12:00:00.000Z')
-      const recoverableConversation: Conversation = {
-        exchanges: completedConversation.exchanges.map((exchange) => ({
-          ...exchange,
-          startedAt,
-        })),
-      }
-      let setupCount = 0
-      let reconnectSetupContext: MlEphantManagerContext | undefined
+      let setupContext: MlEphantManagerContext | undefined
       const machine = mlEphantManagerMachine.provide({
         actors: {
           [MlEphantManagerStates.Setup]: fromPromise<
             Partial<MlEphantManagerContext>,
             SetupActorInput
           >(async ({ input }) => {
-            setupCount += 1
-            if (setupCount === 2) {
-              reconnectSetupContext = input.context
-            }
+            setupContext = input.context
             return {
               ws,
-              conversation: recoverableConversation,
+              conversation: completedConversation,
               conversationId: 'conversation-id',
             }
           }),
@@ -409,7 +400,7 @@ describe('mlEphantManagerMachine', () => {
       await waitFor(actor, (state) => state.matches(S.Await))
 
       expect(actor.getSnapshot().context.conversation).toBe(
-        recoverableConversation
+        completedConversation
       )
       expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
       expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
@@ -425,9 +416,9 @@ describe('mlEphantManagerMachine', () => {
         state.matches(MlEphantManagerStates.WaitForContinueCheck)
       )
 
-      expect(
-        reconnectSetupContext?.cachedSetup?.exchangeStartedAts
-      ).toStrictEqual([startedAt])
+      expect(setupContext?.cachedSetup?.activeExchangeStartedAt).toBe(
+        completedConversationStartedAt
+      )
 
       actor.stop()
     })

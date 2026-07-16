@@ -425,8 +425,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
-  const [mountedAt] = useState<Date>(new Date())
-  let startedAt = props.startedAt ?? mountedAt
+  let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)

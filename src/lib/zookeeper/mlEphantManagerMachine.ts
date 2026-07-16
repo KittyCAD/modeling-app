@@ -268,9 +268,7 @@ export interface Exchange {
   // An optimization. `delta` messages will be appended here.
   deltasAggregated: string
 
-  // Client-side wall-clock time for an in-progress response. The server only
-  // provides its authoritative start time with `end_of_stream`, so this must
-  // survive reconnect replay while a response is still running.
+  // Client-side start time for an in-progress response.
   startedAt?: Date
 }
 
@@ -297,7 +295,7 @@ export interface MlEphantManagerContext {
   cachedSetup?: {
     refParentSend?: (event: MlEphantManagerEvents) => void
     conversationId?: string
-    exchangeStartedAts?: Array<Date | undefined>
+    activeExchangeStartedAt?: Date
   }
 }
 
@@ -679,6 +677,28 @@ export const mlEphantManagerMachine = setup({
         context.ws?.close()
       }
     },
+    cacheSetup: assign({
+      conversationId: ({ event }) => {
+        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
+
+        if (event.conversationId) {
+          return event.conversationId
+        }
+
+        return undefined
+      },
+      cachedSetup: ({ context, event }) => {
+        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
+        return {
+          refParentSend: event.refParentSend,
+          conversationId: event.conversationId,
+          activeExchangeStartedAt:
+            context.conversation?.exchanges.findLast((exchange) =>
+              isMlCopilotUserRequest(exchange.request)
+            )?.startedAt ?? context.cachedSetup?.activeExchangeStartedAt,
+        }
+      },
+    }),
     clearCacheSetup: assign({
       cachedSetup: undefined,
     }),
@@ -875,10 +895,6 @@ export const mlEphantManagerMachine = setup({
             // If it's a replay, we'll unravel it and process as if they are real
             // messages being sent from the server.
             if ('replay' in response) {
-              let replayedRequestIndex = maybeReplayedExchanges.filter(
-                (exchange) => isMlCopilotUserRequest(exchange.request)
-              ).length
-
               for (let byteMessage of response.replay.messages) {
                 const data: Uint8Array = Uint8Array.from(
                   Object.values(byteMessage)
@@ -900,12 +916,7 @@ export const mlEphantManagerMachine = setup({
                       request: responseReplay,
                       responses: [],
                       deltasAggregated: '',
-                      startedAt:
-                        args.input.context.cachedSetup?.exchangeStartedAts?.[
-                          replayedRequestIndex
-                        ],
                     })
-                    replayedRequestIndex += 1
                   }
                   continue
                 }
@@ -934,6 +945,14 @@ export const mlEphantManagerMachine = setup({
             // We're only considered setup when a conversation_id is assigned
             // to us. That means data is being stored and the system is ready.
             if ('conversation_id' in response) {
+              const activeExchange = maybeReplayedExchanges.findLast(
+                (exchange) => isMlCopilotUserRequest(exchange.request)
+              )
+              if (activeExchange) {
+                activeExchange.startedAt =
+                  args.input.context.cachedSetup?.activeExchangeStartedAt
+              }
+
               setupResolved = true
               onFulfilled({
                 abruptlyClosed: false,
@@ -1186,35 +1205,17 @@ export const mlEphantManagerMachine = setup({
         [MlEphantManagerTransitions.CacheSetupAndConnect]: {
           target: MlEphantManagerStates.Setup,
           actions: [
-            assign(({ context, event }) => {
-              assertEvent(
-                event,
-                MlEphantManagerTransitions.CacheSetupAndConnect
-              )
-
-              const exchangeStartedAts = context.abruptlyClosed
-                ? context.conversation?.exchanges.flatMap((exchange) =>
-                    exchange.request ? [exchange.startedAt] : []
-                  )
-                : undefined
-
-              return {
-                abruptlyClosed: false,
-                lastMessageId: undefined,
-                lastMessageType: undefined,
-                conversation: undefined,
-                conversationId: event.conversationId,
-                defaultMode: undefined,
-                modeOptions: undefined,
-                awaitingResponse: false,
-                attachmentsLoadedForCurrentPrompt: true,
-                pendingBackendShutdown: false,
-                cachedSetup: {
-                  refParentSend: event.refParentSend,
-                  conversationId: event.conversationId,
-                  exchangeStartedAts,
-                },
-              }
+            'cacheSetup',
+            assign({
+              abruptlyClosed: false,
+              lastMessageId: undefined,
+              lastMessageType: undefined,
+              conversation: undefined,
+              defaultMode: undefined,
+              modeOptions: undefined,
+              awaitingResponse: false,
+              attachmentsLoadedForCurrentPrompt: true,
+              pendingBackendShutdown: false,
             }),
           ],
         },
@@ -1271,7 +1272,8 @@ export const mlEphantManagerMachine = setup({
                   cachedSetup: {
                     refParentSend: context.cachedSetup?.refParentSend,
                     conversationId: undefined,
-                    exchangeStartedAts: context.cachedSetup?.exchangeStartedAts,
+                    activeExchangeStartedAt:
+                      context.cachedSetup?.activeExchangeStartedAt,
                   },
                 }
               }
@@ -1281,7 +1283,8 @@ export const mlEphantManagerMachine = setup({
                 cachedSetup: {
                   refParentSend: context.cachedSetup?.refParentSend,
                   conversationId: context.cachedSetup?.conversationId,
-                  exchangeStartedAts: context.cachedSetup?.exchangeStartedAts,
+                  activeExchangeStartedAt:
+                    context.cachedSetup?.activeExchangeStartedAt,
                 },
               }
             }),

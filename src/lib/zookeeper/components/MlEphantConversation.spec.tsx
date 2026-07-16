@@ -50,6 +50,7 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
 
 import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { MlEphantConversation } from '@src/lib/zookeeper/components/MlEphantConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
@@ -575,62 +576,31 @@ describe('MlEphantConversation', () => {
     }
   )
 
-  test('preserves active reasoning time when reconnect remounts the conversation', () => {
+  test('preserves active reasoning time when its exchange remounts', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-07-15T12:20:00.000Z'))
 
-    const conversation: Conversation = {
-      exchanges: [
-        {
-          request: {
-            type: 'user',
-            content: 'Render a detailed assembly',
-          },
-          responses: [
-            {
-              reasoning: {
-                type: 'text',
-                content: 'Checking the assembly constraints...',
-              },
-            },
-          ],
-          deltasAggregated: '',
-          startedAt: new Date('2026-07-15T12:00:00.000Z'),
-        },
-      ],
-    }
-    const renderConversation = (needsReconnect: boolean) => (
-      <MlEphantConversation
-        isLoading={false}
-        conversation={conversation}
-        onProcess={vi.fn()}
-        onClickClearChat={() => {}}
-        onReconnect={() => {}}
-        onCancel={() => {}}
-        needsReconnect={needsReconnect}
-        disabled={needsReconnect}
-        hasPromptCompleted={false}
-        contexts={[]}
-        isProcessing={true}
-        queue={[]}
-        onRemoveFromQueue={() => {}}
-        onSteer={() => {}}
-      />
-    )
+    const renderExchange = () =>
+      render(
+        <ExchangeCard
+          request={{ type: 'user', content: 'Render an assembly' }}
+          responses={[
+            { reasoning: { type: 'text', content: 'Checking constraints' } },
+          ]}
+          deltasAggregated=""
+          startedAt={new Date('2026-07-15T12:00:00.000Z')}
+          isLastResponse={true}
+          onClickClearChat={() => {}}
+        />
+      )
 
     try {
-      const { rerender } = render(renderConversation(false))
-
+      const { unmount } = renderExchange()
       expect(screen.getByText('Reasoned for 20 minutes')).toBeInTheDocument()
-
-      rerender(renderConversation(true))
-      expect(
-        screen.queryByText('Reasoned for 20 minutes')
-      ).not.toBeInTheDocument()
+      unmount()
 
       vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
-      rerender(renderConversation(false))
-
+      renderExchange()
       expect(screen.getByText('Reasoned for 21 minutes')).toBeInTheDocument()
     } finally {
       vi.clearAllTimers()
