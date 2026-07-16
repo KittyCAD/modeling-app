@@ -1831,7 +1831,12 @@ impl Node<SketchBlock> {
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
-                if solved.final_values().iter().any(|number| number.is_infinite()) {
+                if solved
+                    .final_values()
+                    .iter()
+                    .any(|number| number.is_infinite() || number.is_nan())
+                {
+
                     return Err(KclError::new_internal(KclErrorDetails::new(
                         "KCL's 2D constraint solver returned an invalid number".to_owned(),
                         vec![SourceRange::from(self)],

@@ -1,13 +1,18 @@
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
-import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
+import {
+  KCL_NEW_LEXER_PARSER_FEATURE_FLAG,
+  OPFS_CLOUD_FEATURE_FLAG,
+} from '@src/lib/constants'
 import fsZds, { moduleFsViaModuleImport, StorageName } from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
@@ -91,14 +96,7 @@ async function waitForAuthSettled(app: App) {
 }
 
 function disposeApp(app: App) {
-  app.closeProject()
-  app.systemIOActor.stop()
-  app.settings.actor.stop()
-  app.commands.actor.stop()
-  app.auth.actor.stop()
-  app.billing.actor.stop()
-  app.userFeatures.actor.stop()
-  app.registry[Symbol.dispose]()
+  app.dispose()
 }
 
 function createUserFeaturesForTest(
@@ -183,6 +181,20 @@ function createAppForTest(
   })
 }
 
+function createRuntimeFlagsWasmInstance() {
+  return {
+    set_kcl_runtime_flags: vi.fn(),
+  } as unknown as ModuleType & {
+    set_kcl_runtime_flags: ReturnType<typeof vi.fn>
+  }
+}
+
+function expectedRuntimeFlags(useNewLexerParser: 'On' | 'Off') {
+  return JSON.stringify({
+    use_new_lexer_parser: useNewLexerParser,
+  })
+}
+
 describe('project system', () => {
   it('uses registry runtime dependencies by default', () => {
     const app = createAppForTest()
@@ -194,6 +206,77 @@ describe('project system', () => {
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
       expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
+    } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('sets KCL runtime flags when the app wasm instance becomes active', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const wasmInstance = createRuntimeFlagsWasmInstance()
+    const wasmPromise = Promise.resolve(wasmInstance)
+    const app = createAppForTest({
+      userFeatures,
+      wasmPromise,
+      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
+    })
+
+    try {
+      await wasmPromise
+
+      expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
+        expectedRuntimeFlags('Off')
+      )
+    } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('updates KCL runtime flags when user features change', async () => {
+    const userFeatures = createUserFeaturesForTest(new Set())
+    const wasmInstance = createRuntimeFlagsWasmInstance()
+    const wasmPromise = Promise.resolve(wasmInstance)
+    const app = createAppForTest({
+      userFeatures,
+      wasmPromise,
+      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
+    })
+
+    try {
+      await wasmPromise
+      wasmInstance.set_kcl_runtime_flags.mockClear()
+
+      userFeatures.setFeatureIds(new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG]))
+
+      expect(wasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
+        expectedRuntimeFlags('On')
+      )
+    } finally {
+      disposeApp(app)
+    }
+  })
+
+  it('sets KCL runtime flags on lifecycle-announced wasm instances', async () => {
+    const userFeatures = createUserFeaturesForTest(
+      new Set([KCL_NEW_LEXER_PARSER_FEATURE_FLAG])
+    )
+    const initialWasmInstance = createRuntimeFlagsWasmInstance()
+    const nextWasmInstance = createRuntimeFlagsWasmInstance()
+    const wasmPromise = Promise.resolve(initialWasmInstance)
+    const app = createAppForTest({
+      userFeatures,
+      wasmPromise,
+      registryOverrides: [createTestWasmRegistryItem(wasmPromise)],
+    })
+
+    try {
+      await wasmPromise
+
+      await notifyActiveWasmInstance(nextWasmInstance)
+
+      expect(nextWasmInstance.set_kcl_runtime_flags).toHaveBeenCalledWith(
+        expectedRuntimeFlags('On')
+      )
     } finally {
       disposeApp(app)
     }

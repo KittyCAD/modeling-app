@@ -8,7 +8,7 @@ import {
   buildZookeeperHistoryExtension,
   mergeZookeeperEditPatches,
   zookeeperEditPatchHistoryEvent,
-} from '@src/editor/plugins/zookeeper'
+} from '@src/lib/zookeeper/editorPlugin'
 import { File, KclManager, type ZDSProject } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'

@@ -7,7 +7,7 @@ vi.mock('@src/lib/desktop', () => ({
 import {
   jsonToZookeeperConversations,
   zookeeperConversationsToJson,
-} from '@src/lib/zookeeperConversationStore'
+} from '@src/lib/zookeeper/zookeeperConversationStore'
 
 describe('zookeeperConversationStore', () => {
   it('round trips project conversation mappings', () => {
