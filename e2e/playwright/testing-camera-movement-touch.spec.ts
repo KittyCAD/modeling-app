@@ -6,88 +6,90 @@ import { type Page } from '@playwright/test'
 test.use({
   hasTouch: true,
 })
-test.describe('Testing Camera Movement (Touch Only)', {
-  tag: '@desktop',
-}, () => {
-  /**
-   * DUPLICATED FROM `testing-camera-movement.spec.ts`, might need to become a util.
-   *
-   * hack that we're implemented our own retry instead of using retries built into playwright.
-   * however each of these camera drags can be flaky, because of udp
-   * and so putting them together means only one needs to fail to make this test extra flaky.
-   * this way we can retry within the test
-   * We could break them out into separate tests, but the longest past of the test is waiting
-   * for the stream to start, so it can be good to bundle related things together.
-   */
-  const _bakeInRetries = async ({
-    mouseActions,
-    afterPosition,
-    beforePosition,
-    retryCount = 0,
-    page,
-    scene,
-  }: {
-    mouseActions: () => Promise<void>
-    beforePosition: [number, number, number]
-    afterPosition: [number, number, number]
-    retryCount?: number
-    page: Page
-    scene: SceneFixture
-  }) => {
-    const acceptableCamError = 5
-    const u = await getUtils(page)
+test.describe(
+  'Testing Camera Movement (Touch Only)',
+  { tag: '@desktop' },
+  () => {
+    /**
+     * DUPLICATED FROM `testing-camera-movement.spec.ts`, might need to become a util.
+     *
+     * hack that we're implemented our own retry instead of using retries built into playwright.
+     * however each of these camera drags can be flaky, because of udp
+     * and so putting them together means only one needs to fail to make this test extra flaky.
+     * this way we can retry within the test
+     * We could break them out into separate tests, but the longest past of the test is waiting
+     * for the stream to start, so it can be good to bundle related things together.
+     */
+    const _bakeInRetries = async ({
+      mouseActions,
+      afterPosition,
+      beforePosition,
+      retryCount = 0,
+      page,
+      scene,
+    }: {
+      mouseActions: () => Promise<void>
+      beforePosition: [number, number, number]
+      afterPosition: [number, number, number]
+      retryCount?: number
+      page: Page
+      scene: SceneFixture
+    }) => {
+      const acceptableCamError = 5
+      const u = await getUtils(page)
 
-    await test.step('Set up initial camera position', async () =>
-      await scene.moveCameraTo({
-        x: beforePosition[0],
-        y: beforePosition[1],
-        z: beforePosition[2],
-      }))
+      await test.step('Set up initial camera position', async () =>
+        await scene.moveCameraTo({
+          x: beforePosition[0],
+          y: beforePosition[1],
+          z: beforePosition[2],
+        }))
 
-    await test.step('Do actions and watch for changes', async () =>
-      u.doAndWaitForImageDiff(async () => {
-        await mouseActions()
+      await test.step('Do actions and watch for changes', async () =>
+        u.doAndWaitForImageDiff(async () => {
+          await mouseActions()
 
-        await u.openAndClearDebugPanel()
-        await u.closeDebugPanel()
-        await page.waitForTimeout(100)
-      }, 300))
+          await u.openAndClearDebugPanel()
+          await u.closeDebugPanel()
+          await page.waitForTimeout(100)
+        }, 300))
 
-    await u.openAndClearDebugPanel()
-    await expect(page.getByTestId('cam-x-position')).toBeAttached()
+      await u.openAndClearDebugPanel()
+      await expect(page.getByTestId('cam-x-position')).toBeAttached()
 
-    const vals = await Promise.all([
-      page.getByTestId('cam-x-position').inputValue(),
-      page.getByTestId('cam-y-position').inputValue(),
-      page.getByTestId('cam-z-position').inputValue(),
-    ])
-    const errors = vals.map((v, i) => Math.abs(Number(v) - afterPosition[i]))
-    let shouldRetry = false
+      const vals = await Promise.all([
+        page.getByTestId('cam-x-position').inputValue(),
+        page.getByTestId('cam-y-position').inputValue(),
+        page.getByTestId('cam-z-position').inputValue(),
+      ])
+      const errors = vals.map((v, i) => Math.abs(Number(v) - afterPosition[i]))
+      let shouldRetry = false
 
-    if (errors.some((e) => e > acceptableCamError)) {
-      if (retryCount > 2) {
-        console.log('xVal', vals[0], 'xError', errors[0])
-        console.log('yVal', vals[1], 'yError', errors[1])
-        console.log('zVal', vals[2], 'zError', errors[2])
+      if (errors.some((e) => e > acceptableCamError)) {
+        if (retryCount > 2) {
+          console.log('xVal', vals[0], 'xError', errors[0])
+          console.log('yVal', vals[1], 'yError', errors[1])
+          console.log('zVal', vals[2], 'zError', errors[2])
 
-        throw new Error('Camera position not as expected', {
-          cause: {
-            vals,
-            errors,
-          },
+          throw new Error('Camera position not as expected', {
+            cause: {
+              vals,
+              errors,
+            },
+          })
+        }
+        shouldRetry = true
+      }
+      if (shouldRetry) {
+        await _bakeInRetries({
+          mouseActions,
+          afterPosition: afterPosition,
+          beforePosition: beforePosition,
+          retryCount: retryCount + 1,
+          page,
+          scene,
         })
       }
-      shouldRetry = true
-    }
-    if (shouldRetry) {
-      await _bakeInRetries({
-        mouseActions,
-        afterPosition: afterPosition,
-        beforePosition: beforePosition,
-        retryCount: retryCount + 1,
-        page,
-        scene,
-      })
     }
   }
-})
+)

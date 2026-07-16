@@ -221,22 +221,24 @@ test.describe('when using the file tree to', { tag: ['@desktop'] }, () => {
     })
   })
 
-  test(`create new folders and that doesn't trigger a navigation`, {
-    tag: ['@macos', '@windows'],
-  }, async ({ page, homePage, scene, toolbar, cmdBar }) => {
-    await homePage.createAndGoToProject('project-000')
-    await scene.settled()
-    await toolbar.openPane(DefaultLayoutPaneID.Files)
-    const { createNewFolder } = await getUtils(page, test)
+  test(
+    `create new folders and that doesn't trigger a navigation`,
+    { tag: ['@macos', '@windows'] },
+    async ({ page, homePage, scene, toolbar, cmdBar }) => {
+      await homePage.createAndGoToProject('project-000')
+      await scene.settled()
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
+      const { createNewFolder } = await getUtils(page, test)
 
-    await createNewFolder('folder')
-    await toolbar.expectFileTreeState(['folder', 'main.kcl'])
+      await createNewFolder('folder')
+      await toolbar.expectFileTreeState(['folder', 'main.kcl'])
 
-    await createNewFolder('folder.kcl')
-    await toolbar.expectFileTreeState(['folder', 'folder.kcl', 'main.kcl'])
+      await createNewFolder('folder.kcl')
+      await toolbar.expectFileTreeState(['folder', 'folder.kcl', 'main.kcl'])
 
-    await expect(toolbar.fileName).toHaveText('main.kcl')
-  })
+      await expect(toolbar.fileName).toHaveText('main.kcl')
+    }
+  )
 
   test('deleting all files recreates a default main.kcl with no code', async ({
     page,
@@ -766,26 +768,102 @@ test.describe('Renaming in the file tree', { tag: ['@desktop'] }, () => {
   })
 })
 
-test.describe('Deleting items from the file pane', {
-  tag: ['@desktop'],
-}, () => {
-  test(
-    `delete file when main.kcl exists, navigate to main.kcl`,
-    { tag: '@windows' },
-    async ({ page, folderSetupFn, scene, cmdBar, fs }, testInfo) => {
-      await folderSetupFn(async (dir) => {
-        const testDir = await fs.join(dir, 'testProject')
-        await fs.mkdir(testDir, { recursive: true })
-        const testData = await nodeFsP.readFile(
-          executorInputPath('cylinder.kcl')
-        )
-        await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
+test.describe(
+  'Deleting items from the file pane',
+  { tag: ['@desktop'] },
+  () => {
+    test(
+      `delete file when main.kcl exists, navigate to main.kcl`,
+      { tag: '@windows' },
+      async ({ page, folderSetupFn, scene, cmdBar, fs }, testInfo) => {
+        await folderSetupFn(async (dir) => {
+          const testDir = await fs.join(dir, 'testProject')
+          await fs.mkdir(testDir, { recursive: true })
+          const testData = await nodeFsP.readFile(
+            executorInputPath('cylinder.kcl')
+          )
+          await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
 
-        const testData2 = await nodeFsP.readFile(
+          const testData2 = await nodeFsP.readFile(
+            executorInputPath('basic_fillet_cube_end.kcl')
+          )
+          await fs.writeFile(
+            await fs.join(testDir, 'fileToDelete.kcl'),
+            testData2
+          )
+        })
+        const u = await getUtils(page)
+        await page.setViewportSize({ width: 1200, height: 500 })
+        page.on('console', console.log)
+
+        // Constants and locators
+        const projectCard = page.getByText('testProject')
+        const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+        const fileToDelete = u.locatorFile('fileToDelete.kcl')
+        const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
+        const deleteConfirmation = page.getByTestId('delete-confirmation')
+
+        await test.step('Open project and navigate to fileToDelete.kcl', async () => {
+          await projectCard.click()
+          await scene.settled()
+
+          await u.openFilePanel()
+
+          await fileToDelete.click()
+
+          await u.openKclCodePanel()
+          await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+          await u.closeKclCodePanel()
+        })
+
+        await test.step('Delete fileToDelete.kcl', async () => {
+          await fileToDelete.click({ button: 'right' })
+          await expect(deleteMenuItem).toBeVisible()
+          await deleteMenuItem.click()
+          await expect(deleteConfirmation).toBeVisible()
+          await deleteConfirmation.click()
+        })
+
+        await test.step('Check deletion and navigation', async () => {
+          await expect(fileToDelete).not.toBeVisible()
+          await u.closeFilePanel()
+          await u.openKclCodePanel()
+          await expect(u.codeLocator).toContainText('circle(')
+          await expect(projectMenuButton).toContainText('main.kcl')
+        })
+      }
+    )
+
+    test(`Delete folder we are not in, don't navigate`, async ({
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      await folderSetupFn(async (dir) => {
+        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
+        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
+          recursive: true,
+        })
+        const testData = await nodeFsP.readFile(
           executorInputPath('basic_fillet_cube_end.kcl')
         )
         await fs.writeFile(
-          await fs.join(testDir, 'fileToDelete.kcl'),
+          await fs.join(dir, 'Test Project', 'main.kcl'),
+          testData
+        )
+
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(
+          await fs.join(
+            dir,
+            'Test Project',
+            'folderToDelete',
+            'someFileWithin.kcl'
+          ),
           testData2
         )
       })
@@ -794,190 +872,116 @@ test.describe('Deleting items from the file pane', {
       page.on('console', console.log)
 
       // Constants and locators
-      const projectCard = page.getByText('testProject')
+      const projectCard = page.getByText('Test Project')
       const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-      const fileToDelete = u.locatorFile('fileToDelete.kcl')
+      const folderToDelete = u.locatorFolder('folderToDelete')
       const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
       const deleteConfirmation = page.getByTestId('delete-confirmation')
 
-      await test.step('Open project and navigate to fileToDelete.kcl', async () => {
+      await test.step('Open project and open project pane', async () => {
         await projectCard.click()
         await scene.settled()
-
-        await u.openFilePanel()
-
-        await fileToDelete.click()
-
-        await u.openKclCodePanel()
-        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+        await expect(projectMenuButton).toContainText('main.kcl')
         await u.closeKclCodePanel()
+        await u.openFilePanel()
       })
 
-      await test.step('Delete fileToDelete.kcl', async () => {
-        await fileToDelete.click({ button: 'right' })
+      await test.step('Delete folderToDelete', async () => {
+        await folderToDelete.click({ button: 'right' })
+        await page.waitForTimeout(1000)
+
         await expect(deleteMenuItem).toBeVisible()
         await deleteMenuItem.click()
+        await page.waitForTimeout(1000)
+
         await expect(deleteConfirmation).toBeVisible()
         await deleteConfirmation.click()
+        await page.waitForTimeout(1000)
       })
 
-      await test.step('Check deletion and navigation', async () => {
-        await expect(fileToDelete).not.toBeVisible()
-        await u.closeFilePanel()
-        await u.openKclCodePanel()
-        await expect(u.codeLocator).toContainText('circle(')
+      await test.step('Check deletion and no navigation', async () => {
+        await expect(folderToDelete).not.toBeVisible()
         await expect(projectMenuButton).toContainText('main.kcl')
       })
-    }
-  )
+    })
 
-  test(`Delete folder we are not in, don't navigate`, async ({
-    folderSetupFn,
-    page,
-    fs,
-    scene,
-    cmdBar,
-  }, testInfo) => {
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-      await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
-        recursive: true,
+    test(`Delete folder we are in, navigate to main.kcl`, async ({
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      await folderSetupFn(async (dir) => {
+        await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
+        await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
+          recursive: true,
+        })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(
+          await fs.join(dir, 'Test Project', 'main.kcl'),
+          testData
+        )
+
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(
+          await fs.join(
+            dir,
+            'Test Project',
+            'folderToDelete',
+            'someFileWithin.kcl'
+          ),
+          testData2
+        )
       })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(dir, 'Test Project', 'main.kcl'),
-        testData
-      )
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(
-          dir,
-          'Test Project',
-          'folderToDelete',
-          'someFileWithin.kcl'
-        ),
-        testData2
-      )
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
+      // Constants and locators
+      const projectCard = page.getByText('Test Project')
+      const projectMenuButton = page.getByTestId('project-sidebar-toggle')
+      const folderToDelete = u.locatorFolder('folderToDelete')
+      const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
+      const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
+      const deleteConfirmation = page.getByTestId('delete-confirmation')
 
-    // Constants and locators
-    const projectCard = page.getByText('Test Project')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const folderToDelete = u.locatorFolder('folderToDelete')
-    const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
-    const deleteConfirmation = page.getByTestId('delete-confirmation')
+      await test.step('Open project and navigate into folderToDelete', async () => {
+        await projectCard.click()
+        await scene.settled()
+        await expect(projectMenuButton).toContainText('main.kcl')
+        await u.closeKclCodePanel()
+        await u.openFilePanel()
 
-    await test.step('Open project and open project pane', async () => {
-      await projectCard.click()
-      await scene.settled()
-      await expect(projectMenuButton).toContainText('main.kcl')
-      await u.closeKclCodePanel()
-      await u.openFilePanel()
-    })
-
-    await test.step('Delete folderToDelete', async () => {
-      await folderToDelete.click({ button: 'right' })
-      await page.waitForTimeout(1000)
-
-      await expect(deleteMenuItem).toBeVisible()
-      await deleteMenuItem.click()
-      await page.waitForTimeout(1000)
-
-      await expect(deleteConfirmation).toBeVisible()
-      await deleteConfirmation.click()
-      await page.waitForTimeout(1000)
-    })
-
-    await test.step('Check deletion and no navigation', async () => {
-      await expect(folderToDelete).not.toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
-    })
-  })
-
-  test(`Delete folder we are in, navigate to main.kcl`, async ({
-    folderSetupFn,
-    page,
-    fs,
-    scene,
-    cmdBar,
-  }, testInfo) => {
-    await folderSetupFn(async (dir) => {
-      await fs.mkdir(await fs.join(dir, 'Test Project'), { recursive: true })
-      await fs.mkdir(await fs.join(dir, 'Test Project', 'folderToDelete'), {
-        recursive: true,
+        await folderToDelete.click()
+        await expect(fileWithinFolder).toBeVisible()
+        await fileWithinFolder.click()
+        await expect(projectMenuButton).toContainText('someFileWithin.kcl')
       })
-      const testData = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(dir, 'Test Project', 'main.kcl'),
-        testData
-      )
 
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('cylinder.kcl')
-      )
-      await fs.writeFile(
-        await fs.join(
-          dir,
-          'Test Project',
-          'folderToDelete',
-          'someFileWithin.kcl'
-        ),
-        testData2
-      )
+      await test.step('Delete folderToDelete', async () => {
+        await folderToDelete.click({ button: 'right' })
+        await expect(deleteMenuItem).toBeVisible()
+        await deleteMenuItem.click()
+        await page.waitForTimeout(1000)
+
+        await expect(deleteConfirmation).toBeVisible()
+        await deleteConfirmation.click()
+        await page.waitForTimeout(1000)
+      })
+
+      await test.step('Check deletion and navigation to main.kcl', async () => {
+        await expect(folderToDelete).not.toBeVisible()
+        await expect(fileWithinFolder).not.toBeVisible()
+        await expect(projectMenuButton).toContainText('main.kcl')
+      })
     })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
-
-    // Constants and locators
-    const projectCard = page.getByText('Test Project')
-    const projectMenuButton = page.getByTestId('project-sidebar-toggle')
-    const folderToDelete = u.locatorFolder('folderToDelete')
-    const fileWithinFolder = u.locatorFile('someFileWithin.kcl')
-    const deleteMenuItem = page.getByRole('button', { name: 'Delete' })
-    const deleteConfirmation = page.getByTestId('delete-confirmation')
-
-    await test.step('Open project and navigate into folderToDelete', async () => {
-      await projectCard.click()
-      await scene.settled()
-      await expect(projectMenuButton).toContainText('main.kcl')
-      await u.closeKclCodePanel()
-      await u.openFilePanel()
-
-      await folderToDelete.click()
-      await expect(fileWithinFolder).toBeVisible()
-      await fileWithinFolder.click()
-      await expect(projectMenuButton).toContainText('someFileWithin.kcl')
-    })
-
-    await test.step('Delete folderToDelete', async () => {
-      await folderToDelete.click({ button: 'right' })
-      await expect(deleteMenuItem).toBeVisible()
-      await deleteMenuItem.click()
-      await page.waitForTimeout(1000)
-
-      await expect(deleteConfirmation).toBeVisible()
-      await deleteConfirmation.click()
-      await page.waitForTimeout(1000)
-    })
-
-    await test.step('Check deletion and navigation to main.kcl', async () => {
-      await expect(folderToDelete).not.toBeVisible()
-      await expect(fileWithinFolder).not.toBeVisible()
-      await expect(projectMenuButton).toContainText('main.kcl')
-    })
-  })
-})
+  }
+)
 
 // Copied from tests above.
 test(
@@ -1179,172 +1183,178 @@ test.describe('Drag and drop moves are undoable', { tag: ['@desktop'] }, () => {
   })
 })
 
-test.describe('Undo and redo do not keep history when navigating between files', {
-  tag: ['@desktop'],
-}, () => {
-  test(`open a file, change something, open a different file, hitting undo should do nothing`, async ({
-    folderSetupFn,
-    page,
-    fs,
-    scene,
-    cmdBar,
-  }, testInfo) => {
-    await folderSetupFn(async (dir) => {
-      const testDir = await fs.join(dir, 'testProject')
-      await fs.mkdir(testDir, { recursive: true })
-      const testData = await nodeFsP.readFile(executorInputPath('cylinder.kcl'))
-      await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
+test.describe(
+  'Undo and redo do not keep history when navigating between files',
+  { tag: ['@desktop'] },
+  () => {
+    test(`open a file, change something, open a different file, hitting undo should do nothing`, async ({
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      await folderSetupFn(async (dir) => {
+        const testDir = await fs.join(dir, 'testProject')
+        await fs.mkdir(testDir, { recursive: true })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
 
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(await fs.join(testDir, 'other.kcl'), testData2)
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(await fs.join(testDir, 'other.kcl'), testData2)
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-    // Constants and locators
-    const projectCard = page.getByText('testProject')
-    const otherFile = u.locatorFile('other.kcl')
+      // Constants and locators
+      const projectCard = page.getByText('testProject')
+      const otherFile = u.locatorFile('other.kcl')
 
-    await test.step('Open project and make a change to the file', async () => {
-      await projectCard.click()
-      await scene.settled()
+      await test.step('Open project and make a change to the file', async () => {
+        await projectCard.click()
+        await scene.settled()
 
-      // Get the text in the code locator.
-      const originalText = await u.codeLocator.innerText()
-      // Click in the editor and add some new lines.
-      await u.codeLocator.click()
+        // Get the text in the code locator.
+        const originalText = await u.codeLocator.innerText()
+        // Click in the editor and add some new lines.
+        await u.codeLocator.click()
 
-      await page.keyboard.type(`sketch001 = startSketchOn(XY)
+        await page.keyboard.type(`sketch001 = startSketchOn(XY)
     some other shit`)
 
-      // Ensure the content in the editor changed.
-      const newContent = await u.codeLocator.innerText()
+        // Ensure the content in the editor changed.
+        const newContent = await u.codeLocator.innerText()
 
-      expect(originalText !== newContent)
+        expect(originalText !== newContent)
+      })
+
+      await test.step('navigate to other.kcl', async () => {
+        await u.openFilePanel()
+
+        await otherFile.click()
+        await scene.settled()
+
+        await u.openKclCodePanel()
+        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+      })
+
+      await test.step('hit undo', async () => {
+        // Get the original content of the file.
+        const originalText = await u.codeLocator.innerText()
+        // Now hit undo
+        await page.keyboard.down('ControlOrMeta')
+        await page.keyboard.press('KeyZ')
+        await page.keyboard.up('ControlOrMeta')
+
+        await page.waitForTimeout(100)
+        await expect(u.codeLocator).toContainText(originalText)
+      })
     })
 
-    await test.step('navigate to other.kcl', async () => {
-      await u.openFilePanel()
+    test(`open a file, change something, undo it, open a different file, hitting redo should do nothing`, async ({
+      folderSetupFn,
+      page,
+      fs,
+      scene,
+      cmdBar,
+    }, testInfo) => {
+      await folderSetupFn(async (dir) => {
+        const testDir = await fs.join(dir, 'testProject')
+        await fs.mkdir(testDir, { recursive: true })
+        const testData = await nodeFsP.readFile(
+          executorInputPath('cylinder.kcl')
+        )
+        await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
 
-      await otherFile.click()
-      await scene.settled()
+        const testData2 = await nodeFsP.readFile(
+          executorInputPath('basic_fillet_cube_end.kcl')
+        )
+        await fs.writeFile(await fs.join(testDir, 'other.kcl'), testData2)
+      })
+      const u = await getUtils(page)
+      await page.setViewportSize({ width: 1200, height: 500 })
+      page.on('console', console.log)
 
-      await u.openKclCodePanel()
-      await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+      // Constants and locators
+      const projectCard = page.getByText('testProject')
+      const otherFile = u.locatorFile('other.kcl')
+
+      const badContent = 'this shit'
+      await test.step('Open project and make a change to the file', async () => {
+        await projectCard.click()
+        await scene.settled()
+
+        // Get the text in the code locator.
+        const originalText = await u.codeLocator.innerText()
+        // Click in the editor and add some new lines.
+        await u.codeLocator.click()
+
+        await page.keyboard.type(badContent)
+
+        // Ensure the content in the editor changed.
+        const newContent = await u.codeLocator.innerText()
+
+        expect(originalText !== newContent)
+
+        // Now hit undo
+        await page.keyboard.down('ControlOrMeta')
+        await page.keyboard.press('KeyZ')
+        await page.keyboard.up('ControlOrMeta')
+
+        await page.waitForTimeout(100)
+        await expect(u.codeLocator).toContainText(originalText)
+        await expect(u.codeLocator).not.toContainText(badContent)
+
+        // Hit redo.
+        await page.keyboard.down('Shift')
+        await page.keyboard.down('ControlOrMeta')
+        await page.keyboard.press('KeyZ')
+        await page.keyboard.up('ControlOrMeta')
+        await page.keyboard.up('Shift')
+
+        await page.waitForTimeout(100)
+        await expect(u.codeLocator).toContainText(originalText)
+        await expect(u.codeLocator).toContainText(badContent)
+
+        // Now hit undo
+        await page.keyboard.down('ControlOrMeta')
+        await page.keyboard.press('KeyZ')
+        await page.keyboard.up('ControlOrMeta')
+
+        await page.waitForTimeout(100)
+        await expect(u.codeLocator).toContainText(originalText)
+        await expect(u.codeLocator).not.toContainText(badContent)
+      })
+
+      await test.step('navigate to other.kcl', async () => {
+        await u.openFilePanel()
+
+        await otherFile.click()
+        await scene.settled()
+        await u.openKclCodePanel()
+        await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
+        await expect(u.codeLocator).not.toContainText(badContent)
+      })
+
+      await test.step('hit redo', async () => {
+        // Get the original content of the file.
+        const originalText = await u.codeLocator.innerText()
+        // Now hit redo
+        await page.keyboard.down('Shift')
+        await page.keyboard.down('ControlOrMeta')
+        await page.keyboard.press('KeyZ')
+        await page.keyboard.up('ControlOrMeta')
+        await page.keyboard.up('Shift')
+
+        await page.waitForTimeout(100)
+        await expect(u.codeLocator).toContainText(originalText)
+        await expect(u.codeLocator).not.toContainText(badContent)
+      })
     })
-
-    await test.step('hit undo', async () => {
-      // Get the original content of the file.
-      const originalText = await u.codeLocator.innerText()
-      // Now hit undo
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-
-      await page.waitForTimeout(100)
-      await expect(u.codeLocator).toContainText(originalText)
-    })
-  })
-
-  test(`open a file, change something, undo it, open a different file, hitting redo should do nothing`, async ({
-    folderSetupFn,
-    page,
-    fs,
-    scene,
-    cmdBar,
-  }, testInfo) => {
-    await folderSetupFn(async (dir) => {
-      const testDir = await fs.join(dir, 'testProject')
-      await fs.mkdir(testDir, { recursive: true })
-      const testData = await nodeFsP.readFile(executorInputPath('cylinder.kcl'))
-      await fs.writeFile(await fs.join(testDir, 'main.kcl'), testData)
-
-      const testData2 = await nodeFsP.readFile(
-        executorInputPath('basic_fillet_cube_end.kcl')
-      )
-      await fs.writeFile(await fs.join(testDir, 'other.kcl'), testData2)
-    })
-    const u = await getUtils(page)
-    await page.setViewportSize({ width: 1200, height: 500 })
-    page.on('console', console.log)
-
-    // Constants and locators
-    const projectCard = page.getByText('testProject')
-    const otherFile = u.locatorFile('other.kcl')
-
-    const badContent = 'this shit'
-    await test.step('Open project and make a change to the file', async () => {
-      await projectCard.click()
-      await scene.settled()
-
-      // Get the text in the code locator.
-      const originalText = await u.codeLocator.innerText()
-      // Click in the editor and add some new lines.
-      await u.codeLocator.click()
-
-      await page.keyboard.type(badContent)
-
-      // Ensure the content in the editor changed.
-      const newContent = await u.codeLocator.innerText()
-
-      expect(originalText !== newContent)
-
-      // Now hit undo
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-
-      await page.waitForTimeout(100)
-      await expect(u.codeLocator).toContainText(originalText)
-      await expect(u.codeLocator).not.toContainText(badContent)
-
-      // Hit redo.
-      await page.keyboard.down('Shift')
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-      await page.keyboard.up('Shift')
-
-      await page.waitForTimeout(100)
-      await expect(u.codeLocator).toContainText(originalText)
-      await expect(u.codeLocator).toContainText(badContent)
-
-      // Now hit undo
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-
-      await page.waitForTimeout(100)
-      await expect(u.codeLocator).toContainText(originalText)
-      await expect(u.codeLocator).not.toContainText(badContent)
-    })
-
-    await test.step('navigate to other.kcl', async () => {
-      await u.openFilePanel()
-
-      await otherFile.click()
-      await scene.settled()
-      await u.openKclCodePanel()
-      await expect(u.codeLocator).toContainText('getOppositeEdge(thing)')
-      await expect(u.codeLocator).not.toContainText(badContent)
-    })
-
-    await test.step('hit redo', async () => {
-      // Get the original content of the file.
-      const originalText = await u.codeLocator.innerText()
-      // Now hit redo
-      await page.keyboard.down('Shift')
-      await page.keyboard.down('ControlOrMeta')
-      await page.keyboard.press('KeyZ')
-      await page.keyboard.up('ControlOrMeta')
-      await page.keyboard.up('Shift')
-
-      await page.waitForTimeout(100)
-      await expect(u.codeLocator).toContainText(originalText)
-      await expect(u.codeLocator).not.toContainText(badContent)
-    })
-  })
-})
+  }
+)

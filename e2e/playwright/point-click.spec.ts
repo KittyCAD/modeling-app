@@ -2375,16 +2375,10 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
   })
 
   // TODO: unskip once https://github.com/KittyCAD/modeling-app/pull/10779 is in
-  test.fixme(`Translate point-and-click with segment-to-body coercion`, async ({
-    context,
-    page,
-    homePage,
-    scene,
-    editor,
-    toolbar,
-    cmdBar,
-  }) => {
-    const initialCode = `sketch001 = sketch(on = XY) {
+  test.fixme(
+    `Translate point-and-click with segment-to-body coercion`,
+    async ({ context, page, homePage, scene, editor, toolbar, cmdBar }) => {
+      const initialCode = `sketch001 = sketch(on = XY) {
   line1 = line(start = [var -5mm, var -10mm], end = [var 5mm, var -10mm])
   line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])
   coincident([line1.end, line2.start])
@@ -2398,100 +2392,101 @@ region002 = region(point = [-20.0275mm, 10mm], sketch = sketch002)`
 }
 region001 = region(segments = [sketch001.line1, sketch001.line2])
 box = extrude(region001, length = 30)`
-    const expectedTranslateCode = `translate(box, x = 50)`
-    const segmentToSelect = `line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])`
+      const expectedTranslateCode = `translate(box, x = 50)`
+      const segmentToSelect = `line2 = line(start = [var 5mm, var -10mm], end = [var 5mm, var 10mm])`
 
-    await test.step('Settle the scene', async () => {
-      await context.addInitScript((initialCode) => {
-        localStorage.setItem('persistCode', initialCode)
-      }, initialCode)
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await homePage.goToModelingScene()
-      await scene.settled()
-    })
-
-    await test.step('Select an edge first (before opening translate)', async () => {
-      await editor.selectText(segmentToSelect)
-      await expect(toolbar.selectionStatus).toContainText('1 edge')
-    })
-
-    await test.step('Open translate via context menu and verify coercion', async () => {
-      await toolbar.translateButton.click()
-
-      // When translate opens with a segment selected, it should coerce to the parent body
-      // The segment belongs to the 'profile' path, which is extruded into 'box'
-      // So the selection should coerce from segment to path (body)
-      await cmdBar.expectState({
-        commandName: 'Translate',
-        currentArgKey: 'objects',
-        currentArgValue: '',
-        headerArguments: {
-          Objects: '',
-        },
-        highlightedHeaderArg: 'objects',
-        stage: 'arguments',
-      })
-
-      await expect(page.getByText('1 path selected')).toBeVisible()
-      await expect(toolbar.selectionStatus).toContainText('1 region')
-    })
-
-    await test.step('Complete command flow', async () => {
-      await test.step('Progress to review since object is already selected', async () => {
-        await cmdBar.progressCmdBar()
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: '1 region',
-          },
-          commandName: 'Translate',
-          reviewValidationError:
-            'semantic: Expected `x`, `y`, or `z` to be provided.',
-        })
-      })
-
-      await test.step('Add x translation', async () => {
-        await cmdBar.clickOptionalArgument('x')
-        await cmdBar.expectState({
-          stage: 'arguments',
-          currentArgKey: 'x',
-          currentArgValue: '0',
-          headerArguments: {
-            Objects: '1 region',
-            X: '',
-          },
-          highlightedHeaderArg: 'x',
-          commandName: 'Translate',
-        })
-        await page.keyboard.insertText('50')
-        await cmdBar.progressCmdBar()
-      })
-
-      await test.step('Review and submit', async () => {
-        await cmdBar.expectState({
-          stage: 'review',
-          headerArguments: {
-            Objects: '1 region',
-            X: '50',
-          },
-          commandName: 'Translate',
-        })
-        await cmdBar.submit()
+      await test.step('Settle the scene', async () => {
+        await context.addInitScript((initialCode) => {
+          localStorage.setItem('persistCode', initialCode)
+        }, initialCode)
+        await page.setBodyDimensions({ width: 1000, height: 500 })
+        await homePage.goToModelingScene()
         await scene.settled()
       })
-    })
 
-    await test.step('Verify code was added correctly', async () => {
-      await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
-      await toolbar.openPane(DefaultLayoutPaneID.Code)
-      await editor.expectEditor.toContain(expectedTranslateCode)
-      await editor.expectState({
-        diagnostics: [],
-        activeLines: [expectedTranslateCode],
-        highlightedCode: '',
+      await test.step('Select an edge first (before opening translate)', async () => {
+        await editor.selectText(segmentToSelect)
+        await expect(toolbar.selectionStatus).toContainText('1 edge')
       })
-    })
-  })
+
+      await test.step('Open translate via context menu and verify coercion', async () => {
+        await toolbar.translateButton.click()
+
+        // When translate opens with a segment selected, it should coerce to the parent body
+        // The segment belongs to the 'profile' path, which is extruded into 'box'
+        // So the selection should coerce from segment to path (body)
+        await cmdBar.expectState({
+          commandName: 'Translate',
+          currentArgKey: 'objects',
+          currentArgValue: '',
+          headerArguments: {
+            Objects: '',
+          },
+          highlightedHeaderArg: 'objects',
+          stage: 'arguments',
+        })
+
+        await expect(page.getByText('1 path selected')).toBeVisible()
+        await expect(toolbar.selectionStatus).toContainText('1 region')
+      })
+
+      await test.step('Complete command flow', async () => {
+        await test.step('Progress to review since object is already selected', async () => {
+          await cmdBar.progressCmdBar()
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Objects: '1 region',
+            },
+            commandName: 'Translate',
+            reviewValidationError:
+              'semantic: Expected `x`, `y`, or `z` to be provided.',
+          })
+        })
+
+        await test.step('Add x translation', async () => {
+          await cmdBar.clickOptionalArgument('x')
+          await cmdBar.expectState({
+            stage: 'arguments',
+            currentArgKey: 'x',
+            currentArgValue: '0',
+            headerArguments: {
+              Objects: '1 region',
+              X: '',
+            },
+            highlightedHeaderArg: 'x',
+            commandName: 'Translate',
+          })
+          await page.keyboard.insertText('50')
+          await cmdBar.progressCmdBar()
+        })
+
+        await test.step('Review and submit', async () => {
+          await cmdBar.expectState({
+            stage: 'review',
+            headerArguments: {
+              Objects: '1 region',
+              X: '50',
+            },
+            commandName: 'Translate',
+          })
+          await cmdBar.submit()
+          await scene.settled()
+        })
+      })
+
+      await test.step('Verify code was added correctly', async () => {
+        await toolbar.closePane(DefaultLayoutPaneID.FeatureTree)
+        await toolbar.openPane(DefaultLayoutPaneID.Code)
+        await editor.expectEditor.toContain(expectedTranslateCode)
+        await editor.expectState({
+          diagnostics: [],
+          activeLines: [expectedTranslateCode],
+          highlightedCode: '',
+        })
+      })
+    }
+  )
 
   test('Blend point-and-click', async ({
     context,
