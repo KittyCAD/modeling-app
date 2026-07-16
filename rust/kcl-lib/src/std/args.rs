@@ -1192,7 +1192,7 @@ impl<'a> FromKclValue<'a> for super::axis_or_reference::Point3dOrEdgeReference {
     }
 }
 
-impl<'a> FromKclValue<'a> for super::axis_or_reference::Axis3dOrPoint3dOrEdgeReference {
+impl<'a> FromKclValue<'a> for super::axis_or_reference::DirectionType3d {
     fn from_kcl_val(arg: &'a KclValue) -> Option<Self> {
         let case1 = <[TyF64; 3]>::from_kcl_val;
         let case2 = super::fillet::EdgeReference::from_kcl_val;
