@@ -5,13 +5,12 @@ import type {
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { waitFor } from 'xstate'
-
 import {
   createKclManagerTestHarness,
   getLatestDispatchedDiagnostics,
 } from '@src/lang/testHelpers/kclManagerTestHarness'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { waitFor } from 'xstate'
 
 function createDeferred<T>() {
   let resolve!: (value: T) => void

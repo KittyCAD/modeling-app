@@ -4,24 +4,24 @@ import {
   provide,
   provideService,
 } from '@kittycad/registry'
-import { type Signal, effect, signal } from '@preact/signals-core'
+import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import {
-  type PreparedZookeeperPatchFileReplay,
-  buildZookeeperHistoryExtension,
-} from '@src/lib/zookeeper/editorPlugin'
 import { ZDSProject } from '@src/lang/KclManager'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import type { Project } from '@src/lib/project'
+import {
+  buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
+} from '@src/lib/zookeeper/editorPlugin'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
+  executingEditorHandleValueSpec,
   type OpenEditorOptions,
   type OpenProjectEditorInput,
-  type ProjectSessionService,
-  executingEditorHandleValueSpec,
   openedProjectHandleValueSpec,
   openedProjectValueSpec,
+  type ProjectSessionService,
   projectSessionService,
 } from '@src/registry/contracts/projectSession'
 import type { Subscription } from 'xstate'

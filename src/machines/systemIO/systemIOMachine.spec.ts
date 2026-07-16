@@ -6,7 +6,6 @@ import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
-  getCloudProjectFolderRenameName,
   reloadExecutingEditorAfterBulkWrite,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,

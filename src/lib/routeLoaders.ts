@@ -4,14 +4,18 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
-import { readAppSettingsFile } from '@src/lib/desktop'
+import {
+  getInitialDefaultDir,
+  getProjectInfo,
+  isPathNotFoundError,
+  readAppSettingsFile,
+} from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
-  PATHS,
   getParentAbsolutePath,
   getProjectMetaByRouteId,
   getRouterSearchFromRequestUrl,
+  PATHS,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
@@ -137,42 +141,7 @@ export const fileLoader =
       projectPathData
 
     const urlObj = new URL(routerData.request.url)
-
-    if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-        .default_file
-      let fileExists = true
-      if (currentFilePath && fileExists) {
-        try {
-          await fsZds.stat(currentFilePath)
-        } catch (e) {
-          if (e === 'ENOENT') {
-            fileExists = false
-          }
-        }
-      }
-
-      // If we are navigating to the project and want to navigate to its
-      // default file, redirect to it keeping everything else in the URL the same.
-      if (projectPath && !currentFileName && fileExists && params.id) {
-        const encodedId = safeEncodeForRouterPaths(params.id)
-        const requestUrlWithDefaultFile = routerData.request.url.replace(
-          encodedId,
-          safeEncodeForRouterPaths(fallbackFile)
-        )
-        return redirect(requestUrlWithDefaultFile)
-      }
-
-      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
-        const routerSearch = getRouterSearchFromRequestUrl(
-          routerData.request.url,
-          Boolean(window.electron)
-        )
-        return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
-        )
-      }
-    }
+    const isSettingsRoute = urlObj.pathname.endsWith('/settings')
 
     const defaultProjectData = {
       name: projectName || 'unnamed',
@@ -186,20 +155,74 @@ export const fileLoader =
     }
 
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
-
     const project = maybeProjectInfo ?? defaultProjectData
 
-    const { editor } = await projectSession.openProjectEditor({
-      project,
-      filePath: currentFilePath || PROJECT_ENTRYPOINT,
-      providedEditor: app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      providedCode:
-        window.electron?.process.env.NODE_ENV === 'test'
-          ? kclManager.localStoragePersistCode()
-          : undefined,
-    })
+    const redirectToFallbackFile = () => {
+      const routerSearch = getRouterSearchFromRequestUrl(
+        routerData.request.url,
+        Boolean(window.electron)
+      )
+      return redirect(
+        `${PATHS.FILE}/${encodeURIComponent(project.default_file)}${routerSearch}`
+      )
+    }
+
+    if (!isSettingsRoute) {
+      let fileExists = true
+      if (currentFilePath && fileExists) {
+        try {
+          await fsZds.stat(currentFilePath)
+        } catch (error) {
+          if (isPathNotFoundError(error)) {
+            fileExists = false
+          }
+        }
+      }
+
+      // If we are navigating to the project and want to navigate to its
+      // default file, redirect to it keeping everything else in the URL the same.
+      if (projectPath && !currentFileName && fileExists && params.id) {
+        const encodedId = safeEncodeForRouterPaths(params.id)
+        const requestUrlWithDefaultFile = routerData.request.url.replace(
+          encodedId,
+          safeEncodeForRouterPaths(project.default_file)
+        )
+        return redirect(requestUrlWithDefaultFile)
+      }
+
+      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+        return redirectToFallbackFile()
+      }
+    }
+
+    const editorFilePath = currentFilePath || PROJECT_ENTRYPOINT
+    let editor: Awaited<
+      ReturnType<typeof projectSession.openProjectEditor>
+    >['editor']
+    try {
+      const openedEditor = await projectSession.openProjectEditor({
+        project,
+        filePath: editorFilePath,
+        providedEditor: app.singletons.kclManager,
+        // If persistCode in localStorage is present, it'll persist that code
+        // through *anything*. INTENDED FOR TESTS.
+        providedCode:
+          window.electron?.process.env.NODE_ENV === 'test'
+            ? kclManager.localStoragePersistCode()
+            : undefined,
+      })
+      editor = openedEditor.editor
+    } catch (error) {
+      if (
+        !isSettingsRoute &&
+        isPathNotFoundError(error) &&
+        editorFilePath !== project.default_file
+      ) {
+        return redirectToFallbackFile()
+      }
+
+      return Promise.reject(error)
+    }
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName

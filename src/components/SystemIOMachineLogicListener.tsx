@@ -9,10 +9,10 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import makeUrlPathRelative from '@src/lib/makeUrlPathRelative'
 import {
-  PATHS,
   getProjectDirectoryFromKCLFilePath,
   joinOSPaths,
   joinRouterPaths,
+  PATHS,
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
@@ -29,8 +29,7 @@ import {
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
 import { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export function SystemIOMachineLogicListener() {
   const { settings, systemIOActor } = useApp()

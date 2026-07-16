@@ -1128,6 +1128,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }) => {
         await fsZds.rm(input.requestedPath, { recursive: true })
+        input.context.app.project?.removePathFromFileRegistry(
+          input.requestedPath
+        )
         const response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
@@ -1265,6 +1268,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           src: input.src,
           target: input.target,
         })
+        input.context.app.project?.removePathFromFileRegistry(input.src)
         return {
           message: input.successMessage || 'Moved successfully',
           requestedAbsolutePath: '',

@@ -1,7 +1,6 @@
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
@@ -13,6 +12,7 @@ import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
@@ -622,6 +622,43 @@ describe('project system', () => {
       expect(app.project).toBeUndefined()
       expect(projectSession.openedProjectHandle.value).toBeUndefined()
       expect(projectSession.executingEditorHandle.value).toBeUndefined()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('removes stale project file references when deleting an opened file tree', async () => {
+    File.ioImplementations.read = (path) =>
+      Promise.resolve(
+        new Map([
+          ['/some-dir/test/main.kcl', 'main = 1'],
+          ['/some-dir/test/parts/part.kcl', 'part = 2'],
+        ]).get(path) ?? ''
+      )
+    File.ioImplementations.write = () => Promise.resolve()
+
+    const app = createAppForTest()
+
+    try {
+      const projectSession = app.registry.get(projectSessionService)
+      const project = await projectSession.openProject(mockProject)
+      const partPath = '/some-dir/test/parts/part.kcl'
+
+      await projectSession.openEditor(partPath, {
+        providedEditor: app.singletons.kclManager,
+      })
+
+      expect(project.executingPath).toBe(partPath)
+      expect(project.files.some((file) => file.path === partPath)).toBe(true)
+
+      const removedFiles = project.removePathFromFileRegistry(
+        '/some-dir/test/parts'
+      )
+
+      expect(removedFiles.map((file) => file.path)).toContain(partPath)
+      expect(project.executingPath).toBeNull()
+      expect(project.findEditor(partPath)).toBeUndefined()
+      expect(project.files.some((file) => file.path === partPath)).toBe(false)
     } finally {
       app.dispose()
     }

@@ -13,9 +13,9 @@ import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsComman
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
-import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
@@ -29,14 +29,14 @@ import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
-import { type SystemIOActor } from '@src/machines/systemIO/utils'
+import type { SystemIOActor } from '@src/machines/systemIO/utils'
 import {
   UserFeaturesTransition,
   userFeaturesContextHas,
