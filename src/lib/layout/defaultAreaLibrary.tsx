@@ -21,7 +21,7 @@ import {
   engineSceneViewExtensionsValueSpec,
   mergeEngineSceneClassNames,
 } from '@src/registry/contracts/engineScene'
-import { layoutAreaLibraryValueSpec } from '@src/registry/contracts/layout'
+import { layoutAreaLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { MouseEventHandler } from 'react'
 import { useCallback, useMemo, useState } from 'react'
 

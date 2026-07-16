@@ -19,10 +19,10 @@ import {
 } from '@src/lib/constants'
 import {
   getInitialDefaultDir,
+  overwriteProjectTomlWithNewSettings,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
-  writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
@@ -1081,7 +1081,7 @@ export async function loadAndValidateSettings(
           new Error('Could not serialize project configuration')
         )
       }
-      await writeProjectSettingsFile(projectPath, projectTomlString)
+      await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
     }
 
     // Keep main.kcl `@settings(kclVersion)` aligned if the entrypoint already has one.
@@ -1214,7 +1214,7 @@ export async function saveSettings(
   }
 
   // Write the project settings.
-  await writeProjectSettingsFile(projectPath, projectTomlString)
+  await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
 
   // Keep main.kcl `@settings(kclVersion)` aligned if the entrypoint already has one.
   const projectKclVersion = allSettings.modeling.kclVersion.current

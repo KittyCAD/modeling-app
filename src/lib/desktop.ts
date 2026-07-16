@@ -39,6 +39,7 @@ import type { FileEntry, FileMetadata, Project } from '@src/lib/project'
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  preserveProjectTomlMetadataInProjectSettingsContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
 import { err } from '@src/lib/trap'
@@ -247,7 +248,8 @@ export async function createNewProjectDirectory(
   initialCode?: string,
   configuration?: DeepPartial<Configuration> | Error,
   initialFileName?: string,
-  overrideApplicationProjectDirectory?: string
+  overrideApplicationProjectDirectory?: string,
+  projectTitle = projectName
 ): Promise<Project> {
   if (!configuration) {
     configuration = await readAppSettingsFile(wasmInstance)
@@ -298,7 +300,7 @@ export async function createNewProjectDirectory(
   await fsZds.writeFile(projectFile, new TextEncoder().encode(codeToWrite))
   await ensureProjectTomlTitle({
     projectPath: projectDir,
-    title: projectName,
+    title: projectTitle,
     defaultFile: kclFileName,
     kclVersion: initialCode ? undefined : DEFAULT_KCL_VERSION,
   })
@@ -319,7 +321,7 @@ export async function createNewProjectDirectory(
   return {
     path: projectDir,
     name: projectName,
-    title: projectName,
+    title: projectTitle,
     // We don't need to recursively get all files in the project directory.
     // Because we just created it and it's empty.
     children: null,
@@ -675,7 +677,7 @@ export async function getProjectInfo(
 }
 
 // Write project settings file.
-export async function writeProjectSettingsFile(
+export async function overwriteProjectTomlWithNewSettings(
   projectPath: string,
   tomlStr: string
 ): Promise<void> {
@@ -683,9 +685,23 @@ export async function writeProjectSettingsFile(
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
+  let projectToml = tomlStr
+  try {
+    const existingProjectToml = await fsZds.readFile(projectSettingsFilePath, {
+      encoding: 'utf-8',
+    })
+    projectToml = preserveProjectTomlMetadataInProjectSettingsContents(
+      existingProjectToml,
+      tomlStr
+    )
+  } catch (error) {
+    if (!isPathNotFoundError(error)) {
+      return Promise.reject(error)
+    }
+  }
   return fsZds.writeFile(
     projectSettingsFilePath,
-    new TextEncoder().encode(tomlStr)
+    new TextEncoder().encode(projectToml)
   )
 }
 

@@ -49,7 +49,7 @@ const mockState = vi.hoisted(() => ({
     })
   ),
   readProjectSettingsFile: vi.fn(async () => ({})),
-  writeProjectSettingsFile: vi.fn(async () => {}),
+  overwriteProjectTomlWithNewSettings: vi.fn(async () => {}),
   serializeProjectConfiguration: vi.fn(() => 'serialized-project-toml'),
   toastError: vi.fn(),
   toastSuccess: vi.fn(),
@@ -90,7 +90,8 @@ vi.mock('@kittycad/lib', () => ({
 
 vi.mock('@src/lib/desktop', () => ({
   readProjectSettingsFile: mockState.readProjectSettingsFile,
-  writeProjectSettingsFile: mockState.writeProjectSettingsFile,
+  overwriteProjectTomlWithNewSettings:
+    mockState.overwriteProjectTomlWithNewSettings,
 }))
 
 vi.mock('@src/lang/wasm', () => ({
