@@ -91,21 +91,27 @@ async fn inner_clone(
                     .await?;
 
                 let mut new_solid = solid.clone();
-                // The engine clone ID identifies the cloned root entity (the
-                // solid's path for sketch-based bodies). Keep the semantic
-                // body artifact on its own ID, just as extrusion does, so the
-                // artifact graph can contain both the Path and Sweep nodes.
-                let result_artifact_id = exec_state.next_artifact_id();
+                // Sweep-backed solids have separate engine entity and body
+                // artifact IDs. Preserve that split so the cloned Path and
+                // Sweep can coexist. Composite solids use their engine entity
+                // as the body artifact directly, so keep those IDs together.
+                let source_entity_id = solid.id.into();
+                let result_artifact_id = if solid.artifact_id == source_entity_id {
+                    new_id.into()
+                } else {
+                    let result_artifact_id = exec_state.next_artifact_id();
+                    entity_clone_info = Some(EntityCloneInfo {
+                        source_artifact_id: solid.artifact_id,
+                        result_artifact_id,
+                    });
+                    result_artifact_id
+                };
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
                 new_solid.artifact_id = result_artifact_id;
-                entity_clone_info = Some(EntityCloneInfo {
-                    source_artifact_id: solid.artifact_id,
-                    result_artifact_id,
-                });
                 GeometryWithImportedGeometry::Solid(new_solid)
             }
         };
@@ -434,6 +440,7 @@ mod tests {
     use pretty_assertions::assert_ne;
 
     use crate::exec::KclValueView;
+    use crate::execution::Artifact;
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
     // the resulting sketch.
@@ -539,6 +546,55 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_composite_solid_keeps_engine_artifact_id() {
+        let code = r#"left = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0])
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+    |> extrude(length = 5)
+
+right = startSketchOn(XY)
+    |> startProfile(at = [5, 0])
+    |> line(end = [10, 0])
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+    |> extrude(length = 5)
+
+composite = union([left, right])
+clonedComposite = clone(composite)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let KclValueView::Solid { value: composite } = result.variables.get("composite").unwrap() else {
+            panic!("Expected composite to be a solid");
+        };
+        let KclValueView::Solid {
+            value: cloned_composite,
+        } = result.variables.get("clonedComposite").unwrap()
+        else {
+            panic!("Expected clonedComposite to be a solid");
+        };
+
+        assert_eq!(composite.artifact_id, composite.id.into());
+        assert_eq!(cloned_composite.artifact_id, cloned_composite.id.into());
+        assert_ne!(composite.id, cloned_composite.id);
+
+        let Some(Artifact::CompositeSolid(cloned_artifact)) = result.artifact_graph.get(&cloned_composite.artifact_id)
+        else {
+            panic!("Expected a cloned composite solid artifact at the engine entity ID");
+        };
+        assert_eq!(cloned_artifact.id, cloned_composite.artifact_id);
+        assert!(!cloned_artifact.consumed);
 
         ctx.close().await;
     }

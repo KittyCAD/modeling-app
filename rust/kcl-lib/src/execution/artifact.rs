@@ -2161,14 +2161,16 @@ fn artifacts_to_update(
         }
         ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
             let source_entity_id = ArtifactId::new(*entity_id);
-            let source_id = artifact_command
+            // A separate body identity is only meaningful when the source
+            // artifact is distinct from the cloned engine entity. Composite
+            // solids use the engine entity as their body artifact directly.
+            let entity_clone_info = artifact_command
                 .entity_clone_info
+                .filter(|info| info.source_artifact_id != source_entity_id);
+            let source_id = entity_clone_info
                 .map(|info| info.source_artifact_id)
                 .unwrap_or(source_entity_id);
-            let result_id = artifact_command
-                .entity_clone_info
-                .map(|info| info.result_artifact_id)
-                .unwrap_or(id);
+            let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
 
             let Some(source_artifact) = artifacts.get(&source_id) else {
                 return Ok(Vec::new());

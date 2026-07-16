@@ -205,6 +205,7 @@ fn entity_clone_remaps_path_ids() {
 fn entity_clone_remaps_composite_solid_ids() {
     let source_id = ArtifactId::new(Uuid::new_v4());
     let cmd_id = Uuid::new_v4();
+    let unused_separate_result_id = ArtifactId::new(Uuid::new_v4());
     let source_solid_id = ArtifactId::new(Uuid::new_v4());
     let source_tool_id = ArtifactId::new(Uuid::new_v4());
     let source_parent_composite_id = ArtifactId::new(Uuid::new_v4());
@@ -242,7 +243,12 @@ fn entity_clone_remaps_composite_solid_ids() {
         cmd_id,
         range: SourceRange::synthetic(),
         command,
-        entity_clone_info: None,
+        // Composite solids use the source engine entity as the artifact ID.
+        // Ignore stale or overly broad metadata that would separate them.
+        entity_clone_info: Some(EntityCloneInfo {
+            source_artifact_id: source_id,
+            result_artifact_id: unused_separate_result_id,
+        }),
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
