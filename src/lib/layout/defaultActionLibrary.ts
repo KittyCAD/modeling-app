@@ -4,8 +4,8 @@ import { useApp, useSingletons } from '@src/lib/boot'
 import { sendAddFileToProjectCommandForCurrentProject } from '@src/lib/commandBarConfigs/applicationCommandConfig'
 import { isDesktop } from '@src/lib/isDesktop'
 import { isMobile } from '@src/lib/isMobile'
+import { layoutActionLibraryValueSpec } from '@src/lib/layout/registry/contract'
 import type { ActionLibrary } from '@src/lib/layout/types'
-import { layoutActionLibraryValueSpec } from '@src/registry/contracts/layout'
 import { useMemo } from 'react'
 
 export const useDefaultActionLibrary = () => {
