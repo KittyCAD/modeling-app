@@ -1,9 +1,9 @@
 import type { Feature } from '@kittycad/lib'
 import {
+  Registry,
   defineRegistryItem,
   provide,
   provideService,
-  Registry,
 } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -12,11 +12,6 @@ import {
   defaultLayoutConfig,
 } from '@src/lib/layout/configs/default'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import {
-  layoutService,
-  layoutUserFeatureTransformationsValueSpec,
-} from '@src/lib/layout/registry/contract'
-import layoutRegistryItem from '@src/lib/layout/registry/extension'
 import type { Layout } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
 import {
@@ -32,6 +27,11 @@ import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
+import layoutRegistryItem from '@src/lib/layout/registry/extension'
+import {
+  layoutService,
+  layoutUserFeatureTransformationsValueSpec,
+} from '@src/lib/layout/registry/contract'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 const playwrightRuntime: RuntimeInfo = {

@@ -6,11 +6,6 @@ import {
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
-import {
-  layoutContributionsValueSpec,
-  layoutService,
-  layoutUserFeatureTransformationsValueSpec,
-} from '@src/lib/layout/registry/contract'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
   applyLayoutContribution,
@@ -20,6 +15,11 @@ import {
   saveLayout,
   setLayoutSaveHandler,
 } from '@src/lib/layout/utils'
+import {
+  layoutContributionsValueSpec,
+  layoutService,
+  layoutUserFeatureTransformationsValueSpec,
+} from '@src/lib/layout/registry/contract'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import { runtimeService } from '@src/registry/contracts/runtime'

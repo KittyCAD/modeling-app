@@ -8,8 +8,8 @@ import {
 import type {
   ActionLibrary,
   AreaLibrary,
-  Layout,
   LayoutContribution,
+  Layout,
   LayoutService,
 } from '@src/lib/layout/types'
 
