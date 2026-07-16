@@ -12,6 +12,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use super::extrude::do_post_extrude;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::EntityCloneInfo;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::Geometry;
@@ -65,6 +66,7 @@ async fn inner_clone(
         let new_id = exec_state.next_uuid();
         let mut geometry = g.clone();
         let old_id = geometry.id(&args.ctx).await?;
+        let mut entity_clone_info = None;
 
         let mut new_geometry = match &geometry {
             GeometryWithImportedGeometry::ImportedGeometry(imported) => {
@@ -89,12 +91,21 @@ async fn inner_clone(
                     .await?;
 
                 let mut new_solid = solid.clone();
+                // The engine clone ID identifies the cloned root entity (the
+                // solid's path for sketch-based bodies). Keep the semantic
+                // body artifact on its own ID, just as extrusion does, so the
+                // artifact graph can contain both the Path and Sweep nodes.
+                let result_artifact_id = exec_state.next_artifact_id();
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
-                new_solid.artifact_id = new_id.into();
+                new_solid.artifact_id = result_artifact_id;
+                entity_clone_info = Some(EntityCloneInfo {
+                    source_artifact_id: solid.artifact_id,
+                    result_artifact_id,
+                });
                 GeometryWithImportedGeometry::Solid(new_solid)
             }
         };
@@ -103,9 +114,10 @@ async fn inner_clone(
             res.push(new_geometry);
         } else {
             exec_state
-                .batch_modeling_cmd(
+                .batch_modeling_cmd_with_entity_clone_info(
                     ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
                     ModelingCmd::from(mcmd::EntityClone::builder().entity_id(old_id).build()),
+                    entity_clone_info,
                 )
                 .await?;
 
@@ -509,7 +521,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
@@ -625,7 +637,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
@@ -699,7 +711,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
@@ -800,7 +812,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
             assert_ne!(value.get_id(), cloned_value.get_id());

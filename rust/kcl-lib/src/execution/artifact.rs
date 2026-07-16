@@ -65,6 +65,17 @@ pub struct ArtifactCommand {
     /// without an engine command, in which case, we would make this field
     /// optional.
     pub command: ModelingCmd,
+    /// Extra artifact identity needed when an engine clone represents a KCL
+    /// solid whose body artifact ID differs from its engine entity ID.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) entity_clone_info: Option<EntityCloneInfo>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub(crate) struct EntityCloneInfo {
+    pub source_artifact_id: ArtifactId,
+    pub result_artifact_id: ArtifactId,
 }
 
 pub type DummyPathToNode = Vec<()>;
@@ -2143,14 +2154,26 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
-            let source_id = ArtifactId::new(*entity_id);
+            let source_entity_id = ArtifactId::new(*entity_id);
+            let source_id = artifact_command
+                .entity_clone_info
+                .map(|info| info.source_artifact_id)
+                .unwrap_or(source_entity_id);
+            let result_id = artifact_command
+                .entity_clone_info
+                .map(|info| info.result_artifact_id)
+                .unwrap_or(id);
 
             let Some(source_artifact) = artifacts.get(&source_id) else {
                 return Ok(Vec::new());
             };
 
             let mut entity_id_map = entity_clone_id_maps.get(&uuid).cloned().unwrap_or_default();
-            entity_id_map.insert(source_id, id);
+            // The engine maps the source root entity to the clone command ID.
+            // A Solid can additionally map its semantic body artifact to a
+            // distinct result ID, allowing its Path and Sweep to coexist.
+            entity_id_map.insert(source_entity_id, id);
+            entity_id_map.insert(source_id, result_id);
 
             let mut cloned_artifacts = Vec::new();
             cloned_artifacts.push(remap_artifact_for_clone(
