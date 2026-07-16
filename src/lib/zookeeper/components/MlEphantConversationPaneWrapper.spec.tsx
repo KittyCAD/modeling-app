@@ -18,6 +18,7 @@ const mocks = vi.hoisted(() => {
     zookeeperHistoryRecordingInProgress: false,
     addGlobalHistoryEvent: vi.fn(),
     addGlobalHistoryEventWithCodeChange: vi.fn(),
+    updateCodeEditor: vi.fn(),
   }
 
   return {
@@ -181,6 +182,7 @@ async function flushQueuedWork() {
 describe('MlEphantConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
+    mocks.kclManager.updateCodeEditor.mockClear()
     mocks.watchCallback = undefined
 
     render(
@@ -218,6 +220,17 @@ describe('MlEphantConversationPaneWrapper', () => {
 
     // Once the editor refresh has completed, the queued final edit can run.
     firstRequest.onSuccess()
+
+    expect(mocks.kclManager.updateCodeEditor).toHaveBeenCalledWith(
+      'intermediate code',
+      {
+        shouldAddToHistory: false,
+        shouldClearHistory: false,
+        shouldExecute: true,
+        shouldResetCamera: true,
+        shouldWriteToDisk: false,
+      }
+    )
 
     await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
 
