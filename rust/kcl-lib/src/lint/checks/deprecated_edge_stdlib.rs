@@ -21,8 +21,8 @@ def_finding!(
     Z0006,
     "Prefer edges or edge specifiers over deprecated edge stdlib calls",
     "\
-Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, or 'to' in extrude with deprecated \
-stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' \
+Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, or 'to' in extrude with \
+stdlib functions (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' \
 (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. \
 The auto-fix will convert it.
 ",
