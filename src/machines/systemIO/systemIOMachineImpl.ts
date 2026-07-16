@@ -58,7 +58,7 @@ import {
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import { v4 } from 'uuid'
-import { fromPromise } from 'xstate'
+import { fromPromise, waitFor } from 'xstate'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -127,7 +127,7 @@ async function moveRecursivePath({
   await fsZds.rm(src, { recursive: true })
 }
 
-async function getUniqueProjectNameForCreate({
+async function getAvailableProjectName({
   context,
   requestedProjectName,
   projectDirectoryPath,
@@ -239,6 +239,25 @@ export function sortProjectDirectoryEntriesByModifiedDesc(
 
 function normalizeProjectPathForCloudMetadata(projectPath: string) {
   return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
+}
+
+async function runWithProjectTargetLock<T>(
+  targetPath: string,
+  operation: () => Promise<T>
+) {
+  const lockManager =
+    typeof navigator !== 'undefined' ? navigator.locks : undefined
+  if (!lockManager) {
+    return operation()
+  }
+
+  const normalizedTargetPath = normalizeProjectPathForCloudMetadata(
+    fsZds.resolve(targetPath)
+  ).toLowerCase()
+  return lockManager.request(
+    `zds:project-target:${normalizedTargetPath}`,
+    operation
+  )
 }
 
 const prepareBulkProjectWrite = async ({
@@ -630,19 +649,35 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.context.projectDirectoryPath !== NO_PROJECT_DIRECTORY
             ? input.context.projectDirectoryPath
             : undefined
-        const uniqueName = await getUniqueProjectNameForCreate({
+        const uniqueName = await getAvailableProjectName({
           context: input.context,
           requestedProjectName,
           projectDirectoryPath,
         })
-        await createNewProjectDirectory(
-          uniqueName,
-          await input.context.wasmInstancePromise,
-          undefined,
-          undefined,
-          undefined,
-          projectDirectoryPath
-        )
+        const createProject = async () =>
+          createNewProjectDirectory(
+            uniqueName,
+            await input.context.wasmInstancePromise,
+            undefined,
+            undefined,
+            undefined,
+            projectDirectoryPath
+          )
+
+        if (projectDirectoryPath) {
+          const targetPath = fsZds.join(projectDirectoryPath, uniqueName)
+          await runWithProjectTargetLock(targetPath, async () => {
+            if (await pathExists(targetPath)) {
+              return Promise.reject(
+                new Error(`Project "${uniqueName}" already exists`)
+              )
+            }
+            await createProject()
+          })
+        } else {
+          await createProject()
+        }
+
         return {
           message: `Successfully created "${uniqueName}"`,
           name: uniqueName,
@@ -704,6 +739,9 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           currentProject &&
           fsZds.resolve(currentProject.path) === fsZds.resolve(project.path)
         ) {
+          await waitFor(input.context.app.settings.actor, (state) =>
+            state.matches('idle')
+          )
           await Promise.all(
             Array.from(currentProject.editors.values(), (editor) =>
               editor.flushPendingWriteToFile()
@@ -716,7 +754,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           input.requestedProjectName,
           project.name
         )
-        const duplicateName = await getUniqueProjectNameForCreate({
+        const duplicateName = await getAvailableProjectName({
           context: input.context,
           requestedProjectName: duplicateBaseName,
           projectDirectoryPath,
@@ -724,14 +762,6 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           includeCloudMetadata: true,
           maxLength: MAX_PROJECT_NAME_LENGTH,
         })
-        if (duplicateName.length > MAX_PROJECT_NAME_LENGTH) {
-          return Promise.reject(
-            new Error(
-              `Project name "${duplicateName}" is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters.`
-            )
-          )
-        }
-
         const targetPath = fsZds.resolve(projectDirectoryPath, duplicateName)
         if (
           fsZds.dirname(targetPath) !== projectDirectoryPath ||
@@ -778,7 +808,14 @@ export const systemIOMachineImpl = systemIOMachine.provide({
             stagedProjectTomlPath,
             new TextEncoder().encode(duplicatedProjectToml)
           )
-          await fsZds.rename(stagingPath, targetPath)
+          await runWithProjectTargetLock(targetPath, async () => {
+            if (await pathExists(targetPath)) {
+              return Promise.reject(
+                new Error(`Project "${duplicateName}" already exists`)
+              )
+            }
+            await fsZds.rename(stagingPath, targetPath)
+          })
         } catch (error) {
           await fsZds
             .rm(stagingPath, { recursive: true, force: true })

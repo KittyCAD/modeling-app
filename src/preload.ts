@@ -147,7 +147,7 @@ const readdir = (path: string) => fs.readdir(path, 'utf-8')
 const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
-export const cp = copyWithNodeFs
+const cp = copyWithNodeFs
 
 /**
  * Recursively move a file or folder to a destination

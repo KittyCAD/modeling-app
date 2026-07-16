@@ -1353,7 +1353,7 @@ describe('systemIOMachine - XState', () => {
                 async () => checkReadWrite.promise
               ),
               [SystemIOMachineActors.readFoldersFromProjectDirectory]:
-                fromPromise(async () => [] as Project[]),
+                fromPromise(async () => new Promise(() => {})),
               [SystemIOMachineActors.createKCLFile]: fromPromise(
                 async () => new Promise(() => {})
               ),
@@ -1502,7 +1502,7 @@ describe('systemIOMachine - XState', () => {
       })
     })
     describe('when duplicating projects', () => {
-      it('does not reuse cloud metadata paths while sync is disabled', async () => {
+      it('safely duplicates the current project while sync is disabled', async () => {
         await moduleFsViaModuleImport({
           type: StorageName.NodeFS,
           options: {},
@@ -1516,6 +1516,24 @@ describe('systemIOMachine - XState', () => {
         const oldLocalProjectId = '11111111-1111-4111-8111-111111111111'
         const oldCloudProjectId = '22222222-2222-4222-8222-222222222222'
         const originalProject = appInstanceInThisFile.project
+        const originalSettings = appInstanceInThisFile.settings
+        const settingsWaitStarted = deferred<undefined>()
+        let releaseSettingsWait = () => {}
+        appInstanceInThisFile.settings = {
+          ...originalSettings,
+          actor: {
+            getSnapshot: () => ({ matches: () => false }),
+            subscribe: (observer: {
+              next: (snapshot: { matches: (state: string) => boolean }) => void
+            }) => {
+              settingsWaitStarted.resolve(undefined)
+              releaseSettingsWait = () => {
+                observer.next({ matches: (state) => state === 'idle' })
+              }
+              return { unsubscribe: () => {} }
+            },
+          },
+        } as any
         const actor = createActor(systemIOMachineImpl, {
           input: {
             wasmInstancePromise: Promise.resolve(instanceInThisFile),
@@ -1585,6 +1603,9 @@ project_id = "${oldCloudProjectId}"
               requestedProjectName: 'Simple Box',
             },
           })
+          await settingsWaitStarted.promise
+          expect(flushPendingWriteToFile).not.toHaveBeenCalled()
+          releaseSettingsWait()
           await waitFor(
             actor,
             (state) =>
@@ -1636,6 +1657,7 @@ project_id = "${oldCloudProjectId}"
           ).toEqual([])
         } finally {
           appInstanceInThisFile.project = originalProject
+          appInstanceInThisFile.settings = originalSettings
           actor.stop()
           await deleteProjectMetadata(reservedProjectPath)
           await chmod(sourceProject, 0o700).catch(() => undefined)
@@ -1701,6 +1723,82 @@ project_id = "${oldCloudProjectId}"
           )
 
           expect(await readdir(projectDirectory)).toEqual(['source'])
+        } finally {
+          copySpy.mockRestore()
+          actor.stop()
+          await rm(projectDirectory, { recursive: true, force: true })
+          await moduleFsViaModuleImport({
+            type: StorageName.NoopFS,
+            options: {},
+          })
+        }
+      })
+
+      it('does not replace a target created while copying', async () => {
+        await moduleFsViaModuleImport({
+          type: StorageName.NodeFS,
+          options: {},
+        })
+        const projectDirectory = await mkdtemp(
+          path.join(tmpdir(), 'zds-duplicate-collision-')
+        )
+        const sourceProject = path.join(projectDirectory, 'source')
+        const targetProject = path.join(projectDirectory, 'Source-1')
+        const actor = createActor(systemIOMachineImpl, {
+          input: {
+            wasmInstancePromise: Promise.resolve(instanceInThisFile),
+            app: appInstanceInThisFile,
+          },
+        }).start()
+        const copy = fsZds.cp.bind(fsZds)
+        const copySpy = vi
+          .spyOn(fsZds, 'cp')
+          .mockImplementationOnce(async (...args) => {
+            await copy(...args)
+            await mkdir(targetProject)
+            await writeFile(
+              path.join(targetProject, 'concurrent.txt'),
+              'keep me'
+            )
+          })
+
+        try {
+          await mkdir(sourceProject)
+          await writeFile(path.join(sourceProject, 'main.kcl'), 'source')
+          await writeFile(
+            path.join(sourceProject, 'project.toml'),
+            'title = "Source"\ndefault_file = "main.kcl"\n'
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.setProjectDirectoryPath,
+            data: { requestedProjectDirectoryPath: projectDirectory },
+          })
+          await waitFor(actor, (state) =>
+            Boolean(
+              state.context.folders?.some((folder) => folder.name === 'source')
+            )
+          )
+
+          actor.send({
+            type: SystemIOMachineEvents.duplicateProject,
+            data: {
+              projectName: 'source',
+              requestedProjectName: 'Source',
+            },
+          })
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          await expect(
+            readFile(path.join(targetProject, 'concurrent.txt'), 'utf-8')
+          ).resolves.toBe('keep me')
+          expect(
+            (await readdir(projectDirectory)).some((name) =>
+              name.startsWith('.zds-duplicate-')
+            )
+          ).toBe(false)
         } finally {
           copySpy.mockRestore()
           actor.stop()

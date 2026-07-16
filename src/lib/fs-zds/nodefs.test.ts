@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { cp } from '@src/lib/fs-zds/nodefs'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('node filesystem', () => {
   let rootPath: string
@@ -86,4 +86,46 @@ describe('node filesystem', () => {
     )
     await expect(fs.lstat(targetPath)).rejects.toMatchObject({ code: 'ENOENT' })
   })
+
+  itOnPosix(
+    'rejects when the source becomes a symlink during copying',
+    async () => {
+      const sourcePath = path.join(rootPath, 'source')
+      const linkedProjectPath = path.join(rootPath, 'linked-project')
+      const targetPath = path.join(rootPath, 'target')
+      await fs.mkdir(sourcePath)
+      await fs.mkdir(linkedProjectPath)
+      await fs.writeFile(
+        path.join(linkedProjectPath, 'project.toml'),
+        'title = "Original"'
+      )
+
+      const originalCp = fs.cp.bind(fs)
+      const cpSpy = vi
+        .spyOn(fs, 'cp')
+        .mockImplementationOnce(async (...args) => {
+          await fs.rm(sourcePath, { recursive: true })
+          await fs.symlink(linkedProjectPath, sourcePath, 'dir')
+          return originalCp(...args)
+        })
+
+      try {
+        await expect(
+          cp(sourcePath, targetPath, {
+            recursive: true,
+            verbatimSymlinks: true,
+            makeWritable: true,
+          })
+        ).rejects.toThrow('root is a symbolic link')
+        await expect(
+          fs.readFile(path.join(linkedProjectPath, 'project.toml'), 'utf-8')
+        ).resolves.toBe('title = "Original"')
+        await expect(fs.lstat(targetPath)).rejects.toMatchObject({
+          code: 'ENOENT',
+        })
+      } finally {
+        cpSpy.mockRestore()
+      }
+    }
+  )
 })

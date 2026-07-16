@@ -41,6 +41,12 @@ export const cp: IZooDesignStudioFS['cp'] = async (
   }
   await fs.cp(sourcePath, targetPath, copyOptions)
   if (makeWritable === true) {
+    if ((await fs.lstat(targetPath)).isSymbolicLink()) {
+      await fs.rm(targetPath, { force: true })
+      return Promise.reject(
+        new Error('Cannot duplicate a project whose root is a symbolic link')
+      )
+    }
     await makeCopiedPathWritable(targetPath)
   }
 }

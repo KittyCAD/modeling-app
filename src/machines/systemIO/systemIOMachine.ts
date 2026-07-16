@@ -1454,6 +1454,7 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
+          actions: [SystemIOMachineActions.flushDeferredSystemIOEvent],
         },
         onError: {
           target: SystemIOMachineStates.readingFolders,

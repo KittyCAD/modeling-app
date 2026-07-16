@@ -253,6 +253,57 @@ describe('flushActiveTextFileWrite', () => {
     expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
     consoleErrorSpy.mockRestore()
   })
+
+  it('keeps a failed strict write pending for a later flush', async () => {
+    const writeError = new Error('write failed')
+    mocks.readFile.mockResolvedValueOnce('initial')
+    await mod.openActiveTextFile('/proj/readme.md')
+    mocks.writeFile
+      .mockRejectedValueOnce(writeError)
+      .mockResolvedValueOnce(undefined)
+
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'edited')
+    await expect(
+      mod.flushActiveTextFileWrite({ throwOnError: true })
+    ).rejects.toBe(writeError)
+    await expect(
+      mod.flushActiveTextFileWrite({ throwOnError: true })
+    ).resolves.toBeUndefined()
+
+    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
+    expect(decode(mocks.writeFile.mock.calls[1][1])).toBe('edited')
+  })
+
+  it('preserves a newer edit timer when an in-flight write fails', async () => {
+    vi.useFakeTimers()
+    const writeError = new Error('write failed')
+    let rejectFirstWrite!: (error: Error) => void
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+    mocks.writeFile
+      .mockReturnValueOnce(
+        new Promise<void>((_resolve, reject) => {
+          rejectFirstWrite = reject
+        })
+      )
+      .mockResolvedValueOnce(undefined)
+    mocks.readFile.mockResolvedValueOnce('initial')
+    await mod.openActiveTextFile('/proj/readme.md')
+
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'first')
+    await vi.advanceTimersByTimeAsync(1000)
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'newer')
+
+    const flushPromise = mod.flushActiveTextFileWrite({ throwOnError: true })
+    rejectFirstWrite(writeError)
+    await expect(flushPromise).rejects.toBe(writeError)
+
+    await vi.advanceTimersByTimeAsync(1000)
+    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
+    expect(decode(mocks.writeFile.mock.calls[1][1])).toBe('newer')
+    consoleErrorSpy.mockRestore()
+  })
 })
 
 describe('switching files', () => {
@@ -273,6 +324,25 @@ describe('switching files', () => {
       status: 'ready',
       text: 'B',
     })
+  })
+
+  it('keeps the current file active when its pending edit cannot be saved', async () => {
+    const writeError = new Error('write failed')
+    mocks.readFile.mockResolvedValueOnce('A')
+    await mod.openActiveTextFile('/proj/a.md')
+    mod.scheduleActiveTextFileWrite('/proj/a.md', 'A edited')
+    mocks.writeFile.mockRejectedValueOnce(writeError)
+
+    await expect(mod.openActiveTextFile('/proj/b.md')).rejects.toBe(writeError)
+    expect(mod.activeTextFileSignal.value?.path).toBe('/proj/a.md')
+
+    mocks.writeFile.mockResolvedValueOnce(undefined)
+    mocks.readFile.mockResolvedValueOnce('B')
+    await mod.openActiveTextFile('/proj/b.md')
+
+    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
+    expect(decode(mocks.writeFile.mock.calls[1][1])).toBe('A edited')
+    expect(mod.activeTextFileSignal.value?.path).toBe('/proj/b.md')
   })
 
   it('clearActiveTextFile persists pending edits and clears the signal', async () => {

@@ -111,10 +111,6 @@ export async function flushActiveTextFileWrite(
   options: { throwOnError?: boolean } = {}
 ): Promise<void> {
   while (inFlightWritePromise || pendingWrite) {
-    if (pendingWriteTimeout !== undefined) {
-      clearTimeout(pendingWriteTimeout)
-      pendingWriteTimeout = undefined
-    }
     const inFlightWrite = inFlightWritePromise
     if (inFlightWrite) {
       try {
@@ -126,15 +122,25 @@ export async function flushActiveTextFileWrite(
       }
       continue
     }
+    if (pendingWriteTimeout !== undefined) {
+      clearTimeout(pendingWriteTimeout)
+      pendingWriteTimeout = undefined
+    }
     const write = pendingWrite
     pendingWrite = null
     if (write) {
       try {
         await startWrite(write, !options.throwOnError)
       } catch (error) {
+        // Keep a failed edit available for a later flush unless a newer edit
+        // arrived while this write was in flight.
+        if (pendingWrite === null) {
+          pendingWrite = write
+        }
         if (options.throwOnError) {
           return Promise.reject(error)
         }
+        return
       }
     }
   }
@@ -174,7 +180,7 @@ export function clearActiveTextFile(): void {
  */
 export async function openActiveTextFile(path: string): Promise<void> {
   // Persist edits to the outgoing file before switching.
-  await flushActiveTextFileWrite()
+  await flushActiveTextFileWrite({ throwOnError: true })
 
   const requestId = ++latestOpenRequestId
   const name = fsZds.basename(path)
