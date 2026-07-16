@@ -2652,8 +2652,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.211"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8bc41e5898f023ccb442ed1f582dd7d4430b813c"
+version = "0.2.212"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8f18d1bbd12bb19ecd53b9e18f531e89ec5c5a7c"
 dependencies = [
  "anyhow",
  "bon",
@@ -2684,7 +2684,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8bc41e5898f023ccb442ed1f582dd7d4430b813c"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8f18d1bbd12bb19ecd53b9e18f531e89ec5c5a7c"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2695,7 +2695,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8bc41e5898f023ccb442ed1f582dd7d4430b813c"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8f18d1bbd12bb19ecd53b9e18f531e89ec5c5a7c"
 dependencies = [
  "proc-macro2",
  "quote",

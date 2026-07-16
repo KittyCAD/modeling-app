@@ -941,8 +941,7 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    // If the sketch is a clone, we will use the original info to get the extrusion face info.
-    // So let's find an edge of the old body.
+    // If the sketch is a clone, we will let the engine intuit an edge
     let extrusion_info_edge_id = if sketch.clone.is_some() { None } else { edge_id };
     let mut sketch = sketch.clone();
     match body_type {
