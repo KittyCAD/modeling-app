@@ -6,10 +6,9 @@ import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   readProjectSettingsFile,
-  writeProjectSettingsFileUnlocked,
+  writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { toProjectRelativePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
@@ -381,10 +380,7 @@ async function persistCloudProjectIdForEnvironment(
       return serialized
     }
 
-    await runWithProjectFilesystemMutationLock(
-      () => writeProjectSettingsFileUnlocked(projectPath, serialized),
-      { ifAvailable: true, mode: 'shared' }
-    )
+    await writeProjectSettingsFile(projectPath, serialized)
     return true
   } catch (error) {
     return new Error(

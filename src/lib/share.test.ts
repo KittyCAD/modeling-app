@@ -90,7 +90,7 @@ vi.mock('@kittycad/lib', () => ({
 
 vi.mock('@src/lib/desktop', () => ({
   readProjectSettingsFile: mockState.readProjectSettingsFile,
-  writeProjectSettingsFileUnlocked: mockState.writeProjectSettingsFile,
+  writeProjectSettingsFile: mockState.writeProjectSettingsFile,
 }))
 
 vi.mock('@src/lang/wasm', () => ({

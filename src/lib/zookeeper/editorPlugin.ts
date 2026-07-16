@@ -7,7 +7,6 @@ import { isCodeTheSame } from '@src/lib/codeEditor'
 import { PROJECT_ENTRYPOINT } from '@src/lib/constants'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import { isErr } from '@src/lib/trap'
 import {
   type ZookeeperEditPatch,
@@ -722,15 +721,6 @@ function countLines(lines: string[]) {
 }
 
 async function writeZookeeperPatchReplay(
-  replayFiles: PreparedZookeeperPatchFileReplay[]
-) {
-  return runWithProjectFilesystemMutationLock(
-    () => writeZookeeperPatchReplayUnlocked(replayFiles),
-    { ifAvailable: true, mode: 'shared' }
-  )
-}
-
-async function writeZookeeperPatchReplayUnlocked(
   replayFiles: PreparedZookeeperPatchFileReplay[]
 ) {
   const writtenFiles: PreparedZookeeperPatchFileReplay[] = []

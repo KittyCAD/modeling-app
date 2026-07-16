@@ -286,7 +286,6 @@ function AppProjectCard({
           void projectActions.duplicate(project).catch(reportRejection)
         }}
         className="!p-0"
-        tabIndex={0}
       >
         <Tooltip position="top-right">Duplicate project</Tooltip>
       </ActionButton>

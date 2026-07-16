@@ -93,16 +93,6 @@ function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
       },
     })
   ).start()
-  const systemIOActor = createActor(
-    createMachine({
-      context: {
-        canReadWriteProjectDirectory: {
-          value: true,
-          error: undefined,
-        },
-      },
-    })
-  ).start()
 
   return {
     app: {
@@ -113,7 +103,6 @@ function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
         actor: commandsActor,
         send: vi.fn(),
       },
-      systemIOActor,
       settings: {
         actor: {},
         useSettings: () => ({
@@ -128,7 +117,6 @@ function createProjectMenuApp(cloudSync: CloudSyncRegistryService) {
     } as unknown as App,
     dispose: () => {
       commandsActor.stop()
-      systemIOActor.stop()
       registry[Symbol.dispose]()
     },
   }

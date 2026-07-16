@@ -10,7 +10,6 @@ import {
 import { getNextFileName, getUniqueProjectName } from '@src/lib/desktopFS'
 import { exportProjectZip } from '@src/lib/exportProjectZip'
 import fsZds from '@src/lib/fs-zds'
-import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import { isDesktop } from '@src/lib/isDesktop'
 import { everyKclSample, findKclSample } from '@src/lib/kclSamples'
 import { isUserLoadableLayoutKey, userLoadableLayouts } from '@src/lib/layout'
@@ -216,21 +215,15 @@ export function createApplicationCommands({
                 app.systemIOActor.getSnapshot().context.projectDirectoryPath
               const fileData = new Uint8Array(fr.result)
 
-              runWithProjectFilesystemMutationLock(
-                async () => {
-                  const { path } = await getNextFileName({
-                    entryName: fileNameWithExtension,
-                    baseDir: joinOSPaths(
-                      projectDirectoryPath,
-                      uniqueNameIfNeeded
-                    ),
-                    wasmInstance,
-                    preserveUnknownExtension: true,
-                  })
-                  await fsZds.writeFile(path, fileData)
-                },
-                { ifAvailable: true, mode: 'shared' }
-              )
+              getNextFileName({
+                entryName: fileNameWithExtension,
+                baseDir: joinOSPaths(projectDirectoryPath, uniqueNameIfNeeded),
+                wasmInstance,
+                preserveUnknownExtension: true,
+              })
+                .then(({ path }) => {
+                  return fsZds.writeFile(path, fileData)
+                })
                 .then(() => {
                   app.systemIOActor.send({
                     type: SystemIOMachineEvents.readFoldersFromProjectDirectory,

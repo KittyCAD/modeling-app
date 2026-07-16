@@ -1,7 +1,4 @@
 import path from 'path'
-import { PUBLISH_DIRECTORY_DESTINATION_EXISTS } from '@src/lib/fs-zds/errors'
-import { DUPLICATE_IN_PROGRESS_FILE_NAME } from '@src/lib/constants'
-import { createDuplicatePublicationEvidence } from '@src/lib/fs-zds/duplicateReservations'
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest'
 
 vi.mock('@src/lib/fs-zds/opfsWriteWorker.ts?worker', () => ({
@@ -36,10 +33,6 @@ class MockFileSystemFileHandle {
     } as File
   }
 
-  async isSameEntry(other: FileSystemHandle) {
-    return other === (this as unknown as FileSystemHandle)
-  }
-
   async createWritable() {
     return {
       write: async (blob: Blob) => {
@@ -58,10 +51,6 @@ class MockFileSystemDirectoryHandle {
   >()
 
   constructor(public name: string) {}
-
-  async isSameEntry(other: FileSystemHandle) {
-    return other === (this as unknown as FileSystemHandle)
-  }
 
   async *entries() {
     for (const entry of this.children) {
@@ -97,15 +86,7 @@ class MockFileSystemDirectoryHandle {
     return next
   }
 
-  async removeEntry(name: string, options?: { recursive?: boolean }) {
-    const existing = this.children.get(name)
-    if (
-      existing instanceof MockFileSystemDirectoryHandle &&
-      existing.children.size > 0 &&
-      !options?.recursive
-    ) {
-      throw new Error('InvalidModificationError')
-    }
+  async removeEntry(name: string) {
     this.children.delete(name)
   }
 
@@ -124,13 +105,37 @@ class MockFileSystemDirectoryHandle {
 
 describe('opfs', () => {
   let root: MockFileSystemDirectoryHandle
-  const publicationEvidence = createDuplicatePublicationEvidence({
-    token: '11111111-1111-4111-8111-111111111111',
-    targetName: 'target',
-    createdAt: 1,
-  })
   const projectPath = path.resolve('projects', 'project')
   const metaPath = path.resolve(projectPath, '._meta')
+
+  beforeEach(() => {
+    vi.resetModules()
+    root = new MockFileSystemDirectoryHandle('')
+    vi.stubGlobal('FileSystemDirectoryHandle', MockFileSystemDirectoryHandle)
+    vi.stubGlobal('FileSystemFileHandle', MockFileSystemFileHandle)
+    Object.defineProperty(globalThis.navigator, 'storage', {
+      configurable: true,
+      value: {
+        getDirectory: vi.fn(async () => root),
+      },
+    })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    Reflect.deleteProperty(globalThis.navigator, 'locks')
+  })
+
+  async function getOpfs() {
+    return (await import('@src/lib/fs-zds/opfs')).default
+  }
+
+  function addProjectWithMeta(contents: string) {
+    const projects = root.addDirectory('projects')
+    const project = projects.addDirectory('project')
+    project.addFile('._meta', contents)
+    return project
+  }
 
   function installSerializedLockManager() {
     const lockTails = new Map<string, Promise<unknown>>()
@@ -155,37 +160,6 @@ describe('opfs', () => {
       value: { request },
     })
     return request
-  }
-
-  beforeEach(() => {
-    vi.resetModules()
-    root = new MockFileSystemDirectoryHandle('')
-    vi.stubGlobal('FileSystemDirectoryHandle', MockFileSystemDirectoryHandle)
-    vi.stubGlobal('FileSystemFileHandle', MockFileSystemFileHandle)
-    Object.defineProperty(globalThis.navigator, 'storage', {
-      configurable: true,
-      value: {
-        getDirectory: vi.fn(async () => root),
-      },
-    })
-    installSerializedLockManager()
-  })
-
-  afterEach(() => {
-    vi.restoreAllMocks()
-    vi.unstubAllGlobals()
-    Reflect.deleteProperty(globalThis.navigator, 'locks')
-  })
-
-  async function getOpfs() {
-    return (await import('@src/lib/fs-zds/opfs')).default
-  }
-
-  function addProjectWithMeta(contents: string) {
-    const projects = root.addDirectory('projects')
-    const project = projects.addDirectory('project')
-    project.addFile('._meta', contents)
-    return project
   }
 
   test('repairs empty directory metadata during stat', async () => {
@@ -266,6 +240,20 @@ describe('opfs', () => {
     ).resolves.toBe('existing')
   })
 
+  test('rejects copying a directory to itself or one of its descendants', async () => {
+    const projects = root.addDirectory('projects')
+    const source = projects.addDirectory('source')
+    source.addFile('main.kcl', 'source')
+    const opfs = await getOpfs()
+    const sourcePath = path.resolve('projects', 'source')
+
+    await expect(opfs.impl.cp(sourcePath, sourcePath)).rejects.toBe('EINVAL')
+    await expect(
+      opfs.impl.cp(sourcePath, path.resolve(sourcePath, 'nested-copy'))
+    ).rejects.toBe('EINVAL')
+    expect(source.children.has('nested-copy')).toBe(false)
+  })
+
   test('walks through exact path components instead of prefix siblings', async () => {
     const projects = root.addDirectory('projects')
     projects.addDirectory('project')
@@ -295,19 +283,25 @@ describe('opfs', () => {
     expect(root.children.has('Projects')).toBe(false)
   })
 
-  test('does not create a directory over an existing path', async () => {
-    const projects = root.addDirectory('projects')
-    const existing = projects.addDirectory('existing')
-    existing.addFile('keep.kcl', 'keep me')
+  test('checks whether a path exists', async () => {
+    root.addDirectory('projects').addDirectory('source')
     const opfs = await getOpfs()
-    const existingPath = path.resolve('projects', 'existing')
 
-    await expect(opfs.impl.mkdir(existingPath)).rejects.toBe('EEXIST')
     await expect(
-      opfs.impl.readFile(path.resolve(existingPath, 'keep.kcl'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('keep me')
+      opfs.impl.access(path.resolve('projects', 'source'), 0)
+    ).resolves.toBeUndefined()
+    await expect(
+      opfs.impl.access(path.resolve('projects', 'missing'), 0)
+    ).rejects.toBe('ENOENT')
+  })
+
+  test('allows forced removal of a missing path', async () => {
+    root.addDirectory('projects')
+    const opfs = await getOpfs()
+
+    await expect(
+      opfs.impl.rm(path.resolve('projects', 'missing'), { force: true })
+    ).resolves.toBeUndefined()
   })
 
   test('does not merge a rename into an existing directory', async () => {
@@ -335,411 +329,13 @@ describe('opfs', () => {
     ).resolves.toBe('source')
   })
 
-  test('does not publish into an existing empty directory', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    source.addFile('source.kcl', 'source')
-    const target = projects.addDirectory('target')
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
-    ).rejects.toBe(PUBLISH_DIRECTORY_DESTINATION_EXISTS)
-
-    expect(projects.children.get('target')).toBe(target)
-    expect(target.children.size).toBe(0)
-    await expect(
-      opfs.impl.readFile(path.resolve(sourcePath, 'source.kcl'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('source')
-  })
-
-  test('rejects a missing publication source before reserving a target', async () => {
-    const projects = root.addDirectory('projects')
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'missing')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
-    ).rejects.toThrow('Duplicate publication source does not exist')
-
-    expect(projects.children.has('target')).toBe(false)
-    expect(projects.children.has(publicationEvidence.reservationFileName)).toBe(
-      false
-    )
-  })
-
-  test('rejects a file publication source before reserving a target', async () => {
-    const projects = root.addDirectory('projects')
-    projects.addFile('source', 'not a directory')
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
-    ).rejects.toThrow('Duplicate publication source is not a directory')
-
-    expect(projects.children.has('target')).toBe(false)
-    expect(projects.children.has(publicationEvidence.reservationFileName)).toBe(
-      false
-    )
-  })
-
-  test('removes an owned reservation when its initial write fails', async () => {
-    const projects = root.addDirectory('projects')
-    projects.addDirectory('source')
-    const originalGetFileHandle = projects.getFileHandle.bind(projects)
-    let injectedFailure = false
-    vi.spyOn(projects, 'getFileHandle').mockImplementation(
-      async (name, options) => {
-        const handle = await originalGetFileHandle(name, options)
-        if (
-          name === publicationEvidence.reservationFileName &&
-          !injectedFailure
-        ) {
-          injectedFailure = true
-          vi.spyOn(handle, 'createWritable').mockResolvedValue({
-            write: async () => {
-              throw new Error('simulated reservation write failure')
-            },
-            close: async () => {},
-          })
-        }
-        return handle
-      }
-    )
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
-    ).rejects.toThrow('simulated reservation write failure')
-
-    expect(projects.children.has(publicationEvidence.reservationFileName)).toBe(
-      false
-    )
-    expect(projects.children.has('target')).toBe(false)
-  })
-
-  test('preserves a replacement reservation after an initial write failure', async () => {
-    const projects = root.addDirectory('projects')
-    projects.addDirectory('source')
-    const replacement = new MockFileSystemFileHandle(
-      publicationEvidence.reservationFileName,
-      'replacement'
-    )
-    const originalGetFileHandle = projects.getFileHandle.bind(projects)
-    let injectedFailure = false
-    vi.spyOn(projects, 'getFileHandle').mockImplementation(
-      async (name, options) => {
-        const handle = await originalGetFileHandle(name, options)
-        if (
-          name === publicationEvidence.reservationFileName &&
-          !injectedFailure
-        ) {
-          injectedFailure = true
-          vi.spyOn(handle, 'createWritable').mockResolvedValue({
-            write: async () => {
-              projects.children.set(name, replacement)
-              throw new Error('simulated reservation write failure')
-            },
-            close: async () => {},
-          })
-        }
-        return handle
-      }
-    )
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
-    ).rejects.toThrow('simulated reservation write failure')
-
-    expect(projects.children.get(publicationEvidence.reservationFileName)).toBe(
-      replacement
-    )
-    expect(projects.children.has('target')).toBe(false)
-  })
-
-  test('preserves its reservation when marker creation fails', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    source.addFile('source.kcl', 'source')
-    const originalGetDirectoryHandle =
-      projects.getDirectoryHandle.bind(projects)
-    vi.spyOn(projects, 'getDirectoryHandle').mockImplementation(
-      async (name, options) => {
-        const directory = await originalGetDirectoryHandle(name, options)
-        if (name === 'target') {
-          vi.spyOn(directory, 'getFileHandle').mockRejectedValueOnce(
-            new Error('simulated marker failure')
-          )
-        }
-        return directory
-      }
-    )
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
-    ).rejects.toThrow('simulated marker failure')
-
-    expect(projects.children.get('target')).toBeInstanceOf(
-      MockFileSystemDirectoryHandle
-    )
-    expect(projects.children.get('source')).toBe(source)
-  })
-
-  test('keeps a failed publication hidden without deleting either directory', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    const nested = source.addDirectory('nested')
-    const sourceFile = nested.addFile('source.kcl', 'source')
-    vi.spyOn(sourceFile, 'getFile').mockRejectedValue(
-      new Error('simulated read failure')
-    )
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(
-      opfs.impl.publishDirectory(sourcePath, targetPath, publicationEvidence)
-    ).rejects.toThrow('simulated read failure')
-
-    expect(projects.children.get('source')).toBe(source)
-    expect(projects.children.get('target')).toBeInstanceOf(
-      MockFileSystemDirectoryHandle
-    )
-    await expect(
-      opfs.impl.readFile(
-        path.resolve(targetPath, DUPLICATE_IN_PROGRESS_FILE_NAME),
-        {
-          encoding: 'utf-8',
-        }
-      )
-    ).resolves.toContain('"phase":"publishing"')
-  })
-
-  test('leaves the marker for transactional finalization after a complete publication', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    source.addFile('source.kcl', 'source')
-    const phaseWrites: string[] = []
-    vi.spyOn(
-      MockFileSystemFileHandle.prototype,
-      'createWritable'
-    ).mockImplementation(async function (this: MockFileSystemFileHandle) {
-      return {
-        write: async (blob: Blob) => {
-          const contents = await blob.text()
-          try {
-            const parsed = JSON.parse(contents)
-            if (parsed.kind === 'target' || parsed.kind === 'reservation') {
-              phaseWrites.push(`${parsed.kind}:${parsed.phase}`)
-            }
-          } catch {}
-          this.data = new Uint8Array(await blob.arrayBuffer())
-          this.lastModified = Date.now()
-        },
-        close: async () => {},
-      }
-    })
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await opfs.impl.publishDirectory(
-      sourcePath,
-      targetPath,
-      publicationEvidence
-    )
-
-    await expect(
-      opfs.impl.readFile(path.resolve(targetPath, 'source.kcl'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('source')
-    await expect(
-      opfs.impl.readFile(
-        path.resolve(targetPath, DUPLICATE_IN_PROGRESS_FILE_NAME),
-        {
-          encoding: 'utf-8',
-        }
-      )
-    ).resolves.toContain('"phase":"published"')
-    await expect(
-      opfs.impl.readFile(
-        path.resolve('projects', publicationEvidence.reservationFileName),
-        { encoding: 'utf-8' }
-      )
-    ).resolves.toContain('"phase":"published"')
-    expect(phaseWrites).toEqual([
-      'reservation:prepared',
-      'target:publishing',
-      'reservation:reserved',
-      'target:published',
-      'reservation:published',
-    ])
-    await expect(
-      opfs.impl.readFile(path.resolve(sourcePath, 'source.kcl'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('source')
-  })
-
-  test('publishes deeply nested directories without reacquiring its destination Web Lock', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    source
-      .addDirectory('nested')
-      .addDirectory('deeper')
-      .addFile('source.kcl', 'source')
-    const request = installSerializedLockManager()
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-    const targetLockName = `zds:opfs:path-mutation:${targetPath.replaceAll(
-      '\\',
-      '/'
-    )}`
-
-    await opfs.impl.publishDirectory(
-      sourcePath,
-      targetPath,
-      publicationEvidence
-    )
-
-    expect(
-      request.mock.calls.filter(([name]) => name === targetLockName)
-    ).toHaveLength(1)
-    await expect(
-      opfs.impl.readFile(path.resolve(targetPath, 'nested/deeper/source.kcl'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('source')
-  })
-
-  test('never deletes a rename target by pathname when copying fails', async () => {
+  test('removes a newly created directory target when rename copying fails', async () => {
     const projects = root.addDirectory('projects')
     const source = projects.addDirectory('source')
     const sourceFile = source.addFile('source.kcl', 'source')
     vi.spyOn(sourceFile, 'getFile').mockRejectedValue(
       new Error('simulated read failure')
     )
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await expect(opfs.impl.rename(sourcePath, targetPath)).rejects.toThrow(
-      'simulated read failure'
-    )
-    await expect(opfs.impl.stat(targetPath)).resolves.toBeDefined()
-    expect(projects.children.get('source')).toBe(source)
-  })
-
-  test('serializes rename publication with a destination Web Lock', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    source.addFile('source.kcl', 'source')
-    const request = installSerializedLockManager()
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    await opfs.impl.rename(sourcePath, targetPath)
-
-    expect(request).toHaveBeenCalledWith(
-      `zds:opfs:path-mutation:${targetPath.replaceAll('\\', '/')}`,
-      expect.any(Function)
-    )
-    await expect(
-      opfs.impl.readFile(path.resolve(targetPath, 'source.kcl'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('source')
-  })
-
-  test('renames deeply nested directories without reacquiring its destination Web Lock', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    source
-      .addDirectory('nested')
-      .addDirectory('deeper')
-      .addFile('source.kcl', 'source')
-    const request = installSerializedLockManager()
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-    const targetLockName = `zds:opfs:path-mutation:${targetPath.replaceAll(
-      '\\',
-      '/'
-    )}`
-
-    await opfs.impl.rename(sourcePath, targetPath)
-
-    expect(
-      request.mock.calls.filter(([name]) => name === targetLockName)
-    ).toHaveLength(1)
-    await expect(
-      opfs.impl.readFile(path.resolve(targetPath, 'nested/deeper/source.kcl'), {
-        encoding: 'utf-8',
-      })
-    ).resolves.toBe('source')
-    expect(projects.children.has('source')).toBe(false)
-  })
-
-  test('keeps a concurrent mkdir out of a rename-owned target', async () => {
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    const sourceFile = source.addFile('source.kcl', 'source')
-    let rejectSourceRead!: (error: Error) => void
-    let resolveSourceReadStarted!: () => void
-    const sourceReadStarted = new Promise<void>((resolve) => {
-      resolveSourceReadStarted = resolve
-    })
-    vi.spyOn(sourceFile, 'getFile').mockImplementation(async () => {
-      resolveSourceReadStarted()
-      return new Promise<never>((_resolve, reject) => {
-        rejectSourceRead = reject
-      })
-    })
-    const opfs = await getOpfs()
-    const sourcePath = path.resolve('projects', 'source')
-    const targetPath = path.resolve('projects', 'target')
-
-    const renamePromise = opfs.impl.rename(sourcePath, targetPath)
-    await sourceReadStarted
-    let mkdirSettled = false
-    const mkdirPromise = opfs.impl.mkdir(targetPath).finally(() => {
-      mkdirSettled = true
-    })
-    await Promise.resolve()
-    expect(mkdirSettled).toBe(false)
-
-    rejectSourceRead(new Error('simulated source read failure'))
-    await expect(renamePromise).rejects.toThrow('simulated source read failure')
-    await expect(mkdirPromise).rejects.toBe('EEXIST')
-    expect(projects.children.get('target')).toBeInstanceOf(
-      MockFileSystemDirectoryHandle
-    )
-    expect(projects.children.get('source')).toBe(source)
-  })
-
-  test('refuses rename without a cross-renderer path lock', async () => {
-    Reflect.deleteProperty(globalThis.navigator, 'locks')
-    const projects = root.addDirectory('projects')
-    const source = projects.addDirectory('source')
-    source.addFile('source.kcl', 'source')
     const opfs = await getOpfs()
 
     await expect(
@@ -747,8 +343,88 @@ describe('opfs', () => {
         path.resolve('projects', 'source'),
         path.resolve('projects', 'target')
       )
-    ).rejects.toBe('OPFS_PATH_LOCK_UNAVAILABLE')
+    ).rejects.toThrow('simulated read failure')
     expect(projects.children.has('target')).toBe(false)
     expect(projects.children.get('source')).toBe(source)
+  })
+
+  test('removes a newly created file target when rename writing fails', async () => {
+    const projects = root.addDirectory('projects')
+    const source = projects.addFile('source.kcl', 'source')
+    const originalGetFileHandle = projects.getFileHandle.bind(projects)
+    vi.spyOn(projects, 'getFileHandle').mockImplementation(
+      async (name, options) => {
+        const handle = await originalGetFileHandle(name, options)
+        if (name === 'target.kcl') {
+          vi.spyOn(handle, 'createWritable').mockResolvedValue({
+            write: async () => {
+              throw new Error('simulated write failure')
+            },
+            close: async () => {},
+          })
+        }
+        return handle
+      }
+    )
+    const opfs = await getOpfs()
+
+    await expect(
+      opfs.impl.rename(
+        path.resolve('projects', 'source.kcl'),
+        path.resolve('projects', 'target.kcl')
+      )
+    ).rejects.toThrow('simulated write failure')
+    expect(projects.children.has('target.kcl')).toBe(false)
+    expect(projects.children.get('source.kcl')).toBe(source)
+  })
+
+  test('removes the target when rename cannot remove its source', async () => {
+    const projects = root.addDirectory('projects')
+    const source = projects.addDirectory('source')
+    source.addFile('source.kcl', 'source')
+    const originalRemoveEntry = projects.removeEntry.bind(projects)
+    vi.spyOn(projects, 'removeEntry').mockImplementation(async (name) => {
+      if (name === 'source') {
+        throw new Error('simulated remove failure')
+      }
+      await originalRemoveEntry(name)
+    })
+    const opfs = await getOpfs()
+
+    await expect(
+      opfs.impl.rename(
+        path.resolve('projects', 'source'),
+        path.resolve('projects', 'target')
+      )
+    ).rejects.toThrow('simulated remove failure')
+    expect(projects.children.has('target')).toBe(false)
+    expect(projects.children.get('source')).toBe(source)
+  })
+
+  test('serializes competing renames to the same target', async () => {
+    const projects = root.addDirectory('projects')
+    const firstSource = projects.addDirectory('first-source')
+    firstSource.addFile('first.kcl', 'first')
+    const secondSource = projects.addDirectory('second-source')
+    secondSource.addFile('second.kcl', 'second')
+    const request = installSerializedLockManager()
+    const opfs = await getOpfs()
+    const targetPath = path.resolve('projects', 'target')
+
+    const results = await Promise.allSettled([
+      opfs.impl.rename(path.resolve('projects', 'first-source'), targetPath),
+      opfs.impl.rename(path.resolve('projects', 'second-source'), targetPath),
+    ])
+
+    expect(results[0].status).toBe('fulfilled')
+    expect(results[1]).toEqual({ status: 'rejected', reason: 'EEXIST' })
+    expect(request).toHaveBeenCalledTimes(2)
+    expect(projects.children.has('first-source')).toBe(false)
+    expect(projects.children.get('second-source')).toBe(secondSource)
+    await expect(
+      opfs.impl.readFile(path.resolve(targetPath, 'first.kcl'), {
+        encoding: 'utf-8',
+      })
+    ).resolves.toBe('first')
   })
 })

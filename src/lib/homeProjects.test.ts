@@ -20,8 +20,7 @@ describe('homeProjectEntryFromProject', () => {
       path: '/projects/project',
       title: 'Project',
       default_file: '/projects/project/main.kcl',
-      readAccess: true,
-      readWriteAccess: false,
+      readWriteAccess: true,
       metadata: metadata(10),
       kcl_file_count: 1,
       directory_count: 0,
@@ -35,8 +34,6 @@ describe('homeProjectEntryFromProject', () => {
       ],
     } satisfies Project
 
-    const entry = homeProjectEntryFromProject(project)
-    expect(entry.modified).toBe(50)
-    expect(entry.readAccess).toBe(true)
+    expect(homeProjectEntryFromProject(project).modified).toBe(50)
   })
 })

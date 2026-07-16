@@ -2,16 +2,17 @@ import type { KclManager } from '@src/lang/KclManager'
 import { AxisNames } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { projectHasReadAccess } from '@src/lib/projectPermissions'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
 import { reportRejection } from '@src/lib/trap'
 import { activeFocusIsInput, uuidv4 } from '@src/lib/utils'
 import type { authMachine } from '@src/machines/authMachine'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import type { SystemIOActor } from '@src/machines/systemIO/utils'
+import {
+  SystemIOMachineEvents,
+  type SystemIOActor,
+} from '@src/machines/systemIO/utils'
 import type { WebContentSendPayload } from '@src/menu/channels'
-import toast from 'react-hot-toast'
 import type { NavigateFunction } from 'react-router-dom'
 import type { ActorRefFrom } from 'xstate'
 
@@ -50,28 +51,13 @@ export function modelingMenuCallbackMostActions({
     } else if (data.menuLabel === 'File.Duplicate project') {
       const currentProject = settingsActor.getSnapshot().context.currentProject
       if (!currentProject) {
-        toast.error('Open a project before duplicating it.')
         return
       }
-      if (!projectHasReadAccess(currentProject)) {
-        toast.error('The current project cannot be read.')
-        return
-      }
-      if (
-        !systemIOActor.getSnapshot().context.canReadWriteProjectDirectory.value
-      ) {
-        toast.error('The project directory cannot be written to.')
-        return
-      }
-      commandBarActor.send({
-        type: 'Find and select command',
+      systemIOActor.send({
+        type: SystemIOMachineEvents.duplicateProject,
         data: {
-          groupId: 'projects',
-          name: 'Duplicate project',
-          argDefaultValues: {
-            name: currentProject.name,
-            newName: getProjectDisplayName(currentProject),
-          },
+          projectName: currentProject.name,
+          requestedProjectName: getProjectDisplayName(currentProject),
         },
       })
     } else if (data.menuLabel === 'File.Open project') {

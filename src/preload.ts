@@ -7,14 +7,11 @@ import type { MachinesListing } from '@src/lib/MachineManager'
 import chokidar from 'chokidar'
 import type { IpcRendererEvent } from 'electron'
 import { contextBridge, ipcRenderer } from 'electron'
-import {
-  cp as copyWithNodeFs,
-  publishDirectory as publishDirectoryWithNodeFs,
-} from '@src/lib/fs-zds/nodefs'
 
 import type { Channel } from '@src/channels'
 import type { AutoUpdateDownloadProgress } from '@src/lib/autoUpdate'
 import { getAllowedExternalURL } from '@src/lib/externalUrls'
+import { cp as copyWithNodeFs } from '@src/lib/fs-zds/nodefs'
 import type { WebContentSendPayload } from '@src/menu/channels'
 import {
   PLUGIN_IPC_SYNC_ACTIVE_PLUGINS_CHANNEL,
@@ -144,14 +141,13 @@ const watchFileOff = (path: string, key: string) => {
 }
 const readFile = fs.readFile
 const rename = (prev: string, next: string) => fs.rename(prev, next)
-export const cp = copyWithNodeFs
-export const publishDirectory = publishDirectoryWithNodeFs
 const writeFile = (path: string, data: string | Uint8Array) =>
   fs.writeFile(path, data, 'utf-8')
 const readdir = (path: string) => fs.readdir(path, 'utf-8')
 const stat = (path: string) => {
   return fs.stat(path).catch((e) => Promise.reject(e.code))
 }
+export const cp = copyWithNodeFs
 
 /**
  * Recursively move a file or folder to a destination
@@ -332,7 +328,6 @@ contextBridge.exposeInMainWorld('electron', {
   writeFile,
   readdir,
   rename,
-  publishDirectory,
   rm: fs.rm,
   stat,
   mkdir: fs.mkdir,

@@ -120,7 +120,6 @@ describe('ProjectCard', () => {
       name: 'Duplicate project',
     })
 
-    expect(duplicateButton).toHaveAttribute('tabindex', '0')
     fireEvent.click(duplicateButton)
 
     await waitFor(() =>

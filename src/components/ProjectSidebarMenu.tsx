@@ -15,8 +15,8 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { getProjectRelativeFilePath, PATHS } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { projectHasReadAccess } from '@src/lib/projectPermissions'
 import type { IndexLoaderData } from '@src/lib/types'
+import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import {
   findKeymapItemForCommand,
   keymapKeystrokesDisplay,
@@ -238,20 +238,12 @@ function ProjectMenuPopover({
   const commandsSelector = (state: SnapshotFrom<typeof commands.actor>) =>
     state.context.commands
   const commandList = useSelector(commands.actor, commandsSelector)
-  const canWriteProjectDirectory = useSelector(
-    app.systemIOActor,
-    (state) => state.context.canReadWriteProjectDirectory.value
-  )
   const projectPath = project?.path
   const contributedProjectMenuItems = app.registry.signal(
     projectExplorerProjectMenuItemsValueSpec
   ).value
 
   const exportCommandInfo = { name: 'Export', groupId: 'modeling' }
-  const duplicateProjectCommandInfo = {
-    name: 'Duplicate project',
-    groupId: 'projects',
-  }
   const exportProjectZipCommandInfo = {
     name: 'export-project-zip',
     groupId: 'application',
@@ -294,7 +286,7 @@ function ProjectMenuPopover({
           },
         },
         { kind: 'break', id: 'after-settings' },
-        project && findCommand(duplicateProjectCommandInfo)
+        project
           ? {
               id: 'duplicate-project',
               Element: 'button' as const,
@@ -306,18 +298,12 @@ function ProjectMenuPopover({
                   Duplicate project
                 </span>
               ),
-              disabled:
-                !projectHasReadAccess(project) || !canWriteProjectDirectory,
-              tabIndex: 0,
               onClick: () => {
-                commands.send({
-                  type: 'Find and select command',
+                app.systemIOActor.send({
+                  type: SystemIOMachineEvents.duplicateProject,
                   data: {
-                    ...duplicateProjectCommandInfo,
-                    argDefaultValues: {
-                      name: project.name,
-                      newName: getProjectDisplayName(project),
-                    },
+                    projectName: project.name,
+                    requestedProjectName: getProjectDisplayName(project),
                   },
                 })
               },
@@ -498,13 +484,13 @@ function ProjectMenuPopover({
       project,
       contributedProjectMenuItems,
       commands.actor,
+      app.systemIOActor,
       file,
       filePath,
       machineCount,
       navigate,
       projectSettingsKeybinding,
       settings.actor,
-      canWriteProjectDirectory,
     ]
   )
 

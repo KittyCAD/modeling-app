@@ -3,16 +3,11 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { projectHasReadAccess } from '@src/lib/projectPermissions'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
-  'Duplicate project': {
-    name: string
-    newName: string
-  }
   'Import file from URL': {
     name: string
     code?: string
@@ -109,80 +104,6 @@ export function createProjectCommands({
         required: true,
         inputType: 'string',
         defaultValue: defaultProjectFolderNameSnapshot,
-      },
-    },
-  }
-
-  // createProjectCommands only needs an actor ref, while the older command
-  // type still asks for XState's concrete Actor class. The production value is
-  // a concrete actor; keep the cast contained until that shared type is relaxed.
-  const duplicateProjectMachineActor = systemIOActor as unknown as NonNullable<
-    Command['machineActor']
-  >
-  const duplicateProjectCommand: Command = {
-    icon: 'clone',
-    name: 'Duplicate project',
-    displayName: 'Duplicate project',
-    description: 'Duplicate a project',
-    groupId: 'projects',
-    machineActor: duplicateProjectMachineActor,
-    needsReview: false,
-    onSubmit: (record) => {
-      if (record) {
-        systemIOActor.send({
-          type: SystemIOMachineEvents.duplicateProject,
-          data: {
-            projectName: record.name,
-            requestedProjectName: record.newName,
-          },
-        })
-      }
-    },
-    args: {
-      name: {
-        inputType: 'options',
-        required: true,
-        machineActor: duplicateProjectMachineActor,
-        options: (_commandContext, machineContext) => {
-          const systemIOContext =
-            (machineContext as
-              | ContextFrom<typeof systemIOMachine>
-              | undefined) ?? systemIOActor.getSnapshot().context
-          const folders = systemIOContext.folders
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders || !systemIOContext.canReadWriteProjectDirectory.value) {
-            return options
-          }
-
-          const currentProjectName = systemIOContext.requestedProjectName.name
-          folders.filter(projectHasReadAccess).forEach((folder) => {
-            const displayName = getProjectDisplayName(folder)
-            options.push({
-              name:
-                displayName === folder.name
-                  ? displayName
-                  : `${displayName} (${folder.name})`,
-              value: folder.name,
-              isCurrent: folder.name === currentProjectName,
-            })
-          })
-          return options
-        },
-      },
-      newName: {
-        inputType: 'string',
-        required: true,
-        defaultValue: (context: ContextFrom<typeof commandBarMachine>) => {
-          const sourceName = context.argumentsToSubmit.name as
-            | string
-            | undefined
-          const sourceProject = folderSnapshot()?.find(
-            (folder) => folder.name === sourceName
-          )
-          return sourceProject
-            ? getProjectDisplayName(sourceProject)
-            : sourceName || defaultProjectFolderNameSnapshot()
-        },
       },
     },
   }
@@ -384,7 +305,6 @@ export function createProjectCommands({
     ? [
         openProjectCommand,
         createProjectCommand,
-        duplicateProjectCommand,
         deleteProjectCommand,
         renameProjectCommand,
         importFileFromURL,

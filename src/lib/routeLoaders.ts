@@ -8,7 +8,6 @@ import {
 import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
 import { readAppSettingsFile } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
-import { isProjectDirectoryQuarantined } from '@src/lib/fs-zds/duplicateQuarantine'
 import {
   PATHS,
   getParentAbsolutePath,
@@ -113,34 +112,15 @@ export const fileLoader =
       return redirect(PATHS.HOME)
     }
 
-    const wasmInstance = await kclManager.wasmInstancePromise
+    const heuristicProjectFilePath = params.id
+      ? params.id.split(fsZds.sep).slice(0, -1).join(fsZds.sep)
+      : undefined
 
-    // Resolve the project root from persisted app settings before project-aware
-    // settings loading receives a path. That loader may write project.toml, so
-    // a heuristic nested dirname would be too late for direct stale URLs.
-    const persistedConfiguration = await readAppSettingsFile(wasmInstance)
-    const preSettingsProjectPathData = await getProjectMetaByRouteId(
-      readAppSettingsFile,
-      wasmInstance,
-      params.id,
-      persistedConfiguration
-    )
-    if (!preSettingsProjectPathData) {
-      return Promise.reject(
-        new Error('bug: projectPathData undefined, early return')
-      )
-    }
-    if (
-      await isProjectDirectoryQuarantined(
-        preSettingsProjectPathData.projectPath
-      )
-    ) {
-      return redirect(PATHS.HOME)
-    }
+    const wasmInstance = await kclManager.wasmInstancePromise
 
     const settings = await loadAndValidateSettings(
       wasmInstance,
-      preSettingsProjectPathData.projectPath
+      heuristicProjectFilePath
     )
 
     const projectPathData = await getProjectMetaByRouteId(
@@ -158,10 +138,6 @@ export const fileLoader =
 
     const { projectName, projectPath, currentFileName, currentFilePath } =
       projectPathData
-
-    if (await isProjectDirectoryQuarantined(projectPath)) {
-      return redirect(PATHS.HOME)
-    }
 
     const urlObj = new URL(routerData.request.url)
 

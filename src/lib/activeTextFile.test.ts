@@ -46,7 +46,6 @@ beforeEach(async () => {
 
 afterEach(() => {
   vi.useRealTimers()
-  vi.unstubAllGlobals()
 })
 
 describe('isEditableTextFile', () => {
@@ -206,107 +205,53 @@ describe('flushActiveTextFileWrite', () => {
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
   })
 
-  it('awaits an in-flight timer write and then persists the latest edit once', async () => {
+  it('awaits an in-flight debounce write before writing a newer edit', async () => {
     vi.useFakeTimers()
-    mocks.readFile.mockResolvedValueOnce('initial')
-    await mod.openActiveTextFile('/proj/readme.md')
-    let finishFirstWrite!: () => void
-    mocks.writeFile.mockImplementationOnce(
-      () =>
+    let resolveFirstWrite!: () => void
+    mocks.writeFile
+      .mockReturnValueOnce(
         new Promise<void>((resolve) => {
-          finishFirstWrite = resolve
+          resolveFirstWrite = resolve
         })
-    )
-
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'first')
-    await vi.advanceTimersByTimeAsync(1000)
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'latest')
-    const flush = mod.flushActiveTextFileWrite()
-    await flushMicrotasks()
-    expect(mocks.writeFile).toHaveBeenCalledTimes(1)
-
-    finishFirstWrite()
-    await flush
-    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
-    expect(decode(mocks.writeFile.mock.calls[1][1])).toBe('latest')
-
-    await vi.advanceTimersByTimeAsync(1000)
-    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
-  })
-
-  it('retries a busy write while its path remains active', async () => {
-    vi.useFakeTimers()
+      )
+      .mockResolvedValueOnce(undefined)
     mocks.readFile.mockResolvedValueOnce('initial')
     await mod.openActiveTextFile('/proj/readme.md')
-    let lockAvailable = false
-    const request = vi.fn(
-      async (
-        _name: string,
-        _options: LockOptions,
-        callback: (lock: Lock | null) => Promise<void>
-      ) => callback(lockAvailable ? ({} as Lock) : null)
-    )
-    vi.stubGlobal('navigator', { locks: { request } })
-
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'blocked')
-    await expect(mod.flushActiveTextFileWrite()).rejects.toMatchObject({
-      name: 'ProjectFilesystemMutationBusyError',
-    })
-    expect(mocks.writeFile).not.toHaveBeenCalled()
-
-    lockAvailable = true
-    await vi.advanceTimersByTimeAsync(1000)
-    expect(mocks.writeFile).toHaveBeenCalledTimes(1)
-    expect(decode(mocks.writeFile.mock.calls[0][1])).toBe('blocked')
-    expect(request).toHaveBeenCalledTimes(2)
-
-    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'latest')
-    await vi.advanceTimersByTimeAsync(1000)
-
-    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
-    expect(decode(mocks.writeFile.mock.calls[1][1])).toBe('latest')
-    expect(request).toHaveBeenCalledTimes(3)
-  })
-
-  it('retries the latest busy write after its path is cleared', async () => {
-    vi.useFakeTimers()
-    mocks.readFile.mockResolvedValueOnce('initial')
-    await mod.openActiveTextFile('/proj/readme.md')
-    let releaseFirstLock!: () => void
-    const firstLockReady = new Promise<void>((resolve) => {
-      releaseFirstLock = resolve
-    })
-    const request = vi.fn(
-      async (
-        _name: string,
-        _options: LockOptions,
-        callback: (lock: Lock | null) => Promise<void>
-      ) => {
-        if (request.mock.calls.length === 1) {
-          await firstLockReady
-          return callback(null)
-        }
-        return callback({} as Lock)
-      }
-    )
-    vi.stubGlobal('navigator', { locks: { request } })
 
     mod.scheduleActiveTextFileWrite('/proj/readme.md', 'first')
     await vi.advanceTimersByTimeAsync(1000)
     mod.scheduleActiveTextFileWrite('/proj/readme.md', 'newer')
 
-    mod.clearActiveTextFile()
-    releaseFirstLock()
+    const flushPromise = mod.flushActiveTextFileWrite({ throwOnError: true })
     await flushMicrotasks()
-    await flushMicrotasks()
-    mocks.readFile.mockResolvedValueOnce('next')
-    await mod.openActiveTextFile('/proj/next.md')
-
-    expect(mod.activeTextFileSignal.peek()?.path).toBe('/proj/next.md')
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
-    expect(mocks.writeFile.mock.calls[0][0]).toBe('/proj/readme.md')
-    expect(decode(mocks.writeFile.mock.calls[0][1])).toBe('newer')
-    expect(request).toHaveBeenCalledTimes(2)
+
+    resolveFirstWrite()
+    await flushPromise
+
+    expect(mocks.writeFile).toHaveBeenCalledTimes(2)
+    expect(decode(mocks.writeFile.mock.calls[1][1])).toBe('newer')
+  })
+
+  it('only propagates write errors when requested', async () => {
+    const writeError = new Error('write failed')
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+    mocks.readFile.mockResolvedValueOnce('initial')
+    await mod.openActiveTextFile('/proj/readme.md')
+
+    mocks.writeFile.mockRejectedValueOnce(writeError)
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'soft failure')
+    await expect(mod.flushActiveTextFileWrite()).resolves.toBeUndefined()
+
+    mocks.writeFile.mockRejectedValueOnce(writeError)
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'strict failure')
+    await expect(
+      mod.flushActiveTextFileWrite({ throwOnError: true })
+    ).rejects.toBe(writeError)
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1)
+    consoleErrorSpy.mockRestore()
   })
 })
 

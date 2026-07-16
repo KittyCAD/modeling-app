@@ -20,7 +20,6 @@ const impl: IZooDesignStudioFS = {
   cp: noopAsync,
   readFile: noopAsync,
   rename: noopAsync,
-  publishDirectory: noopAsync,
   writeFile: noopAsync,
   readdir: noopAsync,
   stat: noopAsync,

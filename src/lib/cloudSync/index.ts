@@ -44,7 +44,6 @@ function bindLocalFileSystem(activeFs: IZooDesignStudioFS): IZooDesignStudioFS {
     cp: activeFs.cp.bind(activeFs),
     readFile: activeFs.readFile.bind(activeFs),
     rename: activeFs.rename.bind(activeFs),
-    publishDirectory: activeFs.publishDirectory.bind(activeFs),
     writeFile: activeFs.writeFile.bind(activeFs),
     readdir: activeFs.readdir.bind(activeFs),
     stat: activeFs.stat.bind(activeFs),
@@ -110,19 +109,6 @@ export function installCloudSyncFileSystemObserver(
     await notifyCloudSyncRenameMutation(sourcePath, targetPath)
     return result
   }
-  const publishDirectory: IZooDesignStudioFS['publishDirectory'] = async (
-    sourcePath,
-    targetPath,
-    evidence
-  ) => {
-    const result = await localFs.publishDirectory(
-      sourcePath,
-      targetPath,
-      evidence
-    )
-    await notifyCloudSyncWriteLikeMutation(targetPath)
-    return result
-  }
 
   Object.assign(activeFs, {
     writeFile,
@@ -130,7 +116,6 @@ export function installCloudSyncFileSystemObserver(
     cp,
     rm,
     rename,
-    publishDirectory,
   })
   fsObserverInstalled = true
 }

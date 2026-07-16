@@ -8,18 +8,15 @@ import {
 import { effect, signal } from '@preact/signals-core'
 import {
   getProjectInfo,
-  writeProjectTitleToProjectTomlUnlocked,
+  writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
-import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import {
   getHomeProjectDisplayName,
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
-import { canDuplicateLocalProject } from '@src/lib/projectPermissions'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
-import { commandSystemService } from '@src/registry/contracts/commands'
 import {
   type HomeProjectActionsService,
   type HomeProjectEntry,
@@ -70,10 +67,8 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
           project.remoteProjectId
       ),
     canDuplicate: (project) =>
-      canDuplicateLocalProject(
-        project,
-        systemIO.value?.actor.getSnapshot().context.canReadWriteProjectDirectory
-          .value === true
+      Boolean(
+        systemIO.value && project.localProjectName && project.localProjectPath
       ),
     canRename: (project) =>
       Boolean(project.localProjectPath && project.readWriteAccess),
@@ -109,15 +104,11 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return
       }
 
-      ctx.services.get(commandSystemService).send({
-        type: 'Find and select command',
+      systemIO.value?.actor.send({
+        type: SystemIOMachineEvents.duplicateProject,
         data: {
-          groupId: 'projects',
-          name: 'Duplicate project',
-          argDefaultValues: {
-            name: project.localProjectName,
-            newName: getHomeProjectDisplayName(project),
-          },
+          projectName: project.localProjectName,
+          requestedProjectName: getHomeProjectDisplayName(project),
         },
       })
     },
@@ -125,7 +116,6 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
       if (!serviceImpl.canRename(project) || !project.localProjectPath) {
         return
       }
-      const localProjectPath = project.localProjectPath
 
       if (
         homeProjectDisplayNameExists({
@@ -139,13 +129,9 @@ const homeProjectActions = defineRegistryItemFactory((ctx) => {
         return Promise.reject(new Error(message))
       }
 
-      await runWithProjectFilesystemMutationLock(
-        () =>
-          writeProjectTitleToProjectTomlUnlocked(
-            localProjectPath,
-            requestedName
-          ),
-        { ifAvailable: true, mode: 'shared' }
+      await writeProjectTitleToProjectToml(
+        project.localProjectPath,
+        requestedName
       )
       toast.success(
         `Successfully renamed "${getHomeProjectDisplayName(project)}" to "${requestedName}"`

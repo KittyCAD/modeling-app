@@ -1,5 +1,4 @@
 import type { PromisifyProps } from '@src/lib/types'
-import type { DuplicatePublicationEvidence } from '@src/lib/fs-zds/duplicateReservations'
 
 export interface IStat {
   dev: number
@@ -55,22 +54,6 @@ export interface IZooDesignStudioFS {
     src: string,
     dest: string,
     options?: any
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-  ) => Promise<void | undefined>
-  /**
-   * Publishes a directory into a destination that must not already exist.
-   *
-   * Implementations reserve the destination and create
-   * `evidence.markerName` before copying any project content. The marker is
-   * intentionally left in place after a complete copy; the caller removes it
-   * only after related transactional state is committed. Implementations must
-   * never remove the destination on failure: another process could have
-   * written to it after it was reserved.
-   */
-  publishDirectory: (
-    src: string,
-    dest: string,
-    evidence: DuplicatePublicationEvidence
     // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   ) => Promise<void | undefined>
   writeFile: (

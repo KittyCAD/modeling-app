@@ -3,8 +3,6 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { EnvironmentConfiguration } from '@src/lib/constants'
 import {
-  canReadDirectory,
-  canReadWriteDirectory,
   getEnvironmentConfigurationPath,
   getEnvironmentFilePath,
   getProjectInfo,
@@ -192,7 +190,6 @@ describe('desktop utilities', () => {
     })
 
     mockElectron.exists.mockResolvedValue(true)
-    mockElectron.access.mockResolvedValue(undefined)
     mockElectron.readFile.mockImplementation(async (path: string) => {
       if (path === '/test/projects/valid-project/.gitignore') {
         return 'dist\nnotes.txt\n'
@@ -203,57 +200,6 @@ describe('desktop utilities', () => {
     mockElectron.writeFile.mockResolvedValue(undefined)
     mockElectron.getPath.mockResolvedValue('/appData')
     mockElectron.kittycad.mockResolvedValue({})
-  })
-
-  describe('directory permissions', () => {
-    it('distinguishes readable read-only directories from writable ones', async () => {
-      const consoleError = vi
-        .spyOn(console, 'error')
-        .mockImplementation(() => undefined)
-      mockElectron.access.mockImplementation(
-        async (_path: string, mode: number) => {
-          if (mode === (fsZdsConstants.R_OK | fsZdsConstants.X_OK)) {
-            return undefined
-          }
-          throw Object.assign(new Error('read-only'), { code: 'EACCES' })
-        }
-      )
-
-      await expect(canReadDirectory('/test/projects')).resolves.toEqual({
-        value: true,
-        error: undefined,
-      })
-      await expect(
-        canReadWriteDirectory('/test/projects')
-      ).resolves.toMatchObject({ value: false })
-      expect(mockElectron.access).toHaveBeenNthCalledWith(
-        1,
-        '/test/projects',
-        fsZdsConstants.R_OK | fsZdsConstants.X_OK
-      )
-      expect(mockElectron.access).toHaveBeenNthCalledWith(
-        2,
-        '/test/projects',
-        fsZdsConstants.R_OK | fsZdsConstants.W_OK | fsZdsConstants.X_OK
-      )
-
-      const { instance } = await buildTheWorldNode()
-      const project = await getProjectInfo(
-        '/test/projects/valid-project',
-        await instance
-      )
-      expect(project).toMatchObject({
-        readAccess: true,
-        readWriteAccess: false,
-        kcl_file_count: 2,
-        directory_count: 1,
-        default_file: '',
-      })
-      expect(project.children?.map((child) => child.name)).toContain(
-        'file1.kcl'
-      )
-      consoleError.mockRestore()
-    })
   })
 
   describe('listProjects', () => {
@@ -306,65 +252,6 @@ describe('desktop utilities', () => {
       // Restore for future tests!
       mockFileSystem['/test/projects'] = TEST_PROJECTS_DEFAULT
       expect(projects).toEqual([])
-    })
-
-    it('includes a writable empty project after creating its default file', async () => {
-      const emptyProjectName = 'new-empty-project'
-      const emptyProjectPath = `/test/projects/${emptyProjectName}`
-      const mainPath = `${emptyProjectPath}/main.kcl`
-      const defaultStat = mockElectron.stat.getMockImplementation()!
-      const originalNavigator = globalThis.navigator
-      let mainCreated = false
-      let mutationLockHeld = false
-      const requestMutationLock = vi.fn(async (...args: unknown[]) => {
-        const callback = args.at(-1) as (lock: Lock) => Promise<unknown>
-        mutationLockHeld = true
-        try {
-          return await callback({} as Lock)
-        } finally {
-          mutationLockHeld = false
-        }
-      })
-      vi.stubGlobal('navigator', {
-        locks: { request: requestMutationLock },
-      })
-      TEST_PROJECTS_DEFAULT.push(emptyProjectName)
-      mockFileSystem[emptyProjectPath] = []
-      mockElectron.stat.mockImplementation(async (path: string) => {
-        if (path === mainPath && !mainCreated) {
-          expect(mutationLockHeld).toBe(true)
-          throw Object.assign(new Error('missing'), { code: 'ENOENT' })
-        }
-        return defaultStat(path)
-      })
-      mockElectron.writeFile.mockImplementation(async (path: string) => {
-        if (path === mainPath) {
-          expect(mutationLockHeld).toBe(true)
-          mainCreated = true
-          mockFileSystem[emptyProjectPath].push('main.kcl')
-        }
-      })
-
-      try {
-        const { instance } = await buildTheWorldNode()
-        const projects = await listProjects(instance, mockConfig)
-
-        expect(projects.map((project) => project.name)).toContain(
-          emptyProjectName
-        )
-        expect(mockElectron.writeFile).toHaveBeenCalledWith(
-          mainPath,
-          expect.any(Uint8Array)
-        )
-        expect(requestMutationLock).toHaveBeenCalled()
-      } finally {
-        vi.stubGlobal('navigator', originalNavigator)
-        TEST_PROJECTS_DEFAULT.splice(
-          TEST_PROJECTS_DEFAULT.indexOf(emptyProjectName),
-          1
-        )
-        delete mockFileSystem[emptyProjectPath]
-      }
     })
 
     it('shows all non-dot files except settings files in project contents', async () => {

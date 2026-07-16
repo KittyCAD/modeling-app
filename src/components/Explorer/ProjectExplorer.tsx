@@ -23,7 +23,6 @@ import type { Command } from '@src/lib/commandTypes'
 import { FILE_EXT } from '@src/lib/constants'
 import { getNextFileName, sortFilesAndDirectories } from '@src/lib/desktopFS'
 import fsZds from '@src/lib/fs-zds'
-import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import {
   desktopSafePathJoin,
   desktopSafePathSplit,
@@ -792,58 +791,33 @@ export const ProjectExplorer = ({
       if (supportedFiles.length > 0) {
         setFileTreeMutationPending(true)
         const targetPath = getDropTargetPath(target, project.path)
-        const preparedFiles: {
-          file: File
-          relativePath: string
-          contents: Uint8Array<ArrayBuffer>
-        }[] = []
-        for (const droppedFile of supportedFiles) {
+        const createdDirs = new Set<string>()
+
+        for (const { file, relativePath } of supportedFiles) {
           try {
-            preparedFiles.push({
-              ...droppedFile,
-              contents: new Uint8Array(await droppedFile.file.arrayBuffer()),
+            const destinationDirPath = relativePath
+              ? joinOSPaths(targetPath, relativePath)
+              : targetPath
+
+            // Create parent directories if needed
+            if (relativePath && !createdDirs.has(destinationDirPath)) {
+              await fsZds.mkdir(destinationDirPath, { recursive: true })
+              createdDirs.add(destinationDirPath)
+            }
+
+            const { path: destinationPath } = await getNextFileName({
+              entryName: file.name,
+              baseDir: destinationDirPath,
+              wasmInstance,
+              preserveUnknownExtension: true,
             })
+
+            const arrayBuffer = await file.arrayBuffer()
+            await fsZds.writeFile(destinationPath, new Uint8Array(arrayBuffer))
           } catch (e) {
-            console.error('Failed to read file:', droppedFile.file.name, e)
-            toast.error(`Failed to import ${droppedFile.file.name}.`)
+            console.error('Failed to copy file:', file.name, e)
+            toast.error(`Failed to import ${file.name}.`)
           }
-        }
-
-        let importedFileCount = 0
-        try {
-          await runWithProjectFilesystemMutationLock(
-            async () => {
-              const createdDirs = new Set<string>()
-              for (const { file, relativePath, contents } of preparedFiles) {
-                try {
-                  const destinationDirPath = relativePath
-                    ? joinOSPaths(targetPath, relativePath)
-                    : targetPath
-
-                  if (relativePath && !createdDirs.has(destinationDirPath)) {
-                    await fsZds.mkdir(destinationDirPath, { recursive: true })
-                    createdDirs.add(destinationDirPath)
-                  }
-
-                  const { path: destinationPath } = await getNextFileName({
-                    entryName: file.name,
-                    baseDir: destinationDirPath,
-                    wasmInstance,
-                    preserveUnknownExtension: true,
-                  })
-                  await fsZds.writeFile(destinationPath, contents)
-                  importedFileCount += 1
-                } catch (e) {
-                  console.error('Failed to copy file:', file.name, e)
-                  toast.error(`Failed to import ${file.name}.`)
-                }
-              }
-            },
-            { ifAvailable: true, mode: 'shared' }
-          )
-        } catch (e) {
-          console.error('Failed to acquire the project filesystem:', e)
-          toast.error('The project is busy. Try importing the files again.')
         }
 
         // Open the target folder so the user can see the imported files
@@ -858,11 +832,9 @@ export const ProjectExplorer = ({
           type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
         })
 
-        if (importedFileCount > 0) {
-          toast.success(
-            `Imported ${importedFileCount} file${importedFileCount > 1 ? 's' : ''}.`
-          )
-        }
+        toast.success(
+          `Imported ${supportedFiles.length} file${supportedFiles.length > 1 ? 's' : ''}.`
+        )
       }
     },
     [

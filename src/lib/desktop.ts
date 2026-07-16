@@ -26,9 +26,7 @@ import {
 } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
-import { isProjectDirectoryQuarantined } from '@src/lib/fs-zds/duplicateQuarantine'
 import type { IStat } from '@src/lib/fs-zds/interface'
-import { runWithProjectFilesystemMutationLock } from '@src/lib/projectDirectoryNamespaceLock'
 import {
   appendGitignoreForDirectory,
   createInitialGitignoreStack,
@@ -178,11 +176,6 @@ export async function renameProjectDirectory(
 
   // Make sure the new name does not exist.
   const newPath = fsZds.join(fsZds.dirname(projectPath), newName)
-  if (await isProjectDirectoryQuarantined(newPath)) {
-    return Promise.reject(
-      new Error(`Path ${newPath} is reserved by an incomplete duplication`)
-    )
-  }
   try {
     await fsZds.stat(newPath)
     // If we get here it means the stat succeeded and there's a file already
@@ -260,13 +253,6 @@ export async function createNewProjectDirectory(
     return Promise.reject(new Error('mainDir is falsey'))
   }
   const projectDir = fsZds.join(mainDir, projectName)
-  if (await isProjectDirectoryQuarantined(projectDir)) {
-    return Promise.reject(
-      new Error(
-        `Project ${projectName} is reserved by an incomplete duplication`
-      )
-    )
-  }
 
   try {
     await fsZds.stat(projectDir)
@@ -330,7 +316,6 @@ export async function createNewProjectDirectory(
     kcl_file_count: 1,
     directory_count: 0,
     // If the mkdir did not crash you have readWriteAccess
-    readAccess: true,
     readWriteAccess: true,
   }
 }
@@ -379,21 +364,14 @@ export async function listProjects(
       continue
     }
 
-    if (await isProjectDirectoryQuarantined(projectPath)) {
-      continue
-    }
-
-    let project = await getProjectInfo(projectPath, wasmInstance)
+    const project = await getProjectInfo(projectPath, wasmInstance)
 
     if (
       project.kcl_file_count === 0 &&
       project.readWriteAccess &&
       canReadWriteProjectDirectory
     ) {
-      project = await getProjectInfo(projectPath, wasmInstance)
-      if (project.kcl_file_count === 0) {
-        continue
-      }
+      continue
     }
 
     // Push folders you cannot readWrite to show users the issue
@@ -406,7 +384,7 @@ export async function listProjects(
 const collectAllFilesRecursiveFrom = async (
   targetPath: string,
   projectRoot: string,
-  canReadPath: boolean,
+  canReadWritePath: boolean,
   showAllFiles: boolean,
   gitignoreStack: GitignoreStackEntry[]
 ) => {
@@ -441,8 +419,8 @@ const collectAllFilesRecursiveFrom = async (
     children: [],
   }
 
-  // If this project path cannot be read, do not collect its files.
-  if (!canReadPath) {
+  // If you cannot read/write this project path do not collect the files
+  if (!canReadWritePath) {
     return entry
   }
 
@@ -491,7 +469,7 @@ const collectAllFilesRecursiveFrom = async (
       const subChildren = await collectAllFilesRecursiveFrom(
         ePath,
         projectRoot,
-        canReadPath,
+        canReadWritePath,
         showAllFiles,
         childGitignoreStack
       )
@@ -517,7 +495,7 @@ const collectAllFilesRecursiveFrom = async (
   return entry
 }
 
-async function getDefaultKclFileForDirUnlocked(
+export async function getDefaultKclFileForDir(
   projectDir: string,
   file: FileEntry,
   wasmInstance: ModuleType
@@ -532,7 +510,7 @@ async function getDefaultKclFileForDirUnlocked(
   try {
     await fsZds.stat(defaultFilePath)
   } catch (e) {
-    if (isPathNotFoundError(e)) {
+    if (e === 'ENOENT') {
       // Find a kcl file in the directory.
       if (file.children) {
         for (const entry of file.children) {
@@ -540,11 +518,7 @@ async function getDefaultKclFileForDirUnlocked(
             return fsZds.join(projectDir, entry.name)
           } else if ((entry.children?.length ?? 0) > 0) {
             // Recursively find a kcl file in the directory.
-            return getDefaultKclFileForDirUnlocked(
-              entry.path,
-              entry,
-              wasmInstance
-            )
+            return getDefaultKclFileForDir(entry.path, entry, wasmInstance)
           }
         }
         // If we didn't find a kcl file, create one.
@@ -575,17 +549,6 @@ async function getDefaultKclFileForDirUnlocked(
   }
 
   return defaultFilePath
-}
-
-export async function getDefaultKclFileForDir(
-  projectDir: string,
-  file: FileEntry,
-  wasmInstance: ModuleType
-) {
-  return runWithProjectFilesystemMutationLock(
-    () => getDefaultKclFileForDirUnlocked(projectDir, file, wasmInstance),
-    { ifAvailable: true, mode: 'shared' }
-  )
 }
 
 const kclFileCount = (file: FileEntry) => {
@@ -619,16 +582,10 @@ const directoryCount = (file: FileEntry) => {
   return count
 }
 
-async function getProjectInfoUnlocked(
+export async function getProjectInfo(
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<Project> {
-  if (await isProjectDirectoryQuarantined(projectPath)) {
-    return Promise.reject(
-      new Error('Project cannot be opened while duplication is incomplete.')
-    )
-  }
-
   // Check the directory.
   let stats: IStat | undefined
   try {
@@ -650,24 +607,20 @@ async function getProjectInfoUnlocked(
     )
   }
 
-  const [readAccess, readWriteAccess] = await Promise.all([
-    canReadDirectory(projectPath),
-    canReadWriteDirectory(projectPath),
-  ])
-  const canReadProjectPath = readAccess.value
-  const canReadWriteProjectPath = readWriteAccess.value
+  // Detect the projectPath has read write permission
+  const { value: canReadWriteProjectPath } =
+    await canReadWriteDirectory(projectPath)
 
   const appSettings = await readAppSettingsFile(wasmInstance)
   const showAllFiles = appSettings.settings?.app?.show_all_files === true
 
   const gitignoreStack = await createInitialGitignoreStack(projectPath)
 
-  // Read-only projects can still be inspected and copied. Only default-file
-  // creation below requires write access.
+  // Return walked early if canReadWriteProjectPath is false
   const walked = await collectAllFilesRecursiveFrom(
     projectPath,
     projectPath,
-    canReadProjectPath,
+    canReadWriteProjectPath,
     showAllFiles,
     gitignoreStack
   )
@@ -676,13 +629,13 @@ async function getProjectInfoUnlocked(
   let default_file = ''
   if (canReadWriteProjectPath) {
     // Create the default main.kcl file only if the project path has read write permissions
-    default_file = await getDefaultKclFileForDirUnlocked(
+    default_file = await getDefaultKclFileForDir(
       projectPath,
       walked,
       wasmInstance
     )
   }
-  const projectTomlMetadata = canReadProjectPath
+  const projectTomlMetadata = canReadWriteProjectPath
     ? await readProjectTomlMetadata(projectPath)
     : { title: undefined, cloudProjectId: undefined }
 
@@ -693,7 +646,6 @@ async function getProjectInfoUnlocked(
     kcl_file_count: 0,
     directory_count: 0,
     default_file,
-    readAccess: canReadProjectPath,
     readWriteAccess: canReadWriteProjectPath,
   }
 
@@ -703,31 +655,15 @@ async function getProjectInfoUnlocked(
   //Populate the number of directories in the project.
   project.directory_count = directoryCount(project)
 
-  if (await isProjectDirectoryQuarantined(projectPath)) {
-    return Promise.reject(
-      new Error('Project cannot be opened while duplication is incomplete.')
-    )
-  }
-
   return project
 }
 
-export async function getProjectInfo(
-  projectPath: string,
-  wasmInstance: ModuleType
-): Promise<Project> {
-  return runWithProjectFilesystemMutationLock(
-    () => getProjectInfoUnlocked(projectPath, wasmInstance),
-    { ifAvailable: true, mode: 'shared' }
-  )
-}
-
 // Write project settings file.
-export async function writeProjectSettingsFileUnlocked(
+export async function writeProjectSettingsFile(
   projectPath: string,
   tomlStr: string
 ): Promise<void> {
-  const projectSettingsFilePath = getProjectSettingsFilePath(projectPath)
+  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   if (err(tomlStr)) {
     return Promise.reject(tomlStr)
   }
@@ -737,21 +673,11 @@ export async function writeProjectSettingsFileUnlocked(
   )
 }
 
-export async function writeProjectSettingsFile(
-  projectPath: string,
-  tomlStr: string
-): Promise<void> {
-  return runWithProjectFilesystemMutationLock(
-    () => writeProjectSettingsFileUnlocked(projectPath, tomlStr),
-    { ifAvailable: true, mode: 'shared' }
-  )
-}
-
-export async function writeProjectTitleToProjectTomlUnlocked(
+export async function writeProjectTitleToProjectToml(
   projectPath: string,
   title: string
 ): Promise<void> {
-  const projectSettingsFilePath = getProjectSettingsFilePath(projectPath)
+  const projectSettingsFilePath = await getProjectSettingsFilePath(projectPath)
   let projectToml = ''
   try {
     projectToml = await fsZds.readFile(projectSettingsFilePath, {
@@ -770,16 +696,6 @@ export async function writeProjectTitleToProjectTomlUnlocked(
   await fsZds.writeFile(
     projectSettingsFilePath,
     new TextEncoder().encode(nextProjectToml)
-  )
-}
-
-export async function writeProjectTitleToProjectToml(
-  projectPath: string,
-  title: string
-): Promise<void> {
-  return runWithProjectFilesystemMutationLock(
-    () => writeProjectTitleToProjectTomlUnlocked(projectPath, title),
-    { ifAvailable: true, mode: 'shared' }
   )
 }
 
@@ -942,7 +858,14 @@ const getRawTelemetryFilePath = async () => {
   return fsZds.join(fullPath, TELEMETRY_RAW_FILE_NAME)
 }
 
-const getProjectSettingsFilePath = (projectPath: string) => {
+const getProjectSettingsFilePath = async (projectPath: string) => {
+  try {
+    await fsZds.stat(projectPath)
+  } catch (e) {
+    if (isPathNotFoundError(e)) {
+      await fsZds.mkdir(projectPath, { recursive: true })
+    }
+  }
   return fsZds.join(projectPath, PROJECT_SETTINGS_FILE_NAME)
 }
 
@@ -966,7 +889,7 @@ export const readProjectSettingsFile = async (
   projectPath: string,
   wasmInstance: ModuleType
 ): Promise<DeepPartial<ProjectConfiguration>> => {
-  const settingsPath = getProjectSettingsFilePath(projectPath)
+  const settingsPath = await getProjectSettingsFilePath(projectPath)
 
   // Check if this file exists.
   try {
@@ -1301,20 +1224,13 @@ export const writeProjectThumbnailFile = async (
   try {
     await fsZds.stat(gitignorePath)
   } catch {
-    await runWithProjectFilesystemMutationLock(
-      () =>
-        fsZds.writeFile(
-          gitignorePath,
-          new TextEncoder().encode(`${PROJECT_IMAGE_NAME}\n`)
-        ),
-      { ifAvailable: true, mode: 'shared' }
+    await fsZds.writeFile(
+      gitignorePath,
+      new TextEncoder().encode(`${PROJECT_IMAGE_NAME}\n`)
     )
   }
 
-  return runWithProjectFilesystemMutationLock(
-    () => fsZds.writeFile(filePath, asArray),
-    { ifAvailable: true, mode: 'shared' }
-  )
+  return fsZds.writeFile(filePath, asArray)
 }
 
 export function getPathFilenameInVariableCase(targetPath: string) {
@@ -1334,7 +1250,7 @@ export const canReadWriteDirectory = async (
     }
   }
 
-  // bitwise OR to check read and write permissions
+  // Directories also require execute permission to traverse their entries.
   try {
     const canReadWrite = await fsZds.access(
       targetPath,
@@ -1347,25 +1263,6 @@ export const canReadWriteDirectory = async (
   } catch (e) {
     console.error(e)
     return { value: false, error: e }
-  }
-}
-
-export const canReadDirectory = async (
-  targetPath: string
-): Promise<{ value: boolean; error: unknown }> => {
-  const isDirectory = await statIsDirectory(targetPath)
-  if (!isDirectory) {
-    return {
-      value: false,
-      error: new Error('path is not a directory. Do not send a file path.'),
-    }
-  }
-
-  try {
-    await fsZds.access(targetPath, fsZdsConstants.R_OK | fsZdsConstants.X_OK)
-    return { value: true, error: undefined }
-  } catch (error) {
-    return { value: false, error }
   }
 }
 

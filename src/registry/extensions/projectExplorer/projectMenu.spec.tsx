@@ -28,7 +28,6 @@ const projectWellFormed = {
       children: [],
     },
   ],
-  readAccess: true,
   readWriteAccess: true,
   metadata: {
     created: now,
@@ -47,28 +46,13 @@ function renderWithRouter(children: ReactNode) {
   return render(<BrowserRouter>{children}</BrowserRouter>)
 }
 
-function createProjectMenuApp(canWriteProjectDirectory = true) {
+function createProjectMenuApp() {
   const registry = new Registry()
   registry.configure([projectExplorerExtension])
   const commandsActor = createActor(
     createMachine({
       context: {
-        commands: [
-          {
-            name: 'Duplicate project',
-            groupId: 'projects',
-          },
-        ],
-      },
-    })
-  ).start()
-  const systemIOActor = createActor(
-    createMachine({
-      context: {
-        canReadWriteProjectDirectory: {
-          value: canWriteProjectDirectory,
-          error: undefined,
-        },
+        commands: [],
       },
     })
   ).start()
@@ -82,7 +66,9 @@ function createProjectMenuApp(canWriteProjectDirectory = true) {
         actor: commandsActor,
         send: vi.fn(),
       },
-      systemIOActor,
+      systemIOActor: {
+        send: vi.fn(),
+      },
       settings: {
         actor: {},
         useSettings: () => ({
@@ -97,14 +83,13 @@ function createProjectMenuApp(canWriteProjectDirectory = true) {
     } as unknown as App,
     dispose: () => {
       commandsActor.stop()
-      systemIOActor.stop()
       registry[Symbol.dispose]()
     },
   }
 }
 
 describe('project explorer project menu', () => {
-  test('opens the duplicate project command for the current project', async () => {
+  test('duplicates the current project', async () => {
     const { app, dispose } = createProjectMenuApp()
 
     try {
@@ -117,103 +102,21 @@ describe('project explorer project menu', () => {
         await screen.findByTestId('project-sidebar-duplicate-project')
       ).closest('button')
 
-      expect(duplicateButton).toHaveAttribute('tabindex', '0')
-      if (!duplicateButton) {
-        return
-      }
+      expect(duplicateButton).not.toBeNull()
+      if (!duplicateButton) return
       fireEvent.click(duplicateButton)
 
-      expect(app.commands.send).toHaveBeenCalledWith({
-        type: 'Find and select command',
+      expect(app.systemIOActor.send).toHaveBeenCalledWith({
+        type: 'duplicate project',
         data: {
-          groupId: 'projects',
-          name: 'Duplicate project',
-          argDefaultValues: {
-            name: projectWellFormed.name,
-            newName: projectWellFormed.title,
-          },
+          projectName: projectWellFormed.name,
+          requestedProjectName: projectWellFormed.title,
         },
       })
     } finally {
       dispose()
     }
   })
-
-  test('allows a readable read-only project to be duplicated', async () => {
-    const { app, dispose } = createProjectMenuApp()
-    const readOnlyProject = {
-      ...projectWellFormed,
-      readAccess: true,
-      readWriteAccess: false,
-    }
-
-    try {
-      renderWithRouter(
-        <ProjectSidebarMenu app={app} enableMenu project={readOnlyProject} />
-      )
-
-      fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-      const duplicateButton = (
-        await screen.findByTestId('project-sidebar-duplicate-project')
-      ).closest('button')
-
-      expect(duplicateButton).toBeEnabled()
-      if (!duplicateButton) {
-        return
-      }
-      fireEvent.click(duplicateButton)
-      expect(app.commands.send).toHaveBeenCalledWith({
-        type: 'Find and select command',
-        data: {
-          groupId: 'projects',
-          name: 'Duplicate project',
-          argDefaultValues: {
-            name: readOnlyProject.name,
-            newName: readOnlyProject.title,
-          },
-        },
-      })
-    } finally {
-      dispose()
-    }
-  })
-
-  test.each([
-    {
-      description: 'the source is unreadable',
-      project: {
-        ...projectWellFormed,
-        readAccess: false,
-        readWriteAccess: false,
-      },
-      canWriteProjectDirectory: true,
-    },
-    {
-      description: 'the destination directory is not writable',
-      project: projectWellFormed,
-      canWriteProjectDirectory: false,
-    },
-  ])(
-    'disables duplication when $description',
-    async ({ project, canWriteProjectDirectory }) => {
-      const { app, dispose } = createProjectMenuApp(canWriteProjectDirectory)
-
-      try {
-        renderWithRouter(
-          <ProjectSidebarMenu app={app} enableMenu project={project} />
-        )
-
-        fireEvent.click(screen.getByTestId('project-sidebar-toggle'))
-        const duplicateButton = (
-          await screen.findByTestId('project-sidebar-duplicate-project')
-        ).closest('button')
-
-        expect(duplicateButton).toBeDisabled()
-      } finally {
-        dispose()
-      }
-    }
-  )
 
   test('reveals the current project from the contributed menu item on desktop', async () => {
     vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue('Electron')

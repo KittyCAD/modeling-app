@@ -328,7 +328,6 @@ export const systemIOMachine = setup({
     }): boolean => {
       assertEvent(event, [
         SystemIOMachineEvents.createProject,
-        SystemIOMachineEvents.duplicateProject,
         SystemIOMachineEvents.renameProject,
       ])
       const { requestedProjectName } = event.data
@@ -830,21 +829,6 @@ export const systemIOMachine = setup({
   },
 }).createMachine({
   initial: SystemIOMachineStates.idle,
-  // A duplicate request can arrive from several surfaces while another
-  // filesystem actor is still running. Keep one request queued instead of
-  // silently dropping it; the idle entry below replays it once the active
-  // operation and any required folder refresh have completed.
-  on: {
-    [SystemIOMachineEvents.duplicateProject]: [
-      {
-        guard: SystemIOMachineGuards.projectNameIsValidLength,
-        actions: [SystemIOMachineActions.deferSystemIOEvent],
-      },
-      {
-        actions: [SystemIOMachineActions.toastProjectNameTooLong],
-      },
-    ],
-  },
   // Remember, this machine and change its projectDirectory at any point
   // '' will be no project directory, aka clear this machine out!
   // To be the absolute root of someones computer we should take the string of path.resolve() in node.js which is different for each OS
@@ -876,7 +860,6 @@ export const systemIOMachine = setup({
   }),
   states: {
     [SystemIOMachineStates.idle]: {
-      entry: [SystemIOMachineActions.flushDeferredSystemIOEvent],
       on: {
         // on can be an action
         [SystemIOMachineEvents.readFoldersFromProjectDirectory]: {
@@ -901,15 +884,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
-        [SystemIOMachineEvents.duplicateProject]: [
-          {
-            guard: SystemIOMachineGuards.projectNameIsValidLength,
-            target: SystemIOMachineStates.duplicatingProject,
-          },
-          {
-            actions: [SystemIOMachineActions.toastProjectNameTooLong],
-          },
-        ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          target: SystemIOMachineStates.duplicatingProject,
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -1018,19 +995,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
-        [SystemIOMachineEvents.duplicateProject]: [
-          {
-            guard: ({ context }) => !context.hasListedProjects,
-            actions: [SystemIOMachineActions.deferSystemIOEvent],
-          },
-          {
-            guard: SystemIOMachineGuards.projectNameIsValidLength,
-            target: SystemIOMachineStates.duplicatingProject,
-          },
-          {
-            actions: [SystemIOMachineActions.toastProjectNameTooLong],
-          },
-        ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             target: SystemIOMachineStates.renamingProject,
@@ -1132,6 +1099,7 @@ export const systemIOMachine = setup({
               },
               pendingRenamedProjectName: () => undefined, // clear after redirect
             }),
+            SystemIOMachineActions.flushDeferredSystemIOEvent,
           ],
         },
         onError: {
@@ -1140,6 +1108,7 @@ export const systemIOMachine = setup({
             assign({
               folders: ({ context }) => context.folders ?? [],
               hasListedProjects: true,
+              deferredSystemIOEvent: undefined,
             }),
           ],
         },
@@ -1393,15 +1362,9 @@ export const systemIOMachine = setup({
             actions: [SystemIOMachineActions.toastProjectNameTooLong],
           },
         ],
-        [SystemIOMachineEvents.duplicateProject]: [
-          {
-            guard: SystemIOMachineGuards.projectNameIsValidLength,
-            actions: [SystemIOMachineActions.deferSystemIOEvent],
-          },
-          {
-            actions: [SystemIOMachineActions.toastProjectNameTooLong],
-          },
-        ],
+        [SystemIOMachineEvents.duplicateProject]: {
+          actions: [SystemIOMachineActions.deferSystemIOEvent],
+        },
         [SystemIOMachineEvents.renameProject]: [
           {
             guard: SystemIOMachineGuards.projectNameIsValidLength,
@@ -1491,10 +1454,6 @@ export const systemIOMachine = setup({
         },
         onDone: {
           target: SystemIOMachineStates.readingFolders,
-          actions: [
-            SystemIOMachineActions.setReadWriteProjectDirectory,
-            SystemIOMachineActions.flushDeferredSystemIOEvent,
-          ],
         },
         onError: {
           target: SystemIOMachineStates.readingFolders,
