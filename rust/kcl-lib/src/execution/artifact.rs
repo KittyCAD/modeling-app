@@ -237,6 +237,10 @@ pub struct Sweep {
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// The original sweep this body was cloned from, if any. For clones of
+    /// clones, this continues to point to the originating sweep.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_sweep_id: Option<ArtifactId>,
     /// ID of trajectory path for sweep, if any
     /// Only applicable to SweepSubType::Sweep and SweepSubType::Blend, which
     /// can use a second path-like input
@@ -772,6 +776,7 @@ impl Sweep {
         };
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
+        self.source_sweep_id = new.source_sweep_id.or(self.source_sweep_id);
         merge_opt_id(&mut self.trajectory_id, new.trajectory_id);
         merge_ids(&mut self.pattern_ids, new.pattern_ids);
         self.consumed = new.consumed;
@@ -1364,6 +1369,7 @@ fn remap_artifact_for_clone(
             surface_ids: remap_ids_for_clone(&source.surface_ids, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
+            source_sweep_id: source.source_sweep_id.or(Some(source.id)),
             trajectory_id: remap_opt_id_for_clone(source.trajectory_id, entity_id_map),
             method: source.method,
             consumed: if source.id == source_root_id {
@@ -2249,6 +2255,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id: None,
                 method,
                 consumed: false,
@@ -2285,6 +2292,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id: Some(trajectory),
                 method,
                 consumed: false,
@@ -2358,6 +2366,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 consumed: false,
@@ -2384,6 +2393,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id: None,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 consumed: false,
