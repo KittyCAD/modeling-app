@@ -1178,7 +1178,7 @@ export async function getEventForSelectWithPoint(
   }
 
   const selectedEngineEntityId = data.entity_id
-  let _artifact =
+  const _artifact =
     artifactGraph.get(selectedEngineEntityId) ??
     getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
   if (!_artifact) {
@@ -1228,6 +1228,31 @@ export async function getEventForSelectWithPoint(
   }
   const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
   if (_artifact && codeRefs) {
+    let bodyEngineEntityId = selectedEngineEntityId
+    let patternIndex: number | undefined
+    if (_artifact.type === 'pattern') {
+      const directCopyIndex = _artifact.copyIds.indexOf(selectedEngineEntityId)
+      if (selectedEngineEntityId === _artifact.sourceId) {
+        patternIndex = 0
+      } else if (directCopyIndex >= 0) {
+        patternIndex = directCopyIndex + 1
+      } else if (
+        _artifact.copyFaceIds.includes(selectedEngineEntityId) ||
+        _artifact.copyEdgeIds.includes(selectedEngineEntityId)
+      ) {
+        const parentEntityId = await getParentEntityIdForEntity(
+          selectedEngineEntityId,
+          engineCommandManager
+        )
+        const parentCopyIndex = parentEntityId
+          ? _artifact.copyIds.indexOf(parentEntityId)
+          : -1
+        if (parentEntityId && parentCopyIndex >= 0) {
+          bodyEngineEntityId = parentEntityId
+          patternIndex = parentCopyIndex + 1
+        }
+      }
+    }
     return {
       type: 'Set selection',
       data: {
@@ -1235,7 +1260,8 @@ export async function getEventForSelectWithPoint(
         selection: {
           artifact: _artifact,
           codeRef: codeRefs[0],
-          engineEntityId: selectedEngineEntityId,
+          engineEntityId: bodyEngineEntityId,
+          ...(patternIndex !== undefined ? { patternIndex } : {}),
         },
       },
     }

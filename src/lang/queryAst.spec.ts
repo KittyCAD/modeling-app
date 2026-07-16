@@ -1,6 +1,6 @@
 import type { Name } from '@rust/kcl-lib/bindings/Name'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
+import type { OpArg, Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 
 import type { Artifact, Plane } from '@rust/kcl-lib/bindings/Artifact'
@@ -33,7 +33,12 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { codeRefFromRange } from '@src/lang/std/artifactGraph'
 import { addCallExpressionsToPipe, addCloseToPipe } from '@src/lang/std/sketch'
 import { topLevelRange } from '@src/lang/util'
-import type { Identifier, PathToNode, SourceRange } from '@src/lang/wasm'
+import type {
+  ArtifactGraph,
+  Identifier,
+  PathToNode,
+  SourceRange,
+} from '@src/lang/wasm'
 import {
   assertParse,
   defaultNodePath,
@@ -1684,6 +1689,52 @@ appearance(extrude001, color = '#FF0000')`
       throw new Error('Artifact not found in the selection')
     }
     expect(selection.artifact.type).toEqual('sweep')
+  })
+
+  it('preserves a pattern copy identity from an operation argument', async () => {
+    const code = `extrude001 = 0
+pattern001 = patternLinear3d(extrude001, instances = 3, distance = 5, axis = X)`
+    const ast = assertParse(code, instanceInThisFile)
+    const patternRange: SourceRange = [
+      code.indexOf('patternLinear3d'),
+      code.length,
+      0,
+    ]
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-command-id',
+      subType: 'linear',
+      sourceId: 'source-body-id',
+      copyIds: ['copy-body-1', 'copy-body-2'],
+      copyFaceIds: [],
+      copyEdgeIds: [],
+      codeRef: {
+        range: patternRange,
+        pathToNode: getNodePathFromSourceRange(ast, patternRange),
+        nodePath: defaultNodePath(),
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+    const opArg = {
+      value: {
+        type: 'Solid',
+        value: { artifactId: 'copy-body-1' },
+      },
+      sourceRange: patternRange,
+    } as unknown as OpArg
+
+    const selections = retrieveSelectionsFromOpArg(opArg, artifactGraph)
+    if (err(selections)) throw selections
+
+    expect(selections.graphSelections).toHaveLength(1)
+    const selection = selections.graphSelections[0]
+    expect(selection.artifact?.type).toBe('pattern')
+    expect(selection.engineEntityId).toBe(
+      selection.artifact?.type === 'pattern'
+        ? selection.artifact.copyIds[0]
+        : undefined
+    )
+    expect(selection.patternIndex).toBe(1)
   })
 
   it('maps a segment tag to a wall selection when a wall exists', async () => {

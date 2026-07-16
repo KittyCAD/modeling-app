@@ -150,6 +150,38 @@ export function getPatternArtifactForCopyId(
   )
 }
 
+export function getPatternSelectionIndex(
+  selection: Selection & {
+    artifact: Extract<Artifact, { type: 'pattern' }>
+  }
+): number | undefined | Error {
+  const { artifact, engineEntityId, patternIndex } = selection
+
+  if (patternIndex !== undefined) {
+    if (
+      !Number.isInteger(patternIndex) ||
+      patternIndex < 0 ||
+      patternIndex > artifact.copyIds.length
+    ) {
+      return new Error(`Invalid pattern instance index: ${patternIndex}`)
+    }
+    return patternIndex
+  }
+
+  if (engineEntityId === undefined) {
+    return undefined
+  }
+  if (engineEntityId === artifact.sourceId) {
+    return 0
+  }
+
+  const copyIndex = artifact.copyIds.indexOf(engineEntityId)
+  if (copyIndex < 0) {
+    return new Error('Selected entity is not a body instance in the pattern')
+  }
+  return copyIndex + 1
+}
+
 export function expandPlane(
   plane: PlaneArtifact,
   artifactGraph: ArtifactGraph
@@ -956,11 +988,13 @@ export function coerceSelectionsToBody(
     ) {
       let bodyKey = selection.artifact.id
       if (selection.artifact.type === 'pattern') {
-        const patternIndex =
-          selection.patternIndex ??
-          (selection.engineEntityId !== undefined
-            ? selection.artifact.copyIds.indexOf(selection.engineEntityId) + 1
-            : undefined)
+        const patternIndex = getPatternSelectionIndex({
+          ...selection,
+          artifact: selection.artifact,
+        })
+        if (patternIndex instanceof Error) {
+          return patternIndex
+        }
         bodyKey = `pattern:${selection.artifact.id}:${
           patternIndex === undefined ? 'all' : `index:${patternIndex}`
         }`

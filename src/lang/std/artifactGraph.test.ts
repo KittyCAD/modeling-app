@@ -294,6 +294,44 @@ describe('coerceSelectionsToBody', () => {
     }
   })
 
+  it('rejects pattern face and edge ids as body instance ids', () => {
+    const pattern: Artifact = {
+      type: 'pattern',
+      id: 'pattern-1',
+      subType: 'linear',
+      sourceId: 'source-body',
+      copyIds: ['copy-1', 'copy-2'],
+      copyFaceIds: ['copy-face-1'],
+      copyEdgeIds: ['copy-edge-1'],
+      codeRef: {
+        range: [0, 100, 0],
+        pathToNode: [],
+        nodePath: { steps: [] },
+      },
+    }
+    const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+
+    for (const engineEntityId of ['copy-face-1', 'copy-edge-1']) {
+      const result = coerceSelectionsToBody(
+        {
+          graphSelections: [
+            {
+              artifact: pattern,
+              codeRef: pattern.codeRef,
+              engineEntityId,
+            },
+          ],
+          otherSelections: [],
+        },
+        artifactGraph
+      )
+
+      expect(result).toEqual(
+        new Error('Selected entity is not a body instance in the pattern')
+      )
+    }
+  })
+
   it('should coerce edgeCut selection to parent path', () => {
     const artifactGraph: ArtifactGraph = new Map()
 

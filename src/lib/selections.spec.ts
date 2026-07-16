@@ -13,6 +13,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getEventForSelectWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -22,6 +23,62 @@ import {
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+
+test('pattern primitive selections resolve to their owning copy body', async () => {
+  const pattern: Artifact = {
+    type: 'pattern',
+    id: 'pattern-command',
+    subType: 'linear',
+    sourceId: 'source-body',
+    copyIds: ['copy-body-1', 'copy-body-2'],
+    copyFaceIds: ['copy-face-2'],
+    copyEdgeIds: [],
+    codeRef: {
+      range: [0, 100, 0],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    },
+  }
+  const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+  const sendSceneCommand = vi.fn(async () => ({
+    success: true,
+    resp: {
+      type: 'modeling',
+      data: {
+        modeling_response: {
+          type: 'entity_get_parent_id',
+          data: { entity_id: 'copy-body-2' },
+        },
+      },
+    },
+  }))
+
+  const event = await getEventForSelectWithPoint(
+    { data: { entity_id: 'copy-face-2' } } as Parameters<
+      typeof getEventForSelectWithPoint
+    >[0],
+    {
+      engineCommandManager: { sendSceneCommand },
+      kclManager: { ast: null, artifactGraph },
+      rustContext: { defaultPlanes: null },
+      wasmInstance: null,
+      useSegmentsBasedRegions: false,
+    } as unknown as Parameters<typeof getEventForSelectWithPoint>[1]
+  )
+
+  expect(sendSceneCommand).toHaveBeenCalledOnce()
+  expect(event).toMatchObject({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: {
+        artifact: pattern,
+        engineEntityId: 'copy-body-2',
+        patternIndex: 2,
+      },
+    },
+  })
+})
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)
