@@ -1956,7 +1956,7 @@ fn artifacts_to_update(
                     sweep_id: None,
                     trajectory_sweep_id: None,
                     solid2d_id: None,
-                    code_ref: code_ref.clone(),
+                    code_ref,
                     composite_solid_id: None,
                     sketch_block_id: None,
                     origin_path_id: Some(ArtifactId::new(*origin_path_id)),
