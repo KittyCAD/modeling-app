@@ -210,6 +210,7 @@ export const modelingCommandStdLibDriftConfig = {
     editFlow: true,
     flowArgOrder: ['sketches', 'path', 'bodyType'],
     deprecatedStdLibArgs: ['relativeTo'],
+    omittedStdLibArgs: ['projectedAxis'],
   },
   Loft: {
     stdLibName: 'loft',

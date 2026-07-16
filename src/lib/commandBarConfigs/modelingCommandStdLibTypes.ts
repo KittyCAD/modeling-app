@@ -15,8 +15,10 @@ import type { Selections } from '@src/machines/modelingSharedTypes'
 
 // Adapts generated KCL stdlib metadata into the command-bar argument shapes.
 // UI-specific aliases and omissions stay explicit here.
-type StdLibCommandArg<Name extends StdLibCommandName> =
-  (typeof STD_LIB_COMMANDS)[Name]['args'][number]
+type StdLibCommandArg<Name extends StdLibCommandName> = Extract<
+  (typeof STD_LIB_COMMANDS)[Name]['args'][number],
+  { readonly deprecated: false; readonly deprecatedSince: null }
+>
 
 type StdLibCommandArgValue<Arg extends { readonly ty: string | null }> =
   Arg['ty'] extends 'bool'
@@ -69,7 +71,7 @@ export type ExtrudeCommandArgs = Override<
 >
 
 export type SweepCommandArgs = Override<
-  StdLibCommandArgs<'sweep'>,
+  Omit<StdLibCommandArgs<'sweep'>, 'projectedAxis'>,
   {
     relativeTo?: SweepRelativeTo
     bodyType?: KclPreludeBodyType
