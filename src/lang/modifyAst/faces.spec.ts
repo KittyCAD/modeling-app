@@ -643,7 +643,8 @@ sketch001 = sketch(on = YZ) {
   horizontal(line3)
   line5 = line(start = [var -1.88mm, var -2.07mm], end = [var 3.23mm, var 9.92mm])
 }
-region001 = region(point = [-0.46mm, 4.77mm], sketch = sketch001)
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line5, sketch001.line3])
 extrude001 = extrude(region001, length = 5)`
 
       const { artifactGraph, ast } = await getAstAndArtifactGraph(
@@ -652,26 +653,7 @@ extrude001 = extrude(region001, length = 5)`
         kclManagerInThisFile
       )
 
-      const wall = [...artifactGraph.values()].find((artifact) => {
-        if (artifact.type !== 'wall') return false
-        const regionSeg = artifactGraph.get(artifact.segId)
-        if (
-          !regionSeg ||
-          regionSeg.type !== 'segment' ||
-          !regionSeg.originalSegId
-        ) {
-          return false
-        }
-        const originalSeg = artifactGraph.get(regionSeg.originalSegId)
-        if (!originalSeg || originalSeg.type !== 'segment') {
-          return false
-        }
-        const originalPath = artifactGraph.get(originalSeg.pathId)
-        if (!originalPath || originalPath.type !== 'path') {
-          return false
-        }
-        return originalPath.segIds.indexOf(originalSeg.id) === 1
-      })
+      const wall = [...artifactGraph.values()].find((a) => a.type === 'wall')
       const cap = [...artifactGraph.values()].find(
         (artifact) => artifact.type === 'cap' && artifact.subType === 'end'
       )
@@ -695,7 +677,7 @@ extrude001 = extrude(region001, length = 5)`
         `extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)`
       )
       expect(newCode).toContain(
-        `surface001 = deleteFace(extrude001, faces = [region001.tags.line2, capEnd001])`
+        `surface001 = deleteFace(extrude001, faces = [region001.tags.line4, capEnd001])`
       )
       await enginelessExecutor(result.modifiedAst, rustContextInThisFile)
     })
