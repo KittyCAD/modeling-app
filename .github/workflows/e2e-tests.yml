@@ -364,6 +364,11 @@ jobs:
         id: deps-install
         run: npm install
 
+      - name: Verify Electron install
+        run: |
+          npm rebuild electron
+          node -p "require('electron')"
+
       - name: Download browser cache
         uses: actions/cache@v6.1.0
         with:
