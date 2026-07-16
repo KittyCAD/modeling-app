@@ -12,7 +12,6 @@ import {
 import type { StatusBarItemType } from '@src/components/StatusBar/statusBarTypes'
 import { UndoRedoButtons } from '@src/components/UndoRedoButtons'
 import { WasmErrToast } from '@src/components/WasmErrToast'
-import { ZookeeperCreditsMenu } from '@src/components/ZookeeperCreditsMenu'
 import { getMlEphantProjectReloadBehavior } from '@src/components/openedProjectUtils'
 import { useEngineConnectionSubscriptions } from '@src/hooks/useEngineConnectionSubscriptions'
 import { useHotKeyListener } from '@src/hooks/useHotKeyListener'
@@ -24,19 +23,14 @@ import {
   autoUpdateReadySignal,
 } from '@src/lib/autoUpdate'
 import { useApp, useSingletons } from '@src/lib/boot'
+import { setCloudSyncProjectScope } from '@src/lib/cloudSync'
 import {
   CHANGES_REQUESTED_TOAST_ID,
   ONBOARDING_TOAST_ID,
   WASM_INIT_FAILED_TOAST_ID,
 } from '@src/lib/constants'
-import { setOpfsCloudSyncProjectScope } from '@src/lib/fs-zds/opfsCloud'
 import { isDesktop } from '@src/lib/isDesktop'
-import {
-  DefaultLayoutPaneID,
-  LayoutRootNode,
-  defaultLayout,
-  getOpenPanes,
-} from '@src/lib/layout'
+import { LayoutRootNode, defaultLayout } from '@src/lib/layout'
 import { useDefaultActionLibrary } from '@src/lib/layout/defaultActionLibrary'
 import { useDefaultAreaLibrary } from '@src/lib/layout/defaultAreaLibrary'
 import { PATHS } from '@src/lib/paths'
@@ -102,10 +96,10 @@ export function OpenedProject() {
   const systemIOState = useSelector(systemIOActor, (actor) => actor.value)
 
   useEffect(() => {
-    setOpfsCloudSyncProjectScope(projectPath ?? undefined)
+    setCloudSyncProjectScope(projectPath ?? undefined)
 
     return () => {
-      setOpfsCloudSyncProjectScope(undefined)
+      setCloudSyncProjectScope(undefined)
     }
   }, [projectPath])
 
@@ -320,21 +314,6 @@ export function OpenedProject() {
     }
   }, [])
 
-  const zookeeperLocalStatusBarItems: StatusBarItemType[] = useMemo(
-    () =>
-      getOpenPanes({ rootLayout: layout.signal.value }).includes(
-        DefaultLayoutPaneID.TTC
-      )
-        ? [
-            {
-              id: 'zookeeper-credits',
-              component: ZookeeperCreditsMenu,
-            },
-          ]
-        : [],
-    [layout.signal.value]
-  )
-
   const undoRedoButtons = useMemo(
     () => (
       <UndoRedoButtons
@@ -412,7 +391,6 @@ export function OpenedProject() {
                 ] satisfies StatusBarItemType[])
               : []),
             ...registryLocalStatusBarItems,
-            ...zookeeperLocalStatusBarItems,
             ...defaultLocalStatusBarItems,
           ]}
         />

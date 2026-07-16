@@ -1,6 +1,7 @@
 //! Wasm bindings for `kcl`.
 
 use gloo_utils::format::JsValueSerdeExt;
+use kcl_lib::KclRuntimeFlags;
 use kcl_lib::Program;
 use kcl_lib::SourceRange;
 use kcl_lib::exec::NumericType;
@@ -46,6 +47,15 @@ pub fn parse_wasm(kcl_program_source: &str) -> Result<JsValue, String> {
     // The serde-wasm-bindgen does not work here because of weird HashMap issues so we use the
     // gloo-serialize crate instead.
     JsValue::from_serde(&(program, errs)).map_err(|e| e.to_string())
+}
+
+#[wasm_bindgen]
+pub fn set_kcl_runtime_flags(flags_json: &str) -> Result<(), String> {
+    console_error_panic_hook::set_once();
+
+    let flags: KclRuntimeFlags = serde_json::from_str(flags_json).map_err(|e| e.to_string())?;
+    kcl_lib::set_kcl_runtime_flags(flags);
+    Ok(())
 }
 
 // wasm_bindgen wrapper for recast

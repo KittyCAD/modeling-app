@@ -1,21 +1,18 @@
-import type { UserFeature, UserResponse } from '@kittycad/lib'
 import {
-  Registry,
-  type RegistryItem,
-  Slot,
   defineRegistryItem,
   pluginsValueSpec,
   provideService,
+  Registry,
+  type RegistryItem,
+  Slot,
 } from '@kittycad/registry'
-import { type Signal, effect, signal } from '@preact/signals-core'
+import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
 import {
-  type PreparedZookeeperPatchFileReplay,
   buildZookeeperHistoryExtension,
-} from '@src/editor/plugins/zookeeper'
+  type PreparedZookeeperPatchFileReplay,
+} from '@src/lib/zookeeper/editorPlugin'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
-import { initialiseWasm } from '@src/lang/wasmUtils'
-import { MachineManager } from '@src/lib/MachineManager'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import {
@@ -24,21 +21,22 @@ import {
 } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
-import { configureOpfsCloudSync } from '@src/lib/fs-zds/opfsCloud'
 import { isPlaywright } from '@src/lib/isPlaywright'
+import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import {
-  type Layout,
-  type LayoutService,
   createLayoutService,
   createLayoutServiceRegistryItem,
   createLayoutWithMetadata,
   defaultLayout,
+  type Layout,
+  type LayoutService,
   loadLayout,
   saveLayout,
   setBodiesPaneLayoutEnabled,
   setLayoutSaveHandler,
 } from '@src/lib/layout'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
+import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
 import type { SaveSettingsPayload } from '@src/lib/settings/settingsTypes'
@@ -49,13 +47,13 @@ import {
 import { err, reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
-import { authMachine } from '@src/machines/authMachine'
 import {
   BILLING_CONTEXT_DEFAULTS,
   billingMachine,
 } from '@src/machines/billingMachine'
-import type { MlEphantManagerActor } from '@src/machines/mlEphantManagerMachine'
+import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
 import {
@@ -63,19 +61,21 @@ import {
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import {
-  type UserFeaturesActorRef,
-  type UserFeaturesContext,
-  type UserFeaturesService,
   UserFeaturesTransition,
   userFeaturesContextHas,
-  userFeaturesMachine,
 } from '@src/machines/userFeaturesMachine'
 import { ConnectionManager } from '@src/network/connectionManager'
+import {
+  type AuthRegistryService,
+  authService,
+} from '@src/registry/contracts/auth'
+import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
   type CommandSystemService,
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { layoutContributionsValueSpec } from '@src/registry/contracts/layout'
@@ -84,10 +84,15 @@ import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
-import { userFeaturesService } from '@src/registry/contracts/userFeatures'
-import { provideWasmPromise } from '@src/registry/contracts/wasm'
+import { systemIOService } from '@src/registry/contracts/systemIO'
+import {
+  type UserFeaturesRegistryService,
+  userFeaturesService,
+} from '@src/registry/contracts/userFeatures'
+import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { zdsPluginActivationSettingsValueSpec } from '@src/registry/createZdsPlugin'
 import {
+  appRegistryOverridesSlot,
   appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
@@ -103,6 +108,10 @@ import { createActor } from 'xstate'
 const DEFAULT_LAYOUT_CONFIG_NAME = 'default'
 const PLAYWRIGHT_LAYOUT_CONFIG_NAME = 'test'
 const appCommandsSlot = new Slot()
+
+type AppRegistryOptions = {
+  registryOverrides?: readonly RegistryItem[]
+}
 
 function zookeeperReplayChangesProjectFileSet(
   replayFiles: readonly PreparedZookeeperPatchFileReplay[]
@@ -130,43 +139,6 @@ function isPlaywrightRuntime() {
   return typeof window !== 'undefined' && isPlaywright()
 }
 
-function createAppRegistryItems({
-  wasmPromise,
-  machineManager,
-  userFeatures,
-}: {
-  wasmPromise: Promise<ModuleType>
-  machineManager: MachineManager
-  userFeatures?: AppUserFeaturesSystem
-}): RegistryItem[] {
-  return [
-    defineRegistryItem({
-      id: 'app.wasm-promise',
-      provides: [provideWasmPromise(wasmPromise)],
-    }),
-    defineRegistryItem({
-      id: 'app.machine-manager',
-      providesServices: [provideService(machineManagerService, machineManager)],
-    }),
-    ...(userFeatures
-      ? [
-          defineRegistryItem({
-            id: 'app.user-features',
-            providesServices: [
-              provideService(userFeaturesService, {
-                context: userFeatures.contextSignal,
-                has: userFeatures.has,
-              }),
-            ],
-          }),
-        ]
-      : []),
-    appCommandsSlot.of(),
-    appRegistryServicesSlot.of(),
-    ...coreRegistryItems,
-  ]
-}
-
 // We set some of our singletons on the window for debugging and E2E tests
 declare global {
   interface Window {
@@ -183,13 +155,7 @@ declare global {
   }
 }
 
-export type AppAuthSystem = {
-  actor: ActorRefFrom<typeof authMachine>
-  send: ActorRefFrom<typeof authMachine>['send']
-  useAuthState: () => SnapshotFrom<typeof authMachine>
-  useToken: () => string
-  useUser: () => UserResponse | undefined
-}
+export type AppAuthSystem = AuthRegistryService
 
 export type AppCommandSystem = CommandSystemService
 
@@ -201,13 +167,7 @@ export type AppBillingSystem = {
   useContext: () => ContextFrom<typeof billingMachine>
 }
 
-export type AppUserFeaturesSystem = UserFeaturesService & {
-  actor: UserFeaturesActorRef
-  send: UserFeaturesActorRef['send']
-  contextSignal: Signal<UserFeaturesContext>
-  useContext: () => UserFeaturesContext
-  useHas: (featureFlagId: UserFeature, defaultValue: boolean) => boolean
-}
+export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
 export type AppLayoutSystem = {
   signal: Signal<Layout>
@@ -285,7 +245,8 @@ export class App implements AppSubsystems {
 
   // TODO: refactor this to not require keeping around the last settings to compare to
   private lastSettings: SaveSettingsPayload
-  private pluginSettingsSubscription: Subscription
+  private activeWasmInstance: ModuleType | undefined
+  private unsubscribeFromActiveWasmInstance: (() => void) | undefined
 
   constructor(subsystems: AppSubsystems) {
     this.wasmPromise = subsystems.wasmPromise
@@ -312,20 +273,24 @@ export class App implements AppSubsystems {
       data: this.userFeatures,
     })
     this.auth.actor.subscribe(this.syncUserFeaturesFromAuth)
-    this.auth.actor.subscribe(this.syncOpfsCloudBacking)
-    this.userFeatures.actor.subscribe(this.syncOpfsCloudBacking)
-    this.settings.actor.subscribe(this.syncOpfsCloudBacking)
+    this.auth.actor.subscribe(this.syncCloudSyncRuntimePolicy)
+    this.userFeatures.actor.subscribe(this.syncCloudSyncRuntimePolicy)
     this.userFeatures.actor.subscribe(this.syncAppCommands)
+    this.userFeatures.actor.subscribe(this.syncKclRuntimeFlags)
+    this.unsubscribeFromActiveWasmInstance = onActiveWasmInstance(
+      this.setActiveWasmInstance
+    )
+    void this.wasmPromise
+      .then(this.setActiveWasmInstance)
+      .catch(reportRejection)
     this.syncUserFeaturesFromAuth(this.auth.actor.getSnapshot())
-    this.syncOpfsCloudBacking()
+    this.syncCloudSyncRuntimePolicy()
 
     this.singletons = this.buildSingletons()
     this.lastSettings = getAllCurrentSettings(
       getOnlySettingsFromContext(this.settings.actor.getSnapshot().context)
     )
-    this.pluginSettingsSubscription = this.settings.actor.subscribe(
-      this.syncPluginSettings
-    )
+    this.settings.actor.subscribe(this.syncPluginSettings)
     this.syncPluginSettings(this.settings.actor.getSnapshot())
   }
 
@@ -333,28 +298,23 @@ export class App implements AppSubsystems {
    * The default app subsystems during normal runtime.
    * Useful if you want to manipulate, spy, or mock some subsystems in an App instance.
    */
-  static getDefaultSystems(wasmPromise = initialiseWasm()) {
-    const authActor = createActor(authMachine).start()
-    const auth: AppAuthSystem = {
-      actor: authActor,
-      send: (...args: Parameters<typeof authActor.send>) =>
-        authActor.send(...args),
-      useAuthState: () => useSelector(authActor, (state) => state),
-      useToken: () => useSelector(authActor, (state) => state.context.token),
-      useUser: () => useSelector(authActor, (state) => state.context.user),
-    }
-
-    const machineManager = window.electron
-      ? new MachineManager({
-          getMachineApiIp: window.electron.getMachineApiIp,
-          listMachines: window.electron.listMachines,
-        })
-      : new MachineManager() // Instantiate with no-op functions
-
+  static getDefaultSystems({
+    registryOverrides = [],
+  }: AppRegistryOptions = {}) {
     const appRegistry = new Registry()
-    appRegistry.configure(
-      createAppRegistryItems({ wasmPromise, machineManager })
-    )
+    appRegistry.configure([
+      appRegistryOverridesSlot.of(...registryOverrides),
+      appCommandsSlot.of(),
+      appRegistryServicesSlot.of(),
+      engineSceneRuntimeExtensionsSlot.of(),
+      ...coreRegistryItems,
+    ])
+    const wasmPromise =
+      appRegistry.get(wasmPromiseValueSpec) ??
+      Promise.reject(new Error('Missing WASM promise registry value.'))
+    const auth = appRegistry.get(authService)
+    const machineManager = appRegistry.get(machineManagerService).manager
+    const userFeatures = appRegistry.get(userFeaturesService)
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
     const settingsActor = settings.actor
@@ -377,31 +337,6 @@ export class App implements AppSubsystems {
       actor: billingActor,
       send: billingActor.send.bind(App),
       useContext: () => useSelector(billingActor, ({ context }) => context),
-    }
-
-    const userFeaturesActor = createActor(userFeaturesMachine).start()
-    const userFeaturesContextSignal = signal<UserFeaturesContext>(
-      userFeaturesActor.getSnapshot().context
-    )
-    userFeaturesActor.subscribe((snapshot) => {
-      userFeaturesContextSignal.value = snapshot.context
-    })
-    const userFeatures: AppUserFeaturesSystem = {
-      actor: userFeaturesActor,
-      send: userFeaturesActor.send.bind(App),
-      contextSignal: userFeaturesContextSignal,
-      has: (featureFlagId, defaultValue) =>
-        userFeaturesContextHas(
-          userFeaturesActor.getSnapshot().context,
-          featureFlagId,
-          defaultValue
-        ),
-      useContext: () =>
-        useSelector(userFeaturesActor, ({ context }) => context),
-      useHas: (featureFlagId, defaultValue) =>
-        useSelector(userFeaturesActor, ({ context }) =>
-          userFeaturesContextHas(context, featureFlagId, defaultValue)
-        ),
     }
 
     const usePlaywrightLayout = isPlaywrightRuntime()
@@ -433,8 +368,7 @@ export class App implements AppSubsystems {
         saveLayout({ layout: layoutSignal.value, layoutName: layoutConfigName })
       ),
     }
-    appRegistry.configure([
-      ...createAppRegistryItems({ wasmPromise, machineManager, userFeatures }),
+    appRegistry.reconfigure(appRegistryServicesSlot, [
       createLayoutServiceRegistryItem(layoutService),
     ])
 
@@ -508,7 +442,7 @@ export class App implements AppSubsystems {
     }
     settingsActor.subscribe(hydrateLayoutFromSettings)
     hydrateLayoutFromSettings(settingsActor.getSnapshot())
-    userFeaturesActor.subscribe(syncBodiesPaneFeatureLayout)
+    userFeatures.actor.subscribe(syncBodiesPaneFeatureLayout)
     effect(() => {
       const contributions = appRegistry.signal(
         layoutContributionsValueSpec
@@ -544,12 +478,12 @@ export class App implements AppSubsystems {
    * Useful for testing, spying, or mocking subsystems (such as WASM in unit tests).
    */
   static fromProvided(
-    provided: Partial<ReturnType<typeof App.getDefaultSystems>>
+    provided: Partial<ReturnType<typeof App.getDefaultSystems>> &
+      AppRegistryOptions = {}
   ) {
-    const defaults = provided.wasmPromise
-      ? App.getDefaultSystems(provided.wasmPromise) // Allows us to instantiate without WASM!
-      : App.getDefaultSystems()
-    const combined = Object.assign(defaults, provided)
+    const { registryOverrides, ...subsystems } = provided
+    const defaults = App.getDefaultSystems({ registryOverrides })
+    const combined = Object.assign(defaults, subsystems)
     return new App(combined)
   }
 
@@ -631,6 +565,19 @@ export class App implements AppSubsystems {
   }
   private unsubscribeFromSettings: Subscription | undefined = undefined
   private disposeProjectHistoryExtensions: (() => void) | undefined = undefined
+  dispose() {
+    this.closeProject()
+    this.unsubscribeFromActiveWasmInstance?.()
+    this.unsubscribeFromActiveWasmInstance = undefined
+    this.systemIOActor.stop()
+    this.settings.actor.stop()
+    this.commands.actor.stop()
+    this.auth.actor.stop()
+    this.billing.actor.stop()
+    this.userFeatures.actor.stop()
+    this.registry[Symbol.dispose]()
+  }
+
   closeProject() {
     this.disposeProjectHistoryExtensions?.()
     this.disposeProjectHistoryExtensions = undefined
@@ -656,8 +603,8 @@ export class App implements AppSubsystems {
     }
   }
 
-  syncOpfsCloudBacking = () => {
-    if (typeof window === 'undefined' || window.electron) {
+  syncCloudSyncRuntimePolicy = () => {
+    if (typeof window === 'undefined') {
       return
     }
 
@@ -673,12 +620,24 @@ export class App implements AppSubsystems {
         false
       )
 
-    configureOpfsCloudSync({
+    this.registry.get(cloudSyncService).configure({
       enabled,
       token,
-      projectDirectoryPath:
-        this.settings.actor.getSnapshot().context.app.projectDirectory.current,
+      syncExistingLocalProjects: !window.electron,
     })
+  }
+
+  setActiveWasmInstance = (wasmInstance: ModuleType) => {
+    this.activeWasmInstance = wasmInstance
+    this.syncKclRuntimeFlags()
+  }
+
+  syncKclRuntimeFlags = () => {
+    if (!this.activeWasmInstance) {
+      return
+    }
+
+    setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
   }
 
   syncAppCommands = () => {
@@ -721,6 +680,7 @@ export class App implements AppSubsystems {
         .get(zdsPluginActivationSettingsValueSpec)
         .map((setting) => [setting.pluginId, setting])
     )
+    const activePluginIds: string[] = []
 
     for (const plugin of this.registry.get(pluginsValueSpec)) {
       const activationSetting = pluginActivationSettings.get(plugin.id)
@@ -737,6 +697,9 @@ export class App implements AppSubsystems {
       if (typeof desiredActive !== 'boolean') {
         continue
       }
+      if (desiredActive) {
+        activePluginIds.push(plugin.id)
+      }
 
       const toggle = this.registry.get(plugin.service)
       if (toggle.active.value === desiredActive) {
@@ -749,6 +712,14 @@ export class App implements AppSubsystems {
       }
 
       toggle.disable()
+    }
+
+    const syncActivePlugins =
+      typeof window !== 'undefined'
+        ? window.electron?.pluginIpc.syncActivePlugins
+        : undefined
+    if (syncActivePlugins) {
+      void syncActivePlugins(activePluginIds).catch(reportRejection)
     }
   }
 
@@ -776,6 +747,9 @@ export class App implements AppSubsystems {
             executingEditorService,
             kclManager.executingEditorService
           ),
+          provideService(systemIOService, {
+            actor: this.systemIOActor,
+          }),
         ],
       }),
     ])
@@ -795,9 +769,13 @@ export class App implements AppSubsystems {
           const streamEl = document.querySelector('[data-testid="stream"]')
           const vw = document.documentElement.clientWidth
           const vh = document.documentElement.clientHeight
-          if (!streamEl || vw <= 0 || vh <= 0) return
+          if (!streamEl || vw <= 0 || vh <= 0) {
+            return
+          }
           const r = streamEl.getBoundingClientRect()
-          if (r.width <= 0 || r.height <= 0) return
+          if (r.width <= 0 || r.height <= 0) {
+            return
+          }
           const cx = e.clientX
           const cy = e.clientY
           const ratioX = (cx - r.left) / r.width

@@ -1,6 +1,6 @@
 [package]
 name = "kcl-api"
-version = "0.2.167"
+version = "0.2.169"
 edition = "2024"
 description = "KCL API"
 license = "MIT"
@@ -12,7 +12,7 @@ pyo3 = ["dep:pyo3", "dep:pyo3-stub-gen"]
 [dependencies]
 indexmap = { workspace = true, features = ["serde", "rayon"] }
 kittycad-unit-conversion-derive = "0.1.0"
-kcl-error = { version = "=0.2.167", path = "../kcl-error" }
+kcl-error = { version = "=0.2.169", path = "../kcl-error" }
 # Fork of <crates.io/crates/measurements>
 measurements = { package = "kittycad-measurements", version = "0.11.2" }
 parse-display = "0.11.0"

@@ -9,7 +9,7 @@ import {
   measurementCapabilities,
 } from './measurementCapabilities'
 import {
-  type MeasurementEntity,
+  convertLengthFromMm,
   formatDistance,
   formatPoint3d,
   getAreaUnit,
@@ -17,6 +17,7 @@ import {
   getMeasurementEntities,
   getMeasurementEntityIds,
   getVolumeUnit,
+  type MeasurementEntity,
 } from './measurementUtils'
 
 describe('MeasurementTool helpers', () => {
@@ -295,11 +296,27 @@ describe('MeasurementTool helpers', () => {
     expect(formatDistance(Number.NaN)).toBe('-')
   })
 
-  it('derives measurement units from length units', () => {
-    expect(getAreaUnit('mm')).toBe('mm2')
-    expect(getAreaUnit('in')).toBe('in2')
-    expect(getVolumeUnit('cm')).toBe('cm3')
-    expect(getVolumeUnit('ft')).toBe('ft3')
+  it('derives area and volume measurement units from length units', () => {
+    expect(
+      (['mm', 'cm', 'm', 'in', 'ft', 'yd'] as const).map((unit) => [
+        unit,
+        getAreaUnit(unit),
+        getVolumeUnit(unit),
+      ])
+    ).toEqual([
+      ['mm', 'mm2', 'mm3'],
+      ['cm', 'cm2', 'cm3'],
+      ['m', 'm2', 'm3'],
+      ['in', 'in2', 'in3'],
+      ['ft', 'ft2', 'ft3'],
+      ['yd', 'yd2', 'yd3'],
+    ])
+  })
+
+  it('converts engine millimeter length measurements to display units', () => {
+    expect(convertLengthFromMm(609.6, 'in')).toBe(24)
+    expect(convertLengthFromMm(609.6, 'ft')).toBe(2)
+    expect(convertLengthFromMm(609.6, 'mm')).toBe(609.6)
   })
 
   it('formats 3d points', () => {

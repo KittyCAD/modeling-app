@@ -666,8 +666,7 @@ description: Operations executed surface_extrude_edge_to.kcl
           }
         ]
       },
-      "sourceRange": [],
-      "isError": true
+      "sourceRange": []
     }
   ],
   "std::math": [

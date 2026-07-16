@@ -52,8 +52,6 @@ export const lineWrappingCompartment = new Compartment()
 export const cursorBlinkingCompartment = new Compartment()
 /** Compartment wrapping KCL CodeMirror plugin, allowing for runtime reconfiguration */
 export const kclLspCompartment = new Compartment()
-/** Compartment wrapping KCL autocompletion "copilot" plugin, allowing for runtime reconfiguration */
-export const kclAutocompleteCompartment = new Compartment()
 
 export function baseEditorExtensions() {
   const extensions: Extension = [
@@ -61,9 +59,8 @@ export function baseEditorExtensions() {
     // Toggled on while in sketch mode
     sketchSceneGraphCompartment.of([]),
     writeEffectsExtension(),
-    // These two extensions are empty to begin with, then reconfigured when the LSP becomes available
+    // Empty to begin with, then reconfigured when the LSP becomes available.
     kclLspCompartment.of([]),
-    kclAutocompleteCompartment.of([]),
     lineWrappingCompartment.of([]),
     cursorBlinkingCompartment.of(
       drawSelection({
