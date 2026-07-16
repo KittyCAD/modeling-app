@@ -897,6 +897,17 @@ impl ExecState {
         self.mod_local.artifacts.pending_edge_refactor_metadata.push(meta);
     }
 
+    pub(crate) fn pending_edge_refactor_meta(&self, edge_id: Uuid) -> Option<PendingEdgeRefactorMeta> {
+        let mut matches = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .filter(|meta| meta.edge_id == edge_id);
+        let pending = matches.next()?.clone();
+        matches.next().is_none().then_some(pending)
+    }
+
     pub(crate) fn record_edge_refactor_meta_from_pending(
         &mut self,
         edge_id: Uuid,

@@ -498,6 +498,15 @@ async fn inner_extrude(
                 ))
             })
         };
+        if is_edge
+            && let Some(edge_id) = sketch_or_face_id
+            && let Some(pending) = exec_state.pending_edge_refactor_meta(edge_id)
+            && let Ok(meta) =
+                edge::get_refactor_meta_for_edge(exec_state, edge_id, &args, pending.source_range, pending.stdlib_fn)
+                    .await
+        {
+            exec_state.record_edge_refactor_meta(meta);
+        }
         let cmd = match (
             &twist_angle,
             &twist_angle_step,
