@@ -49,6 +49,25 @@ export function setProjectTitleInProjectTomlContents(
   return stringifyToml(table)
 }
 
+export function preserveProjectTomlMetadataInProjectSettingsContents(
+  existingContents: string,
+  nextProjectSettingsContents: string
+) {
+  const existingTable = parseProjectToml(existingContents)
+  if (!existingTable) {
+    return nextProjectSettingsContents
+  }
+
+  const nextTable = parseProjectToml(nextProjectSettingsContents) ?? {}
+  for (const [key, value] of Object.entries(existingTable)) {
+    if (key !== 'settings' && !(key in nextTable)) {
+      nextTable[key] = value
+    }
+  }
+
+  return stringifyToml(nextTable)
+}
+
 export function setCloudProjectIdInProjectTomlContents(
   contents: string,
   environmentName: string,

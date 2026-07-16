@@ -1,7 +1,7 @@
 import env from '@src/env'
 import { relevantFileExtensions } from '@src/lang/wasmUtils'
 import type { App } from '@src/lib/app'
-import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
+import type { Command } from '@src/lib/commandTypes'
 import {
   writeEnvironmentConfigurationKittycadWebSocketUrl,
   writeEnvironmentConfigurationMlephantWebSocketUrl,
@@ -19,6 +19,7 @@ import {
   joinOSPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
+import { getProjectDirectoryOptions } from '@src/lib/projectDisplayName'
 import { reportRejection } from '@src/lib/trap'
 import { isArray, returnSelfOrGetHostNameFromURL } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -38,9 +39,9 @@ function onSubmitKCLSampleCreation({
   systemIOActor,
   isProjectNew,
 }: {
-  sample: any
+  sample: string
   kclSample: ReturnType<typeof findKclSample>
-  uniqueNameIfNeeded: any
+  uniqueNameIfNeeded: string
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   isProjectNew: boolean
 }) {
@@ -286,7 +287,7 @@ export function createApplicationCommands({
           const MAX_LENGTH = 12
           if (typeof value === 'string') {
             return value.length > MAX_LENGTH
-              ? value.substring(0, MAX_LENGTH) + '...'
+              ? `${value.substring(0, MAX_LENGTH)}...`
               : value
           }
           return value
@@ -324,17 +325,7 @@ export function createApplicationCommands({
         defaultValue: () => app.project?.name,
         options: (_, _context) => {
           const { folders } = app.systemIOActor.getSnapshot().context
-          const options: CommandArgumentOption<string>[] = []
-          if (!folders) return options
-
-          folders.forEach((folder) => {
-            options.push({
-              name: folder.name,
-              value: folder.name,
-              isCurrent: false,
-            })
-          })
-          return options
+          return getProjectDirectoryOptions(folders)
         },
       },
       newProjectName: {
@@ -348,7 +339,9 @@ export function createApplicationCommands({
         skip: true,
         hidden: false,
         valueSummary: (value) => {
-          if (typeof value === 'string') return fsZds.basename(value)
+          if (typeof value === 'string') {
+            return fsZds.basename(value)
+          }
           if (isArray(value) && typeof value[0] === 'string') {
             return fsZds.basename(value[0])
           }
@@ -388,7 +381,9 @@ export function createApplicationCommands({
     onSubmit: (data) => {
       if (data) {
         const folders = app.systemIOActor.getSnapshot().context.folders
-        if (!folders) return
+        if (!folders) {
+          return
+        }
         const kclSample = findKclSample(data.sample)
         if (!kclSample) {
           toast.error(
@@ -428,7 +423,7 @@ export function createApplicationCommands({
           const MAX_LENGTH = 12
           if (typeof value === 'string') {
             return value.length > MAX_LENGTH
-              ? value.substring(0, MAX_LENGTH) + '...'
+              ? `${value.substring(0, MAX_LENGTH)}...`
               : value
           }
           return value
@@ -492,7 +487,7 @@ export function createApplicationCommands({
     },
     onSubmit: (data) => {
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
-      if (environmentName)
+      if (environmentName) {
         writeEnvironmentConfigurationKittycadWebSocketUrl(
           environmentName,
           data?.url ?? ''
@@ -501,6 +496,7 @@ export function createApplicationCommands({
             window.location.reload()
           })
           .catch(reportRejection)
+      }
     },
     args: {
       url: {
@@ -536,7 +532,7 @@ export function createApplicationCommands({
     },
     onSubmit: (data) => {
       const environmentName = env().VITE_ZOO_BASE_DOMAIN
-      if (environmentName)
+      if (environmentName) {
         writeEnvironmentConfigurationMlephantWebSocketUrl(
           environmentName,
           data?.url ?? ''
@@ -545,6 +541,7 @@ export function createApplicationCommands({
             window.location.reload()
           })
           .catch(reportRejection)
+      }
     },
     args: {
       url: {
