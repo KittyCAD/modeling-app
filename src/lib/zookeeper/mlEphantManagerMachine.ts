@@ -677,27 +677,29 @@ export const mlEphantManagerMachine = setup({
         context.ws?.close()
       }
     },
-    cacheSetup: assign({
-      conversationId: ({ event }) => {
-        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
+    prepareSetup: assign(({ context, event }) => {
+      assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
 
-        if (event.conversationId) {
-          return event.conversationId
-        }
-
-        return undefined
-      },
-      cachedSetup: ({ context, event }) => {
-        assertEvent(event, MlEphantManagerTransitions.CacheSetupAndConnect)
-        return {
+      return {
+        abruptlyClosed: false,
+        lastMessageId: undefined,
+        lastMessageType: undefined,
+        conversation: undefined,
+        conversationId: event.conversationId || undefined,
+        defaultMode: undefined,
+        modeOptions: undefined,
+        awaitingResponse: false,
+        attachmentsLoadedForCurrentPrompt: true,
+        pendingBackendShutdown: false,
+        cachedSetup: {
           refParentSend: event.refParentSend,
           conversationId: event.conversationId,
           activeExchangeStartedAt:
             context.conversation?.exchanges.findLast((exchange) =>
               isMlCopilotUserRequest(exchange.request)
             )?.startedAt ?? context.cachedSetup?.activeExchangeStartedAt,
-        }
-      },
+        },
+      }
     }),
     clearCacheSetup: assign({
       cachedSetup: undefined,
@@ -1204,20 +1206,7 @@ export const mlEphantManagerMachine = setup({
       on: {
         [MlEphantManagerTransitions.CacheSetupAndConnect]: {
           target: MlEphantManagerStates.Setup,
-          actions: [
-            'cacheSetup',
-            assign({
-              abruptlyClosed: false,
-              lastMessageId: undefined,
-              lastMessageType: undefined,
-              conversation: undefined,
-              defaultMode: undefined,
-              modeOptions: undefined,
-              awaitingResponse: false,
-              attachmentsLoadedForCurrentPrompt: true,
-              pendingBackendShutdown: false,
-            }),
-          ],
+          actions: ['prepareSetup'],
         },
         ...transitions([MlEphantManagerStates.Setup]),
       },
