@@ -135,7 +135,7 @@ async fn inner_mirror_3d(
         mirrored_body.id = info.object_id;
         mirrored_body.artifact_id = ArtifactId::new(info.object_id);
         let mut new_geometry = GeometryWithImportedGeometry::Solid(mirrored_body);
-        fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+        fix_tags_and_references(&mut new_geometry, old_id, old_id, exec_state, &args)
             .await
             .map_err(|e| {
                 KclError::new_internal(KclErrorDetails::new(

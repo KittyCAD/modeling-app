@@ -1497,6 +1497,10 @@ fn pattern_artifact_updates(
         .collect::<Vec<_>>();
 
     let source_ids = pattern_source_ids(artifacts, source_id);
+    let source_body = source_ids.iter().find_map(|source_id| match artifacts.get(source_id) {
+        Some(artifact @ (Artifact::Sweep(_) | Artifact::CompositeSolid(_))) => Some(artifact),
+        _ => None,
+    });
     let mut return_arr = vec![Artifact::Pattern(Pattern {
         id: pattern_id,
         sub_type,
@@ -1504,8 +1508,82 @@ fn pattern_artifact_updates(
         copy_ids,
         copy_face_ids,
         copy_edge_ids,
-        code_ref,
+        code_ref: code_ref.clone(),
     })];
+
+    // Pattern copies are top-level engine bodies, but the Pattern artifact
+    // alone only records their IDs. Materialize a body artifact for each copy
+    // so later operations such as clone() can resolve the copy by engine ID.
+    if let Some(source_body) = source_body {
+        for face_edge_info in face_edge_infos {
+            let copy_id = ArtifactId::new(face_edge_info.object_id);
+            match source_body {
+                Artifact::Sweep(source) => {
+                    let mut topology_id_map = AHashMap::default();
+                    topology_id_map.insert(source.id, copy_id);
+                    for (source_id, copy_id) in source
+                        .surface_ids
+                        .iter()
+                        .copied()
+                        .zip(face_edge_info.faces.iter().copied().map(ArtifactId::new))
+                    {
+                        topology_id_map.insert(source_id, copy_id);
+                    }
+                    for (source_id, copy_id) in source
+                        .edge_ids
+                        .iter()
+                        .copied()
+                        .zip(face_edge_info.edges.iter().copied().map(ArtifactId::new))
+                    {
+                        topology_id_map.insert(source_id, copy_id);
+                    }
+
+                    let mut copy = source.clone();
+                    copy.id = copy_id;
+                    copy.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
+                    copy.edge_ids = face_edge_info.edges.iter().copied().map(ArtifactId::new).collect();
+                    copy.code_ref = code_ref.clone();
+                    copy.consumed = false;
+                    copy.pattern_ids = Vec::new();
+                    return_arr.push(Artifact::Sweep(copy));
+
+                    // Preserve the structural face/edge artifacts as well as
+                    // the body's flat topology lists. Their sketch links stay
+                    // on the source geometry, while ownership moves to the
+                    // materialized copy Sweep.
+                    for topology_id in source.surface_ids.iter().chain(&source.edge_ids) {
+                        let Some(source_artifact) = artifacts.get(topology_id) else {
+                            continue;
+                        };
+                        if !matches!(
+                            source_artifact,
+                            Artifact::Wall(_) | Artifact::Cap(_) | Artifact::SweepEdge(_)
+                        ) {
+                            continue;
+                        }
+                        return_arr.push(remap_artifact_for_clone(
+                            source_artifact,
+                            &topology_id_map,
+                            &code_ref,
+                            pattern_id.into(),
+                            source.id,
+                        ));
+                    }
+                }
+                Artifact::CompositeSolid(source) => {
+                    let mut copy = source.clone();
+                    copy.id = copy_id;
+                    copy.consumed = false;
+                    copy.output_index = None;
+                    copy.code_ref = code_ref.clone();
+                    copy.composite_solid_id = None;
+                    copy.pattern_ids = Vec::new();
+                    return_arr.push(Artifact::CompositeSolid(copy));
+                }
+                _ => {}
+            }
+        }
+    }
 
     for source_id in source_ids {
         let Some(artifact) = artifacts.get(&source_id) else {
@@ -2161,14 +2239,16 @@ fn artifacts_to_update(
         }
         ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
             let source_entity_id = ArtifactId::new(*entity_id);
-            let source_id = artifact_command
+            // A separate body identity is only meaningful when the source
+            // artifact is distinct from the cloned engine entity. Composite
+            // solids use the engine entity as their body artifact directly.
+            let entity_clone_info = artifact_command
                 .entity_clone_info
+                .filter(|info| info.source_artifact_id != source_entity_id);
+            let source_id = entity_clone_info
                 .map(|info| info.source_artifact_id)
                 .unwrap_or(source_entity_id);
-            let result_id = artifact_command
-                .entity_clone_info
-                .map(|info| info.result_artifact_id)
-                .unwrap_or(id);
+            let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
 
             let Some(source_artifact) = artifacts.get(&source_id) else {
                 return Ok(Vec::new());
