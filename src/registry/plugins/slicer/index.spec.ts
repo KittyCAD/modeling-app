@@ -13,7 +13,7 @@ import {
 import {
   layoutActionLibraryValueSpec,
   layoutContributionsValueSpec,
-} from '@src/registry/contracts/layout'
+} from '@src/lib/layout/registry/contract'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
 import {
   EXPORT_TO_SLICER_ACTION_TYPE,

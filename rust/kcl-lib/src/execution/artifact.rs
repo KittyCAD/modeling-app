@@ -65,6 +65,17 @@ pub struct ArtifactCommand {
     /// without an engine command, in which case, we would make this field
     /// optional.
     pub command: ModelingCmd,
+    /// Extra artifact identity needed when an engine clone represents a KCL
+    /// solid whose body artifact ID differs from its engine entity ID.
+    #[serde(skip)]
+    #[ts(skip)]
+    pub(crate) entity_clone_info: Option<EntityCloneInfo>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub(crate) struct EntityCloneInfo {
+    pub source_artifact_id: ArtifactId,
+    pub result_artifact_id: ArtifactId,
 }
 
 pub type DummyPathToNode = Vec<()>;
@@ -226,6 +237,10 @@ pub struct Sweep {
     pub surface_ids: Vec<ArtifactId>,
     pub edge_ids: Vec<ArtifactId>,
     pub code_ref: CodeRef,
+    /// The original sweep this body was cloned from, if any. For clones of
+    /// clones, this continues to point to the originating sweep.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_sweep_id: Option<ArtifactId>,
     /// ID of trajectory path for sweep, if any
     /// Only applicable to SweepSubType::Sweep and SweepSubType::Blend, which
     /// can use a second path-like input
@@ -761,6 +776,7 @@ impl Sweep {
         };
         merge_ids(&mut self.surface_ids, new.surface_ids);
         merge_ids(&mut self.edge_ids, new.edge_ids);
+        self.source_sweep_id = new.source_sweep_id.or(self.source_sweep_id);
         merge_opt_id(&mut self.trajectory_id, new.trajectory_id);
         merge_ids(&mut self.pattern_ids, new.pattern_ids);
         self.consumed = new.consumed;
@@ -1353,6 +1369,7 @@ fn remap_artifact_for_clone(
             surface_ids: remap_ids_for_clone(&source.surface_ids, entity_id_map),
             edge_ids: remap_ids_for_clone(&source.edge_ids, entity_id_map),
             code_ref: clone_code_ref.clone(),
+            source_sweep_id: source.source_sweep_id.or(Some(source.id)),
             trajectory_id: remap_opt_id_for_clone(source.trajectory_id, entity_id_map),
             method: source.method,
             consumed: if source.id == source_root_id {
@@ -1480,6 +1497,10 @@ fn pattern_artifact_updates(
         .collect::<Vec<_>>();
 
     let source_ids = pattern_source_ids(artifacts, source_id);
+    let source_body = source_ids.iter().find_map(|source_id| match artifacts.get(source_id) {
+        Some(artifact @ (Artifact::Sweep(_) | Artifact::CompositeSolid(_))) => Some(artifact),
+        _ => None,
+    });
     let mut return_arr = vec![Artifact::Pattern(Pattern {
         id: pattern_id,
         sub_type,
@@ -1487,8 +1508,82 @@ fn pattern_artifact_updates(
         copy_ids,
         copy_face_ids,
         copy_edge_ids,
-        code_ref,
+        code_ref: code_ref.clone(),
     })];
+
+    // Pattern copies are top-level engine bodies, but the Pattern artifact
+    // alone only records their IDs. Materialize a body artifact for each copy
+    // so later operations such as clone() can resolve the copy by engine ID.
+    if let Some(source_body) = source_body {
+        for face_edge_info in face_edge_infos {
+            let copy_id = ArtifactId::new(face_edge_info.object_id);
+            match source_body {
+                Artifact::Sweep(source) => {
+                    let mut topology_id_map = AHashMap::default();
+                    topology_id_map.insert(source.id, copy_id);
+                    for (source_id, copy_id) in source
+                        .surface_ids
+                        .iter()
+                        .copied()
+                        .zip(face_edge_info.faces.iter().copied().map(ArtifactId::new))
+                    {
+                        topology_id_map.insert(source_id, copy_id);
+                    }
+                    for (source_id, copy_id) in source
+                        .edge_ids
+                        .iter()
+                        .copied()
+                        .zip(face_edge_info.edges.iter().copied().map(ArtifactId::new))
+                    {
+                        topology_id_map.insert(source_id, copy_id);
+                    }
+
+                    let mut copy = source.clone();
+                    copy.id = copy_id;
+                    copy.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
+                    copy.edge_ids = face_edge_info.edges.iter().copied().map(ArtifactId::new).collect();
+                    copy.code_ref = code_ref.clone();
+                    copy.consumed = false;
+                    copy.pattern_ids = Vec::new();
+                    return_arr.push(Artifact::Sweep(copy));
+
+                    // Preserve the structural face/edge artifacts as well as
+                    // the body's flat topology lists. Their sketch links stay
+                    // on the source geometry, while ownership moves to the
+                    // materialized copy Sweep.
+                    for topology_id in source.surface_ids.iter().chain(&source.edge_ids) {
+                        let Some(source_artifact) = artifacts.get(topology_id) else {
+                            continue;
+                        };
+                        if !matches!(
+                            source_artifact,
+                            Artifact::Wall(_) | Artifact::Cap(_) | Artifact::SweepEdge(_)
+                        ) {
+                            continue;
+                        }
+                        return_arr.push(remap_artifact_for_clone(
+                            source_artifact,
+                            &topology_id_map,
+                            &code_ref,
+                            pattern_id.into(),
+                            source.id,
+                        ));
+                    }
+                }
+                Artifact::CompositeSolid(source) => {
+                    let mut copy = source.clone();
+                    copy.id = copy_id;
+                    copy.consumed = false;
+                    copy.output_index = None;
+                    copy.code_ref = code_ref.clone();
+                    copy.composite_solid_id = None;
+                    copy.pattern_ids = Vec::new();
+                    return_arr.push(Artifact::CompositeSolid(copy));
+                }
+                _ => {}
+            }
+        }
+    }
 
     for source_id in source_ids {
         let Some(artifact) = artifacts.get(&source_id) else {
@@ -2143,14 +2238,28 @@ fn artifacts_to_update(
             return Ok(return_arr);
         }
         ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
-            let source_id = ArtifactId::new(*entity_id);
+            let source_entity_id = ArtifactId::new(*entity_id);
+            // A separate body identity is only meaningful when the source
+            // artifact is distinct from the cloned engine entity. Composite
+            // solids use the engine entity as their body artifact directly.
+            let entity_clone_info = artifact_command
+                .entity_clone_info
+                .filter(|info| info.source_artifact_id != source_entity_id);
+            let source_id = entity_clone_info
+                .map(|info| info.source_artifact_id)
+                .unwrap_or(source_entity_id);
+            let result_id = entity_clone_info.map(|info| info.result_artifact_id).unwrap_or(id);
 
             let Some(source_artifact) = artifacts.get(&source_id) else {
                 return Ok(Vec::new());
             };
 
             let mut entity_id_map = entity_clone_id_maps.get(&uuid).cloned().unwrap_or_default();
-            entity_id_map.insert(source_id, id);
+            // The engine maps the source root entity to the clone command ID.
+            // A Solid can additionally map its semantic body artifact to a
+            // distinct result ID, allowing its Path and Sweep to coexist.
+            entity_id_map.insert(source_entity_id, id);
+            entity_id_map.insert(source_id, result_id);
 
             let mut cloned_artifacts = Vec::new();
             cloned_artifacts.push(remap_artifact_for_clone(
@@ -2226,6 +2335,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id: None,
                 method,
                 consumed: false,
@@ -2262,6 +2372,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id: Some(trajectory),
                 method,
                 consumed: false,
@@ -2335,6 +2446,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
                 consumed: false,
@@ -2361,6 +2473,7 @@ fn artifacts_to_update(
                 surface_ids: Vec::new(),
                 edge_ids: Vec::new(),
                 code_ref,
+                source_sweep_id: None,
                 trajectory_id: None,
                 method: kittycad_modeling_cmds::shared::ExtrudeMethod::Merge,
                 consumed: false,

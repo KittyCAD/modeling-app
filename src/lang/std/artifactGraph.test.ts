@@ -453,8 +453,24 @@ describe('getBodiesFromArtifactGraph', () => {
       copyEdgeIds: ['copy-edge-1'],
       codeRef: { range: [0, 100, 0], pathToNode: [], nodePath: { steps: [] } },
     }
+    const copySweep1: Artifact = {
+      ...sourceSweep,
+      id: 'copy-1',
+      surfaceIds: ['copy-face-1'],
+      edgeIds: ['copy-edge-1'],
+      patternIds: [],
+    }
+    const copySweep2: Artifact = {
+      ...sourceSweep,
+      id: 'copy-2',
+      surfaceIds: [],
+      edgeIds: [],
+      patternIds: [],
+    }
 
     artifactGraph.set(sourceSweep.id, sourceSweep)
+    artifactGraph.set(copySweep1.id, copySweep1)
+    artifactGraph.set(copySweep2.id, copySweep2)
     artifactGraph.set(pattern.id, pattern)
 
     const result = getBodiesFromArtifactGraph(artifactGraph)

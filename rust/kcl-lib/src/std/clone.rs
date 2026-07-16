@@ -12,6 +12,7 @@ use kittycad_modeling_cmds::{self as kcmc};
 use super::extrude::do_post_extrude;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
+use crate::execution::EntityCloneInfo;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::Geometry;
@@ -65,6 +66,16 @@ async fn inner_clone(
         let new_id = exec_state.next_uuid();
         let mut geometry = g.clone();
         let old_id = geometry.id(&args.ctx).await?;
+        // Pattern copies have a new top-level entity ID, but their KCL
+        // geometry still describes the source topology. Map that source
+        // topology directly to the clone so paths and tagged faces receive
+        // the clone's child IDs.
+        let source_topology_id = match &geometry {
+            GeometryWithImportedGeometry::Sketch(sketch) => sketch.original_id,
+            GeometryWithImportedGeometry::Solid(solid) => solid.original_id(),
+            GeometryWithImportedGeometry::ImportedGeometry(_) => old_id,
+        };
+        let mut entity_clone_info = None;
 
         let mut new_geometry = match &geometry {
             GeometryWithImportedGeometry::ImportedGeometry(imported) => {
@@ -89,12 +100,28 @@ async fn inner_clone(
                     .await?;
 
                 let mut new_solid = solid.clone();
+                // Sweep-backed solids normally have separate engine entity
+                // and body artifact IDs. Preserve that split so the cloned
+                // Path and Sweep can coexist. Bodies whose artifact is the
+                // engine entity itself (including composites and pattern
+                // copies) keep those IDs together.
+                let source_entity_id = solid.id.into();
+                let result_artifact_id = if solid.artifact_id == source_entity_id {
+                    new_id.into()
+                } else {
+                    let result_artifact_id = exec_state.next_artifact_id();
+                    entity_clone_info = Some(EntityCloneInfo {
+                        source_artifact_id: solid.artifact_id,
+                        result_artifact_id,
+                    });
+                    result_artifact_id
+                };
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
                 if let Some(sketch) = new_solid.sketch_mut() {
                     sketch.original_id = new_id;
                 }
-                new_solid.artifact_id = new_id.into();
+                new_solid.artifact_id = result_artifact_id;
                 GeometryWithImportedGeometry::Solid(new_solid)
             }
         };
@@ -103,13 +130,14 @@ async fn inner_clone(
             res.push(new_geometry);
         } else {
             exec_state
-                .batch_modeling_cmd(
+                .batch_modeling_cmd_with_entity_clone_info(
                     ModelingCmdMeta::from_args_id(exec_state, &args, new_id),
                     ModelingCmd::from(mcmd::EntityClone::builder().entity_id(old_id).build()),
+                    entity_clone_info,
                 )
                 .await?;
 
-            fix_tags_and_references(&mut new_geometry, old_id, exec_state, &args)
+            fix_tags_and_references(&mut new_geometry, old_id, source_topology_id, exec_state, &args)
                 .await
                 .map_err(|e| {
                     KclError::new_internal(KclErrorDetails::new(
@@ -127,22 +155,25 @@ async fn inner_clone(
 pub(super) async fn fix_tags_and_references(
     new_geometry: &mut GeometryWithImportedGeometry,
     old_geometry_id: uuid::Uuid,
+    source_topology_id: uuid::Uuid,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<()> {
     let new_geometry_id = new_geometry.id(&args.ctx).await?;
-    let entity_id_map = get_old_new_child_map(new_geometry_id, old_geometry_id, exec_state, args).await?;
+    let entity_id_map =
+        get_old_new_child_map(new_geometry_id, old_geometry_id, source_topology_id, exec_state, args).await?;
 
     // Fix the path references in the new geometry.
     match new_geometry {
         GeometryWithImportedGeometry::ImportedGeometry(_) => {}
         GeometryWithImportedGeometry::Sketch(sketch) => {
-            sketch.clone = Some(old_geometry_id);
+            sketch.clone = Some(source_topology_id);
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, None).await?;
         }
         GeometryWithImportedGeometry::Solid(solid) => {
             let (start_tag, end_tag) = get_named_cap_tags(solid);
             let solid_value = solid.value.clone();
+            let solid_artifact_id = solid.artifact_id;
             let old_face_tag_names = solid.faces.keys().cloned().collect::<Vec<_>>();
 
             // Make the sketch id the new geometry id.
@@ -155,7 +186,7 @@ pub(super) async fn fix_tags_and_references(
             sketch.id = new_geometry_id;
             sketch.original_id = new_geometry_id;
             sketch.artifact_id = new_geometry_id.into();
-            sketch.clone = Some(old_geometry_id);
+            sketch.clone = Some(source_topology_id);
 
             fix_sketch_tags_and_references(sketch, &entity_id_map, exec_state, args, Some(solid_value)).await?;
             let sketch_for_post = sketch.clone();
@@ -181,7 +212,7 @@ pub(super) async fn fix_tags_and_references(
             // information.
             let new_solid = do_post_extrude(
                 &sketch_for_post,
-                new_geometry_id.into(),
+                solid_artifact_id,
                 solid.sectional,
                 &NamedCapTags {
                     start: start_tag.as_ref(),
@@ -263,16 +294,42 @@ fn restore_face_tags(solid: &mut Solid, face_tag_names: &[String], exec_state: &
 async fn get_old_new_child_map(
     new_geometry_id: uuid::Uuid,
     old_geometry_id: uuid::Uuid,
+    source_topology_id: uuid::Uuid,
     exec_state: &mut ExecState,
     args: &Args,
 ) -> Result<HashMap<uuid::Uuid, uuid::Uuid>> {
+    // The artifact graph needs the pattern copy's own child IDs so it can
+    // remap the materialized copy body. Runtime tags, however, still refer to
+    // the source topology. Query both when those roots differ.
+    if old_geometry_id != source_topology_id {
+        let response = exec_state
+            .send_modeling_cmd(
+                ModelingCmdMeta::from_args(exec_state, args),
+                ModelingCmd::from(
+                    mcmd::EntityGetAllChildUuids::builder()
+                        .entity_id(old_geometry_id)
+                        .build(),
+                ),
+            )
+            .await?;
+        let OkWebSocketResponseData::Modeling {
+            modeling_response: OkModelingCmdResponse::EntityGetAllChildUuids(_),
+        } = &response
+        else {
+            return Err(KclError::new_engine(KclErrorDetails::new(
+                format!("EntityGetAllChildUuids response was not as expected: {response:?}"),
+                vec![args.source_range],
+            )));
+        };
+    }
+
     // Get the old geometries entity ids.
     let response = exec_state
         .send_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::EntityGetAllChildUuids::builder()
-                    .entity_id(old_geometry_id)
+                    .entity_id(source_topology_id)
                     .build(),
             ),
         )
@@ -421,6 +478,7 @@ mod tests {
     use pretty_assertions::assert_ne;
 
     use crate::exec::KclValueView;
+    use crate::execution::Artifact;
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
     // the resulting sketch.
@@ -509,7 +567,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
@@ -526,6 +584,57 @@ clonedCube = clone(cube)
 
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_composite_solid_keeps_engine_artifact_id() {
+        let code = r#"left = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0])
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+    |> extrude(length = 5)
+
+right = startSketchOn(XY)
+    |> startProfile(at = [5, 0])
+    |> line(end = [10, 0])
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+    |> extrude(length = 5)
+
+composite = union([left, right])
+clonedComposite = clone(composite)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let KclValueView::Solid { value: composite } = result.variables.get("composite").unwrap() else {
+            panic!("Expected composite to be a solid");
+        };
+        let KclValueView::Solid {
+            value: cloned_composite,
+        } = result.variables.get("clonedComposite").unwrap()
+        else {
+            panic!("Expected clonedComposite to be a solid");
+        };
+
+        assert_eq!(composite.artifact_id, composite.id.into());
+        assert_eq!(cloned_composite.artifact_id, cloned_composite.id.into());
+        assert_ne!(composite.id, cloned_composite.id);
+        assert_eq!(composite.original_id(), composite.id);
+        assert_eq!(cloned_composite.original_id(), cloned_composite.id);
+
+        let Some(Artifact::CompositeSolid(cloned_artifact)) = result.artifact_graph.get(&cloned_composite.artifact_id)
+        else {
+            panic!("Expected a cloned composite solid artifact at the engine entity ID");
+        };
+        assert_eq!(cloned_artifact.id, cloned_composite.artifact_id);
+        assert!(!cloned_artifact.consumed);
 
         ctx.close().await;
     }
@@ -596,7 +705,7 @@ clonedCube = clone(cube)
     |> line(end = [10, 0], tag = $tag03)
     |> line(end = [0, -10], tag = $tag04)
     |> close(tag = $tag05)
-    |> extrude(length = 5) // TODO: Tag these
+    |> extrude(length = 5, tagEnd = $endCap)
 
 clonedCube = clone(cube)
 "#;
@@ -625,7 +734,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
@@ -649,8 +758,78 @@ clonedCube = clone(cube)
             assert_ne!(tag_info.surface, cloned_tag_info.surface);
         }
 
+        for (tag_name, tag) in &cube.faces {
+            let cloned_tag = cloned_cube.faces.get(tag_name).unwrap();
+
+            let tag_info = tag.get_cur_info().unwrap();
+            let cloned_tag_info = cloned_tag.get_cur_info().unwrap();
+
+            assert_ne!(tag_info.id, cloned_tag_info.id);
+            assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
+            assert_ne!(tag_info.surface, cloned_tag_info.surface);
+        }
+        assert!(cube.faces.contains_key("endCap"));
+        assert!(cloned_cube.faces.contains_key("endCap"));
+
         assert_eq!(cube.edge_cuts.len(), 0);
         assert_eq!(cloned_cube.edge_cuts.len(), 0);
+
+        ctx.close().await;
+    }
+
+    // Pattern copies retain the source topology in program memory. Cloning a
+    // copy must map that source topology directly onto the clone so both wall
+    // and cap tags refer to the clone's faces.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_pattern_copy_with_face_tags() {
+        let code = r#"source = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [0, 10], tag = $wall)
+    |> line(end = [10, 0])
+    |> line(end = [0, -10])
+    |> close()
+    |> extrude(length = 5, tagEnd = $endCap)
+
+patterned = patternLinear3d(
+    source,
+    instances = 2,
+    distance = 15,
+    axis = [1, 0, 0],
+)
+patternCopy = patterned[1]
+clonedCopy = clone(patternCopy)
+"#;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let source = result.variables.get("source").unwrap();
+        let pattern_copy = result.variables.get("patternCopy").unwrap();
+        let cloned_copy = result.variables.get("clonedCopy").unwrap();
+
+        let KclValueView::Solid { value: source } = source else {
+            panic!("Expected a solid, got: {source:?}");
+        };
+        let KclValueView::Solid { value: pattern_copy } = pattern_copy else {
+            panic!("Expected a solid, got: {pattern_copy:?}");
+        };
+        let KclValueView::Solid { value: cloned_copy } = cloned_copy else {
+            panic!("Expected a solid, got: {cloned_copy:?}");
+        };
+        let pattern_sketch = pattern_copy.sketch().expect("Expected pattern copy to have a sketch");
+        let cloned_sketch = cloned_copy.sketch().expect("Expected cloned copy to have a sketch");
+        assert_eq!(pattern_copy.original_id(), source.id);
+        assert_eq!(cloned_copy.original_id(), cloned_copy.id);
+
+        let pattern_wall = pattern_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
+        let cloned_wall = cloned_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
+        assert_ne!(pattern_wall.id, cloned_wall.id);
+        assert_ne!(pattern_wall.surface, cloned_wall.surface);
+
+        let pattern_cap = pattern_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
+        let cloned_cap = cloned_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
+        assert_ne!(pattern_cap.id, cloned_cap.id);
+        assert_ne!(pattern_cap.surface, cloned_cap.surface);
 
         ctx.close().await;
     }
@@ -699,7 +878,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (path, cloned_path) in cube_sketch.paths.iter().zip(cloned_cube_sketch.paths.iter()) {
             assert_ne!(path.get_id(), cloned_path.get_id());
@@ -800,7 +979,7 @@ clonedCube = clone(cube)
         assert_ne!(cube.artifact_id, cloned_cube.artifact_id);
         assert_ne!(cube_sketch.artifact_id, cloned_cube_sketch.artifact_id);
 
-        assert_eq!(cloned_cube.artifact_id, cloned_cube.id.into());
+        assert_ne!(cloned_cube.artifact_id, cloned_cube.id.into());
 
         for (value, cloned_value) in cube.value.iter().zip(cloned_cube.value.iter()) {
             assert_ne!(value.get_id(), cloned_value.get_id());

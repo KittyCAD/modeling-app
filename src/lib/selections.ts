@@ -58,6 +58,7 @@ import {
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
   getPatternArtifactForCopyId,
+  getPatternSelectionIndex,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSweepArtifactFromSelection,
@@ -391,11 +392,14 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     lookUpPatternCopies?: boolean
   } = {}
 ): Selection | null {
-  const parentArtifact =
-    artifactGraph.get(parentEntityId) ??
-    (lookUpPatternCopies
-      ? getPatternArtifactForCopyId(parentEntityId, artifactGraph)
-      : undefined)
+  const patternArtifact = getPatternArtifactForCopyId(
+    parentEntityId,
+    artifactGraph
+  )
+  if (patternArtifact && !lookUpPatternCopies) {
+    return null
+  }
+  const parentArtifact = patternArtifact ?? artifactGraph.get(parentEntityId)
   if (!parentArtifact) {
     return null
   }
@@ -1179,8 +1183,8 @@ export async function getEventForSelectWithPoint(
 
   const selectedEngineEntityId = data.entity_id
   const _artifact =
-    artifactGraph.get(selectedEngineEntityId) ??
-    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
+    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph) ??
+    artifactGraph.get(selectedEngineEntityId)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 
@@ -1231,26 +1235,47 @@ export async function getEventForSelectWithPoint(
     let bodyEngineEntityId = selectedEngineEntityId
     let patternIndex: number | undefined
     if (_artifact.type === 'pattern') {
-      const directCopyIndex = _artifact.copyIds.indexOf(selectedEngineEntityId)
-      if (selectedEngineEntityId === _artifact.sourceId) {
-        patternIndex = 0
-      } else if (directCopyIndex >= 0) {
-        patternIndex = directCopyIndex + 1
+      const selectedArtifact = artifactGraph.get(selectedEngineEntityId)
+      let materializedBodyId: ArtifactId | undefined
+      if (
+        selectedArtifact?.type === 'wall' ||
+        selectedArtifact?.type === 'cap' ||
+        selectedArtifact?.type === 'sweepEdge'
+      ) {
+        materializedBodyId = selectedArtifact.sweepId
       } else if (
-        _artifact.copyFaceIds.includes(selectedEngineEntityId) ||
-        _artifact.copyEdgeIds.includes(selectedEngineEntityId)
+        selectedArtifact?.type === 'primitiveFace' ||
+        selectedArtifact?.type === 'primitiveEdge'
+      ) {
+        materializedBodyId = selectedArtifact.solidId
+      }
+
+      if (
+        materializedBodyId &&
+        _artifact.copyIds.includes(materializedBodyId)
+      ) {
+        bodyEngineEntityId = materializedBodyId
+      } else if (
+        !_artifact.copyIds.includes(selectedEngineEntityId) &&
+        (_artifact.copyFaceIds.includes(selectedEngineEntityId) ||
+          _artifact.copyEdgeIds.includes(selectedEngineEntityId))
       ) {
         const parentEntityId = await getParentEntityIdForEntity(
           selectedEngineEntityId,
           engineCommandManager
         )
-        const parentCopyIndex = parentEntityId
-          ? _artifact.copyIds.indexOf(parentEntityId)
-          : -1
-        if (parentEntityId && parentCopyIndex >= 0) {
+        if (parentEntityId) {
           bodyEngineEntityId = parentEntityId
-          patternIndex = parentCopyIndex + 1
         }
+      }
+
+      const resolvedPatternIndex = getPatternSelectionIndex({
+        artifact: _artifact,
+        codeRef: codeRefs[0],
+        engineEntityId: bodyEngineEntityId,
+      })
+      if (!(resolvedPatternIndex instanceof Error)) {
+        patternIndex = resolvedPatternIndex
       }
     }
     return {
