@@ -391,11 +391,14 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     lookUpPatternCopies?: boolean
   } = {}
 ): Selection | null {
-  const parentArtifact =
-    artifactGraph.get(parentEntityId) ??
-    (lookUpPatternCopies
-      ? getPatternArtifactForCopyId(parentEntityId, artifactGraph)
-      : undefined)
+  const patternArtifact = getPatternArtifactForCopyId(
+    parentEntityId,
+    artifactGraph
+  )
+  if (patternArtifact && !lookUpPatternCopies) {
+    return null
+  }
+  const parentArtifact = patternArtifact ?? artifactGraph.get(parentEntityId)
   if (!parentArtifact) {
     return null
   }
@@ -1179,8 +1182,8 @@ export async function getEventForSelectWithPoint(
 
   const selectedEngineEntityId = data.entity_id
   let _artifact =
-    artifactGraph.get(selectedEngineEntityId) ??
-    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph)
+    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph) ??
+    artifactGraph.get(selectedEngineEntityId)
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 

@@ -13,6 +13,7 @@ import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import {
   codeToIdSelections,
   findLastRangeStartingBefore,
+  getBodySelectionFromPrimitiveParentEntityId,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -1646,6 +1647,41 @@ describe('pattern copy selection highlighting', () => {
       'copy-face-id',
       'copy-edge-id',
     ])
+  })
+
+  test('prefers the owning pattern over a materialized copy body', () => {
+    const materializedCopy = {
+      type: 'sweep',
+      id: 'copy-body-id',
+      codeRef: { range: selectionCodeRef.range, nodePath: [] },
+      pathId: 'source-path-id',
+      subType: 'extrusion',
+      surfaceIds: [],
+      edgeIds: [],
+      method: 'new',
+      trajectoryId: null,
+      consumed: false,
+    } as unknown as Artifact
+    const graph = new Map([
+      [patternArtifact.id, patternArtifact],
+      [materializedCopy.id, materializedCopy],
+    ])
+
+    expect(
+      getBodySelectionFromPrimitiveParentEntityId(materializedCopy.id, graph)
+    ).toBeNull()
+
+    const result = getBodySelectionFromPrimitiveParentEntityId(
+      materializedCopy.id,
+      graph,
+      {
+        bodyArtifactTypes: ['sweep', 'compositeSolid', 'pattern'],
+        lookUpPatternCopies: true,
+      }
+    )
+
+    expect(result?.artifact).toBe(patternArtifact)
+    expect(result?.engineEntityId).toBe(materializedCopy.id)
   })
 
   test('keeps a selected copied pattern entity highlighted through selection batching', () => {

@@ -1642,8 +1642,8 @@ export function retrieveSelectionsFromOpArg(
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
     let artifact =
-      artifactGraph.get(artifactId) ??
-      getPatternArtifactForCopyId(artifactId, artifactGraph)
+      getPatternArtifactForCopyId(artifactId, artifactGraph) ??
+      artifactGraph.get(artifactId)
     if (!artifact) {
       continue
     }
