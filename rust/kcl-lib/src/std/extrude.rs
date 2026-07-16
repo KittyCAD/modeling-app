@@ -490,7 +490,14 @@ async fn inner_extrude(
                 vec![args.source_range],
             )));
         }
-        let concrete_target = || sketch_or_face_id.expect("checked above or guaranteed by the extrudable variant");
+        let concrete_target = || {
+            sketch_or_face_id.ok_or_else(|| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "This extrusion requires a concrete target UUID".to_owned(),
+                    vec![args.source_range],
+                ))
+            })
+        };
         let cmd = match (
             &twist_angle,
             &twist_angle_step,
@@ -598,7 +605,7 @@ async fn inner_extrude(
             (None, None, None, None, Some(to), None) => match to {
                 Point3dAxis3dOrGeometryReference::Point(point) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target().into())
+                        .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Point {
                             point: KPoint3d {
                                 x: LengthUnit(point[0].to_mm()),
@@ -612,7 +619,7 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Axis { direction, origin } => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target().into())
+                        .target(concrete_target()?.into())
                         .reference(ExtrudeReference::Axis {
                             axis: KPoint3d {
                                 x: direction[0].to_mm(),
@@ -649,7 +656,7 @@ async fn inner_extrude(
                     };
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target().into())
+                            .target(concrete_target()?.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(plane_id),
                                 entity_reference: None,
@@ -663,7 +670,7 @@ async fn inner_extrude(
                     let edge_id = edge_ref.get_engine_id(exec_state, &args)?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target().into())
+                            .target(concrete_target()?.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(edge_id),
                                 entity_reference: None,
@@ -677,7 +684,7 @@ async fn inner_extrude(
                     let face_id = face_tag.get_face_id_from_tag(exec_state, &args, false).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target().into())
+                            .target(concrete_target()?.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(face_id),
                                 entity_reference: None,
@@ -689,7 +696,7 @@ async fn inner_extrude(
                 }
                 Point3dAxis3dOrGeometryReference::Sketch(sketch_ref) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target().into())
+                        .target(concrete_target()?.into())
                         .reference(ExtrudeReference::EntityReference {
                             entity_id: Some(sketch_ref.id),
                             entity_reference: None,
@@ -700,7 +707,7 @@ async fn inner_extrude(
                 ),
                 Point3dAxis3dOrGeometryReference::Solid(solid) => ModelingCmd::from(
                     mcmd::ExtrudeToReference::builder()
-                        .target(concrete_target().into())
+                        .target(concrete_target()?.into())
                         .reference(ExtrudeReference::EntityReference {
                             entity_id: Some(solid.id),
                             entity_reference: None,
@@ -714,7 +721,7 @@ async fn inner_extrude(
                     let tagged_edge_or_face_id = tagged_edge_or_face.id;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target().into())
+                            .target(concrete_target()?.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: Some(tagged_edge_or_face_id),
                                 entity_reference: None,
@@ -728,7 +735,7 @@ async fn inner_extrude(
                     let inner = edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?;
                     ModelingCmd::from(
                         mcmd::ExtrudeToReference::builder()
-                            .target(concrete_target().into())
+                            .target(concrete_target()?.into())
                             .reference(ExtrudeReference::EntityReference {
                                 entity_id: None,
                                 entity_reference: Some(EntityReference::Edge {
@@ -771,7 +778,7 @@ async fn inner_extrude(
         let being_extruded = match extrudable {
             Extrudable::Sketch(..) => BeingExtruded::Sketch,
             Extrudable::FaceTag(face_tag) => {
-                let face_id = concrete_target();
+                let face_id = concrete_target()?;
                 let solid_id = match face_tag.geometry() {
                     Some(crate::execution::Geometry::Solid(solid)) => solid.id,
                     Some(crate::execution::Geometry::Sketch(sketch)) => match sketch.on {
