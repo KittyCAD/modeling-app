@@ -249,7 +249,7 @@ pub enum Point3dAxis3dOrGeometryReference {
 /// A 3D axis a point 3D or tagged edge.
 #[allow(clippy::large_enum_variant)]
 #[derive(Debug, Clone, PartialEq)]
-pub enum Axis3dOrPoint3dOrEdgeReference {
+pub enum DirectionType3d {
     /// 3D axis and origin.
     Axis { direction: [TyF64; 3], origin: [TyF64; 3] },
     /// 3D point
@@ -258,7 +258,7 @@ pub enum Axis3dOrPoint3dOrEdgeReference {
     Edge(EdgeReference),
 }
 
-impl Axis3dOrPoint3dOrEdgeReference {
+impl DirectionType3d {
     pub fn from_segment(segment: &Segment) -> Result<Self, KclError> {
         match &segment.kind {
             SegmentKind::Line { .. } => Ok(Self::Edge(EdgeReference::Uuid(segment.id))),
