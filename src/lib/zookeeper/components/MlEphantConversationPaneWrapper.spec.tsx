@@ -183,6 +183,7 @@ describe('MlEphantConversationPaneWrapper', () => {
   test('does not start the next patch-backed Zookeeper edit until the previous editor refresh completes', async () => {
     mocks.systemIOSend.mockClear()
     mocks.kclManager.updateCodeEditor.mockClear()
+    mocks.kclManager.path = '/workspace/demo/main.kcl'
     mocks.watchCallback = undefined
 
     render(
@@ -239,5 +240,38 @@ describe('MlEphantConversationPaneWrapper', () => {
       requestedFileName: 'main.kcl',
       requestedCode: 'final code',
     })
+  })
+
+  test('does not refresh a file that is no longer active or stall later edits', async () => {
+    mocks.systemIOSend.mockClear()
+    mocks.kclManager.updateCodeEditor.mockClear()
+    mocks.kclManager.path = '/workspace/demo/main.kcl'
+    mocks.watchCallback = undefined
+
+    render(
+      <MlEphantConversationPaneWrapper
+        areaConfig={{ hide: () => false }}
+        layout={{
+          areaType: AreaType.TTC,
+          id: 'zookeeper',
+          label: 'Zookeeper',
+          type: LayoutType.Simple,
+        }}
+        onClose={vi.fn()}
+      />
+    )
+
+    emitZookeeperFileRequest('intermediate code')
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(1))
+
+    const firstRequest = mocks.systemIOSend.mock.calls[0][0].data
+    firstRequest.onFileSystemSuccess()
+    mocks.kclManager.path = '/workspace/demo/other.kcl'
+    firstRequest.onSuccess()
+
+    expect(mocks.kclManager.updateCodeEditor).not.toHaveBeenCalled()
+
+    emitZookeeperFileRequest('final code')
+    await waitFor(() => expect(mocks.systemIOSend).toHaveBeenCalledTimes(2))
   })
 })

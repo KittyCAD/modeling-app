@@ -320,6 +320,7 @@ function MlEphantConversationPaneInner(props: AreaTypeComponentProps) {
                             if (
                               shouldRefreshActiveEditor &&
                               activeFileOutput &&
+                              kclManager.path === activeFilePath &&
                               kclManager.code !== activeFileOutput.requestedCode
                             ) {
                               kclManager.updateCodeEditor(
