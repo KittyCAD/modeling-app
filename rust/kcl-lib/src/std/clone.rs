@@ -155,6 +155,7 @@ pub(super) async fn fix_tags_and_references(
         GeometryWithImportedGeometry::Solid(solid) => {
             let (start_tag, end_tag) = get_named_cap_tags(solid);
             let solid_value = solid.value.clone();
+            let solid_artifact_id = solid.artifact_id;
             let old_face_tag_names = solid.faces.keys().cloned().collect::<Vec<_>>();
 
             // Make the sketch id the new geometry id.
@@ -193,7 +194,7 @@ pub(super) async fn fix_tags_and_references(
             // information.
             let new_solid = do_post_extrude(
                 &sketch_for_post,
-                new_geometry_id.into(),
+                solid_artifact_id,
                 solid.sectional,
                 &NamedCapTags {
                     start: start_tag.as_ref(),
