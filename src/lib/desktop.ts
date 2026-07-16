@@ -661,7 +661,7 @@ export async function getProjectInfo(
 }
 
 // Write project settings file.
-export async function writeProjectSettingsFile(
+export async function overwriteProjectTomlWithNewSettings(
   projectPath: string,
   tomlStr: string
 ): Promise<void> {

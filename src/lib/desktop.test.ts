@@ -1,7 +1,7 @@
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   createNewProjectDirectory,
-  writeProjectSettingsFile,
+  overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
 import fsZds, { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
@@ -200,7 +200,7 @@ describe('createNewProjectDirectory', () => {
       )
     )
 
-    await writeProjectSettingsFile(
+    await overwriteProjectTomlWithNewSettings(
       projectPath,
       '[settings.meta]\nid = "new-settings-id"\n'
     )
