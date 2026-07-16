@@ -87,20 +87,21 @@ async fn execute_test(test: &Test) {
     };
 
     // Find the sketch ID.
-    let mut sketch_id = String::new();
-    for (k, v) in kcl_object.iter() {
-        if k == "meta" {
-            continue;
-        }
-        let KclValueView::Segment { value } = v else {
-            panic!("Expected {variable_name}.{k} to be a segment");
-        };
-        let crate::execution::SegmentRepr::Solved { segment } = &value.repr else {
-            panic!("Expected {variable_name}.{k} to be solved");
-        };
-        sketch_id = segment.sketch_id.to_string();
-    }
-    let sketch_id = sketch_id;
+    let sketch_id = kcl_object
+        .iter()
+        .find_map(|(k, v)| {
+            if k == "meta" {
+                return None;
+            }
+            let KclValueView::Segment { value } = v else {
+                return None;
+            };
+            let crate::execution::SegmentRepr::Solved { segment } = &value.repr else {
+                return None;
+            };
+            Some(segment.sketch_id.to_string())
+        })
+        .unwrap();
     assert!(sketch_id.is_empty().not());
 
     // Query engine's view of the data.
