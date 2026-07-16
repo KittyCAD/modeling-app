@@ -1,81 +1,3 @@
-import type { EntityType } from '@kittycad/lib'
-import type { Node } from '@rust/kcl-lib/bindings/Node'
-import type { Operation } from '@rust/kcl-lib/bindings/Operation'
-import { SceneInfra } from '@src/clientSideScene/sceneInfra'
-import {
-  artifactAnnotationsEvent,
-  setArtifactGraphEffect,
-} from '@src/editor/plugins/artifacts'
-import type { KCLError } from '@src/lang/errors'
-import {
-  compilationIssuesToDiagnostics,
-  kclErrorsToDiagnostics,
-} from '@src/lang/errors'
-import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
-import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
-import { CommandLogType } from '@src/lang/std/commandLog'
-import { isTopLevelModule, topLevelRange } from '@src/lang/util'
-import type {
-  ArtifactGraph,
-  ExecCallbacks,
-  ExecState,
-  OperationCallbackArgs,
-  OperationsByModule,
-  PathToNode,
-  Program,
-  VariableMap,
-} from '@src/lang/wasm'
-import {
-  applyOperationCallbackToOperationsByModule,
-  emptyExecState,
-  emptyOperationsByModule,
-  execStateFromRust,
-  getKclVersion,
-  getOperationsForCurrentFile,
-  getSketchCheckpointLimit,
-  parse,
-  recast,
-} from '@src/lang/wasm'
-import type { ArtifactIndex } from '@src/lib/artifactIndex'
-import { buildArtifactIndex } from '@src/lib/artifactIndex'
-import {
-  DEFAULT_DEFAULT_LENGTH_UNIT,
-  DEFAULT_EXPERIMENTAL_FEATURES,
-  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
-} from '@src/lib/constants'
-import { getOperationKey } from '@src/lib/featureTreeOperationTree'
-import fsZds from '@src/lib/fs-zds'
-import { markOnce } from '@src/lib/performance'
-import type RustContext from '@src/lib/rustContext'
-import type {
-  BaseUnit,
-  KclSettingsAnnotation,
-} from '@src/lib/settings/settingsTypes'
-import {
-  getSettingsFromActorContext,
-  jsAppSettings,
-} from '@src/lib/settings/settingsUtils'
-
-import {
-  FALLBACK_SKETCH_CHECKPOINT_LIMIT,
-  createHistoryExtension,
-} from '@src/editor/historyConfig'
-import { EngineDebugger } from '@src/lib/debugger'
-import {
-  type handleSelectionBatch as handleSelectionBatchFn,
-  processCodeMirrorRanges,
-  type processCodeMirrorRanges as processCodeMirrorRangesFn,
-} from '@src/lib/selections'
-import { err, reportRejection } from '@src/lib/trap'
-import { deferredCallback, uuidv4 } from '@src/lib/utils'
-import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type {
-  PlaneVisibilityMap,
-  Selection,
-  Selections,
-} from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
-
 import {
   invertedEffects,
   isolateHistory,
@@ -97,37 +19,40 @@ import {
   type TransactionSpec,
 } from '@codemirror/state'
 import type { KeyBinding, ViewUpdate } from '@codemirror/view'
-import { EditorView, drawSelection, keymap } from '@codemirror/view'
-import {
-  clearSceneSelection,
-  defaultSelectionFilter,
-  setSelectionFilter,
-  setSelectionFilterToDefault,
-} from '@src/lib/selectionFilterUtils'
-import type { StateFrom, Subscription } from 'xstate'
-
-import {
-  addLineHighlight,
-  addLineHighlightEvent,
-} from '@src/editor/highlightextension'
-
-import { type Signal, computed, signal } from '@preact/signals-core'
+import { drawSelection, EditorView, keymap } from '@codemirror/view'
+import type { EntityType } from '@kittycad/lib'
+import { computed, type Signal, signal } from '@preact/signals-core'
 import type {
   ApiFile,
   SceneGraphDelta,
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
+import type { Node } from '@rust/kcl-lib/bindings/Node'
+import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import { SceneEntities } from '@src/clientSideScene/sceneEntities'
+import { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import {
   baseEditorExtensions,
   cursorBlinkingCompartment,
   lineWrappingCompartment,
 } from '@src/editor'
+import { historyCompartment } from '@src/editor/compartments'
 import {
   HistoryView,
   type TransactionSpecNoChanges,
 } from '@src/editor/HistoryView'
-import { historyCompartment } from '@src/editor/compartments'
+import {
+  addLineHighlight,
+  addLineHighlightEvent,
+} from '@src/editor/highlightextension'
+import {
+  createHistoryExtension,
+  FALLBACK_SKETCH_CHECKPOINT_LIMIT,
+} from '@src/editor/historyConfig'
+import {
+  artifactAnnotationsEvent,
+  setArtifactGraphEffect,
+} from '@src/editor/plugins/artifacts'
 import {
   createEmptyAst,
   setAstEffect,
@@ -150,26 +75,96 @@ import {
   themeCompartment,
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
-import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
+import type { KCLError } from '@src/lang/errors'
+import {
+  compilationIssuesToDiagnostics,
+  kclErrorsToDiagnostics,
+} from '@src/lang/errors'
+import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
+import { CommandLogType } from '@src/lang/std/commandLog'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
+import { isTopLevelModule, topLevelRange } from '@src/lang/util'
+import type {
+  ArtifactGraph,
+  ExecCallbacks,
+  ExecState,
+  OperationCallbackArgs,
+  OperationsByModule,
+  PathToNode,
+  Program,
+  VariableMap,
+} from '@src/lang/wasm'
+import {
+  applyOperationCallbackToOperationsByModule,
+  emptyExecState,
+  emptyOperationsByModule,
+  execStateFromRust,
+  getKclVersion,
+  getOperationsForCurrentFile,
+  getSketchCheckpointLimit,
+  parse,
+  recast,
+} from '@src/lang/wasm'
 import type { App } from '@src/lib/app'
+import type { ArtifactIndex } from '@src/lib/artifactIndex'
+import { buildArtifactIndex } from '@src/lib/artifactIndex'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
 import { isCodeTheSame, normalizeLineEndings } from '@src/lib/codeEditor'
+import {
+  DEFAULT_DEFAULT_LENGTH_UNIT,
+  DEFAULT_EXPERIMENTAL_FEATURES,
+  EXECUTE_AST_INTERRUPT_ERROR_MESSAGE,
+} from '@src/lib/constants'
+import { EngineDebugger } from '@src/lib/debugger'
 import { isPathNotFoundError } from '@src/lib/desktop'
 import { bracket } from '@src/lib/exampleKcl'
+import { getOperationKey } from '@src/lib/featureTreeOperationTree'
+import fsZds from '@src/lib/fs-zds'
 import { setKclVersion } from '@src/lib/kclVersion'
 import { getStringAfterLastSeparator } from '@src/lib/paths'
+import { markOnce } from '@src/lib/performance'
 import type { FileEntry, Project } from '@src/lib/project'
 import { resetCameraPosition } from '@src/lib/resetCameraPosition'
+import type RustContext from '@src/lib/rustContext'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
-import { getSelectionTypeDisplayText } from '@src/lib/selections'
-import { type Themes, getOppositeTheme, getResolvedTheme } from '@src/lib/theme'
+import {
+  clearSceneSelection,
+  defaultSelectionFilter,
+  setSelectionFilter,
+  setSelectionFilterToDefault,
+} from '@src/lib/selectionFilterUtils'
+import {
+  getSelectionTypeDisplayText,
+  type handleSelectionBatch as handleSelectionBatchFn,
+  processCodeMirrorRanges,
+  type processCodeMirrorRanges as processCodeMirrorRangesFn,
+} from '@src/lib/selections'
+import type {
+  BaseUnit,
+  KclSettingsAnnotation,
+} from '@src/lib/settings/settingsTypes'
+import {
+  getSettingsFromActorContext,
+  jsAppSettings,
+} from '@src/lib/settings/settingsUtils'
+import { getOppositeTheme, getResolvedTheme, type Themes } from '@src/lib/theme'
+import { err, reportRejection } from '@src/lib/trap'
+import { deferredCallback, uuidv4 } from '@src/lib/utils'
+import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
+import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
 import type { CommandBarActorType } from '@src/machines/commandBarMachine'
 import type {
   ModelingMachineEvent,
   modelingMachine,
 } from '@src/machines/modelingMachine'
+import type {
+  PlaneVisibilityMap,
+  Selection,
+  Selections,
+} from '@src/machines/modelingSharedTypes'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
+import type { ConnectionManager } from '@src/network/connectionManager'
 import type { ExecutingEditorService } from '@src/registry/contracts/executingEditor'
 import {
   CODE_EDITOR_FOCUSED_KEYMAP_SCOPE,
@@ -177,6 +172,7 @@ import {
   type KeymapService,
 } from '@src/registry/contracts/keymap'
 import toast from 'react-hot-toast'
+import type { StateFrom, Subscription } from 'xstate'
 
 interface ExecuteArgs {
   ast?: Node<Program>
@@ -390,6 +386,42 @@ export class ZDSProject {
       .find(([p]) => p.value === path)
   }
 
+  private pathContainsFile(targetPath: string, filePath: string) {
+    const targetPathPrefix = targetPath.endsWith(fsZds.sep)
+      ? targetPath
+      : `${targetPath}${fsZds.sep}`
+    return filePath === targetPath || filePath.startsWith(targetPathPrefix)
+  }
+
+  removePathFromFileRegistry(targetPath: string) {
+    const removedFiles = this.files.filter((file) =>
+      this.pathContainsFile(targetPath, file.path)
+    )
+    this.files = this.files.filter(
+      (file) => !this.pathContainsFile(targetPath, file.path)
+    )
+
+    for (const [pathSignal] of this.editors.entries()) {
+      if (!this.pathContainsFile(targetPath, pathSignal.value)) {
+        continue
+      }
+      if (this.#executingPath.value === pathSignal) {
+        this.#executingPath.value = null
+      }
+      this.editors.delete(pathSignal)
+    }
+
+    return removedFiles
+  }
+
+  private deleteEditorReferences(editor: KclManager, exceptPath?: string) {
+    for (const [pathSignal, foundEditor] of this.editors.entries()) {
+      if (foundEditor === editor && pathSignal.value !== exceptPath) {
+        this.editors.delete(pathSignal)
+      }
+    }
+  }
+
   // Saving some keystrokes
   private set = this.editors.set.bind(this.editors)
 
@@ -407,12 +439,15 @@ export class ZDSProject {
   ) {
     const foundEditor = this.findEditor(path)
     const found = foundEditor?.[1]
-    if (
-      found &&
-      (!providedEditor || found !== providedEditor || found.path === path)
-    ) {
+    if (found && found.path === path) {
+      if (isExecuting) {
+        this.executingPath = path
+      }
       console.warn(`Attempted to overwrite editor with path "${path}"`)
       return found
+    }
+    if (foundEditor) {
+      this.editors.delete(foundEditor[0])
     }
 
     const systemDeps: SystemDeps = {
@@ -460,6 +495,7 @@ export class ZDSProject {
     if (newEditor.path !== path) {
       newEditor.path = path
     }
+    this.deleteEditorReferences(newEditor, path)
 
     // Initialize the editor theme
     // Subsequent changes are listened for within app.onSettingsUpdate()
@@ -519,7 +555,7 @@ export class ZDSProject {
     // We ignore all currently-opened editors. The project watcher is meant
     // only to notify about the rest of the project's updates, and pass them
     // into the currently-executing editor.
-    if (foundEditorKey) {
+    if (foundEditorKey && eventType !== 'unlink') {
       return
     }
 
@@ -547,11 +583,10 @@ export class ZDSProject {
           }
           break
         case 'unlink':
-          const foundIndex = this.files.findIndex((f) => f.path === path)
-          if (foundIndex >= 0 && path !== this.executingPath && foundFile) {
-            this.files = this.files.filter((_, i) => i !== foundIndex)
+          const removedFiles = this.removePathFromFileRegistry(path)
+          for (const removedFile of removedFiles) {
             editor?.rustContext
-              .sendRemoveFile(foundFile.id)
+              .sendRemoveFile(removedFile.id)
               .catch(reportRejection)
           }
       }
@@ -1992,7 +2027,7 @@ export class KclManager extends File {
       })
     }
     providedEditor.markFileCodeAsSynced(diskCode)
-    providedEditor.watch()
+    providedEditor.reactivateFileLifecycle()
     return providedEditor
   }
 
@@ -2029,10 +2064,7 @@ export class KclManager extends File {
       zookeeperHistoryExtension(),
     ])
     this._editorView = this.createEditorView(initialCode)
-    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
-      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
-    })
-    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    this.subscribeToSettingsUpdates()
     // TODO: Delete this._code, only derive from the editorView's doc
     this._code.value = initialCode
     this.markFileCodeAsSynced(initialCode)
@@ -2069,9 +2101,23 @@ export class KclManager extends File {
     clearTimeout(this.timeoutWriter)
     clearTimeout(this.timeoutRewatch)
     this.settingsSubscription?.unsubscribe()
+    this.settingsSubscription = undefined
     this.disposeGlobalHistorySubscription?.()
     this.flushRecoverySnapshot()
     this.unwatch()
+  }
+
+  public reactivateFileLifecycle() {
+    this.subscribeToSettingsUpdates()
+    this.watch()
+  }
+
+  private subscribeToSettingsUpdates() {
+    this.settingsSubscription?.unsubscribe()
+    this.settingsSubscription = this.systemDeps.settings.subscribe(() => {
+      this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
+    })
+    this.setEditorAutomaticallyRender(this.getAutomaticallyRenderSetting())
   }
 
   private markFileCodeAsSynced(code: string) {
@@ -3566,6 +3612,36 @@ export class KclManager extends File {
     this.updateLastCommittedSketchCheckpoint(resolvedOptions, additionalSpec)
     this.setDiagnosticsForCurrentErrors()
   }
+
+  async reloadFromDisk(
+    options: Partial<UpdateCodeEditorOptions> = {}
+  ): Promise<void> {
+    const code = normalizeLineEndings(await this.read())
+    if (isCodeTheSame(code, this.code)) {
+      this.markFileCodeAsSynced(code)
+      return
+    }
+
+    if (this.hasUnsavedLocalChanges()) {
+      console.warn(
+        'External file change detected while local edits are unsaved. Skipping automatic reload to avoid overwriting the editor buffer.'
+      )
+      toast.error(
+        'File changed on disk while this editor has unsaved changes. Reload was skipped to protect your work.'
+      )
+      return
+    }
+
+    this.updateCodeEditor(code, {
+      shouldExecute: true,
+      shouldClearHistory: true,
+      shouldResetCamera: true,
+      ...options,
+      shouldWriteToDisk: false,
+    })
+    this.markFileCodeAsSynced(code)
+  }
+
   async writeToFile(
     newCode = this.codeSignal.value,
     requestedDocumentVersion = this._documentVersion,

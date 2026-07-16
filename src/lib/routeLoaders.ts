@@ -1,18 +1,21 @@
 import { projectSkeletonCreate } from '@src/lang/project'
-import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   PROJECT_ENTRYPOINT,
 } from '@src/lib/constants'
-import { getInitialDefaultDir, getProjectInfo } from '@src/lib/desktop'
-import { readAppSettingsFile } from '@src/lib/desktop'
+import {
+  getInitialDefaultDir,
+  getProjectInfo,
+  isPathNotFoundError,
+  readAppSettingsFile,
+} from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import {
-  PATHS,
   getParentAbsolutePath,
   getProjectMetaByRouteId,
   getRouterSearchFromRequestUrl,
+  PATHS,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
@@ -26,9 +29,9 @@ import type {
   IndexLoaderData,
 } from '@src/lib/types'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import { projectSessionService } from '@src/registry/contracts/projectSession'
 import type { LoaderFunction } from 'react-router-dom'
 import { redirect } from 'react-router-dom'
-import { waitFor } from 'xstate'
 
 export const DEFAULT_WEB_PROJECT_NAME = 'demo-project'
 
@@ -98,10 +101,8 @@ export const baseLoader =
 export const fileLoader =
   ({ app }: { app: App }): LoaderFunction =>
   async (routerData): Promise<FileLoaderData | Response> => {
-    const {
-      settings: { actor: settingsActor },
-    } = app
     const { kclManager } = app.singletons
+    const projectSession = app.registry.get(projectSessionService)
     const { params } = routerData
 
     // Must basically remain for all eternity, until the last person
@@ -140,46 +141,7 @@ export const fileLoader =
       projectPathData
 
     const urlObj = new URL(routerData.request.url)
-
-    if (!urlObj.pathname.endsWith('/settings')) {
-      const fallbackFile = (await getProjectInfo(projectPath, wasmInstance))
-        .default_file
-      let fileExists = true
-      if (currentFilePath && fileExists) {
-        try {
-          await fsZds.stat(currentFilePath)
-        } catch (e) {
-          if (e === 'ENOENT') {
-            fileExists = false
-          }
-        }
-      }
-
-      // If we are navigating to the project and want to navigate to its
-      // default file, redirect to it keeping everything else in the URL the same.
-      if (projectPath && !currentFileName && fileExists && params.id) {
-        const encodedId = safeEncodeForRouterPaths(params.id)
-        const requestUrlWithDefaultFile = routerData.request.url.replace(
-          encodedId,
-          safeEncodeForRouterPaths(fallbackFile)
-        )
-        return redirect(requestUrlWithDefaultFile)
-      }
-
-      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
-        const routerSearch = getRouterSearchFromRequestUrl(
-          routerData.request.url,
-          Boolean(window.electron)
-        )
-        return redirect(
-          `${PATHS.FILE}/${encodeURIComponent(fallbackFile)}${routerSearch}`
-        )
-      }
-    }
-
-    // Set the file system manager to the project path
-    // So that WASM gets an updated path for operations
-    projectFsManager.dir = projectPath
+    const isSettingsRoute = urlObj.pathname.endsWith('/settings')
 
     const defaultProjectData = {
       name: projectName || 'unnamed',
@@ -193,28 +155,74 @@ export const fileLoader =
     }
 
     const maybeProjectInfo = await getProjectInfo(projectPath, wasmInstance)
-
     const project = maybeProjectInfo ?? defaultProjectData
 
-    // Fire off the event to load the project settings
-    // once we know it's idle.
-    await waitFor(settingsActor, (state) => state.matches('idle'))
-    settingsActor.send({
-      type: 'load.project',
-      project,
-    })
-    await waitFor(settingsActor, (state) => state.matches('idle'))
+    const redirectToFallbackFile = () => {
+      const routerSearch = getRouterSearchFromRequestUrl(
+        routerData.request.url,
+        Boolean(window.electron)
+      )
+      return redirect(
+        `${PATHS.FILE}/${encodeURIComponent(project.default_file)}${routerSearch}`
+      )
+    }
 
-    const projectRef = await app.openProject(project)
-    const editor = await projectRef.openEditor(
-      currentFilePath || PROJECT_ENTRYPOINT,
-      app.singletons.kclManager,
-      // If persistCode in localStorage is present, it'll persist that code
-      // through *anything*. INTENDED FOR TESTS.
-      window.electron?.process.env.NODE_ENV === 'test'
-        ? kclManager.localStoragePersistCode()
-        : undefined
-    )
+    if (!isSettingsRoute) {
+      let fileExists = true
+      if (currentFilePath && fileExists) {
+        try {
+          await fsZds.stat(currentFilePath)
+        } catch (error) {
+          if (isPathNotFoundError(error)) {
+            fileExists = false
+          }
+        }
+      }
+
+      // If we are navigating to the project and want to navigate to its
+      // default file, redirect to it keeping everything else in the URL the same.
+      if (projectPath && !currentFileName && fileExists && params.id) {
+        const encodedId = safeEncodeForRouterPaths(params.id)
+        const requestUrlWithDefaultFile = routerData.request.url.replace(
+          encodedId,
+          safeEncodeForRouterPaths(project.default_file)
+        )
+        return redirect(requestUrlWithDefaultFile)
+      }
+
+      if (!fileExists || !currentFileName || !currentFilePath || !projectName) {
+        return redirectToFallbackFile()
+      }
+    }
+
+    const editorFilePath = currentFilePath || PROJECT_ENTRYPOINT
+    let editor: Awaited<
+      ReturnType<typeof projectSession.openProjectEditor>
+    >['editor']
+    try {
+      const openedEditor = await projectSession.openProjectEditor({
+        project,
+        filePath: editorFilePath,
+        providedEditor: app.singletons.kclManager,
+        // If persistCode in localStorage is present, it'll persist that code
+        // through *anything*. INTENDED FOR TESTS.
+        providedCode:
+          window.electron?.process.env.NODE_ENV === 'test'
+            ? kclManager.localStoragePersistCode()
+            : undefined,
+      })
+      editor = openedEditor.editor
+    } catch (error) {
+      if (
+        !isSettingsRoute &&
+        isPathNotFoundError(error) &&
+        editorFilePath !== project.default_file
+      ) {
+        return redirectToFallbackFile()
+      }
+
+      return Promise.reject(error)
+    }
 
     const requestedFileName =
       app.systemIOActor.getSnapshot().context.requestedFileName
@@ -260,5 +268,9 @@ export const homeLoader =
       return redirect(PATHS.INDEX)
     }
 
-    return loadHomeProjects(app)
+    return loadHomeProjects({
+      app,
+      closeProject: () =>
+        app.registry.get(projectSessionService).closeProject(),
+    })
   }

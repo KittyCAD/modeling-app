@@ -1,7 +1,6 @@
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
@@ -13,6 +12,7 @@ import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
@@ -20,6 +20,7 @@ import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
+import { projectSessionService } from '@src/registry/contracts/projectSession'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import { createTestWasmRegistryItem } from '@src/unitTestUtils'
@@ -297,8 +298,11 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Expected ${pluginId} plugin to be registered.`)
+      }
 
-      const pluginToggle = app.registry.get(plugin!.service)
+      const pluginToggle = app.registry.get(plugin.service)
       expect(pluginToggle.active.value).toBe(true)
       expect(syncActivePlugins).toHaveBeenCalledWith(
         expect.arrayContaining([pluginId])
@@ -450,13 +454,16 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Expected ${pluginId} plugin to be registered.`)
+      }
 
       app.settings.actor.send({ type: 'reload.settings' } as never)
 
       await waitForSettingsIdle(app)
 
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
-      expect(app.registry.get(plugin!.service).active.value).toBe(true)
+      expect(app.registry.get(plugin.service).active.value).toBe(true)
     } finally {
       app.dispose()
     }
@@ -533,25 +540,125 @@ describe('project system', () => {
 
   it('can open, close project', async () => {
     // Stub out File read and write implementations
-    File.ioImplementations.read = () => Promise.resolve('')
+    File.ioImplementations.read = (path) =>
+      Promise.resolve(
+        new Map([
+          ['/some-dir/test/main.kcl', 'main = 1'],
+          ['/some-dir/test/other.kcl', 'other = 2'],
+        ]).get(path) ?? ''
+      )
     File.ioImplementations.write = () => Promise.resolve()
 
     const app = createAppForTest()
 
     try {
-      const project = await app.openProject(mockProject)
+      const projectSession = app.registry.get(projectSessionService)
+      const project = await projectSession.openProject(mockProject)
 
       expect(app.project).toBeDefined()
+      expect(app.project).toBe(project)
+      expect(projectSession.openedProject.value).toBe(project)
+      expect(projectSession.openedProjectHandle.value).toEqual({
+        projectPath: mockProject.path,
+      })
       expect(app.project?.executingPath).toBeNull()
       expect(app.project?.executingFileEntry.value.name).toEqual('')
 
-      await project.openEditor(mockProject.children![0].path)
+      const mainFile = mockProject.children?.[0]
+      expect(mainFile).toBeDefined()
+      if (!mainFile) {
+        throw new Error('Expected mock project to include a main file.')
+      }
+
+      await projectSession.openEditor(mainFile.path, {
+        providedEditor: app.singletons.kclManager,
+      })
       expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
+      expect(app.singletons.kclManager.code).toBe('main = 1')
+      expect(projectSession.executingEditorHandle.value).toEqual({
+        projectPath: mockProject.path,
+        filePath: mainFile.path,
+      })
 
-      app.closeProject()
+      await projectSession.openEditor('/some-dir/test/other.kcl', {
+        providedEditor: app.singletons.kclManager,
+      })
+      expect(app.project?.executingPath).toEqual('/some-dir/test/other.kcl')
+      expect(app.singletons.kclManager.code).toBe('other = 2')
+
+      await projectSession.openEditor(mainFile.path, {
+        providedEditor: app.singletons.kclManager,
+      })
+      expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
+      expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
+      expect(app.singletons.kclManager.code).toBe('main = 1')
+      expect(projectSession.executingEditorHandle.value).toEqual({
+        projectPath: mockProject.path,
+        filePath: mainFile.path,
+      })
+
+      const otherProject: Project = {
+        ...mockProject,
+        name: 'other-test',
+        path: '/some-dir/other-test',
+        children: [
+          {
+            name: 'main.kcl',
+            path: '/some-dir/other-test/main.kcl',
+            children: [],
+          },
+        ],
+      }
+
+      await projectSession.openProject(otherProject)
+      expect(projectSession.openedProjectHandle.value).toEqual({
+        projectPath: otherProject.path,
+      })
+      expect(projectSession.executingEditorHandle.value).toBeUndefined()
+
+      projectSession.closeProject()
 
       expect(app.project).toBeUndefined()
+      expect(projectSession.openedProjectHandle.value).toBeUndefined()
+      expect(projectSession.executingEditorHandle.value).toBeUndefined()
+    } finally {
+      app.dispose()
+    }
+  })
+
+  it('removes stale project file references when deleting an opened file tree', async () => {
+    File.ioImplementations.read = (path) =>
+      Promise.resolve(
+        new Map([
+          ['/some-dir/test/main.kcl', 'main = 1'],
+          ['/some-dir/test/parts/part.kcl', 'part = 2'],
+        ]).get(path) ?? ''
+      )
+    File.ioImplementations.write = () => Promise.resolve()
+
+    const app = createAppForTest()
+
+    try {
+      const projectSession = app.registry.get(projectSessionService)
+      const project = await projectSession.openProject(mockProject)
+      const partPath = '/some-dir/test/parts/part.kcl'
+
+      await projectSession.openEditor(partPath, {
+        providedEditor: app.singletons.kclManager,
+      })
+
+      expect(project.executingPath).toBe(partPath)
+      expect(project.files.some((file) => file.path === partPath)).toBe(true)
+
+      const removedFiles = project.removePathFromFileRegistry(
+        '/some-dir/test/parts'
+      )
+
+      expect(removedFiles.map((file) => file.path)).toContain(partPath)
+      expect(project.executingPath).toBeNull()
+      expect(project.findEditor(partPath)).toBeUndefined()
+      expect(project.files.some((file) => file.path === partPath)).toBe(false)
     } finally {
       app.dispose()
     }
