@@ -1,6 +1,7 @@
 import {
   getCloudProjectIdFromProjectTomlContents,
   getProjectTitleFromProjectTomlContents,
+  preserveProjectTomlMetadataInProjectSettingsContents,
   removeCloudProjectIdFromProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
@@ -38,6 +39,20 @@ describe('projectTomlMetadata', () => {
       'project-123'
     )
     expect(toml).toContain('default_file = "main.kcl"')
+  })
+
+  it('preserves top-level project metadata when replacing project settings', () => {
+    const toml = preserveProjectTomlMetadataInProjectSettingsContents(
+      'title = "Some demo"\ndefault_file = "main.kcl"\n\n[cloud."dev.zoo.dev"]\nproject_id = "project-123"\n\n[settings.meta]\nid = "old-settings-id"\n',
+      '[settings.meta]\nid = "new-settings-id"\n'
+    )
+
+    expect(toml).toContain('title = "Some demo"')
+    expect(toml).toContain('default_file = "main.kcl"')
+    expect(toml).toContain('[cloud."dev.zoo.dev"]')
+    expect(toml).toContain('project_id = "project-123"')
+    expect(toml).toContain('id = "new-settings-id"')
+    expect(toml).not.toContain('old-settings-id')
   })
 
   it('reads cloud project ids from environment-scoped metadata', () => {

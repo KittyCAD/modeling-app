@@ -660,6 +660,8 @@ export class App implements AppSubsystems {
           ...createProjectCommands({
             systemIOActor: this.systemIOActor,
             enableProjectDirectoryCommands,
+            getCurrentProjectDirectoryName: () =>
+              this.settings.actor.getSnapshot().context.currentProject?.name,
           }).map(provideCommand),
         ],
       }),
