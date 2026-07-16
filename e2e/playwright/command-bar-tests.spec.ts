@@ -769,14 +769,12 @@ export exported = 2`,
     })
   })
 
-  test(
-    'Command palette can be opened via query parameter - web',
-    { tag: '@web' },
-    async ({ page, cmdBar }) => {
-      await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
-      await cmdBar.expectCommandName('Settings · app · theme')
-    }
-  )
+  test('Command palette can be opened via query parameter - web', {
+    tag: '@web',
+  }, async ({ page, cmdBar }) => {
+    await page.goto(`${page.url()}/?cmd=app.theme&groupId=settings`)
+    await cmdBar.expectCommandName('Settings · app · theme')
+  })
 
   test('Step back works on non-required and required arguments and closes', async ({
     page,

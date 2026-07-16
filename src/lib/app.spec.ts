@@ -95,10 +95,6 @@ async function waitForAuthSettled(app: App) {
   })
 }
 
-function disposeApp(app: App) {
-  app.dispose()
-}
-
 function createUserFeaturesForTest(
   featureIds: UserFeaturesContext['featureIds']
 ) {
@@ -207,7 +203,7 @@ describe('project system', () => {
       expect(app.machineManager).toBe(registryMachineManager.manager)
       expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
     } finally {
-      disposeApp(app)
+      app.dispose()
     }
   })
 
@@ -228,7 +224,7 @@ describe('project system', () => {
         expectedRuntimeFlags('Off')
       )
     } finally {
-      disposeApp(app)
+      app.dispose()
     }
   })
 
@@ -252,7 +248,7 @@ describe('project system', () => {
         expectedRuntimeFlags('On')
       )
     } finally {
-      disposeApp(app)
+      app.dispose()
     }
   })
 
@@ -278,7 +274,7 @@ describe('project system', () => {
         expectedRuntimeFlags('On')
       )
     } finally {
-      disposeApp(app)
+      app.dispose()
     }
   })
 
@@ -346,7 +342,7 @@ describe('project system', () => {
         ]
       ).toBeUndefined()
     } finally {
-      disposeApp(app)
+      app.dispose()
       window.electron = previousElectron
     }
   })
@@ -403,7 +399,7 @@ describe('project system', () => {
       expect(snapshot.context.currentArgument?.name).toBe('name')
     } finally {
       await waitForAuthSettled(app)
-      disposeApp(app)
+      app.dispose()
     }
   })
 
@@ -439,7 +435,7 @@ describe('project system', () => {
       expect(textEditorSettings.automaticallyRender.current).toBe(true)
       expect(textEditorSettings.automaticallyRender.hideOnLevel).toBe('project')
     } finally {
-      disposeApp(app)
+      app.dispose()
     }
   })
 
@@ -462,7 +458,7 @@ describe('project system', () => {
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
       expect(app.registry.get(plugin!.service).active.value).toBe(true)
     } finally {
-      disposeApp(app)
+      app.dispose()
     }
   })
 
@@ -530,7 +526,7 @@ describe('project system', () => {
         'created = true\n'
       )
     } finally {
-      disposeApp(app)
+      app.dispose()
       await fsZds.rm(projectPath, { recursive: true, force: true })
     }
   })
@@ -557,7 +553,7 @@ describe('project system', () => {
 
       expect(app.project).toBeUndefined()
     } finally {
-      disposeApp(app)
+      app.dispose()
     }
   })
 })

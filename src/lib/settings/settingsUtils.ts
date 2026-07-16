@@ -12,10 +12,10 @@ import {
 } from '@src/lib/cameraControls'
 import {
   getInitialDefaultDir,
+  overwriteProjectTomlWithNewSettings,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
-  writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
@@ -958,7 +958,7 @@ export async function loadAndValidateSettings(
         )
       }
 
-      await writeProjectSettingsFile(projectPath, projectTomlString)
+      await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
     }
 
     const projectSettingsPayload = projectSettings
@@ -1084,7 +1084,7 @@ export async function saveSettings(
   }
 
   // Write the project settings.
-  await writeProjectSettingsFile(projectPath, projectTomlString)
+  await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
 }
 
 export function getChangedSettingsAtLevel(

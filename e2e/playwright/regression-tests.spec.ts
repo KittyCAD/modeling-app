@@ -299,14 +299,13 @@ extrude001 = extrude(sketch001, length = 50)
     await expect(page.locator('.cm-lint-marker-error')).toBeVisible()
   })
 
-  test(
-    'window resize updates should reconfigure the stream',
-    { tag: '@skipLocalEngine' },
-    async ({ scene, page, homePage, cmdBar, toolbar }) => {
-      await page.addInitScript(async () => {
-        localStorage.setItem(
-          'persistCode',
-          `@settings(defaultLengthUnit = mm)
+  test('window resize updates should reconfigure the stream', {
+    tag: '@skipLocalEngine',
+  }, async ({ scene, page, homePage, cmdBar, toolbar }) => {
+    await page.addInitScript(async () => {
+      localStorage.setItem(
+        'persistCode',
+        `@settings(defaultLengthUnit = mm)
 sketch002 = startSketchOn(XY)
 profile002 = startProfile(sketch002, at = [72.24, -52.05])
   |> angledLine(angle = 0, length = 181.26, tag = $rectangleSegmentA001)
@@ -315,144 +314,133 @@ profile002 = startProfile(sketch002, at = [72.24, -52.05])
   |> line(endAbsolute = [profileStartX(%), profileStartY(%)])
   |> close()
 extrude002 = extrude(profile002, length = 150)`
-        )
-      })
-
-      await page.setBodyDimensions({ width: 500, height: 500 })
-
-      await homePage.goToModelingScene()
-      await toolbar.closePane(DefaultLayoutPaneID.Code)
-
-      await scene.connectionEstablished()
-      await scene.settled()
-
-      // expect pixel color to be background color
-      const offModelBefore = await scene.convertPagePositionToStream(
-        0.1,
-        0.9,
-        'ratio'
       )
-      const onModelBefore = await scene.convertPagePositionToStream(
-        0.5,
-        0.5,
-        'ratio'
-      )
+    })
 
-      await scene.expectPixelColor(
-        TEST_COLORS.DARK_MODE_BKGD,
-        offModelBefore,
-        15
-      )
-      const standardModelGrey: TestColor = [100, 100, 100]
-      await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
+    await page.setBodyDimensions({ width: 500, height: 500 })
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
-      await scene.settled()
+    await homePage.goToModelingScene()
+    await toolbar.closePane(DefaultLayoutPaneID.Code)
 
-      const offModelAfter = await scene.convertPagePositionToStream(
-        0.9,
-        0.5,
-        'ratio'
-      )
-      const onModelAfter = await scene.convertPagePositionToStream(
-        0.5,
-        0.5,
-        'ratio'
-      )
+    await scene.connectionEstablished()
+    await scene.settled()
 
-      await scene.expectPixelColor(
-        TEST_COLORS.DARK_MODE_BKGD,
-        offModelAfter,
-        15
-      )
-      await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
-    }
-  )
-  test(
-    'when engine fails export we handle the failure and alert the user',
-    { tag: '@skipLocalEngine' },
-    async ({ scene, page, homePage, cmdBar }) => {
-      await page.addInitScript(
-        async ({ code }) => {
-          localStorage.setItem('persistCode', code)
-          ;(window as any).playwrightSkipFilePicker = true
-        },
-        { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
-      )
+    // expect pixel color to be background color
+    const offModelBefore = await scene.convertPagePositionToStream(
+      0.1,
+      0.9,
+      'ratio'
+    )
+    const onModelBefore = await scene.convertPagePositionToStream(
+      0.5,
+      0.5,
+      'ratio'
+    )
 
-      await page.setBodyDimensions({ width: 1000, height: 500 })
+    await scene.expectPixelColor(TEST_COLORS.DARK_MODE_BKGD, offModelBefore, 15)
+    const standardModelGrey: TestColor = [100, 100, 100]
+    await scene.expectPixelColor(standardModelGrey, onModelBefore, 15)
 
-      await homePage.goToModelingScene()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
+    await scene.settled()
 
-      await scene.connectionEstablished()
-      await scene.settled()
+    const offModelAfter = await scene.convertPagePositionToStream(
+      0.9,
+      0.5,
+      'ratio'
+    )
+    const onModelAfter = await scene.convertPagePositionToStream(
+      0.5,
+      0.5,
+      'ratio'
+    )
 
-      // export the model
-      const exportButton = page.getByTestId('export-pane-button')
-      await expect(exportButton).toBeVisible()
+    await scene.expectPixelColor(TEST_COLORS.DARK_MODE_BKGD, offModelAfter, 15)
+    await scene.expectPixelColor(standardModelGrey, onModelAfter, 15)
+  })
+  test('when engine fails export we handle the failure and alert the user', {
+    tag: '@skipLocalEngine',
+  }, async ({ scene, page, homePage, cmdBar }) => {
+    await page.addInitScript(
+      async ({ code }) => {
+        localStorage.setItem('persistCode', code)
+        ;(window as any).playwrightSkipFilePicker = true
+      },
+      { code: TEST_CODE_TRIGGER_ENGINE_EXPORT_ERROR }
+    )
 
-      // Click the export button
-      await exportButton.click()
+    await page.setBodyDimensions({ width: 1000, height: 500 })
 
-      // Click the stl.
-      const stlOption = page.getByText('glTF')
-      await expect(stlOption).toBeVisible()
+    await homePage.goToModelingScene()
 
-      await page.keyboard.press('Enter')
+    await scene.connectionEstablished()
+    await scene.settled()
 
-      // Click the checkbox
-      await cmdBar.submit()
+    // export the model
+    const exportButton = page.getByTestId('export-pane-button')
+    await expect(exportButton).toBeVisible()
 
-      // Find the toast.
-      // Look out for the toast message
-      const exportingToastMessage = page.getByText(`Exporting...`)
+    // Click the export button
+    await exportButton.click()
 
-      const engineErrorToastMessage = page.getByText(`Nothing to export`)
-      await expect(engineErrorToastMessage).toBeVisible()
+    // Click the stl.
+    const stlOption = page.getByText('glTF')
+    await expect(stlOption).toBeVisible()
 
-      // Make sure the exporting toast is gone
-      await expect(exportingToastMessage).not.toBeVisible()
+    await page.keyboard.press('Enter')
 
-      // Click the code editor
-      await page.locator('.cm-content').click()
+    // Click the checkbox
+    await cmdBar.submit()
 
-      await page.waitForTimeout(2000)
+    // Find the toast.
+    // Look out for the toast message
+    const exportingToastMessage = page.getByText(`Exporting...`)
 
-      // Expect the toast to be gone
-      await expect(engineErrorToastMessage).not.toBeVisible()
+    const engineErrorToastMessage = page.getByText(`Nothing to export`)
+    await expect(engineErrorToastMessage).toBeVisible()
 
-      // Now add in code that works.
-      await page.locator('.cm-content').fill(bracket)
-      await page.keyboard.press('End')
-      await page.keyboard.press('Enter')
-      await scene.settled()
-      await page.waitForTimeout(5_000) // delay for re-execution
+    // Make sure the exporting toast is gone
+    await expect(exportingToastMessage).not.toBeVisible()
 
-      // Click the export button
-      await expect(exportButton).toBeEnabled()
-      await exportButton.click()
+    // Click the code editor
+    await page.locator('.cm-content').click()
 
-      // Click the stl.
-      await expect(stlOption).toBeVisible()
-      await page.keyboard.press('Enter')
+    await page.waitForTimeout(2000)
 
-      // Click the checkbox
-      await cmdBar.submit()
+    // Expect the toast to be gone
+    await expect(engineErrorToastMessage).not.toBeVisible()
 
-      // Find the toast.
-      // Look out for the toast message
-      await expect(exportingToastMessage).toBeVisible()
+    // Now add in code that works.
+    await page.locator('.cm-content').fill(bracket)
+    await page.keyboard.press('End')
+    await page.keyboard.press('Enter')
+    await scene.settled()
+    await page.waitForTimeout(5_000) // delay for re-execution
 
-      // Expect it to succeed.
-      await expect(exportingToastMessage).not.toBeVisible()
-      await expect(engineErrorToastMessage).not.toBeVisible()
+    // Click the export button
+    await expect(exportButton).toBeEnabled()
+    await exportButton.click()
 
-      const successToastMessage = page.getByText(`Exported successfully`)
-      await page.waitForTimeout(1_000)
-      const count = await successToastMessage.count()
-      expect(count).toBeGreaterThanOrEqual(1)
-    }
-  )
+    // Click the stl.
+    await expect(stlOption).toBeVisible()
+    await page.keyboard.press('Enter')
+
+    // Click the checkbox
+    await cmdBar.submit()
+
+    // Find the toast.
+    // Look out for the toast message
+    await expect(exportingToastMessage).toBeVisible()
+
+    // Expect it to succeed.
+    await expect(exportingToastMessage).not.toBeVisible()
+    await expect(engineErrorToastMessage).not.toBeVisible()
+
+    const successToastMessage = page.getByText(`Exported successfully`)
+    await page.waitForTimeout(1_000)
+    const count = await successToastMessage.count()
+    expect(count).toBeGreaterThanOrEqual(1)
+  })
   // We updated this test such that you can have multiple exports going at once.
   test('ensure you CAN export while an export is already going', async ({
     page,

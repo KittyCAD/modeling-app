@@ -79,31 +79,30 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     ).not.toBeDisabled()
   })
 
-  test(
-    'Testing selections (and hovers) work on sketches when NOT in sketch mode',
-    { tag: '@desktop' },
-    async ({ page, homePage, scene, cmdBar, folderSetupFn, fs }) => {
-      const cases = [
-        {
-          pos: [0.31, 0.5],
-          expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
-        },
-        {
-          pos: [0.448, 0.557],
-          expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
-        },
-        {
-          pos: [0.753, 0.5],
-          expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
-        },
-      ] as const
-      await folderSetupFn(async (dir) => {
-        const projectDir = path.join(dir, 'demo-project')
-        await fs.mkdir(projectDir, { recursive: true })
-        await fs.writeFile(
-          path.join(projectDir, 'main.kcl'),
-          new TextEncoder().encode(
-            `@settings(defaultLengthUnit = in)
+  test('Testing selections (and hovers) work on sketches when NOT in sketch mode', {
+    tag: '@desktop',
+  }, async ({ page, homePage, scene, cmdBar, folderSetupFn, fs }) => {
+    const cases = [
+      {
+        pos: [0.31, 0.5],
+        expectedCode: 'line(end = [74.36, 130.4], tag = $seg01)',
+      },
+      {
+        pos: [0.448, 0.557],
+        expectedCode: 'angledLine(angle = segAng(seg01), length = yo)',
+      },
+      {
+        pos: [0.753, 0.5],
+        expectedCode: 'tangentialArc(endAbsolute = [167.95, -28.85])',
+      },
+    ] as const
+    await folderSetupFn(async (dir) => {
+      const projectDir = path.join(dir, 'demo-project')
+      await fs.mkdir(projectDir, { recursive: true })
+      await fs.writeFile(
+        path.join(projectDir, 'main.kcl'),
+        new TextEncoder().encode(
+          `@settings(defaultLengthUnit = in)
   yo = 79
   part001 = startSketchOn(XZ)
     |> startProfile(at = [-40.54, -26.74])
@@ -112,31 +111,30 @@ test.describe('Testing selections', { tag: '@desktop' }, () => {
     |> ${cases[1].expectedCode}
     |> line(end = [41.19, 28.97 + 5])
     |> ${cases[2].expectedCode}`
-          )
         )
-      })
-      await page.setBodyDimensions({ width: 1200, height: 500 })
-      await homePage.openProject('demo-project')
-      await scene.settled()
+      )
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
+    await homePage.openProject('demo-project')
+    await scene.settled()
 
-      // end setup, now test hover and selects
-      for (const { pos, expectedCode } of cases) {
-        const [click, hover] = scene.makeMouseHelpers(pos[0], pos[1], {
-          format: 'ratio',
-          steps: 5,
-        })
-        // hover over segment, check it's content
-        await hover()
-        await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
-        await expect(page.getByTestId('hover-highlight').first()).toHaveText(
-          expectedCode
-        )
-        // hover over segment, click it and check the cursor has move to the right place
-        await click()
-        await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
-      }
+    // end setup, now test hover and selects
+    for (const { pos, expectedCode } of cases) {
+      const [click, hover] = scene.makeMouseHelpers(pos[0], pos[1], {
+        format: 'ratio',
+        steps: 5,
+      })
+      // hover over segment, check it's content
+      await hover()
+      await expect(page.getByTestId('hover-highlight').first()).toBeVisible()
+      await expect(page.getByTestId('hover-highlight').first()).toHaveText(
+        expectedCode
+      )
+      // hover over segment, click it and check the cursor has move to the right place
+      await click()
+      await expect(page.locator('.cm-activeLine')).toContainText(expectedCode)
     }
-  )
+  })
   test("Various pipe expressions should and shouldn't allow edit and or extrude", async ({
     page,
     homePage,

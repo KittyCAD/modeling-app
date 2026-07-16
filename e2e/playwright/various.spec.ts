@@ -99,193 +99,182 @@ part001 = startSketchOn(-XZ)
   }
 )
 
-test(
-  'Paste should not work unless an input is focused',
-  { tag: '@desktop' },
-  async ({ page, homePage }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
+test('Paste should not work unless an input is focused', {
+  tag: '@desktop',
+}, async ({ page, homePage }) => {
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
 
-    const codeEditorText = page.locator('.cm-content')
-    const pasteContent = `// was this pasted?`
-    const typeContent = `// this should be typed`
+  const codeEditorText = page.locator('.cm-content')
+  const pasteContent = `// was this pasted?`
+  const typeContent = `// this should be typed`
 
-    // Load text into the clipboard
-    await page.evaluate((t) => navigator.clipboard.writeText(t), pasteContent)
+  // Load text into the clipboard
+  await page.evaluate((t) => navigator.clipboard.writeText(t), pasteContent)
 
-    // Focus the text editor
-    await codeEditorText.focus()
+  // Focus the text editor
+  await codeEditorText.focus()
 
-    // Show that we can type into it
-    await page.keyboard.type(typeContent)
-    await page.keyboard.press('Enter')
+  // Show that we can type into it
+  await page.keyboard.type(typeContent)
+  await page.keyboard.press('Enter')
 
-    // Paste without the code pane focused
-    await codeEditorText.blur()
-    await page.keyboard.press('ControlOrMeta+KeyV')
+  // Paste without the code pane focused
+  await codeEditorText.blur()
+  await page.keyboard.press('ControlOrMeta+KeyV')
 
-    // Show that the paste didn't work but typing did
-    await expect(codeEditorText).not.toContainText(pasteContent)
-    await expect(codeEditorText).toContainText(typeContent)
+  // Show that the paste didn't work but typing did
+  await expect(codeEditorText).not.toContainText(pasteContent)
+  await expect(codeEditorText).toContainText(typeContent)
 
-    // Paste with the code editor focused
-    // Following this guidance: https://github.com/microsoft/playwright/issues/8114
-    await codeEditorText.focus()
-    await page.keyboard.press('ControlOrMeta+KeyV')
-    expect(
-      await page.evaluate(
-        () => document.querySelector('.cm-content')?.textContent
-      )
-    ).toContain(pasteContent)
+  // Paste with the code editor focused
+  // Following this guidance: https://github.com/microsoft/playwright/issues/8114
+  await codeEditorText.focus()
+  await page.keyboard.press('ControlOrMeta+KeyV')
+  expect(
+    await page.evaluate(
+      () => document.querySelector('.cm-content')?.textContent
+    )
+  ).toContain(pasteContent)
+})
+
+test('Keyboard shortcuts can be viewed through the help menu', {
+  tag: '@desktop',
+}, async ({ page, homePage }) => {
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
+
+  await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
+  await page
+    .getByRole('button', { name: 'Start Sketch' })
+    .waitFor({ state: 'visible' })
+
+  // Open the help menu
+  await page.getByRole('button', { name: 'Help and resources' }).click()
+
+  // Open the keyboard shortcuts
+  await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
+
+  // Verify the URL and that you can see a list of shortcuts
+  await expect.poll(() => page.url()).toContain('?tab=keybindings')
+  await expectKeybindingsSettingsVisible(page)
+})
+
+test('First escape in tool pops you out of tool, second exits sketch mode', {
+  tag: '@desktop',
+}, async ({ page, context, homePage, toolbar }) => {
+  // Wait for the app to be ready for use
+  const u = await getUtils(page)
+  await context.addInitScript((initialCode) => {
+    localStorage.setItem('persistCode', initialCode)
+  }, 'sketch001 = startSketchOn(XZ)')
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+
+  await homePage.goToModelingScene()
+  await u.openDebugPanel()
+  await u.expectCmdLog('[data-message-type="execution-done"]')
+  await u.closeDebugPanel()
+
+  // Test these hotkeys perform actions when
+  // focus is on the canvas
+  await page.mouse.move(600, 250)
+  await page.mouse.click(600, 250)
+
+  const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
+  await op.dblclick()
+  await toolbar.waitUntilSketchingReady()
+  await toolbar.closeFeatureTreePane()
+  await expect(toolbar.lineBtn).toBeVisible()
+  if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+    await page.keyboard.press('l')
   }
-)
+  await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
 
-test(
-  'Keyboard shortcuts can be viewed through the help menu',
-  { tag: '@desktop' },
-  async ({ page, homePage }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
+  // Draw a line
+  await page.mouse.move(700, 200, { steps: 5 })
+  await page.mouse.click(700, 200)
 
-    await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
-    await page
-      .getByRole('button', { name: 'Start Sketch' })
-      .waitFor({ state: 'visible' })
+  const secondMousePosition = { x: 800, y: 250 }
 
-    // Open the help menu
-    await page.getByRole('button', { name: 'Help and resources' }).click()
+  await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
+    steps: 5,
+  })
+  await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
+  // Equip arc tool
+  await toolbar.selectTangentialArc()
 
-    // Open the keyboard shortcuts
-    await page.getByRole('button', { name: 'Keyboard Shortcuts' }).click()
+  // click in the same position again to continue the profile
+  await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
+    steps: 5,
+  })
+  await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
 
-    // Verify the URL and that you can see a list of shortcuts
-    await expect.poll(() => page.url()).toContain('?tab=keybindings')
-    await expectKeybindingsSettingsVisible(page)
-  }
-)
-
-test(
-  'First escape in tool pops you out of tool, second exits sketch mode',
-  { tag: '@desktop' },
-  async ({ page, context, homePage, toolbar }) => {
-    // Wait for the app to be ready for use
-    const u = await getUtils(page)
-    await context.addInitScript((initialCode) => {
-      localStorage.setItem('persistCode', initialCode)
-    }, 'sketch001 = startSketchOn(XZ)')
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-
-    await homePage.goToModelingScene()
-    await u.openDebugPanel()
-    await u.expectCmdLog('[data-message-type="execution-done"]')
-    await u.closeDebugPanel()
-
-    // Test these hotkeys perform actions when
-    // focus is on the canvas
-    await page.mouse.move(600, 250)
-    await page.mouse.click(600, 250)
-
-    const op = await toolbar.getFeatureTreeOperation('sketch001', 0)
-    await op.dblclick()
-    await toolbar.waitUntilSketchingReady()
-    await toolbar.closeFeatureTreePane()
-    await expect(toolbar.lineBtn).toBeVisible()
-    if ((await toolbar.lineBtn.getAttribute('aria-pressed')) !== 'true') {
+  await page.mouse.move(1000, 100, { steps: 5 })
+  await page.mouse.click(1000, 100)
+  await page.keyboard.press('Escape')
+  await expect(toolbar.tangentialArcBtn).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  )
+  await expect
+    .poll(async () => {
       await page.keyboard.press('l')
-    }
-    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'true')
-
-    // Draw a line
-    await page.mouse.move(700, 200, { steps: 5 })
-    await page.mouse.click(700, 200)
-
-    const secondMousePosition = { x: 800, y: 250 }
-
-    await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-      steps: 5,
+      return toolbar.lineBtn.getAttribute('aria-pressed')
     })
-    await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
-    // Unequip line tool
-    await page.keyboard.press('Escape')
-    // Make sure we didn't pop out of sketch mode.
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).toBeVisible()
-    await expect(toolbar.lineBtn).not.toHaveAttribute('aria-pressed', 'true')
-    // Equip arc tool
-    await toolbar.selectTangentialArc()
+    .toBe('true')
 
-    // click in the same position again to continue the profile
-    await page.mouse.move(secondMousePosition.x, secondMousePosition.y, {
-      steps: 5,
-    })
-    await page.mouse.click(secondMousePosition.x, secondMousePosition.y)
+  // Do not close the sketch.
+  // On close it will exit sketch mode.
 
-    await page.mouse.move(1000, 100, { steps: 5 })
-    await page.mouse.click(1000, 100)
-    await page.keyboard.press('Escape')
-    await expect(toolbar.tangentialArcBtn).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
-    await expect
-      .poll(async () => {
-        await page.keyboard.press('l')
-        return toolbar.lineBtn.getAttribute('aria-pressed')
-      })
-      .toBe('true')
+  // Unequip line tool
+  await page.keyboard.press('Escape')
+  await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
+  await expect(toolbar.tangentialArcBtn).toHaveAttribute(
+    'aria-pressed',
+    'false'
+  )
+  // Make sure we didn't pop out of sketch mode.
+  await expect(page.getByRole('button', { name: 'Exit Sketch' })).toBeVisible()
+  // Exit sketch
+  await page.keyboard.press('Shift+Escape')
+  await expect(
+    page.getByRole('button', { name: 'Exit Sketch' })
+  ).not.toBeVisible()
+})
 
-    // Do not close the sketch.
-    // On close it will exit sketch mode.
+test('Delete key does not navigate back', { tag: '@desktop' }, async ({
+  page,
+  homePage,
+}) => {
+  await page.setBodyDimensions({ width: 1200, height: 500 })
+  await homePage.goToModelingScene()
 
-    // Unequip line tool
-    await page.keyboard.press('Escape')
-    await expect(toolbar.lineBtn).toHaveAttribute('aria-pressed', 'false')
-    await expect(toolbar.tangentialArcBtn).toHaveAttribute(
-      'aria-pressed',
-      'false'
-    )
-    // Make sure we didn't pop out of sketch mode.
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).toBeVisible()
-    // Exit sketch
-    await page.keyboard.press('Shift+Escape')
-    await expect(
-      page.getByRole('button', { name: 'Exit Sketch' })
-    ).not.toBeVisible()
-  }
-)
+  await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
 
-test(
-  'Delete key does not navigate back',
-  { tag: '@desktop' },
-  async ({ page, homePage }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
-    await homePage.goToModelingScene()
+  const settingsButton = page.getByRole('link', {
+    name: 'Settings',
+    exact: false,
+  })
+  const settingsCloseButton = page.getByTestId('settings-close-button')
 
-    await page.waitForURL('file:///**', { waitUntil: 'domcontentloaded' })
+  await settingsButton.click()
+  await expect.poll(() => page.url()).toContain('/settings')
 
-    const settingsButton = page.getByRole('link', {
-      name: 'Settings',
-      exact: false,
-    })
-    const settingsCloseButton = page.getByTestId('settings-close-button')
+  // Make sure that delete doesn't go back from settings
+  await page.keyboard.press('Delete')
+  await expect.poll(() => page.url()).toContain('/settings')
 
-    await settingsButton.click()
-    await expect.poll(() => page.url()).toContain('/settings')
-
-    // Make sure that delete doesn't go back from settings
-    await page.keyboard.press('Delete')
-    await expect.poll(() => page.url()).toContain('/settings')
-
-    // Now close the settings and try delete again,
-    // make sure it doesn't go back to settings
-    await settingsCloseButton.click()
-    await page.keyboard.press('Delete')
-    await expect.poll(() => page.url()).not.toContain('/settings')
-  }
-)
+  // Now close the settings and try delete again,
+  // make sure it doesn't go back to settings
+  await settingsCloseButton.click()
+  await page.keyboard.press('Delete')
+  await expect.poll(() => page.url()).not.toContain('/settings')
+})

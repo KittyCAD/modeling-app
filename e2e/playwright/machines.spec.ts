@@ -104,16 +104,14 @@ test(
   }
 )
 
-test(
-  'Machine API service turns on when the setting is enabled',
-  { tag: '@desktop' },
-  async ({ page }) => {
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+test('Machine API service turns on when the setting is enabled', {
+  tag: '@desktop',
+}, async ({ page }) => {
+  await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    await expect
-      .poll(() => page.evaluate(() => window.electron?.getMachineApiRunning()))
-      .toBe(false)
+  await expect
+    .poll(() => page.evaluate(() => window.electron?.getMachineApiRunning()))
+    .toBe(false)
 
-    await setMachineApiEnabled(page, true)
-  }
-)
+  await setMachineApiEnabled(page, true)
+})

@@ -43,33 +43,36 @@ test.describe('Zookeeper tests', { tag: ['@desktop', '@web'] }, () => {
       await expect(extrude).toBeVisible()
     })
   })
-  test(
-    'Chat history can be cleared',
-    { tag: ['@desktop', '@web'] },
-    async ({ page, homePage, scene, toolbar, cmdBar, copilot }) => {
-      await page.setBodyDimensions({ width: 1500, height: 1000 })
-      await homePage.goToModelingScene()
-      await scene.settled()
+  test('Chat history can be cleared', { tag: ['@desktop', '@web'] }, async ({
+    page,
+    homePage,
+    scene,
+    toolbar,
+    cmdBar,
+    copilot,
+  }) => {
+    await page.setBodyDimensions({ width: 1500, height: 1000 })
+    await homePage.goToModelingScene()
+    await scene.settled()
 
-      await test.step('Submit placeholder prompt', async () => {
-        await toolbar.closePane(DefaultLayoutPaneID.Code)
-        await toolbar.openPane(DefaultLayoutPaneID.TTC)
-        await copilot.conversationInput.fill(
-          `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
-        )
-        await copilot.submitButton.click()
-        await expect(copilot.placeHolderResponse).toBeVisible()
-      })
+    await test.step('Submit placeholder prompt', async () => {
+      await toolbar.closePane(DefaultLayoutPaneID.Code)
+      await toolbar.openPane(DefaultLayoutPaneID.TTC)
+      await copilot.conversationInput.fill(
+        `This is a test prompt [${ZK_MOCK_REPLY_MARKER}]`
+      )
+      await copilot.submitButton.click()
+      await expect(copilot.placeHolderResponse).toBeVisible()
+    })
 
-      await test.step('Clear the chat history', async () => {
-        await copilot.clearChatButton.click()
-        await expect(copilot.welcomeSection).not.toBeVisible()
-        await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
+    await test.step('Clear the chat history', async () => {
+      await copilot.clearChatButton.click()
+      await expect(copilot.welcomeSection).not.toBeVisible()
+      await expect(copilot.welcomeSection).toBeVisible({ timeout: 30_000 })
 
-        await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(0)
-        await expect(page.getByTestId('ml-response-chat-bubble')).toHaveCount(0)
-        await expect(copilot.clearChatButton).not.toBeVisible()
-      })
-    }
-  )
+      await expect(page.getByTestId('ml-request-chat-bubble')).toHaveCount(0)
+      await expect(page.getByTestId('ml-response-chat-bubble')).toHaveCount(0)
+      await expect(copilot.clearChatButton).not.toBeVisible()
+    })
+  })
 })

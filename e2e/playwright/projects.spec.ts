@@ -110,246 +110,238 @@ test(
   }
 )
 
-test(
-  'open a file in a project works and renders, open another file in different project with errors, it should clear the scene',
-  { tag: ['@desktop'] },
-  async ({
-    homePage,
-    toolbar,
-    scene,
-    cmdBar,
-    context,
-    page,
-    editor,
-    fs,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      let testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
-      const errorDir = path.join(dir, 'broken-code')
-      await fs.mkdir(errorDir, { recursive: true })
-      testFileData = await nodeFs.readFile(
-        executorInputPath('broken-code-test.kcl')
-      )
-      await fs.writeFile(
-        path.join(errorDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
-    })
+test('open a file in a project works and renders, open another file in different project with errors, it should clear the scene', {
+  tag: ['@desktop'],
+}, async ({
+  homePage,
+  toolbar,
+  scene,
+  cmdBar,
+  context,
+  page,
+  editor,
+  fs,
+  folderSetupFn,
+}) => {
+  await folderSetupFn(async (dir) => {
+    const bracketDir = path.join(dir, 'bracket')
+    await fs.mkdir(bracketDir, { recursive: true })
+    let testFileData = await nodeFs.readFile(
+      executorInputPath('cylinder-inches.kcl')
+    )
+    await fs.writeFile(
+      path.join(bracketDir, 'main.kcl'),
+      new Uint8Array(testFileData)
+    )
+    const errorDir = path.join(dir, 'broken-code')
+    await fs.mkdir(errorDir, { recursive: true })
+    testFileData = await nodeFs.readFile(
+      executorInputPath('broken-code-test.kcl')
+    )
+    await fs.writeFile(
+      path.join(errorDir, 'main.kcl'),
+      new Uint8Array(testFileData)
+    )
+  })
 
-    const u = await getUtils(page)
+  const u = await getUtils(page)
 
-    await test.step('Opening the bracket project should load the stream', async () => {
-      await homePage.openProject('bracket')
-      await scene.settled()
-    })
+  await test.step('Opening the bracket project should load the stream', async () => {
+    await homePage.openProject('bracket')
+    await scene.settled()
+  })
 
-    await u.doAndWaitForImageDiff(
-      async () => {
-        await toolbar.logoLink.click()
-        await homePage.openProject('broken-code')
-        await scene.settled({ expectError: true })
+  await u.doAndWaitForImageDiff(
+    async () => {
+      await toolbar.logoLink.click()
+      await homePage.openProject('broken-code')
+      await scene.settled({ expectError: true })
 
-        await test.step('Verify error appears', async () => {
-          await editor.scrollToText(
-            "|> line(end = [0, wallMountL], tag = 'outerEdge')"
-          )
-          // error in gutter
-          await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-            timeout: 10_000,
-          })
-          // error text on hover
-          await page.hover('.cm-lint-marker-error')
-          const crypticErrorText =
-            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-          await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+      await test.step('Verify error appears', async () => {
+        await editor.scrollToText(
+          "|> line(end = [0, wallMountL], tag = 'outerEdge')"
+        )
+        // error in gutter
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+          timeout: 10_000,
         })
-      },
-      500,
-      scene.streamWrapper
+        // error text on hover
+        await page.hover('.cm-lint-marker-error')
+        const crypticErrorText =
+          'tag requires a value with type `TagDecl`, but found a value with type `string`.'
+        await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+      })
+    },
+    500,
+    scene.streamWrapper
+  )
+})
+
+test('open a file in a project works and renders, open another file in different project that is empty, it should clear the scene', {
+  tag: ['@desktop'],
+}, async ({
+  toolbar,
+  editor,
+  scene,
+  cmdBar,
+  context,
+  page,
+  homePage,
+  fs,
+  folderSetupFn,
+}) => {
+  await folderSetupFn(async (dir) => {
+    const bracketDir = path.join(dir, 'bracket')
+    await fs.mkdir(bracketDir, { recursive: true })
+    const testFileData = await nodeFs.readFile(
+      executorInputPath('cylinder-inches.kcl')
     )
-  }
-)
+    await fs.writeFile(
+      path.join(bracketDir, 'main.kcl'),
+      new Uint8Array(testFileData)
+    )
+    const emptyDir = path.join(dir, 'empty')
+    await fs.mkdir(emptyDir, { recursive: true })
+    await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
+  })
 
-test(
-  'open a file in a project works and renders, open another file in different project that is empty, it should clear the scene',
-  { tag: ['@desktop'] },
-  async ({
-    toolbar,
-    editor,
-    scene,
-    cmdBar,
-    context,
-    page,
-    homePage,
-    fs,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
-      const emptyDir = path.join(dir, 'empty')
-      await fs.mkdir(emptyDir, { recursive: true })
-      await fs.writeFile(path.join(emptyDir, 'main.kcl'), new Uint8Array())
-    })
+  const u = await getUtils(page)
 
-    const u = await getUtils(page)
+  await test.step('Opening the bracket project should load the stream', async () => {
+    await homePage.openProject('bracket')
+    await scene.settled()
+  })
 
-    await test.step('Opening the bracket project should load the stream', async () => {
-      await homePage.openProject('bracket')
+  await u.doAndWaitForImageDiff(
+    async () => {
+      await toolbar.logoLink.click()
+      await homePage.openProject('empty')
       await scene.settled()
-    })
+    },
+    500,
+    scene.streamWrapper
+  )
 
-    await u.doAndWaitForImageDiff(
-      async () => {
-        await toolbar.logoLink.click()
-        await homePage.openProject('empty')
-        await scene.settled()
-      },
-      500,
-      scene.streamWrapper
+  await test.step('Ensure the code is empty', async () => {
+    await editor.expectEditor.toBe('\n')
+  })
+})
+
+test('open a file in a project works and renders, open empty file, it should clear the scene', {
+  tag: ['@desktop'],
+}, async ({
+  scene,
+  cmdBar,
+  context,
+  page,
+  toolbar,
+  editor,
+  homePage,
+  fs,
+  folderSetupFn,
+}) => {
+  await folderSetupFn(async (dir) => {
+    const bracketDir = path.join(dir, 'bracket')
+    await fs.mkdir(bracketDir, { recursive: true })
+    const testFileData = await nodeFs.readFile(
+      executorInputPath('cylinder-inches.kcl')
+    )
+    await fs.writeFile(
+      path.join(bracketDir, 'main.kcl'),
+      new Uint8Array(testFileData)
+    )
+    await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
+  })
+
+  const u = await getUtils(page)
+
+  await test.step('Opening the bracket project should load the stream', async () => {
+    await homePage.openProject('bracket')
+    await scene.settled()
+  })
+
+  await u.doAndWaitForImageDiff(
+    async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
+      await toolbar.openFile('empty.kcl')
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
+      await scene.settled()
+    },
+    500,
+    scene.streamWrapper
+  )
+
+  await test.step('Ensure the code is empty', async () => {
+    await editor.expectEditor.toBe('\n')
+  })
+})
+
+test('open a file in a project works and renders, open another file in the same project with errors, it should clear the scene', {
+  tag: '@desktop',
+}, async ({
+  scene,
+  cmdBar,
+  context,
+  page,
+  toolbar,
+  homePage,
+  editor,
+  fs,
+  folderSetupFn,
+}) => {
+  await folderSetupFn(async (dir) => {
+    const bracketDir = path.join(dir, 'bracket')
+    await fs.mkdir(bracketDir, { recursive: true })
+    const testFileData = await nodeFs.readFile(
+      executorInputPath('cylinder-inches.kcl')
+    )
+    await fs.writeFile(
+      path.join(bracketDir, 'main.kcl'),
+      new Uint8Array(testFileData)
     )
 
-    await test.step('Ensure the code is empty', async () => {
-      await editor.expectEditor.toBe('\n')
-    })
-  }
-)
-
-test(
-  'open a file in a project works and renders, open empty file, it should clear the scene',
-  { tag: ['@desktop'] },
-  async ({
-    scene,
-    cmdBar,
-    context,
-    page,
-    toolbar,
-    editor,
-    homePage,
-    fs,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
-      await fs.writeFile(path.join(bracketDir, 'empty.kcl'), new Uint8Array())
-    })
-
-    const u = await getUtils(page)
-
-    await test.step('Opening the bracket project should load the stream', async () => {
-      await homePage.openProject('bracket')
-      await scene.settled()
-    })
-
-    await u.doAndWaitForImageDiff(
-      async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.openFile('empty.kcl')
-        await toolbar.closePane(DefaultLayoutPaneID.Files)
-        await scene.settled()
-      },
-      500,
-      scene.streamWrapper
+    const brokenFileData = await nodeFs.readFile(
+      executorInputPath('broken-code-test.kcl')
     )
+    await fs.writeFile(
+      path.join(bracketDir, 'broken-code-test.kcl'),
+      new Uint8Array(brokenFileData)
+    )
+  })
 
-    await test.step('Ensure the code is empty', async () => {
-      await editor.expectEditor.toBe('\n')
-    })
-  }
-)
+  const u = await getUtils(page)
 
-test(
-  'open a file in a project works and renders, open another file in the same project with errors, it should clear the scene',
-  { tag: '@desktop' },
-  async ({
-    scene,
-    cmdBar,
-    context,
-    page,
-    toolbar,
-    homePage,
-    editor,
-    fs,
-    folderSetupFn,
-  }) => {
-    await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
+  await test.step('Opening the bracket project should load the stream', async () => {
+    await homePage.openProject('bracket')
+    await scene.settled()
+  })
 
-      const brokenFileData = await nodeFs.readFile(
-        executorInputPath('broken-code-test.kcl')
-      )
-      await fs.writeFile(
-        path.join(bracketDir, 'broken-code-test.kcl'),
-        new Uint8Array(brokenFileData)
-      )
-    })
+  await u.doAndWaitForImageDiff(
+    async () => {
+      await toolbar.openPane(DefaultLayoutPaneID.Files)
+      await toolbar.openFile('broken-code-test.kcl')
+      await toolbar.closePane(DefaultLayoutPaneID.Files)
+      await scene.settled({ expectError: true })
 
-    const u = await getUtils(page)
-
-    await test.step('Opening the bracket project should load the stream', async () => {
-      await homePage.openProject('bracket')
-      await scene.settled()
-    })
-
-    await u.doAndWaitForImageDiff(
-      async () => {
-        await toolbar.openPane(DefaultLayoutPaneID.Files)
-        await toolbar.openFile('broken-code-test.kcl')
-        await toolbar.closePane(DefaultLayoutPaneID.Files)
-        await scene.settled({ expectError: true })
-
-        await test.step('Verify error appears', async () => {
-          await editor.scrollToText(
-            "|> line(end = [0, wallMountL], tag = 'outerEdge')"
-          )
-          // error in gutter
-          await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
-            timeout: 10_000,
-          })
-          // error text on hover
-          await page.hover('.cm-lint-marker-error')
-          const crypticErrorText =
-            'tag requires a value with type `TagDecl`, but found a value with type `string`.'
-          await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+      await test.step('Verify error appears', async () => {
+        await editor.scrollToText(
+          "|> line(end = [0, wallMountL], tag = 'outerEdge')"
+        )
+        // error in gutter
+        await expect(page.locator('.cm-lint-marker-error')).toBeVisible({
+          timeout: 10_000,
         })
-      },
-      500,
-      scene.streamWrapper
-    )
-  }
-)
+        // error text on hover
+        await page.hover('.cm-lint-marker-error')
+        const crypticErrorText =
+          'tag requires a value with type `TagDecl`, but found a value with type `string`.'
+        await expect(page.getByText(crypticErrorText).first()).toBeVisible()
+      })
+    },
+    500,
+    scene.streamWrapper
+  )
+})
 
 test(
   'when code with error first loads you get errors in console',
@@ -932,56 +924,57 @@ test.describe(`Project management commands`, { tag: ['@desktop'] }, () => {
   })
 })
 
-test(
-  `Create a few projects using the default project name`,
-  { tag: ['@desktop'] },
-  async ({ homePage, toolbar }) => {
-    for (let i = 0; i < 12; i++) {
-      await test.step(`Create project ${i}`, async () => {
-        await homePage.expectState({
-          projectCards: Array.from({ length: i }, (_, i) => ({
-            title: i === 0 ? 'untitled' : `untitled-${i}`,
-            fileCount: 1,
-          })).toReversed(),
-          sortBy: 'last-modified-desc',
-        })
-        await homePage.createAndGoToProject()
-        await toolbar.logoLink.click()
-      })
-    }
-  }
-)
-
-test(
-  'project title case sensitive duplication',
-  { tag: ['@desktop'] },
-  async ({ homePage, page, scene, cmdBar, toolbar, folderSetupFn }) => {
-    await test.step('Create project "test" and add KCL', async () => {
-      await homePage.createAndGoToProject('test')
-      await scene.settled()
-    })
-
-    await test.step('Return to dashboard', async () => {
-      await toolbar.logoLink.click()
-    })
-
-    await test.step('Create project "Test" and open it', async () => {
-      await homePage.createAndGoToProject('Test')
-      await scene.settled()
-    })
-
-    await test.step('Verify duplicate resolves to "Test-1" on dashboard', async () => {
-      await toolbar.logoLink.click()
+test(`Create a few projects using the default project name`, {
+  tag: ['@desktop'],
+}, async ({ homePage, toolbar }) => {
+  for (let i = 0; i < 12; i++) {
+    await test.step(`Create project ${i}`, async () => {
       await homePage.expectState({
-        projectCards: [
-          { title: 'Test-1', fileCount: 1 },
-          { title: 'test', fileCount: 1 },
-        ],
+        projectCards: Array.from({ length: i }, (_, i) => ({
+          title: i === 0 ? 'untitled' : `untitled-${i}`,
+          fileCount: 1,
+        })).toReversed(),
         sortBy: 'last-modified-desc',
       })
+      await homePage.createAndGoToProject()
+      await toolbar.logoLink.click()
     })
   }
-)
+})
+
+test('project title case sensitive duplication', { tag: ['@desktop'] }, async ({
+  homePage,
+  page,
+  scene,
+  cmdBar,
+  toolbar,
+  folderSetupFn,
+}) => {
+  await test.step('Create project "test" and add KCL', async () => {
+    await homePage.createAndGoToProject('test')
+    await scene.settled()
+  })
+
+  await test.step('Return to dashboard', async () => {
+    await toolbar.logoLink.click()
+  })
+
+  await test.step('Create project "Test" and open it', async () => {
+    await homePage.createAndGoToProject('Test')
+    await scene.settled()
+  })
+
+  await test.step('Verify duplicate resolves to "Test-1" on dashboard', async () => {
+    await toolbar.logoLink.click()
+    await homePage.expectState({
+      projectCards: [
+        { title: 'Test-1', fileCount: 1 },
+        { title: 'test', fileCount: 1 },
+      ],
+      sortBy: 'last-modified-desc',
+    })
+  })
+})
 
 test(
   'File in the file pane should open with a single click',
@@ -1683,202 +1676,192 @@ test(
   }
 )
 
-test(
-  'Original project name persist after onboarding',
-  {
-    tag: ['@desktop'],
-  },
-  async ({ page, toolbar }) => {
-    const nextButton = page.getByTestId('onboarding-next')
-    await page.setBodyDimensions({ width: 1200, height: 500 })
+test('Original project name persist after onboarding', {
+  tag: ['@desktop'],
+}, async ({ page, toolbar }) => {
+  const nextButton = page.getByTestId('onboarding-next')
+  await page.setBodyDimensions({ width: 1200, height: 500 })
 
-    const getAllProjects = () => page.getByTestId('project-link').all()
-    page.on('console', console.log)
+  const getAllProjects = () => page.getByTestId('project-link').all()
+  page.on('console', console.log)
 
-    await test.step('Should create and name a project called wrist brace', async () => {
-      await createProject({ name: 'wrist brace', page, returnHome: true })
-      await expect(page.getByTestId('project-link').first()).toBeVisible()
-    })
+  await test.step('Should create and name a project called wrist brace', async () => {
+    await createProject({ name: 'wrist brace', page, returnHome: true })
+    await expect(page.getByTestId('project-link').first()).toBeVisible()
+  })
 
-    await test.step('Should go through onboarding', async () => {
-      await toolbar.userSidebarButton.click()
-      await page.getByTestId('user-settings').click()
-      await page.getByRole('button', { name: 'Replay Onboarding' }).click()
-      await expect(nextButton).toBeVisible()
+  await test.step('Should go through onboarding', async () => {
+    await toolbar.userSidebarButton.click()
+    await page.getByTestId('user-settings').click()
+    await page.getByRole('button', { name: 'Replay Onboarding' }).click()
+    await expect(nextButton).toBeVisible()
 
-      let advances = 0
-      while ((await nextButton.innerText()).trim() !== 'Finish') {
-        if (++advances > 20) {
-          throw new Error('Onboarding did not finish')
-        }
-        const urlBefore = page.url()
-        await nextButton.click()
-        await expect.poll(() => page.url()).not.toBe(urlBefore)
+    let advances = 0
+    while ((await nextButton.innerText()).trim() !== 'Finish') {
+      if (++advances > 20) {
+        throw new Error('Onboarding did not finish')
       }
+      const urlBefore = page.url()
       await nextButton.click()
-      await expect(page).not.toHaveURL(/\/onboarding\//)
+      await expect.poll(() => page.url()).not.toBe(urlBefore)
+    }
+    await nextButton.click()
+    await expect(page).not.toHaveURL(/\/onboarding\//)
 
-      await page.getByTestId('project-sidebar-toggle').click()
-    })
+    await page.getByTestId('project-sidebar-toggle').click()
+  })
 
-    await test.step('Should go home after onboarding is completed', async () => {
-      await page.getByTestId('app-logo').click()
-    })
+  await test.step('Should go home after onboarding is completed', async () => {
+    await page.getByTestId('app-logo').click()
+  })
 
-    await test.step('Should show the original project called wrist brace', async () => {
-      const projectNames = ['tutorial-project', 'wrist brace']
-      for (const [index, projectLink] of (await getAllProjects()).entries()) {
-        await expect(projectLink).toContainText(projectNames[index])
-      }
-    })
-  }
-)
+  await test.step('Should show the original project called wrist brace', async () => {
+    const projectNames = ['tutorial-project', 'wrist brace']
+    for (const [index, projectLink] of (await getAllProjects()).entries()) {
+      await expect(projectLink).toContainText(projectNames[index])
+    }
+  })
+})
 
 // Desktop-only because browser uses UTF-16 for text encoding so shit's a bit
 // fucked when trying to mix them. I (lee) mainly care it works on desktop.
-test(
-  'project name with foreign characters should open',
-  { tag: ['@desktop'] },
-  async ({ context, page, cmdBar, scene, homePage, fs, folderSetupFn }) => {
-    const projectName = 'にゅにゅ'
-    await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, projectName)
-      await fs.mkdir(bracketDir, { recursive: true })
-      console.log('READDIR', await fs.readdir(dir))
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      const finalPath = path.join(bracketDir, 'main.kcl')
-      await fs.writeFile(finalPath, new Uint8Array(testFileData))
-    })
+test('project name with foreign characters should open', {
+  tag: ['@desktop'],
+}, async ({ context, page, cmdBar, scene, homePage, fs, folderSetupFn }) => {
+  const projectName = 'にゅにゅ'
+  await folderSetupFn(async (dir) => {
+    const bracketDir = path.join(dir, projectName)
+    await fs.mkdir(bracketDir, { recursive: true })
+    console.log('READDIR', await fs.readdir(dir))
+    const testFileData = await nodeFs.readFile(
+      executorInputPath('cylinder-inches.kcl')
+    )
+    const finalPath = path.join(bracketDir, 'main.kcl')
+    await fs.writeFile(finalPath, new Uint8Array(testFileData))
+  })
 
-    await homePage.openProject(projectName)
+  await homePage.openProject(projectName)
+  await scene.settled()
+})
+
+test('import from nested directory', {
+  tag: ['@desktop', '@windows', '@macos'],
+}, async ({
+  homePage,
+  scene,
+  cmdBar,
+  context,
+  page,
+  editor,
+  fs,
+  folderSetupFn,
+}) => {
+  const lineOfKcl = runningOnWindows()
+    ? `import 'nested\\main.kcl' as thing`
+    : `import 'nested/main.kcl' as thing`
+  await folderSetupFn(async (dir) => {
+    const bracketDir = path.join(dir, 'bracket')
+    await fs.mkdir(bracketDir, { recursive: true })
+    const nestedDir = path.join(bracketDir, 'nested')
+    await fs.mkdir(nestedDir, { recursive: true })
+
+    const testFileData = await nodeFs.readFile(
+      executorInputPath('cylinder-inches.kcl')
+    )
+    await fs.writeFile(
+      path.join(nestedDir, 'main.kcl'),
+      new Uint8Array(testFileData)
+    )
+
+    await fs.writeFile(
+      path.join(bracketDir, 'main.kcl'),
+      new TextEncoder().encode(`${lineOfKcl}\n\nthing`)
+    )
+  })
+
+  await test.step('Opening the bracket project should load the stream', async () => {
+    // expect to see the text bracket
+    await homePage.openProject('bracket')
     await scene.settled()
-  }
-)
 
-test(
-  'import from nested directory',
-  { tag: ['@desktop', '@windows', '@macos'] },
-  async ({
-    homePage,
-    scene,
-    cmdBar,
-    context,
-    page,
-    editor,
-    fs,
-    folderSetupFn,
-  }) => {
-    const lineOfKcl = runningOnWindows()
-      ? `import 'nested\\main.kcl' as thing`
-      : `import 'nested/main.kcl' as thing`
-    await folderSetupFn(async (dir) => {
-      const bracketDir = path.join(dir, 'bracket')
-      await fs.mkdir(bracketDir, { recursive: true })
-      const nestedDir = path.join(bracketDir, 'nested')
-      await fs.mkdir(nestedDir, { recursive: true })
-
-      const testFileData = await nodeFs.readFile(
-        executorInputPath('cylinder-inches.kcl')
-      )
-      await fs.writeFile(
-        path.join(nestedDir, 'main.kcl'),
-        new Uint8Array(testFileData)
-      )
-
-      await fs.writeFile(
-        path.join(bracketDir, 'main.kcl'),
-        new TextEncoder().encode(`${lineOfKcl}\n\nthing`)
-      )
+    await editor.expectState({
+      activeLines: [lineOfKcl],
+      diagnostics: [],
+      highlightedCode: '',
     })
+  })
+})
 
-    await test.step('Opening the bracket project should load the stream', async () => {
-      // expect to see the text bracket
-      await homePage.openProject('bracket')
-      await scene.settled()
+test('segment position changes persist after dragging and reopening project', {
+  tag: ['@desktop'],
+}, async ({
+  scene,
+  cmdBar,
+  context,
+  page,
+  editor,
+  toolbar,
+  fs,
+  folderSetupFn,
+}) => {
+  const projectName = 'segment-drag-test'
 
-      await editor.expectState({
-        activeLines: [lineOfKcl],
-        diagnostics: [],
-        highlightedCode: '',
-      })
-    })
-  }
-)
-
-test(
-  'segment position changes persist after dragging and reopening project',
-  { tag: ['@desktop'] },
-  async ({
-    scene,
-    cmdBar,
-    context,
-    page,
-    editor,
-    toolbar,
-    fs,
-    folderSetupFn,
-  }) => {
-    const projectName = 'segment-drag-test'
-
-    await folderSetupFn(async (dir) => {
-      const projectDir = path.join(dir, projectName)
-      await fs.mkdir(projectDir, { recursive: true })
-      await fs.writeFile(
-        path.join(projectDir, 'main.kcl'),
-        new TextEncoder().encode(`sketch001 = startSketchOn(XZ)
+  await folderSetupFn(async (dir) => {
+    const projectDir = path.join(dir, projectName)
+    await fs.mkdir(projectDir, { recursive: true })
+    await fs.writeFile(
+      path.join(projectDir, 'main.kcl'),
+      new TextEncoder().encode(`sketch001 = startSketchOn(XZ)
 profile001 = startProfile(sketch001, at = [0, 0])
   |> line(end = [0, 6])
   |> line(end = [10, 0])
   |> line(end = [-8, -5])
 `)
-      )
-    })
-    const u = await getUtils(page)
+    )
+  })
+  const u = await getUtils(page)
 
-    await test.step('Opening the project and entering sketch mode', async () => {
-      await expect(page.getByText(projectName)).toBeVisible()
-      await page.getByText(projectName).click()
-      await scene.settled()
+  await test.step('Opening the project and entering sketch mode', async () => {
+    await expect(page.getByText(projectName)).toBeVisible()
+    await page.getByText(projectName).click()
+    await scene.settled()
 
-      // go to sketch mode
-      await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
-    })
+    // go to sketch mode
+    await (await toolbar.getFeatureTreeOperation('Sketch', 0)).dblclick()
+  })
 
-    const lineToChange = 'line(end = [-8, -5])'
-    const lineToStay = 'line(end = [10, 0])'
+  const lineToChange = 'line(end = [-8, -5])'
+  const lineToStay = 'line(end = [10, 0])'
 
-    await test.step('Dragging the line endpoint to modify it', async () => {
-      // Get the last line's endpoint position
-      const lineEnd = await u.getBoundingBox('[data-overlay-index="3"]')
+  await test.step('Dragging the line endpoint to modify it', async () => {
+    // Get the last line's endpoint position
+    const lineEnd = await u.getBoundingBox('[data-overlay-index="3"]')
 
-      await page.mouse.move(lineEnd.x, lineEnd.y - 5)
-      await page.mouse.down()
-      await page.mouse.move(lineEnd.x + 80, lineEnd.y)
-      await page.mouse.up()
+    await page.mouse.move(lineEnd.x, lineEnd.y - 5)
+    await page.mouse.down()
+    await page.mouse.move(lineEnd.x + 80, lineEnd.y)
+    await page.mouse.up()
 
-      await editor.expectEditor.not.toContain(lineToChange)
-      await editor.expectEditor.toContain(lineToStay)
+    await editor.expectEditor.not.toContain(lineToChange)
+    await editor.expectEditor.toContain(lineToStay)
 
-      // Exit sketch mode
-      await page.keyboard.press('Shift+Escape')
-      await scene.settled()
-    })
+    // Exit sketch mode
+    await page.keyboard.press('Shift+Escape')
+    await scene.settled()
+  })
 
-    await test.step('Going back to dashboard', async () => {
-      await page.getByTestId('app-logo').click()
-    })
+  await test.step('Going back to dashboard', async () => {
+    await page.getByTestId('app-logo').click()
+  })
 
-    await test.step('Reopening the project and verifying changes are saved', async () => {
-      await page.getByText(projectName).click()
+  await test.step('Reopening the project and verifying changes are saved', async () => {
+    await page.getByText(projectName).click()
 
-      // Check if new line coordinates were saved
-      await editor.expectEditor.not.toContain(lineToChange)
-      await editor.expectEditor.toContain(lineToStay)
-    })
-  }
-)
+    // Check if new line coordinates were saved
+    await editor.expectEditor.not.toContain(lineToChange)
+    await editor.expectEditor.toContain(lineToStay)
+  })
+})
 
 test.describe('Project id', { tag: ['@desktop'] }, () => {
   // Should work on both web and desktop.
