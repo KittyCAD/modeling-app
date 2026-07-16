@@ -53,6 +53,7 @@ type SetupActorInput = {
   context: MlEphantManagerContext
 }
 
+const completedConversationStartedAt = new Date('2026-07-15T12:00:00.000Z')
 const completedConversation: Conversation = {
   exchanges: [
     {
@@ -68,6 +69,7 @@ const completedConversation: Conversation = {
           },
         },
       ],
+      startedAt: completedConversationStartedAt,
     },
   ],
 }
@@ -350,16 +352,20 @@ describe('mlEphantManagerMachine', () => {
     it('keeps recoverable context after an abrupt close', async () => {
       const { fetchMock } = stubClientErrorFetch()
       const ws: TestWebSocket = new TestSocket() as TestWebSocket
+      let setupContext: MlEphantManagerContext | undefined
       const machine = mlEphantManagerMachine.provide({
         actors: {
           [MlEphantManagerStates.Setup]: fromPromise<
             Partial<MlEphantManagerContext>,
             SetupActorInput
-          >(async () => ({
-            ws,
-            conversation: completedConversation,
-            conversationId: 'conversation-id',
-          })),
+          >(async ({ input }) => {
+            setupContext = input.context
+            return {
+              ws,
+              conversation: completedConversation,
+              conversationId: 'conversation-id',
+            }
+          }),
         },
       })
       const actor = createActor(machine, {
@@ -399,6 +405,20 @@ describe('mlEphantManagerMachine', () => {
       expect(actor.getSnapshot().context.conversationId).toBe('conversation-id')
       expect(actor.getSnapshot().context.abruptlyClosed).toBe(true)
       expect(fetchMock).not.toHaveBeenCalled()
+
+      actor.send({
+        type: MlEphantManagerTransitions.CacheSetupAndConnect,
+        refParentSend: vi.fn(),
+        conversationId: 'conversation-id',
+      })
+
+      await waitFor(actor, (state) =>
+        state.matches(MlEphantManagerStates.WaitForContinueCheck)
+      )
+
+      expect(setupContext?.cachedSetup?.activeExchangeStartedAt).toBe(
+        completedConversationStartedAt
+      )
 
       actor.stop()
     })
