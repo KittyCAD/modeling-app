@@ -927,7 +927,7 @@ async function resolveProjectEntrypointPath(
       }
     }
   } catch {
-    // Fall through to the project entrypoint.
+    // Fall through to the default project entrypoint.
   }
   return fsZds.join(projectPath, PROJECT_ENTRYPOINT)
 }
@@ -948,14 +948,14 @@ async function readKclVersionFromEntrypoint(
       return version
     }
   } catch {
-    // Missing or unreadable entrypoint — treat as no file-level version.
+    // Fall through to no entrypoint-defined version.
   }
   return undefined
 }
 
 /**
  * Keep the entrypoint file's `@settings(kclVersion)` in sync with the project
- * setting. Only updates when the entrypoint already declares a kclVersion, and
+ * setting. Only updates when the entrypoint already declares a version, and
  * only writes when the file content would change.
  */
 export async function syncKclVersionToEntrypoint(
@@ -968,7 +968,7 @@ export async function syncKclVersionToEntrypoint(
   try {
     code = await fsZds.readFile(entrypointPath, { encoding: 'utf-8' })
   } catch {
-    // Missing entrypoint — nothing to sync.
+    // Missing entrypoint so there is nothing to sync.
     return
   }
 

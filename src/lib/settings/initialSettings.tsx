@@ -379,8 +379,7 @@ function createCoreSettings() {
        */
       kclVersion: new Setting<string>({
         defaultValue: LEGACY_KCL_VERSION,
-        description:
-          'The KittyCAD Language version for this project. New projects use the latest stable version.',
+        description: 'The KittyCAD Language version for this project.',
         validate: (v) => typeof v === 'string' && v.length > 0,
         hideOnLevel: 'user',
         commandConfig: {
