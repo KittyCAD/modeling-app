@@ -65,6 +65,20 @@ description: Variables in memory after executing pipe.kcl
             "value": "circle1"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 460,
+            "end": 467,
+            "moduleId": 0,
+            "start": 460,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -98,6 +112,36 @@ description: Variables in memory after executing pipe.kcl
             "to": [
               1.18749999905,
               0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              0.0000000007338130096224303,
+              0.000000000163069585449449
+            ],
+            "from": [
+              0.9761870726831523,
+              0.21693041543317135
+            ],
+            "radius": 1.0000000022551416,
+            "tag": {
+              "commentStart": 460,
+              "end": 467,
+              "moduleId": 0,
+              "start": 460,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.9761870726831523,
+              0.21693041543317135
             ],
             "type": "Circle",
             "units": "in"
@@ -638,6 +682,36 @@ description: Variables in memory after executing pipe.kcl
           "to": [
             1.18749999905,
             0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            0.0000000007338130096224303,
+            0.000000000163069585449449
+          ],
+          "from": [
+            0.9761870726831523,
+            0.21693041543317135
+          ],
+          "radius": 1.0000000022551416,
+          "tag": {
+            "commentStart": 460,
+            "end": 467,
+            "moduleId": 0,
+            "start": 460,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.9761870726831523,
+            0.21693041543317135
           ],
           "type": "Circle",
           "units": "in"

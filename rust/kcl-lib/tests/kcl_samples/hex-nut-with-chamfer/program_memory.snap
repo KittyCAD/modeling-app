@@ -2216,6 +2216,20 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line6"
           },
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1163,
+            "end": 1170,
+            "moduleId": 0,
+            "start": 1163,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2365,6 +2379,36 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               -0.0000000000005417584559039567
             ],
             "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0000000000017475789678086058,
+              -0.0000000000012528795904140175
+            ],
+            "from": [
+              3.2508737898140208,
+              2.330626439963561
+            ],
+            "radius": 3.9999999999967746,
+            "tag": {
+              "commentStart": 1163,
+              "end": 1170,
+              "moduleId": 0,
+              "start": 1163,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
+            "to": [
+              3.2508737898140208,
+              2.330626439963561
+            ],
+            "type": "Circle",
             "units": "mm"
           }
         ],
@@ -2555,6 +2599,20 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             "value": "line6"
           },
           "type": "extrudePlane"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 1163,
+            "end": 1170,
+            "moduleId": 0,
+            "start": 1163,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -2704,6 +2762,36 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
               -0.0000000000005417584559039567
             ],
             "type": "ToPoint",
+            "units": "mm"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0000000000017475789678086058,
+              -0.0000000000012528795904140175
+            ],
+            "from": [
+              3.2508737898140208,
+              2.330626439963561
+            ],
+            "radius": 3.9999999999967746,
+            "tag": {
+              "commentStart": 1163,
+              "end": 1170,
+              "moduleId": 0,
+              "start": 1163,
+              "type": "TagDeclarator",
+              "value": "circle1"
+            },
+            "to": [
+              3.2508737898140208,
+              2.330626439963561
+            ],
+            "type": "Circle",
             "units": "mm"
           }
         ],
@@ -2943,6 +3031,36 @@ description: Variables in memory after executing hex-nut-with-chamfer.kcl
             -0.0000000000005417584559039567
           ],
           "type": "ToPoint",
+          "units": "mm"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.0000000000017475789678086058,
+            -0.0000000000012528795904140175
+          ],
+          "from": [
+            3.2508737898140208,
+            2.330626439963561
+          ],
+          "radius": 3.9999999999967746,
+          "tag": {
+            "commentStart": 1163,
+            "end": 1170,
+            "moduleId": 0,
+            "start": 1163,
+            "type": "TagDeclarator",
+            "value": "circle1"
+          },
+          "to": [
+            3.2508737898140208,
+            2.330626439963561
+          ],
+          "type": "Circle",
           "units": "mm"
         }
       ],

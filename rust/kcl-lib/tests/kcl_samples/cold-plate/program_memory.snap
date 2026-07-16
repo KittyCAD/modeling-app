@@ -15269,6 +15269,36 @@ description: Variables in memory after executing cold-plate.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -3.000000000035,
+            0.62500000015
+          ],
+          "from": [
+            -2.7675000000475,
+            0.62500000018
+          ],
+          "radius": 0.23249999998750015,
+          "tag": {
+            "commentStart": 18051,
+            "end": 18062,
+            "moduleId": 0,
+            "start": 18051,
+            "type": "TagDeclarator",
+            "value": "innerCircle"
+          },
+          "to": [
+            -2.7675000000475,
+            0.62500000018
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
@@ -16179,6 +16209,36 @@ description: Variables in memory after executing cold-plate.kcl
             ],
             "type": "Circle",
             "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -3.000000000035,
+              0.62500000015
+            ],
+            "from": [
+              -2.7675000000475,
+              0.62500000018
+            ],
+            "radius": 0.23249999998750015,
+            "tag": {
+              "commentStart": 18051,
+              "end": 18062,
+              "moduleId": 0,
+              "start": 18051,
+              "type": "TagDeclarator",
+              "value": "innerCircle"
+            },
+            "to": [
+              -2.7675000000475,
+              0.62500000018
+            ],
+            "type": "Circle",
+            "units": "in"
           }
         ],
         "on": {
@@ -16302,6 +16362,36 @@ description: Variables in memory after executing cold-plate.kcl
             "to": [
               -2.6875000000425,
               0.62500000016
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -3.000000000035,
+              0.62500000015
+            ],
+            "from": [
+              -2.7675000000475,
+              0.62500000018
+            ],
+            "radius": 0.23249999998750015,
+            "tag": {
+              "commentStart": 18051,
+              "end": 18062,
+              "moduleId": 0,
+              "start": 18051,
+              "type": "TagDeclarator",
+              "value": "innerCircle"
+            },
+            "to": [
+              -2.7675000000475,
+              0.62500000018
             ],
             "type": "Circle",
             "units": "in"

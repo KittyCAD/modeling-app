@@ -6410,6 +6410,20 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "circle1"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 925,
+            "end": 932,
+            "moduleId": 0,
+            "start": 925,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -6442,6 +6456,36 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "to": [
               0.47500000001,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.0000000000750000060555278,
+              0.0
+            ],
+            "from": [
+              0.37499999985,
+              0.0
+            ],
+            "radius": 0.374999999925,
+            "tag": {
+              "commentStart": 925,
+              "end": 932,
+              "moduleId": 0,
+              "start": 925,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.37499999985,
               0.0
             ],
             "type": "Circle",
@@ -6547,6 +6591,36 @@ description: Variables in memory after executing ball-bearing.kcl
           },
           "to": [
             0.47500000001,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.0000000000750000060555278,
+            0.0
+          ],
+          "from": [
+            0.37499999985,
+            0.0
+          ],
+          "radius": 0.374999999925,
+          "tag": {
+            "commentStart": 925,
+            "end": 932,
+            "moduleId": 0,
+            "start": 925,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.37499999985,
             0.0
           ],
           "type": "Circle",
@@ -9127,6 +9201,36 @@ description: Variables in memory after executing ball-bearing.kcl
           ],
           "type": "Circle",
           "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "ccw": true,
+          "center": [
+            -0.00000000001500000121110556,
+            0.0
+          ],
+          "from": [
+            0.72499999997,
+            0.0
+          ],
+          "radius": 0.724999999985,
+          "tag": {
+            "commentStart": 4924,
+            "end": 4931,
+            "moduleId": 0,
+            "start": 4924,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "to": [
+            0.72499999997,
+            0.0
+          ],
+          "type": "Circle",
+          "units": "in"
         }
       ],
       "on": {
@@ -9212,6 +9316,20 @@ description: Variables in memory after executing ball-bearing.kcl
             "value": "circle1"
           },
           "type": "extrudeArc"
+        },
+        {
+          "faceId": "[uuid]",
+          "id": "[uuid]",
+          "sourceRange": [],
+          "tag": {
+            "commentStart": 4924,
+            "end": 4931,
+            "moduleId": 0,
+            "start": 4924,
+            "type": "TagDeclarator",
+            "value": "circle2"
+          },
+          "type": "extrudeArc"
         }
       ],
       "sketch": {
@@ -9244,6 +9362,36 @@ description: Variables in memory after executing ball-bearing.kcl
             },
             "to": [
               0.812499999995,
+              0.0
+            ],
+            "type": "Circle",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "ccw": true,
+            "center": [
+              -0.00000000001500000121110556,
+              0.0
+            ],
+            "from": [
+              0.72499999997,
+              0.0
+            ],
+            "radius": 0.724999999985,
+            "tag": {
+              "commentStart": 4924,
+              "end": 4931,
+              "moduleId": 0,
+              "start": 4924,
+              "type": "TagDeclarator",
+              "value": "circle2"
+            },
+            "to": [
+              0.72499999997,
               0.0
             ],
             "type": "Circle",

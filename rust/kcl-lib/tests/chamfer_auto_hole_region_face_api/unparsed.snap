@@ -1,0 +1,27 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Result of unparsing chamfer_auto_hole_region_face_api.kcl
+---
+@settings(defaultLengthUnit = mm, kclVersion = 2.0, experimentalFeatures = allow)
+
+profile = sketch(on = XY) {
+  bottom = line(start = [var -20mm, var -20mm], end = [var 20mm, var -20mm])
+  right = line(start = [var 20mm, var -20mm], end = [var 20mm, var 20mm])
+  top = line(start = [var 20mm, var 20mm], end = [var -20mm, var 20mm])
+  left = line(start = [var -20mm, var 20mm], end = [var -20mm, var -20mm])
+
+  hole = circle(start = [var 5mm, var 0mm], center = [var 0mm, var 0mm])
+}
+
+plateRegion = region(point = [10mm, 0mm], sketch = profile)
+plate = extrude(plateRegion, length = 5mm, tagEnd = $topCap)
+
+chamfer(
+  plate,
+  length = 1mm,
+  edges = [
+    {
+      sideFaces = [topCap, plateRegion.tags.hole]
+    }
+  ],
+)

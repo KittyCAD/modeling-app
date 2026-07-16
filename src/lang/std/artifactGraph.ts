@@ -33,6 +33,10 @@ import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
 export type { Artifact, ArtifactId, SegmentArtifact } from '@src/lang/wasm'
 
+type SegmentArtifactWithType = Extract<Artifact, { type: 'segment' }>
+type SweepArtifactWithType = Extract<Artifact, { type: 'sweep' }>
+type SweepEdgeWithType = Extract<Artifact, { type: 'sweepEdge' }>
+
 export function defaultArtifactGraph(): ArtifactGraph {
   return new Map()
 }
@@ -135,6 +139,49 @@ export function getArtifactOfTypes<T extends Artifact['type'][]>(
   if (!types.includes(artifact?.type))
     return new Error(`Expected ${types} but got ${artifact?.type}`)
   return artifact as Extract<Artifact, { type: T[number] }>
+}
+
+function getMappedRegionSegments(
+  segment: SegmentArtifactWithType,
+  artifactGraph: ArtifactGraph
+): SegmentArtifactWithType[] {
+  return [...artifactGraph.values()].filter(
+    (artifact): artifact is SegmentArtifactWithType =>
+      artifact.type === 'segment' &&
+      artifact.originalSegId === segment.id &&
+      artifact.id !== segment.id
+  )
+}
+
+function getSweepFromMappedRegionSegment(
+  segment: SegmentArtifactWithType,
+  artifactGraph: ArtifactGraph
+): SweepArtifactWithType | Error {
+  let mappedSweep: SweepArtifactWithType | null = null
+
+  for (const mappedSegment of getMappedRegionSegments(segment, artifactGraph)) {
+    const path = getArtifactOfTypes(
+      { key: mappedSegment.pathId, types: ['path'] },
+      artifactGraph
+    )
+    if (err(path) || !path.sweepId) {
+      continue
+    }
+
+    const sweep = getArtifactOfTypes(
+      { key: path.sweepId, types: ['sweep'] },
+      artifactGraph
+    )
+    if (err(sweep)) {
+      continue
+    }
+    if (mappedSweep && mappedSweep.id !== sweep.id) {
+      return new Error('Segment maps to more than one swept region')
+    }
+    mappedSweep = sweep
+  }
+
+  return mappedSweep ?? new Error('No swept region segment found')
 }
 
 export function getPatternArtifactForCopyId(
@@ -346,16 +393,46 @@ export function getSweepFromSuspectedSweepSurface(
 }
 
 export function getCommonFacesForEdge(
-  artifact: SweepEdge | SegmentArtifact,
+  artifact: SweepEdgeWithType | SegmentArtifactWithType,
   artifactGraph: ArtifactGraph
 ): Extract<Artifact, { type: 'wall' | 'cap' }>[] | Error {
-  const faces = getArtifactsOfTypes(
-    { keys: artifact.commonSurfaceIds, types: ['wall', 'cap'] },
-    artifactGraph
-  )
-  if (err(faces)) return faces
-  if (faces.size === 0) return new Error('No common face found')
-  return [...faces.values()]
+  const candidates =
+    artifact.type === 'segment'
+      ? [artifact, ...getMappedRegionSegments(artifact, artifactGraph)]
+      : [artifact]
+
+  let commonFaces: Extract<Artifact, { type: 'wall' | 'cap' }>[] | null = null
+
+  for (const candidate of candidates) {
+    const faces = getArtifactsOfTypes(
+      { keys: candidate.commonSurfaceIds, types: ['wall', 'cap'] },
+      artifactGraph
+    )
+    if (err(faces)) {
+      return faces
+    }
+    if (faces.size === 0) {
+      continue
+    }
+
+    const candidateFaces = [...faces.values()]
+    if (
+      commonFaces &&
+      commonFaces
+        .map(({ id }) => id)
+        .sort()
+        .join() !==
+        candidateFaces
+          .map(({ id }) => id)
+          .sort()
+          .join()
+    ) {
+      return new Error('Segment maps to more than one set of common faces')
+    }
+    commonFaces = candidateFaces
+  }
+
+  return commonFaces ?? new Error('No common face found')
 }
 
 export function getSweepArtifactFromSelection(
@@ -376,7 +453,9 @@ export function getSweepArtifactFromSelection(
       artifactGraph
     )
     if (err(_pathArtifact)) return _pathArtifact
-    if (!_pathArtifact.sweepId) return new Error('Path does not have a sweepId')
+    if (!_pathArtifact.sweepId) {
+      return getSweepFromMappedRegionSegment(selection.artifact, artifactGraph)
+    }
     const _artifact = getArtifactOfTypes(
       { key: _pathArtifact.sweepId, types: ['sweep'] },
       artifactGraph
