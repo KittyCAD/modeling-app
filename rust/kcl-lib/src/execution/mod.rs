@@ -3617,7 +3617,7 @@ w = f() + f()
         let ctx = ExecutorContext::new_mock(None).await;
         let program = crate::Program::parse_no_errs(code).unwrap();
         let result = ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
-        assert!(result.variables.contains_key("s"), "actual: {:?}", &result.variables);
+        assert!(result.variables.contains_key("s"), "actual: {:?}", result.variables);
 
         let code2 = code.to_owned()
             + "
@@ -3629,7 +3629,7 @@ extrude001 = extrude(region001, length = 1)
         assert!(
             result.variables.contains_key("region001"),
             "actual: {:?}",
-            &result.variables
+            result.variables
         );
 
         ctx.close().await;

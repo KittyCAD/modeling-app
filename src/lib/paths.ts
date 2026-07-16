@@ -295,6 +295,16 @@ export const getEXTNoPeriod = (filePath: string) => {
   return extension
 }
 
+/**
+ * Whether a file name includes a user-typed extension: a `.` that is neither the
+ * first character (so dotfiles like `.gitignore` don't count) nor the last.
+ * `bracket` -> false, `notes.txt` -> true, `archive.tar.gz` -> true.
+ */
+export const fileNameHasExtension = (fileName: string): boolean => {
+  const lastDot = fileName.lastIndexOf('.')
+  return lastDot > 0 && lastDot < fileName.length - 1
+}
+
 export const getEXTWithPeriod = (filePath: string) => {
   let extension = getEXTNoPeriod(filePath)
   if (extension) {

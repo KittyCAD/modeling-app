@@ -1,7 +1,7 @@
-import type { UserFeature } from '@kittycad/lib'
+import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { zookeeperEditPatchHistoryEvent } from '@src/editor/plugins/zookeeper'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
@@ -131,10 +131,10 @@ function createUserFeaturesForTest(
     context: contextSignal,
     contextSignal,
     ready: readySignal,
-    has: (featureFlagId: UserFeature, defaultValue: boolean) =>
+    has: (featureFlagId: Feature, defaultValue: boolean) =>
       contextSignal.value.featureIds.has(featureFlagId) ? true : defaultValue,
     useContext: () => contextSignal.value,
-    useHas: (featureFlagId: UserFeature, defaultValue: boolean) =>
+    useHas: (featureFlagId: Feature, defaultValue: boolean) =>
       userFeatures.has(featureFlagId, defaultValue),
     setFeatureIds: (nextFeatureIds: UserFeaturesContext['featureIds']) => {
       contextSignal.value = {

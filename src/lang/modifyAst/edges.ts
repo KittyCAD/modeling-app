@@ -7,7 +7,6 @@ import {
   createLabeledArg,
   createLiteral,
   createLocalName,
-  createMemberExpression,
   createTagDeclarator,
   createVariableDeclaration,
   findUniqueName,
@@ -21,6 +20,7 @@ import {
 import { deleteNodeInExtrudePipe } from '@src/lang/modifyAst/deleteNodeInExtrudePipe'
 import { modifyAstWithTagsForSelection } from '@src/lang/modifyAst/tagManagement'
 import {
+  createSketchTagMemberExpression,
   getNodeFromPath,
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentNameFromSourceSurface,
@@ -488,11 +488,8 @@ function buildEdgeExpr(
     wasmInstance
   )
   if (sketchSegmentName) {
-    const sketchTagExpr = createMemberExpression(
-      createMemberExpression(
-        createMemberExpression(structuredClone(sourceSurfaceExpr), 'sketch'),
-        'tags'
-      ),
+    const sketchTagExpr = createSketchTagMemberExpression(
+      sourceSurfaceExpr,
       sketchSegmentName
     )
     const edgeExpr = getEdgeTagCall(sketchTagExpr, edgeArtifact)
