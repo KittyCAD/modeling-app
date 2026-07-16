@@ -54,7 +54,7 @@ export const testLayoutConfig: Layout = {
               id: crypto.randomUUID(),
               label: crypto.randomUUID(),
               type: LayoutType.Simple,
-              areaType: AreaType.TTC,
+              areaType: AreaType.Zookeeper,
               icon: 'sparkles',
             },
             {
@@ -78,7 +78,7 @@ export const testLayoutConfig: Layout = {
                   id: crypto.randomUUID(),
                   label: crypto.randomUUID(),
                   type: LayoutType.Simple,
-                  areaType: AreaType.TTC,
+                  areaType: AreaType.Zookeeper,
                   icon: 'sparkles',
                 },
                 {
@@ -134,7 +134,7 @@ export const testLayoutConfig: Layout = {
           id: crypto.randomUUID(),
           label: crypto.randomUUID(),
           type: LayoutType.Simple,
-          areaType: AreaType.TTC,
+          areaType: AreaType.Zookeeper,
           icon: 'sparkles',
         },
         {

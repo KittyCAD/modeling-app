@@ -2,13 +2,14 @@ import { Spinner } from '@src/components/Spinner'
 import { useApp } from '@src/lib/boot'
 import {
   ONBOARDING_PROJECT_NAME,
-  SEARCH_PARAM_ML_PROMPT_KEY,
+  SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY,
 } from '@src/lib/constants'
 import { modifiedColdPlate } from '@src/lib/exampleKcl'
 import { DefaultLayoutPaneID } from '@src/lib/layout'
 import {
   type DesktopOnboardingPath,
   desktopOnboardingPaths,
+  legacyDesktopOnboardingPathAliases,
 } from '@src/lib/onboardingPaths'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS, joinRouterPaths } from '@src/lib/paths'
@@ -41,8 +42,10 @@ const onboardingComponents: Record<DesktopOnboardingPath, React.JSX.Element> = {
   '/desktop': <Welcome />,
   '/desktop/scene': <Scene />,
   '/desktop/toolbar': <Toolbar />,
-  '/desktop/text-to-cad': <TextToCad />,
-  '/desktop/text-to-cad-prompt': <TextToCadPrompt />,
+  '/desktop/zookeeper': <Zookeeper />,
+  '/desktop/zookeeper-prompt': <ZookeeperPrompt />,
+  '/desktop/text-to-cad': <Zookeeper />,
+  '/desktop/text-to-cad-prompt': <ZookeeperPrompt />,
   '/desktop/feature-tree-pane': <FeatureTreePane />,
   '/desktop/code-pane': <CodePane />,
   '/desktop/project-pane': <ProjectPane />,
@@ -163,8 +166,8 @@ function Toolbar() {
   )
 }
 
-function TextToCad() {
-  // Highlight the text-to-cad button if it's present
+function Zookeeper() {
+  // Highlight the zookeeper button if it's present
   useOnboardingHighlight('ttc-pane-button')
 
   // Ensure panes are closed
@@ -189,7 +192,7 @@ function TextToCad() {
           Let’s walk through an example of how to use Zookeeper.
         </p>
         <OnboardingButtons
-          currentSlug="/desktop/text-to-cad"
+          currentSlug="/desktop/zookeeper"
           platform="desktop"
         />
       </OnboardingCard>
@@ -197,19 +200,19 @@ function TextToCad() {
   )
 }
 
-function TextToCadPrompt() {
+function ZookeeperPrompt() {
   const thisOnboardingStatus: DesktopOnboardingPath =
-    '/desktop/text-to-cad-prompt'
+    '/desktop/zookeeper-prompt'
   const [searchParams, setSearchParams] = useSearchParams()
   const prompt =
     'Design a cold plate with a serpentine copper coolant tube and recessed channels for thermal management'
 
-  // Ensure panes are closed except TTC
-  useOnboardingPanes([DefaultLayoutPaneID.TTC])
+  // Ensure panes are closed except Zookeeper
+  useOnboardingPanes([DefaultLayoutPaneID.Zookeeper])
 
   // Enter the zookeeper flow with a prebaked prompt
   useEffect(() => {
-    searchParams.set(SEARCH_PARAM_ML_PROMPT_KEY, prompt)
+    searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
     setSearchParams(searchParams)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
@@ -373,10 +376,10 @@ function PromptToEdit() {
   const { systemIOActor } = useApp()
   const thisOnboardingStatus: DesktopOnboardingPath = '/desktop/prompt-to-edit'
 
-  // Highlight the text-to-cad button if it's present
+  // Highlight the zookeeper button if it's present
   useOnboardingHighlight('ttc-pane-button')
 
-  // Open the text-to-cad pane
+  // Open the zookeeper pane
   // Navigate to the sample file
   useEffect(() => {
     systemIOActor.send({
@@ -418,13 +421,16 @@ function PromptToEditPrompt() {
   const prompt =
     'Increase the cold plate length to 12 inches and make the copper tube blue.'
 
-  // Open the text-to-cad pane
-  useOnboardingPanes([DefaultLayoutPaneID.TTC], [DefaultLayoutPaneID.TTC])
+  // Open the zookeeper pane
+  useOnboardingPanes(
+    [DefaultLayoutPaneID.Zookeeper],
+    [DefaultLayoutPaneID.Zookeeper]
+  )
 
   // Fill in the prompt if available
   const [searchParams, setSearchParams] = useSearchParams()
   useEffect(() => {
-    searchParams.set(SEARCH_PARAM_ML_PROMPT_KEY, prompt)
+    searchParams.set(SEARCH_PARAM_ZOOKEEPER_PROMPT_KEY, prompt)
     setSearchParams(searchParams)
     // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
   }, [])
@@ -644,6 +650,11 @@ function OnboardingConclusion() {
 
 export const desktopOnboardingRoutes: DesktopOnboardingRoute[] = [
   ...Object.values(desktopOnboardingPaths).map((path) => ({
+    path,
+    index: true,
+    element: onboardingComponents[path],
+  })),
+  ...Object.values(legacyDesktopOnboardingPathAliases).map((path) => ({
     path,
     index: true,
     element: onboardingComponents[path],

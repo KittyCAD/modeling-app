@@ -508,7 +508,7 @@ describe('KclManager diagnostics', () => {
     const updateCodeEditorSpy = vi.spyOn(kclManager, 'updateCodeEditor')
 
     kclManager.path = '/tmp/kcl-manager-zookeeper-watch-test.kcl'
-    kclManager.mlEphantManagerMachineBulkManipulatingFileSystem = true
+    kclManager.zookeeperManagerMachineBulkManipulatingFileSystem = true
     ;(kclManager as any).systemDeps.projectPath.value = '/tmp/project'
     ;(kclManager as any).markFileCodeAsSynced('from disk')
 

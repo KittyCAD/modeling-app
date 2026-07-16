@@ -3,8 +3,8 @@ import type {
   FileExportFormat,
   MlFeedback,
   SourceRangePrompt,
-  TextToCadModel,
-  TextToCadResponse,
+  TextToCadModel as ZookeeperModel,
+  TextToCadResponse as ZookeeperResponse,
 } from '@kittycad/lib'
 
 export type Prompt = {
@@ -13,7 +13,7 @@ export type Prompt = {
   created_at: string
   updated_at: string
   status: ApiCallStatus
-  model: TextToCadModel
+  model: ZookeeperModel
   model_version: string
   // Optional fields across variants
   started_at?: string
@@ -27,7 +27,7 @@ export type Prompt = {
   output_format?: FileExportFormat
   kcl_version?: string
   project_name?: string
-  type?: TextToCadResponse['type']
+  type?: ZookeeperResponse['type']
 }
 
 export enum PromptType {

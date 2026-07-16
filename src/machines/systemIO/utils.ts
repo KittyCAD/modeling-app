@@ -99,7 +99,7 @@ export enum SystemIOMachineActions {
   toastError = 'toastError',
   toastErrorZookeeperFileWrite = 'toastErrorZookeeperFileWrite',
   setReadWriteProjectDirectory = 'set read write project directory',
-  setRequestedTextToCadGeneration = 'set requested text to cad generation',
+  setRequestedZookeeperGeneration = 'set requested zookeeper generation',
   setLastProjectDeleteRequest = 'set last project delete request',
   toastProjectNameTooLong = 'toast project name too long',
   deferSystemIOEvent = 'defer system IO event',
@@ -141,7 +141,7 @@ export type SystemIOContext = SystemIOInput & {
   }
   canReadWriteProjectDirectory: { value: boolean; error: unknown }
   clearURLParams: { value: boolean }
-  requestedTextToCadGeneration: {
+  requestedZookeeperGeneration: {
     requestedPrompt: string
     requestedProjectName: string
     isProjectNew: boolean
@@ -382,20 +382,20 @@ export const collectProjectFiles = async (args: {
   return projectFiles
 }
 
-type MlEphantNewFileRequestProps = {
+type ZookeeperNewFileRequestProps = {
   toolOutput: MlToolResult
   projectNameCurrentlyOpened: string
   fileFocusedOnInEditor?: FileEntry
   filesToDelete?: RequestedKCLFileDelete[]
 }
 
-export const prepareMlEphantNewFileRequest = ({
+export const prepareZookeeperNewFileRequest = ({
   fallbackFilePath,
   toolOutput,
   projectNameCurrentlyOpened,
   fileFocusedOnInEditor,
   filesToDelete = [],
-}: MlEphantNewFileRequestProps & { fallbackFilePath?: string }) => {
+}: ZookeeperNewFileRequestProps & { fallbackFilePath?: string }) => {
   if (
     toolOutput.type !== 'text_to_cad' &&
     toolOutput.type !== 'edit_kcl_code'

@@ -9,6 +9,8 @@ export type OnboardingStatus =
   | '/desktop'
   | '/desktop/scene'
   | '/desktop/toolbar'
+  | '/desktop/zookeeper'
+  | '/desktop/zookeeper-prompt'
   | '/desktop/text-to-cad'
   | '/desktop/text-to-cad-prompt'
   | '/desktop/feature-tree-pane'
@@ -29,8 +31,8 @@ export const desktopOnboardingPaths: Record<string, DesktopOnboardingPath> = {
   welcome: '/desktop',
   scene: '/desktop/scene',
   toolbar: '/desktop/toolbar',
-  textToCadWelcome: '/desktop/text-to-cad',
-  textToCadPrompt: '/desktop/text-to-cad-prompt',
+  zookeeperWelcome: '/desktop/zookeeper',
+  zookeeperPrompt: '/desktop/zookeeper-prompt',
   featureTreePane: '/desktop/feature-tree-pane',
   codePane: '/desktop/code-pane',
   projectFilesPane: '/desktop/project-pane',
@@ -43,6 +45,14 @@ export const desktopOnboardingPaths: Record<string, DesktopOnboardingPath> = {
   conclusion: '/desktop/conclusion',
 }
 
+export const legacyDesktopOnboardingPathAliases: Record<
+  string,
+  DesktopOnboardingPath
+> = {
+  zookeeperWelcome: '/desktop/text-to-cad',
+  zookeeperPrompt: '/desktop/text-to-cad-prompt',
+}
+
 export const onboardingPaths = {
   desktop: desktopOnboardingPaths,
 }
@@ -50,7 +60,8 @@ export const onboardingPaths = {
 export const onboardingStartPath = Object.values(onboardingPaths['desktop'])[0]
 
 export const isOnboardingPath = (input: string): input is OnboardingStatus => {
-  return Object.values(onboardingPaths)
-    .flatMap((o) => Object.values(o))
-    .includes(input as OnboardingPath)
+  return [
+    ...Object.values(onboardingPaths).flatMap((o) => Object.values(o)),
+    ...Object.values(legacyDesktopOnboardingPathAliases),
+  ].includes(input as OnboardingPath)
 }

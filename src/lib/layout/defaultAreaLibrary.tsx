@@ -182,7 +182,7 @@ export const testAreaLibrary = Object.freeze({
   featureTree: testArea('Feature Tree'),
   bodies: testArea('bodies'),
   modeling: testArea('Modeling Scene'),
-  ttc: testArea('TTC'),
+  ttc: testArea('Zookeeper'),
   codeEditor: testArea('Code Editor'),
   files: testArea('File Explorer'),
   logs: testArea('Logs'),

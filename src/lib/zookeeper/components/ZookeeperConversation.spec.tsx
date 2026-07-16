@@ -51,7 +51,7 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
 import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
-import { MlEphantConversation } from '@src/lib/zookeeper/components/MlEphantConversation'
+import { ZookeeperConversation } from '@src/lib/zookeeper/components/ZookeeperConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
 import type * as ScreenshotModule from '@src/lib/screenshot'
 import { withSiteBaseURL } from '@src/lib/withBaseURL'
@@ -59,7 +59,7 @@ import type {
   Conversation,
   MlCopilotModeId,
   MlCopilotModeOption,
-} from '@src/lib/zookeeper/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/zookeeperManagerMachine'
 import {
   type EngineSceneExtensionContext,
   engineSceneRuntimeExtensionsSlot,
@@ -113,7 +113,7 @@ const SERVER_MODE_OPTIONS: MlCopilotModeOption[] = [
   },
 ]
 
-describe('MlEphantConversation', () => {
+describe('ZookeeperConversation', () => {
   beforeEach(() => {
     configureTestRegistry()
     window.localStorage.removeItem(MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY)
@@ -148,7 +148,7 @@ describe('MlEphantConversation', () => {
       hasPromptCompleted = true
     ) => {
       return (
-        <MlEphantConversation
+        <ZookeeperConversation
           isLoading={false}
           conversation={conversation}
           onProcess={handleProcess}
@@ -244,7 +244,7 @@ describe('MlEphantConversation', () => {
 
   test('shows an attachments loading indicator while attachment processing is in progress', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         isLoadingAttachments={true}
         conversation={{
@@ -289,7 +289,7 @@ describe('MlEphantConversation', () => {
   test('omits mode while server mode metadata is unavailable', () => {
     const handleProcess = vi.fn()
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -323,7 +323,7 @@ describe('MlEphantConversation', () => {
   test('resets a local mode pick when the mode scope changes', () => {
     const handleProcess = vi.fn()
     const renderConversation = (modeScopeKey: string) => (
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -375,7 +375,7 @@ describe('MlEphantConversation', () => {
     ]
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -423,7 +423,7 @@ describe('MlEphantConversation', () => {
     ]
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={handleProcess}
@@ -480,7 +480,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -540,7 +540,7 @@ describe('MlEphantConversation', () => {
       }
 
       render(
-        <MlEphantConversation
+        <ZookeeperConversation
           isLoading={false}
           conversation={conversation}
           onProcess={vi.fn()}
@@ -612,7 +612,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -663,7 +663,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -730,7 +730,7 @@ describe('MlEphantConversation', () => {
     }
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={conversation}
         onProcess={vi.fn()}
@@ -775,7 +775,7 @@ describe('MlEphantConversation', () => {
     const blockedReason = `You need a payment method to keep using Zookeeper. Go to your [account](${withSiteBaseURL('/account')}) to fix this.`
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         onProcess={vi.fn()}
         onClickClearChat={() => {}}
@@ -808,7 +808,7 @@ describe('MlEphantConversation', () => {
 
   test('renders a provided welcome message when the conversation is empty', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         welcomeMessage={
@@ -837,7 +837,7 @@ describe('MlEphantConversation', () => {
 
   test('renders a provided welcome message above conversation exchanges', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{
           exchanges: [
@@ -889,7 +889,7 @@ describe('MlEphantConversation', () => {
 
   test('renders the Makeathon announcement in the Zookeeper pane', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -922,7 +922,7 @@ describe('MlEphantConversation', () => {
 
   test('does not render the Makeathon announcement when hidden', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -948,7 +948,7 @@ describe('MlEphantConversation', () => {
 
   test('dismisses the Makeathon announcement and persists the choice', () => {
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -988,7 +988,7 @@ describe('MlEphantConversation', () => {
     )
 
     render(
-      <MlEphantConversation
+      <ZookeeperConversation
         isLoading={false}
         conversation={{ exchanges: [] }}
         onProcess={vi.fn()}
@@ -1025,7 +1025,7 @@ describe('MlEphantConversation', () => {
     const renderConversation = (handleProcess = vi.fn(), disabled = false) => {
       return render(
         <>
-          <MlEphantConversation
+          <ZookeeperConversation
             isLoading={false}
             conversation={{ exchanges: [] }}
             onProcess={handleProcess}

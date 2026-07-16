@@ -283,7 +283,7 @@ export class MockSocket extends WebSocket {
       this.cbs.message.push(listener)
 
       // If there's 1 'message' event listener, fire off the replay on
-      // the next tick (so it's not immediate and the mlephant state machine
+      // the next tick (so it's not immediate and the zookeeper state machine
       // can move onto the listening phase
       if (this.cbs.message.length === 1) {
         setTimeout(() => {

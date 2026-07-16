@@ -6,7 +6,7 @@ export function EnvironmentChip() {
   let label = env().VITE_ZOO_BASE_DOMAIN
   const urls = [
     new URL(env().VITE_KITTYCAD_WEBSOCKET_URL ?? ''),
-    new URL(env().VITE_MLEPHANT_WEBSOCKET_URL ?? ''),
+    new URL(env().VITE_ZOOKEEPER_WEBSOCKET_URL ?? ''),
   ]
   for (const url of urls) {
     if (['localhost', '127.0.0.1', '0.0.0.0'].includes(url.hostname)) {
@@ -99,7 +99,7 @@ export function EnvironmentDescription() {
           </p>{' '}
           <p className="text-chalkboard-60 dark:text-chalkboard-40 flex flex-row justify-between items-center">
             <span className="flex-1 min-w-0 truncate">
-              {env().VITE_MLEPHANT_WEBSOCKET_URL}
+              {env().VITE_ZOOKEEPER_WEBSOCKET_URL}
             </span>
             <ActionButton
               Element="button"
@@ -110,7 +110,7 @@ export function EnvironmentDescription() {
                     groupId: 'application',
                     name: 'override-zookeeper',
                     argDefaultValues: {
-                      url: env().VITE_MLEPHANT_WEBSOCKET_URL,
+                      url: env().VITE_ZOOKEEPER_WEBSOCKET_URL,
                     },
                   },
                 })
