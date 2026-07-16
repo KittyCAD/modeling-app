@@ -585,7 +585,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2652,8 +2652,8 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.212"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8f18d1bbd12bb19ecd53b9e18f531e89ec5c5a7c"
+version = "0.2.213"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#b94e9f128c888db48a2370a6f4b6033b48fe04f1"
 dependencies = [
  "anyhow",
  "bon",
@@ -2684,7 +2684,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8f18d1bbd12bb19ecd53b9e18f531e89ec5c5a7c"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#b94e9f128c888db48a2370a6f4b6033b48fe04f1"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2695,7 +2695,7 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#8f18d1bbd12bb19ecd53b9e18f531e89ec5c5a7c"
+source = "git+https://github.com/KittyCAD/modeling-api.git?branch=serena%2Foptional-edge#b94e9f128c888db48a2370a6f4b6033b48fe04f1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3153,7 +3153,7 @@ version = "0.50.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7957b9740744892f114936ab4a57b3f487491bbeafaf8083688b16841a4240e5"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4388,7 +4388,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -6239,7 +6239,8 @@ name = "winapi-util"
 version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
-dependencies = [sys 0.61.2",
+dependencies = [
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
