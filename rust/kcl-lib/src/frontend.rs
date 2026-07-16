@@ -1925,6 +1925,7 @@ impl FrontendState {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            refactor_metadata,
             filenames,
             default_planes,
             ..
@@ -1944,6 +1945,7 @@ impl FrontendState {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            refactor_metadata,
             issues: non_fatal,
             default_planes,
         })
@@ -8896,6 +8898,7 @@ cylinder = startSketchOn(XY)
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
+            refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
             default_planes: Default::default(),
@@ -9048,6 +9051,7 @@ sketch(on = XY) {
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions,
+            refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
             default_planes: Default::default(),
