@@ -126,6 +126,28 @@ result001 = fillet(extrude001, radius = 1)`)
     expect(result001Init.unlabeled.name.name).toBe('sketch001')
   })
 
+  // App repro: create an extrusion and a function parameter with the same name,
+  // then remove the extrusion in the Feature Tree. The local reference is
+  // incorrectly rewired to its region.
+  it('does not rewire a function parameter that shadows a deleted feature', () => {
+    const beforeDeleteAst = parseProgram(`parent001 = 1
+deleted001 = parent001
+fn keepLocal(deleted001) {
+  copy = deleted001
+  return copy
+}`)
+
+    const afterDeleteAst = parseProgram(`parent001 = 1
+fn keepLocal(deleted001) {
+  copy = deleted001
+  return copy
+}`)
+
+    const rewiredAst = rewireAfterDelete(beforeDeleteAst, afterDeleteAst)
+
+    expect(recast(rewiredAst, getInstance())).toContain('copy = deleted001')
+  })
+
   it('does not rewrite when deleted feature has no parent reference', () => {
     const beforeDeleteAst = parseProgram(`deleted001 = 5
 keep001 = deleted001 + 1`)
