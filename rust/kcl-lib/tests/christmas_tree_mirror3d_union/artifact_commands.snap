@@ -326,8 +326,12 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+<<<<<<< HEAD
       },
       "omitFromGraph": true
+=======
+      }
+>>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
@@ -336,8 +340,12 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+<<<<<<< HEAD
       },
       "omitFromGraph": true
+=======
+      }
+>>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
@@ -346,8 +354,12 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+<<<<<<< HEAD
       },
       "omitFromGraph": true
+=======
+      }
+>>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",

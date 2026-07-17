@@ -888,38 +888,25 @@ impl ExecState {
         source_range: SourceRange,
         face_ids: Option<[Uuid; 2]>,
     ) -> bool {
-        let exact_meta_index = self.mod_local.artifacts.refactor_metadata.iter().position(|meta| {
-            matches!(
-                meta,
+        let existing_meta = self
+            .mod_local
+            .artifacts
+            .refactor_metadata
+            .iter_mut()
+            .find_map(|meta| match meta {
                 RefactorMetadata::EdgeRefactor(meta)
-                    if meta.edge_id == edge_id && meta.source_range == source_range
-            )
-        });
+                    if meta.edge_id == edge_id && meta.source_range == source_range =>
+                {
+                    Some(meta)
+                }
+                _ => None,
+            });
 
-        let unique_edge_meta_index = || {
-            let mut matches = self
-                .mod_local
-                .artifacts
-                .refactor_metadata
-                .iter()
-                .enumerate()
-                .filter_map(|(index, meta)| match meta {
-                    RefactorMetadata::EdgeRefactor(meta) if meta.edge_id == edge_id => Some(index),
-                    _ => None,
-                });
-            let index = matches.next()?;
-            matches.next().is_none().then_some(index)
-        };
-
-        let Some(meta_index) = exact_meta_index.or_else(unique_edge_meta_index) else {
-            return false;
-        };
-        let RefactorMetadata::EdgeRefactor(existing_meta) = &mut self.mod_local.artifacts.refactor_metadata[meta_index]
-        else {
+        let Some(existing_meta) = existing_meta else {
             return false;
         };
 
-        if object_id.is_some() {
+        if existing_meta.object_id.is_none() {
             existing_meta.object_id = object_id;
         }
         if existing_meta.face_ids.is_none() {

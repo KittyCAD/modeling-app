@@ -16,7 +16,6 @@ import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
-import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { ConnectionManager } from '@src/network/connectionManager'
 import type { EditorView } from 'codemirror'
@@ -100,7 +99,10 @@ export async function hydrateEdgeRefactorMetadata({
   const hydrated = await Promise.all(
     edgeRefactorMetadata.map(async (meta) => {
       const hydratable = meta as HydratableEdgeRefactorMeta
-      if (isArray(hydratable.faceIds) && hydratable.faceIds.length === 2) {
+      if (
+        Array.isArray(hydratable.faceIds) &&
+        hydratable.faceIds.length === 2
+      ) {
         return meta
       }
       if (!hydratable.objectId) {
@@ -111,7 +113,7 @@ export async function hydrateEdgeRefactorMetadata({
         objectId: hydratable.objectId,
         edgeId: hydratable.edgeId,
       }).catch(() => null)
-      return faceIds ? { ...meta, faceIds } : meta
+      return faceIds ? ({ ...meta, faceIds } as EdgeRefactorMeta) : meta
     })
   )
 

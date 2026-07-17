@@ -210,8 +210,21 @@ description: Artifact commands basic_fillet_cube_previous_adjacent.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
+<<<<<<< HEAD
       },
       "omitFromGraph": true
+=======
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+>>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
