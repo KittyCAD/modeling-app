@@ -3366,16 +3366,18 @@ impl Node<MemberExpression> {
             }
             (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
+                // Out-of-bounds error.
+                let oob_error = KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("The array doesn't have any item at index {index}"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                );
                 if let Some(value) = value_of_arr {
                     Ok(value.to_owned().continue_())
                 } else {
-                    Err(KclError::new_undefined_value(
-                        KclErrorDetails::new(
-                            format!("The array doesn't have any item at index {index}"),
-                            vec![self.clone().into()],
-                        ),
-                        None,
-                    ))
+                    Err(oob_error)
                 }
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
