@@ -278,7 +278,9 @@ impl FunctionSource {
         args: Args<Sugary>,
         callsite: SourceRange,
     ) -> Result<Option<KclValueControlFlow>, KclError> {
-        if self.deprecated {
+        // The KCL stdlib is allowed to use deprecated sketch1 functions inside.
+        let warn_on_deprecated_usage = !exec_state.mod_local.inside_stdlib;
+        if warn_on_deprecated_usage && self.deprecated {
             exec_state.warn(
                 CompilationIssue::err(
                     callsite,
@@ -292,7 +294,8 @@ impl FunctionSource {
                 ),
                 annotations::WARN_DEPRECATED,
             );
-        } else if let Some(since) = &self.deprecated_since
+        } else if warn_on_deprecated_usage
+            && let Some(since) = &self.deprecated_since
             && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
         {
             exec_state.warn(
@@ -338,7 +341,9 @@ impl FunctionSource {
             }
             // `deprecated` deprecates the parameter for all versions, whereas
             // `deprecated_since` only deprecates it at or after a given version.
-            let deprecation_suffix = if param.deprecated {
+            let deprecation_suffix = if !warn_on_deprecated_usage {
+                None
+            } else if param.deprecated {
                 Some("is deprecated, see the docs for a recommended replacement".to_owned())
             } else if let Some(since) = &param.deprecated_since
                 && annotations::version_ge(&exec_state.mod_local.settings.kcl_version, since)
