@@ -423,7 +423,8 @@ description: Artifact commands blend_with_edge_specifier_objects.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -432,7 +433,8 @@ description: Artifact commands blend_with_edge_specifier_objects.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -441,7 +443,8 @@ description: Artifact commands blend_with_edge_specifier_objects.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -450,7 +453,8 @@ description: Artifact commands blend_with_edge_specifier_objects.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -459,7 +463,8 @@ description: Artifact commands blend_with_edge_specifier_objects.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -468,7 +473,8 @@ description: Artifact commands blend_with_edge_specifier_objects.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

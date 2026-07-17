@@ -69,6 +69,7 @@ fn entity_clone_remaps_sweep_ids() {
         range: SourceRange::synthetic(),
         command,
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -165,6 +166,7 @@ fn entity_clone_remaps_path_ids() {
         range: SourceRange::synthetic(),
         command,
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -249,6 +251,7 @@ fn entity_clone_remaps_composite_solid_ids() {
             source_artifact_id: source_id,
             result_artifact_id: unused_separate_result_id,
         }),
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -316,6 +319,7 @@ fn entity_clone_does_not_preserve_unmapped_pattern_links() {
         range: SourceRange::synthetic(),
         command,
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -434,6 +438,7 @@ fn entity_clone_clones_mapped_child_artifacts() {
         range: SourceRange::synthetic(),
         command,
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -584,6 +589,7 @@ fn entity_clone_separates_solid_artifact_from_root_path() {
             source_artifact_id: source_sweep_id,
             result_artifact_id: cloned_sweep_id,
         }),
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -669,6 +675,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
             range: SourceRange::synthetic(),
             command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(source_id).build()),
             entity_clone_info: None,
+            omit_from_graph: false,
         },
         ArtifactCommand {
             cmd_id: old_children_cmd_id,
@@ -679,6 +686,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
                     .build(),
             ),
             entity_clone_info: None,
+            omit_from_graph: false,
         },
         ArtifactCommand {
             cmd_id: source_children_cmd_id,
@@ -689,6 +697,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
                     .build(),
             ),
             entity_clone_info: None,
+            omit_from_graph: false,
         },
         ArtifactCommand {
             cmd_id: new_children_cmd_id,
@@ -699,6 +708,7 @@ fn build_entity_clone_id_maps_from_child_queries() {
                     .build(),
             ),
             entity_clone_info: None,
+            omit_from_graph: false,
         },
     ];
 
@@ -815,6 +825,7 @@ fn surface_blend_creates_blend_sweep_artifact() {
         range: SourceRange::synthetic(),
         command,
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -888,6 +899,7 @@ fn create_region_creates_region_path_sub_type() {
         range: SourceRange::synthetic(),
         command,
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
     let programs = crate::execution::ProgramLookup::new(ast, Default::default());
@@ -1202,6 +1214,7 @@ fn entity_clone_resolves_materialized_pattern_copy() {
         range: SourceRange::synthetic(),
         command: ModelingCmd::from(kcmc::each_cmd::EntityClone::builder().entity_id(copy_id).build()),
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let mut clone_id_map = AHashMap::default();
     clone_id_map.insert(ArtifactId::new(copy_face_id), cloned_face_id);
@@ -1367,6 +1380,7 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
         range: SourceRange::synthetic(),
         command,
         entity_clone_info: None,
+        omit_from_graph: false,
     };
     let mirror_response: kcmc::output::EntityMirrorAcross = serde_json::from_value(serde_json::json!({
         "entity_face_edge_ids": [
