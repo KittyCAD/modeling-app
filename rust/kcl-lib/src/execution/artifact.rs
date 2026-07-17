@@ -70,6 +70,11 @@ pub struct ArtifactCommand {
     #[serde(skip)]
     #[ts(skip)]
     pub(crate) entity_clone_info: Option<EntityCloneInfo>,
+    /// Whether this command should be omitted when deriving the semantic
+    /// artifact graph. Query-only commands can still be useful in command
+    /// snapshots without becoming frontend selection artifacts.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub omit_from_graph: bool,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq)]
@@ -995,6 +1000,9 @@ pub(super) fn build_artifact_graph(
     }
 
     for artifact_command in artifact_commands {
+        if artifact_command.omit_from_graph {
+            continue;
+        }
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
             current_plane_id = Some(entity_id);
         }

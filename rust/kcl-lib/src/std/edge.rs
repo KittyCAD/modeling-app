@@ -14,11 +14,14 @@ use crate::SourceRange;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::BoundedEdge;
+use crate::execution::EdgeRefactorMeta;
+use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
 use crate::execution::KclObjectFields;
 use crate::execution::KclValue;
 use crate::execution::ModelingCmdMeta;
+use crate::execution::PendingEdgeRefactorMeta;
 use crate::execution::Solid;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
@@ -64,7 +67,7 @@ pub(crate) async fn get_face_ids_for_edge(
     }
 
     let resp = exec_state
-        .send_modeling_cmd(
+        .send_untracked_modeling_cmd(
             ModelingCmdMeta::from_args(exec_state, args),
             ModelingCmd::from(
                 mcmd::Solid3dGetAllEdgeFaces::builder()
@@ -93,6 +96,93 @@ pub(crate) async fn get_face_ids_for_edge(
         )));
     }
     Ok(info.faces.clone())
+}
+
+pub(crate) async fn get_refactor_meta_for_edge(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    args: &Args,
+    source_range: SourceRange,
+    stdlib_fn: EdgeRefactorStdlibFn,
+) -> Result<EdgeRefactorMeta, KclError> {
+    if args.ctx.no_engine_commands().await {
+        let face_ids = [exec_state.next_uuid(), exec_state.next_uuid()];
+        return Ok(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            end_face_ids: Vec::new(),
+            source_range,
+            stdlib_fn,
+        });
+    }
+
+    let query_entity_type = serde_json::from_value::<mcmd::QueryEntityType>(serde_json::json!({
+        "entity_id": edge_id,
+    }))
+    .map_err(|err| {
+        KclError::new_engine(KclErrorDetails::new(
+            format!("Failed to construct QueryEntityType command for edge refactor metadata: {err}"),
+            vec![args.source_range],
+        ))
+    })?;
+
+    let resp = exec_state
+        .send_untracked_modeling_cmd(
+            ModelingCmdMeta::from_args(exec_state, args),
+            ModelingCmd::from(query_entity_type),
+        )
+        .await?;
+
+    let OkWebSocketResponseData::Modeling {
+        modeling_response: OkModelingCmdResponse::QueryEntityType(info),
+    } = &resp
+    else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!("QueryEntityType response was not as expected: {resp:?}"),
+            vec![args.source_range],
+        )));
+    };
+
+    let kcmc::shared::EntityReference::Edge { inner, .. } = &info.reference else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!(
+                "QueryEntityType returned a non-edge reference for edge {edge_id}: {:?}",
+                info.reference
+            ),
+            vec![args.source_range],
+        )));
+    };
+
+    let [a, b] = inner.side_faces.as_slice() else {
+        return Err(KclError::new_engine(KclErrorDetails::new(
+            format!(
+                "QueryEntityType returned {} side face(s) for edge {edge_id}, expected exactly 2",
+                inner.side_faces.len()
+            ),
+            vec![args.source_range],
+        )));
+    };
+
+    Ok(EdgeRefactorMeta {
+        edge_id,
+        face_ids: [*a, *b],
+        end_face_ids: inner.end_faces.clone(),
+        source_range,
+        stdlib_fn,
+    })
+}
+
+fn record_pending_edge_refactor_meta(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    stdlib_fn: EdgeRefactorStdlibFn,
+    args: &Args,
+) {
+    exec_state.record_pending_edge_refactor_meta(PendingEdgeRefactorMeta {
+        edge_id,
+        source_range: args.source_range,
+        stdlib_fn,
+    });
 }
 
 /// Check that a tag does not map to multiple edges (ambiguous region mapping).
@@ -159,7 +249,10 @@ async fn inner_get_opposite_edge(
         )));
     };
 
-    Ok(opposite_edge.edge)
+    let edge_id = opposite_edge.edge;
+
+    record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetOppositeEdge, &args);
+    Ok(edge_id)
 }
 
 /// Get the next adjacent edge to the edge given.
@@ -211,12 +304,15 @@ async fn inner_get_next_adjacent_edge(
         )));
     };
 
-    adjacent_edge.edge.ok_or_else(|| {
+    let edge_id = adjacent_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("No edge found next adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
-    })
+    })?;
+
+    record_pending_edge_refactor_meta(exec_state, edge_id, EdgeRefactorStdlibFn::GetNextAdjacentEdge, &args);
+    Ok(edge_id)
 }
 
 /// Get the previous adjacent edge to the edge given.
@@ -267,12 +363,20 @@ async fn inner_get_previous_adjacent_edge(
         )));
     };
 
-    adjacent_edge.edge.ok_or_else(|| {
+    let edge_id = adjacent_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!("No edge found previous adjacent to tag: `{}`", edge.value),
             vec![args.source_range],
         ))
-    })
+    })?;
+
+    record_pending_edge_refactor_meta(
+        exec_state,
+        edge_id,
+        EdgeRefactorStdlibFn::GetPreviousAdjacentEdge,
+        &args,
+    );
+    Ok(edge_id)
 }
 
 /// Get the shared edge between two faces.
@@ -371,7 +475,7 @@ async fn inner_get_common_edge(
         )));
     };
 
-    common_edge.edge.ok_or_else(|| {
+    let edge_id = common_edge.edge.ok_or_else(|| {
         KclError::new_type(KclErrorDetails::new(
             format!(
                 "No common edge was found between `{}` and `{}`",
@@ -379,7 +483,16 @@ async fn inner_get_common_edge(
             ),
             vec![args.source_range],
         ))
-    })
+    })?;
+
+    exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        edge_id,
+        face_ids: [first_face_id, second_face_id],
+        end_face_ids: Vec::new(),
+        source_range: args.source_range,
+        stdlib_fn: EdgeRefactorStdlibFn::GetCommonEdge,
+    });
+    Ok(edge_id)
 }
 
 pub async fn get_bounded_edge(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
