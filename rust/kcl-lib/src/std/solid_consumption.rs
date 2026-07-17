@@ -145,6 +145,10 @@ pub(super) fn record_consumed_solids(
     }
 }
 
+pub(super) fn is_consuming_operation_output(solid: &Solid, exec_state: &ExecState) -> bool {
+    exec_state.is_consuming_operation_output(&consumed_solid_key(solid))
+}
+
 fn consumed_solid_key(solid: &Solid) -> ConsumedSolidKey {
     ConsumedSolidKey::new(solid.id, solid.value_id)
 }
@@ -293,6 +297,8 @@ mod tests {
 
         validate_solids_not_consumed(std::slice::from_ref(&output), &exec_state, SourceRange::default())
             .expect("replacement output should remain usable");
+        assert!(is_consuming_operation_output(&output, &exec_state));
+        assert!(!is_consuming_operation_output(&consumed, &exec_state));
         assert!(
             validate_solids_not_consumed(std::slice::from_ref(&consumed), &exec_state, SourceRange::default()).is_err()
         );

@@ -361,6 +361,10 @@ impl ConsumedSolidInfo {
     pub(crate) fn should_report_reused_engine_id_as_consumed(&self, key: ConsumedSolidKey) -> bool {
         !self.returned_solid_keys.contains(&key)
     }
+
+    pub(crate) fn contains_returned_solid(&self, key: &ConsumedSolidKey) -> bool {
+        self.returned_solid_keys.contains(key)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -754,6 +758,16 @@ impl ExecState {
     /// boolean operation.
     pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
         self.mod_local.consumed_solid_ids.get(id)
+    }
+
+    /// Check whether a solid value was produced by an operation that consumed
+    /// its input bodies. These outputs own engine topology that is distinct
+    /// from the source sketch topology retained in program memory.
+    pub(crate) fn is_consuming_operation_output(&self, key: &ConsumedSolidKey) -> bool {
+        self.mod_local
+            .consumed_solids
+            .values()
+            .any(|info| info.contains_returned_solid(key))
     }
 
     /// Follow direct replacement links until we find the latest known output.
