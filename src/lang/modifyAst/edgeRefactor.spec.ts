@@ -607,6 +607,12 @@ extrude002 = extrude(
 )
 `
 
+const KCL_EXTRUDE_TARGET_DIRECT_TAG =
+  KCL_EXTRUDE_TARGET_GET_OPPOSITE_EDGE.replace(
+    'getOppositeEdge(extrude001.sketch.tags.line1)',
+    'extrude001.sketch.tags.line1'
+  )
+
 const KCL_EXTRUDE_DIRECTION_GET_COMMON_EDGE = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [2, 2])
   |> yLine(length = 1)
@@ -1064,6 +1070,29 @@ describe('refactorZ0006Unified', () => {
         ).toEqual([argument])
       }
     )
+
+    it('finds a direct tagged-edge extrude target from the artifact graph', () => {
+      const ast = assertParse(KCL_EXTRUDE_TARGET_DIRECT_TAG, wasmInstance)
+      const graph = createTaggedWallAndCapGraph(
+        ast,
+        KCL_EXTRUDE_TARGET_DIRECT_TAG,
+        {
+          segmentId: 'segment-1',
+          wallId: 'wall-1',
+          capId: 'cap-1',
+          pathId: 'path-1',
+          sweepId: 'sweep-1',
+          segmentSnippet:
+            'line1 = line(start = [-6.36mm, -3.01mm], end = [3.61mm, 6.24mm])',
+          extrudeSnippet: 'extrude(region001, length = 5mm)',
+        }
+      )
+      const callsToFix = findExtrudeEdgeCallsToFix(ast, [], graph, wasmInstance)
+      expect(callsToFix).toHaveLength(1)
+      expect(callsToFix[0]?.replacements.map((item) => item.argument)).toEqual([
+        'target',
+      ])
+    })
 
     it('finds revolve call with axis = helper variable for Z0006 refactor', () => {
       const ast = assertParse(
@@ -1621,6 +1650,25 @@ part = bracket()
         expect(normalized).not.toContain('getOppositeEdge(')
         expect(normalized).toContain('extrude( { sideFaces = [')
         expect(normalized).toContain('direction = { sideFaces = [')
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
+      'refactors a direct tagged-edge extrude target',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_EXTRUDE_TARGET_DIRECT_TAG
+        )
+        const normalized = norm(refactored)
+        expect(normalized).not.toContain(
+          'extrude( extrude001.sketch.tags.line1,'
+        )
+        expect(normalized).toContain('extrude( { sideFaces = [')
 
         const refactoredAst = assertParse(refactored, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast: refactoredAst })

@@ -32,6 +32,7 @@ import {
   getSketchSegmentNameFromSourceSurface,
   getSketchVariableNameForSegment,
   getVariableExprsFromSelection,
+  getVariableNameFromNodePath,
   locateVariableWithCallOrPipe,
   traverse,
   valueOrVariable,
@@ -1615,7 +1616,7 @@ export function findExtrudeEdgeCallsToFix(
           : null
         if (!deprecatedCall) {
           if (
-            argument === 'direction' &&
+            (argument === 'target' || argument === 'direction') &&
             expr &&
             artifactGraph &&
             wasmInstance
@@ -1661,16 +1662,52 @@ function directSketchSegmentEdgePayload(
   artifactGraph: ArtifactGraph,
   wasmInstance: ModuleType
 ): FilletEdgeRefPayload | null {
-  if (
-    expr.type !== 'MemberExpression' ||
-    expr.object.type !== 'Name' ||
-    expr.property.type !== 'Name'
-  ) {
+  if (expr.type !== 'MemberExpression' || expr.property.type !== 'Name') {
     return null
   }
 
-  const sketchName = expr.object.name.name
   const segmentName = expr.property.name.name
+  const tagInfo = getTagInfoFromExpr(expr)
+  const owningBodyExpr = tagInfo?.tagsBaseExpr
+    ? getBodyExprFromSketchTagsBaseExpr(tagInfo.tagsBaseExpr)
+    : null
+
+  if (owningBodyExpr) {
+    const bodyKey = exprPathKey(owningBodyExpr)
+    if (!bodyKey) return null
+
+    const owningSweep = [...artifactGraph.values()].find((artifact) => {
+      if (artifact.type !== 'sweep') return false
+      return [
+        artifact.codeRef.pathToNode,
+        getNodePathFromSourceRange(program, artifact.codeRef.range),
+      ].some(
+        (pathToNode) =>
+          getVariableNameFromNodePath(pathToNode, program, wasmInstance) ===
+          bodyKey
+      )
+    })
+    if (!owningSweep || owningSweep.type !== 'sweep') return null
+
+    const segment = [...artifactGraph.values()].find(
+      (artifact) =>
+        artifact.type === 'segment' &&
+        artifact.pathId === owningSweep.pathId &&
+        artifact.commonSurfaceIds.length === 2 &&
+        getSketchSegmentName(
+          program,
+          artifact.id,
+          artifactGraph,
+          wasmInstance
+        ) === segmentName
+    )
+    return segment?.type === 'segment'
+      ? { side_faces: segment.commonSurfaceIds }
+      : null
+  }
+
+  if (expr.object.type !== 'Name') return null
+  const sketchName = expr.object.name.name
   const originalSegment = [...artifactGraph.values()].find(
     (artifact) =>
       artifact.type === 'segment' &&
