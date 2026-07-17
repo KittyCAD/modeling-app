@@ -23,7 +23,6 @@ import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { isArray } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import { REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE } from '@src/network/utils'
 import type { EditorView } from 'codemirror'
 export type { ToolTip } from '@src/lang/toolTips'
@@ -153,7 +152,6 @@ export async function lintAst({
   edgeRefactorMetadata,
   directTagFilletMetadata,
   artifactGraph,
-  engineCommandManager,
 }: {
   ast: Node<Program>
   sourceCode: string
@@ -162,7 +160,6 @@ export async function lintAst({
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
   artifactGraph?: ArtifactGraph
-  engineCommandManager?: ConnectionManager
 }): Promise<Array<Diagnostic>> {
   try {
     let discovered_findings = await kclLint(ast, instance)
@@ -226,7 +223,6 @@ export async function lintAst({
           edgeRefactorMetadata,
           directTagFilletMetadata,
           artifactGraph,
-          engineCommandManager,
           z0006RefactorCache,
         })
         actions = refactorResult.actions

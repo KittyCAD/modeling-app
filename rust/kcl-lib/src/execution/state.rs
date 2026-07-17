@@ -160,10 +160,18 @@ pub enum EdgeRefactorStdlibFn {
 #[serde(rename_all = "camelCase")]
 pub struct EdgeRefactorMeta {
     pub edge_id: Uuid,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub object_id: Option<Uuid>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub face_ids: Option<[Uuid; 2]>,
+    pub face_ids: [Uuid; 2],
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub end_face_ids: Vec<Uuid>,
+    pub source_range: SourceRange,
+    pub stdlib_fn: EdgeRefactorStdlibFn,
+}
+
+/// Metadata for a deprecated edge stdlib function whose edge ID was resolved,
+/// but whose adjacent face IDs could not be recorded at the helper callsite.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct PendingEdgeRefactorMeta {
+    pub edge_id: Uuid,
     pub source_range: SourceRange,
     pub stdlib_fn: EdgeRefactorStdlibFn,
 }
@@ -226,6 +234,10 @@ pub struct ModuleArtifactState {
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     /// Metadata collected during execution for refactor lint/code-mod paths (Z0006 and future).
     pub refactor_metadata: Vec<RefactorMetadata>,
+    /// Deprecated edge helper callsites that may be completed by a downstream
+    /// operation that knows the target solid.
+    #[serde(skip)]
+    pub(crate) pending_edge_refactor_metadata: Vec<PendingEdgeRefactorMeta>,
 }
 
 #[derive(Debug, Clone)]
@@ -881,37 +893,56 @@ impl ExecState {
             .push(RefactorMetadata::EdgeRefactor(meta));
     }
 
+    pub(crate) fn record_pending_edge_refactor_meta(&mut self, meta: PendingEdgeRefactorMeta) {
+        self.mod_local.artifacts.pending_edge_refactor_metadata.push(meta);
+    }
+
     pub(crate) fn record_edge_refactor_meta_from_pending(
         &mut self,
         edge_id: Uuid,
-        object_id: Option<Uuid>,
         source_range: SourceRange,
-        face_ids: Option<[Uuid; 2]>,
+        face_ids: [Uuid; 2],
     ) -> bool {
-        let existing_meta = self
+        if self.mod_local.artifacts.refactor_metadata.iter().any(|meta| {
+            matches!(
+                meta,
+                RefactorMetadata::EdgeRefactor(meta)
+                    if meta.edge_id == edge_id && meta.source_range == source_range
+            )
+        }) {
+            return true;
+        }
+
+        let exact_pending_meta = self
             .mod_local
             .artifacts
-            .refactor_metadata
-            .iter_mut()
-            .find_map(|meta| match meta {
-                RefactorMetadata::EdgeRefactor(meta)
-                    if meta.edge_id == edge_id && meta.source_range == source_range =>
-                {
-                    Some(meta)
-                }
-                _ => None,
-            });
+            .pending_edge_refactor_metadata
+            .iter()
+            .find(|meta| meta.edge_id == edge_id && meta.source_range == source_range)
+            .cloned();
 
-        let Some(existing_meta) = existing_meta else {
+        let edge_pending_meta = || {
+            let mut matches = self
+                .mod_local
+                .artifacts
+                .pending_edge_refactor_metadata
+                .iter()
+                .filter(|meta| meta.edge_id == edge_id);
+            let pending_meta = matches.next()?.clone();
+            matches.next().is_none().then_some(pending_meta)
+        };
+
+        let Some(pending_meta) = exact_pending_meta.or_else(edge_pending_meta) else {
             return false;
         };
 
-        if existing_meta.object_id.is_none() {
-            existing_meta.object_id = object_id;
-        }
-        if existing_meta.face_ids.is_none() {
-            existing_meta.face_ids = face_ids;
-        }
+        self.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            end_face_ids: Vec::new(),
+            source_range: pending_meta.source_range,
+            stdlib_fn: pending_meta.stdlib_fn,
+        });
 
         true
     }

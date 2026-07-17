@@ -5,21 +5,17 @@ import type { Node } from '@rust/kcl-lib/bindings/Node'
 
 import { toUtf16 } from '@src/lang/errors'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
-import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type {
   ArtifactGraph,
   DirectTagFilletMeta,
   EdgeRefactorMeta,
   Program,
 } from '@src/lang/wasm'
-import { isModelingResponse } from '@src/lib/kcSdkGuards'
 import type RustContext from '@src/lib/rustContext'
 import { jsAppSettings } from '@src/lib/settings/settingsUtils'
 import { err } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
 import type { EditorView } from 'codemirror'
-import { v4 as uuidv4 } from 'uuid'
 
 type RefactorLintActionsParams = {
   lint: Discovered
@@ -31,7 +27,6 @@ type RefactorLintActionsParams = {
   edgeRefactorMetadata?: EdgeRefactorMeta[]
   directTagFilletMetadata?: DirectTagFilletMeta[]
   artifactGraph?: ArtifactGraph
-  engineCommandManager?: ConnectionManager
   z0006RefactorCache?: Z0006RefactorCache
 }
 
@@ -42,82 +37,6 @@ type RefactorLintActionsResult = {
 
 export type Z0006RefactorCache = {
   promise?: Promise<string | null>
-}
-
-type HydratableEdgeRefactorMeta = EdgeRefactorMeta & {
-  objectId?: string
-  faceIds?: [string, string]
-}
-
-async function getFaceIdsForEdge({
-  engineCommandManager,
-  objectId,
-  edgeId,
-}: {
-  engineCommandManager: ConnectionManager
-  objectId: string
-  edgeId: string
-}): Promise<[string, string] | null> {
-  const command: EngineCommand = {
-    type: 'modeling_cmd_req',
-    cmd_id: uuidv4(),
-    cmd: {
-      type: 'solid3d_get_all_edge_faces',
-      object_id: objectId,
-      edge_id: edgeId,
-    },
-  }
-  const response = await engineCommandManager.sendSceneCommand(command)
-  if (!isModelingResponse(response)) {
-    return null
-  }
-  const modelingResponse = response.resp.data.modeling_response as {
-    type?: string
-    data?: { faces?: string[] }
-  }
-  if (modelingResponse.type !== 'solid3d_get_all_edge_faces') {
-    return null
-  }
-  const faces = modelingResponse.data?.faces ?? []
-  return faces.length === 2 ? [faces[0], faces[1]] : null
-}
-
-export async function hydrateEdgeRefactorMetadata({
-  edgeRefactorMetadata,
-  engineCommandManager,
-}: {
-  edgeRefactorMetadata?: EdgeRefactorMeta[]
-  engineCommandManager?: ConnectionManager
-}): Promise<EdgeRefactorMeta[]> {
-  if (!edgeRefactorMetadata?.length) {
-    return []
-  }
-  if (!engineCommandManager) {
-    return edgeRefactorMetadata
-  }
-
-  const hydrated = await Promise.all(
-    edgeRefactorMetadata.map(async (meta) => {
-      const hydratable = meta as HydratableEdgeRefactorMeta
-      if (
-        Array.isArray(hydratable.faceIds) &&
-        hydratable.faceIds.length === 2
-      ) {
-        return meta
-      }
-      if (!hydratable.objectId) {
-        return meta
-      }
-      const faceIds = await getFaceIdsForEdge({
-        engineCommandManager,
-        objectId: hydratable.objectId,
-        edgeId: hydratable.edgeId,
-      }).catch(() => null)
-      return faceIds ? ({ ...meta, faceIds } as EdgeRefactorMeta) : meta
-    })
-  )
-
-  return hydrated
 }
 
 function findLintVariableName(
@@ -275,7 +194,6 @@ async function createZ0006Actions({
   edgeRefactorMetadata,
   directTagFilletMetadata,
   artifactGraph,
-  engineCommandManager,
   z0006RefactorCache,
 }: Omit<
   RefactorLintActionsParams,
@@ -289,16 +207,11 @@ async function createZ0006Actions({
     return {}
   }
 
-  const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
-    edgeRefactorMetadata,
-    engineCommandManager,
-  })
-
   const newSource = await getZ0006RefactorSource({
     ast,
     sourceCode,
     instance,
-    edgeRefactorMetadata: hydratedEdgeRefactorMetadata,
+    edgeRefactorMetadata,
     directTagFilletMetadata,
     artifactGraph,
     sourceRange: [lint.pos[0], lint.pos[1], lint.pos[2] ?? 0],

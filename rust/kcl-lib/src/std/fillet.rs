@@ -230,18 +230,18 @@ async fn inner_fillet(
             EdgeReference::Uuid(_) => String::new(),
         };
         for edge_id in ids {
-            if tag_identifier.is_empty() {
-                exec_state.record_edge_refactor_meta_from_pending(edge_id, Some(solid.id), *source_range, None);
-                continue;
-            }
             if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
                 && let [a, b] = face_ids.as_slice()
             {
-                tag_entries.push(crate::execution::DirectTagFilletTagEntry {
-                    tag_identifier: tag_identifier.clone(),
-                    edge_id,
-                    face_ids: [*a, *b],
-                });
+                if !tag_identifier.is_empty() {
+                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                        tag_identifier: tag_identifier.clone(),
+                        edge_id,
+                        face_ids: [*a, *b],
+                    });
+                } else {
+                    exec_state.record_edge_refactor_meta_from_pending(edge_id, *source_range, [*a, *b]);
+                }
             }
         }
     }

@@ -30,7 +30,6 @@
  */
 import { join } from 'path'
 import type { KclManager } from '@src/lang/KclManager'
-import { hydrateEdgeRefactorMetadata } from '@src/lang/lintRefactorActions'
 import {
   findBoundedEdgeCallsToFix,
   findExtrudeEdgeCallsToFix,
@@ -1185,45 +1184,6 @@ describe('refactorZ0006Unified', () => {
       expect(toFix).toHaveLength(1)
       expect(toFix[0]?.payload.side_faces).toHaveLength(2)
       expect(toFix[0]?.pathToCall?.length ?? 0).toBeGreaterThan(0)
-    })
-
-    it('hydrates edge refactor metadata from object and edge IDs when face IDs are missing', async () => {
-      const sentCommands: unknown[] = []
-      const engineCommandManager = {
-        sendSceneCommand: async (command: unknown) => {
-          sentCommands.push(command)
-          return {
-            success: true,
-            resp: {
-              type: 'modeling',
-              data: {
-                modeling_response: {
-                  type: 'solid3d_get_all_edge_faces',
-                  data: {
-                    faces: ['face-1', 'face-2'],
-                  },
-                },
-              },
-            },
-          }
-        },
-      }
-      const metadata = [
-        {
-          edgeId: 'edge-1',
-          objectId: 'body-1',
-          sourceRange: [0, 10, 0],
-          stdlibFn: 'getOppositeEdge',
-        },
-      ] as unknown as EdgeRefactorMeta[]
-
-      const hydrated = await hydrateEdgeRefactorMetadata({
-        edgeRefactorMetadata: metadata,
-        engineCommandManager: engineCommandManager as any,
-      })
-
-      expect(hydrated[0]?.faceIds).toEqual(['face-1', 'face-2'])
-      expect(sentCommands).toHaveLength(1)
     })
 
     it('refactors GD&T edges with provided metadata without requiring engine execution', () => {
