@@ -3,6 +3,7 @@ import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
 
 export type EngineDisconnectEvent =
+  | EngineCommandManagerEvents.WebsocketClosed
   | EngineCommandManagerEvents.peerConnectionClosed
   | EngineCommandManagerEvents.peerConnectionDisconnected
   | EngineCommandManagerEvents.peerConnectionFailed

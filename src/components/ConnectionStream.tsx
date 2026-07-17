@@ -36,6 +36,7 @@ import {
 } from '@src/lib/selections'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
+import { EngineCommandManagerEvents } from '@src/network/utils'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
@@ -94,7 +95,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   }, [])
 
   const reportEngineDisconnect = useCallback(
-    (eventType: EngineDisconnectEvent) => {
+    (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
       const kclSource = kclManager.code
       const connection = engineCommandManager.connection
 
@@ -117,6 +118,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           peerConnectionState: connection?.peerConnection?.connectionState,
           iceConnectionState: connection?.peerConnection?.iceConnectionState,
           dataChannelReadyState: connection?.unreliableDataChannel?.readyState,
+          ...extra,
           kclSourceLength: kclSource.length,
           kclSource,
         },
@@ -387,7 +389,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   const onWebSocketCloseParams = useMemo(
     () => ({
-      callback: () => {
+      callback: (code: string | undefined) => {
+        reportEngineDisconnect(EngineCommandManagerEvents.WebsocketClosed, {
+          websocketCloseCode: code,
+        })
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -406,13 +411,22 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect(true)
         })
       },
-      infiniteDetectionLoopCallback: () => {
+      infiniteDetectionLoopCallback: (code: string | undefined) => {
+        reportEngineDisconnect(EngineCommandManagerEvents.WebsocketClosed, {
+          websocketCloseCode: code,
+        })
         setShowManualConnect(true)
       },
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      reportEngineDisconnect,
+      settings,
+    ]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
 
