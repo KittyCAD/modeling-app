@@ -89,7 +89,7 @@ pub(super) fn validate_unique<T: Eq + std::hash::Hash>(tags: &[(T, SourceRange)]
 }
 
 pub(super) enum TaggedEdgeInputs {
-    Tags(Vec<EdgeReference>),
+    Tags(Vec<(EdgeReference, SourceRange)>),
     EngineRefs(Vec<kcmc::shared::EdgeSpecifier>),
 }
 
@@ -114,8 +114,7 @@ pub(super) async fn parse_tagged_edge_inputs(
         }
         (None, Some(tags_with_source)) => {
             validate_unique(&tags_with_source)?;
-            let tags = tags_with_source.into_iter().map(|item| item.0).collect();
-            Ok(TaggedEdgeInputs::Tags(tags))
+            Ok(TaggedEdgeInputs::Tags(tags_with_source))
         }
         (None, None) => Err(KclError::new_semantic(KclErrorDetails::new(
             missing_args_message.to_owned(),
@@ -195,7 +194,7 @@ pub async fn fillet(exec_state: &mut ExecState, args: Args) -> Result<KclValue, 
 async fn inner_fillet(
     solid: Box<Solid>,
     radius: TyF64,
-    tags: Vec<EdgeReference>,
+    tags: Vec<(EdgeReference, SourceRange)>,
     tolerance: Option<TyF64>,
     csg_algorithm: CsgAlgorithm,
     tag: Option<TagNode>,
@@ -221,16 +220,37 @@ async fn inner_fillet(
     }
 
     let mut solid = solid.clone();
-    let edge_ids = tags
-        .into_iter()
-        .map(|edge_tag| edge_tag.get_all_engine_ids(exec_state, &args))
-        .try_fold(Vec::new(), |mut acc, item| match item {
-            Ok(ids) => {
-                acc.extend(ids);
-                Ok(acc)
+    let mut edge_ids = Vec::new();
+    let mut tag_entries: Vec<crate::execution::DirectTagFilletTagEntry> = Vec::new();
+    for (edge_ref, source_range) in &tags {
+        let ids = edge_ref.get_all_engine_ids(exec_state, &args)?;
+        edge_ids.extend(ids.iter().copied());
+        let tag_identifier = match edge_ref {
+            EdgeReference::Tag(t) => t.value.clone(),
+            EdgeReference::Uuid(_) => String::new(),
+        };
+        for edge_id in ids {
+            if let Ok(face_ids) = super::edge::get_face_ids_for_edge(exec_state, solid.id, edge_id, &args).await
+                && let [a, b] = face_ids.as_slice()
+            {
+                if !tag_identifier.is_empty() {
+                    tag_entries.push(crate::execution::DirectTagFilletTagEntry {
+                        tag_identifier: tag_identifier.clone(),
+                        edge_id,
+                        face_ids: [*a, *b],
+                    });
+                } else {
+                    exec_state.record_edge_refactor_meta_from_pending(edge_id, *source_range, [*a, *b]);
+                }
             }
-            Err(e) => Err(e),
-        })?;
+        }
+    }
+    if !tag_entries.is_empty() {
+        exec_state.record_direct_tag_fillet_meta(crate::execution::DirectTagFilletMeta {
+            call_source_range: args.source_range,
+            tags: tag_entries,
+        });
+    }
 
     let id = exec_state.next_uuid();
     let mut extra_face_ids = Vec::new();
