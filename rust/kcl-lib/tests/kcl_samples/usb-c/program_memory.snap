@@ -320,7 +320,7 @@ description: Variables in memory after executing usb-c.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -44.0200763652834,
+                        "n": -44.02007636527866,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -328,7 +328,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 9.379946518878542,
+                        "n": 9.379946518865598,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -346,7 +346,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 0.00009323028762037974,
+                        "n": 0.00009323027890705969,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -356,7 +356,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "center": [
                       {
-                        "n": -25.999847269405382,
+                        "n": -25.999847269408182,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -364,7 +364,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 21.99992050168512,
+                        "n": 21.99992050166762,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -498,7 +498,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 0.00009323028752714944,
+                        "n": 0.00009323027881382942,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -592,7 +592,7 @@ description: Variables in memory after executing usb-c.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -44.02007636528332,
+                        "n": -44.020076365278584,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -600,7 +600,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 9.379946518878597,
+                        "n": 9.379946518865651,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -728,7 +728,7 @@ description: Variables in memory after executing usb-c.kcl
                   },
                   "to": [
                     -26.0,
-                    0.00009323028752714944
+                    0.00009323027881382942
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -740,14 +740,14 @@ description: Variables in memory after executing usb-c.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -25.999847269405375,
-                    21.999920501685022
+                    -25.999847269408175,
+                    21.999920501667525
                   ],
                   "from": [
                     -26.0,
-                    0.00009323028752714944
+                    0.00009323027881382942
                   ],
-                  "radius": 21.999827271927654,
+                  "radius": 21.999827271918868,
                   "tag": {
                     "commentStart": 5433,
                     "end": 5437,
@@ -757,8 +757,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    -44.02007636528354,
-                    9.379946518878342
+                    -44.02007636527881,
+                    9.379946518865395
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -769,8 +769,8 @@ description: Variables in memory after executing usb-c.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -44.02007636528354,
-                    9.379946518878342
+                    -44.02007636527881,
+                    9.379946518865395
                   ],
                   "tag": {
                     "commentStart": 5578,
@@ -1043,8 +1043,8 @@ description: Variables in memory after executing usb-c.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000000000000000030811812698190877,
-              -2.789718878975444
+              0.00000000000000000001344000083051566,
+              -2.7926805077037278
             ],
             "tag": {
               "commentStart": 3247,
@@ -1055,8 +1055,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "line2"
             },
             "to": [
-              4.400111670250007,
-              -2.789718878975444
+              4.4001116702616505,
+              -2.7926805077037278
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1068,14 +1068,14 @@ description: Variables in memory after executing usb-c.kcl
             },
             "ccw": true,
             "center": [
-              4.399996411170338,
-              -1.1897188789754438
+              4.399996411175185,
+              -1.1926805077037284
             ],
             "from": [
-              4.400111670250007,
-              -2.789718878975444
+              4.4001116702616505,
+              -2.7926805077037278
             ],
-            "radius": 1.600000004151455,
+            "radius": 1.6000000041514548,
             "tag": {
               "commentStart": 3366,
               "end": 3370,
@@ -1085,8 +1085,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "arc1"
             },
             "to": [
-              5.999996412352239,
-              -1.1898163601152092
+              5.999996412357086,
+              -1.1927779888527936
             ],
             "type": "Arc",
             "units": "mm"
@@ -1097,8 +1097,8 @@ description: Variables in memory after executing usb-c.kcl
               "sourceRange": []
             },
             "from": [
-              5.999996412352239,
-              -1.1898163601152092
+              5.999996412357086,
+              -1.1927779888527936
             ],
             "tag": {
               "commentStart": 3546,
@@ -1109,8 +1109,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "line3"
             },
             "to": [
-              5.999996411170339,
-              1.3889744714500132
+              5.999996411175186,
+              1.3875181367476408
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1122,14 +1122,14 @@ description: Variables in memory after executing usb-c.kcl
             },
             "ccw": true,
             "center": [
-              4.3999964111703385,
-              1.3888911397504073
+              4.399996411175186,
+              1.3874348050190466
             ],
             "from": [
-              5.999996411170339,
-              1.3889744714500132
+              5.999996411175186,
+              1.3875181367476408
             ],
-            "radius": 1.6000000021700544,
+            "radius": 1.600000002170055,
             "tag": {
               "commentStart": 3666,
               "end": 3670,
@@ -1139,8 +1139,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "arc2"
             },
             "to": [
-              4.387993541166949,
-              2.9888461197594873
+              4.38858206182678,
+              2.9873940918676616
             ],
             "type": "Arc",
             "units": "mm"
@@ -1151,8 +1151,8 @@ description: Variables in memory after executing usb-c.kcl
               "sourceRange": []
             },
             "from": [
-              4.387993541166949,
-              2.9888461197594873
+              4.38858206182678,
+              2.9873940918676616
             ],
             "tag": {
               "commentStart": 3843,
@@ -1163,8 +1163,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "line4"
             },
             "to": [
-              -4.412005082536478,
-              2.922824902536733
+              -4.411416537999087,
+              2.9246101314313675
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1176,14 +1176,14 @@ description: Variables in memory after executing usb-c.kcl
             },
             "ccw": true,
             "center": [
-              -4.400003588829662,
-              1.3228699143583689
+              -4.400003588824813,
+              1.3246508366560197
             ],
             "from": [
-              -4.412005082536478,
-              2.922824902536733
+              -4.411416537999087,
+              2.9246101314313675
             ],
-            "radius": 1.6000000000150079,
+            "radius": 1.600000000108401,
             "tag": {
               "commentStart": 3963,
               "end": 3967,
@@ -1193,8 +1193,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "arc3"
             },
             "to": [
-              -6.000003587056362,
-              1.3229455621294175
+              -6.000003587144905,
+              1.3247264844396784
             ],
             "type": "Arc",
             "units": "mm"
@@ -1205,8 +1205,8 @@ description: Variables in memory after executing usb-c.kcl
               "sourceRange": []
             },
             "from": [
-              -6.000003587056362,
-              1.3229455621294175
+              -6.000003587144905,
+              1.3247264844396784
             ],
             "tag": {
               "commentStart": 4143,
@@ -1217,8 +1217,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "line5"
             },
             "to": [
-              -6.000003588829663,
-              -1.189801693108195
+              -6.000003588824813,
+              -1.1927633218416225
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1230,14 +1230,14 @@ description: Variables in memory after executing usb-c.kcl
             },
             "ccw": true,
             "center": [
-              -4.400003588829663,
-              -1.1897188789754436
+              -4.400003588824814,
+              -1.1926805077037277
             ],
             "from": [
-              -6.000003588829663,
-              -1.189801693108195
+              -6.000003588824813,
+              -1.1927633218416225
             ],
-            "radius": 1.600000002143181,
+            "radius": 1.6000000021431813,
             "tag": {
               "commentStart": 4265,
               "end": 4269,
@@ -1247,8 +1247,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "arc4"
             },
             "to": [
-              -4.400111670249907,
-              -2.7897188774681267
+              -4.400111670261549,
+              -2.79268050619641
             ],
             "type": "Arc",
             "units": "mm"
@@ -1259,8 +1259,8 @@ description: Variables in memory after executing usb-c.kcl
               "sourceRange": []
             },
             "from": [
-              -4.400111670249907,
-              -2.7897188774681267
+              -4.400111670261549,
+              -2.79268050619641
             ],
             "tag": {
               "commentStart": 4448,
@@ -1271,8 +1271,8 @@ description: Variables in memory after executing usb-c.kcl
               "value": "line6"
             },
             "to": [
-              -0.0000000000000000000047690974199478455,
-              -2.789718878975444
+              0.000000000000000000023226217967171404,
+              -2.7926805077037278
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1420,7 +1420,7 @@ description: Variables in memory after executing usb-c.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 4.400111670250007,
+                        "n": 4.4001116702616505,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1428,7 +1428,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -2.789718878975444,
+                        "n": -2.7926805077037273,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1438,7 +1438,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.999996411170339,
+                        "n": 5.999996411175185,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1446,7 +1446,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -1.1898163601151375,
+                        "n": -1.192777988852721,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1456,7 +1456,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "center": [
                       {
-                        "n": 4.3999964111703385,
+                        "n": 4.399996411175185,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1464,7 +1464,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -1.189718878975444,
+                        "n": -1.1926805077037277,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1572,7 +1572,7 @@ description: Variables in memory after executing usb-c.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 5.999996411170339,
+                        "n": 5.999996411175185,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1580,7 +1580,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 1.3889744714500132,
+                        "n": 1.3875181367476408,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1590,7 +1590,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.387993541183157,
+                        "n": 4.388582061841597,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1598,7 +1598,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 2.9888461175991194,
+                        "n": 2.987394089790614,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1608,7 +1608,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "center": [
                       {
-                        "n": 4.3999964111703385,
+                        "n": 4.399996411175185,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1616,7 +1616,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 1.3888911397504073,
+                        "n": 1.3874348050190466,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1724,7 +1724,7 @@ description: Variables in memory after executing usb-c.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -4.412005082536478,
+                        "n": -4.411416537999087,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1732,7 +1732,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 2.922824902536733,
+                        "n": 2.924610131431367,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1742,7 +1742,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": -6.000003588829663,
+                        "n": -6.000003588824814,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1750,7 +1750,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 1.3229455621295014,
+                        "n": 1.3247264844397577,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1760,7 +1760,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "center": [
                       {
-                        "n": -4.400003588829662,
+                        "n": -4.400003588824814,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1768,7 +1768,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 1.3228699143583686,
+                        "n": 1.3246508366560192,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1876,7 +1876,7 @@ description: Variables in memory after executing usb-c.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -6.000003588829662,
+                        "n": -6.000003588824813,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1884,7 +1884,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -1.189801693108195,
+                        "n": -1.1927633218416225,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1894,7 +1894,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.400111670250007,
+                        "n": -4.4001116702616505,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1902,7 +1902,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -2.789718878975444,
+                        "n": -2.7926805077037278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1912,7 +1912,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "center": [
                       {
-                        "n": -4.400003588829662,
+                        "n": -4.400003588824814,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1920,7 +1920,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -1.1897188789754438,
+                        "n": -1.1926805077037275,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2046,7 +2046,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000000000030811812698190877,
+                        "n": 0.00000000000000000001344000083051566,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2054,7 +2054,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -2.789718878975444,
+                        "n": -2.7926805077037278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2148,7 +2148,7 @@ description: Variables in memory after executing usb-c.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000000000004474446389509321,
+                        "n": 0.00000000000000000001709378452437553,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2156,7 +2156,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -2.789718878975444,
+                        "n": -2.7926805077037278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2166,7 +2166,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.400111670250007,
+                        "n": 4.4001116702616505,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2174,7 +2174,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -2.789718878975444,
+                        "n": -2.7926805077037278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2268,7 +2268,7 @@ description: Variables in memory after executing usb-c.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 5.999996411170339,
+                        "n": 5.999996411175186,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2276,7 +2276,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -1.1898163601151375,
+                        "n": -1.192777988852721,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2286,7 +2286,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.999996411170339,
+                        "n": 5.999996411175186,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2294,7 +2294,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 1.3889744714500132,
+                        "n": 1.3875181367476408,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2388,7 +2388,7 @@ description: Variables in memory after executing usb-c.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.387993541183157,
+                        "n": 4.388582061841597,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2396,7 +2396,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 2.98884611759912,
+                        "n": 2.9873940897906106,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2406,7 +2406,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": -4.412005082536478,
+                        "n": -4.411416537999087,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2414,7 +2414,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 2.922824902536733,
+                        "n": 2.9246101314313675,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2508,7 +2508,7 @@ description: Variables in memory after executing usb-c.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -6.000003588829663,
+                        "n": -6.000003588824813,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2516,7 +2516,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": 1.3229455621295014,
+                        "n": 1.3247264844397577,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2526,7 +2526,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": -6.000003588829663,
+                        "n": -6.000003588824813,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2534,7 +2534,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -1.189801693108195,
+                        "n": -1.1927633218416225,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2628,7 +2628,7 @@ description: Variables in memory after executing usb-c.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.400111670250007,
+                        "n": -4.4001116702616505,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2636,7 +2636,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -2.789718878975444,
+                        "n": -2.7926805077037278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2646,7 +2646,7 @@ description: Variables in memory after executing usb-c.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000000000047690974199478455,
+                        "n": 0.000000000000000000023226217967171404,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2654,7 +2654,7 @@ description: Variables in memory after executing usb-c.kcl
                         }
                       },
                       {
-                        "n": -2.789718878975444,
+                        "n": -2.7926805077037278,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2763,8 +2763,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.0000000000000000000030811812698190877,
-                    -2.789718878975444
+                    0.00000000000000000001344000083051566,
+                    -2.7926805077037278
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2775,8 +2775,8 @@ description: Variables in memory after executing usb-c.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000000000000030811812698190877,
-                    -2.789718878975444
+                    0.00000000000000000001344000083051566,
+                    -2.7926805077037278
                   ],
                   "tag": {
                     "commentStart": 3247,
@@ -2787,8 +2787,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "line2"
                   },
                   "to": [
-                    4.400111670250007,
-                    -2.789718878975444
+                    4.4001116702616505,
+                    -2.7926805077037278
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2800,14 +2800,14 @@ description: Variables in memory after executing usb-c.kcl
                   },
                   "ccw": true,
                   "center": [
-                    4.399996411170338,
-                    -1.1897188789754438
+                    4.399996411175185,
+                    -1.1926805077037284
                   ],
                   "from": [
-                    4.400111670250007,
-                    -2.789718878975444
+                    4.4001116702616505,
+                    -2.7926805077037278
                   ],
-                  "radius": 1.600000004151455,
+                  "radius": 1.6000000041514548,
                   "tag": {
                     "commentStart": 3366,
                     "end": 3370,
@@ -2817,8 +2817,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    5.999996412352239,
-                    -1.1898163601152092
+                    5.999996412357086,
+                    -1.1927779888527936
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2829,8 +2829,8 @@ description: Variables in memory after executing usb-c.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.999996412352239,
-                    -1.1898163601152092
+                    5.999996412357086,
+                    -1.1927779888527936
                   ],
                   "tag": {
                     "commentStart": 3546,
@@ -2841,8 +2841,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "line3"
                   },
                   "to": [
-                    5.999996411170339,
-                    1.3889744714500132
+                    5.999996411175186,
+                    1.3875181367476408
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2854,14 +2854,14 @@ description: Variables in memory after executing usb-c.kcl
                   },
                   "ccw": true,
                   "center": [
-                    4.3999964111703385,
-                    1.3888911397504073
+                    4.399996411175186,
+                    1.3874348050190466
                   ],
                   "from": [
-                    5.999996411170339,
-                    1.3889744714500132
+                    5.999996411175186,
+                    1.3875181367476408
                   ],
-                  "radius": 1.6000000021700544,
+                  "radius": 1.600000002170055,
                   "tag": {
                     "commentStart": 3666,
                     "end": 3670,
@@ -2871,8 +2871,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    4.387993541166949,
-                    2.9888461197594873
+                    4.38858206182678,
+                    2.9873940918676616
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2883,8 +2883,8 @@ description: Variables in memory after executing usb-c.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    4.387993541166949,
-                    2.9888461197594873
+                    4.38858206182678,
+                    2.9873940918676616
                   ],
                   "tag": {
                     "commentStart": 3843,
@@ -2895,8 +2895,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -4.412005082536478,
-                    2.922824902536733
+                    -4.411416537999087,
+                    2.9246101314313675
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2908,14 +2908,14 @@ description: Variables in memory after executing usb-c.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -4.400003588829662,
-                    1.3228699143583689
+                    -4.400003588824813,
+                    1.3246508366560197
                   ],
                   "from": [
-                    -4.412005082536478,
-                    2.922824902536733
+                    -4.411416537999087,
+                    2.9246101314313675
                   ],
-                  "radius": 1.6000000000150079,
+                  "radius": 1.600000000108401,
                   "tag": {
                     "commentStart": 3963,
                     "end": 3967,
@@ -2925,8 +2925,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    -6.000003587056362,
-                    1.3229455621294175
+                    -6.000003587144905,
+                    1.3247264844396784
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2937,8 +2937,8 @@ description: Variables in memory after executing usb-c.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -6.000003587056362,
-                    1.3229455621294175
+                    -6.000003587144905,
+                    1.3247264844396784
                   ],
                   "tag": {
                     "commentStart": 4143,
@@ -2949,8 +2949,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "line5"
                   },
                   "to": [
-                    -6.000003588829663,
-                    -1.189801693108195
+                    -6.000003588824813,
+                    -1.1927633218416225
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2962,14 +2962,14 @@ description: Variables in memory after executing usb-c.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -4.400003588829663,
-                    -1.1897188789754436
+                    -4.400003588824814,
+                    -1.1926805077037277
                   ],
                   "from": [
-                    -6.000003588829663,
-                    -1.189801693108195
+                    -6.000003588824813,
+                    -1.1927633218416225
                   ],
-                  "radius": 1.600000002143181,
+                  "radius": 1.6000000021431813,
                   "tag": {
                     "commentStart": 4265,
                     "end": 4269,
@@ -2979,8 +2979,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -4.400111670249907,
-                    -2.7897188774681267
+                    -4.400111670261549,
+                    -2.79268050619641
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2991,8 +2991,8 @@ description: Variables in memory after executing usb-c.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.400111670249907,
-                    -2.7897188774681267
+                    -4.400111670261549,
+                    -2.79268050619641
                   ],
                   "tag": {
                     "commentStart": 4448,
@@ -3003,8 +3003,8 @@ description: Variables in memory after executing usb-c.kcl
                     "value": "line6"
                   },
                   "to": [
-                    -0.0000000000000000000047690974199478455,
-                    -2.789718878975444
+                    0.000000000000000000023226217967171404,
+                    -2.7926805077037278
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -3497,8 +3497,8 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0000000000000000000030811812698190877,
-            -2.789718878975444
+            0.00000000000000000001344000083051566,
+            -2.7926805077037278
           ],
           "tag": {
             "commentStart": 3247,
@@ -3509,8 +3509,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line2"
           },
           "to": [
-            4.400111670250007,
-            -2.789718878975444
+            4.4001116702616505,
+            -2.7926805077037278
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3522,14 +3522,14 @@ description: Variables in memory after executing usb-c.kcl
           },
           "ccw": true,
           "center": [
-            4.399996411170338,
-            -1.1897188789754438
+            4.399996411175185,
+            -1.1926805077037284
           ],
           "from": [
-            4.400111670250007,
-            -2.789718878975444
+            4.4001116702616505,
+            -2.7926805077037278
           ],
-          "radius": 1.600000004151455,
+          "radius": 1.6000000041514548,
           "tag": {
             "commentStart": 3366,
             "end": 3370,
@@ -3539,8 +3539,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "arc1"
           },
           "to": [
-            5.999996412352239,
-            -1.1898163601152092
+            5.999996412357086,
+            -1.1927779888527936
           ],
           "type": "Arc",
           "units": "mm"
@@ -3551,8 +3551,8 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            5.999996412352239,
-            -1.1898163601152092
+            5.999996412357086,
+            -1.1927779888527936
           ],
           "tag": {
             "commentStart": 3546,
@@ -3563,8 +3563,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line3"
           },
           "to": [
-            5.999996411170339,
-            1.3889744714500132
+            5.999996411175186,
+            1.3875181367476408
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3576,14 +3576,14 @@ description: Variables in memory after executing usb-c.kcl
           },
           "ccw": true,
           "center": [
-            4.3999964111703385,
-            1.3888911397504073
+            4.399996411175186,
+            1.3874348050190466
           ],
           "from": [
-            5.999996411170339,
-            1.3889744714500132
+            5.999996411175186,
+            1.3875181367476408
           ],
-          "radius": 1.6000000021700544,
+          "radius": 1.600000002170055,
           "tag": {
             "commentStart": 3666,
             "end": 3670,
@@ -3593,8 +3593,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "arc2"
           },
           "to": [
-            4.387993541166949,
-            2.9888461197594873
+            4.38858206182678,
+            2.9873940918676616
           ],
           "type": "Arc",
           "units": "mm"
@@ -3605,8 +3605,8 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            4.387993541166949,
-            2.9888461197594873
+            4.38858206182678,
+            2.9873940918676616
           ],
           "tag": {
             "commentStart": 3843,
@@ -3617,8 +3617,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line4"
           },
           "to": [
-            -4.412005082536478,
-            2.922824902536733
+            -4.411416537999087,
+            2.9246101314313675
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3630,14 +3630,14 @@ description: Variables in memory after executing usb-c.kcl
           },
           "ccw": true,
           "center": [
-            -4.400003588829662,
-            1.3228699143583689
+            -4.400003588824813,
+            1.3246508366560197
           ],
           "from": [
-            -4.412005082536478,
-            2.922824902536733
+            -4.411416537999087,
+            2.9246101314313675
           ],
-          "radius": 1.6000000000150079,
+          "radius": 1.600000000108401,
           "tag": {
             "commentStart": 3963,
             "end": 3967,
@@ -3647,8 +3647,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "arc3"
           },
           "to": [
-            -6.000003587056362,
-            1.3229455621294175
+            -6.000003587144905,
+            1.3247264844396784
           ],
           "type": "Arc",
           "units": "mm"
@@ -3659,8 +3659,8 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            -6.000003587056362,
-            1.3229455621294175
+            -6.000003587144905,
+            1.3247264844396784
           ],
           "tag": {
             "commentStart": 4143,
@@ -3671,8 +3671,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line5"
           },
           "to": [
-            -6.000003588829663,
-            -1.189801693108195
+            -6.000003588824813,
+            -1.1927633218416225
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3684,14 +3684,14 @@ description: Variables in memory after executing usb-c.kcl
           },
           "ccw": true,
           "center": [
-            -4.400003588829663,
-            -1.1897188789754436
+            -4.400003588824814,
+            -1.1926805077037277
           ],
           "from": [
-            -6.000003588829663,
-            -1.189801693108195
+            -6.000003588824813,
+            -1.1927633218416225
           ],
-          "radius": 1.600000002143181,
+          "radius": 1.6000000021431813,
           "tag": {
             "commentStart": 4265,
             "end": 4269,
@@ -3701,8 +3701,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "arc4"
           },
           "to": [
-            -4.400111670249907,
-            -2.7897188774681267
+            -4.400111670261549,
+            -2.79268050619641
           ],
           "type": "Arc",
           "units": "mm"
@@ -3713,8 +3713,8 @@ description: Variables in memory after executing usb-c.kcl
             "sourceRange": []
           },
           "from": [
-            -4.400111670249907,
-            -2.7897188774681267
+            -4.400111670261549,
+            -2.79268050619641
           ],
           "tag": {
             "commentStart": 4448,
@@ -3725,8 +3725,8 @@ description: Variables in memory after executing usb-c.kcl
             "value": "line6"
           },
           "to": [
-            -0.0000000000000000000047690974199478455,
-            -2.789718878975444
+            0.000000000000000000023226217967171404,
+            -2.7926805077037278
           ],
           "type": "ToPoint",
           "units": "mm"

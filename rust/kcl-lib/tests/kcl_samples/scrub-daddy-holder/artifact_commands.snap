@@ -93,8 +93,8 @@ description: Artifact commands scrub-daddy-holder.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 15.394642647515752,
-          "y": -2.651641439659839,
+          "x": 15.396313466227804,
+          "y": -2.6526521522376236,
           "z": 0.0
         }
       }
@@ -115,17 +115,17 @@ description: Artifact commands scrub-daddy-holder.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 16.999999999999975,
-            "y": 0.000306485278516996
+            "x": 17.0,
+            "y": 0.0003064835769238815
           },
-          "radius": 3.1000000041548397,
+          "radius": 3.100000003539559,
           "start": {
             "unit": "radians",
-            "value": -2.1151405539102197
+            "value": -2.1145106395774476
           },
           "end": {
             "unit": "radians",
-            "value": 4.168044753269367
+            "value": 4.168674667602138
           },
           "relative": false
         }

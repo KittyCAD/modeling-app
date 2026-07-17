@@ -68,7 +68,7 @@ description: Artifact commands router-template-slate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000004038474002237585,
+          "x": -0.000000004038476562105978,
           "y": 28.119999999999845,
           "z": 0.0
         }
@@ -183,7 +183,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000002522129937049522,
+            "x": -0.000000000000002522100805667424,
             "y": -122.49,
             "z": 0.0
           },
@@ -251,7 +251,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -18.869583319075826,
+            "x": -18.8695833190764,
             "y": 19.999999999666805,
             "z": 0.0
           },
@@ -268,17 +268,17 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -10.750833361846723,
-            "y": 20.000833361805533
+            "x": -10.75083336184731,
+            "y": 20.000833361903986
           },
           "radius": 8.11875,
           "start": {
             "unit": "degrees",
-            "value": -179.9941187826403
+            "value": -179.99411878194553
           },
           "end": {
             "unit": "degrees",
-            "value": -270.005881243789
+            "value": -270.00588124379317
           },
           "relative": false
         }
@@ -293,7 +293,7 @@ description: Artifact commands router-template-slate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000004038474002641433,
+            "x": -0.0000000040384765625098255,
             "y": 28.119999999999845,
             "z": 0.0
           },

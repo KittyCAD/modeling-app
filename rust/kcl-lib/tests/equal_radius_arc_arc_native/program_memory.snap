@@ -50,7 +50,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -4.999999998,
+                        "n": -4.999999998000001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -68,7 +68,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.999999998,
+                        "n": 4.999999998000001,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -86,7 +86,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0,
+                        "n": 0.00000000000000000000000017763565842190707,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -220,7 +220,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     ],
                     "end": [
                       {
-                        "n": 14.999999994,
+                        "n": 14.999999994000003,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -238,7 +238,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     ],
                     "center": [
                       {
-                        "n": 10.0,
+                        "n": 10.000000000000002,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -359,13 +359,13 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                   "ccw": true,
                   "center": [
                     -0.0,
-                    -0.0000000000000006123233993287472
+                    -0.0000000000000006123233993287473
                   ],
                   "from": [
-                    -4.999999998,
+                    -4.999999998000001,
                     0.0
                   ],
-                  "radius": 4.999999998,
+                  "radius": 4.999999998000001,
                   "tag": {
                     "commentStart": 65,
                     "end": 66,
@@ -375,7 +375,7 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     "value": "a"
                   },
                   "to": [
-                    4.999999998,
+                    4.999999998000001,
                     -0.000000000000001836970197986242
                   ],
                   "type": "Arc",
@@ -388,14 +388,14 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                   },
                   "ccw": true,
                   "center": [
-                    9.999999992,
+                    9.999999992000001,
                     -0.0000000000000024492935968251304
                   ],
                   "from": [
-                    4.999999998,
+                    4.999999998000001,
                     -0.000000000000001836970197986242
                   ],
-                  "radius": 4.999999993999999,
+                  "radius": 4.999999994,
                   "tag": {
                     "commentStart": 159,
                     "end": 160,
@@ -405,8 +405,8 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
                     "value": "b"
                   },
                   "to": [
-                    14.999999985999999,
-                    -0.000000000000003673940394502907
+                    14.999999986000002,
+                    -0.000000000000003673940394502908
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -445,11 +445,11 @@ description: Variables in memory after executing equal_radius_arc_arc_native.kcl
               },
               "start": {
                 "from": [
-                  -4.999999998,
+                  -4.999999998000001,
                   0.0
                 ],
                 "to": [
-                  -4.999999998,
+                  -4.999999998000001,
                   0.0
                 ],
                 "units": "mm",

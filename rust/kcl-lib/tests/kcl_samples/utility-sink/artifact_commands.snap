@@ -1234,7 +1234,7 @@ description: Artifact commands utility-sink.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 593.5000000160001,
+            "x": 593.500000016,
             "y": 13.0,
             "z": 0.0
           },

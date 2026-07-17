@@ -1469,7 +1469,7 @@ description: Artifact commands wheel-hub.kcl
         "path": "[uuid]",
         "to": {
           "x": -68.12142857143047,
-          "y": 0.00000000000013115034358013318,
+          "y": 0.00000000000013072866084476149,
           "z": 0.0
         }
       }
@@ -1491,7 +1491,7 @@ description: Artifact commands wheel-hub.kcl
           "type": "line",
           "end": {
             "x": -62.63571428070372,
-            "y": 9.501535865907602,
+            "y": 9.501535865907604,
             "z": 0.0
           },
           "relative": false
@@ -1508,7 +1508,7 @@ description: Artifact commands wheel-hub.kcl
           "type": "line",
           "end": {
             "x": -51.664285719296224,
-            "y": 9.501535865907565,
+            "y": 9.501535865907567,
             "z": 0.0
           },
           "relative": false
@@ -1525,7 +1525,7 @@ description: Artifact commands wheel-hub.kcl
           "type": "line",
           "end": {
             "x": -46.17857142856973,
-            "y": -0.00000000000006275120840067839,
+            "y": -0.0000000000000613195148862722,
             "z": 0.0
           },
           "relative": false
@@ -1576,7 +1576,7 @@ description: Artifact commands wheel-hub.kcl
           "type": "line",
           "end": {
             "x": -68.12142857143046,
-            "y": 0.0000000000001034183221495561,
+            "y": 0.00000000000010318775361290309,
             "z": 0.0
           },
           "relative": false

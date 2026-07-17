@@ -68,8 +68,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1849.999996,
-          "y": 399.9999994000001,
+          "x": -1849.9999959999993,
+          "y": 399.9999993999999,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1850.0000006,
-            "y": 399.9999986,
+            "x": 1850.0000006000005,
+            "y": 399.9999985999999,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1849.9999980499997,
-          "y": 399.9999982,
+          "x": 1849.99999805,
+          "y": 399.9999981999999,
           "z": 0.0
         }
       }
@@ -120,8 +120,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1849.9999963499995,
-            "y": 750.0000019000004,
+            "x": 1849.9999963499997,
+            "y": 750.0000019000001,
             "z": 0.0
           },
           "relative": false
@@ -135,8 +135,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1849.9999954999994,
-          "y": 750.0000016500004,
+          "x": 1849.9999954999996,
+          "y": 750.0000016500002,
           "z": 0.0
         }
       }
@@ -150,8 +150,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1849.9999848999987,
-            "y": 750.0000011500003,
+            "x": -1849.9999848999985,
+            "y": 750.0000011500001,
             "z": 0.0
           },
           "relative": false
@@ -165,8 +165,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1849.9999867499987,
-          "y": 750.0000004000002,
+          "x": -1849.9999867499985,
+          "y": 750.0000004000001,
           "z": 0.0
         }
       }
@@ -180,8 +180,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1849.9999904499994,
-            "y": 399.99999900000006,
+            "x": -1849.999990449999,
+            "y": 399.9999989999999,
             "z": 0.0
           },
           "relative": false
@@ -352,8 +352,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -525.0000000003398,
-          "y": 350.00000000001063,
+          "x": -525.0000000003397,
+          "y": 350.0000000000106,
           "z": 0.0
         }
       }
@@ -374,8 +374,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.50000000020486,
-            "y": 804.6633388240977,
+            "x": -262.5000000002049,
+            "y": 804.6633388240975,
             "z": 0.0
           },
           "relative": false
@@ -391,8 +391,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.50000000007896,
-            "y": 804.663338824103,
+            "x": 262.5000000000789,
+            "y": 804.6633388241028,
             "z": 0.0
           },
           "relative": false
@@ -408,7 +408,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 525.0000000001714,
+            "x": 525.0000000001713,
             "y": 350.0000000000027,
             "z": 0.0
           },
@@ -425,8 +425,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 262.5000000000522,
-            "y": -104.66333882410376,
+            "x": 262.5000000000521,
+            "y": -104.66333882410355,
             "z": 0.0
           },
           "relative": false
@@ -442,8 +442,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -262.500000000238,
-            "y": -104.66333882409191,
+            "x": -262.5000000002379,
+            "y": -104.66333882409188,
             "z": 0.0
           },
           "relative": false
@@ -459,8 +459,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -525.0000000003414,
-            "y": 350.0000000000079,
+            "x": -525.0000000003412,
+            "y": 350.00000000000784,
             "z": 0.0
           },
           "relative": false
@@ -903,8 +903,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1749.9999959999996,
-          "y": 749.9999963999998,
+          "x": -1749.9999959999993,
+          "y": 749.9999963999996,
           "z": 0.0
         }
       }
@@ -925,8 +925,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1750.0000010000003,
-            "y": 749.9999948999997,
+            "x": 1750.000001000001,
+            "y": 749.9999948999996,
             "z": 0.0
           },
           "relative": false
@@ -940,8 +940,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1749.99999875,
-          "y": 749.9999941499997,
+          "x": 1749.9999987500003,
+          "y": 749.9999941499996,
           "z": 0.0
         }
       }
@@ -955,7 +955,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1749.99999725,
+            "x": 1749.9999972500002,
             "y": 1149.9999948999996,
             "z": 0.0
           },
@@ -970,7 +970,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 1749.9999965,
+          "x": 1749.9999965000002,
           "y": 1149.9999950499996,
           "z": 0.0
         }
@@ -985,7 +985,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1749.999985499998,
+            "x": -1749.9999854999983,
             "y": 1149.9999953499996,
             "z": 0.0
           },
@@ -1000,8 +1000,8 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1749.9999872499982,
-          "y": 1149.9999957999999,
+          "x": -1749.9999872499984,
+          "y": 1149.9999957999996,
           "z": 0.0
         }
       }
@@ -1016,7 +1016,7 @@ description: Artifact commands stylized-cybertruck.kcl
           "type": "line",
           "end": {
             "x": -1749.9999907499987,
-            "y": 749.9999956499997,
+            "y": 749.9999956499995,
             "z": 0.0
           },
           "relative": false
@@ -1678,7 +1678,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000019500001439964887,
+            "x": -0.0000001950000057260315,
             "y": 349.99999973999996
           },
           "radius": 349.99999997,
@@ -1716,7 +1716,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.00000015500001109003403,
+            "x": -0.00000015500000415114012,
             "y": 349.99999987999996
           },
           "radius": 175.00000000499998,
@@ -2695,7 +2695,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -899.9999905999991,
+            "x": -899.9999905999994,
             "y": 1149.9999940699995,
             "z": 0.0
           },
@@ -2710,7 +2710,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -899.9999914999992,
+          "x": -899.9999914999994,
           "y": 1149.9999945199995,
           "z": 0.0
         }
@@ -2725,7 +2725,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -899.9999932999995,
+            "x": -899.9999932999996,
             "y": 1069.9999940499993,
             "z": 0.0
           },
@@ -2993,7 +2993,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -899.9999905999991,
+            "x": -899.9999905999994,
             "y": 1149.9999940699995,
             "z": 0.0
           },
@@ -3008,7 +3008,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -899.9999914999992,
+          "x": -899.9999914999994,
           "y": 1149.9999945199995,
           "z": 0.0
         }
@@ -3023,7 +3023,7 @@ description: Artifact commands stylized-cybertruck.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -899.9999932999995,
+            "x": -899.9999932999996,
             "y": 1069.9999940499993,
             "z": 0.0
           },

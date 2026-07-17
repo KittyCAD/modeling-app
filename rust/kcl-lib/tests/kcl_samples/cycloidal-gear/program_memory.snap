@@ -139,7 +139,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000500000018436142,
+                        "n": 0.0000000000005000001823675103,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -245,7 +245,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.000000000000500000018436142,
+                    0.0000000000005000001823675103,
                     0.0
                   ],
                   "from": [
@@ -347,7 +347,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           "ccw": true,
           "center": [
-            0.000000000000500000018436142,
+            0.0000000000005000001823675103,
             0.0
           ],
           "from": [
@@ -612,14 +612,14 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": false,
             "center": [
-              -0.22868634843138996,
-              -0.4005000000001976
+              -0.22868634843138985,
+              -0.40050000000019753
             ],
             "from": [
               0.031121272703941827,
               -0.550500000000149
             ],
-            "radius": 0.29999999999997584,
+            "radius": 0.2999999999999758,
             "tag": {
               "commentStart": 2306,
               "end": 2310,
@@ -629,8 +629,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc3"
             },
             "to": [
-              -0.4884939695667057,
-              -0.2505000000002184
+              -0.48849396956670543,
+              -0.2505000000002182
             ],
             "type": "Arc",
             "units": "in"
@@ -642,12 +642,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              -0.9223726968630543,
-              -0.00000000000018912649224489542
+              -0.922372696863054,
+              -0.00000000000018890444763997039
             ],
             "from": [
-              -0.4884939695667057,
-              -0.2505000000002184
+              -0.48849396956670543,
+              -0.2505000000002182
             ],
             "radius": 0.5010000000003133,
             "tag": {
@@ -659,8 +659,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc4"
             },
             "to": [
-              -0.48849396956672275,
-              0.25049999999986966
+              -0.4884939695667224,
+              0.2504999999998699
             ],
             "type": "Arc",
             "units": "in"
@@ -672,12 +672,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": false,
             "center": [
-              -0.22868634843103697,
-              0.4005000000000686
+              -0.22868634843103663,
+              0.4005000000000688
             ],
             "from": [
-              -0.48849396956672275,
-              0.25049999999986966
+              -0.4884939695667224,
+              0.2504999999998699
             ],
             "radius": 0.30000000000040616,
             "tag": {
@@ -689,8 +689,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc5"
             },
             "to": [
-              0.03112127270466869,
-              0.550500000000233
+              0.031121272704669023,
+              0.5505000000002332
             ],
             "type": "Arc",
             "units": "in"
@@ -702,12 +702,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              0.4650000000007592,
-              0.8010000000002144
+              0.46500000000075953,
+              0.8010000000002147
             ],
             "from": [
-              0.03112127270466869,
-              0.550500000000233
+              0.031121272704669023,
+              0.5505000000002332
             ],
             "radius": 0.5010000000000658,
             "tag": {
@@ -719,8 +719,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc6"
             },
             "to": [
-              0.46500000000075487,
-              0.3000000000001486
+              0.4650000000007552,
+              0.3000000000001488
             ],
             "type": "Arc",
             "units": "in"
@@ -844,7 +844,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              0.000000000000500000018436142,
+              0.0000000000005000001823675103,
               0.0
             ],
             "from": [
@@ -1105,14 +1105,14 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": false,
             "center": [
-              -0.22868634843138996,
-              -0.4005000000001976
+              -0.22868634843138985,
+              -0.40050000000019753
             ],
             "from": [
               0.031121272703941827,
               -0.550500000000149
             ],
-            "radius": 0.29999999999997584,
+            "radius": 0.2999999999999758,
             "tag": {
               "commentStart": 2306,
               "end": 2310,
@@ -1122,8 +1122,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc3"
             },
             "to": [
-              -0.4884939695667057,
-              -0.2505000000002184
+              -0.48849396956670543,
+              -0.2505000000002182
             ],
             "type": "Arc",
             "units": "in"
@@ -1135,12 +1135,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              -0.9223726968630543,
-              -0.00000000000018912649224489542
+              -0.922372696863054,
+              -0.00000000000018890444763997039
             ],
             "from": [
-              -0.4884939695667057,
-              -0.2505000000002184
+              -0.48849396956670543,
+              -0.2505000000002182
             ],
             "radius": 0.5010000000003133,
             "tag": {
@@ -1152,8 +1152,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc4"
             },
             "to": [
-              -0.48849396956672275,
-              0.25049999999986966
+              -0.4884939695667224,
+              0.2504999999998699
             ],
             "type": "Arc",
             "units": "in"
@@ -1165,12 +1165,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": false,
             "center": [
-              -0.22868634843103697,
-              0.4005000000000686
+              -0.22868634843103663,
+              0.4005000000000688
             ],
             "from": [
-              -0.48849396956672275,
-              0.25049999999986966
+              -0.4884939695667224,
+              0.2504999999998699
             ],
             "radius": 0.30000000000040616,
             "tag": {
@@ -1182,8 +1182,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc5"
             },
             "to": [
-              0.03112127270466869,
-              0.550500000000233
+              0.031121272704669023,
+              0.5505000000002332
             ],
             "type": "Arc",
             "units": "in"
@@ -1195,12 +1195,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              0.4650000000007592,
-              0.8010000000002144
+              0.46500000000075953,
+              0.8010000000002147
             ],
             "from": [
-              0.03112127270466869,
-              0.550500000000233
+              0.031121272704669023,
+              0.5505000000002332
             ],
             "radius": 0.5010000000000658,
             "tag": {
@@ -1212,8 +1212,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc6"
             },
             "to": [
-              0.46500000000075487,
-              0.3000000000001486
+              0.4650000000007552,
+              0.3000000000001488
             ],
             "type": "Arc",
             "units": "in"
@@ -1485,14 +1485,14 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": false,
             "center": [
-              -0.22868634843138996,
-              -0.4005000000001976
+              -0.22868634843138985,
+              -0.40050000000019753
             ],
             "from": [
               0.031121272703941827,
               -0.550500000000149
             ],
-            "radius": 0.29999999999997584,
+            "radius": 0.2999999999999758,
             "tag": {
               "commentStart": 2306,
               "end": 2310,
@@ -1502,8 +1502,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc3"
             },
             "to": [
-              -0.4884939695667057,
-              -0.2505000000002184
+              -0.48849396956670543,
+              -0.2505000000002182
             ],
             "type": "Arc",
             "units": "in"
@@ -1515,12 +1515,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              -0.9223726968630543,
-              -0.00000000000018912649224489542
+              -0.922372696863054,
+              -0.00000000000018890444763997039
             ],
             "from": [
-              -0.4884939695667057,
-              -0.2505000000002184
+              -0.48849396956670543,
+              -0.2505000000002182
             ],
             "radius": 0.5010000000003133,
             "tag": {
@@ -1532,8 +1532,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc4"
             },
             "to": [
-              -0.48849396956672275,
-              0.25049999999986966
+              -0.4884939695667224,
+              0.2504999999998699
             ],
             "type": "Arc",
             "units": "in"
@@ -1545,12 +1545,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": false,
             "center": [
-              -0.22868634843103697,
-              0.4005000000000686
+              -0.22868634843103663,
+              0.4005000000000688
             ],
             "from": [
-              -0.48849396956672275,
-              0.25049999999986966
+              -0.4884939695667224,
+              0.2504999999998699
             ],
             "radius": 0.30000000000040616,
             "tag": {
@@ -1562,8 +1562,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc5"
             },
             "to": [
-              0.03112127270466869,
-              0.550500000000233
+              0.031121272704669023,
+              0.5505000000002332
             ],
             "type": "Arc",
             "units": "in"
@@ -1575,12 +1575,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              0.4650000000007592,
-              0.8010000000002144
+              0.46500000000075953,
+              0.8010000000002147
             ],
             "from": [
-              0.03112127270466869,
-              0.550500000000233
+              0.031121272704669023,
+              0.5505000000002332
             ],
             "radius": 0.5010000000000658,
             "tag": {
@@ -1592,8 +1592,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
               "value": "arc6"
             },
             "to": [
-              0.46500000000075487,
-              0.3000000000001486
+              0.4650000000007552,
+              0.3000000000001488
             ],
             "type": "Arc",
             "units": "in"
@@ -1717,7 +1717,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
             },
             "ccw": true,
             "center": [
-              0.000000000000500000018436142,
+              0.0000000000005000001823675103,
               0.0
             ],
             "from": [
@@ -1896,7 +1896,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000006651337181766232,
+                        "n": -0.000000000000006652934012579735,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2022,7 +2022,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.031121272703902577,
+                        "n": 0.03112127270390253,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2174,7 +2174,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.03112127270390483,
+                        "n": 0.031121272703904787,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2192,7 +2192,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.22868634843142688,
+                        "n": -0.2286863484314269,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2316,7 +2316,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": -0.25050000000007117,
+                        "n": -0.2505000000000712,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2352,7 +2352,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000004188950760282628,
+                        "n": -0.000000000000041916586983106565,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2460,7 +2460,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.03112127270391792,
+                        "n": 0.03112127270391788,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2612,7 +2612,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.031121272703914148,
+                        "n": 0.031121272703914113,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2630,7 +2630,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.4650000000000005,
+                        "n": 0.46500000000000047,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2764,7 +2764,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000000000004258952854810633,
+                        "n": 0.000000000000000000004258948793401773,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2772,7 +2772,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000000002110979686624717,
+                        "n": -0.000000000000000002110979447861749,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2790,7 +2790,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000005687443894772448,
+                        "n": 0.000000000000005691183350019951,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2893,7 +2893,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000017388356028909173,
+                        "n": -0.000000000000017387670703154227,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3032,7 +3032,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000030760596238276316,
+                        "n": 0.00000000000000003075923623139444,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3145,7 +3145,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.22868634843150124,
+                        "n": -0.22868634843150126,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3274,7 +3274,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000003290666743777651,
+                        "n": -0.00000000000003292597093896854,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3377,7 +3377,7 @@ description: Variables in memory after executing cycloidal-gear.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000007940145888405213,
+                        "n": 0.000000000000007922239949389947,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3692,14 +3692,14 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.22868634843138996,
-                    -0.4005000000001976
+                    -0.22868634843138985,
+                    -0.40050000000019753
                   ],
                   "from": [
                     0.031121272703941827,
                     -0.550500000000149
                   ],
-                  "radius": 0.29999999999997584,
+                  "radius": 0.2999999999999758,
                   "tag": {
                     "commentStart": 2306,
                     "end": 2310,
@@ -3709,8 +3709,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    -0.4884939695667057,
-                    -0.2505000000002184
+                    -0.48849396956670543,
+                    -0.2505000000002182
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3722,12 +3722,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.9223726968630543,
-                    -0.00000000000018912649224489542
+                    -0.922372696863054,
+                    -0.00000000000018890444763997039
                   ],
                   "from": [
-                    -0.4884939695667057,
-                    -0.2505000000002184
+                    -0.48849396956670543,
+                    -0.2505000000002182
                   ],
                   "radius": 0.5010000000003133,
                   "tag": {
@@ -3739,8 +3739,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -0.48849396956672275,
-                    0.25049999999986966
+                    -0.4884939695667224,
+                    0.2504999999998699
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3752,12 +3752,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -0.22868634843103697,
-                    0.4005000000000686
+                    -0.22868634843103663,
+                    0.4005000000000688
                   ],
                   "from": [
-                    -0.48849396956672275,
-                    0.25049999999986966
+                    -0.4884939695667224,
+                    0.2504999999998699
                   ],
                   "radius": 0.30000000000040616,
                   "tag": {
@@ -3769,8 +3769,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    0.03112127270466869,
-                    0.550500000000233
+                    0.031121272704669023,
+                    0.5505000000002332
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3782,12 +3782,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.4650000000007592,
-                    0.8010000000002144
+                    0.46500000000075953,
+                    0.8010000000002147
                   ],
                   "from": [
-                    0.03112127270466869,
-                    0.550500000000233
+                    0.031121272704669023,
+                    0.5505000000002332
                   ],
                   "radius": 0.5010000000000658,
                   "tag": {
@@ -3799,8 +3799,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
                     "value": "arc6"
                   },
                   "to": [
-                    0.46500000000075487,
-                    0.3000000000001486
+                    0.4650000000007552,
+                    0.3000000000001488
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3964,14 +3964,14 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           "ccw": false,
           "center": [
-            -0.22868634843138996,
-            -0.4005000000001976
+            -0.22868634843138985,
+            -0.40050000000019753
           ],
           "from": [
             0.031121272703941827,
             -0.550500000000149
           ],
-          "radius": 0.29999999999997584,
+          "radius": 0.2999999999999758,
           "tag": {
             "commentStart": 2306,
             "end": 2310,
@@ -3981,8 +3981,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "arc3"
           },
           "to": [
-            -0.4884939695667057,
-            -0.2505000000002184
+            -0.48849396956670543,
+            -0.2505000000002182
           ],
           "type": "Arc",
           "units": "in"
@@ -3994,12 +3994,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           "ccw": true,
           "center": [
-            -0.9223726968630543,
-            -0.00000000000018912649224489542
+            -0.922372696863054,
+            -0.00000000000018890444763997039
           ],
           "from": [
-            -0.4884939695667057,
-            -0.2505000000002184
+            -0.48849396956670543,
+            -0.2505000000002182
           ],
           "radius": 0.5010000000003133,
           "tag": {
@@ -4011,8 +4011,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "arc4"
           },
           "to": [
-            -0.48849396956672275,
-            0.25049999999986966
+            -0.4884939695667224,
+            0.2504999999998699
           ],
           "type": "Arc",
           "units": "in"
@@ -4024,12 +4024,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           "ccw": false,
           "center": [
-            -0.22868634843103697,
-            0.4005000000000686
+            -0.22868634843103663,
+            0.4005000000000688
           ],
           "from": [
-            -0.48849396956672275,
-            0.25049999999986966
+            -0.4884939695667224,
+            0.2504999999998699
           ],
           "radius": 0.30000000000040616,
           "tag": {
@@ -4041,8 +4041,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "arc5"
           },
           "to": [
-            0.03112127270466869,
-            0.550500000000233
+            0.031121272704669023,
+            0.5505000000002332
           ],
           "type": "Arc",
           "units": "in"
@@ -4054,12 +4054,12 @@ description: Variables in memory after executing cycloidal-gear.kcl
           },
           "ccw": true,
           "center": [
-            0.4650000000007592,
-            0.8010000000002144
+            0.46500000000075953,
+            0.8010000000002147
           ],
           "from": [
-            0.03112127270466869,
-            0.550500000000233
+            0.031121272704669023,
+            0.5505000000002332
           ],
           "radius": 0.5010000000000658,
           "tag": {
@@ -4071,8 +4071,8 @@ description: Variables in memory after executing cycloidal-gear.kcl
             "value": "arc6"
           },
           "to": [
-            0.46500000000075487,
-            0.3000000000001486
+            0.4650000000007552,
+            0.3000000000001488
           ],
           "type": "Arc",
           "units": "in"

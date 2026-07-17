@@ -410,8 +410,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -432,102 +432,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -544,87 +450,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -641,7 +466,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -656,8 +481,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -671,8 +496,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -686,8 +511,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -701,13 +701,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -724,8 +724,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -740,16 +740,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -762,8 +762,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -783,11 +783,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -800,8 +800,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -815,17 +815,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -1059,8 +1059,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -1081,102 +1081,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -1193,87 +1099,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -1290,7 +1115,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -1305,8 +1130,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -1320,8 +1145,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -1335,8 +1160,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -1350,13 +1350,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -1373,8 +1373,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -1389,16 +1389,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -1411,8 +1411,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -1432,11 +1432,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -1449,8 +1449,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -1464,17 +1464,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -1708,8 +1708,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -1730,102 +1730,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -1842,87 +1748,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -1939,7 +1764,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -1954,8 +1779,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -1969,8 +1794,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -1984,8 +1809,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -1999,13 +1999,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -2022,8 +2022,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -2038,16 +2038,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -2060,8 +2060,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -2081,11 +2081,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -2098,8 +2098,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -2113,17 +2113,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -2357,8 +2357,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -2379,102 +2379,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -2491,87 +2397,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -2588,7 +2413,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -2603,8 +2428,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -2618,8 +2443,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -2633,8 +2458,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -2648,13 +2648,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -2671,8 +2671,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -2687,16 +2687,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -2709,8 +2709,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -2730,11 +2730,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -2747,8 +2747,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -2762,17 +2762,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -3006,8 +3006,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -3028,102 +3028,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -3140,87 +3046,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -3237,7 +3062,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -3252,8 +3077,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -3267,8 +3092,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -3282,8 +3107,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -3297,13 +3297,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -3320,8 +3320,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -3336,16 +3336,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -3358,8 +3358,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -3379,11 +3379,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -3396,8 +3396,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -3411,17 +3411,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -3655,8 +3655,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -3677,102 +3677,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -3789,87 +3695,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -3886,7 +3711,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -3901,8 +3726,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -3916,8 +3741,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -3931,8 +3756,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -3946,13 +3946,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -3969,8 +3969,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -3985,16 +3985,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -4007,8 +4007,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -4028,11 +4028,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -4045,8 +4045,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -4060,17 +4060,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -4304,8 +4304,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -4326,102 +4326,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -4438,87 +4344,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -4535,7 +4360,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -4550,8 +4375,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -4565,8 +4390,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -4580,8 +4405,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -4595,13 +4595,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -4618,8 +4618,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -4634,16 +4634,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -4656,8 +4656,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -4677,11 +4677,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -4694,8 +4694,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -4709,17 +4709,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -4953,8 +4953,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -4975,102 +4975,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -5087,87 +4993,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -5184,7 +5009,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -5199,8 +5024,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -5214,8 +5039,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -5229,8 +5054,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -5244,13 +5244,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -5267,8 +5267,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -5283,16 +5283,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -5305,8 +5305,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -5326,11 +5326,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -5343,8 +5343,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -5358,17 +5358,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -5602,8 +5602,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -5624,102 +5624,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -5736,87 +5642,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -5833,7 +5658,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -5848,8 +5673,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -5863,8 +5688,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -5878,8 +5703,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -5893,13 +5893,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -5916,8 +5916,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -5932,16 +5932,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -5954,8 +5954,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -5975,11 +5975,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -5992,8 +5992,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -6007,17 +6007,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -6251,8 +6251,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -6273,102 +6273,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -6385,87 +6291,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -6482,7 +6307,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -6497,8 +6322,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -6512,8 +6337,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -6527,8 +6352,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -6542,13 +6542,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -6565,8 +6565,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -6581,16 +6581,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -6603,8 +6603,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -6624,11 +6624,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -6641,8 +6641,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -6656,17 +6656,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }
@@ -6900,8 +6900,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
+          "x": -33.82009999999999,
+          "y": 50.8,
           "z": 0.0
         }
       }
@@ -6922,102 +6922,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.82009999999999,
-            "y": 50.80000000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 33.82009999999999,
-            "y": 43.35780000000001,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 14.057510944353846,
-            "y": 43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 2.4511,
-          "y": 31.750000000000043,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 2.4511,
-            "y": -31.750000001570047,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.057510944214037,
-          "y": -43.35780000000002,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
             "x": 33.820100000000004,
-            "y": -43.357800000000005,
+            "y": 50.8,
             "z": 0.0
           },
           "relative": false
@@ -7034,87 +6940,6 @@ description: Artifact commands truss_bridge.kcl
           "type": "line",
           "end": {
             "x": 33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -50.8,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
-            "y": -43.357800000000005,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -14.057510944250494,
-            "y": -43.35780000000002,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -33.820100000000004,
-          "y": 50.80000000000001,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -33.820100000000004,
             "y": 43.357800000000005,
             "z": 0.0
           },
@@ -7131,7 +6956,7 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -14.057510944223894,
+            "x": 14.05751094435017,
             "y": 43.35780000000001,
             "z": 0.0
           },
@@ -7146,8 +6971,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511,
-          "y": 31.750000000775398,
+          "x": 2.4510999999999994,
+          "y": 31.750000000000032,
           "z": 0.0
         }
       }
@@ -7161,8 +6986,8 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.4510999999999994,
-            "y": -31.750000000794692,
+            "x": 2.4511000000000003,
+            "y": -31.75000000082552,
             "z": 0.0
           },
           "relative": false
@@ -7176,8 +7001,183 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 14.057510944353846,
-          "y": 43.35780000000001,
+          "x": 14.057510944258622,
+          "y": -43.35780000000001,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 33.82010000000003,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -50.80000000000001,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82010000000002,
+            "y": -43.35779999999998,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944251359,
+            "y": -43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -33.82009999999999,
+          "y": 50.8,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -33.82009999999999,
+            "y": 43.3578,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -14.057510944227408,
+            "y": 43.357800000000005,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -2.4511,
+          "y": 31.750000000397822,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -2.4511,
+            "y": -31.75000000042773,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.05751094435017,
+          "y": 43.35779999999999,
           "z": 0.0
         }
       }
@@ -7191,13 +7191,13 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 14.058900000000001,
-            "y": 31.750000000000043
+            "x": 14.0589,
+            "y": 31.750000000000032
           },
-          "radius": 11.607800083111133,
+          "radius": 11.607800083111128,
           "start": {
             "unit": "degrees",
-            "value": 90.00685634018969
+            "value": 90.0068563402078
           },
           "end": {
             "unit": "degrees",
@@ -7214,8 +7214,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 2.4511000000000003,
-          "y": -31.750000001570047,
+          "x": 2.4511,
+          "y": -31.75000000082552,
           "z": 0.0
         }
       }
@@ -7230,16 +7230,16 @@ description: Artifact commands truss_bridge.kcl
           "type": "arc",
           "center": {
             "x": 14.0589,
-            "y": -31.75000000000005
+            "y": -31.750000000000025
           },
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": -179.99999999225054
+            "value": -179.99999999592538
           },
           "end": {
             "unit": "degrees",
-            "value": -90.00685634087976
+            "value": -90.00685634065968
           },
           "relative": false
         }
@@ -7252,8 +7252,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.4511000000000007,
-          "y": 31.750000000775398,
+          "x": -2.4511000000000003,
+          "y": 31.750000000397822,
           "z": 0.0
         }
       }
@@ -7273,11 +7273,11 @@ description: Artifact commands truss_bridge.kcl
           "radius": 11.6078,
           "start": {
             "unit": "degrees",
-            "value": 0.000000003827216429347246
+            "value": 0.0000000019635088209451623
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99314365916892
+            "value": 89.99314365918625
           },
           "relative": false
         }
@@ -7290,8 +7290,8 @@ description: Artifact commands truss_bridge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -14.057510944250494,
-          "y": -43.357800000000005,
+          "x": -14.057510944251359,
+          "y": -43.35779999999999,
           "z": 0.0
         }
       }
@@ -7305,17 +7305,17 @@ description: Artifact commands truss_bridge.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -14.0589,
-            "y": -31.75000000000004
+            "x": -14.058899999999996,
+            "y": -31.750000000000014
           },
-          "radius": 11.607800083111144,
+          "radius": 11.607800083111151,
           "start": {
             "unit": "degrees",
-            "value": -89.99314365930019
+            "value": -89.99314365930448
           },
           "end": {
             "unit": "degrees",
-            "value": -0.000000003922396442090561
+            "value": -0.0000000021111923446665098
           },
           "relative": false
         }

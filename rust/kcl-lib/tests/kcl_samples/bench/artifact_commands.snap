@@ -311,7 +311,7 @@ description: Artifact commands bench.kcl
           "type": "line",
           "end": {
             "x": 17.33999999992724,
-            "y": 0.03999999994057445,
+            "y": 0.03999999994057446,
             "z": 0.0
           },
           "relative": false
@@ -328,7 +328,7 @@ description: Artifact commands bench.kcl
           "type": "line",
           "end": {
             "x": 23.31999999990946,
-            "y": 0.039999999931499906,
+            "y": 0.03999999993149991,
             "z": 0.0
           },
           "relative": false

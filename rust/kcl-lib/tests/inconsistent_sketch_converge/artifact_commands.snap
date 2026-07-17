@@ -68,8 +68,8 @@ description: Artifact commands inconsistent_sketch_converge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1.7913914569171994,
-          "y": 2.6518785110838667,
+          "x": -1.7913909689557008,
+          "y": 2.6518784422959523,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands inconsistent_sketch_converge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.8413905502521459,
-            "y": 2.228121488916133,
+            "x": 0.8413910619045102,
+            "y": 2.2281215577040476,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands inconsistent_sketch_converge.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.1864998383822822,
-          "y": -0.33641746056402655,
+          "x": -2.1864997885599937,
+          "y": -0.33641746432564795,
           "z": 0.0
         }
       }
@@ -120,8 +120,8 @@ description: Artifact commands inconsistent_sketch_converge.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.146499796548108,
-            "y": -0.3835825394359735,
+            "x": 1.1464998474676031,
+            "y": -0.3835825356743521,
             "z": 0.0
           },
           "relative": false

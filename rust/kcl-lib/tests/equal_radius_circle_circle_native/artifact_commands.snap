@@ -90,7 +90,7 @@ description: Artifact commands equal_radius_circle_circle_native.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000010000000814903708,
+            "x": 0.0000000010000000747403698,
             "y": 0.0
           },
           "radius": 4.999999998,

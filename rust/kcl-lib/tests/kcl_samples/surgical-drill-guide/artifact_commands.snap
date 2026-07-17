@@ -68,8 +68,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000000000000009097996342281411,
-          "y": -0.00000000000000000019371529680462074,
+          "x": -0.0000000000000000004270914531676395,
+          "y": -0.00000000000000000037082637292001084,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands surgical-drill-guide.kcl
           "type": "line",
           "end": {
             "x": 150.0,
-            "y": -0.00000000000000007773362832750456,
+            "y": -0.0000000000000000019694889973277208,
             "z": 0.0
           },
           "relative": false
@@ -108,7 +108,7 @@ description: Artifact commands surgical-drill-guide.kcl
           "type": "line",
           "end": {
             "x": 150.0,
-            "y": 5.999999999999999,
+            "y": 6.0,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.000000000000007876179657971618,
-            "y": 5.999999999999999,
+            "x": 0.000000000000007875791210187682,
+            "y": 6.0,
             "z": 0.0
           },
           "relative": false
@@ -141,17 +141,17 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000000009097355763973145,
+            "x": 0.0000000000000007552105127564857,
             "y": 13.5
           },
-          "radius": 7.500000000000001,
+          "radius": 7.5,
           "start": {
             "unit": "degrees",
-            "value": -89.99999999999993
+            "value": -89.99999999999994
           },
           "end": {
             "unit": "degrees",
-            "value": -149.99710839918998
+            "value": -149.99710839942776
           },
           "relative": false
         }
@@ -166,8 +166,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -31.495001273552674,
-            "y": 53.05094239023973,
+            "x": -31.495001273568235,
+            "y": 53.050942390266684,
             "z": 0.0
           },
           "relative": false
@@ -183,8 +183,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -36.691153696259306,
-            "y": 50.05094239023973,
+            "x": -36.69115369627487,
+            "y": 50.050942390266684,
             "z": 0.0
           },
           "relative": false
@@ -200,8 +200,8 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -11.691153696259306,
-            "y": 6.749672201017803,
+            "x": -11.691153696274869,
+            "y": 6.749672201044749,
             "z": 0.0
           },
           "relative": false
@@ -217,13 +217,13 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000000003552713678800501,
-            "y": 13.499999999999996
+            "x": -0.0000000000000017763568394002505,
+            "y": 13.5
           },
           "radius": 13.500000005306278,
           "start": {
             "unit": "degrees",
-            "value": -149.99839355510466
+            "value": -149.9983935552367
           },
           "end": {
             "unit": "degrees",
@@ -402,7 +402,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000006315790342255249,
+            "x": 0.0000000006315789509587988,
             "y": 53.15127018801177
           },
           "radius": 15.789473684421054,
@@ -601,7 +601,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000006315790342255249,
+            "x": 0.0000000006315789509587988,
             "y": 150.0
           },
           "radius": 15.789473684421054,
@@ -816,7 +816,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000006315790342255249,
+            "x": 0.0000000006315789509587988,
             "y": 53.15127018801177
           },
           "radius": 15.789473684421054,
@@ -1335,7 +1335,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000012972973989532907,
+            "x": -0.0000000012972973989532909,
             "y": 53.15127018528891
           },
           "radius": 16.216216215135134,
@@ -1636,7 +1636,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000006315790342255249,
+            "x": 0.0000000006315789509587988,
             "y": 150.0
           },
           "radius": 15.789473684421054,
@@ -1783,7 +1783,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000006000000450442218,
+            "x": -0.0000000006000000450442219,
             "y": 150.0
           },
           "radius": 3.1999999998,
@@ -1960,7 +1960,7 @@ description: Artifact commands surgical-drill-guide.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000012000000900884436,
+            "x": 0.0000000012000000900884438,
             "y": 150.0
           },
           "radius": 1.6000000004000001,

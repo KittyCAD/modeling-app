@@ -82,7 +82,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.01080702466452768,
+                        "n": -0.010807057262052895,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -90,7 +90,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000000004366950295151887,
+                        "n": -0.0000000000000000004371986864549797,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -100,7 +100,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.6787107802984397,
+                        "n": -0.6787107823514908,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -108,7 +108,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 3.8589157113722443,
+                        "n": 3.85891567419851,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -202,7 +202,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.6601034900935318,
+                        "n": 0.660103484561035,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -210,7 +210,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 5.31116024377252,
+                        "n": 5.311160263735792,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -220,7 +220,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.6787107802983937,
+                        "n": -0.6787107823514449,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -228,7 +228,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 3.8589157113722523,
+                        "n": 3.858915674198518,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -238,7 +238,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5481251779438097,
+                        "n": 0.5481252272085017,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -246,7 +246,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 4.0711481731178045,
+                        "n": 4.071148137153573,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -357,7 +357,7 @@ description: Variables in memory after executing sweep_mirror.kcl
           },
           "from": [
             -0.1250000000000005,
-            0.125
+            0.12500000000000003
           ],
           "tag": {
             "commentStart": 61,
@@ -392,7 +392,7 @@ description: Variables in memory after executing sweep_mirror.kcl
             "value": "line2"
           },
           "to": [
-            0.125,
+            0.12499999999999999,
             -0.12500000000000006
           ],
           "type": "ToPoint",
@@ -404,7 +404,7 @@ description: Variables in memory after executing sweep_mirror.kcl
             "sourceRange": []
           },
           "from": [
-            0.125,
+            0.12499999999999999,
             -0.12500000000000006
           ],
           "tag": {
@@ -481,11 +481,11 @@ description: Variables in memory after executing sweep_mirror.kcl
       "start": {
         "from": [
           -0.1250000000000005,
-          0.125
+          0.12500000000000003
         ],
         "to": [
           -0.1250000000000005,
-          0.125
+          0.12500000000000003
         ],
         "units": "mm",
         "tag": null,
@@ -541,7 +541,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 0.125,
+                        "n": 0.12500000000000003,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -661,7 +661,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 0.125,
+                        "n": 0.12500000000000003,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -671,7 +671,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.125,
+                        "n": 0.12499999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -901,7 +901,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": -0.12499999999999988,
+                        "n": -0.12499999999999989,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1031,7 +1031,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000000000000023499829075990378,
+                        "n": 0.0000000000000000023500268733479515,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1039,7 +1039,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000000000024188697992900747,
+                        "n": 0.0000000000000000024188423353690276,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1134,7 +1134,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000016987670803942754,
+                        "n": -0.0000000000000001692870091195821,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1142,7 +1142,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000017941446508201893,
+                        "n": 0.00000000000000017882479738824162,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1160,7 +1160,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 0.12499999999999983,
+                        "n": 0.12499999999999985,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1255,7 +1255,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000005179144128128466,
+                        "n": -0.0000000000000005161454345469331,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1263,7 +1263,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000018062389081871639,
+                        "n": 0.0000000000000001800342181618554,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1376,7 +1376,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000000691316087753352,
+                        "n": -0.0000000000000006889574723993438,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1384,7 +1384,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000717252861828884,
+                        "n": 0.000000000000000007172496170029049,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1394,7 +1394,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.12499999999999965,
+                        "n": -0.12499999999999967,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1501,7 +1501,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   },
                   "from": [
                     -0.1250000000000005,
-                    0.125
+                    0.12500000000000003
                   ],
                   "tag": {
                     "commentStart": 61,
@@ -1536,7 +1536,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "value": "line2"
                   },
                   "to": [
-                    0.125,
+                    0.12499999999999999,
                     -0.12500000000000006
                   ],
                   "type": "ToPoint",
@@ -1548,7 +1548,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.125,
+                    0.12499999999999999,
                     -0.12500000000000006
                   ],
                   "tag": {
@@ -1625,11 +1625,11 @@ description: Variables in memory after executing sweep_mirror.kcl
               "start": {
                 "from": [
                   -0.1250000000000005,
-                  0.125
+                  0.12500000000000003
                 ],
                 "to": [
                   -0.1250000000000005,
-                  0.125
+                  0.12500000000000003
                 ],
                 "units": "mm",
                 "tag": null,
@@ -1683,7 +1683,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.6601034900935318,
+                        "n": 0.660103484561035,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1691,7 +1691,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 5.31116024377252,
+                        "n": 5.311160263735792,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1701,7 +1701,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.6787107802983937,
+                        "n": -0.6787107823514449,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1709,7 +1709,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 3.8589157113722523,
+                        "n": 3.858915674198518,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1719,7 +1719,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5481251779438097,
+                        "n": 0.5481252272085017,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1727,7 +1727,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 4.0711481731178045,
+                        "n": 4.071148137153573,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1835,7 +1835,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.01080702466452768,
+                        "n": -0.010807057262052895,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1843,7 +1843,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000000004366950295151887,
+                        "n": -0.0000000000000000004371986864549797,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1853,7 +1853,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.6787107802984397,
+                        "n": -0.6787107823514908,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1861,7 +1861,7 @@ description: Variables in memory after executing sweep_mirror.kcl
                         }
                       },
                       {
-                        "n": 3.8589157113722443,
+                        "n": 3.85891567419851,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1958,8 +1958,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.01080702466452768,
-                    -0.0000000000000000004366950295151887
+                    -0.010807057262052895,
+                    -0.0000000000000000004371986864549797
                   ],
                   "tag": {
                     "commentStart": 1561,
@@ -1970,8 +1970,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.6787107802984397,
-                    3.8589157113722443
+                    -0.6787107823514908,
+                    3.85891567419851
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1983,14 +1983,14 @@ description: Variables in memory after executing sweep_mirror.kcl
                   },
                   "ccw": false,
                   "center": [
-                    0.5481251779437636,
-                    4.0711481731177965
+                    0.5481252272084558,
+                    4.071148137153565
                   ],
                   "from": [
-                    -0.6787107802984397,
-                    3.8589157113722443
+                    -0.6787107823514908,
+                    3.85891567419851
                   ],
-                  "radius": 1.2450578646210153,
+                  "radius": 1.2450579153938752,
                   "tag": {
                     "commentStart": 1641,
                     "end": 1645,
@@ -2000,8 +2000,8 @@ description: Variables in memory after executing sweep_mirror.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    0.6601034904002475,
-                    5.311160247169513
+                    0.6601034848677853,
+                    5.311160267133157
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2040,12 +2040,12 @@ description: Variables in memory after executing sweep_mirror.kcl
               },
               "start": {
                 "from": [
-                  -0.01080702466452768,
-                  -0.0000000000000000004366950295151887
+                  -0.010807057262052895,
+                  -0.0000000000000000004371986864549797
                 ],
                 "to": [
-                  -0.01080702466452768,
-                  -0.0000000000000000004366950295151887
+                  -0.010807057262052895,
+                  -0.0000000000000000004371986864549797
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2152,7 +2152,7 @@ description: Variables in memory after executing sweep_mirror.kcl
             },
             "from": [
               -0.1250000000000005,
-              0.125
+              0.12500000000000003
             ],
             "tag": {
               "commentStart": 61,
@@ -2187,7 +2187,7 @@ description: Variables in memory after executing sweep_mirror.kcl
               "value": "line2"
             },
             "to": [
-              0.125,
+              0.12499999999999999,
               -0.12500000000000006
             ],
             "type": "ToPoint",
@@ -2199,7 +2199,7 @@ description: Variables in memory after executing sweep_mirror.kcl
               "sourceRange": []
             },
             "from": [
-              0.125,
+              0.12499999999999999,
               -0.12500000000000006
             ],
             "tag": {
@@ -2276,11 +2276,11 @@ description: Variables in memory after executing sweep_mirror.kcl
         "start": {
           "from": [
             -0.1250000000000005,
-            0.125
+            0.12500000000000003
           ],
           "to": [
             -0.1250000000000005,
-            0.125
+            0.12500000000000003
           ],
           "units": "mm",
           "tag": null,
@@ -2394,7 +2394,7 @@ description: Variables in memory after executing sweep_mirror.kcl
             },
             "from": [
               -0.1250000000000005,
-              0.125
+              0.12500000000000003
             ],
             "tag": {
               "commentStart": 61,
@@ -2429,7 +2429,7 @@ description: Variables in memory after executing sweep_mirror.kcl
               "value": "line2"
             },
             "to": [
-              0.125,
+              0.12499999999999999,
               -0.12500000000000006
             ],
             "type": "ToPoint",
@@ -2441,7 +2441,7 @@ description: Variables in memory after executing sweep_mirror.kcl
               "sourceRange": []
             },
             "from": [
-              0.125,
+              0.12499999999999999,
               -0.12500000000000006
             ],
             "tag": {
@@ -2518,11 +2518,11 @@ description: Variables in memory after executing sweep_mirror.kcl
         "start": {
           "from": [
             -0.1250000000000005,
-            0.125
+            0.12500000000000003
           ],
           "to": [
             -0.1250000000000005,
-            0.125
+            0.12500000000000003
           ],
           "units": "mm",
           "tag": null,

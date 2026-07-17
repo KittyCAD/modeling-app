@@ -294,7 +294,7 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "to": [
                   0.02499999999999999,
-                  0.1649999999999999
+                  0.16500000000000017
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -306,7 +306,7 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "from": [
                   0.02499999999999999,
-                  0.1649999999999999
+                  0.16500000000000017
                 ],
                 "tag": {
                   "commentStart": 1157,
@@ -389,7 +389,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "zLine05"
                 },
                 "to": [
-                  0.625,
+                  0.6249999999999999,
                   0.9750000000000001
                 ],
                 "type": "ToPoint",
@@ -401,7 +401,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.625,
+                  0.6249999999999999,
                   0.9750000000000001
                 ],
                 "tag": {
@@ -413,8 +413,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "zLine06"
                 },
                 "to": [
-                  0.625,
-                  0.8173489932885908
+                  0.6249999999999999,
+                  0.8173489932885907
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -425,8 +425,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.625,
-                  0.8173489932885908
+                  0.6249999999999999,
+                  0.8173489932885907
                 ],
                 "tag": {
                   "commentStart": 1572,
@@ -509,7 +509,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "zLine10"
                 },
                 "to": [
-                  0.3627469135802469,
+                  0.3627469135802468,
                   0.24000000000000002
                 ],
                 "type": "ToPoint",
@@ -521,7 +521,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.3627469135802469,
+                  0.3627469135802468,
                   0.24000000000000002
                 ],
                 "tag": {
@@ -581,7 +581,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "zLine13"
                 },
                 "to": [
-                  0.31,
+                  0.30999999999999994,
                   0.025000000000000012
                 ],
                 "type": "ToPoint",
@@ -593,7 +593,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.31,
+                  0.30999999999999994,
                   0.025000000000000012
                 ],
                 "tag": {
@@ -605,8 +605,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "zLine14"
                 },
                 "to": [
-                  0.31,
-                  0.18265100671140935
+                  0.30999999999999994,
+                  0.18265100671140944
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -617,8 +617,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.31,
-                  0.18265100671140935
+                  0.30999999999999994,
+                  0.18265100671140944
                 ],
                 "tag": {
                   "commentStart": 2236,
@@ -629,7 +629,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "zLine15"
                 },
                 "to": [
-                  0.16500000000000006,
+                  0.16499999999999987,
                   0.025000000000000012
                 ],
                 "type": "ToPoint",
@@ -641,7 +641,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.16500000000000006,
+                  0.16499999999999987,
                   0.025000000000000012
                 ],
                 "tag": {
@@ -924,14 +924,14 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "ccw": true,
                 "center": [
-                  1.4479999999999997,
+                  1.448,
                   0.5
                 ],
                 "from": [
-                  1.750722215113798,
-                  0.8979437905993726
+                  1.7507222151137982,
+                  0.8979437905993727
                 ],
-                "radius": 0.500000000000002,
+                "radius": 0.5000000000000021,
                 "tag": {
                   "commentStart": 5447,
                   "end": 5454,
@@ -941,8 +941,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Arc01"
                 },
                 "to": [
-                  1.0721424147242913,
-                  0.1702560454068709
+                  1.0721424147242915,
+                  0.17025604540687084
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -954,11 +954,11 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "ccw": true,
                 "center": [
-                  1.4479999999999997,
+                  1.448,
                   0.5
                 ],
                 "from": [
-                  1.5923869283562486,
+                  1.5923869283562488,
                   0.728149983387791
                 ],
                 "radius": 0.27000000000000346,
@@ -971,8 +971,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Arc02"
                 },
                 "to": [
-                  1.2304777014818407,
-                  0.3400498526184524
+                  1.230477701481841,
+                  0.3400498526184522
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -984,14 +984,14 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "ccw": true,
                 "center": [
-                  1.4479999999999995,
-                  0.5000000000000001
+                  1.448,
+                  0.4999999999999999
                 ],
                 "from": [
-                  1.1452777848862086,
+                  1.145277784886209,
                   0.10205620940062167
                 ],
-                "radius": 0.5000000000000023,
+                "radius": 0.5000000000000021,
                 "tag": {
                   "commentStart": 5678,
                   "end": 5685,
@@ -1001,8 +1001,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Arc03"
                 },
                 "to": [
-                  1.8238575852757144,
-                  0.8297439545931223
+                  1.8238575852757148,
+                  0.829743954593122
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1014,14 +1014,14 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "ccw": true,
                 "center": [
-                  1.4479999999999997,
+                  1.448,
                   0.5
                 ],
                 "from": [
-                  1.3036130716437577,
-                  0.27185001661220265
+                  1.303613071643758,
+                  0.2718500166122026
                 ],
-                "radius": 0.2700000000000051,
+                "radius": 0.2700000000000052,
                 "tag": {
                   "commentStart": 5793,
                   "end": 5800,
@@ -1031,8 +1031,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Arc04"
                 },
                 "to": [
-                  1.6655222985181655,
-                  0.6599501473815412
+                  1.6655222985181657,
+                  0.6599501473815413
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1301,7 +1301,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.0721424147242915,
+                  1.0721424147242917,
                   0.17025604540687092
                 ],
                 "tag": {
@@ -1313,7 +1313,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Line01"
                 },
                 "to": [
-                  1.2304777014818409,
+                  1.2304777014818413,
                   0.34004985261845244
                 ],
                 "type": "ToPoint",
@@ -1325,7 +1325,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.5923869283562486,
+                  1.5923869283562488,
                   0.728149983387791
                 ],
                 "tag": {
@@ -1337,7 +1337,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Line02"
                 },
                 "to": [
-                  1.750722215113798,
+                  1.7507222151137982,
                   0.8979437905993726
                 ],
                 "type": "ToPoint",
@@ -1349,7 +1349,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.1452777848862086,
+                  1.145277784886209,
                   0.10205620940062167
                 ],
                 "tag": {
@@ -1361,8 +1361,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Line03"
                 },
                 "to": [
-                  1.3036130716437577,
-                  0.27185001661220265
+                  1.303613071643758,
+                  0.2718500166122026
                 ],
                 "type": "ToPoint",
                 "units": "in"
@@ -1373,7 +1373,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  1.6655222985181655,
+                  1.6655222985181657,
                   0.6599501473815413
                 ],
                 "tag": {
@@ -1385,7 +1385,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o1Line04"
                 },
                 "to": [
-                  1.8238575852757144,
+                  1.8238575852757146,
                   0.829743954593122
                 ],
                 "type": "ToPoint",
@@ -1687,13 +1687,13 @@ description: Variables in memory after executing zoo-logo.kcl
                 "ccw": true,
                 "center": [
                   2.5,
-                  0.5000000000000001
+                  0.4999999999999999
                 ],
                 "from": [
                   2.197277784886207,
-                  0.10205620940062599
+                  0.10205620940062604
                 ],
-                "radius": 0.5000000000000001,
+                "radius": 0.5,
                 "tag": {
                   "commentStart": 9061,
                   "end": 9068,
@@ -1704,7 +1704,7 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "to": [
                   2.87585758527571,
-                  0.8297439545931243
+                  0.829743954593124
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1720,10 +1720,10 @@ description: Variables in memory after executing zoo-logo.kcl
                   0.5
                 ],
                 "from": [
-                  2.644386928356242,
+                  2.6443869283562424,
                   0.728149983387791
                 ],
-                "radius": 0.2699999999999998,
+                "radius": 0.27,
                 "tag": {
                   "commentStart": 9174,
                   "end": 9181,
@@ -1734,7 +1734,7 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "to": [
                   2.2824777014818407,
-                  0.3400498526184591
+                  0.3400498526184589
                 ],
                 "type": "Arc",
                 "units": "in"
@@ -1746,7 +1746,7 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "from": [
                   2.197277784886207,
-                  0.10205620940062599
+                  0.10205620940062603
                 ],
                 "tag": {
                   "commentStart": 9570,
@@ -2058,7 +2058,7 @@ description: Variables in memory after executing zoo-logo.kcl
                 },
                 "from": [
                   2.1241424147242896,
-                  0.1702560454068758
+                  0.17025604540687583
                 ],
                 "tag": {
                   "commentStart": 9404,
@@ -2069,7 +2069,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "value": "o2Line01"
                 },
                 "to": [
-                  2.2824777014818403,
+                  2.2824777014818407,
                   0.3400498526184587
                 ],
                 "type": "ToPoint",
@@ -2081,7 +2081,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  2.644386928356242,
+                  2.6443869283562424,
                   0.728149983387791
                 ],
                 "tag": {
@@ -2347,7 +2347,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000001183131726234638,
+                        "n": -0.000000000000000011831226292030127,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2355,7 +2355,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000011745700055058772,
+                        "n": 0.000000000000000011745731568196535,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2373,7 +2373,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000012606018544935754,
+                        "n": 0.000000000000000012606031628490479,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2468,7 +2468,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000000012044522877192726,
+                        "n": -0.000000000000000012044426930842858,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2486,7 +2486,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000000011831316438927056,
+                        "n": -0.000000000000000011831225467260274,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2494,7 +2494,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000001172797813932272,
+                        "n": 0.000000000000000011728007318517677,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2597,7 +2597,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.000000000000000012623739047159282,
+                        "n": 0.000000000000000012623751954816957,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2728,7 +2728,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000000011970954061066887,
+                        "n": -0.000000000000000011970859349782896,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2847,7 +2847,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "to": [
                     0.02499999999999999,
-                    0.1649999999999999
+                    0.16500000000000017
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2859,7 +2859,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "from": [
                     0.02499999999999999,
-                    0.1649999999999999
+                    0.16500000000000017
                   ],
                   "tag": {
                     "commentStart": 1157,
@@ -2942,7 +2942,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "zLine05"
                   },
                   "to": [
-                    0.625,
+                    0.6249999999999999,
                     0.9750000000000001
                   ],
                   "type": "ToPoint",
@@ -2954,7 +2954,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.625,
+                    0.6249999999999999,
                     0.9750000000000001
                   ],
                   "tag": {
@@ -2966,8 +2966,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "zLine06"
                   },
                   "to": [
-                    0.625,
-                    0.8173489932885908
+                    0.6249999999999999,
+                    0.8173489932885907
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -2978,8 +2978,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.625,
-                    0.8173489932885908
+                    0.6249999999999999,
+                    0.8173489932885907
                   ],
                   "tag": {
                     "commentStart": 1572,
@@ -3062,7 +3062,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "zLine10"
                   },
                   "to": [
-                    0.3627469135802469,
+                    0.3627469135802468,
                     0.24000000000000002
                   ],
                   "type": "ToPoint",
@@ -3074,7 +3074,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.3627469135802469,
+                    0.3627469135802468,
                     0.24000000000000002
                   ],
                   "tag": {
@@ -3134,7 +3134,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "zLine13"
                   },
                   "to": [
-                    0.31,
+                    0.30999999999999994,
                     0.025000000000000012
                   ],
                   "type": "ToPoint",
@@ -3146,7 +3146,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.31,
+                    0.30999999999999994,
                     0.025000000000000012
                   ],
                   "tag": {
@@ -3158,8 +3158,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "zLine14"
                   },
                   "to": [
-                    0.31,
-                    0.18265100671140935
+                    0.30999999999999994,
+                    0.18265100671140944
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3170,8 +3170,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.31,
-                    0.18265100671140935
+                    0.30999999999999994,
+                    0.18265100671140944
                   ],
                   "tag": {
                     "commentStart": 2236,
@@ -3182,7 +3182,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "zLine15"
                   },
                   "to": [
-                    0.16500000000000006,
+                    0.16499999999999987,
                     0.025000000000000012
                   ],
                   "type": "ToPoint",
@@ -3194,7 +3194,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.16500000000000006,
+                    0.16499999999999987,
                     0.025000000000000012
                   ],
                   "tag": {
@@ -3223,8 +3223,8 @@ description: Variables in memory after executing zoo-logo.kcl
                   ],
                   "tag": null,
                   "to": [
-                    1.750722215113798,
-                    0.8979437905993726
+                    1.7507222151137982,
+                    0.8979437905993727
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3236,14 +3236,14 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "ccw": true,
                   "center": [
-                    1.4479999999999997,
+                    1.448,
                     0.5
                   ],
                   "from": [
-                    1.750722215113798,
-                    0.8979437905993726
+                    1.7507222151137982,
+                    0.8979437905993727
                   ],
-                  "radius": 0.500000000000002,
+                  "radius": 0.5000000000000021,
                   "tag": {
                     "commentStart": 5447,
                     "end": 5454,
@@ -3253,8 +3253,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Arc01"
                   },
                   "to": [
-                    1.0721424147242913,
-                    0.1702560454068709
+                    1.0721424147242915,
+                    0.17025604540687084
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3265,12 +3265,12 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.0721424147242913,
-                    0.1702560454068709
+                    1.0721424147242915,
+                    0.17025604540687084
                   ],
                   "tag": null,
                   "to": [
-                    1.5923869283562486,
+                    1.5923869283562488,
                     0.728149983387791
                   ],
                   "type": "ToPoint",
@@ -3283,11 +3283,11 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "ccw": true,
                   "center": [
-                    1.4479999999999997,
+                    1.448,
                     0.5
                   ],
                   "from": [
-                    1.5923869283562486,
+                    1.5923869283562488,
                     0.728149983387791
                   ],
                   "radius": 0.27000000000000346,
@@ -3300,8 +3300,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Arc02"
                   },
                   "to": [
-                    1.2304777014818407,
-                    0.3400498526184524
+                    1.230477701481841,
+                    0.3400498526184522
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3312,12 +3312,12 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2304777014818407,
-                    0.3400498526184524
+                    1.230477701481841,
+                    0.3400498526184522
                   ],
                   "tag": null,
                   "to": [
-                    1.1452777848862086,
+                    1.145277784886209,
                     0.10205620940062167
                   ],
                   "type": "ToPoint",
@@ -3330,14 +3330,14 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "ccw": true,
                   "center": [
-                    1.4479999999999995,
-                    0.5000000000000001
+                    1.448,
+                    0.4999999999999999
                   ],
                   "from": [
-                    1.1452777848862086,
+                    1.145277784886209,
                     0.10205620940062167
                   ],
-                  "radius": 0.5000000000000023,
+                  "radius": 0.5000000000000021,
                   "tag": {
                     "commentStart": 5678,
                     "end": 5685,
@@ -3347,8 +3347,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Arc03"
                   },
                   "to": [
-                    1.8238575852757144,
-                    0.8297439545931223
+                    1.8238575852757148,
+                    0.829743954593122
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3359,13 +3359,13 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.8238575852757144,
-                    0.8297439545931223
+                    1.8238575852757148,
+                    0.829743954593122
                   ],
                   "tag": null,
                   "to": [
-                    1.3036130716437577,
-                    0.27185001661220265
+                    1.303613071643758,
+                    0.2718500166122026
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3377,14 +3377,14 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "ccw": true,
                   "center": [
-                    1.4479999999999997,
+                    1.448,
                     0.5
                   ],
                   "from": [
-                    1.3036130716437577,
-                    0.27185001661220265
+                    1.303613071643758,
+                    0.2718500166122026
                   ],
-                  "radius": 0.2700000000000051,
+                  "radius": 0.2700000000000052,
                   "tag": {
                     "commentStart": 5793,
                     "end": 5800,
@@ -3394,8 +3394,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Arc04"
                   },
                   "to": [
-                    1.6655222985181655,
-                    0.6599501473815412
+                    1.6655222985181657,
+                    0.6599501473815413
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3406,12 +3406,12 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.6655222985181655,
-                    0.6599501473815412
+                    1.6655222985181657,
+                    0.6599501473815413
                   ],
                   "tag": null,
                   "to": [
-                    1.0721424147242915,
+                    1.0721424147242917,
                     0.17025604540687092
                   ],
                   "type": "ToPoint",
@@ -3423,7 +3423,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.0721424147242915,
+                    1.0721424147242917,
                     0.17025604540687092
                   ],
                   "tag": {
@@ -3435,7 +3435,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Line01"
                   },
                   "to": [
-                    1.2304777014818409,
+                    1.2304777014818413,
                     0.34004985261845244
                   ],
                   "type": "ToPoint",
@@ -3447,12 +3447,12 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.2304777014818409,
+                    1.2304777014818413,
                     0.34004985261845244
                   ],
                   "tag": null,
                   "to": [
-                    1.5923869283562486,
+                    1.5923869283562488,
                     0.728149983387791
                   ],
                   "type": "ToPoint",
@@ -3464,7 +3464,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.5923869283562486,
+                    1.5923869283562488,
                     0.728149983387791
                   ],
                   "tag": {
@@ -3476,7 +3476,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Line02"
                   },
                   "to": [
-                    1.750722215113798,
+                    1.7507222151137982,
                     0.8979437905993726
                   ],
                   "type": "ToPoint",
@@ -3488,12 +3488,12 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.750722215113798,
+                    1.7507222151137982,
                     0.8979437905993726
                   ],
                   "tag": null,
                   "to": [
-                    1.1452777848862086,
+                    1.145277784886209,
                     0.10205620940062167
                   ],
                   "type": "ToPoint",
@@ -3505,7 +3505,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.1452777848862086,
+                    1.145277784886209,
                     0.10205620940062167
                   ],
                   "tag": {
@@ -3517,8 +3517,8 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Line03"
                   },
                   "to": [
-                    1.3036130716437577,
-                    0.27185001661220265
+                    1.303613071643758,
+                    0.2718500166122026
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3529,12 +3529,12 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.3036130716437577,
-                    0.27185001661220265
+                    1.303613071643758,
+                    0.2718500166122026
                   ],
                   "tag": null,
                   "to": [
-                    1.6655222985181655,
+                    1.6655222985181657,
                     0.6599501473815413
                   ],
                   "type": "ToPoint",
@@ -3546,7 +3546,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.6655222985181655,
+                    1.6655222985181657,
                     0.6599501473815413
                   ],
                   "tag": {
@@ -3558,7 +3558,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o1Line04"
                   },
                   "to": [
-                    1.8238575852757144,
+                    1.8238575852757146,
                     0.829743954593122
                   ],
                   "type": "ToPoint",
@@ -3570,7 +3570,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.8238575852757144,
+                    1.8238575852757146,
                     0.829743954593122
                   ],
                   "tag": null,
@@ -3623,7 +3623,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "tag": null,
                   "to": [
                     2.197277784886207,
-                    0.10205620940062599
+                    0.10205620940062604
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3636,13 +3636,13 @@ description: Variables in memory after executing zoo-logo.kcl
                   "ccw": true,
                   "center": [
                     2.5,
-                    0.5000000000000001
+                    0.4999999999999999
                   ],
                   "from": [
                     2.197277784886207,
-                    0.10205620940062599
+                    0.10205620940062604
                   ],
-                  "radius": 0.5000000000000001,
+                  "radius": 0.5,
                   "tag": {
                     "commentStart": 9061,
                     "end": 9068,
@@ -3653,7 +3653,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "to": [
                     2.87585758527571,
-                    0.8297439545931243
+                    0.829743954593124
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3665,11 +3665,11 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "from": [
                     2.87585758527571,
-                    0.8297439545931243
+                    0.829743954593124
                   ],
                   "tag": null,
                   "to": [
-                    2.644386928356242,
+                    2.6443869283562424,
                     0.728149983387791
                   ],
                   "type": "ToPoint",
@@ -3686,10 +3686,10 @@ description: Variables in memory after executing zoo-logo.kcl
                     0.5
                   ],
                   "from": [
-                    2.644386928356242,
+                    2.6443869283562424,
                     0.728149983387791
                   ],
-                  "radius": 0.2699999999999998,
+                  "radius": 0.27,
                   "tag": {
                     "commentStart": 9174,
                     "end": 9181,
@@ -3700,7 +3700,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "to": [
                     2.2824777014818407,
-                    0.3400498526184591
+                    0.3400498526184589
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3712,7 +3712,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "from": [
                     2.2824777014818407,
-                    0.3400498526184591
+                    0.3400498526184589
                   ],
                   "tag": null,
                   "to": [
@@ -3764,7 +3764,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "tag": null,
                   "to": [
                     2.1241424147242896,
-                    0.1702560454068758
+                    0.17025604540687583
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3776,7 +3776,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "from": [
                     2.1241424147242896,
-                    0.1702560454068758
+                    0.17025604540687583
                   ],
                   "tag": {
                     "commentStart": 9404,
@@ -3787,7 +3787,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "value": "o2Line01"
                   },
                   "to": [
-                    2.2824777014818403,
+                    2.2824777014818407,
                     0.3400498526184587
                   ],
                   "type": "ToPoint",
@@ -3799,12 +3799,12 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.2824777014818403,
+                    2.2824777014818407,
                     0.3400498526184587
                   ],
                   "tag": null,
                   "to": [
-                    2.644386928356242,
+                    2.6443869283562424,
                     0.728149983387791
                   ],
                   "type": "ToPoint",
@@ -3816,7 +3816,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.644386928356242,
+                    2.6443869283562424,
                     0.728149983387791
                   ],
                   "tag": {
@@ -3846,7 +3846,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "tag": null,
                   "to": [
                     2.197277784886207,
-                    0.10205620940062599
+                    0.10205620940062603
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3858,7 +3858,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   },
                   "from": [
                     2.197277784886207,
-                    0.10205620940062599
+                    0.10205620940062603
                   ],
                   "tag": {
                     "commentStart": 9570,
@@ -4115,7 +4115,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.750722215113798,
+                        "n": 1.7507222151137982,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4123,7 +4123,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.8979437905993726,
+                        "n": 0.8979437905993727,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4133,7 +4133,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.0721424147242915,
+                        "n": 1.0721424147242917,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4151,7 +4151,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4267,7 +4267,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.5923869283562486,
+                        "n": 1.5923869283562488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4285,7 +4285,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.2304777014818409,
+                        "n": 1.2304777014818413,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4303,7 +4303,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4419,7 +4419,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.1452777848862086,
+                        "n": 1.145277784886209,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4437,7 +4437,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.8238575852757144,
+                        "n": 1.8238575852757146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4455,7 +4455,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4571,7 +4571,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.3036130716437577,
+                        "n": 1.303613071643758,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4579,7 +4579,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.27185001661220265,
+                        "n": 0.2718500166122026,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4589,7 +4589,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.6655222985181655,
+                        "n": 1.6655222985181657,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4607,7 +4607,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4723,7 +4723,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.2304777014818409,
+                        "n": 1.2304777014818413,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4741,7 +4741,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.5923869283562486,
+                        "n": 1.5923869283562488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4844,7 +4844,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.3036130716437577,
+                        "n": 1.303613071643758,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4852,7 +4852,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.27185001661220265,
+                        "n": 0.2718500166122026,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4862,7 +4862,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.6655222985181655,
+                        "n": 1.6655222985181657,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4965,7 +4965,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.2304777014818409,
+                        "n": 1.2304777014818413,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4983,7 +4983,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.3036130716437577,
+                        "n": 1.303613071643758,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4991,7 +4991,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.27185001661220265,
+                        "n": 0.2718500166122026,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5001,7 +5001,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5118,7 +5118,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.0721424147242915,
+                        "n": 1.0721424147242917,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5126,7 +5126,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.17025604540687092,
+                        "n": 0.1702560454068709,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5136,7 +5136,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.1452777848862086,
+                        "n": 1.145277784886209,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5144,7 +5144,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.10205620940062167,
+                        "n": 0.10205620940062168,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5154,7 +5154,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5271,7 +5271,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.6655222985181655,
+                        "n": 1.6655222985181657,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5289,7 +5289,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.5923869283562486,
+                        "n": 1.5923869283562488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5307,7 +5307,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5424,7 +5424,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.8238575852757144,
+                        "n": 1.8238575852757146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5442,7 +5442,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.750722215113798,
+                        "n": 1.7507222151137982,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5460,7 +5460,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "center": [
                       {
-                        "n": 1.4479999999999997,
+                        "n": 1.448,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5577,7 +5577,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.0721424147242915,
+                        "n": 1.0721424147242917,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5595,7 +5595,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.2304777014818409,
+                        "n": 1.2304777014818413,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5697,7 +5697,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.5923869283562486,
+                        "n": 1.5923869283562488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5715,7 +5715,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.750722215113798,
+                        "n": 1.7507222151137982,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5817,7 +5817,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.1452777848862086,
+                        "n": 1.145277784886209,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5835,7 +5835,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.3036130716437577,
+                        "n": 1.303613071643758,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5843,7 +5843,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.27185001661220265,
+                        "n": 0.2718500166122026,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5937,7 +5937,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.6655222985181655,
+                        "n": 1.6655222985181657,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -5955,7 +5955,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.8238575852757144,
+                        "n": 1.8238575852757146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6057,7 +6057,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.750722215113798,
+                        "n": 1.7507222151137982,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6075,7 +6075,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.5923869283562486,
+                        "n": 1.5923869283562488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6178,7 +6178,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.5923869283562486,
+                        "n": 1.5923869283562488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6196,7 +6196,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.5923869283562486,
+                        "n": 1.5923869283562488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6299,7 +6299,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.6655222985181655,
+                        "n": 1.6655222985181657,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6317,7 +6317,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.8238575852757144,
+                        "n": 1.8238575852757146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6420,7 +6420,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.8238575852757144,
+                        "n": 1.8238575852757146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6438,7 +6438,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.8238575852757144,
+                        "n": 1.8238575852757146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6701,7 +6701,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.10205620940062599,
+                        "n": 0.10205620940062604,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6845,7 +6845,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.644386928356242,
+                        "n": 2.6443869283562424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -6863,7 +6863,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.2824777014818403,
+                        "n": 2.2824777014818407,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7149,7 +7149,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.2824777014818403,
+                        "n": 2.2824777014818407,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7167,7 +7167,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.644386928356242,
+                        "n": 2.6443869283562424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7399,7 +7399,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.1702560454068758,
+                        "n": 0.17025604540687583,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7417,7 +7417,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.10205620940062599,
+                        "n": 0.10205620940062603,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7544,7 +7544,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.2824777014818403,
+                        "n": 2.2824777014818407,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -7715,7 +7715,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.644386928356242,
+                        "n": 2.6443869283562424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8011,7 +8011,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.1702560454068758,
+                        "n": 0.17025604540687583,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8021,7 +8021,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.2824777014818403,
+                        "n": 2.2824777014818407,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8123,7 +8123,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.644386928356242,
+                        "n": 2.6443869283562424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8251,7 +8251,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.10205620940062599,
+                        "n": 0.10205620940062603,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8501,7 +8501,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.644386928356242,
+                        "n": 2.6443869283562424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8604,7 +8604,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.644386928356242,
+                        "n": 2.6443869283562424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8622,7 +8622,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.644386928356242,
+                        "n": 2.6443869283562424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8985,7 +8985,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.625,
+                        "n": 0.6249999999999999,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -8993,7 +8993,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.8173489932885908,
+                        "n": 0.8173489932885907,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9088,7 +9088,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.31,
+                        "n": 0.30999999999999994,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9096,7 +9096,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.18265100671140935,
+                        "n": 0.18265100671140944,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9106,7 +9106,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3627469135802469,
+                        "n": 0.3627469135802468,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9209,7 +9209,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.16500000000000006,
+                        "n": 0.16499999999999987,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9227,7 +9227,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.31,
+                        "n": 0.30999999999999994,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9338,7 +9338,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.1649999999999999,
+                        "n": 0.16500000000000017,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9451,7 +9451,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.625,
+                        "n": 0.6249999999999999,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9719,7 +9719,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.1649999999999999,
+                        "n": 0.16500000000000017,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9821,7 +9821,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.1649999999999999,
+                        "n": 0.16500000000000017,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10191,7 +10191,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.625,
+                        "n": 0.6249999999999999,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10293,7 +10293,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.625,
+                        "n": 0.6249999999999999,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10311,7 +10311,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.625,
+                        "n": 0.6249999999999999,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10319,7 +10319,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.8173489932885908,
+                        "n": 0.8173489932885907,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10413,7 +10413,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.625,
+                        "n": 0.6249999999999999,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10421,7 +10421,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.8173489932885908,
+                        "n": 0.8173489932885907,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10791,7 +10791,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3627469135802469,
+                        "n": 0.3627469135802468,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10893,7 +10893,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.3627469135802469,
+                        "n": 0.3627469135802468,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11151,7 +11151,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.31,
+                        "n": 0.30999999999999994,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11253,7 +11253,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.31,
+                        "n": 0.30999999999999994,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11271,7 +11271,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.31,
+                        "n": 0.30999999999999994,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11279,7 +11279,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.18265100671140935,
+                        "n": 0.18265100671140944,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11373,7 +11373,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.31,
+                        "n": 0.30999999999999994,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11381,7 +11381,7 @@ description: Variables in memory after executing zoo-logo.kcl
                         }
                       },
                       {
-                        "n": 0.18265100671140935,
+                        "n": 0.18265100671140944,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11391,7 +11391,7 @@ description: Variables in memory after executing zoo-logo.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.16500000000000006,
+                        "n": 0.16499999999999987,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11493,7 +11493,7 @@ description: Variables in memory after executing zoo-logo.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.16500000000000006,
+                        "n": 0.16499999999999987,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11899,14 +11899,14 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "ccw": true,
           "center": [
-            1.4479999999999997,
+            1.448,
             0.5
           ],
           "from": [
-            1.750722215113798,
-            0.8979437905993726
+            1.7507222151137982,
+            0.8979437905993727
           ],
-          "radius": 0.500000000000002,
+          "radius": 0.5000000000000021,
           "tag": {
             "commentStart": 5447,
             "end": 5454,
@@ -11916,8 +11916,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Arc01"
           },
           "to": [
-            1.0721424147242913,
-            0.1702560454068709
+            1.0721424147242915,
+            0.17025604540687084
           ],
           "type": "Arc",
           "units": "in"
@@ -11929,11 +11929,11 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "ccw": true,
           "center": [
-            1.4479999999999997,
+            1.448,
             0.5
           ],
           "from": [
-            1.5923869283562486,
+            1.5923869283562488,
             0.728149983387791
           ],
           "radius": 0.27000000000000346,
@@ -11946,8 +11946,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Arc02"
           },
           "to": [
-            1.2304777014818407,
-            0.3400498526184524
+            1.230477701481841,
+            0.3400498526184522
           ],
           "type": "Arc",
           "units": "in"
@@ -11959,14 +11959,14 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "ccw": true,
           "center": [
-            1.4479999999999995,
-            0.5000000000000001
+            1.448,
+            0.4999999999999999
           ],
           "from": [
-            1.1452777848862086,
+            1.145277784886209,
             0.10205620940062167
           ],
-          "radius": 0.5000000000000023,
+          "radius": 0.5000000000000021,
           "tag": {
             "commentStart": 5678,
             "end": 5685,
@@ -11976,8 +11976,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Arc03"
           },
           "to": [
-            1.8238575852757144,
-            0.8297439545931223
+            1.8238575852757148,
+            0.829743954593122
           ],
           "type": "Arc",
           "units": "in"
@@ -11989,14 +11989,14 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "ccw": true,
           "center": [
-            1.4479999999999997,
+            1.448,
             0.5
           ],
           "from": [
-            1.3036130716437577,
-            0.27185001661220265
+            1.303613071643758,
+            0.2718500166122026
           ],
-          "radius": 0.2700000000000051,
+          "radius": 0.2700000000000052,
           "tag": {
             "commentStart": 5793,
             "end": 5800,
@@ -12006,8 +12006,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Arc04"
           },
           "to": [
-            1.6655222985181655,
-            0.6599501473815412
+            1.6655222985181657,
+            0.6599501473815413
           ],
           "type": "Arc",
           "units": "in"
@@ -12208,7 +12208,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            1.0721424147242915,
+            1.0721424147242917,
             0.17025604540687092
           ],
           "tag": {
@@ -12220,7 +12220,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Line01"
           },
           "to": [
-            1.2304777014818409,
+            1.2304777014818413,
             0.34004985261845244
           ],
           "type": "ToPoint",
@@ -12232,7 +12232,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            1.5923869283562486,
+            1.5923869283562488,
             0.728149983387791
           ],
           "tag": {
@@ -12244,7 +12244,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Line02"
           },
           "to": [
-            1.750722215113798,
+            1.7507222151137982,
             0.8979437905993726
           ],
           "type": "ToPoint",
@@ -12256,7 +12256,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            1.1452777848862086,
+            1.145277784886209,
             0.10205620940062167
           ],
           "tag": {
@@ -12268,8 +12268,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Line03"
           },
           "to": [
-            1.3036130716437577,
-            0.27185001661220265
+            1.303613071643758,
+            0.2718500166122026
           ],
           "type": "ToPoint",
           "units": "in"
@@ -12280,7 +12280,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            1.6655222985181655,
+            1.6655222985181657,
             0.6599501473815413
           ],
           "tag": {
@@ -12292,7 +12292,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o1Line04"
           },
           "to": [
-            1.8238575852757144,
+            1.8238575852757146,
             0.829743954593122
           ],
           "type": "ToPoint",
@@ -12566,13 +12566,13 @@ description: Variables in memory after executing zoo-logo.kcl
           "ccw": true,
           "center": [
             2.5,
-            0.5000000000000001
+            0.4999999999999999
           ],
           "from": [
             2.197277784886207,
-            0.10205620940062599
+            0.10205620940062604
           ],
-          "radius": 0.5000000000000001,
+          "radius": 0.5,
           "tag": {
             "commentStart": 9061,
             "end": 9068,
@@ -12583,7 +12583,7 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "to": [
             2.87585758527571,
-            0.8297439545931243
+            0.829743954593124
           ],
           "type": "Arc",
           "units": "in"
@@ -12599,10 +12599,10 @@ description: Variables in memory after executing zoo-logo.kcl
             0.5
           ],
           "from": [
-            2.644386928356242,
+            2.6443869283562424,
             0.728149983387791
           ],
-          "radius": 0.2699999999999998,
+          "radius": 0.27,
           "tag": {
             "commentStart": 9174,
             "end": 9181,
@@ -12613,7 +12613,7 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "to": [
             2.2824777014818407,
-            0.3400498526184591
+            0.3400498526184589
           ],
           "type": "Arc",
           "units": "in"
@@ -12625,7 +12625,7 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "from": [
             2.197277784886207,
-            0.10205620940062599
+            0.10205620940062603
           ],
           "tag": {
             "commentStart": 9570,
@@ -12869,7 +12869,7 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "from": [
             2.1241424147242896,
-            0.1702560454068758
+            0.17025604540687583
           ],
           "tag": {
             "commentStart": 9404,
@@ -12880,7 +12880,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "o2Line01"
           },
           "to": [
-            2.2824777014818403,
+            2.2824777014818407,
             0.3400498526184587
           ],
           "type": "ToPoint",
@@ -12892,7 +12892,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            2.644386928356242,
+            2.6443869283562424,
             0.728149983387791
           ],
           "tag": {
@@ -13223,7 +13223,7 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "to": [
             0.02499999999999999,
-            0.1649999999999999
+            0.16500000000000017
           ],
           "type": "ToPoint",
           "units": "in"
@@ -13235,7 +13235,7 @@ description: Variables in memory after executing zoo-logo.kcl
           },
           "from": [
             0.02499999999999999,
-            0.1649999999999999
+            0.16500000000000017
           ],
           "tag": {
             "commentStart": 1157,
@@ -13318,7 +13318,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "zLine05"
           },
           "to": [
-            0.625,
+            0.6249999999999999,
             0.9750000000000001
           ],
           "type": "ToPoint",
@@ -13330,7 +13330,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            0.625,
+            0.6249999999999999,
             0.9750000000000001
           ],
           "tag": {
@@ -13342,8 +13342,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "zLine06"
           },
           "to": [
-            0.625,
-            0.8173489932885908
+            0.6249999999999999,
+            0.8173489932885907
           ],
           "type": "ToPoint",
           "units": "in"
@@ -13354,8 +13354,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            0.625,
-            0.8173489932885908
+            0.6249999999999999,
+            0.8173489932885907
           ],
           "tag": {
             "commentStart": 1572,
@@ -13438,7 +13438,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "zLine10"
           },
           "to": [
-            0.3627469135802469,
+            0.3627469135802468,
             0.24000000000000002
           ],
           "type": "ToPoint",
@@ -13450,7 +13450,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            0.3627469135802469,
+            0.3627469135802468,
             0.24000000000000002
           ],
           "tag": {
@@ -13510,7 +13510,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "zLine13"
           },
           "to": [
-            0.31,
+            0.30999999999999994,
             0.025000000000000012
           ],
           "type": "ToPoint",
@@ -13522,7 +13522,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            0.31,
+            0.30999999999999994,
             0.025000000000000012
           ],
           "tag": {
@@ -13534,8 +13534,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "zLine14"
           },
           "to": [
-            0.31,
-            0.18265100671140935
+            0.30999999999999994,
+            0.18265100671140944
           ],
           "type": "ToPoint",
           "units": "in"
@@ -13546,8 +13546,8 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            0.31,
-            0.18265100671140935
+            0.30999999999999994,
+            0.18265100671140944
           ],
           "tag": {
             "commentStart": 2236,
@@ -13558,7 +13558,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "value": "zLine15"
           },
           "to": [
-            0.16500000000000006,
+            0.16499999999999987,
             0.025000000000000012
           ],
           "type": "ToPoint",
@@ -13570,7 +13570,7 @@ description: Variables in memory after executing zoo-logo.kcl
             "sourceRange": []
           },
           "from": [
-            0.16500000000000006,
+            0.16499999999999987,
             0.025000000000000012
           ],
           "tag": {

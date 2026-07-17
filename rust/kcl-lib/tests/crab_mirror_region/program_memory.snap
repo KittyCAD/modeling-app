@@ -100,7 +100,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.5092409503525765,
+                        "n": 1.5092409450050073,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -108,7 +108,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                         }
                       },
                       {
-                        "n": -2.2730096934821926,
+                        "n": -2.2730097068559973,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -118,7 +118,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.07604390749099142,
+                        "n": -0.07604392031568925,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -126,7 +126,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                         }
                       },
                       {
-                        "n": -2.611416401920998,
+                        "n": -2.6114163875126164,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -136,7 +136,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.8575619899253911,
+                        "n": 0.8575619696760547,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -144,7 +144,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                         }
                       },
                       {
-                        "n": -3.1025641782130777,
+                        "n": -3.1025641840410274,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2582,7 +2582,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.5092409503833355,
+                        "n": 1.5092409450357664,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2590,7 +2590,7 @@ description: Variables in memory after executing crab_mirror_region.kcl
                         }
                       },
                       {
-                        "n": -2.273009693449183,
+                        "n": -2.2730097068229878,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3617,8 +3617,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "value": "leg3Lower"
                   },
                   "to": [
-                    1.5092409503833355,
-                    -2.273009693449183
+                    1.5092409450357664,
+                    -2.2730097068229878
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3630,14 +3630,14 @@ description: Variables in memory after executing crab_mirror_region.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.8575619899561501,
-                    -3.102564178180068
+                    0.8575619697068136,
+                    -3.102564184008018
                   ],
                   "from": [
-                    1.5092409503833355,
-                    -2.273009693449183
+                    1.5092409450357664,
+                    -2.2730097068229878
                   ],
-                  "radius": 1.0549152148872352,
+                  "radius": 1.054915218159034,
                   "tag": {
                     "commentStart": 2195,
                     "end": 2200,
@@ -3647,8 +3647,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
                     "value": "belly"
                   },
                   "to": [
-                    -0.07604390777620817,
-                    -2.6114164017217614
+                    -0.07604392097350032,
+                    -2.6114163871173672
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -4517,8 +4517,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "value": "leg3Lower"
           },
           "to": [
-            1.5092409503833355,
-            -2.273009693449183
+            1.5092409450357664,
+            -2.2730097068229878
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4530,14 +4530,14 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           "ccw": true,
           "center": [
-            0.8575619899561501,
-            -3.102564178180068
+            0.8575619697068136,
+            -3.102564184008018
           ],
           "from": [
-            1.5092409503833355,
-            -2.273009693449183
+            1.5092409450357664,
+            -2.2730097068229878
           ],
-          "radius": 1.0549152148872352,
+          "radius": 1.054915218159034,
           "tag": {
             "commentStart": 2195,
             "end": 2200,
@@ -4547,8 +4547,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "value": "belly"
           },
           "to": [
-            -0.07604390777620817,
-            -2.6114164017217614
+            -0.07604392097350032,
+            -2.6114163871173672
           ],
           "type": "Arc",
           "units": "in"
@@ -5261,8 +5261,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "value": "leg3Lower"
           },
           "to": [
-            1.5092409503833355,
-            -2.273009693449183
+            1.5092409450357664,
+            -2.2730097068229878
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5274,14 +5274,14 @@ description: Variables in memory after executing crab_mirror_region.kcl
           },
           "ccw": true,
           "center": [
-            0.8575619899561501,
-            -3.102564178180068
+            0.8575619697068136,
+            -3.102564184008018
           ],
           "from": [
-            1.5092409503833355,
-            -2.273009693449183
+            1.5092409450357664,
+            -2.2730097068229878
           ],
-          "radius": 1.0549152148872352,
+          "radius": 1.054915218159034,
           "tag": {
             "commentStart": 2195,
             "end": 2200,
@@ -5291,8 +5291,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
             "value": "belly"
           },
           "to": [
-            -0.07604390777620817,
-            -2.6114164017217614
+            -0.07604392097350032,
+            -2.6114163871173672
           ],
           "type": "Arc",
           "units": "in"
@@ -6348,8 +6348,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "value": "leg3Lower"
             },
             "to": [
-              1.5092409503833355,
-              -2.273009693449183
+              1.5092409450357664,
+              -2.2730097068229878
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6361,14 +6361,14 @@ description: Variables in memory after executing crab_mirror_region.kcl
             },
             "ccw": true,
             "center": [
-              0.8575619899561501,
-              -3.102564178180068
+              0.8575619697068136,
+              -3.102564184008018
             ],
             "from": [
-              1.5092409503833355,
-              -2.273009693449183
+              1.5092409450357664,
+              -2.2730097068229878
             ],
-            "radius": 1.0549152148872352,
+            "radius": 1.054915218159034,
             "tag": {
               "commentStart": 2195,
               "end": 2200,
@@ -6378,8 +6378,8 @@ description: Variables in memory after executing crab_mirror_region.kcl
               "value": "belly"
             },
             "to": [
-              -0.07604390777620817,
-              -2.6114164017217614
+              -0.07604392097350032,
+              -2.6114163871173672
             ],
             "type": "Arc",
             "units": "in"

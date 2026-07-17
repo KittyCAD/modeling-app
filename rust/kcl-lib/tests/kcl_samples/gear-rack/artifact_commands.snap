@@ -69,7 +69,7 @@ description: Artifact commands gear-rack.kcl
         "path": "[uuid]",
         "to": {
           "x": -50.0,
-          "y": 0.00000000004000000228961467,
+          "y": 0.0000000000400000022896147,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands gear-rack.kcl
           "type": "line",
           "end": {
             "x": 50.0,
-            "y": 0.00000000006000000348442202,
+            "y": 0.00000000006000000348442205,
             "z": 0.0
           },
           "relative": false
@@ -142,7 +142,7 @@ description: Artifact commands gear-rack.kcl
           "type": "line",
           "end": {
             "x": -50.0,
-            "y": 0.000000000020000001134807336,
+            "y": 0.000000000020000001134807343,
             "z": 0.0
           },
           "relative": false
@@ -342,7 +342,7 @@ description: Artifact commands gear-rack.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": -20.958752206044213
+            "value": -20.958752206942833
           },
           "relative": false
         }
@@ -357,8 +357,8 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -49.5037502569291,
-            "y": 11.865788312575486,
+            "x": -49.50375025690669,
+            "y": 11.865788312568858,
             "z": 0.0
           },
           "relative": false
@@ -374,17 +374,17 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -49.34499011962855,
+            "x": -49.3449901196036,
             "y": 11.805
           },
-          "radius": 0.17000000041607577,
+          "radius": 0.17000000041607483,
           "start": {
             "unit": "degrees",
-            "value": 159.04845406685664
+            "value": 159.04845406924838
           },
           "end": {
             "unit": "degrees",
-            "value": 90.016476332295
+            "value": 90.01647633209144
           },
           "relative": false
         }
@@ -399,7 +399,7 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -49.155039005891915,
+            "x": -49.155039005866364,
             "y": 11.975,
             "z": 0.0
           },
@@ -416,17 +416,17 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -49.15503028963032,
+            "x": -49.15503028959918,
             "y": 11.805
           },
-          "radius": 0.17000000022345058,
+          "radius": 0.17000000022345085,
           "start": {
             "unit": "degrees",
-            "value": 90.00293767648353
+            "value": 90.00293767836583
           },
           "end": {
             "unit": "degrees",
-            "value": 20.947894446308457
+            "value": 20.947894453316902
           },
           "relative": false
         }
@@ -441,8 +441,8 @@ description: Artifact commands gear-rack.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -48.65875122841786,
-            "y": 10.984188415322539,
+            "x": -48.65875122841972,
+            "y": 10.984188415327363,
             "z": 0.0
           },
           "relative": false
@@ -498,7 +498,7 @@ description: Artifact commands gear-rack.kcl
           },
           "end": {
             "unit": "degrees",
-            "value": -159.04005550090866
+            "value": -159.04005550265072
           },
           "relative": false
         }

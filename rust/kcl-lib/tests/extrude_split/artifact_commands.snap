@@ -69,7 +69,7 @@ description: Artifact commands extrude_split.kcl
         "path": "[uuid]",
         "to": {
           "x": -73.0,
-          "y": 0.0000000000000003048394547342806,
+          "y": 0.00000000000000030480985327642446,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -43.522056257411236,
-            "y": -0.0000000000000012472898195170687,
+            "x": -43.52205625744336,
+            "y": -0.0000000000000012472003503443017,
             "z": 0.0
           },
           "relative": false
@@ -105,8 +105,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -34.370745409337545,
-          "y": -5.96911853011834,
+          "x": -34.37074540939521,
+          "y": -5.969118529987418,
           "z": 0.0
         }
       }
@@ -120,8 +120,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.545536158730603,
-            "y": -78.22094493693335,
+            "x": -2.545536158213892,
+            "y": -78.22094493810643,
             "z": 0.0
           },
           "relative": false
@@ -135,8 +135,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000000007479031997255503,
-          "y": -90.31384884991998,
+          "x": -0.000000000000007477566063749989,
+          "y": -90.3138488502718,
           "z": 0.0
         }
       }
@@ -150,7 +150,7 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000005540827517630426,
+            "x": 0.0000000000000005539829666982801,
             "y": -184.0,
             "z": 0.0
           },
@@ -165,8 +165,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000044789709756171204,
-          "y": -90.31384884991999,
+          "x": -0.000000000044781641305956877,
+          "y": -90.3138488502718,
           "z": 0.0
         }
       }
@@ -180,17 +180,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -29.999999999932847,
-            "y": -90.31443142168335
+            "x": -29.99999999993285,
+            "y": -90.31443142168338
           },
-          "radius": 30.000000005544557,
+          "radius": 30.00000000554456,
           "start": {
             "unit": "degrees",
-            "value": 0.0011126301099980815
+            "value": 0.0011126294381563697
           },
           "end": {
             "unit": "degrees",
-            "value": 23.77313330181323
+            "value": 23.77313329936516
           },
           "relative": false
         }
@@ -203,8 +203,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -34.37074540936475,
-          "y": -5.9691185301303245,
+          "x": -34.37074540942242,
+          "y": -5.9691185299994025,
           "z": 0.0
         }
       }
@@ -219,16 +219,16 @@ description: Artifact commands extrude_split.kcl
           "type": "arc",
           "center": {
             "x": -43.522356994426275,
-            "y": -9.999999999977543
+            "y": -9.999999999977547
           },
           "radius": 10.000000001389498,
           "start": {
             "unit": "degrees",
-            "value": 23.771375953255795
+            "value": 23.771375954075477
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99827690383
+            "value": 89.99827690401405
           },
           "relative": false
         }
@@ -273,8 +273,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000000007479031997255503,
-          "y": -90.31384884991998,
+          "x": -0.000000000000007477566063749989,
+          "y": -90.3138488502718,
           "z": 0.0
         }
       }
@@ -295,7 +295,7 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.0000000000000005540827517630426,
+            "x": 0.0000000000000005539829666982801,
             "y": -184.0,
             "z": 0.0
           },
@@ -310,8 +310,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -34.37074540936475,
-          "y": -5.9691185301303245,
+          "x": -34.37074540942242,
+          "y": -5.9691185299994025,
           "z": 0.0
         }
       }
@@ -326,16 +326,16 @@ description: Artifact commands extrude_split.kcl
           "type": "arc",
           "center": {
             "x": -43.522356994426275,
-            "y": -9.999999999977543
+            "y": -9.999999999977547
           },
           "radius": 10.000000001389498,
           "start": {
             "unit": "degrees",
-            "value": 23.771375953255795
+            "value": 23.771375954075477
           },
           "end": {
             "unit": "degrees",
-            "value": 89.99827690383
+            "value": 89.99827690401405
           },
           "relative": false
         }
@@ -348,8 +348,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -34.370745409337545,
-          "y": -5.96911853011834,
+          "x": -34.37074540939521,
+          "y": -5.969118529987418,
           "z": 0.0
         }
       }
@@ -363,8 +363,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -2.545536158730603,
-            "y": -78.22094493693335,
+            "x": -2.545536158213892,
+            "y": -78.22094493810643,
             "z": 0.0
           },
           "relative": false
@@ -380,17 +380,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -29.999999999892072,
-            "y": -90.31443142166539
+            "x": -29.999999999892093,
+            "y": -90.31443142166543
           },
-          "radius": 30.000000002700652,
+          "radius": 30.00000000270067,
           "start": {
             "unit": "degrees",
-            "value": 23.77313330181323
+            "value": 23.77313329936516
           },
           "end": {
             "unit": "degrees",
-            "value": 0.0011126301099980815
+            "value": 0.0011126294381563697
           },
           "relative": false
         }
@@ -404,7 +404,7 @@ description: Artifact commands extrude_split.kcl
         "path": "[uuid]",
         "to": {
           "x": -73.0,
-          "y": 0.0000000000000003048394547342806,
+          "y": 0.00000000000000030480985327642446,
           "z": 0.0
         }
       }
@@ -418,8 +418,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -43.522056257411236,
-            "y": -0.0000000000000012472898195170687,
+            "x": -43.52205625744336,
+            "y": -0.0000000000000012472003503443017,
             "z": 0.0
           },
           "relative": false
@@ -575,7 +575,7 @@ description: Artifact commands extrude_split.kcl
           "type": "line",
           "end": {
             "x": 39.99999999999999,
-            "y": -134.00989892735538,
+            "y": -134.00989892279952,
             "z": 0.0
           },
           "relative": false
@@ -589,8 +589,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -4.5716541350698,
-          "y": -160.23320845394068,
+          "x": -4.571654134797874,
+          "y": -160.23320845409177,
           "z": 0.0
         }
       }
@@ -604,8 +604,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -31.95337860722691,
-            "y": -145.01821418606323,
+            "x": -31.95337860881371,
+            "y": -145.01821418518148,
             "z": 0.0
           },
           "relative": false
@@ -619,8 +619,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -46.58412202983491,
-          "y": -111.91979144006247,
+          "x": -46.58412202862342,
+          "y": -111.91979143491652,
           "z": 0.0
         }
       }
@@ -649,8 +649,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -46.58412202975517,
-          "y": -111.91979144008124,
+          "x": -46.58412202854371,
+          "y": -111.91979143493529,
           "z": 0.0
         }
       }
@@ -664,17 +664,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -17.38241963458235,
-            "y": -118.7944243207115
+            "x": -17.38241963458231,
+            "y": -118.79442432071147
           },
-          "radius": 30.00000000032808,
+          "radius": 30.000000000328104,
           "start": {
             "unit": "degrees",
-            "value": 166.75270540937916
+            "value": 166.75270539928252
           },
           "end": {
             "unit": "degrees",
-            "value": 240.94174495811356
+            "value": 240.9417449546465
           },
           "relative": false
         }
@@ -687,8 +687,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -4.571654135027698,
-          "y": -160.23320845386493,
+          "x": -4.571654134755775,
+          "y": -160.23320845401602,
           "z": 0.0
         }
       }
@@ -702,17 +702,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 10.000000000052783,
-            "y": -134.00980486422657
+            "x": 10.000000000052774,
+            "y": -134.0098048642265
           },
-          "radius": 30.000000000957773,
+          "radius": 30.000000000957805,
           "start": {
             "unit": "degrees",
-            "value": -119.05977390214889
+            "value": -119.0597739015547
           },
           "end": {
             "unit": "degrees",
-            "value": -0.00017964734295948087
+            "value": -0.0001796386420203609
           },
           "relative": false
         }
@@ -725,8 +725,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.968516211307185,
-          "y": -98.25244756981596,
+          "x": -5.968516211792132,
+          "y": -98.25244756954645,
           "z": 0.0
         }
       }
@@ -740,17 +740,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -17.382419634582266,
-            "y": -118.79442432071134
+            "x": -17.382419634582234,
+            "y": -118.79442432071131
           },
-          "radius": 23.500000004046324,
+          "radius": 23.50000000404633,
           "start": {
             "unit": "degrees",
-            "value": 60.941785230864355
+            "value": 60.941785232217065
           },
           "end": {
             "unit": "degrees",
-            "value": 240.9396107827795
+            "value": 240.939610782
           },
           "relative": false
         }
@@ -763,8 +763,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -1.4144097607514128,
-          "y": -154.55150026240565,
+          "x": -1.4144097613826683,
+          "y": -154.55150026205484,
           "z": 0.0
         }
       }
@@ -778,17 +778,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 10.000000000052701,
-            "y": -134.0098048642267
+            "x": 10.000000000052681,
+            "y": -134.00980486422665
           },
-          "radius": 23.500000000406516,
+          "radius": 23.500000000406526,
           "start": {
             "unit": "degrees",
-            "value": -119.05962706278889
+            "value": -119.05962706454955
           },
           "end": {
             "unit": "degrees",
-            "value": 60.94178966136101
+            "value": 60.94178966047287
           },
           "relative": false
         }
@@ -801,8 +801,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -28.79710264408739,
-          "y": -139.33596788489095,
+          "x": -28.797102644366824,
+          "y": -139.33596788473565,
           "z": 0.0
         }
       }
@@ -816,8 +816,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -1.4144097607624235,
-            "y": -154.55150026242546,
+            "x": -1.414409761393679,
+            "y": -154.55150026207465,
             "z": 0.0
           },
           "relative": false
@@ -831,8 +831,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -5.968516211295814,
-          "y": -98.25244756979549,
+          "x": -5.968516211780757,
+          "y": -98.25244756952597,
           "z": 0.0
         }
       }
@@ -846,8 +846,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 21.413901834910792,
-            "y": -113.4678272306819,
+            "x": 21.413901835229197,
+            "y": -113.46782723085879,
             "z": 0.0
           },
           "relative": false
@@ -861,8 +861,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -4.068654557123219,
-          "y": -116.5597745803205,
+          "x": -4.0686545570812225,
+          "y": -116.55977458057043,
           "z": 0.0
         }
       }
@@ -876,17 +876,55 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -17.38241963458235,
-            "y": -118.7944243207115
+            "x": -17.382419634582313,
+            "y": -118.79442432071147
+          },
+          "radius": 13.5,
+          "start": {
+            "unit": "radians",
+            "value": 0.16629500578461828
+          },
+          "end": {
+            "unit": "radians",
+            "value": 6.449480312964204
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 22.918537399572877,
+          "y": -130.09044376103674,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 10.000000000052685,
+            "y": -134.00980486422665
           },
           "radius": 13.499999999999998,
           "start": {
             "unit": "radians",
-            "value": 0.16629500580339351
+            "value": 0.2945644053720462
           },
           "end": {
             "unit": "radians",
-            "value": 6.449480312982979
+            "value": 6.577749712551633
           },
           "relative": false
         }
@@ -899,8 +937,170 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 22.918537399678993,
-          "y": -130.0904437613865,
+          "x": -22.38241963458223,
+          "y": -113.79442432071147,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -12.382419634582233,
+            "y": -113.79442432071147,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -12.382419634582233,
+            "y": -123.79442432071147,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -22.38241963458223,
+            "y": -123.79442432071147,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -22.38241963458223,
+            "y": -113.79442432071147,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 5.000000000052684,
+          "y": -139.00980486422665,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 15.000000000052685,
+            "y": -139.00980486422665,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 15.000000000052685,
+            "y": -129.00980486422665,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 5.000000000052684,
+            "y": -129.00980486422665,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 5.000000000052684,
+            "y": -139.00980486422665,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": 14.08152514103305,
+          "y": -69.20002259469764,
           "z": 0.0
         }
       }
@@ -914,217 +1114,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 10.0000000000527,
-            "y": -134.0098048642267
-          },
-          "radius": 13.500000000000005,
-          "start": {
-            "unit": "radians",
-            "value": 0.29456440534497635
-          },
-          "end": {
-            "unit": "radians",
-            "value": 6.577749712524563
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": -22.38241963458227,
-          "y": -113.7944243207115,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -12.38241963458227,
-            "y": -113.7944243207115,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -12.38241963458227,
-            "y": -123.7944243207115,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -22.38241963458227,
-            "y": -123.7944243207115,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -22.38241963458227,
-            "y": -113.7944243207115,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 5.0000000000527,
-          "y": -139.0098048642267,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 15.0000000000527,
-            "y": -139.0098048642267,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 15.0000000000527,
-            "y": -129.0098048642267,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 5.0000000000527,
-            "y": -129.0098048642267,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 5.0000000000527,
-            "y": -139.0098048642267,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "move_path_pen",
-        "path": "[uuid]",
-        "to": {
-          "x": 14.081525141033042,
-          "y": -69.20002259469788,
-          "z": 0.0
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "arc",
-          "center": {
-            "x": 0.5830070386037864,
+            "x": 0.5830070386037906,
             "y": -69.0
           },
           "radius": 13.499999999999998,
           "start": {
             "unit": "radians",
-            "value": -0.014817030656199421
+            "value": -0.014817030656181522
           },
           "end": {
             "unit": "radians",
-            "value": 6.268368276523387
+            "value": 6.268368276523405
           },
           "relative": false
         }
@@ -1137,8 +1137,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 22.89062951670857,
-          "y": -33.01019583847991,
+          "x": 22.890629516685024,
+          "y": -33.0101958385556,
           "z": 0.0
         }
       }
@@ -1158,11 +1158,11 @@ description: Artifact commands extrude_split.kcl
           "radius": 13.499999999999998,
           "start": {
             "unit": "radians",
-            "value": -0.3016033276696778
+            "value": -0.30160332767554987
           },
           "end": {
             "unit": "radians",
-            "value": 5.981581979509908
+            "value": 5.981581979504036
           },
           "relative": false
         }
@@ -1175,8 +1175,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -3.5374284242351552,
-          "y": -67.19112974578627,
+          "x": -3.5374284242250544,
+          "y": -67.19112974576328,
           "z": 0.0
         }
       }
@@ -1190,17 +1190,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.5830070386037864,
+            "x": 0.5830070386037906,
             "y": -69.0
           },
-          "radius": 4.500000000000001,
+          "radius": 4.499999999999998,
           "start": {
             "unit": "radians",
-            "value": 2.7279240753458787
+            "value": 2.7279240753402982
           },
           "end": {
             "unit": "radians",
-            "value": 9.011109382525465
+            "value": 9.011109382519884
           },
           "relative": false
         }
@@ -1213,8 +1213,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.681147059479005,
-          "y": -25.961050319732955,
+          "x": 6.681147059766565,
+          "y": -25.96105031941891,
           "z": 0.0
         }
       }
@@ -1231,14 +1231,14 @@ description: Artifact commands extrude_split.kcl
             "x": 9.999999999999996,
             "y": -29.0
           },
-          "radius": 4.500000000000001,
+          "radius": 4.5,
           "start": {
             "unit": "radians",
-            "value": 2.400191237092466
+            "value": 2.4001912369978413
           },
           "end": {
             "unit": "radians",
-            "value": 8.683376544272052
+            "value": 8.683376544177428
           },
           "relative": false
         }
@@ -1283,8 +1283,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -46.58412202983491,
-          "y": -111.91979144006247,
+          "x": -46.58412202862342,
+          "y": -111.91979143491652,
           "z": 0.0
         }
       }
@@ -1320,8 +1320,8 @@ description: Artifact commands extrude_split.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -46.58412202975517,
-          "y": -111.91979144008124,
+          "x": -46.58412202854371,
+          "y": -111.91979143493529,
           "z": 0.0
         }
       }
@@ -1335,17 +1335,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -17.38241963458235,
-            "y": -118.7944243207115
+            "x": -17.38241963458231,
+            "y": -118.79442432071147
           },
-          "radius": 30.00000000032808,
+          "radius": 30.000000000328104,
           "start": {
             "unit": "degrees",
-            "value": 166.75270540937916
+            "value": 166.75270539928252
           },
           "end": {
             "unit": "degrees",
-            "value": 240.94174495811356
+            "value": 240.9417449546465
           },
           "relative": false
         }
@@ -1360,8 +1360,8 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -4.5716541350698,
-            "y": -160.23320845394068,
+            "x": -4.571654134797874,
+            "y": -160.23320845409177,
             "z": 0.0
           },
           "relative": false
@@ -1377,17 +1377,17 @@ description: Artifact commands extrude_split.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 10.00000000001068,
-            "y": -134.0098048643023
+            "x": 10.000000000010676,
+            "y": -134.00980486430225
           },
-          "radius": 30.000000000957773,
+          "radius": 30.000000000957805,
           "start": {
             "unit": "degrees",
-            "value": -119.05977390214889
+            "value": -119.0597739015547
           },
           "end": {
             "unit": "degrees",
-            "value": -0.00017964734295948087
+            "value": -0.0001796386420203609
           },
           "relative": false
         }

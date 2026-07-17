@@ -1479,7 +1479,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "from": [
               -1.9999999959999992,
-              0.7499999963999998
+              0.7499999963999996
             ],
             "tag": {
               "commentStart": 6578,
@@ -1490,8 +1490,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              2.0000000000000004,
-              0.7499999948999997
+              2.000000000000001,
+              0.7499999948999996
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1503,7 +1503,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "from": [
               1.9999999970000002,
-              0.7499999941499996
+              0.7499999941499995
             ],
             "tag": {
               "commentStart": 6643,
@@ -1538,7 +1538,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              -1.999999983999998,
+              -1.9999999839999982,
               1.1499999953499995
             ],
             "type": "ToPoint",
@@ -1550,8 +1550,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -1.9999999859999982,
-              1.1499999957999998
+              -1.9999999859999984,
+              1.1499999957999996
             ],
             "tag": {
               "commentStart": 6773,
@@ -1562,8 +1562,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              -1.9999999899999985,
-              0.7499999956499998
+              -1.9999999899999987,
+              0.7499999956499995
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1603,11 +1603,11 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         "start": {
           "from": [
             -1.9999999959999992,
-            0.7499999963999998
+            0.7499999963999996
           ],
           "to": [
             -1.9999999959999992,
-            0.7499999963999998
+            0.7499999963999996
           ],
           "units": "m",
           "tag": null,
@@ -1721,7 +1721,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "from": [
               -1.9999999959999992,
-              0.7499999963999998
+              0.7499999963999996
             ],
             "tag": {
               "commentStart": 6578,
@@ -1732,8 +1732,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              2.0000000000000004,
-              0.7499999948999997
+              2.000000000000001,
+              0.7499999948999996
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1745,7 +1745,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "from": [
               1.9999999970000002,
-              0.7499999941499996
+              0.7499999941499995
             ],
             "tag": {
               "commentStart": 6643,
@@ -1780,7 +1780,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              -1.999999983999998,
+              -1.9999999839999982,
               1.1499999953499995
             ],
             "type": "ToPoint",
@@ -1792,8 +1792,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -1.9999999859999982,
-              1.1499999957999998
+              -1.9999999859999984,
+              1.1499999957999996
             ],
             "tag": {
               "commentStart": 6773,
@@ -1804,8 +1804,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              -1.9999999899999985,
-              0.7499999956499998
+              -1.9999999899999987,
+              0.7499999956499995
             ],
             "type": "ToPoint",
             "units": "m"
@@ -1845,11 +1845,11 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         "start": {
           "from": [
             -1.9999999959999992,
-            0.7499999963999998
+            0.7499999963999996
           ],
           "to": [
             -1.9999999959999992,
-            0.7499999963999998
+            0.7499999963999996
           ],
           "units": "m",
           "tag": null,
@@ -1937,7 +1937,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7499999963999998,
+                        "n": 0.7499999963999996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1947,7 +1947,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.0000000000000004,
+                        "n": 2.000000000000001,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -1955,7 +1955,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7499999948999997,
+                        "n": 0.7499999948999996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2057,7 +2057,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7499999941499996,
+                        "n": 0.7499999941499995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2187,7 +2187,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.999999983999998,
+                        "n": -1.9999999839999982,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2289,7 +2289,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.9999999859999982,
+                        "n": -1.9999999859999984,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2297,7 +2297,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 1.1499999957999998,
+                        "n": 1.1499999957999996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2307,7 +2307,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.9999999899999985,
+                        "n": -1.9999999899999987,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2315,7 +2315,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7499999956499998,
+                        "n": 0.7499999956499995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -2413,7 +2413,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   },
                   "from": [
                     -1.9999999959999992,
-                    0.7499999963999998
+                    0.7499999963999996
                   ],
                   "tag": {
                     "commentStart": 6578,
@@ -2424,8 +2424,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line1"
                   },
                   "to": [
-                    2.0000000000000004,
-                    0.7499999948999997
+                    2.000000000000001,
+                    0.7499999948999996
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2436,13 +2436,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.0000000000000004,
-                    0.7499999948999997
+                    2.000000000000001,
+                    0.7499999948999996
                   ],
                   "tag": null,
                   "to": [
                     1.9999999970000002,
-                    0.7499999941499996
+                    0.7499999941499995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2454,7 +2454,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   },
                   "from": [
                     1.9999999970000002,
-                    0.7499999941499996
+                    0.7499999941499995
                   ],
                   "tag": {
                     "commentStart": 6643,
@@ -2506,7 +2506,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -1.999999983999998,
+                    -1.9999999839999982,
                     1.1499999953499995
                   ],
                   "type": "ToPoint",
@@ -2518,13 +2518,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.999999983999998,
+                    -1.9999999839999982,
                     1.1499999953499995
                   ],
                   "tag": null,
                   "to": [
-                    -1.9999999859999982,
-                    1.1499999957999998
+                    -1.9999999859999984,
+                    1.1499999957999996
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2535,8 +2535,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.9999999859999982,
-                    1.1499999957999998
+                    -1.9999999859999984,
+                    1.1499999957999996
                   ],
                   "tag": {
                     "commentStart": 6773,
@@ -2547,8 +2547,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -1.9999999899999985,
-                    0.7499999956499998
+                    -1.9999999899999987,
+                    0.7499999956499995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -2588,11 +2588,11 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "start": {
                 "from": [
                   -1.9999999959999992,
-                  0.7499999963999998
+                  0.7499999963999996
                 ],
                 "to": [
                   -1.9999999959999992,
-                  0.7499999963999998
+                  0.7499999963999996
                 ],
                 "units": "m",
                 "tag": null,
@@ -2644,7 +2644,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "from": [
             -1.9999999959999992,
-            0.7499999963999998
+            0.7499999963999996
           ],
           "tag": {
             "commentStart": 6578,
@@ -2655,8 +2655,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line1"
           },
           "to": [
-            2.0000000000000004,
-            0.7499999948999997
+            2.000000000000001,
+            0.7499999948999996
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2668,7 +2668,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "from": [
             1.9999999970000002,
-            0.7499999941499996
+            0.7499999941499995
           ],
           "tag": {
             "commentStart": 6643,
@@ -2703,7 +2703,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line3"
           },
           "to": [
-            -1.999999983999998,
+            -1.9999999839999982,
             1.1499999953499995
           ],
           "type": "ToPoint",
@@ -2715,8 +2715,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            -1.9999999859999982,
-            1.1499999957999998
+            -1.9999999859999984,
+            1.1499999957999996
           ],
           "tag": {
             "commentStart": 6773,
@@ -2727,8 +2727,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line4"
           },
           "to": [
-            -1.9999999899999985,
-            0.7499999956499998
+            -1.9999999899999987,
+            0.7499999956499995
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2768,11 +2768,11 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       "start": {
         "from": [
           -1.9999999959999992,
-          0.7499999963999998
+          0.7499999963999996
         ],
         "to": [
           -1.9999999959999992,
-          0.7499999963999998
+          0.7499999963999996
         ],
         "units": "m",
         "tag": null,
@@ -2836,8 +2836,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "tag": {
             "commentStart": 4044,
@@ -2848,8 +2848,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line1"
           },
           "to": [
-            -0.26250000000020485,
-            0.8046633388240977
+            -0.2625000000002049,
+            0.8046633388240976
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2860,8 +2860,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            -0.26250000000020485,
-            0.8046633388240977
+            -0.2625000000002049,
+            0.8046633388240976
           ],
           "tag": {
             "commentStart": 4121,
@@ -2872,8 +2872,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line2"
           },
           "to": [
-            0.26250000000007895,
-            0.804663338824103
+            0.2625000000000789,
+            0.8046633388241028
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2884,8 +2884,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            0.26250000000007895,
-            0.804663338824103
+            0.2625000000000789,
+            0.8046633388241028
           ],
           "tag": {
             "commentStart": 4237,
@@ -2896,7 +2896,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line3"
           },
           "to": [
-            0.5250000000001714,
+            0.5250000000001713,
             0.3500000000000027
           ],
           "type": "ToPoint",
@@ -2908,7 +2908,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            0.5250000000001714,
+            0.5250000000001713,
             0.3500000000000027
           ],
           "tag": {
@@ -2920,8 +2920,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line4"
           },
           "to": [
-            0.2625000000000522,
-            -0.10466333882410377
+            0.26250000000005214,
+            -0.10466333882410354
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2932,8 +2932,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            0.2625000000000522,
-            -0.10466333882410377
+            0.26250000000005214,
+            -0.10466333882410354
           ],
           "tag": {
             "commentStart": 4509,
@@ -2944,8 +2944,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line5"
           },
           "to": [
-            -0.262500000000238,
-            -0.10466333882409191
+            -0.2625000000002379,
+            -0.10466333882409189
           ],
           "type": "ToPoint",
           "units": "m"
@@ -2956,8 +2956,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            -0.262500000000238,
-            -0.10466333882409191
+            -0.2625000000002379,
+            -0.10466333882409189
           ],
           "tag": {
             "commentStart": 4627,
@@ -2968,8 +2968,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line6"
           },
           "to": [
-            -0.5250000000003414,
-            0.3500000000000079
+            -0.5250000000003412,
+            0.35000000000000786
           ],
           "type": "ToPoint",
           "units": "m"
@@ -3008,12 +3008,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "start": {
         "from": [
-          -0.5250000000003399,
-          0.35000000000001064
+          -0.5250000000003396,
+          0.3500000000000106
         ],
         "to": [
-          -0.5250000000003399,
-          0.35000000000001064
+          -0.5250000000003396,
+          0.3500000000000106
         ],
         "units": "m",
         "tag": null,
@@ -3157,8 +3157,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000003399,
-              0.35000000000001064
+              -0.5250000000003396,
+              0.3500000000000106
             ],
             "tag": {
               "commentStart": 4044,
@@ -3169,8 +3169,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3181,8 +3181,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "tag": {
               "commentStart": 4121,
@@ -3193,8 +3193,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line2"
             },
             "to": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3205,8 +3205,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "tag": {
               "commentStart": 4237,
@@ -3217,7 +3217,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "type": "ToPoint",
@@ -3229,7 +3229,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "tag": {
@@ -3241,8 +3241,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3253,8 +3253,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "tag": {
               "commentStart": 4509,
@@ -3265,8 +3265,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line5"
             },
             "to": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3277,8 +3277,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "tag": {
               "commentStart": 4627,
@@ -3289,8 +3289,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000003414,
-              0.3500000000000079
+              -0.5250000000003412,
+              0.35000000000000786
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3329,12 +3329,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "to": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "units": "m",
           "tag": null,
@@ -3414,7 +3414,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000015500001109003403,
+              -0.00000000015500000415114012,
               0.34999999987999997
             ],
             "from": [
@@ -3519,7 +3519,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "ccw": true,
           "center": [
-            -0.00000000015500001109003403,
+            -0.00000000015500000415114012,
             0.34999999987999997
           ],
           "from": [
@@ -3681,8 +3681,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -2.099999996,
-              0.3999999994000001
+              -2.0999999959999993,
+              0.3999999993999999
             ],
             "tag": {
               "commentStart": 2846,
@@ -3693,8 +3693,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              2.0999999995999996,
-              0.3999999986
+              2.0999999996000005,
+              0.3999999985999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3705,8 +3705,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              2.0999999962999993,
-              0.3999999982
+              2.0999999963,
+              0.3999999981999999
             ],
             "tag": {
               "commentStart": 2911,
@@ -3717,8 +3717,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line2"
             },
             "to": [
-              2.099999994099999,
-              0.7500000019000004
+              2.0999999940999996,
+              0.7500000019000002
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3729,8 +3729,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              2.099999992999999,
-              0.7500000016500004
+              2.0999999929999995,
+              0.7500000016500001
             ],
             "tag": {
               "commentStart": 2976,
@@ -3741,8 +3741,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              -2.0999999833999987,
-              0.7500000011500003
+              -2.0999999833999983,
+              0.7500000011500001
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3753,8 +3753,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -2.099999985499999,
-              0.7500000004000003
+              -2.0999999854999984,
+              0.7500000004
             ],
             "tag": {
               "commentStart": 3041,
@@ -3765,8 +3765,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              -2.0999999896999992,
-              0.39999999900000005
+              -2.099999989699999,
+              0.3999999989999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -3805,12 +3805,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "start": {
           "from": [
-            -2.099999996,
-            0.3999999994000001
+            -2.0999999959999993,
+            0.3999999993999999
           ],
           "to": [
-            -2.099999996,
-            0.3999999994000001
+            -2.0999999959999993,
+            0.3999999993999999
           ],
           "units": "m",
           "tag": null,
@@ -3890,7 +3890,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.099999996,
+                        "n": -2.0999999959999993,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3898,7 +3898,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.3999999994000001,
+                        "n": 0.3999999993999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3908,7 +3908,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.0999999995999996,
+                        "n": 2.0999999996000005,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -3916,7 +3916,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.3999999986,
+                        "n": 0.3999999985999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4010,7 +4010,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.0999999962999993,
+                        "n": 2.0999999963,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4018,7 +4018,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.3999999982,
+                        "n": 0.3999999981999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4028,7 +4028,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.099999994099999,
+                        "n": 2.0999999940999996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4036,7 +4036,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7500000019000004,
+                        "n": 0.7500000019000002,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4130,7 +4130,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.099999992999999,
+                        "n": 2.0999999929999995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4138,7 +4138,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7500000016500004,
+                        "n": 0.7500000016500001,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4148,7 +4148,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.0999999833999987,
+                        "n": -2.0999999833999983,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4156,7 +4156,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7500000011500003,
+                        "n": 0.7500000011500001,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4250,7 +4250,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.099999985499999,
+                        "n": -2.0999999854999984,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4258,7 +4258,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.7500000004000003,
+                        "n": 0.7500000004,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4268,7 +4268,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.0999999896999992,
+                        "n": -2.099999989699999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4276,7 +4276,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.39999999900000005,
+                        "n": 0.3999999989999999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -4373,8 +4373,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.099999996,
-                    0.3999999994000001
+                    -2.0999999959999993,
+                    0.3999999993999999
                   ],
                   "tag": {
                     "commentStart": 2846,
@@ -4385,8 +4385,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line1"
                   },
                   "to": [
-                    2.0999999995999996,
-                    0.3999999986
+                    2.0999999996000005,
+                    0.3999999985999999
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4397,13 +4397,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.0999999995999996,
-                    0.3999999986
+                    2.0999999996000005,
+                    0.3999999985999999
                   ],
                   "tag": null,
                   "to": [
-                    2.0999999962999993,
-                    0.3999999982
+                    2.0999999963,
+                    0.3999999981999999
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4414,8 +4414,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.0999999962999993,
-                    0.3999999982
+                    2.0999999963,
+                    0.3999999981999999
                   ],
                   "tag": {
                     "commentStart": 2911,
@@ -4426,8 +4426,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line2"
                   },
                   "to": [
-                    2.099999994099999,
-                    0.7500000019000004
+                    2.0999999940999996,
+                    0.7500000019000002
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4438,13 +4438,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.099999994099999,
-                    0.7500000019000004
+                    2.0999999940999996,
+                    0.7500000019000002
                   ],
                   "tag": null,
                   "to": [
-                    2.099999992999999,
-                    0.7500000016500004
+                    2.0999999929999995,
+                    0.7500000016500001
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4455,8 +4455,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.099999992999999,
-                    0.7500000016500004
+                    2.0999999929999995,
+                    0.7500000016500001
                   ],
                   "tag": {
                     "commentStart": 2976,
@@ -4467,8 +4467,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -2.0999999833999987,
-                    0.7500000011500003
+                    -2.0999999833999983,
+                    0.7500000011500001
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4479,13 +4479,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.0999999833999987,
-                    0.7500000011500003
+                    -2.0999999833999983,
+                    0.7500000011500001
                   ],
                   "tag": null,
                   "to": [
-                    -2.099999985499999,
-                    0.7500000004000003
+                    -2.0999999854999984,
+                    0.7500000004
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4496,8 +4496,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.099999985499999,
-                    0.7500000004000003
+                    -2.0999999854999984,
+                    0.7500000004
                   ],
                   "tag": {
                     "commentStart": 3041,
@@ -4508,8 +4508,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -2.0999999896999992,
-                    0.39999999900000005
+                    -2.099999989699999,
+                    0.3999999989999999
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -4548,12 +4548,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               },
               "start": {
                 "from": [
-                  -2.099999996,
-                  0.3999999994000001
+                  -2.0999999959999993,
+                  0.3999999993999999
                 ],
                 "to": [
-                  -2.099999996,
-                  0.3999999994000001
+                  -2.0999999959999993,
+                  0.3999999993999999
                 ],
                 "units": "m",
                 "tag": null,
@@ -4604,8 +4604,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            -2.099999996,
-            0.3999999994000001
+            -2.0999999959999993,
+            0.3999999993999999
           ],
           "tag": {
             "commentStart": 2846,
@@ -4616,8 +4616,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line1"
           },
           "to": [
-            2.0999999995999996,
-            0.3999999986
+            2.0999999996000005,
+            0.3999999985999999
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4628,8 +4628,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            2.0999999962999993,
-            0.3999999982
+            2.0999999963,
+            0.3999999981999999
           ],
           "tag": {
             "commentStart": 2911,
@@ -4640,8 +4640,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line2"
           },
           "to": [
-            2.099999994099999,
-            0.7500000019000004
+            2.0999999940999996,
+            0.7500000019000002
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4652,8 +4652,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            2.099999992999999,
-            0.7500000016500004
+            2.0999999929999995,
+            0.7500000016500001
           ],
           "tag": {
             "commentStart": 2976,
@@ -4664,8 +4664,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line3"
           },
           "to": [
-            -2.0999999833999987,
-            0.7500000011500003
+            -2.0999999833999983,
+            0.7500000011500001
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4676,8 +4676,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "sourceRange": []
           },
           "from": [
-            -2.099999985499999,
-            0.7500000004000003
+            -2.0999999854999984,
+            0.7500000004
           ],
           "tag": {
             "commentStart": 3041,
@@ -4688,8 +4688,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             "value": "line4"
           },
           "to": [
-            -2.0999999896999992,
-            0.39999999900000005
+            -2.099999989699999,
+            0.3999999989999999
           ],
           "type": "ToPoint",
           "units": "m"
@@ -4728,12 +4728,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
       },
       "start": {
         "from": [
-          -2.099999996,
-          0.3999999994000001
+          -2.0999999959999993,
+          0.3999999993999999
         ],
         "to": [
-          -2.099999996,
-          0.3999999994000001
+          -2.0999999959999993,
+          0.3999999993999999
         ],
         "units": "m",
         "tag": null,
@@ -4850,8 +4850,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -2.099999996,
-              0.3999999994000001
+              -2.0999999959999993,
+              0.3999999993999999
             ],
             "tag": {
               "commentStart": 2846,
@@ -4862,8 +4862,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              2.0999999995999996,
-              0.3999999986
+              2.0999999996000005,
+              0.3999999985999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4874,8 +4874,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              2.0999999962999993,
-              0.3999999982
+              2.0999999963,
+              0.3999999981999999
             ],
             "tag": {
               "commentStart": 2911,
@@ -4886,8 +4886,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line2"
             },
             "to": [
-              2.099999994099999,
-              0.7500000019000004
+              2.0999999940999996,
+              0.7500000019000002
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4898,8 +4898,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              2.099999992999999,
-              0.7500000016500004
+              2.0999999929999995,
+              0.7500000016500001
             ],
             "tag": {
               "commentStart": 2976,
@@ -4910,8 +4910,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              -2.0999999833999987,
-              0.7500000011500003
+              -2.0999999833999983,
+              0.7500000011500001
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4922,8 +4922,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -2.099999985499999,
-              0.7500000004000003
+              -2.0999999854999984,
+              0.7500000004
             ],
             "tag": {
               "commentStart": 3041,
@@ -4934,8 +4934,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              -2.0999999896999992,
-              0.39999999900000005
+              -2.099999989699999,
+              0.3999999989999999
             ],
             "type": "ToPoint",
             "units": "m"
@@ -4974,12 +4974,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "start": {
           "from": [
-            -2.099999996,
-            0.3999999994000001
+            -2.0999999959999993,
+            0.3999999993999999
           ],
           "to": [
-            -2.099999996,
-            0.3999999994000001
+            -2.0999999959999993,
+            0.3999999993999999
           ],
           "units": "m",
           "tag": null,
@@ -5120,8 +5120,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000003399,
-              0.35000000000001064
+              -0.5250000000003396,
+              0.3500000000000106
             ],
             "tag": {
               "commentStart": 4044,
@@ -5132,8 +5132,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5144,8 +5144,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "tag": {
               "commentStart": 4121,
@@ -5156,8 +5156,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line2"
             },
             "to": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5168,8 +5168,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "tag": {
               "commentStart": 4237,
@@ -5180,7 +5180,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "type": "ToPoint",
@@ -5192,7 +5192,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "tag": {
@@ -5204,8 +5204,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5216,8 +5216,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "tag": {
               "commentStart": 4509,
@@ -5228,8 +5228,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line5"
             },
             "to": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5240,8 +5240,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "tag": {
               "commentStart": 4627,
@@ -5252,8 +5252,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000003414,
-              0.3500000000000079
+              -0.5250000000003412,
+              0.35000000000000786
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5292,12 +5292,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "to": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "units": "m",
           "tag": null,
@@ -5446,8 +5446,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000003399,
-              0.35000000000001064
+              -0.5250000000003396,
+              0.3500000000000106
             ],
             "tag": {
               "commentStart": 4044,
@@ -5458,8 +5458,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5470,8 +5470,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "tag": {
               "commentStart": 4121,
@@ -5482,8 +5482,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line2"
             },
             "to": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5494,8 +5494,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "tag": {
               "commentStart": 4237,
@@ -5506,7 +5506,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "type": "ToPoint",
@@ -5518,7 +5518,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "tag": {
@@ -5530,8 +5530,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5542,8 +5542,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "tag": {
               "commentStart": 4509,
@@ -5554,8 +5554,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line5"
             },
             "to": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5566,8 +5566,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "tag": {
               "commentStart": 4627,
@@ -5578,8 +5578,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000003414,
-              0.3500000000000079
+              -0.5250000000003412,
+              0.35000000000000786
             ],
             "type": "ToPoint",
             "units": "m"
@@ -5618,12 +5618,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "to": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "units": "m",
           "tag": null,
@@ -6548,8 +6548,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000003399,
-              0.35000000000001064
+              -0.5250000000003396,
+              0.3500000000000106
             ],
             "tag": {
               "commentStart": 4044,
@@ -6560,8 +6560,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6572,8 +6572,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "tag": {
               "commentStart": 4121,
@@ -6584,8 +6584,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line2"
             },
             "to": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6596,8 +6596,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "tag": {
               "commentStart": 4237,
@@ -6608,7 +6608,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "type": "ToPoint",
@@ -6620,7 +6620,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "tag": {
@@ -6632,8 +6632,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6644,8 +6644,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "tag": {
               "commentStart": 4509,
@@ -6656,8 +6656,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line5"
             },
             "to": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6668,8 +6668,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "tag": {
               "commentStart": 4627,
@@ -6680,8 +6680,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000003414,
-              0.3500000000000079
+              -0.5250000000003412,
+              0.35000000000000786
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6720,12 +6720,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "to": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "units": "m",
           "tag": null,
@@ -6883,8 +6883,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.5250000000003399,
-              0.35000000000001064
+              -0.5250000000003396,
+              0.3500000000000106
             ],
             "tag": {
               "commentStart": 4044,
@@ -6895,8 +6895,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line1"
             },
             "to": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6907,8 +6907,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.26250000000020485,
-              0.8046633388240977
+              -0.2625000000002049,
+              0.8046633388240976
             ],
             "tag": {
               "commentStart": 4121,
@@ -6919,8 +6919,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line2"
             },
             "to": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6931,8 +6931,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.26250000000007895,
-              0.804663338824103
+              0.2625000000000789,
+              0.8046633388241028
             ],
             "tag": {
               "commentStart": 4237,
@@ -6943,7 +6943,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line3"
             },
             "to": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "type": "ToPoint",
@@ -6955,7 +6955,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.5250000000001714,
+              0.5250000000001713,
               0.3500000000000027
             ],
             "tag": {
@@ -6967,8 +6967,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line4"
             },
             "to": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "type": "ToPoint",
             "units": "m"
@@ -6979,8 +6979,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              0.2625000000000522,
-              -0.10466333882410377
+              0.26250000000005214,
+              -0.10466333882410354
             ],
             "tag": {
               "commentStart": 4509,
@@ -6991,8 +6991,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line5"
             },
             "to": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7003,8 +7003,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "sourceRange": []
             },
             "from": [
-              -0.262500000000238,
-              -0.10466333882409191
+              -0.2625000000002379,
+              -0.10466333882409189
             ],
             "tag": {
               "commentStart": 4627,
@@ -7015,8 +7015,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               "value": "line6"
             },
             "to": [
-              -0.5250000000003414,
-              0.3500000000000079
+              -0.5250000000003412,
+              0.35000000000000786
             ],
             "type": "ToPoint",
             "units": "m"
@@ -7055,12 +7055,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
         },
         "start": {
           "from": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "to": [
-            -0.5250000000003399,
-            0.35000000000001064
+            -0.5250000000003396,
+            0.3500000000000106
           ],
           "units": "m",
           "tag": null,
@@ -8284,8 +8284,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "tag": {
                   "commentStart": 14872,
@@ -8296,8 +8296,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.4599999850399987,
-                  0.8299999947399996
+                  -0.45999998503999895,
+                  0.8299999947399995
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -8308,8 +8308,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.45999998065999836,
-                  0.8299999939099996
+                  -0.45999998065999814,
+                  0.8299999939099995
                 ],
                 "tag": {
                   "commentStart": 14937,
@@ -8320,7 +8320,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line2"
                 },
                 "to": [
-                  -0.4599999777399981,
+                  -0.4599999777399979,
                   1.0699999956999997
                 ],
                 "type": "ToPoint",
@@ -8332,7 +8332,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.459999976279998,
+                  -0.4599999762799978,
                   1.0699999957699997
                 ],
                 "tag": {
@@ -8344,7 +8344,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line3"
                 },
                 "to": [
-                  -0.8199999859599986,
+                  -0.8199999859599989,
                   1.0699999959099997
                 ],
                 "type": "ToPoint",
@@ -8356,7 +8356,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999867799986,
+                  -0.819999986779999,
                   1.0699999961199997
                 ],
                 "tag": {
@@ -8368,8 +8368,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line4"
                 },
                 "to": [
-                  -0.8199999884199989,
-                  0.8299999955699997
+                  -0.8199999884199991,
+                  0.8299999955699996
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -8408,12 +8408,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "start": {
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "to": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "units": "m",
               "tag": null,
@@ -8469,8 +8469,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "tag": {
                   "commentStart": 14872,
@@ -8481,8 +8481,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -0.4599999850399987,
-                  0.8299999947399996
+                  -0.45999998503999895,
+                  0.8299999947399995
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -8493,8 +8493,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.45999998065999836,
-                  0.8299999939099996
+                  -0.45999998065999814,
+                  0.8299999939099995
                 ],
                 "tag": {
                   "commentStart": 14937,
@@ -8505,7 +8505,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line2"
                 },
                 "to": [
-                  -0.4599999777399981,
+                  -0.4599999777399979,
                   1.0699999956999997
                 ],
                 "type": "ToPoint",
@@ -8517,7 +8517,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.459999976279998,
+                  -0.4599999762799978,
                   1.0699999957699997
                 ],
                 "tag": {
@@ -8529,7 +8529,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line3"
                 },
                 "to": [
-                  -0.8199999859599986,
+                  -0.8199999859599989,
                   1.0699999959099997
                 ],
                 "type": "ToPoint",
@@ -8541,7 +8541,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.8199999867799986,
+                  -0.819999986779999,
                   1.0699999961199997
                 ],
                 "tag": {
@@ -8553,8 +8553,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "value": "line4"
                 },
                 "to": [
-                  -0.8199999884199989,
-                  0.8299999955699997
+                  -0.8199999884199991,
+                  0.8299999955699996
                 ],
                 "type": "ToPoint",
                 "units": "m"
@@ -8593,12 +8593,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "start": {
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "to": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "units": "m",
               "tag": null,
@@ -8722,8 +8722,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "tag": {
                 "commentStart": 14872,
@@ -8734,8 +8734,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line1"
               },
               "to": [
-                -0.4599999850399987,
-                0.8299999947399996
+                -0.45999998503999895,
+                0.8299999947399995
               ],
               "type": "ToPoint",
               "units": "m"
@@ -8746,8 +8746,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.45999998065999836,
-                0.8299999939099996
+                -0.45999998065999814,
+                0.8299999939099995
               ],
               "tag": {
                 "commentStart": 14937,
@@ -8758,7 +8758,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line2"
               },
               "to": [
-                -0.4599999777399981,
+                -0.4599999777399979,
                 1.0699999956999997
               ],
               "type": "ToPoint",
@@ -8770,7 +8770,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.459999976279998,
+                -0.4599999762799978,
                 1.0699999957699997
               ],
               "tag": {
@@ -8782,7 +8782,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line3"
               },
               "to": [
-                -0.8199999859599986,
+                -0.8199999859599989,
                 1.0699999959099997
               ],
               "type": "ToPoint",
@@ -8794,7 +8794,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999867799986,
+                -0.819999986779999,
                 1.0699999961199997
               ],
               "tag": {
@@ -8806,8 +8806,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line4"
               },
               "to": [
-                -0.8199999884199989,
-                0.8299999955699997
+                -0.8199999884199991,
+                0.8299999955699996
               ],
               "type": "ToPoint",
               "units": "m"
@@ -8846,12 +8846,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "start": {
             "from": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "to": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "units": "m",
             "tag": null,
@@ -8896,8 +8896,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999908799992,
-                0.8299999963999998
+                -0.8199999908799993,
+                0.8299999963999997
               ],
               "tag": {
                 "commentStart": 14872,
@@ -8908,8 +8908,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line1"
               },
               "to": [
-                -0.4599999850399987,
-                0.8299999947399996
+                -0.45999998503999895,
+                0.8299999947399995
               ],
               "type": "ToPoint",
               "units": "m"
@@ -8920,8 +8920,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.45999998065999836,
-                0.8299999939099996
+                -0.45999998065999814,
+                0.8299999939099995
               ],
               "tag": {
                 "commentStart": 14937,
@@ -8932,7 +8932,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line2"
               },
               "to": [
-                -0.4599999777399981,
+                -0.4599999777399979,
                 1.0699999956999997
               ],
               "type": "ToPoint",
@@ -8944,7 +8944,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.459999976279998,
+                -0.4599999762799978,
                 1.0699999957699997
               ],
               "tag": {
@@ -8956,7 +8956,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line3"
               },
               "to": [
-                -0.8199999859599986,
+                -0.8199999859599989,
                 1.0699999959099997
               ],
               "type": "ToPoint",
@@ -8968,7 +8968,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "sourceRange": []
               },
               "from": [
-                -0.8199999867799986,
+                -0.819999986779999,
                 1.0699999961199997
               ],
               "tag": {
@@ -8980,8 +8980,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 "value": "line4"
               },
               "to": [
-                -0.8199999884199989,
-                0.8299999955699997
+                -0.8199999884199991,
+                0.8299999955699996
               ],
               "type": "ToPoint",
               "units": "m"
@@ -9020,12 +9020,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "start": {
             "from": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "to": [
-              -0.8199999908799992,
-              0.8299999963999998
+              -0.8199999908799993,
+              0.8299999963999997
             ],
             "units": "m",
             "tag": null,
@@ -9084,7 +9084,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.8199999908799992,
+                        "n": -0.8199999908799993,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9092,7 +9092,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.8299999963999998,
+                        "n": 0.8299999963999997,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9102,7 +9102,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.4599999850399987,
+                        "n": -0.45999998503999895,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9110,7 +9110,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.8299999947399996,
+                        "n": 0.8299999947399995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9204,7 +9204,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.45999998065999836,
+                        "n": -0.45999998065999814,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9212,7 +9212,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.8299999939099996,
+                        "n": 0.8299999939099995,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9222,7 +9222,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.4599999777399981,
+                        "n": -0.4599999777399979,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9324,7 +9324,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.459999976279998,
+                        "n": -0.4599999762799978,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9342,7 +9342,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.8199999859599986,
+                        "n": -0.8199999859599989,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9444,7 +9444,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.8199999867799986,
+                        "n": -0.819999986779999,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9462,7 +9462,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.8199999884199989,
+                        "n": -0.8199999884199991,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9470,7 +9470,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.8299999955699997,
+                        "n": 0.8299999955699996,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -9567,8 +9567,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.8199999908799992,
-                    0.8299999963999998
+                    -0.8199999908799993,
+                    0.8299999963999997
                   ],
                   "tag": {
                     "commentStart": 14872,
@@ -9579,8 +9579,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.4599999850399987,
-                    0.8299999947399996
+                    -0.45999998503999895,
+                    0.8299999947399995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -9591,13 +9591,13 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4599999850399987,
-                    0.8299999947399996
+                    -0.45999998503999895,
+                    0.8299999947399995
                   ],
                   "tag": null,
                   "to": [
-                    -0.45999998065999836,
-                    0.8299999939099996
+                    -0.45999998065999814,
+                    0.8299999939099995
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -9608,8 +9608,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.45999998065999836,
-                    0.8299999939099996
+                    -0.45999998065999814,
+                    0.8299999939099995
                   ],
                   "tag": {
                     "commentStart": 14937,
@@ -9620,7 +9620,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line2"
                   },
                   "to": [
-                    -0.4599999777399981,
+                    -0.4599999777399979,
                     1.0699999956999997
                   ],
                   "type": "ToPoint",
@@ -9632,12 +9632,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.4599999777399981,
+                    -0.4599999777399979,
                     1.0699999956999997
                   ],
                   "tag": null,
                   "to": [
-                    -0.459999976279998,
+                    -0.4599999762799978,
                     1.0699999957699997
                   ],
                   "type": "ToPoint",
@@ -9649,7 +9649,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.459999976279998,
+                    -0.4599999762799978,
                     1.0699999957699997
                   ],
                   "tag": {
@@ -9661,7 +9661,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -0.8199999859599986,
+                    -0.8199999859599989,
                     1.0699999959099997
                   ],
                   "type": "ToPoint",
@@ -9673,12 +9673,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.8199999859599986,
+                    -0.8199999859599989,
                     1.0699999959099997
                   ],
                   "tag": null,
                   "to": [
-                    -0.8199999867799986,
+                    -0.819999986779999,
                     1.0699999961199997
                   ],
                   "type": "ToPoint",
@@ -9690,7 +9690,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.8199999867799986,
+                    -0.819999986779999,
                     1.0699999961199997
                   ],
                   "tag": {
@@ -9702,8 +9702,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -0.8199999884199989,
-                    0.8299999955699997
+                    -0.8199999884199991,
+                    0.8299999955699996
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -9742,12 +9742,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               },
               "start": {
                 "from": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "to": [
-                  -0.8199999908799992,
-                  0.8299999963999998
+                  -0.8199999908799993,
+                  0.8299999963999997
                 ],
                 "units": "m",
                 "tag": null,
@@ -10970,7 +10970,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000000005663827739078771,
+                        "n": -0.00000000000005663826710823476,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11073,7 +11073,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.5250000000003399,
+                        "n": -0.5250000000003396,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11081,7 +11081,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.35000000000001064,
+                        "n": 0.3500000000000106,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11091,7 +11091,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.26250000000020485,
+                        "n": -0.2625000000002049,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11099,7 +11099,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388240977,
+                        "n": 0.8046633388240976,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11193,7 +11193,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.2625000000002033,
+                        "n": -0.26250000000020335,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11201,7 +11201,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388240922,
+                        "n": 0.8046633388240921,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11211,7 +11211,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.26250000000007895,
+                        "n": 0.2625000000000789,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11219,7 +11219,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.804663338824103,
+                        "n": 0.8046633388241028,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11313,7 +11313,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.2625000000000726,
+                        "n": 0.26250000000007256,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11321,7 +11321,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.8046633388240948,
+                        "n": 0.8046633388240947,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11331,7 +11331,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5250000000001714,
+                        "n": 0.5250000000001713,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11451,7 +11451,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.2625000000000522,
+                        "n": 0.26250000000005214,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11459,7 +11459,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882410377,
+                        "n": -0.10466333882410354,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11553,7 +11553,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.26250000000005064,
+                        "n": 0.2625000000000506,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11561,7 +11561,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882409831,
+                        "n": -0.10466333882409809,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11571,7 +11571,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.262500000000238,
+                        "n": -0.2625000000002379,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11579,7 +11579,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882409191,
+                        "n": -0.10466333882409189,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11673,7 +11673,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.2625000000002317,
+                        "n": -0.26250000000023155,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11681,7 +11681,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": -0.10466333882408374,
+                        "n": -0.10466333882408371,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11691,7 +11691,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.5250000000003414,
+                        "n": -0.5250000000003412,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11699,7 +11699,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": 0.3500000000000079,
+                        "n": 0.35000000000000786,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11793,7 +11793,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000000000000002693551847571604,
+                        "n": 0.00000000000000000019479435218785224,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -11917,8 +11917,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.5250000000003399,
-                    0.35000000000001064
+                    -0.5250000000003396,
+                    0.3500000000000106
                   ],
                   "tag": {
                     "commentStart": 4044,
@@ -11929,8 +11929,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.26250000000020485,
-                    0.8046633388240977
+                    -0.2625000000002049,
+                    0.8046633388240976
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11941,8 +11941,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.26250000000020485,
-                    0.8046633388240977
+                    -0.2625000000002049,
+                    0.8046633388240976
                   ],
                   "tag": {
                     "commentStart": 4121,
@@ -11953,8 +11953,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line2"
                   },
                   "to": [
-                    0.26250000000007895,
-                    0.804663338824103
+                    0.2625000000000789,
+                    0.8046633388241028
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -11965,8 +11965,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.26250000000007895,
-                    0.804663338824103
+                    0.2625000000000789,
+                    0.8046633388241028
                   ],
                   "tag": {
                     "commentStart": 4237,
@@ -11977,7 +11977,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line3"
                   },
                   "to": [
-                    0.5250000000001714,
+                    0.5250000000001713,
                     0.3500000000000027
                   ],
                   "type": "ToPoint",
@@ -11989,7 +11989,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.5250000000001714,
+                    0.5250000000001713,
                     0.3500000000000027
                   ],
                   "tag": {
@@ -12001,8 +12001,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line4"
                   },
                   "to": [
-                    0.2625000000000522,
-                    -0.10466333882410377
+                    0.26250000000005214,
+                    -0.10466333882410354
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -12013,8 +12013,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.2625000000000522,
-                    -0.10466333882410377
+                    0.26250000000005214,
+                    -0.10466333882410354
                   ],
                   "tag": {
                     "commentStart": 4509,
@@ -12025,8 +12025,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line5"
                   },
                   "to": [
-                    -0.262500000000238,
-                    -0.10466333882409191
+                    -0.2625000000002379,
+                    -0.10466333882409189
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -12037,8 +12037,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.262500000000238,
-                    -0.10466333882409191
+                    -0.2625000000002379,
+                    -0.10466333882409189
                   ],
                   "tag": {
                     "commentStart": 4627,
@@ -12049,8 +12049,8 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     "value": "line6"
                   },
                   "to": [
-                    -0.5250000000003414,
-                    0.3500000000000079
+                    -0.5250000000003412,
+                    0.35000000000000786
                   ],
                   "type": "ToPoint",
                   "units": "m"
@@ -12089,12 +12089,12 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
               },
               "start": {
                 "from": [
-                  -0.5250000000003399,
-                  0.35000000000001064
+                  -0.5250000000003396,
+                  0.3500000000000106
                 ],
                 "to": [
-                  -0.5250000000003399,
-                  0.35000000000001064
+                  -0.5250000000003396,
+                  0.3500000000000106
                 ],
                 "units": "m",
                 "tag": null,
@@ -12187,7 +12187,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000019500001439964887,
+                  -0.0000000001950000057260315,
                   0.34999999973999996
                 ],
                 "from": [
@@ -12313,7 +12313,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000015500001109003403,
+                  -0.00000000015500000415114012,
                   0.34999999987999997
                 ],
                 "from": [
@@ -12444,7 +12444,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000019500001439964887,
+                  -0.0000000001950000057260315,
                   0.34999999973999996
                 ],
                 "from": [
@@ -12570,7 +12570,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000015500001109003403,
+                  -0.00000000015500000415114012,
                   0.34999999987999997
                 ],
                 "from": [
@@ -12677,7 +12677,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
           },
           "ccw": true,
           "center": [
-            -0.00000000019500001439964887,
+            -0.0000000001950000057260315,
             0.34999999973999996
           ],
           "from": [
@@ -12801,7 +12801,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000019500001439964887,
+                  -0.0000000001950000057260315,
                   0.34999999973999996
                 ],
                 "from": [
@@ -12927,7 +12927,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000015500001109003403,
+                  -0.00000000015500000415114012,
                   0.34999999987999997
                 ],
                 "from": [
@@ -13058,7 +13058,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000019500001439964887,
+                  -0.0000000001950000057260315,
                   0.34999999973999996
                 ],
                 "from": [
@@ -13184,7 +13184,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                 },
                 "ccw": true,
                 "center": [
-                  -0.00000000015500001109003403,
+                  -0.00000000015500000415114012,
                   0.34999999987999997
                 ],
                 "from": [
@@ -13311,7 +13311,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000019500001439964887,
+                        "n": -0.0000000001950000057260315,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13431,7 +13431,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.00000000015500001109003403,
+                        "n": -0.00000000015500000415114012,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13533,7 +13533,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000005500000365585866,
+                        "n": -0.00000000005500000026275623,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13541,7 +13541,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                         }
                       },
                       {
-                        "n": -0.000000000040000002709614723,
+                        "n": -0.00000000004000000228586468,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13551,7 +13551,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000011000000736671733,
+                        "n": -0.00000000011000000042782343,
                         "ty": {
                           "m": null,
                           "type": "Known",
@@ -13658,7 +13658,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.00000000019500001439964887,
+                    -0.0000000001950000057260315,
                     0.34999999973999996
                   ],
                   "from": [
@@ -13705,7 +13705,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.00000000015500001109003403,
+                    -0.00000000015500000415114012,
                     0.34999999987999997
                   ],
                   "from": [
@@ -13832,7 +13832,7 @@ description: Variables in memory after executing stylized-pickup-truck.kcl
             },
             "ccw": true,
             "center": [
-              -0.00000000019500001439964887,
+              -0.0000000001950000057260315,
               0.34999999973999996
             ],
             "from": [

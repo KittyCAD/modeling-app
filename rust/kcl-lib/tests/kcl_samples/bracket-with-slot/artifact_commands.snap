@@ -68,8 +68,8 @@ description: Artifact commands bracket-with-slot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.000000000000000016300003424760624,
-          "y": -0.00000000000000002210000776434463,
+          "x": -0.00000000000000001629999928885756,
+          "y": -0.00000000000000002210001769051198,
           "z": 0.0
         }
       }
@@ -90,7 +90,7 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000000031200006144317086,
+            "x": -0.00000000000000003119999787251096,
             "y": 70.0,
             "z": 0.0
           },
@@ -125,7 +125,7 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "line",
           "end": {
             "x": 4.0,
-            "y": 3.999999999999996,
+            "y": 3.9999999999999982,
             "z": 0.0
           },
           "relative": false
@@ -142,7 +142,7 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "line",
           "end": {
             "x": 170.0,
-            "y": 3.9999999999999973,
+            "y": 3.999999999999999,
             "z": 0.0
           },
           "relative": false
@@ -159,7 +159,7 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "line",
           "end": {
             "x": 170.0,
-            "y": -0.000000000000001936029164093864,
+            "y": -0.0000000000000009368284684010028,
             "z": 0.0
           },
           "relative": false
@@ -175,8 +175,8 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000000017300004401152518,
-            "y": -0.0000000000000006619652844002472,
+            "x": -0.000000000000000017299999438068843,
+            "y": -0.0000000000000003288983902475901,
             "z": 0.0
           },
           "relative": false
@@ -496,12 +496,12 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "arc",
           "center": {
             "x": 50.0,
-            "y": -0.000000000000000005300001369846221
+            "y": -0.000000000000000005300000542665608
           },
           "radius": 6.0,
           "start": {
             "unit": "radians",
-            "value": 0.0000000000000000004833335571018983
+            "value": 0.00000000000000000048333341923846295
           },
           "end": {
             "unit": "radians",
@@ -519,7 +519,7 @@ description: Artifact commands bracket-with-slot.kcl
         "path": "[uuid]",
         "to": {
           "x": 61.0,
-          "y": -0.000000000000000023300006950781432,
+          "y": -0.000000000000000023300000333336532,
           "z": 0.0
         }
       }
@@ -534,12 +534,12 @@ description: Artifact commands bracket-with-slot.kcl
           "type": "arc",
           "center": {
             "x": 50.0,
-            "y": -0.00000000000000001140000302449759
+            "y": -0.000000000000000011400001370136364
           },
           "radius": 11.0,
           "start": {
             "unit": "radians",
-            "value": -0.0000000000000000010818185387530765
+            "value": -0.0000000000000000010818180875636515
           },
           "end": {
             "unit": "radians",
@@ -635,7 +635,7 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.0000000006000000466442222,
+            "x": 0.0000000006000000770526624,
             "y": 0.0
           },
           "radius": 11.2000000004,
@@ -737,7 +737,7 @@ description: Artifact commands bracket-with-slot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.00000000040000003109614805,
+            "x": 0.0000000004000000121161302,
             "y": 0.0
           },
           "radius": 6.8000000006,

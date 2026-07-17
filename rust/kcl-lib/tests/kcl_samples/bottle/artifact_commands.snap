@@ -90,7 +90,7 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -62.499999999995865,
+            "x": -62.49999999999587,
             "y": 26.66333333333257,
             "z": 0.0
           },
@@ -107,7 +107,7 @@ description: Artifact commands bottle.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000007105427357601002,
+            "x": -0.0000000000007176481631177012,
             "y": -112.59441187317721
           },
           "radius": 152.64000000000195,

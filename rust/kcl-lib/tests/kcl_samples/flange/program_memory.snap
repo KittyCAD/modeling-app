@@ -148,7 +148,7 @@ description: Variables in memory after executing flange.kcl
                         }
                       },
                       {
-                        "n": -0.00000000007500000312997022,
+                        "n": -0.00000000007500000197630717,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -502,7 +502,7 @@ description: Variables in memory after executing flange.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000007500000312997022,
+                        "n": -0.00000000007500000485552763,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -868,14 +868,14 @@ description: Variables in memory after executing flange.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.00000000017500001325456472,
+                    0.00000000017500000516540548,
                     0.0
                   ],
                   "from": [
-                    2.3125000006125003,
+                    2.3125000006125,
                     0.0
                   ],
-                  "radius": 2.3125000004375003,
+                  "radius": 2.3125000004375,
                   "tag": {
                     "commentStart": 1007,
                     "end": 1018,
@@ -885,7 +885,7 @@ description: Variables in memory after executing flange.kcl
                     "value": "outerCircle"
                   },
                   "to": [
-                    2.3125000006125003,
+                    2.3125000006125,
                     0.0
                   ],
                   "type": "Circle",
@@ -897,7 +897,7 @@ description: Variables in memory after executing flange.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.3125000006125003,
+                    2.3125000006125,
                     0.0
                   ],
                   "tag": null,
@@ -1113,11 +1113,11 @@ description: Variables in memory after executing flange.kcl
               },
               "start": {
                 "from": [
-                  2.3125000006125003,
+                  2.3125000006125,
                   0.0
                 ],
                 "to": [
-                  2.3125000006125003,
+                  2.3125000006125,
                   0.0
                 ],
                 "units": "in",
@@ -1170,7 +1170,7 @@ description: Variables in memory after executing flange.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 2.3125000006125003,
+                        "n": 2.3125000006125,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1188,7 +1188,7 @@ description: Variables in memory after executing flange.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000017500001325456472,
+                        "n": 0.00000000017500000516540548,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1290,7 +1290,7 @@ description: Variables in memory after executing flange.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000003500000266841295,
+                        "n": 0.00000000035000001050581104,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1411,7 +1411,7 @@ description: Variables in memory after executing flange.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000007500000312997022,
+                        "n": 0.00000000007500000485552763,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1781,7 +1781,7 @@ description: Variables in memory after executing flange.kcl
                         }
                       },
                       {
-                        "n": 0.00000000007500000312997022,
+                        "n": 0.00000000007500000197630717,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2148,14 +2148,14 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000017500001325456472,
+            0.00000000017500000516540548,
             0.0
           ],
           "from": [
-            2.3125000006125003,
+            2.3125000006125,
             0.0
           ],
-          "radius": 2.3125000004375003,
+          "radius": 2.3125000004375,
           "tag": {
             "commentStart": 1007,
             "end": 1018,
@@ -2165,7 +2165,7 @@ description: Variables in memory after executing flange.kcl
             "value": "outerCircle"
           },
           "to": [
-            2.3125000006125003,
+            2.3125000006125,
             0.0
           ],
           "type": "Circle",
@@ -2205,11 +2205,11 @@ description: Variables in memory after executing flange.kcl
       },
       "start": {
         "from": [
-          2.3125000006125003,
+          2.3125000006125,
           0.0
         ],
         "to": [
-          2.3125000006125003,
+          2.3125000006125,
           0.0
         ],
         "units": "in",
@@ -2289,7 +2289,7 @@ description: Variables in memory after executing flange.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000010000000757403699,
+                        "n": 0.00000000010000000699850539,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2389,7 +2389,7 @@ description: Variables in memory after executing flange.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.00000000010000000757403699,
+                    0.00000000010000000699850539,
                     0.0
                   ],
                   "from": [
@@ -2481,7 +2481,7 @@ description: Variables in memory after executing flange.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000200000015248074,
+                        "n": 0.00000000020000001409701081,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2600,7 +2600,7 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000010000000757403699,
+            0.00000000010000000699850539,
             0.0
           ],
           "from": [
@@ -2748,7 +2748,7 @@ description: Variables in memory after executing flange.kcl
             },
             "ccw": true,
             "center": [
-              0.00000000010000000757403699,
+              0.00000000010000000699850539,
               0.0
             ],
             "from": [
@@ -2864,14 +2864,14 @@ description: Variables in memory after executing flange.kcl
             },
             "ccw": true,
             "center": [
-              0.00000000017500001325456472,
+              0.00000000017500000516540548,
               0.0
             ],
             "from": [
-              2.3125000006125003,
+              2.3125000006125,
               0.0
             ],
-            "radius": 2.3125000004375003,
+            "radius": 2.3125000004375,
             "tag": {
               "commentStart": 1007,
               "end": 1018,
@@ -2881,7 +2881,7 @@ description: Variables in memory after executing flange.kcl
               "value": "outerCircle"
             },
             "to": [
-              2.3125000006125003,
+              2.3125000006125,
               0.0
             ],
             "type": "Circle",
@@ -2921,11 +2921,11 @@ description: Variables in memory after executing flange.kcl
         },
         "start": {
           "from": [
-            2.3125000006125003,
+            2.3125000006125,
             0.0
           ],
           "to": [
-            2.3125000006125003,
+            2.3125000006125,
             0.0
           ],
           "units": "in",
@@ -3002,7 +3002,7 @@ description: Variables in memory after executing flange.kcl
             },
             "ccw": true,
             "center": [
-              0.00000000010000000757403699,
+              0.00000000010000000699850539,
               0.0
             ],
             "from": [
@@ -3118,7 +3118,7 @@ description: Variables in memory after executing flange.kcl
             },
             "ccw": true,
             "center": [
-              0.00000000008700000381385463,
+              0.0000000000870000092047704,
               0.0
             ],
             "from": [
@@ -3213,14 +3213,14 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000017500001325456472,
+            0.00000000017500000516540548,
             0.0
           ],
           "from": [
-            2.3125000006125003,
+            2.3125000006125,
             0.0
           ],
-          "radius": 2.3125000004375003,
+          "radius": 2.3125000004375,
           "tag": {
             "commentStart": 1007,
             "end": 1018,
@@ -3230,7 +3230,7 @@ description: Variables in memory after executing flange.kcl
             "value": "outerCircle"
           },
           "to": [
-            2.3125000006125003,
+            2.3125000006125,
             0.0
           ],
           "type": "Circle",
@@ -3242,7 +3242,7 @@ description: Variables in memory after executing flange.kcl
             "sourceRange": []
           },
           "from": [
-            2.3125000006125003,
+            2.3125000006125,
             0.0
           ],
           "tag": null,
@@ -3458,11 +3458,11 @@ description: Variables in memory after executing flange.kcl
       },
       "start": {
         "from": [
-          2.3125000006125003,
+          2.3125000006125,
           0.0
         ],
         "to": [
-          2.3125000006125003,
+          2.3125000006125,
           0.0
         ],
         "units": "in",
@@ -3513,7 +3513,7 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000010000000757403699,
+            0.00000000010000000699850539,
             0.0
           ],
           "from": [
@@ -3603,7 +3603,7 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000015000001136105548,
+            0.00000000015000001616334122,
             0.0
           ],
           "from": [
@@ -3693,7 +3693,7 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000008700000381385463,
+            0.0000000000870000092047704,
             0.0
           ],
           "from": [
@@ -3868,7 +3868,7 @@ description: Variables in memory after executing flange.kcl
             },
             "ccw": true,
             "center": [
-              0.00000000015000001136105548,
+              0.00000000015000001616334122,
               0.0
             ],
             "from": [
@@ -3983,7 +3983,7 @@ description: Variables in memory after executing flange.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000015000001136105548,
+                        "n": 0.00000000015000001616334122,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4083,7 +4083,7 @@ description: Variables in memory after executing flange.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.00000000015000001136105548,
+                    0.00000000015000001616334122,
                     0.0
                   ],
                   "from": [
@@ -4175,7 +4175,7 @@ description: Variables in memory after executing flange.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000030000002287211097,
+                        "n": 0.0000000003000000324766825,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4294,7 +4294,7 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000015000001136105548,
+            0.00000000015000001616334122,
             0.0
           ],
           "from": [
@@ -4418,7 +4418,7 @@ description: Variables in memory after executing flange.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000008700000381385463,
+                        "n": 0.0000000000870000092047704,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4518,7 +4518,7 @@ description: Variables in memory after executing flange.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.00000000008700000381385463,
+                    0.0000000000870000092047704,
                     0.0
                   ],
                   "from": [
@@ -4610,7 +4610,7 @@ description: Variables in memory after executing flange.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000017400000771470928,
+                        "n": 0.00000000017400001849654085,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -4729,7 +4729,7 @@ description: Variables in memory after executing flange.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000008700000381385463,
+            0.0000000000870000092047704,
             0.0
           ],
           "from": [

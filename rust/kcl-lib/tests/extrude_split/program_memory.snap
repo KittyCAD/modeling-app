@@ -166,8 +166,8 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000007479031997255503,
-              -90.31384884991998
+              -0.000000000000007477566063749989,
+              -90.3138488502718
             ],
             "tag": {
               "commentStart": 0,
@@ -178,7 +178,7 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "line3"
             },
             "to": [
-              0.0000000000000005540827517630426,
+              0.0000000000000005539829666982801,
               -184.0
             ],
             "type": "ToPoint",
@@ -190,13 +190,13 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              0.0000000000000005540827517630426,
+              0.0000000000000005539829666982801,
               -184.0
             ],
             "tag": null,
             "to": [
-              -34.37074540936475,
-              -5.9691185301303245
+              -34.37074540942242,
+              -5.9691185299994025
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -209,11 +209,11 @@ description: Variables in memory after executing extrude_split.kcl
             "ccw": true,
             "center": [
               -43.522356994426275,
-              -9.999999999977543
+              -9.999999999977547
             ],
             "from": [
-              -34.37074540936475,
-              -5.9691185301303245
+              -34.37074540942242,
+              -5.9691185299994025
             ],
             "radius": 10.000000001389498,
             "tag": {
@@ -225,8 +225,8 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "arc1"
             },
             "to": [
-              -43.52205625741133,
-              -0.0000000031101823338985923
+              -43.52205625744345,
+              -0.000000003110185886612271
             ],
             "type": "Arc",
             "units": "mm"
@@ -237,13 +237,13 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              -43.52205625741133,
-              -0.0000000031101823338985923
+              -43.52205625744345,
+              -0.000000003110185886612271
             ],
             "tag": null,
             "to": [
-              -34.370745409337545,
-              -5.96911853011834
+              -34.37074540939521,
+              -5.969118529987418
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -254,8 +254,8 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              -34.370745409337545,
-              -5.96911853011834
+              -34.37074540939521,
+              -5.969118529987418
             ],
             "tag": {
               "commentStart": 0,
@@ -266,8 +266,8 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "line2"
             },
             "to": [
-              -2.545536158730603,
-              -78.22094493693335
+              -2.545536158213892,
+              -78.22094493810643
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -279,14 +279,14 @@ description: Variables in memory after executing extrude_split.kcl
             },
             "ccw": false,
             "center": [
-              -29.999999999892072,
-              -90.31443142166539
+              -29.999999999892093,
+              -90.31443142166543
             ],
             "from": [
-              -2.545536158730603,
-              -78.22094493693335
+              -2.545536158213892,
+              -78.22094493810643
             ],
-            "radius": 30.000000002700652,
+            "radius": 30.00000000270067,
             "tag": {
               "commentStart": 0,
               "end": 0,
@@ -296,8 +296,8 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "arc2"
             },
             "to": [
-              -0.0000000028479192337727,
-              -90.31384884990209
+              -0.000000002847915681059021,
+              -90.3138488502539
             ],
             "type": "Arc",
             "units": "mm"
@@ -308,13 +308,13 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000028479192337727,
-              -90.31384884990209
+              -0.000000002847915681059021,
+              -90.3138488502539
             ],
             "tag": null,
             "to": [
               -73.0,
-              0.0000000000000003048394547342806
+              0.00000000000000030480985327642446
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -326,7 +326,7 @@ description: Variables in memory after executing extrude_split.kcl
             },
             "from": [
               -73.0,
-              0.0000000000000003048394547342806
+              0.00000000000000030480985327642446
             ],
             "tag": {
               "commentStart": 0,
@@ -337,8 +337,8 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "line1"
             },
             "to": [
-              -43.522056257411236,
-              -0.0000000000000012472898195170687
+              -43.52205625744336,
+              -0.0000000000000012472003503443017
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -377,12 +377,12 @@ description: Variables in memory after executing extrude_split.kcl
         },
         "start": {
           "from": [
-            -0.000000000000007479031997255503,
-            -90.31384884991998
+            -0.000000000000007477566063749989,
+            -90.3138488502718
           ],
           "to": [
-            -0.000000000000007479031997255503,
-            -90.31384884991998
+            -0.000000000000007477566063749989,
+            -90.3138488502718
           ],
           "units": "mm",
           "tag": null,
@@ -513,8 +513,8 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              -46.58412202983491,
-              -111.91979144006247
+              -46.58412202862342,
+              -111.91979143491652
             ],
             "tag": {
               "commentStart": 0,
@@ -542,8 +542,8 @@ description: Variables in memory after executing extrude_split.kcl
             ],
             "tag": null,
             "to": [
-              -46.58412202975517,
-              -111.91979144008124
+              -46.58412202854371,
+              -111.91979143493529
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -555,14 +555,14 @@ description: Variables in memory after executing extrude_split.kcl
             },
             "ccw": true,
             "center": [
-              -17.38241963458235,
-              -118.7944243207115
+              -17.38241963458231,
+              -118.79442432071147
             ],
             "from": [
-              -46.58412202975517,
-              -111.91979144008124
+              -46.58412202854371,
+              -111.91979143493529
             ],
-            "radius": 30.00000000032808,
+            "radius": 30.000000000328104,
             "tag": {
               "commentStart": 0,
               "end": 0,
@@ -572,8 +572,8 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "arc1"
             },
             "to": [
-              -31.95337860508232,
-              -145.0182141822035
+              -31.953378606669133,
+              -145.01821418132178
             ],
             "type": "Arc",
             "units": "mm"
@@ -584,8 +584,8 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              -31.95337860508232,
-              -145.0182141822035
+              -31.953378606669133,
+              -145.01821418132178
             ],
             "tag": {
               "commentStart": 0,
@@ -596,8 +596,8 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "line2"
             },
             "to": [
-              -4.5716541350698,
-              -160.23320845394068
+              -4.571654134797874,
+              -160.23320845409177
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -609,14 +609,14 @@ description: Variables in memory after executing extrude_split.kcl
             },
             "ccw": true,
             "center": [
-              10.00000000001068,
-              -134.0098048643023
+              10.000000000010676,
+              -134.00980486430225
             ],
             "from": [
-              -4.5716541350698,
-              -160.23320845394068
+              -4.571654134797874,
+              -160.23320845409177
             ],
-            "radius": 30.000000000957773,
+            "radius": 30.000000000957805,
             "tag": {
               "commentStart": 0,
               "end": 0,
@@ -626,8 +626,8 @@ description: Variables in memory after executing extrude_split.kcl
               "value": "arc2"
             },
             "to": [
-              40.00000000082099,
-              -134.00989892743112
+              40.00000000082103,
+              -134.00989892287527
             ],
             "type": "Arc",
             "units": "mm"
@@ -638,8 +638,8 @@ description: Variables in memory after executing extrude_split.kcl
               "sourceRange": []
             },
             "from": [
-              40.00000000082099,
-              -134.00989892743112
+              40.00000000082103,
+              -134.00989892287527
             ],
             "tag": {
               "commentStart": 0,
@@ -690,12 +690,12 @@ description: Variables in memory after executing extrude_split.kcl
         },
         "start": {
           "from": [
-            -46.58412202983491,
-            -111.91979144006247
+            -46.58412202862342,
+            -111.91979143491652
           ],
           "to": [
-            -46.58412202983491,
-            -111.91979144006247
+            -46.58412202862342,
+            -111.91979143491652
           ],
           "units": "mm",
           "tag": null,
@@ -767,7 +767,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -34.37074540936475,
+                        "n": -34.37074540942242,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -775,7 +775,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -5.9691185301303245,
+                        "n": -5.9691185299994025,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -785,7 +785,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -43.522056257411236,
+                        "n": -43.52205625744336,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -793,7 +793,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -0.00000000001497342223188465,
+                        "n": -0.000000000014971969150335624,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -811,7 +811,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -9.999999999977545,
+                        "n": -9.999999999977547,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -919,7 +919,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.000000000044789709756171204,
+                        "n": -0.000000000044781641305956877,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -927,7 +927,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -90.31384884991999,
+                        "n": -90.3138488502718,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -937,7 +937,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.5455361587713727,
+                        "n": -2.545536158254649,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -945,7 +945,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -78.22094493695131,
+                        "n": -78.22094493812438,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -955,7 +955,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": -29.999999999932847,
+                        "n": -29.999999999932854,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -963,7 +963,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -90.31443142168335,
+                        "n": -90.31443142168338,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1079,7 +1079,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000000003048394547342806,
+                        "n": 0.00000000000000030480985327642446,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1089,7 +1089,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -43.522056257411236,
+                        "n": -43.52205625744336,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1097,7 +1097,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000012472898195170687,
+                        "n": -0.0000000000000012472003503443017,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1191,7 +1191,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -34.370745409337545,
+                        "n": -34.37074540939521,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1199,7 +1199,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -5.96911853011834,
+                        "n": -5.969118529987418,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1209,7 +1209,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -2.545536158730603,
+                        "n": -2.545536158213892,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1217,7 +1217,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -78.22094493693335,
+                        "n": -78.22094493810643,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1311,7 +1311,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000007479031997255503,
+                        "n": -0.000000000000007477566063749989,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1319,7 +1319,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -90.31384884991998,
+                        "n": -90.3138488502718,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1329,7 +1329,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.0000000000000005540827517630426,
+                        "n": 0.0000000000000005539829666982801,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1431,7 +1431,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -43.522056257411236,
+                        "n": -43.52205625744336,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1439,7 +1439,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -0.00000000001497342223201894,
+                        "n": -0.000000000014971969150469886,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1457,7 +1457,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000000005082029482488307,
+                        "n": 0.0000000000000005081478543137373,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1552,7 +1552,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -34.370745409351144,
+                        "n": -34.37074540940881,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1560,7 +1560,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -5.969118530124333,
+                        "n": -5.969118529993411,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1578,7 +1578,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000000010164058964881256,
+                        "n": 0.000000000000001016295708617939,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1673,7 +1673,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -2.54553615873061,
+                        "n": -2.5455361582138987,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1681,7 +1681,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -78.22094493693335,
+                        "n": -78.22094493810643,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1691,7 +1691,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.000000000000006384601408926174,
+                        "n": 0.000000000000006383661374477381,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1794,7 +1794,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000006384601409043784,
+                        "n": 0.000000000000006383661374595016,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1812,7 +1812,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000007479031997393308,
+                        "n": -0.000000000000007477566063887819,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1820,7 +1820,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -90.31384884991998,
+                        "n": -90.3138488502718,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1919,7 +1919,7 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "from": [
                     -73.0,
-                    0.0000000000000003048394547342806
+                    0.00000000000000030480985327642446
                   ],
                   "tag": {
                     "commentStart": 85,
@@ -1930,8 +1930,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -43.522056257411236,
-                    -0.0000000000000012472898195170687
+                    -43.52205625744336,
+                    -0.0000000000000012472003503443017
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1942,13 +1942,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -43.522056257411236,
-                    -0.0000000000000012472898195170687
+                    -43.52205625744336,
+                    -0.0000000000000012472003503443017
                   ],
                   "tag": null,
                   "to": [
-                    -34.370745409337545,
-                    -5.96911853011834
+                    -34.37074540939521,
+                    -5.969118529987418
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1959,8 +1959,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -34.370745409337545,
-                    -5.96911853011834
+                    -34.37074540939521,
+                    -5.969118529987418
                   ],
                   "tag": {
                     "commentStart": 231,
@@ -1971,8 +1971,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line2"
                   },
                   "to": [
-                    -2.545536158730603,
-                    -78.22094493693335
+                    -2.545536158213892,
+                    -78.22094493810643
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1983,13 +1983,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.545536158730603,
-                    -78.22094493693335
+                    -2.545536158213892,
+                    -78.22094493810643
                   ],
                   "tag": null,
                   "to": [
-                    -0.000000000000007479031997255503,
-                    -90.31384884991998
+                    -0.000000000000007477566063749989,
+                    -90.3138488502718
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2000,8 +2000,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000007479031997255503,
-                    -90.31384884991998
+                    -0.000000000000007477566063749989,
+                    -90.3138488502718
                   ],
                   "tag": {
                     "commentStart": 318,
@@ -2012,7 +2012,7 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line3"
                   },
                   "to": [
-                    0.0000000000000005540827517630426,
+                    0.0000000000000005539829666982801,
                     -184.0
                   ],
                   "type": "ToPoint",
@@ -2024,13 +2024,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.0000000000000005540827517630426,
+                    0.0000000000000005539829666982801,
                     -184.0
                   ],
                   "tag": null,
                   "to": [
-                    -0.000000000044789709756171204,
-                    -90.31384884991999
+                    -0.000000000044781641305956877,
+                    -90.3138488502718
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2042,14 +2042,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -29.999999999932847,
-                    -90.31443142168335
+                    -29.99999999993285,
+                    -90.31443142168338
                   ],
                   "from": [
-                    -0.000000000044789709756171204,
-                    -90.31384884991999
+                    -0.000000000044781641305956877,
+                    -90.3138488502718
                   ],
-                  "radius": 30.000000005544557,
+                  "radius": 30.00000000554456,
                   "tag": {
                     "commentStart": 461,
                     "end": 465,
@@ -2059,8 +2059,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    -2.5455361561687795,
-                    -78.2209449358049
+                    -2.5455361556520657,
+                    -78.22094493697796
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2071,13 +2071,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -2.5455361561687795,
-                    -78.2209449358049
+                    -2.5455361556520657,
+                    -78.22094493697796
                   ],
                   "tag": null,
                   "to": [
-                    -34.37074540936475,
-                    -5.9691185301303245
+                    -34.37074540942242,
+                    -5.9691185299994025
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2090,11 +2090,11 @@ description: Variables in memory after executing extrude_split.kcl
                   "ccw": true,
                   "center": [
                     -43.522356994426275,
-                    -9.999999999977543
+                    -9.999999999977547
                   ],
                   "from": [
-                    -34.37074540936475,
-                    -5.9691185301303245
+                    -34.37074540942242,
+                    -5.9691185299994025
                   ],
                   "radius": 10.000000001389498,
                   "tag": {
@@ -2106,8 +2106,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    -43.52205625741133,
-                    -0.0000000031101823338985923
+                    -43.52205625744345,
+                    -0.000000003110185886612271
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2147,11 +2147,11 @@ description: Variables in memory after executing extrude_split.kcl
               "start": {
                 "from": [
                   -73.0,
-                  0.0000000000000003048394547342806
+                  0.00000000000000030480985327642446
                 ],
                 "to": [
                   -73.0,
-                  0.0000000000000003048394547342806
+                  0.00000000000000030480985327642446
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2209,7 +2209,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -46.58412202975517,
+                        "n": -46.58412202854371,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2217,7 +2217,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -111.91979144008124,
+                        "n": -111.91979143493529,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2227,7 +2227,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -31.953378607183552,
+                        "n": -31.953378608770375,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2235,7 +2235,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -145.0182141859852,
+                        "n": -145.0182141851035,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2245,7 +2245,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": -17.38241963458235,
+                        "n": -17.382419634582313,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2253,7 +2253,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -118.7944243207115,
+                        "n": -118.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2361,7 +2361,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -4.571654135027698,
+                        "n": -4.571654134755775,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2369,7 +2369,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -160.23320845386493,
+                        "n": -160.23320845401602,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2379,7 +2379,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 39.99999999996486,
+                        "n": 39.999999999964864,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2387,7 +2387,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.00989892735538,
+                        "n": -134.00989892279952,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2397,7 +2397,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": 10.000000000052783,
+                        "n": 10.000000000052767,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2405,7 +2405,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.00980486422657,
+                        "n": -134.0098048642265,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2513,7 +2513,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -5.968516211307185,
+                        "n": -5.968516211792132,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2521,7 +2521,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -98.25244756981596,
+                        "n": -98.25244756954645,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2531,7 +2531,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -28.797102644076013,
+                        "n": -28.797102644355444,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2539,7 +2539,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -139.33596788487048,
+                        "n": -139.33596788471516,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2549,7 +2549,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": -17.38241963458227,
+                        "n": -17.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2557,7 +2557,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -118.79442432071134,
+                        "n": -118.79442432071131,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2665,7 +2665,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -1.4144097607514128,
+                        "n": -1.4144097613826683,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2673,7 +2673,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -154.55150026240565,
+                        "n": -154.55150026205484,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2683,7 +2683,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 21.413901834899416,
+                        "n": 21.413901835217825,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2691,7 +2691,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -113.46782723070238,
+                        "n": -113.46782723087925,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2701,7 +2701,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": 10.0000000000527,
+                        "n": 10.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2709,7 +2709,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.0098048642267,
+                        "n": -134.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2817,7 +2817,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": -4.068654557123219,
+                        "n": -4.0686545570812225,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2825,7 +2825,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -116.5597745803205,
+                        "n": -116.55977458057043,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2835,7 +2835,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": -17.38241963458235,
+                        "n": -17.382419634582313,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2843,7 +2843,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -118.7944243207115,
+                        "n": -118.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2937,7 +2937,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 22.918537399678993,
+                        "n": 22.918537399572877,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2945,7 +2945,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -130.0904437613865,
+                        "n": -130.09044376103674,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2955,7 +2955,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": 10.0000000000527,
+                        "n": 10.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2963,7 +2963,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.0098048642267,
+                        "n": -134.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3057,7 +3057,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 14.081525141033042,
+                        "n": 14.08152514103305,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3065,7 +3065,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -69.20002259469788,
+                        "n": -69.20002259469764,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3075,7 +3075,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5830070386037864,
+                        "n": 0.5830070386037906,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3177,7 +3177,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 22.89062951670857,
+                        "n": 22.890629516685024,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3185,7 +3185,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -33.01019583847991,
+                        "n": -33.0101958385556,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3297,7 +3297,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": -3.5374284242351552,
+                        "n": -3.5374284242250544,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3305,7 +3305,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -67.19112974578627,
+                        "n": -67.19112974576328,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3315,7 +3315,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5830070386037864,
+                        "n": 0.5830070386037906,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3417,7 +3417,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 6.681147059479005,
+                        "n": 6.681147059766565,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3425,7 +3425,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -25.961050319732955,
+                        "n": -25.96105031941891,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3563,7 +3563,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.00989892735538,
+                        "n": -134.00989892279952,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3657,7 +3657,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -5.968516211295814,
+                        "n": -5.968516211780757,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3665,7 +3665,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -98.25244756979549,
+                        "n": -98.25244756952597,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3675,7 +3675,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 21.413901834910792,
+                        "n": 21.413901835229197,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3683,7 +3683,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -113.4678272306819,
+                        "n": -113.46782723085879,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3777,7 +3777,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -22.38241963458227,
+                        "n": -22.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3785,7 +3785,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -113.7944243207115,
+                        "n": -113.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3795,7 +3795,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -12.38241963458227,
+                        "n": -12.382419634582233,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3803,7 +3803,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -113.7944243207115,
+                        "n": -113.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3897,7 +3897,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -12.38241963458227,
+                        "n": -12.382419634582233,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3905,7 +3905,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -113.7944243207115,
+                        "n": -113.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3915,7 +3915,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -12.38241963458227,
+                        "n": -12.382419634582233,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3923,7 +3923,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -123.7944243207115,
+                        "n": -123.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4017,7 +4017,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -12.38241963458227,
+                        "n": -12.382419634582233,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4025,7 +4025,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -123.7944243207115,
+                        "n": -123.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4035,7 +4035,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -22.38241963458227,
+                        "n": -22.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4043,7 +4043,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -123.7944243207115,
+                        "n": -123.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4137,7 +4137,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -22.38241963458227,
+                        "n": -22.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4145,7 +4145,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -123.7944243207115,
+                        "n": -123.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4155,7 +4155,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -22.38241963458227,
+                        "n": -22.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4163,7 +4163,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -113.7944243207115,
+                        "n": -113.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4257,7 +4257,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -17.38241963458227,
+                        "n": -17.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4265,7 +4265,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -118.79442432071134,
+                        "n": -118.79442432071131,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4275,7 +4275,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -17.38241963458227,
+                        "n": -17.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4283,7 +4283,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -123.7944243207115,
+                        "n": -123.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4378,7 +4378,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -17.38241963458235,
+                        "n": -17.382419634582313,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4386,7 +4386,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -118.7944243207115,
+                        "n": -118.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4396,7 +4396,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -12.38241963458227,
+                        "n": -12.38241963458223,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4404,7 +4404,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -118.7944243207115,
+                        "n": -118.79442432071147,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4499,7 +4499,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 5.0000000000527,
+                        "n": 5.000000000052684,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4507,7 +4507,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -139.0098048642267,
+                        "n": -139.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4517,7 +4517,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 15.0000000000527,
+                        "n": 15.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4525,7 +4525,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -139.0098048642267,
+                        "n": -139.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4619,7 +4619,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 15.0000000000527,
+                        "n": 15.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4627,7 +4627,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -139.0098048642267,
+                        "n": -139.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4637,7 +4637,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 15.0000000000527,
+                        "n": 15.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4645,7 +4645,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -129.0098048642267,
+                        "n": -129.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4739,7 +4739,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 15.0000000000527,
+                        "n": 15.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4747,7 +4747,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -129.0098048642267,
+                        "n": -129.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4757,7 +4757,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.0000000000527,
+                        "n": 5.000000000052684,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4765,7 +4765,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -129.0098048642267,
+                        "n": -129.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4859,7 +4859,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.5716541350698,
+                        "n": -4.571654134797874,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4867,7 +4867,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -160.23320845394068,
+                        "n": -160.23320845409177,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4877,7 +4877,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -31.95337860722691,
+                        "n": -31.95337860881371,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4885,7 +4885,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -145.01821418606323,
+                        "n": -145.01821418518148,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4979,7 +4979,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 5.0000000000527,
+                        "n": 5.000000000052684,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4987,7 +4987,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -129.0098048642267,
+                        "n": -129.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4997,7 +4997,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.0000000000527,
+                        "n": 5.000000000052684,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5005,7 +5005,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -139.0098048642267,
+                        "n": -139.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5099,7 +5099,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 10.0000000000527,
+                        "n": 10.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5107,7 +5107,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.0098048642267,
+                        "n": -134.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5117,7 +5117,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 5.000000000052703,
+                        "n": 5.0000000000526805,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5125,7 +5125,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.0098048642267,
+                        "n": -134.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5220,7 +5220,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 10.0000000000527,
+                        "n": 10.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5228,7 +5228,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.0098048642267,
+                        "n": -134.00980486422665,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5238,7 +5238,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": 10.0000000000527,
+                        "n": 10.000000000052685,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5246,7 +5246,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -139.0098048642267,
+                        "n": -139.00980486422668,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5341,7 +5341,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.5830070386037864,
+                        "n": 0.5830070386037906,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5462,7 +5462,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -46.58412202983491,
+                        "n": -46.58412202862342,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5470,7 +5470,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -111.91979144006247,
+                        "n": -111.91979143491652,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5703,7 +5703,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -4.57165413504875,
+                        "n": -4.571654134776825,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5711,7 +5711,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -160.2332084539028,
+                        "n": -160.23320845405388,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5850,7 +5850,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -134.00989892735538,
+                        "n": -134.00989892279952,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5945,7 +5945,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -31.95337860720523,
+                        "n": -31.953378608792043,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5953,7 +5953,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -145.0182141860242,
+                        "n": -145.01821418514248,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6084,7 +6084,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -46.58412202979504,
+                        "n": -46.584122028583565,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6092,7 +6092,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -111.91979144007186,
+                        "n": -111.91979143492591,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6187,7 +6187,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -28.79710264408739,
+                        "n": -28.797102644366824,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6195,7 +6195,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -139.33596788489095,
+                        "n": -139.33596788473565,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6205,7 +6205,7 @@ description: Variables in memory after executing extrude_split.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.4144097607624235,
+                        "n": -1.414409761393679,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6213,7 +6213,7 @@ description: Variables in memory after executing extrude_split.kcl
                         }
                       },
                       {
-                        "n": -154.55150026242546,
+                        "n": -154.55150026207465,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6323,7 +6323,7 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "to": [
                     39.99999999999999,
-                    -134.00989892735538
+                    -134.00989892279952
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6335,12 +6335,12 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "from": [
                     39.99999999999999,
-                    -134.00989892735538
+                    -134.00989892279952
                   ],
                   "tag": null,
                   "to": [
-                    -4.5716541350698,
-                    -160.23320845394068
+                    -4.571654134797874,
+                    -160.23320845409177
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6351,8 +6351,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.5716541350698,
-                    -160.23320845394068
+                    -4.571654134797874,
+                    -160.23320845409177
                   ],
                   "tag": {
                     "commentStart": 2241,
@@ -6363,8 +6363,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line2"
                   },
                   "to": [
-                    -31.95337860722691,
-                    -145.01821418606323
+                    -31.95337860881371,
+                    -145.01821418518148
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6375,13 +6375,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -31.95337860722691,
-                    -145.01821418606323
+                    -31.95337860881371,
+                    -145.01821418518148
                   ],
                   "tag": null,
                   "to": [
-                    -46.58412202983491,
-                    -111.91979144006247
+                    -46.58412202862342,
+                    -111.91979143491652
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6392,8 +6392,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -46.58412202983491,
-                    -111.91979144006247
+                    -46.58412202862342,
+                    -111.91979143491652
                   ],
                   "tag": {
                     "commentStart": 2331,
@@ -6421,8 +6421,8 @@ description: Variables in memory after executing extrude_split.kcl
                   ],
                   "tag": null,
                   "to": [
-                    -46.58412202975517,
-                    -111.91979144008124
+                    -46.58412202854371,
+                    -111.91979143493529
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6434,14 +6434,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -17.38241963458235,
-                    -118.7944243207115
+                    -17.38241963458231,
+                    -118.79442432071147
                   ],
                   "from": [
-                    -46.58412202975517,
-                    -111.91979144008124
+                    -46.58412202854371,
+                    -111.91979143493529
                   ],
-                  "radius": 30.00000000032808,
+                  "radius": 30.000000000328104,
                   "tag": {
                     "commentStart": 3442,
                     "end": 3446,
@@ -6451,8 +6451,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "arc1"
                   },
                   "to": [
-                    -31.95337860508232,
-                    -145.0182141822035
+                    -31.953378606669133,
+                    -145.01821418132178
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6463,13 +6463,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -31.95337860508232,
-                    -145.0182141822035
+                    -31.953378606669133,
+                    -145.01821418132178
                   ],
                   "tag": null,
                   "to": [
-                    -4.571654135027698,
-                    -160.23320845386493
+                    -4.571654134755775,
+                    -160.23320845401602
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6481,14 +6481,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    10.000000000052783,
-                    -134.00980486422657
+                    10.000000000052774,
+                    -134.0098048642265
                   ],
                   "from": [
-                    -4.571654135027698,
-                    -160.23320845386493
+                    -4.571654134755775,
+                    -160.23320845401602
                   ],
-                  "radius": 30.000000000957773,
+                  "radius": 30.000000000957805,
                   "tag": {
                     "commentStart": 3718,
                     "end": 3722,
@@ -6498,8 +6498,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    40.00000000086309,
-                    -134.00989892735538
+                    40.00000000086313,
+                    -134.00989892279952
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6510,13 +6510,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    40.00000000086309,
-                    -134.00989892735538
+                    40.00000000086313,
+                    -134.00989892279952
                   ],
                   "tag": null,
                   "to": [
-                    -5.968516211307185,
-                    -98.25244756981596
+                    -5.968516211792132,
+                    -98.25244756954645
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6528,14 +6528,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -17.382419634582266,
-                    -118.79442432071134
+                    -17.382419634582234,
+                    -118.79442432071131
                   ],
                   "from": [
-                    -5.968516211307185,
-                    -98.25244756981596
+                    -5.968516211792132,
+                    -98.25244756954645
                   ],
-                  "radius": 23.500000004046324,
+                  "radius": 23.50000000404633,
                   "tag": {
                     "commentStart": 4137,
                     "end": 4141,
@@ -6545,8 +6545,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    -28.79710264391794,
-                    -139.335967884586
+                    -28.79710264419738,
+                    -139.3359678844307
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6557,13 +6557,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -28.79710264391794,
-                    -139.335967884586
+                    -28.79710264419738,
+                    -139.3359678844307
                   ],
                   "tag": null,
                   "to": [
-                    -1.4144097607514128,
-                    -154.55150026240565
+                    -1.4144097613826683,
+                    -154.55150026205484
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6575,14 +6575,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    10.000000000052701,
-                    -134.0098048642267
+                    10.000000000052681,
+                    -134.00980486422665
                   ],
                   "from": [
-                    -1.4144097607514128,
-                    -154.55150026240565
+                    -1.4144097613826683,
+                    -154.55150026205484
                   ],
-                  "radius": 23.500000000406516,
+                  "radius": 23.500000000406526,
                   "tag": {
                     "commentStart": 4263,
                     "end": 4267,
@@ -6592,8 +6592,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    21.413901833115517,
-                    -113.46782723391293
+                    21.413901833433922,
+                    -113.4678272340898
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6604,13 +6604,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    21.413901833115517,
-                    -113.46782723391293
+                    21.413901833433922,
+                    -113.4678272340898
                   ],
                   "tag": null,
                   "to": [
-                    -28.79710264408739,
-                    -139.33596788489095
+                    -28.797102644366824,
+                    -139.33596788473565
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6621,8 +6621,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -28.79710264408739,
-                    -139.33596788489095
+                    -28.797102644366824,
+                    -139.33596788473565
                   ],
                   "tag": {
                     "commentStart": 4386,
@@ -6633,8 +6633,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line9"
                   },
                   "to": [
-                    -1.4144097607624235,
-                    -154.55150026242546
+                    -1.414409761393679,
+                    -154.55150026207465
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6645,13 +6645,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.4144097607624235,
-                    -154.55150026242546
+                    -1.414409761393679,
+                    -154.55150026207465
                   ],
                   "tag": null,
                   "to": [
-                    -5.968516211295814,
-                    -98.25244756979549
+                    -5.968516211780757,
+                    -98.25244756952597
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6662,8 +6662,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -5.968516211295814,
-                    -98.25244756979549
+                    -5.968516211780757,
+                    -98.25244756952597
                   ],
                   "tag": {
                     "commentStart": 4551,
@@ -6674,8 +6674,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line10"
                   },
                   "to": [
-                    21.413901834910792,
-                    -113.4678272306819
+                    21.413901835229197,
+                    -113.46782723085879
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6686,13 +6686,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    21.413901834910792,
-                    -113.4678272306819
+                    21.413901835229197,
+                    -113.46782723085879
                   ],
                   "tag": null,
                   "to": [
-                    -4.068654557123219,
-                    -116.5597745803205
+                    -4.0686545570812225,
+                    -116.55977458057043
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6704,14 +6704,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -17.38241963458235,
-                    -118.7944243207115
+                    -17.382419634582313,
+                    -118.79442432071147
                   ],
                   "from": [
-                    -4.068654557123219,
-                    -116.5597745803205
+                    -4.0686545570812225,
+                    -116.55977458057043
                   ],
-                  "radius": 13.499999999999998,
+                  "radius": 13.5,
                   "tag": {
                     "commentStart": 5003,
                     "end": 5010,
@@ -6721,8 +6721,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    -4.068654557123219,
-                    -116.5597745803205
+                    -4.0686545570812225,
+                    -116.55977458057043
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -6733,13 +6733,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -4.068654557123219,
-                    -116.5597745803205
+                    -4.0686545570812225,
+                    -116.55977458057043
                   ],
                   "tag": null,
                   "to": [
-                    22.918537399678993,
-                    -130.0904437613865
+                    22.918537399572877,
+                    -130.09044376103674
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6751,14 +6751,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    10.0000000000527,
-                    -134.0098048642267
+                    10.000000000052685,
+                    -134.00980486422665
                   ],
                   "from": [
-                    22.918537399678993,
-                    -130.0904437613865
+                    22.918537399572877,
+                    -130.09044376103674
                   ],
-                  "radius": 13.500000000000005,
+                  "radius": 13.499999999999998,
                   "tag": {
                     "commentStart": 5170,
                     "end": 5177,
@@ -6768,8 +6768,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "circle2"
                   },
                   "to": [
-                    22.918537399678993,
-                    -130.0904437613865
+                    22.918537399572877,
+                    -130.09044376103674
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -6780,13 +6780,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    22.918537399678993,
-                    -130.0904437613865
+                    22.918537399572877,
+                    -130.09044376103674
                   ],
                   "tag": null,
                   "to": [
-                    -22.38241963458227,
-                    -113.7944243207115
+                    -22.38241963458223,
+                    -113.79442432071147
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6797,8 +6797,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -22.38241963458227,
-                    -113.7944243207115
+                    -22.38241963458223,
+                    -113.79442432071147
                   ],
                   "tag": {
                     "commentStart": 5341,
@@ -6809,8 +6809,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line11"
                   },
                   "to": [
-                    -12.38241963458227,
-                    -113.7944243207115
+                    -12.382419634582233,
+                    -113.79442432071147
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6821,8 +6821,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -12.38241963458227,
-                    -113.7944243207115
+                    -12.382419634582233,
+                    -113.79442432071147
                   ],
                   "tag": {
                     "commentStart": 5433,
@@ -6833,8 +6833,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line12"
                   },
                   "to": [
-                    -12.38241963458227,
-                    -123.7944243207115
+                    -12.382419634582233,
+                    -123.79442432071147
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6845,8 +6845,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -12.38241963458227,
-                    -123.7944243207115
+                    -12.382419634582233,
+                    -123.79442432071147
                   ],
                   "tag": {
                     "commentStart": 5525,
@@ -6857,8 +6857,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line13"
                   },
                   "to": [
-                    -22.38241963458227,
-                    -123.7944243207115
+                    -22.38241963458223,
+                    -123.79442432071147
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6869,8 +6869,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -22.38241963458227,
-                    -123.7944243207115
+                    -22.38241963458223,
+                    -123.79442432071147
                   ],
                   "tag": {
                     "commentStart": 5617,
@@ -6881,8 +6881,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line14"
                   },
                   "to": [
-                    -22.38241963458227,
-                    -113.7944243207115
+                    -22.38241963458223,
+                    -113.79442432071147
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6893,13 +6893,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -22.38241963458227,
-                    -113.7944243207115
+                    -22.38241963458223,
+                    -113.79442432071147
                   ],
                   "tag": null,
                   "to": [
-                    5.0000000000527,
-                    -139.0098048642267
+                    5.000000000052684,
+                    -139.00980486422665
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6910,8 +6910,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.0000000000527,
-                    -139.0098048642267
+                    5.000000000052684,
+                    -139.00980486422665
                   ],
                   "tag": {
                     "commentStart": 6574,
@@ -6922,8 +6922,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line17"
                   },
                   "to": [
-                    15.0000000000527,
-                    -139.0098048642267
+                    15.000000000052685,
+                    -139.00980486422665
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6934,8 +6934,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    15.0000000000527,
-                    -139.0098048642267
+                    15.000000000052685,
+                    -139.00980486422665
                   ],
                   "tag": {
                     "commentStart": 6657,
@@ -6946,8 +6946,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line18"
                   },
                   "to": [
-                    15.0000000000527,
-                    -129.0098048642267
+                    15.000000000052685,
+                    -129.00980486422665
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6958,8 +6958,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    15.0000000000527,
-                    -129.0098048642267
+                    15.000000000052685,
+                    -129.00980486422665
                   ],
                   "tag": {
                     "commentStart": 6741,
@@ -6970,8 +6970,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line19"
                   },
                   "to": [
-                    5.0000000000527,
-                    -129.0098048642267
+                    5.000000000052684,
+                    -129.00980486422665
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6982,8 +6982,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.0000000000527,
-                    -129.0098048642267
+                    5.000000000052684,
+                    -129.00980486422665
                   ],
                   "tag": {
                     "commentStart": 6824,
@@ -6994,8 +6994,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "line20"
                   },
                   "to": [
-                    5.0000000000527,
-                    -139.0098048642267
+                    5.000000000052684,
+                    -139.00980486422665
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -7006,13 +7006,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    5.0000000000527,
-                    -139.0098048642267
+                    5.000000000052684,
+                    -139.00980486422665
                   ],
                   "tag": null,
                   "to": [
-                    14.081525141033042,
-                    -69.20002259469788
+                    14.08152514103305,
+                    -69.20002259469764
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -7024,12 +7024,12 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.5830070386037864,
+                    0.5830070386037906,
                     -69.0
                   ],
                   "from": [
-                    14.081525141033042,
-                    -69.20002259469788
+                    14.08152514103305,
+                    -69.20002259469764
                   ],
                   "radius": 13.499999999999998,
                   "tag": {
@@ -7041,8 +7041,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "circle3"
                   },
                   "to": [
-                    14.081525141033042,
-                    -69.20002259469788
+                    14.08152514103305,
+                    -69.20002259469764
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -7053,13 +7053,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    14.081525141033042,
-                    -69.20002259469788
+                    14.08152514103305,
+                    -69.20002259469764
                   ],
                   "tag": null,
                   "to": [
-                    22.89062951670857,
-                    -33.01019583847991
+                    22.890629516685024,
+                    -33.0101958385556
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -7075,8 +7075,8 @@ description: Variables in memory after executing extrude_split.kcl
                     -29.0
                   ],
                   "from": [
-                    22.89062951670857,
-                    -33.01019583847991
+                    22.890629516685024,
+                    -33.0101958385556
                   ],
                   "radius": 13.499999999999998,
                   "tag": {
@@ -7088,8 +7088,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "circle4"
                   },
                   "to": [
-                    22.89062951670857,
-                    -33.01019583847991
+                    22.890629516685024,
+                    -33.0101958385556
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -7100,13 +7100,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    22.89062951670857,
-                    -33.01019583847991
+                    22.890629516685024,
+                    -33.0101958385556
                   ],
                   "tag": null,
                   "to": [
-                    -3.5374284242351552,
-                    -67.19112974578627
+                    -3.5374284242250544,
+                    -67.19112974576328
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -7118,14 +7118,14 @@ description: Variables in memory after executing extrude_split.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.5830070386037864,
+                    0.5830070386037906,
                     -69.0
                   ],
                   "from": [
-                    -3.5374284242351552,
-                    -67.19112974578627
+                    -3.5374284242250544,
+                    -67.19112974576328
                   ],
-                  "radius": 4.500000000000001,
+                  "radius": 4.499999999999998,
                   "tag": {
                     "commentStart": 8322,
                     "end": 8329,
@@ -7135,8 +7135,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "circle5"
                   },
                   "to": [
-                    -3.5374284242351552,
-                    -67.19112974578627
+                    -3.5374284242250544,
+                    -67.19112974576328
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -7147,13 +7147,13 @@ description: Variables in memory after executing extrude_split.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -3.5374284242351552,
-                    -67.19112974578627
+                    -3.5374284242250544,
+                    -67.19112974576328
                   ],
                   "tag": null,
                   "to": [
-                    6.681147059479005,
-                    -25.961050319732955
+                    6.681147059766565,
+                    -25.96105031941891
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -7169,10 +7169,10 @@ description: Variables in memory after executing extrude_split.kcl
                     -29.0
                   ],
                   "from": [
-                    6.681147059479005,
-                    -25.961050319732955
+                    6.681147059766565,
+                    -25.96105031941891
                   ],
-                  "radius": 4.500000000000001,
+                  "radius": 4.5,
                   "tag": {
                     "commentStart": 8457,
                     "end": 8464,
@@ -7182,8 +7182,8 @@ description: Variables in memory after executing extrude_split.kcl
                     "value": "circle6"
                   },
                   "to": [
-                    6.681147059479005,
-                    -25.961050319732955
+                    6.681147059766565,
+                    -25.96105031941891
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -7434,8 +7434,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.000000000000007479031997255503,
-                  -90.31384884991998
+                  -0.000000000000007477566063749989,
+                  -90.3138488502718
                 ],
                 "tag": {
                   "commentStart": 0,
@@ -7446,7 +7446,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.0000000000000005540827517630426,
+                  0.0000000000000005539829666982801,
                   -184.0
                 ],
                 "type": "ToPoint",
@@ -7458,13 +7458,13 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0000000000000005540827517630426,
+                  0.0000000000000005539829666982801,
                   -184.0
                 ],
                 "tag": null,
                 "to": [
-                  -34.37074540936475,
-                  -5.9691185301303245
+                  -34.37074540942242,
+                  -5.9691185299994025
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7477,11 +7477,11 @@ description: Variables in memory after executing extrude_split.kcl
                 "ccw": true,
                 "center": [
                   -43.522356994426275,
-                  -9.999999999977543
+                  -9.999999999977547
                 ],
                 "from": [
-                  -34.37074540936475,
-                  -5.9691185301303245
+                  -34.37074540942242,
+                  -5.9691185299994025
                 ],
                 "radius": 10.000000001389498,
                 "tag": {
@@ -7493,8 +7493,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  -43.52205625741133,
-                  -0.0000000031101823338985923
+                  -43.52205625744345,
+                  -0.000000003110185886612271
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -7505,13 +7505,13 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -43.52205625741133,
-                  -0.0000000031101823338985923
+                  -43.52205625744345,
+                  -0.000000003110185886612271
                 ],
                 "tag": null,
                 "to": [
-                  -34.370745409337545,
-                  -5.96911853011834
+                  -34.37074540939521,
+                  -5.969118529987418
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7522,8 +7522,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -34.370745409337545,
-                  -5.96911853011834
+                  -34.37074540939521,
+                  -5.969118529987418
                 ],
                 "tag": {
                   "commentStart": 0,
@@ -7534,8 +7534,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line2"
                 },
                 "to": [
-                  -2.545536158730603,
-                  -78.22094493693335
+                  -2.545536158213892,
+                  -78.22094493810643
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7547,14 +7547,14 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -29.999999999892072,
-                  -90.31443142166539
+                  -29.999999999892093,
+                  -90.31443142166543
                 ],
                 "from": [
-                  -2.545536158730603,
-                  -78.22094493693335
+                  -2.545536158213892,
+                  -78.22094493810643
                 ],
-                "radius": 30.000000002700652,
+                "radius": 30.00000000270067,
                 "tag": {
                   "commentStart": 0,
                   "end": 0,
@@ -7564,8 +7564,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "arc2"
                 },
                 "to": [
-                  -0.0000000028479192337727,
-                  -90.31384884990209
+                  -0.000000002847915681059021,
+                  -90.3138488502539
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -7576,13 +7576,13 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0000000028479192337727,
-                  -90.31384884990209
+                  -0.000000002847915681059021,
+                  -90.3138488502539
                 ],
                 "tag": null,
                 "to": [
                   -73.0,
-                  0.0000000000000003048394547342806
+                  0.00000000000000030480985327642446
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7594,7 +7594,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 "from": [
                   -73.0,
-                  0.0000000000000003048394547342806
+                  0.00000000000000030480985327642446
                 ],
                 "tag": {
                   "commentStart": 0,
@@ -7605,8 +7605,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -43.522056257411236,
-                  -0.0000000000000012472898195170687
+                  -43.52205625744336,
+                  -0.0000000000000012472003503443017
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7645,12 +7645,12 @@ description: Variables in memory after executing extrude_split.kcl
             },
             "start": {
               "from": [
-                -0.000000000000007479031997255503,
-                -90.31384884991998
+                -0.000000000000007477566063749989,
+                -90.3138488502718
               ],
               "to": [
-                -0.000000000000007479031997255503,
-                -90.31384884991998
+                -0.000000000000007477566063749989,
+                -90.3138488502718
               ],
               "units": "mm",
               "tag": null,
@@ -7781,8 +7781,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.000000000000007479031997255503,
-                  -90.31384884991998
+                  -0.000000000000007477566063749989,
+                  -90.3138488502718
                 ],
                 "tag": {
                   "commentStart": 0,
@@ -7793,7 +7793,7 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line3"
                 },
                 "to": [
-                  0.0000000000000005540827517630426,
+                  0.0000000000000005539829666982801,
                   -184.0
                 ],
                 "type": "ToPoint",
@@ -7805,13 +7805,13 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  0.0000000000000005540827517630426,
+                  0.0000000000000005539829666982801,
                   -184.0
                 ],
                 "tag": null,
                 "to": [
-                  -34.37074540936475,
-                  -5.9691185301303245
+                  -34.37074540942242,
+                  -5.9691185299994025
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7824,11 +7824,11 @@ description: Variables in memory after executing extrude_split.kcl
                 "ccw": true,
                 "center": [
                   -43.522356994426275,
-                  -9.999999999977543
+                  -9.999999999977547
                 ],
                 "from": [
-                  -34.37074540936475,
-                  -5.9691185301303245
+                  -34.37074540942242,
+                  -5.9691185299994025
                 ],
                 "radius": 10.000000001389498,
                 "tag": {
@@ -7840,8 +7840,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "arc1"
                 },
                 "to": [
-                  -43.52205625741133,
-                  -0.0000000031101823338985923
+                  -43.52205625744345,
+                  -0.000000003110185886612271
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -7852,13 +7852,13 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -43.52205625741133,
-                  -0.0000000031101823338985923
+                  -43.52205625744345,
+                  -0.000000003110185886612271
                 ],
                 "tag": null,
                 "to": [
-                  -34.370745409337545,
-                  -5.96911853011834
+                  -34.37074540939521,
+                  -5.969118529987418
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7869,8 +7869,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -34.370745409337545,
-                  -5.96911853011834
+                  -34.37074540939521,
+                  -5.969118529987418
                 ],
                 "tag": {
                   "commentStart": 0,
@@ -7881,8 +7881,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line2"
                 },
                 "to": [
-                  -2.545536158730603,
-                  -78.22094493693335
+                  -2.545536158213892,
+                  -78.22094493810643
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7894,14 +7894,14 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 "ccw": false,
                 "center": [
-                  -29.999999999892072,
-                  -90.31443142166539
+                  -29.999999999892093,
+                  -90.31443142166543
                 ],
                 "from": [
-                  -2.545536158730603,
-                  -78.22094493693335
+                  -2.545536158213892,
+                  -78.22094493810643
                 ],
-                "radius": 30.000000002700652,
+                "radius": 30.00000000270067,
                 "tag": {
                   "commentStart": 0,
                   "end": 0,
@@ -7911,8 +7911,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "arc2"
                 },
                 "to": [
-                  -0.0000000028479192337727,
-                  -90.31384884990209
+                  -0.000000002847915681059021,
+                  -90.3138488502539
                 ],
                 "type": "Arc",
                 "units": "mm"
@@ -7923,13 +7923,13 @@ description: Variables in memory after executing extrude_split.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  -0.0000000028479192337727,
-                  -90.31384884990209
+                  -0.000000002847915681059021,
+                  -90.3138488502539
                 ],
                 "tag": null,
                 "to": [
                   -73.0,
-                  0.0000000000000003048394547342806
+                  0.00000000000000030480985327642446
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7941,7 +7941,7 @@ description: Variables in memory after executing extrude_split.kcl
                 },
                 "from": [
                   -73.0,
-                  0.0000000000000003048394547342806
+                  0.00000000000000030480985327642446
                 ],
                 "tag": {
                   "commentStart": 0,
@@ -7952,8 +7952,8 @@ description: Variables in memory after executing extrude_split.kcl
                   "value": "line1"
                 },
                 "to": [
-                  -43.522056257411236,
-                  -0.0000000000000012472898195170687
+                  -43.52205625744336,
+                  -0.0000000000000012472003503443017
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -7992,12 +7992,12 @@ description: Variables in memory after executing extrude_split.kcl
             },
             "start": {
               "from": [
-                -0.000000000000007479031997255503,
-                -90.31384884991998
+                -0.000000000000007477566063749989,
+                -90.3138488502718
               ],
               "to": [
-                -0.000000000000007479031997255503,
-                -90.31384884991998
+                -0.000000000000007477566063749989,
+                -90.3138488502718
               ],
               "units": "mm",
               "tag": null,

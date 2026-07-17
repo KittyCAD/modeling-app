@@ -1397,7 +1397,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "to": [
               80.0,
-              -0.00000000000000016391164960538617
+              -0.00000000000000016359325901190258
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1409,7 +1409,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "from": [
               80.0,
-              -0.00000000000000016391164960538617
+              -0.00000000000000016359325901190258
             ],
             "tag": {
               "commentStart": 1243,
@@ -1421,7 +1421,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "to": [
               4.4,
-              -0.0000000000000001361968854300703
+              -0.00000000000000013593532780969027
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1486,8 +1486,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "sourceRange": []
             },
             "from": [
-              7.33334990021131,
-              58.99999999999904
+              7.333349899984599,
+              58.99999999999905
             ],
             "tag": {
               "commentStart": 5496,
@@ -1499,7 +1499,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "to": [
               7.333333333333334,
-              59.99999999999904
+              59.99999999999905
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1539,11 +1539,11 @@ description: Variables in memory after executing gas-impeller.kcl
         "start": {
           "from": [
             4.4,
-            -0.00000000000000016773846515189331
+            -0.00000000000000016741813814460606
           ],
           "to": [
             4.4,
-            -0.00000000000000016773846515189331
+            -0.00000000000000016741813814460606
           ],
           "units": "mm",
           "tag": null,
@@ -1635,7 +1635,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "to": [
             80.0,
-            -0.00000000000000016391164960538617
+            -0.00000000000000016359325901190258
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1647,7 +1647,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "from": [
             80.0,
-            -0.00000000000000016391164960538617
+            -0.00000000000000016359325901190258
           ],
           "tag": {
             "commentStart": 1243,
@@ -1659,7 +1659,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "to": [
             4.4,
-            -0.0000000000000001361968854300703
+            -0.00000000000000013593532780969027
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1724,8 +1724,8 @@ description: Variables in memory after executing gas-impeller.kcl
             "sourceRange": []
           },
           "from": [
-            7.33334990021131,
-            58.99999999999904
+            7.333349899984599,
+            58.99999999999905
           ],
           "tag": {
             "commentStart": 5496,
@@ -1737,7 +1737,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "to": [
             7.333333333333334,
-            59.99999999999904
+            59.99999999999905
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -1777,11 +1777,11 @@ description: Variables in memory after executing gas-impeller.kcl
       "start": {
         "from": [
           4.4,
-          -0.00000000000000016773846515189331
+          -0.00000000000000016741813814460606
         ],
         "to": [
           4.4,
-          -0.00000000000000016773846515189331
+          -0.00000000000000016741813814460606
         ],
         "units": "mm",
         "tag": null,
@@ -1980,7 +1980,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -1992,7 +1992,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -2004,7 +2004,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2069,8 +2069,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -2082,7 +2082,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2122,11 +2122,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -2290,7 +2290,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2302,7 +2302,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -2314,7 +2314,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2379,8 +2379,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -2392,7 +2392,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2432,11 +2432,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -2600,7 +2600,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2612,7 +2612,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -2624,7 +2624,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2689,8 +2689,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -2702,7 +2702,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2742,11 +2742,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -2910,7 +2910,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2922,7 +2922,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -2934,7 +2934,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -2999,8 +2999,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -3012,7 +3012,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3052,11 +3052,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -3220,7 +3220,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3232,7 +3232,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -3244,7 +3244,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3309,8 +3309,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -3322,7 +3322,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3362,11 +3362,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -3530,7 +3530,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3542,7 +3542,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -3554,7 +3554,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3619,8 +3619,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -3632,7 +3632,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3672,11 +3672,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -3840,7 +3840,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3852,7 +3852,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -3864,7 +3864,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3929,8 +3929,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -3942,7 +3942,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -3982,11 +3982,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -4150,7 +4150,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -4162,7 +4162,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -4174,7 +4174,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -4239,8 +4239,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -4252,7 +4252,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -4292,11 +4292,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -4460,7 +4460,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -4472,7 +4472,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "from": [
                   80.0,
-                  -0.00000000000000016391164960538617
+                  -0.00000000000000016359325901190258
                 ],
                 "tag": {
                   "commentStart": 1243,
@@ -4484,7 +4484,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   4.4,
-                  -0.0000000000000001361968854300703
+                  -0.00000000000000013593532780969027
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -4549,8 +4549,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   "sourceRange": []
                 },
                 "from": [
-                  7.33334990021131,
-                  58.99999999999904
+                  7.333349899984599,
+                  58.99999999999905
                 ],
                 "tag": {
                   "commentStart": 5496,
@@ -4562,7 +4562,7 @@ description: Variables in memory after executing gas-impeller.kcl
                 },
                 "to": [
                   7.333333333333334,
-                  59.99999999999904
+                  59.99999999999905
                 ],
                 "type": "ToPoint",
                 "units": "mm"
@@ -4602,11 +4602,11 @@ description: Variables in memory after executing gas-impeller.kcl
             "start": {
               "from": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "to": [
                 4.4,
-                -0.00000000000000016773846515189331
+                -0.00000000000000016741813814460606
               ],
               "units": "mm",
               "tag": null,
@@ -4693,7 +4693,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000015005426751786983,
+                        "n": -0.00000000000000014976429341093822,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4711,7 +4711,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000001361968854300703,
+                        "n": -0.00000000000000013593532780969027,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5439,7 +5439,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 8.308484377177006,
+                        "n": 8.308484376942259,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5447,7 +5447,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 59.22161398652467,
+                        "n": 59.22161398656003,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5465,7 +5465,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 59.99999999999904,
+                        "n": 59.99999999999905,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5475,7 +5475,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     ],
                     "center": [
                       {
-                        "n": 7.33334990021131,
+                        "n": 7.333349899984599,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5483,7 +5483,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 58.99999999999904,
+                        "n": 58.99999999999905,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5591,7 +5591,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 7.33334990021131,
+                        "n": 7.333349899984599,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5599,7 +5599,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 58.99999999999904,
+                        "n": 58.99999999999905,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5617,7 +5617,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 59.99999999999904,
+                        "n": 59.99999999999905,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5835,7 +5835,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "from": [
                     4.4,
-                    -0.00000000000000016773846515189331
+                    -0.00000000000000016741813814460606
                   ],
                   "tag": {
                     "commentStart": 762,
@@ -5883,14 +5883,14 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "ccw": false,
                   "center": [
-                    7.33334990021131,
+                    7.333349899984599,
                     59.0
                   ],
                   "from": [
                     7.333333333333334,
                     60.0
                   ],
-                  "radius": 1.0000000001372307,
+                  "radius": 1.000000000137227,
                   "tag": {
                     "commentStart": 970,
                     "end": 989,
@@ -5900,8 +5900,8 @@ description: Variables in memory after executing gas-impeller.kcl
                     "value": "hubShoulderBlendArc"
                   },
                   "to": [
-                    8.308484373804756,
-                    59.22161398575924
+                    8.308484373570007,
+                    59.22161398579458
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -5912,8 +5912,8 @@ description: Variables in memory after executing gas-impeller.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    8.308484373804756,
-                    59.22161398575924
+                    8.308484373570007,
+                    59.22161398579458
                   ],
                   "tag": null,
                   "to": [
@@ -5942,7 +5942,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "to": [
                     80.0,
-                    -0.00000000000000016391164960538617
+                    -0.00000000000000016359325901190258
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5954,7 +5954,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "from": [
                     80.0,
-                    -0.00000000000000016391164960538617
+                    -0.00000000000000016359325901190258
                   ],
                   "tag": {
                     "commentStart": 1243,
@@ -5966,7 +5966,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "to": [
                     4.4,
-                    -0.0000000000000001361968854300703
+                    -0.00000000000000013593532780969027
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5978,12 +5978,12 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "from": [
                     4.4,
-                    -0.0000000000000001361968854300703
+                    -0.00000000000000013593532780969027
                   ],
                   "tag": null,
                   "to": [
-                    8.30848437717722,
-                    59.22161398652472
+                    8.308484376942472,
+                    59.22161398656007
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5996,13 +5996,13 @@ description: Variables in memory after executing gas-impeller.kcl
                   "ccw": true,
                   "center": [
                     80.0,
-                    75.52105204072917
+                    75.52105204101323
                   ],
                   "from": [
-                    8.30848437717722,
-                    59.22161398652472
+                    8.308484376942472,
+                    59.22161398656007
                   ],
-                  "radius": 73.52105204076102,
+                  "radius": 73.52105204104507,
                   "tag": {
                     "commentStart": 2178,
                     "end": 2194,
@@ -6013,7 +6013,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "to": [
                     80.0,
-                    1.9999999999681535
+                    1.9999999999681677
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -6025,7 +6025,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "from": [
                     80.0,
-                    1.9999999999681535
+                    1.9999999999681677
                   ],
                   "tag": null,
                   "to": [
@@ -6141,8 +6141,8 @@ description: Variables in memory after executing gas-impeller.kcl
                   ],
                   "tag": null,
                   "to": [
-                    7.33334990021131,
-                    58.99999999999904
+                    7.333349899984599,
+                    58.99999999999905
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6153,8 +6153,8 @@ description: Variables in memory after executing gas-impeller.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    7.33334990021131,
-                    58.99999999999904
+                    7.333349899984599,
+                    58.99999999999905
                   ],
                   "tag": {
                     "commentStart": 5496,
@@ -6166,7 +6166,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   },
                   "to": [
                     7.333333333333334,
-                    59.99999999999904
+                    59.99999999999905
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -6206,11 +6206,11 @@ description: Variables in memory after executing gas-impeller.kcl
               "start": {
                 "from": [
                   4.4,
-                  -0.00000000000000016773846515189331
+                  -0.00000000000000016741813814460606
                 ],
                 "to": [
                   4.4,
-                  -0.00000000000000016773846515189331
+                  -0.00000000000000016741813814460606
                 ],
                 "units": "mm",
                 "tag": null,
@@ -6282,7 +6282,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 8.30848437717722,
+                        "n": 8.308484376942472,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6290,7 +6290,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 59.22161398652472,
+                        "n": 59.22161398656007,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6326,7 +6326,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 75.52105204072917,
+                        "n": 75.52105204101323,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6442,7 +6442,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 75.52105204072917,
+                        "n": 75.52105204101323,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6555,7 +6555,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 8.308484377177006,
+                        "n": 8.308484376942259,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6563,7 +6563,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 59.22161398652467,
+                        "n": 59.22161398656003,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6684,7 +6684,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 75.52105204072917,
+                        "n": 75.52105204101323,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6694,7 +6694,7 @@ description: Variables in memory after executing gas-impeller.kcl
                     ],
                     "end": [
                       {
-                        "n": 44.15424218858868,
+                        "n": 44.154242188471294,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6702,7 +6702,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 30.610806993262194,
+                        "n": 30.61080699327987,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6797,7 +6797,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 8.308484377177006,
+                        "n": 8.308484376942259,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6805,7 +6805,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 59.22161398652467,
+                        "n": 59.22161398656003,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6823,7 +6823,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": 75.52105204072917,
+                        "n": 75.52105204101323,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6944,7 +6944,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000016391164960538617,
+                        "n": -0.00000000000000016359325901190258,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7038,7 +7038,7 @@ description: Variables in memory after executing gas-impeller.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.000000000000000019109918266141755,
+                        "n": 0.00000000000000001907933210484619,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7046,7 +7046,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000004539896181013798,
+                        "n": -0.000000000000000045311775936677974,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7064,7 +7064,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000009079792362018998,
+                        "n": -0.00000000000000009062355187326976,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7167,7 +7167,7 @@ description: Variables in memory after executing gas-impeller.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000016773846515189331,
+                        "n": -0.00000000000000016741813814460606,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7283,7 +7283,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "from": [
             4.4,
-            -0.00000000000000016773846515189331
+            -0.00000000000000016741813814460606
           ],
           "tag": {
             "commentStart": 762,
@@ -7331,14 +7331,14 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "ccw": false,
           "center": [
-            7.33334990021131,
+            7.333349899984599,
             59.0
           ],
           "from": [
             7.333333333333334,
             60.0
           ],
-          "radius": 1.0000000001372307,
+          "radius": 1.000000000137227,
           "tag": {
             "commentStart": 970,
             "end": 989,
@@ -7348,8 +7348,8 @@ description: Variables in memory after executing gas-impeller.kcl
             "value": "hubShoulderBlendArc"
           },
           "to": [
-            8.308484373804756,
-            59.22161398575924
+            8.308484373570007,
+            59.22161398579458
           ],
           "type": "Arc",
           "units": "mm"
@@ -7373,7 +7373,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "to": [
             80.0,
-            -0.00000000000000016391164960538617
+            -0.00000000000000016359325901190258
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -7386,13 +7386,13 @@ description: Variables in memory after executing gas-impeller.kcl
           "ccw": true,
           "center": [
             80.0,
-            75.52105204072917
+            75.52105204101323
           ],
           "from": [
-            8.30848437717722,
-            59.22161398652472
+            8.308484376942472,
+            59.22161398656007
           ],
-          "radius": 73.52105204076102,
+          "radius": 73.52105204104507,
           "tag": {
             "commentStart": 2178,
             "end": 2194,
@@ -7403,7 +7403,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "to": [
             80.0,
-            1.9999999999681535
+            1.9999999999681677
           ],
           "type": "Arc",
           "units": "mm"
@@ -7416,13 +7416,13 @@ description: Variables in memory after executing gas-impeller.kcl
           "ccw": true,
           "center": [
             80.0,
-            75.52105204072917
+            75.52105204101323
           ],
           "from": [
-            8.30848437717722,
-            59.22161398652472
+            8.308484376942472,
+            59.22161398656007
           ],
-          "radius": 73.52105204076102,
+          "radius": 73.52105204104507,
           "tag": {
             "commentStart": 2178,
             "end": 2194,
@@ -7433,7 +7433,7 @@ description: Variables in memory after executing gas-impeller.kcl
           },
           "to": [
             80.0,
-            1.9999999999681535
+            1.9999999999681677
           ],
           "type": "Arc",
           "units": "mm"
@@ -7521,11 +7521,11 @@ description: Variables in memory after executing gas-impeller.kcl
       "start": {
         "from": [
           4.4,
-          -0.00000000000000016773846515189331
+          -0.00000000000000016741813814460606
         ],
         "to": [
           4.4,
-          -0.00000000000000016773846515189331
+          -0.00000000000000016741813814460606
         ],
         "units": "mm",
         "tag": null,
@@ -7747,7 +7747,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "from": [
               4.4,
-              -0.00000000000000016773846515189331
+              -0.00000000000000016741813814460606
             ],
             "tag": {
               "commentStart": 762,
@@ -7795,14 +7795,14 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "ccw": false,
             "center": [
-              7.33334990021131,
+              7.333349899984599,
               59.0
             ],
             "from": [
               7.333333333333334,
               60.0
             ],
-            "radius": 1.0000000001372307,
+            "radius": 1.000000000137227,
             "tag": {
               "commentStart": 970,
               "end": 989,
@@ -7812,8 +7812,8 @@ description: Variables in memory after executing gas-impeller.kcl
               "value": "hubShoulderBlendArc"
             },
             "to": [
-              8.308484373804756,
-              59.22161398575924
+              8.308484373570007,
+              59.22161398579458
             ],
             "type": "Arc",
             "units": "mm"
@@ -7837,7 +7837,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "to": [
               80.0,
-              -0.00000000000000016391164960538617
+              -0.00000000000000016359325901190258
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -7850,13 +7850,13 @@ description: Variables in memory after executing gas-impeller.kcl
             "ccw": true,
             "center": [
               80.0,
-              75.52105204072917
+              75.52105204101323
             ],
             "from": [
-              8.30848437717722,
-              59.22161398652472
+              8.308484376942472,
+              59.22161398656007
             ],
-            "radius": 73.52105204076102,
+            "radius": 73.52105204104507,
             "tag": {
               "commentStart": 2178,
               "end": 2194,
@@ -7867,7 +7867,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "to": [
               80.0,
-              1.9999999999681535
+              1.9999999999681677
             ],
             "type": "Arc",
             "units": "mm"
@@ -7880,13 +7880,13 @@ description: Variables in memory after executing gas-impeller.kcl
             "ccw": true,
             "center": [
               80.0,
-              75.52105204072917
+              75.52105204101323
             ],
             "from": [
-              8.30848437717722,
-              59.22161398652472
+              8.308484376942472,
+              59.22161398656007
             ],
-            "radius": 73.52105204076102,
+            "radius": 73.52105204104507,
             "tag": {
               "commentStart": 2178,
               "end": 2194,
@@ -7897,7 +7897,7 @@ description: Variables in memory after executing gas-impeller.kcl
             },
             "to": [
               80.0,
-              1.9999999999681535
+              1.9999999999681677
             ],
             "type": "Arc",
             "units": "mm"
@@ -7985,11 +7985,11 @@ description: Variables in memory after executing gas-impeller.kcl
         "start": {
           "from": [
             4.4,
-            -0.00000000000000016773846515189331
+            -0.00000000000000016741813814460606
           ],
           "to": [
             4.4,
-            -0.00000000000000016773846515189331
+            -0.00000000000000016741813814460606
           ],
           "units": "mm",
           "tag": null,

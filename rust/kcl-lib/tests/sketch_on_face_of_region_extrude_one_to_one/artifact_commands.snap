@@ -68,8 +68,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.22104746979281129,
-          "y": 0.323390789500588,
+          "x": -0.22104743757752468,
+          "y": 0.32339085930211725,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 3.394380771462946,
-            "y": 0.32339078950058997,
+            "x": 3.3943808251606176,
+            "y": 0.3233908593021192,
             "z": 0.0
           },
           "relative": false
@@ -107,8 +107,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.5866666508349256,
-            "y": 4.808218492451258,
+            "x": 1.5866666937913998,
+            "y": 4.8082184115519135,
             "z": 0.0
           },
           "relative": false
@@ -124,8 +124,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.22104746979281167,
-            "y": 0.3233907895005861,
+            "x": -0.22104743757752507,
+            "y": 0.3233908593021153,
             "z": 0.0
           },
           "relative": false
@@ -232,8 +232,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.4999999979999996,
-          "y": 0.4999999975600003,
+          "x": 0.4999999979999997,
+          "y": 0.49999999755999947,
           "z": 0.0
         }
       }
@@ -254,8 +254,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7499999976799994,
-            "y": 0.4999999969816958,
+            "x": 0.7499999976799997,
+            "y": 0.4999999969816937,
             "z": 0.0
           },
           "relative": false
@@ -271,8 +271,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.749999996996215,
-            "y": 0.7499999955316958,
+            "x": 0.749999996996217,
+            "y": 0.7499999955316935,
             "z": 0.0
           },
           "relative": false
@@ -288,8 +288,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.499999995036215,
-            "y": 0.749999995340848,
+            "x": 0.49999999503621706,
+            "y": 0.7499999953408464,
             "z": 0.0
           },
           "relative": false
@@ -305,8 +305,8 @@ description: Artifact commands sketch_on_face_of_region_extrude_one_to_one.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.4999999967399994,
-            "y": 0.4999999970700002,
+            "x": 0.4999999967399997,
+            "y": 0.4999999970699994,
             "z": 0.0
           },
           "relative": false

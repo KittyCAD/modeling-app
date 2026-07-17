@@ -319,8 +319,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000016300003424760624,
-              -0.00000000000000002210000776434463
+              -0.00000000000000001629999928885756,
+              -0.00000000000000002210001769051198
             ],
             "tag": {
               "commentStart": 746,
@@ -331,7 +331,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line1"
             },
             "to": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "type": "ToPoint",
@@ -343,7 +343,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "tag": {
@@ -380,7 +380,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -392,7 +392,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "tag": {
               "commentStart": 1039,
@@ -404,7 +404,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -416,7 +416,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "tag": {
               "commentStart": 1150,
@@ -428,7 +428,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -440,7 +440,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "tag": {
               "commentStart": 1264,
@@ -451,8 +451,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line6"
             },
             "to": [
-              -0.000000000000000017300004401152518,
-              -0.0000000000000006619652844002472
+              -0.000000000000000017299999438068843,
+              -0.0000000000000003288983902475901
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -491,12 +491,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "to": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "units": "mm",
           "tag": null,
@@ -691,8 +691,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000016300003424760624,
-              -0.00000000000000002210000776434463
+              -0.00000000000000001629999928885756,
+              -0.00000000000000002210001769051198
             ],
             "tag": {
               "commentStart": 746,
@@ -703,7 +703,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line1"
             },
             "to": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "type": "ToPoint",
@@ -715,7 +715,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "tag": {
@@ -752,7 +752,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -764,7 +764,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "tag": {
               "commentStart": 1039,
@@ -776,7 +776,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -788,7 +788,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "tag": {
               "commentStart": 1150,
@@ -800,7 +800,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -812,7 +812,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "tag": {
               "commentStart": 1264,
@@ -823,8 +823,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line6"
             },
             "to": [
-              -0.000000000000000017300004401152518,
-              -0.0000000000000006619652844002472
+              -0.000000000000000017299999438068843,
+              -0.0000000000000003288983902475901
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -863,12 +863,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "to": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "units": "mm",
           "tag": null,
@@ -1149,8 +1149,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000016300003424760624,
-              -0.00000000000000002210000776434463
+              -0.00000000000000001629999928885756,
+              -0.00000000000000002210001769051198
             ],
             "tag": {
               "commentStart": 746,
@@ -1161,7 +1161,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line1"
             },
             "to": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "type": "ToPoint",
@@ -1173,7 +1173,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "tag": {
@@ -1210,7 +1210,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1222,7 +1222,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "tag": {
               "commentStart": 1039,
@@ -1234,7 +1234,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1246,7 +1246,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "tag": {
               "commentStart": 1150,
@@ -1258,7 +1258,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1270,7 +1270,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "tag": {
               "commentStart": 1264,
@@ -1281,8 +1281,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line6"
             },
             "to": [
-              -0.000000000000000017300004401152518,
-              -0.0000000000000006619652844002472
+              -0.000000000000000017299999438068843,
+              -0.0000000000000003288983902475901
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1321,12 +1321,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "to": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "units": "mm",
           "tag": null,
@@ -1591,7 +1591,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000040000003109614805,
+            0.0000000004000000121161302,
             0.0
           ],
           "from": [
@@ -1707,7 +1707,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.00000000040000003109614805,
+                        "n": 0.0000000004000000121161302,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1809,7 +1809,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000040000003149614814,
+                        "n": 0.00000000040000001251613025,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1934,7 +1934,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.00000000040000003109614805,
+                    0.0000000004000000121161302,
                     0.0
                   ],
                   "from": [
@@ -2062,7 +2062,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "ccw": true,
             "center": [
-              0.0000000006000000466442222,
+              0.0000000006000000770526624,
               0.0
             ],
             "from": [
@@ -2301,7 +2301,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "ccw": true,
           "center": [
-            0.0000000006000000466442222,
+            0.0000000006000000770526624,
             0.0
           ],
           "from": [
@@ -2403,7 +2403,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.0000000006000000466442222,
+                    0.0000000006000000770526624,
                     0.0
                   ],
                   "from": [
@@ -2519,7 +2519,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.0000000006000000466442222,
+                        "n": 0.0000000006000000770526624,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2621,7 +2621,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.0000000006000000472442223,
+                        "n": 0.0000000006000000776526626,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2897,8 +2897,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000016300003424760624,
-              -0.00000000000000002210000776434463
+              -0.00000000000000001629999928885756,
+              -0.00000000000000002210001769051198
             ],
             "tag": {
               "commentStart": 746,
@@ -2909,7 +2909,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line1"
             },
             "to": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "type": "ToPoint",
@@ -2921,7 +2921,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "tag": {
@@ -2958,7 +2958,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2970,7 +2970,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "tag": {
               "commentStart": 1039,
@@ -2982,7 +2982,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -2994,7 +2994,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "tag": {
               "commentStart": 1150,
@@ -3006,7 +3006,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3018,7 +3018,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "tag": {
               "commentStart": 1264,
@@ -3029,8 +3029,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line6"
             },
             "to": [
-              -0.000000000000000017300004401152518,
-              -0.0000000000000006619652844002472
+              -0.000000000000000017299999438068843,
+              -0.0000000000000003288983902475901
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -3069,12 +3069,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "to": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "units": "mm",
           "tag": null,
@@ -3236,7 +3236,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "ccw": true,
           "center": [
-            0.00000000040000003109614805,
+            0.0000000004000000121161302,
             0.0
           ],
           "from": [
@@ -3332,7 +3332,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "ccw": true,
           "center": [
-            0.0000000006000000466442222,
+            0.0000000006000000770526624,
             0.0
           ],
           "from": [
@@ -3427,8 +3427,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "tag": {
             "commentStart": 746,
@@ -3439,7 +3439,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line1"
           },
           "to": [
-            -0.000000000000000031200006144317086,
+            -0.00000000000000003119999787251096,
             70.0
           ],
           "type": "ToPoint",
@@ -3451,7 +3451,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000000031200006144317086,
+            -0.00000000000000003119999787251096,
             70.0
           ],
           "tag": {
@@ -3488,7 +3488,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "to": [
             4.0,
-            3.999999999999996
+            3.9999999999999982
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3500,7 +3500,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "from": [
             4.0,
-            3.999999999999996
+            3.9999999999999982
           ],
           "tag": {
             "commentStart": 1039,
@@ -3512,7 +3512,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "to": [
             170.0,
-            3.9999999999999973
+            3.999999999999999
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3524,7 +3524,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "from": [
             170.0,
-            3.9999999999999973
+            3.999999999999999
           ],
           "tag": {
             "commentStart": 1150,
@@ -3536,7 +3536,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "to": [
             170.0,
-            -0.000000000000001936029164093864
+            -0.0000000000000009368284684010028
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3548,7 +3548,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "from": [
             170.0,
-            -0.000000000000001936029164093864
+            -0.0000000000000009368284684010028
           ],
           "tag": {
             "commentStart": 1264,
@@ -3559,8 +3559,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           },
           "to": [
-            -0.000000000000000017300004401152518,
-            -0.0000000000000006619652844002472
+            -0.000000000000000017299999438068843,
+            -0.0000000000000003288983902475901
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3599,12 +3599,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
       },
       "start": {
         "from": [
-          -0.000000000000000016300003424760624,
-          -0.00000000000000002210000776434463
+          -0.00000000000000001629999928885756,
+          -0.00000000000000002210001769051198
         ],
         "to": [
-          -0.000000000000000016300003424760624,
-          -0.00000000000000002210000776434463
+          -0.00000000000000001629999928885756,
+          -0.00000000000000002210001769051198
         ],
         "units": "mm",
         "tag": null,
@@ -3845,7 +3845,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "ccw": true,
           "center": [
             50.0,
-            -0.000000000000000005300001369846221
+            -0.000000000000000005300000542665608
           ],
           "from": [
             56.0,
@@ -3879,7 +3879,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "tag": null,
           "to": [
             61.0,
-            -0.000000000000000023300006950781432
+            -0.000000000000000023300000333336532
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3892,11 +3892,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
           "ccw": true,
           "center": [
             50.0,
-            -0.00000000000000001140000302449759
+            -0.000000000000000011400001370136364
           ],
           "from": [
             61.0,
-            -0.000000000000000023300006950781432
+            -0.000000000000000023300000333336532
           ],
           "radius": 11.0,
           "tag": {
@@ -3909,7 +3909,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "to": [
             61.0,
-            -0.000000000000000023300006950781432
+            -0.000000000000000023300000333336532
           ],
           "type": "Circle",
           "units": "mm"
@@ -4119,8 +4119,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000016300003424760624,
-              -0.00000000000000002210000776434463
+              -0.00000000000000001629999928885756,
+              -0.00000000000000002210001769051198
             ],
             "tag": {
               "commentStart": 746,
@@ -4131,7 +4131,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line1"
             },
             "to": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "type": "ToPoint",
@@ -4143,7 +4143,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "tag": {
@@ -4180,7 +4180,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -4192,7 +4192,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "tag": {
               "commentStart": 1039,
@@ -4204,7 +4204,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -4216,7 +4216,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "tag": {
               "commentStart": 1150,
@@ -4228,7 +4228,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -4240,7 +4240,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "tag": {
               "commentStart": 1264,
@@ -4251,8 +4251,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line6"
             },
             "to": [
-              -0.000000000000000017300004401152518,
-              -0.0000000000000006619652844002472
+              -0.000000000000000017299999438068843,
+              -0.0000000000000003288983902475901
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -4291,12 +4291,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "to": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "units": "mm",
           "tag": null,
@@ -4420,7 +4420,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000000016300003424760624,
+                        "n": -0.00000000000000001629999928885756,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4428,7 +4428,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000002210000776434463,
+                        "n": -0.00000000000000002210001769051198,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4438,7 +4438,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000000031200006144317086,
+                        "n": -0.00000000000000003119999787251096,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4540,7 +4540,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000000004670000845709195,
+                        "n": -0.00000000000000004669999770374399,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4686,7 +4686,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": 3.999999999999996,
+                        "n": 3.9999999999999982,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4788,7 +4788,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": 3.9999999999999964,
+                        "n": 3.9999999999999987,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4806,7 +4806,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": 3.9999999999999973,
+                        "n": 3.999999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4908,7 +4908,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": 3.999999999999998,
+                        "n": 3.999999999999999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4926,7 +4926,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000001936029164093864,
+                        "n": -0.0000000000000009368284684010028,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5028,7 +5028,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000013001138882955002,
+                        "n": -0.0000000000000006339800966814634,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5038,7 +5038,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000000017300004401152518,
+                        "n": -0.000000000000000017299999438068843,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5046,7 +5046,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000006619652844002472,
+                        "n": -0.0000000000000003288983902475901,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5143,8 +5143,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000000016300003424760624,
-                    -0.00000000000000002210000776434463
+                    -0.00000000000000001629999928885756,
+                    -0.00000000000000002210001769051198
                   ],
                   "tag": {
                     "commentStart": 746,
@@ -5155,7 +5155,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.000000000000000031200006144317086,
+                    -0.00000000000000003119999787251096,
                     70.0
                   ],
                   "type": "ToPoint",
@@ -5167,7 +5167,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000000031200006144317086,
+                    -0.00000000000000003119999787251096,
                     70.0
                   ],
                   "tag": {
@@ -5204,7 +5204,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "to": [
                     4.0,
-                    3.999999999999996
+                    3.9999999999999982
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5216,7 +5216,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "from": [
                     4.0,
-                    3.999999999999996
+                    3.9999999999999982
                   ],
                   "tag": {
                     "commentStart": 1039,
@@ -5228,7 +5228,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "to": [
                     170.0,
-                    3.9999999999999973
+                    3.999999999999999
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5240,7 +5240,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "from": [
                     170.0,
-                    3.9999999999999973
+                    3.999999999999999
                   ],
                   "tag": {
                     "commentStart": 1150,
@@ -5252,7 +5252,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "to": [
                     170.0,
-                    -0.000000000000001936029164093864
+                    -0.0000000000000009368284684010028
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5264,7 +5264,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "from": [
                     170.0,
-                    -0.000000000000001936029164093864
+                    -0.0000000000000009368284684010028
                   ],
                   "tag": {
                     "commentStart": 1264,
@@ -5275,8 +5275,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
                     "value": "line6"
                   },
                   "to": [
-                    -0.000000000000000017300004401152518,
-                    -0.0000000000000006619652844002472
+                    -0.000000000000000017299999438068843,
+                    -0.0000000000000003288983902475901
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -5315,12 +5315,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
               },
               "start": {
                 "from": [
-                  -0.000000000000000016300003424760624,
-                  -0.00000000000000002210000776434463
+                  -0.00000000000000001629999928885756,
+                  -0.00000000000000002210001769051198
                 ],
                 "to": [
-                  -0.000000000000000016300003424760624,
-                  -0.00000000000000002210000776434463
+                  -0.00000000000000001629999928885756,
+                  -0.00000000000000002210001769051198
                 ],
                 "units": "mm",
                 "tag": null,
@@ -5379,8 +5379,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "tag": {
             "commentStart": 746,
@@ -5391,7 +5391,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line1"
           },
           "to": [
-            -0.000000000000000031200006144317086,
+            -0.00000000000000003119999787251096,
             70.0
           ],
           "type": "ToPoint",
@@ -5403,7 +5403,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000000031200006144317086,
+            -0.00000000000000003119999787251096,
             70.0
           ],
           "tag": {
@@ -5440,7 +5440,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "to": [
             4.0,
-            3.999999999999996
+            3.9999999999999982
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -5452,7 +5452,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "from": [
             4.0,
-            3.999999999999996
+            3.9999999999999982
           ],
           "tag": {
             "commentStart": 1039,
@@ -5464,7 +5464,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "to": [
             170.0,
-            3.9999999999999973
+            3.999999999999999
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -5476,7 +5476,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "from": [
             170.0,
-            3.9999999999999973
+            3.999999999999999
           ],
           "tag": {
             "commentStart": 1150,
@@ -5488,7 +5488,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "to": [
             170.0,
-            -0.000000000000001936029164093864
+            -0.0000000000000009368284684010028
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -5500,7 +5500,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
           },
           "from": [
             170.0,
-            -0.000000000000001936029164093864
+            -0.0000000000000009368284684010028
           ],
           "tag": {
             "commentStart": 1264,
@@ -5511,8 +5511,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
             "value": "line6"
           },
           "to": [
-            -0.000000000000000017300004401152518,
-            -0.0000000000000006619652844002472
+            -0.000000000000000017299999438068843,
+            -0.0000000000000003288983902475901
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -5551,12 +5551,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
       },
       "start": {
         "from": [
-          -0.000000000000000016300003424760624,
-          -0.00000000000000002210000776434463
+          -0.00000000000000001629999928885756,
+          -0.00000000000000002210001769051198
         ],
         "to": [
-          -0.000000000000000016300003424760624,
-          -0.00000000000000002210000776434463
+          -0.00000000000000001629999928885756,
+          -0.00000000000000002210001769051198
         ],
         "units": "mm",
         "tag": null,
@@ -5746,8 +5746,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000016300003424760624,
-              -0.00000000000000002210000776434463
+              -0.00000000000000001629999928885756,
+              -0.00000000000000002210001769051198
             ],
             "tag": {
               "commentStart": 746,
@@ -5758,7 +5758,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line1"
             },
             "to": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "type": "ToPoint",
@@ -5770,7 +5770,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000031200006144317086,
+              -0.00000000000000003119999787251096,
               70.0
             ],
             "tag": {
@@ -5807,7 +5807,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -5819,7 +5819,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               4.0,
-              3.999999999999996
+              3.9999999999999982
             ],
             "tag": {
               "commentStart": 1039,
@@ -5831,7 +5831,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -5843,7 +5843,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              3.9999999999999973
+              3.999999999999999
             ],
             "tag": {
               "commentStart": 1150,
@@ -5855,7 +5855,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "to": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -5867,7 +5867,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
             },
             "from": [
               170.0,
-              -0.000000000000001936029164093864
+              -0.0000000000000009368284684010028
             ],
             "tag": {
               "commentStart": 1264,
@@ -5878,8 +5878,8 @@ description: Variables in memory after executing bracket-with-slot.kcl
               "value": "line6"
             },
             "to": [
-              -0.000000000000000017300004401152518,
-              -0.0000000000000006619652844002472
+              -0.000000000000000017299999438068843,
+              -0.0000000000000003288983902475901
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -5918,12 +5918,12 @@ description: Variables in memory after executing bracket-with-slot.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "to": [
-            -0.000000000000000016300003424760624,
-            -0.00000000000000002210000776434463
+            -0.00000000000000001629999928885756,
+            -0.00000000000000002210001769051198
           ],
           "units": "mm",
           "tag": null,
@@ -6365,7 +6365,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000006336631516319871,
+                        "n": -0.00000000000000019052965270527662,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6517,7 +6517,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000000015170026482004094,
+                        "n": -0.0000000000000000000028839718416256955,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6633,7 +6633,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000006336627991189524,
+                        "n": -0.00000000000000019052961745478095,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6754,7 +6754,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000006336627991189524,
+                        "n": -0.00000000000000019052961745478095,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7307,7 +7307,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000000015170031135281951,
+                        "n": -0.0000000000000000000028839721714311836,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7428,7 +7428,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": 0.00000000000000000000015170031235276234,
+                        "n": -0.0000000000000000000028839721704327815,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7549,7 +7549,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000004224380642311905,
+                        "n": -0.00000000000000012702071021086894,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7567,7 +7567,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000000021121465001320917,
+                        "n": -0.00000000000000006351179121638781,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7973,7 +7973,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000000023300006950781432,
+                        "n": -0.000000000000000023300000333336532,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7991,7 +7991,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000001140000302449759,
+                        "n": -0.000000000000000011400001370136364,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8093,7 +8093,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.00000000000000001680000515372749,
+                        "n": -0.000000000000000016800000190643815,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8111,7 +8111,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000000021000004787798137,
+                        "n": -0.000000000000000021000001479075687,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8232,7 +8232,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000000005300001369846221,
+                        "n": -0.000000000000000005300000542665608,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8334,7 +8334,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000000004200000873581566,
+                        "n": -0.000000000000000004200000682047363,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8452,7 +8452,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "ccw": true,
                   "center": [
                     50.0,
-                    -0.000000000000000005300001369846221
+                    -0.000000000000000005300000542665608
                   ],
                   "from": [
                     56.0,
@@ -8486,7 +8486,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "tag": null,
                   "to": [
                     61.0,
-                    -0.000000000000000023300006950781432
+                    -0.000000000000000023300000333336532
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -8499,11 +8499,11 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   "ccw": true,
                   "center": [
                     50.0,
-                    -0.00000000000000001140000302449759
+                    -0.000000000000000011400001370136364
                   ],
                   "from": [
                     61.0,
-                    -0.000000000000000023300006950781432
+                    -0.000000000000000023300000333336532
                   ],
                   "radius": 11.0,
                   "tag": {
@@ -8516,7 +8516,7 @@ description: Variables in memory after executing bracket-with-slot.kcl
                   },
                   "to": [
                     61.0,
-                    -0.000000000000000023300006950781432
+                    -0.000000000000000023300000333336532
                   ],
                   "type": "Circle",
                   "units": "mm"

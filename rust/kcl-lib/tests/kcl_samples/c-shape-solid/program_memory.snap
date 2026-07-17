@@ -379,7 +379,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.00000000000005708870300578105,
+                        "n": 0.00000000000005708905762141837,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -387,7 +387,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.00000000002253752781154869,
+                        "n": 0.000000000022537525156947433,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -405,7 +405,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.000000000045077409422625715,
+                        "n": 0.00000000004507740408631815,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -518,7 +518,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "end": [
                       {
-                        "n": 4.89897948558399,
+                        "n": 4.8989794855839905,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -536,7 +536,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000028484721395472226,
+                        "n": 0.00000000000002848489869261509,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -544,7 +544,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000005198410054705789,
+                        "n": -0.00000000000000519844987271186,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -652,7 +652,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 4.8989794856944515,
+                        "n": 4.898979485694452,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -678,7 +678,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.00000000006761752521290167,
+                        "n": 0.00000000006761751721013438,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1008,7 +1008,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.9999999999052778,
+                        "n": -0.9999999999052777,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1018,7 +1018,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.000000000000028484725972921715,
+                        "n": 0.00000000000002848490327010335,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1026,7 +1026,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000004270760043037278,
+                        "n": -0.0000000000000042707935326205244,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1280,7 +1280,7 @@ description: Variables in memory after executing c-shape-solid.kcl
                         }
                       },
                       {
-                        "n": 0.00000000007888755387185043,
+                        "n": 0.00000000007888754454093549,
                         "ty": {
                           "mm": null,
                           "type": "Known",

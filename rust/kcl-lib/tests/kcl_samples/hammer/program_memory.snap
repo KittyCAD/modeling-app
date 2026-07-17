@@ -673,7 +673,7 @@ description: Variables in memory after executing hammer.kcl
               "value": "line1"
             },
             "to": [
-              0.3294391188972452,
+              0.3294391189384675,
               11.36
             ],
             "type": "ToPoint",
@@ -686,14 +686,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.891241267032794,
-              11.361115378144001
+              0.891241267038863,
+              11.361115378189023
             ],
             "from": [
-              0.3294391188972452,
+              0.3294391189384675,
               11.36
             ],
-            "radius": 0.561803255346675,
+            "radius": 0.561803255311611,
             "tag": {
               "commentStart": 368,
               "end": 372,
@@ -703,8 +703,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc2"
             },
             "to": [
-              0.9499808132389663,
-              11.91983942759025
+              0.9499808132507284,
+              11.919839427599417
             ],
             "type": "Arc",
             "units": "in"
@@ -716,14 +716,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              0.5703778508879216,
-              8.199859009185026
+              0.5703778508554236,
+              8.199859009197134
             ],
             "from": [
-              2.719770508509604,
-              11.259673374936213
+              2.71977050852744,
+              11.259673374914742
             ],
-            "radius": 3.739298430119658,
+            "radius": 3.7392984301211136,
             "tag": {
               "commentStart": 521,
               "end": 525,
@@ -733,8 +733,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc3"
             },
             "to": [
-              0.9499808136188855,
-              11.919839431200876
+              0.9499808136306356,
+              11.91983943120993
             ],
             "type": "Arc",
             "units": "in"
@@ -745,8 +745,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              2.7197705085098334,
-              11.259673374936538
+              2.7197705085276693,
+              11.259673374915069
             ],
             "tag": {
               "commentStart": 673,
@@ -781,8 +781,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line5"
             },
             "to": [
-              2.480535920311962,
-              11.780535920197902
+              2.48053592036513,
+              11.780535920145486
             ],
             "type": "ToPoint",
             "units": "in"
@@ -794,14 +794,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -0.13139196908463635,
-              9.170409780895554
+              -0.13139196909720496,
+              9.170409780962421
             ],
             "from": [
-              2.480535920311962,
-              11.780535920197902
+              2.48053592036513,
+              11.780535920145486
             ],
-            "radius": 3.692550035202929,
+            "radius": 3.69255003516511,
             "tag": {
               "commentStart": 918,
               "end": 922,
@@ -811,8 +811,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc6"
             },
             "to": [
-              -0.9099871952373693,
-              12.779940946613523
+              -0.9099871952178312,
+              12.779940946648628
             ],
             "type": "Arc",
             "units": "in"
@@ -824,14 +824,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1791705084471185,
-              14.029924785911584
+              -1.1791705085460145,
+              14.029924785906875
             ],
             "from": [
-              -0.9099871952373693,
-              12.779940946613523
+              -0.9099871952178312,
+              12.779940946648628
             ],
-            "radius": 1.2786396109212703,
+            "radius": 1.2786396109072824,
             "tag": {
               "commentStart": 1074,
               "end": 1078,
@@ -841,8 +841,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc7"
             },
             "to": [
-              -1.6702674861953792,
-              12.849355849735716
+              -1.6702674861548281,
+              12.849355849688148
             ],
             "type": "Arc",
             "units": "in"
@@ -853,8 +853,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -1.6702674861953792,
-              12.849355849735716
+              -1.6702674861548281,
+              12.849355849688148
             ],
             "tag": {
               "commentStart": 1229,
@@ -919,7 +919,7 @@ description: Variables in memory after executing hammer.kcl
               "value": "line10"
             },
             "to": [
-              -1.9716666666618003,
+              -1.971666666665,
               11.68
             ],
             "type": "ToPoint",
@@ -932,14 +932,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -1.9166666666647332,
-              11.6766666666664
+              -1.9166666666649999,
+              11.676666666666666
             ],
             "from": [
-              -1.9716666666618003,
+              -1.971666666665,
               11.68
             ],
-            "radius": 0.055100917513143825,
+            "radius": 0.05510091751605532,
             "tag": {
               "commentStart": 1634,
               "end": 1639,
@@ -950,7 +950,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "to": [
               -1.919999999998132,
-              11.62166666666932
+              11.621666666666654
             ],
             "type": "Arc",
             "units": "in"
@@ -962,7 +962,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               -1.919999999998132,
-              11.62166666666932
+              11.621666666666654
             ],
             "tag": {
               "commentStart": 1795,
@@ -997,8 +997,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line13"
             },
             "to": [
-              -1.5804123883467058,
-              11.660972813642742
+              -1.580412388436731,
+              11.660972813990007
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1010,14 +1010,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1873668675807505,
-              10.739147796704014
+              -1.1873668677788556,
+              10.739147796636773
             ],
             "from": [
-              -1.5804123883467058,
-              11.660972813642742
+              -1.580412388436731,
+              11.660972813990007
             ],
-            "radius": 1.002120822679714,
+            "radius": 1.0021208230186167,
             "tag": {
               "commentStart": 2048,
               "end": 2053,
@@ -1027,8 +1027,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc14"
             },
             "to": [
-              -0.3309041777851862,
-              11.259453287965075
+              -0.33090417763355906,
+              11.259453287974884
             ],
             "type": "Arc",
             "units": "in"
@@ -1039,8 +1039,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3309041777851862,
-              11.259453287965075
+              -0.33090417763355906,
+              11.259453287974884
             ],
             "tag": {
               "commentStart": 2207,
@@ -1419,7 +1419,7 @@ description: Variables in memory after executing hammer.kcl
               "value": "line1"
             },
             "to": [
-              0.3294391188972452,
+              0.3294391189384675,
               11.36
             ],
             "type": "ToPoint",
@@ -1432,14 +1432,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.891241267032794,
-              11.361115378144001
+              0.891241267038863,
+              11.361115378189023
             ],
             "from": [
-              0.3294391188972452,
+              0.3294391189384675,
               11.36
             ],
-            "radius": 0.561803255346675,
+            "radius": 0.561803255311611,
             "tag": {
               "commentStart": 368,
               "end": 372,
@@ -1449,8 +1449,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc2"
             },
             "to": [
-              0.9499808132389663,
-              11.91983942759025
+              0.9499808132507284,
+              11.919839427599417
             ],
             "type": "Arc",
             "units": "in"
@@ -1462,14 +1462,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              0.5703778508879216,
-              8.199859009185026
+              0.5703778508554236,
+              8.199859009197134
             ],
             "from": [
-              2.719770508509604,
-              11.259673374936213
+              2.71977050852744,
+              11.259673374914742
             ],
-            "radius": 3.739298430119658,
+            "radius": 3.7392984301211136,
             "tag": {
               "commentStart": 521,
               "end": 525,
@@ -1479,8 +1479,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc3"
             },
             "to": [
-              0.9499808136188855,
-              11.919839431200876
+              0.9499808136306356,
+              11.91983943120993
             ],
             "type": "Arc",
             "units": "in"
@@ -1491,8 +1491,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              2.7197705085098334,
-              11.259673374936538
+              2.7197705085276693,
+              11.259673374915069
             ],
             "tag": {
               "commentStart": 673,
@@ -1527,8 +1527,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line5"
             },
             "to": [
-              2.480535920311962,
-              11.780535920197902
+              2.48053592036513,
+              11.780535920145486
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1540,14 +1540,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -0.13139196908463635,
-              9.170409780895554
+              -0.13139196909720496,
+              9.170409780962421
             ],
             "from": [
-              2.480535920311962,
-              11.780535920197902
+              2.48053592036513,
+              11.780535920145486
             ],
-            "radius": 3.692550035202929,
+            "radius": 3.69255003516511,
             "tag": {
               "commentStart": 918,
               "end": 922,
@@ -1557,8 +1557,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc6"
             },
             "to": [
-              -0.9099871952373693,
-              12.779940946613523
+              -0.9099871952178312,
+              12.779940946648628
             ],
             "type": "Arc",
             "units": "in"
@@ -1570,14 +1570,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1791705084471185,
-              14.029924785911584
+              -1.1791705085460145,
+              14.029924785906875
             ],
             "from": [
-              -0.9099871952373693,
-              12.779940946613523
+              -0.9099871952178312,
+              12.779940946648628
             ],
-            "radius": 1.2786396109212703,
+            "radius": 1.2786396109072824,
             "tag": {
               "commentStart": 1074,
               "end": 1078,
@@ -1587,8 +1587,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc7"
             },
             "to": [
-              -1.6702674861953792,
-              12.849355849735716
+              -1.6702674861548281,
+              12.849355849688148
             ],
             "type": "Arc",
             "units": "in"
@@ -1599,8 +1599,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -1.6702674861953792,
-              12.849355849735716
+              -1.6702674861548281,
+              12.849355849688148
             ],
             "tag": {
               "commentStart": 1229,
@@ -1665,7 +1665,7 @@ description: Variables in memory after executing hammer.kcl
               "value": "line10"
             },
             "to": [
-              -1.9716666666618003,
+              -1.971666666665,
               11.68
             ],
             "type": "ToPoint",
@@ -1678,14 +1678,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -1.9166666666647332,
-              11.6766666666664
+              -1.9166666666649999,
+              11.676666666666666
             ],
             "from": [
-              -1.9716666666618003,
+              -1.971666666665,
               11.68
             ],
-            "radius": 0.055100917513143825,
+            "radius": 0.05510091751605532,
             "tag": {
               "commentStart": 1634,
               "end": 1639,
@@ -1696,7 +1696,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "to": [
               -1.919999999998132,
-              11.62166666666932
+              11.621666666666654
             ],
             "type": "Arc",
             "units": "in"
@@ -1708,7 +1708,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               -1.919999999998132,
-              11.62166666666932
+              11.621666666666654
             ],
             "tag": {
               "commentStart": 1795,
@@ -1743,8 +1743,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line13"
             },
             "to": [
-              -1.5804123883467058,
-              11.660972813642742
+              -1.580412388436731,
+              11.660972813990007
             ],
             "type": "ToPoint",
             "units": "in"
@@ -1756,14 +1756,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1873668675807505,
-              10.739147796704014
+              -1.1873668677788556,
+              10.739147796636773
             ],
             "from": [
-              -1.5804123883467058,
-              11.660972813642742
+              -1.580412388436731,
+              11.660972813990007
             ],
-            "radius": 1.002120822679714,
+            "radius": 1.0021208230186167,
             "tag": {
               "commentStart": 2048,
               "end": 2053,
@@ -1773,8 +1773,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc14"
             },
             "to": [
-              -0.3309041777851862,
-              11.259453287965075
+              -0.33090417763355906,
+              11.259453287974884
             ],
             "type": "Arc",
             "units": "in"
@@ -1785,8 +1785,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3309041777851862,
-              11.259453287965075
+              -0.33090417763355906,
+              11.259453287974884
             ],
             "tag": {
               "commentStart": 2207,
@@ -2039,8 +2039,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line1"
             },
             "to": [
-              0.5699989417330824,
-              -0.00022143541315993665
+              0.569998941660857,
+              -0.0002214414742992401
             ],
             "type": "ToPoint",
             "units": "in"
@@ -2052,14 +2052,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              0.5708332040845302,
-              0.05016041871788659
+              0.570833181410884,
+              0.050160434007719176
             ],
             "from": [
-              0.5699989417330824,
-              -0.00022143541315993665
+              0.569998941660857,
+              -0.0002214414742992401
             ],
-            "radius": 0.050388760843595795,
+            "radius": 0.05038878181744558,
             "tag": {
               "commentStart": 8021,
               "end": 8025,
@@ -2069,8 +2069,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc2"
             },
             "to": [
-              0.6212219612504043,
-              0.050141166921593434
+              0.6212219595506003,
+              0.05014118218742481
             ],
             "type": "Arc",
             "units": "in"
@@ -2082,14 +2082,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -127.86877803522704,
-              0.05027676521968816
+              -127.8687780369249,
+              0.050276765827863924
             ],
             "from": [
-              0.6212219647017184,
-              0.05014116692027481
+              0.621221963003921,
+              0.050141182186105415
             ],
-            "radius": 128.49000000000032,
+            "radius": 128.49000000000035,
             "tag": {
               "commentStart": 8170,
               "end": 8174,
@@ -2099,8 +2099,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc3"
             },
             "to": [
-              0.378769940806464,
-              7.939924294423511
+              0.37876993915607216,
+              7.939924294260284
             ],
             "type": "Arc",
             "units": "in"
@@ -2112,14 +2112,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              59.740003424511364,
-              11.58983323778406
+              59.740003424522904,
+              11.58983323744933
             ],
             "from": [
-              0.378769940806464,
-              7.939924294423511
+              0.37876993915607216,
+              7.939924294260284
             ],
-            "radius": 59.47333752196653,
+            "radius": 59.4733375236148,
             "tag": {
               "commentStart": 8324,
               "end": 8328,
@@ -2129,8 +2129,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc4"
             },
             "to": [
-              0.2789798698824626,
-              12.800020759459336
+              0.2789798682535434,
+              12.800020759525506
             ],
             "type": "Arc",
             "units": "in"
@@ -2141,8 +2141,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              0.2789798698824626,
-              12.800020759459336
+              0.2789798682535434,
+              12.800020759525506
             ],
             "tag": {
               "commentStart": 8475,
@@ -2777,7 +2777,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.5699989417330824,
+                        "n": 0.569998941660857,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2785,7 +2785,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.0002214354131599371,
+                        "n": -0.00022144147429924057,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2795,7 +2795,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.6212219647017159,
+                        "n": 0.6212219630039184,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2803,7 +2803,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.05014116692027481,
+                        "n": 0.050141182186105415,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2813,7 +2813,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5708332040845302,
+                        "n": 0.570833181410884,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2821,7 +2821,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.05016041871788659,
+                        "n": 0.050160434007719176,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2929,7 +2929,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.6212219647017184,
+                        "n": 0.621221963003921,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2937,7 +2937,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.05014116692027481,
+                        "n": 0.050141182186105415,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2947,7 +2947,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3787699408061197,
+                        "n": 0.37876993915575446,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2955,7 +2955,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 7.9399242944234905,
+                        "n": 7.939924294260262,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2965,7 +2965,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": -127.86877803522705,
+                        "n": -127.86877803692488,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2973,7 +2973,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.05027676521968816,
+                        "n": 0.050276765827863924,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3081,7 +3081,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.2789798698821273,
+                        "n": 0.2789798682532298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3089,7 +3089,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 12.80002075945932,
+                        "n": 12.80002075952551,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3099,7 +3099,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3787699408061197,
+                        "n": 0.37876993915575446,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3107,7 +3107,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 7.9399242944234905,
+                        "n": 7.939924294260262,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3117,7 +3117,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 59.74000342451103,
+                        "n": 59.74000342452259,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3125,7 +3125,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.589833237784028,
+                        "n": 11.589833237449318,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3251,7 +3251,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5699989417330824,
+                        "n": 0.569998941660857,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3259,7 +3259,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.00022143541315993665,
+                        "n": -0.0002214414742992401,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3353,7 +3353,7 @@ description: Variables in memory after executing hammer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.2789798698821273,
+                        "n": 0.2789798682532298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3361,7 +3361,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 12.80002075945932,
+                        "n": 12.80002075952551,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -3608,8 +3608,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line1"
                   },
                   "to": [
-                    0.5699989417330824,
-                    -0.00022143541315993665
+                    0.569998941660857,
+                    -0.0002214414742992401
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3621,14 +3621,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.5708332040845302,
-                    0.05016041871788659
+                    0.570833181410884,
+                    0.050160434007719176
                   ],
                   "from": [
-                    0.5699989417330824,
-                    -0.00022143541315993665
+                    0.569998941660857,
+                    -0.0002214414742992401
                   ],
-                  "radius": 0.050388760843595795,
+                  "radius": 0.05038878181744558,
                   "tag": {
                     "commentStart": 8021,
                     "end": 8025,
@@ -3638,8 +3638,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    0.6212219612504043,
-                    0.050141166921593434
+                    0.6212219595506003,
+                    0.05014118218742481
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3650,13 +3650,13 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.6212219612504043,
-                    0.050141166921593434
+                    0.6212219595506003,
+                    0.05014118218742481
                   ],
                   "tag": null,
                   "to": [
-                    0.6212219647017184,
-                    0.05014116692027481
+                    0.621221963003921,
+                    0.050141182186105415
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -3668,14 +3668,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -127.86877803522704,
-                    0.05027676521968816
+                    -127.8687780369249,
+                    0.050276765827863924
                   ],
                   "from": [
-                    0.6212219647017184,
-                    0.05014116692027481
+                    0.621221963003921,
+                    0.050141182186105415
                   ],
-                  "radius": 128.49000000000032,
+                  "radius": 128.49000000000035,
                   "tag": {
                     "commentStart": 8170,
                     "end": 8174,
@@ -3685,8 +3685,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    0.378769940806464,
-                    7.939924294423511
+                    0.37876993915607216,
+                    7.939924294260284
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3698,14 +3698,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    59.740003424511364,
-                    11.58983323778406
+                    59.740003424522904,
+                    11.58983323744933
                   ],
                   "from": [
-                    0.378769940806464,
-                    7.939924294423511
+                    0.37876993915607216,
+                    7.939924294260284
                   ],
-                  "radius": 59.47333752196653,
+                  "radius": 59.4733375236148,
                   "tag": {
                     "commentStart": 8324,
                     "end": 8328,
@@ -3715,8 +3715,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    0.2789798698824626,
-                    12.800020759459336
+                    0.2789798682535434,
+                    12.800020759525506
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -3727,8 +3727,8 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.2789798698824626,
-                    12.800020759459336
+                    0.2789798682535434,
+                    12.800020759525506
                   ],
                   "tag": {
                     "commentStart": 8475,
@@ -4096,7 +4096,7 @@ description: Variables in memory after executing hammer.kcl
               "value": "line1"
             },
             "to": [
-              0.3294391188972452,
+              0.3294391189384675,
               11.36
             ],
             "type": "ToPoint",
@@ -4109,14 +4109,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              0.891241267032794,
-              11.361115378144001
+              0.891241267038863,
+              11.361115378189023
             ],
             "from": [
-              0.3294391188972452,
+              0.3294391189384675,
               11.36
             ],
-            "radius": 0.561803255346675,
+            "radius": 0.561803255311611,
             "tag": {
               "commentStart": 368,
               "end": 372,
@@ -4126,8 +4126,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc2"
             },
             "to": [
-              0.9499808132389663,
-              11.91983942759025
+              0.9499808132507284,
+              11.919839427599417
             ],
             "type": "Arc",
             "units": "in"
@@ -4139,14 +4139,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              0.5703778508879216,
-              8.199859009185026
+              0.5703778508554236,
+              8.199859009197134
             ],
             "from": [
-              2.719770508509604,
-              11.259673374936213
+              2.71977050852744,
+              11.259673374914742
             ],
-            "radius": 3.739298430119658,
+            "radius": 3.7392984301211136,
             "tag": {
               "commentStart": 521,
               "end": 525,
@@ -4156,8 +4156,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc3"
             },
             "to": [
-              0.9499808136188855,
-              11.919839431200876
+              0.9499808136306356,
+              11.91983943120993
             ],
             "type": "Arc",
             "units": "in"
@@ -4168,8 +4168,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              2.7197705085098334,
-              11.259673374936538
+              2.7197705085276693,
+              11.259673374915069
             ],
             "tag": {
               "commentStart": 673,
@@ -4204,8 +4204,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line5"
             },
             "to": [
-              2.480535920311962,
-              11.780535920197902
+              2.48053592036513,
+              11.780535920145486
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4217,14 +4217,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -0.13139196908463635,
-              9.170409780895554
+              -0.13139196909720496,
+              9.170409780962421
             ],
             "from": [
-              2.480535920311962,
-              11.780535920197902
+              2.48053592036513,
+              11.780535920145486
             ],
-            "radius": 3.692550035202929,
+            "radius": 3.69255003516511,
             "tag": {
               "commentStart": 918,
               "end": 922,
@@ -4234,8 +4234,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc6"
             },
             "to": [
-              -0.9099871952373693,
-              12.779940946613523
+              -0.9099871952178312,
+              12.779940946648628
             ],
             "type": "Arc",
             "units": "in"
@@ -4247,14 +4247,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1791705084471185,
-              14.029924785911584
+              -1.1791705085460145,
+              14.029924785906875
             ],
             "from": [
-              -0.9099871952373693,
-              12.779940946613523
+              -0.9099871952178312,
+              12.779940946648628
             ],
-            "radius": 1.2786396109212703,
+            "radius": 1.2786396109072824,
             "tag": {
               "commentStart": 1074,
               "end": 1078,
@@ -4264,8 +4264,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc7"
             },
             "to": [
-              -1.6702674861953792,
-              12.849355849735716
+              -1.6702674861548281,
+              12.849355849688148
             ],
             "type": "Arc",
             "units": "in"
@@ -4276,8 +4276,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -1.6702674861953792,
-              12.849355849735716
+              -1.6702674861548281,
+              12.849355849688148
             ],
             "tag": {
               "commentStart": 1229,
@@ -4342,7 +4342,7 @@ description: Variables in memory after executing hammer.kcl
               "value": "line10"
             },
             "to": [
-              -1.9716666666618003,
+              -1.971666666665,
               11.68
             ],
             "type": "ToPoint",
@@ -4355,14 +4355,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -1.9166666666647332,
-              11.6766666666664
+              -1.9166666666649999,
+              11.676666666666666
             ],
             "from": [
-              -1.9716666666618003,
+              -1.971666666665,
               11.68
             ],
-            "radius": 0.055100917513143825,
+            "radius": 0.05510091751605532,
             "tag": {
               "commentStart": 1634,
               "end": 1639,
@@ -4373,7 +4373,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "to": [
               -1.919999999998132,
-              11.62166666666932
+              11.621666666666654
             ],
             "type": "Arc",
             "units": "in"
@@ -4385,7 +4385,7 @@ description: Variables in memory after executing hammer.kcl
             },
             "from": [
               -1.919999999998132,
-              11.62166666666932
+              11.621666666666654
             ],
             "tag": {
               "commentStart": 1795,
@@ -4420,8 +4420,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line13"
             },
             "to": [
-              -1.5804123883467058,
-              11.660972813642742
+              -1.580412388436731,
+              11.660972813990007
             ],
             "type": "ToPoint",
             "units": "in"
@@ -4433,14 +4433,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.1873668675807505,
-              10.739147796704014
+              -1.1873668677788556,
+              10.739147796636773
             ],
             "from": [
-              -1.5804123883467058,
-              11.660972813642742
+              -1.580412388436731,
+              11.660972813990007
             ],
-            "radius": 1.002120822679714,
+            "radius": 1.0021208230186167,
             "tag": {
               "commentStart": 2048,
               "end": 2053,
@@ -4450,8 +4450,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc14"
             },
             "to": [
-              -0.3309041777851862,
-              11.259453287965075
+              -0.33090417763355906,
+              11.259453287974884
             ],
             "type": "Arc",
             "units": "in"
@@ -4462,8 +4462,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              -0.3309041777851862,
-              11.259453287965075
+              -0.33090417763355906,
+              11.259453287974884
             ],
             "tag": {
               "commentStart": 2207,
@@ -4658,7 +4658,7 @@ description: Variables in memory after executing hammer.kcl
             "value": "line1"
           },
           "to": [
-            0.3294391188972452,
+            0.3294391189384675,
             11.36
           ],
           "type": "ToPoint",
@@ -4671,14 +4671,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            0.891241267032794,
-            11.361115378144001
+            0.891241267038863,
+            11.361115378189023
           ],
           "from": [
-            0.3294391188972452,
+            0.3294391189384675,
             11.36
           ],
-          "radius": 0.561803255346675,
+          "radius": 0.561803255311611,
           "tag": {
             "commentStart": 368,
             "end": 372,
@@ -4688,8 +4688,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc2"
           },
           "to": [
-            0.9499808132389663,
-            11.91983942759025
+            0.9499808132507284,
+            11.919839427599417
           ],
           "type": "Arc",
           "units": "in"
@@ -4700,13 +4700,13 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            0.9499808132389663,
-            11.91983942759025
+            0.9499808132507284,
+            11.919839427599417
           ],
           "tag": null,
           "to": [
-            2.719770508509604,
-            11.259673374936213
+            2.71977050852744,
+            11.259673374914742
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4718,14 +4718,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            0.5703778508879216,
-            8.199859009185026
+            0.5703778508554236,
+            8.199859009197134
           ],
           "from": [
-            2.719770508509604,
-            11.259673374936213
+            2.71977050852744,
+            11.259673374914742
           ],
-          "radius": 3.739298430119658,
+          "radius": 3.7392984301211136,
           "tag": {
             "commentStart": 521,
             "end": 525,
@@ -4735,8 +4735,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc3"
           },
           "to": [
-            0.9499808136188855,
-            11.919839431200876
+            0.9499808136306356,
+            11.91983943120993
           ],
           "type": "Arc",
           "units": "in"
@@ -4747,13 +4747,13 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            0.9499808136188855,
-            11.919839431200876
+            0.9499808136306356,
+            11.91983943120993
           ],
           "tag": null,
           "to": [
-            2.7197705085098334,
-            11.259673374936538
+            2.7197705085276693,
+            11.259673374915069
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4764,8 +4764,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            2.7197705085098334,
-            11.259673374936538
+            2.7197705085276693,
+            11.259673374915069
           ],
           "tag": {
             "commentStart": 673,
@@ -4800,8 +4800,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line5"
           },
           "to": [
-            2.480535920311962,
-            11.780535920197902
+            2.48053592036513,
+            11.780535920145486
           ],
           "type": "ToPoint",
           "units": "in"
@@ -4813,14 +4813,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -0.13139196908463635,
-            9.170409780895554
+            -0.13139196909720496,
+            9.170409780962421
           ],
           "from": [
-            2.480535920311962,
-            11.780535920197902
+            2.48053592036513,
+            11.780535920145486
           ],
-          "radius": 3.692550035202929,
+          "radius": 3.69255003516511,
           "tag": {
             "commentStart": 918,
             "end": 922,
@@ -4830,8 +4830,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc6"
           },
           "to": [
-            -0.9099871952373693,
-            12.779940946613523
+            -0.9099871952178312,
+            12.779940946648628
           ],
           "type": "Arc",
           "units": "in"
@@ -4843,14 +4843,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            -1.1791705084471185,
-            14.029924785911584
+            -1.1791705085460145,
+            14.029924785906875
           ],
           "from": [
-            -0.9099871952373693,
-            12.779940946613523
+            -0.9099871952178312,
+            12.779940946648628
           ],
-          "radius": 1.2786396109212703,
+          "radius": 1.2786396109072824,
           "tag": {
             "commentStart": 1074,
             "end": 1078,
@@ -4860,8 +4860,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc7"
           },
           "to": [
-            -1.6702674861953792,
-            12.849355849735716
+            -1.6702674861548281,
+            12.849355849688148
           ],
           "type": "Arc",
           "units": "in"
@@ -4872,8 +4872,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            -1.6702674861953792,
-            12.849355849735716
+            -1.6702674861548281,
+            12.849355849688148
           ],
           "tag": {
             "commentStart": 1229,
@@ -4938,7 +4938,7 @@ description: Variables in memory after executing hammer.kcl
             "value": "line10"
           },
           "to": [
-            -1.9716666666618003,
+            -1.971666666665,
             11.68
           ],
           "type": "ToPoint",
@@ -4951,14 +4951,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -1.9166666666647332,
-            11.6766666666664
+            -1.9166666666649999,
+            11.676666666666666
           ],
           "from": [
-            -1.9716666666618003,
+            -1.971666666665,
             11.68
           ],
-          "radius": 0.055100917513143825,
+          "radius": 0.05510091751605532,
           "tag": {
             "commentStart": 1634,
             "end": 1639,
@@ -4969,7 +4969,7 @@ description: Variables in memory after executing hammer.kcl
           },
           "to": [
             -1.919999999998132,
-            11.62166666666932
+            11.621666666666654
           ],
           "type": "Arc",
           "units": "in"
@@ -4981,7 +4981,7 @@ description: Variables in memory after executing hammer.kcl
           },
           "from": [
             -1.919999999998132,
-            11.62166666666932
+            11.621666666666654
           ],
           "tag": {
             "commentStart": 1795,
@@ -5016,8 +5016,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line13"
           },
           "to": [
-            -1.5804123883467058,
-            11.660972813642742
+            -1.580412388436731,
+            11.660972813990007
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5029,14 +5029,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            -1.1873668675807505,
-            10.739147796704014
+            -1.1873668677788556,
+            10.739147796636773
           ],
           "from": [
-            -1.5804123883467058,
-            11.660972813642742
+            -1.580412388436731,
+            11.660972813990007
           ],
-          "radius": 1.002120822679714,
+          "radius": 1.0021208230186167,
           "tag": {
             "commentStart": 2048,
             "end": 2053,
@@ -5046,8 +5046,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc14"
           },
           "to": [
-            -0.3309041777851862,
-            11.259453287965075
+            -0.33090417763355906,
+            11.259453287974884
           ],
           "type": "Arc",
           "units": "in"
@@ -5058,8 +5058,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            -0.3309041777851862,
-            11.259453287965075
+            -0.33090417763355906,
+            11.259453287974884
           ],
           "tag": {
             "commentStart": 2207,
@@ -5270,8 +5270,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line3"
           },
           "to": [
-            -1.670136931855748,
-            -0.6096068410554604
+            -1.6701369375297057,
+            -0.6096068419338572
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5283,14 +5283,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            -1.291092690207574,
-            -1.6996828331476372
+            -1.2910926850326223,
+            -1.6996828312651249
           ],
           "from": [
-            -1.670136931855748,
-            -0.6096068410554604
+            -1.6701369375297057,
+            -0.6096068419338572
           ],
-          "radius": 1.1540971387462944,
+          "radius": 1.1540971397016868,
           "tag": {
             "commentStart": 3007,
             "end": 3011,
@@ -5300,8 +5300,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            -0.9092317649800853,
-            -0.6105903488072164
+            -0.9092317599372419,
+            -0.6105903458659669
           ],
           "type": "Arc",
           "units": "in"
@@ -5312,13 +5312,13 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            -0.9092317649800853,
-            -0.6105903488072164
+            -0.9092317599372419,
+            -0.6105903458659669
           ],
           "tag": null,
           "to": [
-            -0.9092317628087931,
-            -0.6105903426145476
+            -0.9092317577657718,
+            -0.6105903396727912
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5330,14 +5330,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            2.489845474790344,
-            9.079902081240409
+            2.489845476541049,
+            9.079902087492032
           ],
           "from": [
-            -0.9092317628087931,
-            -0.6105903426145476
+            -0.9092317577657718,
+            -0.6105903396727912
           ],
-          "radius": 10.269341239045223,
+          "radius": 10.269341241078791,
           "tag": {
             "commentStart": 3162,
             "end": 3166,
@@ -5347,8 +5347,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc5"
           },
           "to": [
-            3.3899922970134506,
-            -1.1499124421220035
+            3.3899922966043676,
+            -1.1499124381018504
           ],
           "type": "Arc",
           "units": "in"
@@ -5359,8 +5359,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            3.3899922970134506,
-            -1.1499124421220035
+            3.3899922966043676,
+            -1.1499124381018504
           ],
           "tag": {
             "commentStart": 3318,
@@ -5905,8 +5905,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line3"
           },
           "to": [
-            -1.6699810619240838,
-            0.6100543223799865
+            -1.6699810619204416,
+            0.6100543223822966
           ],
           "type": "ToPoint",
           "units": "in"
@@ -5918,14 +5918,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -1.2900757523270423,
+            -1.2900757523257984,
             1.6999999999999456
           ],
           "from": [
-            -1.6699810619240838,
-            0.6100543223799865
+            -1.6699810619204416,
+            0.6100543223822966
           ],
-          "radius": 1.1542571742997552,
+          "radius": 1.1542571742967844,
           "tag": {
             "commentStart": 4984,
             "end": 4988,
@@ -5935,8 +5935,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            -0.9100356689665694,
-            0.6101013077070241
+            -0.9100356689654066,
+            0.610101307710142
           ],
           "type": "Arc",
           "units": "in"
@@ -5948,14 +5948,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            2.490138122849105,
-            -9.07998266484332
+            2.49013812280021,
+            -9.07998266484493
           ],
           "from": [
-            -0.9100356689665694,
-            0.6101013077070241
+            -0.9100356689654066,
+            0.610101307710142
           ],
-          "radius": 10.269318828901323,
+          "radius": 10.26931882888921,
           "tag": {
             "commentStart": 5138,
             "end": 5142,
@@ -5965,8 +5965,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc5"
           },
           "to": [
-            3.3899855456646746,
-            1.149835702326227
+            3.3899855456662102,
+            1.149835702308021
           ],
           "type": "Arc",
           "units": "in"
@@ -5977,8 +5977,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            3.3899855456646746,
-            1.149835702326227
+            3.3899855456662102,
+            1.149835702308021
           ],
           "tag": {
             "commentStart": 5289,
@@ -6223,8 +6223,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line1"
           },
           "to": [
-            0.5699989417330824,
-            -0.00022143541315993665
+            0.569998941660857,
+            -0.0002214414742992401
           ],
           "type": "ToPoint",
           "units": "in"
@@ -6236,14 +6236,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            0.5708332040845302,
-            0.05016041871788659
+            0.570833181410884,
+            0.050160434007719176
           ],
           "from": [
-            0.5699989417330824,
-            -0.00022143541315993665
+            0.569998941660857,
+            -0.0002214414742992401
           ],
-          "radius": 0.050388760843595795,
+          "radius": 0.05038878181744558,
           "tag": {
             "commentStart": 8021,
             "end": 8025,
@@ -6253,8 +6253,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc2"
           },
           "to": [
-            0.6212219612504043,
-            0.050141166921593434
+            0.6212219595506003,
+            0.05014118218742481
           ],
           "type": "Arc",
           "units": "in"
@@ -6265,13 +6265,13 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            0.6212219612504043,
-            0.050141166921593434
+            0.6212219595506003,
+            0.05014118218742481
           ],
           "tag": null,
           "to": [
-            0.6212219647017184,
-            0.05014116692027481
+            0.621221963003921,
+            0.050141182186105415
           ],
           "type": "ToPoint",
           "units": "in"
@@ -6283,14 +6283,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -127.86877803522704,
-            0.05027676521968816
+            -127.8687780369249,
+            0.050276765827863924
           ],
           "from": [
-            0.6212219647017184,
-            0.05014116692027481
+            0.621221963003921,
+            0.050141182186105415
           ],
-          "radius": 128.49000000000032,
+          "radius": 128.49000000000035,
           "tag": {
             "commentStart": 8170,
             "end": 8174,
@@ -6300,8 +6300,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc3"
           },
           "to": [
-            0.378769940806464,
-            7.939924294423511
+            0.37876993915607216,
+            7.939924294260284
           ],
           "type": "Arc",
           "units": "in"
@@ -6313,14 +6313,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            59.740003424511364,
-            11.58983323778406
+            59.740003424522904,
+            11.58983323744933
           ],
           "from": [
-            0.378769940806464,
-            7.939924294423511
+            0.37876993915607216,
+            7.939924294260284
           ],
-          "radius": 59.47333752196653,
+          "radius": 59.4733375236148,
           "tag": {
             "commentStart": 8324,
             "end": 8328,
@@ -6330,8 +6330,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            0.2789798698824626,
-            12.800020759459336
+            0.2789798682535434,
+            12.800020759525506
           ],
           "type": "Arc",
           "units": "in"
@@ -6342,8 +6342,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            0.2789798698824626,
-            12.800020759459336
+            0.2789798682535434,
+            12.800020759525506
           ],
           "tag": {
             "commentStart": 8475,
@@ -6488,8 +6488,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line1"
           },
           "to": [
-            3.289852806310985,
-            -0.5527849047255319
+            3.289852806337246,
+            -0.5527849046635424
           ],
           "type": "ToPoint",
           "units": "in"
@@ -6501,14 +6501,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            3.7891586952857974,
-            8.91010907279452
+            3.7891586955055376,
+            8.910109072765236
           ],
           "from": [
-            3.289852806310985,
-            -0.5527849047255319
+            3.289852806337246,
+            -0.5527849046635424
           ],
-          "radius": 9.476057661314128,
+          "radius": 9.476057661233177,
           "tag": {
             "commentStart": 3873,
             "end": 3877,
@@ -6518,8 +6518,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc2"
           },
           "to": [
-            1.8604959136334478,
-            -0.367602319311791
+            1.8604959135905723,
+            -0.36760231920380093
           ],
           "type": "Arc",
           "units": "in"
@@ -6531,14 +6531,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            1.9399999999960043,
-            0.0013307487963968856
+            1.9399999999960054,
+            0.001330748829615258
           ],
           "from": [
-            1.8604959136334478,
-            -0.367602319311791
+            1.8604959135905723,
+            -0.36760231920380093
           ],
-          "radius": 0.37740231649006295,
+          "radius": 0.37740231642600164,
           "tag": {
             "commentStart": 4025,
             "end": 4029,
@@ -6548,8 +6548,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc3"
           },
           "to": [
-            1.8599718736389081,
-            0.370150498110121
+            1.8599718735921658,
+            0.3701504980676448
           ],
           "type": "Arc",
           "units": "in"
@@ -6561,14 +6561,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            3.7901586453032627,
-            -8.9499803689712
+            3.790158645333133,
+            -8.949980368969747
           ],
           "from": [
-            1.8599718736389081,
-            0.370150498110121
+            1.8599718735921658,
+            0.3701504980676448
           ],
-          "radius": 9.51790209831085,
+          "radius": 9.51790209828337,
           "tag": {
             "commentStart": 4174,
             "end": 4178,
@@ -6578,8 +6578,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            3.3900207361021866,
-            0.5595069992653379
+            3.39002073610148,
+            0.5595069992379997
           ],
           "type": "Arc",
           "units": "in"
@@ -6590,8 +6590,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            3.3900207361021866,
-            0.5595069992653379
+            3.39002073610148,
+            0.5595069992379997
           ],
           "tag": {
             "commentStart": 4326,
@@ -6867,8 +6867,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line3"
             },
             "to": [
-              -1.670136931855748,
-              -0.6096068410554604
+              -1.6701369375297057,
+              -0.6096068419338572
             ],
             "type": "ToPoint",
             "units": "in"
@@ -6880,14 +6880,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              -1.291092690207574,
-              -1.6996828331476372
+              -1.2910926850326223,
+              -1.6996828312651249
             ],
             "from": [
-              -1.670136931855748,
-              -0.6096068410554604
+              -1.6701369375297057,
+              -0.6096068419338572
             ],
-            "radius": 1.1540971387462944,
+            "radius": 1.1540971397016868,
             "tag": {
               "commentStart": 3007,
               "end": 3011,
@@ -6897,8 +6897,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc4"
             },
             "to": [
-              -0.9092317649800853,
-              -0.6105903488072164
+              -0.9092317599372419,
+              -0.6105903458659669
             ],
             "type": "Arc",
             "units": "in"
@@ -6910,14 +6910,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              2.489845474790344,
-              9.079902081240409
+              2.489845476541049,
+              9.079902087492032
             ],
             "from": [
-              -0.9092317628087931,
-              -0.6105903426145476
+              -0.9092317577657718,
+              -0.6105903396727912
             ],
-            "radius": 10.269341239045223,
+            "radius": 10.269341241078791,
             "tag": {
               "commentStart": 3162,
               "end": 3166,
@@ -6927,8 +6927,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc5"
             },
             "to": [
-              3.3899922970134506,
-              -1.1499124421220035
+              3.3899922966043676,
+              -1.1499124381018504
             ],
             "type": "Arc",
             "units": "in"
@@ -6939,8 +6939,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              3.3899922970134506,
-              -1.1499124421220035
+              3.3899922966043676,
+              -1.1499124381018504
             ],
             "tag": {
               "commentStart": 3318,
@@ -7236,8 +7236,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line1"
             },
             "to": [
-              3.289852806310985,
-              -0.5527849047255319
+              3.289852806337246,
+              -0.5527849046635424
             ],
             "type": "ToPoint",
             "units": "in"
@@ -7249,14 +7249,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              3.7891586952857974,
-              8.91010907279452
+              3.7891586955055376,
+              8.910109072765236
             ],
             "from": [
-              3.289852806310985,
-              -0.5527849047255319
+              3.289852806337246,
+              -0.5527849046635424
             ],
-            "radius": 9.476057661314128,
+            "radius": 9.476057661233177,
             "tag": {
               "commentStart": 3873,
               "end": 3877,
@@ -7266,8 +7266,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc2"
             },
             "to": [
-              1.8604959136334478,
-              -0.367602319311791
+              1.8604959135905723,
+              -0.36760231920380093
             ],
             "type": "Arc",
             "units": "in"
@@ -7279,14 +7279,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              1.9399999999960043,
-              0.0013307487963968856
+              1.9399999999960054,
+              0.001330748829615258
             ],
             "from": [
-              1.8604959136334478,
-              -0.367602319311791
+              1.8604959135905723,
+              -0.36760231920380093
             ],
-            "radius": 0.37740231649006295,
+            "radius": 0.37740231642600164,
             "tag": {
               "commentStart": 4025,
               "end": 4029,
@@ -7296,8 +7296,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc3"
             },
             "to": [
-              1.8599718736389081,
-              0.370150498110121
+              1.8599718735921658,
+              0.3701504980676448
             ],
             "type": "Arc",
             "units": "in"
@@ -7309,14 +7309,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              3.7901586453032627,
-              -8.9499803689712
+              3.790158645333133,
+              -8.949980368969747
             ],
             "from": [
-              1.8599718736389081,
-              0.370150498110121
+              1.8599718735921658,
+              0.3701504980676448
             ],
-            "radius": 9.51790209831085,
+            "radius": 9.51790209828337,
             "tag": {
               "commentStart": 4174,
               "end": 4178,
@@ -7326,8 +7326,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc4"
             },
             "to": [
-              3.3900207361021866,
-              0.5595069992653379
+              3.39002073610148,
+              0.5595069992379997
             ],
             "type": "Arc",
             "units": "in"
@@ -7338,8 +7338,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              3.3900207361021866,
-              0.5595069992653379
+              3.39002073610148,
+              0.5595069992379997
             ],
             "tag": {
               "commentStart": 4326,
@@ -7461,7 +7461,7 @@ description: Variables in memory after executing hammer.kcl
             "value": "line1"
           },
           "to": [
-            0.3294391188972452,
+            0.3294391189384675,
             11.36
           ],
           "type": "ToPoint",
@@ -7474,14 +7474,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            0.891241267032794,
-            11.361115378144001
+            0.891241267038863,
+            11.361115378189023
           ],
           "from": [
-            0.3294391188972452,
+            0.3294391189384675,
             11.36
           ],
-          "radius": 0.561803255346675,
+          "radius": 0.561803255311611,
           "tag": {
             "commentStart": 368,
             "end": 372,
@@ -7491,8 +7491,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc2"
           },
           "to": [
-            0.9499808132389663,
-            11.91983942759025
+            0.9499808132507284,
+            11.919839427599417
           ],
           "type": "Arc",
           "units": "in"
@@ -7504,14 +7504,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            0.5703778508879216,
-            8.199859009185026
+            0.5703778508554236,
+            8.199859009197134
           ],
           "from": [
-            2.719770508509604,
-            11.259673374936213
+            2.71977050852744,
+            11.259673374914742
           ],
-          "radius": 3.739298430119658,
+          "radius": 3.7392984301211136,
           "tag": {
             "commentStart": 521,
             "end": 525,
@@ -7521,8 +7521,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc3"
           },
           "to": [
-            0.9499808136188855,
-            11.919839431200876
+            0.9499808136306356,
+            11.91983943120993
           ],
           "type": "Arc",
           "units": "in"
@@ -7533,8 +7533,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            2.7197705085098334,
-            11.259673374936538
+            2.7197705085276693,
+            11.259673374915069
           ],
           "tag": {
             "commentStart": 673,
@@ -7569,8 +7569,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line5"
           },
           "to": [
-            2.480535920311962,
-            11.780535920197902
+            2.48053592036513,
+            11.780535920145486
           ],
           "type": "ToPoint",
           "units": "in"
@@ -7582,14 +7582,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -0.13139196908463635,
-            9.170409780895554
+            -0.13139196909720496,
+            9.170409780962421
           ],
           "from": [
-            2.480535920311962,
-            11.780535920197902
+            2.48053592036513,
+            11.780535920145486
           ],
-          "radius": 3.692550035202929,
+          "radius": 3.69255003516511,
           "tag": {
             "commentStart": 918,
             "end": 922,
@@ -7599,8 +7599,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc6"
           },
           "to": [
-            -0.9099871952373693,
-            12.779940946613523
+            -0.9099871952178312,
+            12.779940946648628
           ],
           "type": "Arc",
           "units": "in"
@@ -7612,14 +7612,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            -1.1791705084471185,
-            14.029924785911584
+            -1.1791705085460145,
+            14.029924785906875
           ],
           "from": [
-            -0.9099871952373693,
-            12.779940946613523
+            -0.9099871952178312,
+            12.779940946648628
           ],
-          "radius": 1.2786396109212703,
+          "radius": 1.2786396109072824,
           "tag": {
             "commentStart": 1074,
             "end": 1078,
@@ -7629,8 +7629,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc7"
           },
           "to": [
-            -1.6702674861953792,
-            12.849355849735716
+            -1.6702674861548281,
+            12.849355849688148
           ],
           "type": "Arc",
           "units": "in"
@@ -7641,8 +7641,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            -1.6702674861953792,
-            12.849355849735716
+            -1.6702674861548281,
+            12.849355849688148
           ],
           "tag": {
             "commentStart": 1229,
@@ -7707,7 +7707,7 @@ description: Variables in memory after executing hammer.kcl
             "value": "line10"
           },
           "to": [
-            -1.9716666666618003,
+            -1.971666666665,
             11.68
           ],
           "type": "ToPoint",
@@ -7720,14 +7720,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -1.9166666666647332,
-            11.6766666666664
+            -1.9166666666649999,
+            11.676666666666666
           ],
           "from": [
-            -1.9716666666618003,
+            -1.971666666665,
             11.68
           ],
-          "radius": 0.055100917513143825,
+          "radius": 0.05510091751605532,
           "tag": {
             "commentStart": 1634,
             "end": 1639,
@@ -7738,7 +7738,7 @@ description: Variables in memory after executing hammer.kcl
           },
           "to": [
             -1.919999999998132,
-            11.62166666666932
+            11.621666666666654
           ],
           "type": "Arc",
           "units": "in"
@@ -7750,7 +7750,7 @@ description: Variables in memory after executing hammer.kcl
           },
           "from": [
             -1.919999999998132,
-            11.62166666666932
+            11.621666666666654
           ],
           "tag": {
             "commentStart": 1795,
@@ -7785,8 +7785,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line13"
           },
           "to": [
-            -1.5804123883467058,
-            11.660972813642742
+            -1.580412388436731,
+            11.660972813990007
           ],
           "type": "ToPoint",
           "units": "in"
@@ -7798,14 +7798,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            -1.1873668675807505,
-            10.739147796704014
+            -1.1873668677788556,
+            10.739147796636773
           ],
           "from": [
-            -1.5804123883467058,
-            11.660972813642742
+            -1.580412388436731,
+            11.660972813990007
           ],
-          "radius": 1.002120822679714,
+          "radius": 1.0021208230186167,
           "tag": {
             "commentStart": 2048,
             "end": 2053,
@@ -7815,8 +7815,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc14"
           },
           "to": [
-            -0.3309041777851862,
-            11.259453287965075
+            -0.33090417763355906,
+            11.259453287974884
           ],
           "type": "Arc",
           "units": "in"
@@ -7827,8 +7827,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            -0.3309041777851862,
-            11.259453287965075
+            -0.33090417763355906,
+            11.259453287974884
           ],
           "tag": {
             "commentStart": 2207,
@@ -8039,8 +8039,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line3"
           },
           "to": [
-            -1.670136931855748,
-            -0.6096068410554604
+            -1.6701369375297057,
+            -0.6096068419338572
           ],
           "type": "ToPoint",
           "units": "in"
@@ -8052,14 +8052,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            -1.291092690207574,
-            -1.6996828331476372
+            -1.2910926850326223,
+            -1.6996828312651249
           ],
           "from": [
-            -1.670136931855748,
-            -0.6096068410554604
+            -1.6701369375297057,
+            -0.6096068419338572
           ],
-          "radius": 1.1540971387462944,
+          "radius": 1.1540971397016868,
           "tag": {
             "commentStart": 3007,
             "end": 3011,
@@ -8069,8 +8069,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            -0.9092317649800853,
-            -0.6105903488072164
+            -0.9092317599372419,
+            -0.6105903458659669
           ],
           "type": "Arc",
           "units": "in"
@@ -8082,14 +8082,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            2.489845474790344,
-            9.079902081240409
+            2.489845476541049,
+            9.079902087492032
           ],
           "from": [
-            -0.9092317628087931,
-            -0.6105903426145476
+            -0.9092317577657718,
+            -0.6105903396727912
           ],
-          "radius": 10.269341239045223,
+          "radius": 10.269341241078791,
           "tag": {
             "commentStart": 3162,
             "end": 3166,
@@ -8099,8 +8099,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc5"
           },
           "to": [
-            3.3899922970134506,
-            -1.1499124421220035
+            3.3899922966043676,
+            -1.1499124381018504
           ],
           "type": "Arc",
           "units": "in"
@@ -8111,8 +8111,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            3.3899922970134506,
-            -1.1499124421220035
+            3.3899922966043676,
+            -1.1499124381018504
           ],
           "tag": {
             "commentStart": 3318,
@@ -8261,8 +8261,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line1"
           },
           "to": [
-            3.289852806310985,
-            -0.5527849047255319
+            3.289852806337246,
+            -0.5527849046635424
           ],
           "type": "ToPoint",
           "units": "in"
@@ -8274,14 +8274,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            3.7891586952857974,
-            8.91010907279452
+            3.7891586955055376,
+            8.910109072765236
           ],
           "from": [
-            3.289852806310985,
-            -0.5527849047255319
+            3.289852806337246,
+            -0.5527849046635424
           ],
-          "radius": 9.476057661314128,
+          "radius": 9.476057661233177,
           "tag": {
             "commentStart": 3873,
             "end": 3877,
@@ -8291,8 +8291,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc2"
           },
           "to": [
-            1.8604959136334478,
-            -0.367602319311791
+            1.8604959135905723,
+            -0.36760231920380093
           ],
           "type": "Arc",
           "units": "in"
@@ -8304,14 +8304,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            1.9399999999960043,
-            0.0013307487963968856
+            1.9399999999960054,
+            0.001330748829615258
           ],
           "from": [
-            1.8604959136334478,
-            -0.367602319311791
+            1.8604959135905723,
+            -0.36760231920380093
           ],
-          "radius": 0.37740231649006295,
+          "radius": 0.37740231642600164,
           "tag": {
             "commentStart": 4025,
             "end": 4029,
@@ -8321,8 +8321,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc3"
           },
           "to": [
-            1.8599718736389081,
-            0.370150498110121
+            1.8599718735921658,
+            0.3701504980676448
           ],
           "type": "Arc",
           "units": "in"
@@ -8334,14 +8334,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            3.7901586453032627,
-            -8.9499803689712
+            3.790158645333133,
+            -8.949980368969747
           ],
           "from": [
-            1.8599718736389081,
-            0.370150498110121
+            1.8599718735921658,
+            0.3701504980676448
           ],
-          "radius": 9.51790209831085,
+          "radius": 9.51790209828337,
           "tag": {
             "commentStart": 4174,
             "end": 4178,
@@ -8351,8 +8351,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            3.3900207361021866,
-            0.5595069992653379
+            3.39002073610148,
+            0.5595069992379997
           ],
           "type": "Arc",
           "units": "in"
@@ -8363,8 +8363,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            3.3900207361021866,
-            0.5595069992653379
+            3.39002073610148,
+            0.5595069992379997
           ],
           "tag": {
             "commentStart": 4326,
@@ -8535,8 +8535,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line3"
           },
           "to": [
-            -1.6699810619240838,
-            0.6100543223799865
+            -1.6699810619204416,
+            0.6100543223822966
           ],
           "type": "ToPoint",
           "units": "in"
@@ -8548,14 +8548,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -1.2900757523270423,
+            -1.2900757523257984,
             1.6999999999999456
           ],
           "from": [
-            -1.6699810619240838,
-            0.6100543223799865
+            -1.6699810619204416,
+            0.6100543223822966
           ],
-          "radius": 1.1542571742997552,
+          "radius": 1.1542571742967844,
           "tag": {
             "commentStart": 4984,
             "end": 4988,
@@ -8565,8 +8565,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            -0.9100356689665694,
-            0.6101013077070241
+            -0.9100356689654066,
+            0.610101307710142
           ],
           "type": "Arc",
           "units": "in"
@@ -8578,14 +8578,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            2.490138122849105,
-            -9.07998266484332
+            2.49013812280021,
+            -9.07998266484493
           ],
           "from": [
-            -0.9100356689665694,
-            0.6101013077070241
+            -0.9100356689654066,
+            0.610101307710142
           ],
-          "radius": 10.269318828901323,
+          "radius": 10.26931882888921,
           "tag": {
             "commentStart": 5138,
             "end": 5142,
@@ -8595,8 +8595,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc5"
           },
           "to": [
-            3.3899855456646746,
-            1.149835702326227
+            3.3899855456662102,
+            1.149835702308021
           ],
           "type": "Arc",
           "units": "in"
@@ -8607,8 +8607,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            3.3899855456646746,
-            1.149835702326227
+            3.3899855456662102,
+            1.149835702308021
           ],
           "tag": {
             "commentStart": 5289,
@@ -9199,8 +9199,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "line1"
           },
           "to": [
-            0.5699989417330824,
-            -0.00022143541315993665
+            0.569998941660857,
+            -0.0002214414742992401
           ],
           "type": "ToPoint",
           "units": "in"
@@ -9212,14 +9212,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            0.5708332040845302,
-            0.05016041871788659
+            0.570833181410884,
+            0.050160434007719176
           ],
           "from": [
-            0.5699989417330824,
-            -0.00022143541315993665
+            0.569998941660857,
+            -0.0002214414742992401
           ],
-          "radius": 0.050388760843595795,
+          "radius": 0.05038878181744558,
           "tag": {
             "commentStart": 8021,
             "end": 8025,
@@ -9229,8 +9229,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc2"
           },
           "to": [
-            0.6212219612504043,
-            0.050141166921593434
+            0.6212219595506003,
+            0.05014118218742481
           ],
           "type": "Arc",
           "units": "in"
@@ -9242,14 +9242,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": true,
           "center": [
-            -127.86877803522704,
-            0.05027676521968816
+            -127.8687780369249,
+            0.050276765827863924
           ],
           "from": [
-            0.6212219647017184,
-            0.05014116692027481
+            0.621221963003921,
+            0.050141182186105415
           ],
-          "radius": 128.49000000000032,
+          "radius": 128.49000000000035,
           "tag": {
             "commentStart": 8170,
             "end": 8174,
@@ -9259,8 +9259,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc3"
           },
           "to": [
-            0.378769940806464,
-            7.939924294423511
+            0.37876993915607216,
+            7.939924294260284
           ],
           "type": "Arc",
           "units": "in"
@@ -9272,14 +9272,14 @@ description: Variables in memory after executing hammer.kcl
           },
           "ccw": false,
           "center": [
-            59.740003424511364,
-            11.58983323778406
+            59.740003424522904,
+            11.58983323744933
           ],
           "from": [
-            0.378769940806464,
-            7.939924294423511
+            0.37876993915607216,
+            7.939924294260284
           ],
-          "radius": 59.47333752196653,
+          "radius": 59.4733375236148,
           "tag": {
             "commentStart": 8324,
             "end": 8328,
@@ -9289,8 +9289,8 @@ description: Variables in memory after executing hammer.kcl
             "value": "arc4"
           },
           "to": [
-            0.2789798698824626,
-            12.800020759459336
+            0.2789798682535434,
+            12.800020759525506
           ],
           "type": "Arc",
           "units": "in"
@@ -9301,8 +9301,8 @@ description: Variables in memory after executing hammer.kcl
             "sourceRange": []
           },
           "from": [
-            0.2789798698824626,
-            12.800020759459336
+            0.2789798682535434,
+            12.800020759525506
           ],
           "tag": {
             "commentStart": 8475,
@@ -9606,8 +9606,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "line3"
             },
             "to": [
-              -1.6699810619240838,
-              0.6100543223799865
+              -1.6699810619204416,
+              0.6100543223822966
             ],
             "type": "ToPoint",
             "units": "in"
@@ -9619,14 +9619,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": true,
             "center": [
-              -1.2900757523270423,
+              -1.2900757523257984,
               1.6999999999999456
             ],
             "from": [
-              -1.6699810619240838,
-              0.6100543223799865
+              -1.6699810619204416,
+              0.6100543223822966
             ],
-            "radius": 1.1542571742997552,
+            "radius": 1.1542571742967844,
             "tag": {
               "commentStart": 4984,
               "end": 4988,
@@ -9636,8 +9636,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc4"
             },
             "to": [
-              -0.9100356689665694,
-              0.6101013077070241
+              -0.9100356689654066,
+              0.610101307710142
             ],
             "type": "Arc",
             "units": "in"
@@ -9649,14 +9649,14 @@ description: Variables in memory after executing hammer.kcl
             },
             "ccw": false,
             "center": [
-              2.490138122849105,
-              -9.07998266484332
+              2.49013812280021,
+              -9.07998266484493
             ],
             "from": [
-              -0.9100356689665694,
-              0.6101013077070241
+              -0.9100356689654066,
+              0.610101307710142
             ],
-            "radius": 10.269318828901323,
+            "radius": 10.26931882888921,
             "tag": {
               "commentStart": 5138,
               "end": 5142,
@@ -9666,8 +9666,8 @@ description: Variables in memory after executing hammer.kcl
               "value": "arc5"
             },
             "to": [
-              3.3899855456646746,
-              1.149835702326227
+              3.3899855456662102,
+              1.149835702308021
             ],
             "type": "Arc",
             "units": "in"
@@ -9678,8 +9678,8 @@ description: Variables in memory after executing hammer.kcl
               "sourceRange": []
             },
             "from": [
-              3.3899855456646746,
-              1.149835702326227
+              3.3899855456662102,
+              1.149835702308021
             ],
             "tag": {
               "commentStart": 5289,
@@ -9824,7 +9824,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -1.971666666663467,
+                        "n": -1.9716666666666667,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9850,7 +9850,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.621666666666,
+                        "n": 11.621666666663334,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9860,7 +9860,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.9166666666663998,
+                        "n": -1.9166666666666665,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9868,7 +9868,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.6766666666664,
+                        "n": 11.676666666666666,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9976,7 +9976,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.3309041777846951,
+                        "n": -0.3309041776328069,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9984,7 +9984,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.259453287966597,
+                        "n": 11.259453287976564,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -9994,7 +9994,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.5804123883471182,
+                        "n": -1.5804123884371433,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10002,7 +10002,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.660972813643715,
+                        "n": 11.66097281399098,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10012,7 +10012,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.1873668675811628,
+                        "n": -1.1873668677792681,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10020,7 +10020,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 10.739147796704987,
+                        "n": 10.739147796637747,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10128,7 +10128,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 0.9499808136481503,
+                        "n": 0.9499808136599011,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10136,7 +10136,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.919839431487697,
+                        "n": 11.919839431496754,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10146,7 +10146,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3294391188966843,
+                        "n": 0.3294391189379066,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10164,7 +10164,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.8912412670322332,
+                        "n": 0.8912412670383021,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10172,7 +10172,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.361115378144001,
+                        "n": 11.361115378189023,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10280,7 +10280,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.719770508509604,
+                        "n": 2.71977050852744,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10288,7 +10288,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.259673374936213,
+                        "n": 11.259673374914742,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10298,7 +10298,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.9499808136482506,
+                        "n": 0.9499808136600014,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10306,7 +10306,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.919839431488652,
+                        "n": 11.91983943149771,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10316,7 +10316,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.5703778508879209,
+                        "n": 0.5703778508554236,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10324,7 +10324,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 8.199859009185026,
+                        "n": 8.199859009197134,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10432,7 +10432,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 2.480535920312498,
+                        "n": 2.4805359203656656,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10440,7 +10440,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.780535920198439,
+                        "n": 11.780535920146022,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10450,7 +10450,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.9099871952403606,
+                        "n": -0.9099871952208146,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10458,7 +10458,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 12.779940946630415,
+                        "n": 12.779940946665484,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10468,7 +10468,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": -0.1313919690841004,
+                        "n": -0.13139196909666928,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10476,7 +10476,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 9.17040978089609,
+                        "n": 9.170409780962958,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10584,7 +10584,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -1.6702674862096492,
+                        "n": -1.670267486169085,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10592,7 +10592,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 12.849355849727655,
+                        "n": 12.849355849680064,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10602,7 +10602,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.909987195240668,
+                        "n": -0.9099871952211219,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10610,7 +10610,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 12.779940946631838,
+                        "n": 12.779940946666906,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10620,7 +10620,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.1791705084504172,
+                        "n": -1.1791705085493052,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10628,7 +10628,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 14.029924785929898,
+                        "n": 14.029924785925154,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -10906,7 +10906,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.3294391188972452,
+                        "n": 0.3294391189384675,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11026,7 +11026,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.9716666666618003,
+                        "n": -1.971666666665,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11136,7 +11136,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.621666666664332,
+                        "n": 11.621666666661666,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11266,7 +11266,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.5804123883467058,
+                        "n": -1.580412388436731,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11274,7 +11274,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.660972813642742,
+                        "n": 11.660972813990007,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11368,7 +11368,7 @@ description: Variables in memory after executing hammer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.3309041777837909,
+                        "n": -0.33090417763190266,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11376,7 +11376,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.259453287967144,
+                        "n": 11.25945328797711,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11488,7 +11488,7 @@ description: Variables in memory after executing hammer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 2.7197705085098334,
+                        "n": 2.7197705085276693,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11496,7 +11496,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.259673374936538,
+                        "n": 11.259673374915069,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11626,7 +11626,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.480535920311962,
+                        "n": 2.48053592036513,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11634,7 +11634,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 11.780535920197902,
+                        "n": 11.780535920145486,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11728,7 +11728,7 @@ description: Variables in memory after executing hammer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -1.6702674862093818,
+                        "n": -1.6702674861688174,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11736,7 +11736,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 12.8493558497283,
+                        "n": 12.849355849680709,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -11863,7 +11863,7 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line1"
                   },
                   "to": [
-                    0.3294391188972452,
+                    0.3294391189384675,
                     11.36
                   ],
                   "type": "ToPoint",
@@ -11876,14 +11876,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    0.891241267032794,
-                    11.361115378144001
+                    0.891241267038863,
+                    11.361115378189023
                   ],
                   "from": [
-                    0.3294391188972452,
+                    0.3294391189384675,
                     11.36
                   ],
-                  "radius": 0.561803255346675,
+                  "radius": 0.561803255311611,
                   "tag": {
                     "commentStart": 368,
                     "end": 372,
@@ -11893,8 +11893,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    0.9499808132389663,
-                    11.91983942759025
+                    0.9499808132507284,
+                    11.919839427599417
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -11905,13 +11905,13 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.9499808132389663,
-                    11.91983942759025
+                    0.9499808132507284,
+                    11.919839427599417
                   ],
                   "tag": null,
                   "to": [
-                    2.719770508509604,
-                    11.259673374936213
+                    2.71977050852744,
+                    11.259673374914742
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -11923,14 +11923,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.5703778508879216,
-                    8.199859009185026
+                    0.5703778508554236,
+                    8.199859009197134
                   ],
                   "from": [
-                    2.719770508509604,
-                    11.259673374936213
+                    2.71977050852744,
+                    11.259673374914742
                   ],
-                  "radius": 3.739298430119658,
+                  "radius": 3.7392984301211136,
                   "tag": {
                     "commentStart": 521,
                     "end": 525,
@@ -11940,8 +11940,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    0.9499808136188855,
-                    11.919839431200876
+                    0.9499808136306356,
+                    11.91983943120993
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -11952,13 +11952,13 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.9499808136188855,
-                    11.919839431200876
+                    0.9499808136306356,
+                    11.91983943120993
                   ],
                   "tag": null,
                   "to": [
-                    2.7197705085098334,
-                    11.259673374936538
+                    2.7197705085276693,
+                    11.259673374915069
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -11969,8 +11969,8 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    2.7197705085098334,
-                    11.259673374936538
+                    2.7197705085276693,
+                    11.259673374915069
                   ],
                   "tag": {
                     "commentStart": 673,
@@ -12005,8 +12005,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line5"
                   },
                   "to": [
-                    2.480535920311962,
-                    11.780535920197902
+                    2.48053592036513,
+                    11.780535920145486
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -12018,14 +12018,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -0.13139196908463635,
-                    9.170409780895554
+                    -0.13139196909720496,
+                    9.170409780962421
                   ],
                   "from": [
-                    2.480535920311962,
-                    11.780535920197902
+                    2.48053592036513,
+                    11.780535920145486
                   ],
-                  "radius": 3.692550035202929,
+                  "radius": 3.69255003516511,
                   "tag": {
                     "commentStart": 918,
                     "end": 922,
@@ -12035,8 +12035,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc6"
                   },
                   "to": [
-                    -0.9099871952373693,
-                    12.779940946613523
+                    -0.9099871952178312,
+                    12.779940946648628
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -12048,14 +12048,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -1.1791705084471185,
-                    14.029924785911584
+                    -1.1791705085460145,
+                    14.029924785906875
                   ],
                   "from": [
-                    -0.9099871952373693,
-                    12.779940946613523
+                    -0.9099871952178312,
+                    12.779940946648628
                   ],
-                  "radius": 1.2786396109212703,
+                  "radius": 1.2786396109072824,
                   "tag": {
                     "commentStart": 1074,
                     "end": 1078,
@@ -12065,8 +12065,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc7"
                   },
                   "to": [
-                    -1.6702674861953792,
-                    12.849355849735716
+                    -1.6702674861548281,
+                    12.849355849688148
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -12077,8 +12077,8 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -1.6702674861953792,
-                    12.849355849735716
+                    -1.6702674861548281,
+                    12.849355849688148
                   ],
                   "tag": {
                     "commentStart": 1229,
@@ -12143,7 +12143,7 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line10"
                   },
                   "to": [
-                    -1.9716666666618003,
+                    -1.971666666665,
                     11.68
                   ],
                   "type": "ToPoint",
@@ -12156,14 +12156,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -1.9166666666647332,
-                    11.6766666666664
+                    -1.9166666666649999,
+                    11.676666666666666
                   ],
                   "from": [
-                    -1.9716666666618003,
+                    -1.971666666665,
                     11.68
                   ],
-                  "radius": 0.055100917513143825,
+                  "radius": 0.05510091751605532,
                   "tag": {
                     "commentStart": 1634,
                     "end": 1639,
@@ -12174,7 +12174,7 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "to": [
                     -1.919999999998132,
-                    11.62166666666932
+                    11.621666666666654
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -12186,7 +12186,7 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "from": [
                     -1.919999999998132,
-                    11.62166666666932
+                    11.621666666666654
                   ],
                   "tag": {
                     "commentStart": 1795,
@@ -12221,8 +12221,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line13"
                   },
                   "to": [
-                    -1.5804123883467058,
-                    11.660972813642742
+                    -1.580412388436731,
+                    11.660972813990007
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -12234,14 +12234,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -1.1873668675807505,
-                    10.739147796704014
+                    -1.1873668677788556,
+                    10.739147796636773
                   ],
                   "from": [
-                    -1.5804123883467058,
-                    11.660972813642742
+                    -1.580412388436731,
+                    11.660972813990007
                   ],
-                  "radius": 1.002120822679714,
+                  "radius": 1.0021208230186167,
                   "tag": {
                     "commentStart": 2048,
                     "end": 2053,
@@ -12251,8 +12251,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc14"
                   },
                   "to": [
-                    -0.3309041777851862,
-                    11.259453287965075
+                    -0.33090417763355906,
+                    11.259453287974884
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -12263,8 +12263,8 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.3309041777851862,
-                    11.259453287965075
+                    -0.33090417763355906,
+                    11.259453287974884
                   ],
                   "tag": {
                     "commentStart": 2207,
@@ -12570,7 +12570,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.9092317628089578,
+                        "n": -0.9092317577659366,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12578,7 +12578,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.6105903426150172,
+                        "n": -0.6105903396732608,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12588,7 +12588,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.670136931855748,
+                        "n": -1.6701369375297057,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12596,7 +12596,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.6096068410554604,
+                        "n": -0.6096068419338572,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12606,7 +12606,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.2910926902075741,
+                        "n": -1.2910926850326223,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12614,7 +12614,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -1.6996828331476375,
+                        "n": -1.6996828312651249,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12722,7 +12722,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -0.9092317628087931,
+                        "n": -0.9092317577657718,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12730,7 +12730,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.6105903426145476,
+                        "n": -0.6105903396727912,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12740,7 +12740,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.3899922969874554,
+                        "n": 3.3899922965783658,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12748,7 +12748,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -1.1499124418265416,
+                        "n": -1.1499124378063585,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12758,7 +12758,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 2.489845474790345,
+                        "n": 2.4898454765410483,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -12766,7 +12766,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 9.079902081240409,
+                        "n": 9.079902087492032,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13012,7 +13012,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.670136931855748,
+                        "n": -1.6701369375297057,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13020,7 +13020,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.6096068410554604,
+                        "n": -0.6096068419338572,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13114,7 +13114,7 @@ description: Variables in memory after executing hammer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 3.3899922969874554,
+                        "n": 3.3899922965783658,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13122,7 +13122,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -1.1499124418265416,
+                        "n": -1.1499124378063585,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13423,8 +13423,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -1.670136931855748,
-                    -0.6096068410554604
+                    -1.6701369375297057,
+                    -0.6096068419338572
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -13436,14 +13436,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -1.291092690207574,
-                    -1.6996828331476372
+                    -1.2910926850326223,
+                    -1.6996828312651249
                   ],
                   "from": [
-                    -1.670136931855748,
-                    -0.6096068410554604
+                    -1.6701369375297057,
+                    -0.6096068419338572
                   ],
-                  "radius": 1.1540971387462944,
+                  "radius": 1.1540971397016868,
                   "tag": {
                     "commentStart": 3007,
                     "end": 3011,
@@ -13453,8 +13453,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -0.9092317649800853,
-                    -0.6105903488072164
+                    -0.9092317599372419,
+                    -0.6105903458659669
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -13465,13 +13465,13 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.9092317649800853,
-                    -0.6105903488072164
+                    -0.9092317599372419,
+                    -0.6105903458659669
                   ],
                   "tag": null,
                   "to": [
-                    -0.9092317628087931,
-                    -0.6105903426145476
+                    -0.9092317577657718,
+                    -0.6105903396727912
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -13483,14 +13483,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    2.489845474790344,
-                    9.079902081240409
+                    2.489845476541049,
+                    9.079902087492032
                   ],
                   "from": [
-                    -0.9092317628087931,
-                    -0.6105903426145476
+                    -0.9092317577657718,
+                    -0.6105903396727912
                   ],
-                  "radius": 10.269341239045223,
+                  "radius": 10.269341241078791,
                   "tag": {
                     "commentStart": 3162,
                     "end": 3166,
@@ -13500,8 +13500,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    3.3899922970134506,
-                    -1.1499124421220035
+                    3.3899922966043676,
+                    -1.1499124381018504
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -13512,8 +13512,8 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.3899922970134506,
-                    -1.1499124421220035
+                    3.3899922966043676,
+                    -1.1499124381018504
                   ],
                   "tag": {
                     "commentStart": 3318,
@@ -13659,7 +13659,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.8604959136334465,
+                        "n": 1.8604959135905699,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13667,7 +13667,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.3676023193117921,
+                        "n": -0.3676023192037978,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13677,7 +13677,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.289852806310985,
+                        "n": 3.289852806337246,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13685,7 +13685,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.5527849047255319,
+                        "n": -0.5527849046635424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13695,7 +13695,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.7891586952857965,
+                        "n": 3.7891586955055367,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13703,7 +13703,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 8.91010907279452,
+                        "n": 8.910109072765236,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13811,7 +13811,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 1.859971873638907,
+                        "n": 1.8599718735921638,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13819,7 +13819,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.37015049811011985,
+                        "n": 0.37015049806764777,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13829,7 +13829,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.8604959136334465,
+                        "n": 1.8604959135905699,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13837,7 +13837,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.3676023193117921,
+                        "n": -0.3676023192037978,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13855,7 +13855,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.0013307487963957756,
+                        "n": 0.001330748829618343,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13963,7 +13963,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 3.3900207361021875,
+                        "n": 3.3900207361014756,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13971,7 +13971,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.5595069992653365,
+                        "n": 0.5595069992380034,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13981,7 +13981,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.859971873638907,
+                        "n": 1.8599718735921638,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13989,7 +13989,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.37015049811011985,
+                        "n": 0.37015049806764777,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -13999,7 +13999,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 3.790158645303261,
+                        "n": 3.790158645333128,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14007,7 +14007,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -8.949980368971202,
+                        "n": -8.949980368969744,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14133,7 +14133,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": 3.289852806310985,
+                        "n": 3.289852806337246,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14141,7 +14141,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -0.5527849047255319,
+                        "n": -0.5527849046635424,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14235,7 +14235,7 @@ description: Variables in memory after executing hammer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 3.3900207361021875,
+                        "n": 3.3900207361014756,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14243,7 +14243,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.5595069992653365,
+                        "n": 0.5595069992380034,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14370,8 +14370,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line1"
                   },
                   "to": [
-                    3.289852806310985,
-                    -0.5527849047255319
+                    3.289852806337246,
+                    -0.5527849046635424
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -14383,14 +14383,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    3.7891586952857974,
-                    8.91010907279452
+                    3.7891586955055376,
+                    8.910109072765236
                   ],
                   "from": [
-                    3.289852806310985,
-                    -0.5527849047255319
+                    3.289852806337246,
+                    -0.5527849046635424
                   ],
-                  "radius": 9.476057661314128,
+                  "radius": 9.476057661233177,
                   "tag": {
                     "commentStart": 3873,
                     "end": 3877,
@@ -14400,8 +14400,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    1.8604959136334478,
-                    -0.367602319311791
+                    1.8604959135905723,
+                    -0.36760231920380093
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -14413,14 +14413,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    1.9399999999960043,
-                    0.0013307487963968856
+                    1.9399999999960054,
+                    0.001330748829615258
                   ],
                   "from": [
-                    1.8604959136334478,
-                    -0.367602319311791
+                    1.8604959135905723,
+                    -0.36760231920380093
                   ],
-                  "radius": 0.37740231649006295,
+                  "radius": 0.37740231642600164,
                   "tag": {
                     "commentStart": 4025,
                     "end": 4029,
@@ -14430,8 +14430,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    1.8599718736389081,
-                    0.370150498110121
+                    1.8599718735921658,
+                    0.3701504980676448
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -14443,14 +14443,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    3.7901586453032627,
-                    -8.9499803689712
+                    3.790158645333133,
+                    -8.949980368969747
                   ],
                   "from": [
-                    1.8599718736389081,
-                    0.370150498110121
+                    1.8599718735921658,
+                    0.3701504980676448
                   ],
-                  "radius": 9.51790209831085,
+                  "radius": 9.51790209828337,
                   "tag": {
                     "commentStart": 4174,
                     "end": 4178,
@@ -14460,8 +14460,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    3.3900207361021866,
-                    0.5595069992653379
+                    3.39002073610148,
+                    0.5595069992379997
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -14472,8 +14472,8 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.3900207361021866,
-                    0.5595069992653379
+                    3.39002073610148,
+                    0.5595069992379997
                   ],
                   "tag": {
                     "commentStart": 4326,
@@ -14739,7 +14739,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -1.669981061924065,
+                        "n": -1.6699810619204225,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14747,7 +14747,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.6100543223800409,
+                        "n": 0.6100543223823509,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14757,7 +14757,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.9100356689733293,
+                        "n": -0.9100356689721661,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14765,7 +14765,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.6101013077265186,
+                        "n": 0.6101013077296368,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14775,7 +14775,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": -1.2900757523270234,
+                        "n": -1.2900757523257795,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14891,7 +14891,7 @@ description: Variables in memory after executing hammer.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 3.389985545657732,
+                        "n": 3.389985545659269,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14899,7 +14899,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 1.1498357023447343,
+                        "n": 1.1498357023265298,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14909,7 +14909,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.9100356689734028,
+                        "n": -0.9100356689722396,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14917,7 +14917,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.6101013077267285,
+                        "n": 0.6101013077298467,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14927,7 +14927,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "center": [
                       {
-                        "n": 2.4901381228422683,
+                        "n": 2.490138122793376,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -14935,7 +14935,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": -9.079982664823618,
+                        "n": -9.079982664825225,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -15181,7 +15181,7 @@ description: Variables in memory after executing hammer.kcl
                     ],
                     "end": [
                       {
-                        "n": -1.6699810619240838,
+                        "n": -1.6699810619204416,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -15189,7 +15189,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 0.6100543223799865,
+                        "n": 0.6100543223822966,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -15283,7 +15283,7 @@ description: Variables in memory after executing hammer.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 3.389985545657747,
+                        "n": 3.389985545659284,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -15291,7 +15291,7 @@ description: Variables in memory after executing hammer.kcl
                         }
                       },
                       {
-                        "n": 1.1498357023448986,
+                        "n": 1.149835702326694,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -15592,8 +15592,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -1.6699810619240838,
-                    0.6100543223799865
+                    -1.6699810619204416,
+                    0.6100543223822966
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -15605,14 +15605,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -1.2900757523270423,
+                    -1.2900757523257984,
                     1.6999999999999456
                   ],
                   "from": [
-                    -1.6699810619240838,
-                    0.6100543223799865
+                    -1.6699810619204416,
+                    0.6100543223822966
                   ],
-                  "radius": 1.1542571742997552,
+                  "radius": 1.1542571742967844,
                   "tag": {
                     "commentStart": 4984,
                     "end": 4988,
@@ -15622,8 +15622,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -0.9100356689665694,
-                    0.6101013077070241
+                    -0.9100356689654066,
+                    0.610101307710142
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -15635,14 +15635,14 @@ description: Variables in memory after executing hammer.kcl
                   },
                   "ccw": false,
                   "center": [
-                    2.490138122849105,
-                    -9.07998266484332
+                    2.49013812280021,
+                    -9.07998266484493
                   ],
                   "from": [
-                    -0.9100356689665694,
-                    0.6101013077070241
+                    -0.9100356689654066,
+                    0.610101307710142
                   ],
-                  "radius": 10.269318828901323,
+                  "radius": 10.26931882888921,
                   "tag": {
                     "commentStart": 5138,
                     "end": 5142,
@@ -15652,8 +15652,8 @@ description: Variables in memory after executing hammer.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    3.3899855456646746,
-                    1.149835702326227
+                    3.3899855456662102,
+                    1.149835702308021
                   ],
                   "type": "Arc",
                   "units": "in"
@@ -15664,8 +15664,8 @@ description: Variables in memory after executing hammer.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    3.3899855456646746,
-                    1.149835702326227
+                    3.3899855456662102,
+                    1.149835702308021
                   ],
                   "tag": {
                     "commentStart": 5289,

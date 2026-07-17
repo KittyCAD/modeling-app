@@ -69,7 +69,7 @@ description: Artifact commands m4-insert.kcl
         "path": "[uuid]",
         "to": {
           "x": -3.15,
-          "y": -0.000000000000004263373171371604,
+          "y": -0.000000000000004263370501452307,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands m4-insert.kcl
           "type": "line",
           "end": {
             "x": -3.15,
-            "y": -2.2800000000000042,
+            "y": -2.2800000000000047,
             "z": 0.0
           },
           "relative": false
@@ -242,7 +242,7 @@ description: Artifact commands m4-insert.kcl
         "path": "[uuid]",
         "to": {
           "x": -3.15,
-          "y": -0.00000000000000378965335218995,
+          "y": -0.0000000000000037896509875519975,
           "z": 0.0
         }
       }
@@ -257,7 +257,7 @@ description: Artifact commands m4-insert.kcl
           "type": "line",
           "end": {
             "x": -1.555,
-            "y": -0.0000000000000033159381321777384,
+            "y": -0.0000000000000033159360728146682,
             "z": 0.0
           },
           "relative": false

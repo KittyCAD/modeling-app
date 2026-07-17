@@ -353,8 +353,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.00000000000042272897431283866,
-              0.00000000006505814284373173
+              -0.0000000000004227293813903384,
+              0.00000000006505811401169924
             ],
             "tag": {
               "commentStart": 3094,
@@ -366,7 +366,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "to": [
               29.99999999993579,
-              0.0000000000650581422134809
+              0.00000000006505811338144842
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -378,7 +378,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "from": [
               29.99999999993579,
-              0.0000000000650581422134809
+              0.00000000006505811338144842
             ],
             "tag": {
               "commentStart": 3164,
@@ -413,7 +413,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line3"
             },
             "to": [
-              -0.00000000013222848488890493,
+              -0.00000000013223138252763111,
               20.5
             ],
             "type": "ToPoint",
@@ -425,7 +425,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.00000000013222848488890493,
+              -0.00000000013223138252763111,
               20.5
             ],
             "tag": {
@@ -437,7 +437,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line4"
             },
             "to": [
-              -0.0000000002628731991197869,
+              -0.0000000002628760609798414,
               25.499999999869885
             ],
             "type": "ToPoint",
@@ -449,7 +449,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000002628731991197869,
+              -0.0000000002628760609798414,
               25.499999999869885
             ],
             "tag": {
@@ -534,7 +534,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "to": [
               34.99999999907144,
-              -4.999999999577122
+              -4.999999999577121
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -546,7 +546,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "from": [
               34.99999999907144,
-              -4.999999999577122
+              -4.999999999577121
             ],
             "tag": {
               "commentStart": 3954,
@@ -557,7 +557,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line9"
             },
             "to": [
-              -0.0000000000004227295993767799,
+              -0.00000000000042273000645458984,
               -4.999999999625915
             ],
             "type": "ToPoint",
@@ -569,7 +569,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000000004227295993767799,
+              -0.00000000000042273000645458984,
               -4.999999999625915
             ],
             "tag": {
@@ -581,8 +581,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line10"
             },
             "to": [
-              -0.00000000000042272936691550484,
-              0.00000000013011628658927892
+              -0.00000000000042272977399300457,
+              0.00000000013011622892521313
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -621,12 +621,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         "start": {
           "from": [
-            -0.00000000000042272897431283866,
-            0.00000000006505814284373173
+            -0.0000000000004227293813903384,
+            0.00000000006505811401169924
           ],
           "to": [
-            -0.00000000000042272897431283866,
-            0.00000000006505814284373173
+            -0.0000000000004227293813903384,
+            0.00000000006505811401169924
           ],
           "units": "mm",
           "tag": null,
@@ -847,8 +847,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.00000000000042272897431283866,
-              0.00000000006505814284373173
+              -0.0000000000004227293813903384,
+              0.00000000006505811401169924
             ],
             "tag": {
               "commentStart": 3094,
@@ -860,7 +860,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "to": [
               29.99999999993579,
-              0.0000000000650581422134809
+              0.00000000006505811338144842
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -872,7 +872,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "from": [
               29.99999999993579,
-              0.0000000000650581422134809
+              0.00000000006505811338144842
             ],
             "tag": {
               "commentStart": 3164,
@@ -907,7 +907,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line3"
             },
             "to": [
-              -0.00000000013222848488890493,
+              -0.00000000013223138252763111,
               20.5
             ],
             "type": "ToPoint",
@@ -919,7 +919,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.00000000013222848488890493,
+              -0.00000000013223138252763111,
               20.5
             ],
             "tag": {
@@ -931,7 +931,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line4"
             },
             "to": [
-              -0.0000000002628731991197869,
+              -0.0000000002628760609798414,
               25.499999999869885
             ],
             "type": "ToPoint",
@@ -943,7 +943,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000002628731991197869,
+              -0.0000000002628760609798414,
               25.499999999869885
             ],
             "tag": {
@@ -1028,7 +1028,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "to": [
               34.99999999907144,
-              -4.999999999577122
+              -4.999999999577121
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1040,7 +1040,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             },
             "from": [
               34.99999999907144,
-              -4.999999999577122
+              -4.999999999577121
             ],
             "tag": {
               "commentStart": 3954,
@@ -1051,7 +1051,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line9"
             },
             "to": [
-              -0.0000000000004227295993767799,
+              -0.00000000000042273000645458984,
               -4.999999999625915
             ],
             "type": "ToPoint",
@@ -1063,7 +1063,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000000004227295993767799,
+              -0.00000000000042273000645458984,
               -4.999999999625915
             ],
             "tag": {
@@ -1075,8 +1075,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               "value": "line10"
             },
             "to": [
-              -0.00000000000042272936691550484,
-              0.00000000013011628658927892
+              -0.00000000000042272977399300457,
+              0.00000000013011622892521313
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1115,12 +1115,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
         },
         "start": {
           "from": [
-            -0.00000000000042272897431283866,
-            0.00000000006505814284373173
+            -0.0000000000004227293813903384,
+            0.00000000006505811401169924
           ],
           "to": [
-            -0.00000000000042272897431283866,
-            0.00000000006505814284373173
+            -0.0000000000004227293813903384,
+            0.00000000006505811401169924
           ],
           "units": "mm",
           "tag": null,
@@ -1206,7 +1206,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000000042272897431283866,
+                        "n": -0.0000000000004227293813903384,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1214,7 +1214,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         }
                       },
                       {
-                        "n": 0.00000000006505814284373173,
+                        "n": 0.00000000006505811401169924,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1232,7 +1232,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000650581422134809,
+                        "n": 0.00000000006505811338144842,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1326,7 +1326,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000004227295528464746,
+                        "n": -0.0000000000004227299599241811,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1344,7 +1344,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000042272936691550484,
+                        "n": -0.00000000000042272977399300457,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1352,7 +1352,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         }
                       },
                       {
-                        "n": 0.00000000013011628658927892,
+                        "n": 0.00000000013011622892521313,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1454,7 +1454,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         }
                       },
                       {
-                        "n": 0.0000000000650581418483551,
+                        "n": 0.00000000006505811301632262,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1584,7 +1584,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000013222848488890493,
+                        "n": -0.00000000013223138252763111,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1686,7 +1686,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000019760368298246678,
+                        "n": -0.00000000019760656305711777,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1704,7 +1704,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000002628731991197869,
+                        "n": -0.0000000002628760609798414,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1806,7 +1806,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.00000000032803703286718444,
+                        "n": -0.00000000032803987651264244,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1926,7 +1926,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 29.999999999478057,
+                        "n": 29.999999999478053,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2192,7 +2192,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                         }
                       },
                       {
-                        "n": -4.999999999577122,
+                        "n": -4.999999999577121,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2304,7 +2304,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000004227295993767799,
+                        "n": -0.00000000000042273000645458984,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2409,8 +2409,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000042272897431283866,
-                    0.00000000006505814284373173
+                    -0.0000000000004227293813903384,
+                    0.00000000006505811401169924
                   ],
                   "tag": {
                     "commentStart": 3094,
@@ -2422,7 +2422,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   },
                   "to": [
                     29.99999999993579,
-                    0.0000000000650581422134809
+                    0.00000000006505811338144842
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2434,7 +2434,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   },
                   "from": [
                     29.99999999993579,
-                    0.0000000000650581422134809
+                    0.00000000006505811338144842
                   ],
                   "tag": {
                     "commentStart": 3164,
@@ -2469,7 +2469,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -0.00000000013222848488890493,
+                    -0.00000000013223138252763111,
                     20.5
                   ],
                   "type": "ToPoint",
@@ -2481,7 +2481,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000013222848488890493,
+                    -0.00000000013223138252763111,
                     20.5
                   ],
                   "tag": {
@@ -2493,7 +2493,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "value": "line4"
                   },
                   "to": [
-                    -0.0000000002628731991197869,
+                    -0.0000000002628760609798414,
                     25.499999999869885
                   ],
                   "type": "ToPoint",
@@ -2505,7 +2505,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000002628731991197869,
+                    -0.0000000002628760609798414,
                     25.499999999869885
                   ],
                   "tag": {
@@ -2590,7 +2590,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   },
                   "to": [
                     34.99999999907144,
-                    -4.999999999577122
+                    -4.999999999577121
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2602,7 +2602,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                   },
                   "from": [
                     34.99999999907144,
-                    -4.999999999577122
+                    -4.999999999577121
                   ],
                   "tag": {
                     "commentStart": 3954,
@@ -2613,7 +2613,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "value": "line9"
                   },
                   "to": [
-                    -0.0000000000004227295993767799,
+                    -0.00000000000042273000645458984,
                     -4.999999999625915
                   ],
                   "type": "ToPoint",
@@ -2625,7 +2625,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000004227295993767799,
+                    -0.00000000000042273000645458984,
                     -4.999999999625915
                   ],
                   "tag": {
@@ -2637,8 +2637,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
                     "value": "line10"
                   },
                   "to": [
-                    -0.00000000000042272936691550484,
-                    0.00000000013011628658927892
+                    -0.00000000000042272977399300457,
+                    0.00000000013011622892521313
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2677,12 +2677,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
               },
               "start": {
                 "from": [
-                  -0.00000000000042272897431283866,
-                  0.00000000006505814284373173
+                  -0.0000000000004227293813903384,
+                  0.00000000006505811401169924
                 ],
                 "to": [
-                  -0.00000000000042272897431283866,
-                  0.00000000006505814284373173
+                  -0.0000000000004227293813903384,
+                  0.00000000006505811401169924
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2757,8 +2757,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.00000000000042272897431283866,
-            0.00000000006505814284373173
+            -0.0000000000004227293813903384,
+            0.00000000006505811401169924
           ],
           "tag": {
             "commentStart": 3094,
@@ -2770,7 +2770,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "to": [
             29.99999999993579,
-            0.0000000000650581422134809
+            0.00000000006505811338144842
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2782,7 +2782,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "from": [
             29.99999999993579,
-            0.0000000000650581422134809
+            0.00000000006505811338144842
           ],
           "tag": {
             "commentStart": 3164,
@@ -2817,7 +2817,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line3"
           },
           "to": [
-            -0.00000000013222848488890493,
+            -0.00000000013223138252763111,
             20.5
           ],
           "type": "ToPoint",
@@ -2829,7 +2829,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.00000000013222848488890493,
+            -0.00000000013223138252763111,
             20.5
           ],
           "tag": {
@@ -2841,7 +2841,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line4"
           },
           "to": [
-            -0.0000000002628731991197869,
+            -0.0000000002628760609798414,
             25.499999999869885
           ],
           "type": "ToPoint",
@@ -2853,7 +2853,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0000000002628731991197869,
+            -0.0000000002628760609798414,
             25.499999999869885
           ],
           "tag": {
@@ -2938,7 +2938,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "to": [
             34.99999999907144,
-            -4.999999999577122
+            -4.999999999577121
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2950,7 +2950,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "from": [
             34.99999999907144,
-            -4.999999999577122
+            -4.999999999577121
           ],
           "tag": {
             "commentStart": 3954,
@@ -2961,7 +2961,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line9"
           },
           "to": [
-            -0.0000000000004227295993767799,
+            -0.00000000000042273000645458984,
             -4.999999999625915
           ],
           "type": "ToPoint",
@@ -2973,7 +2973,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0000000000004227295993767799,
+            -0.00000000000042273000645458984,
             -4.999999999625915
           ],
           "tag": {
@@ -2985,8 +2985,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line10"
           },
           "to": [
-            -0.00000000000042272936691550484,
-            0.00000000013011628658927892
+            -0.00000000000042272977399300457,
+            0.00000000013011622892521313
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3025,12 +3025,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       },
       "start": {
         "from": [
-          -0.00000000000042272897431283866,
-          0.00000000006505814284373173
+          -0.0000000000004227293813903384,
+          0.00000000006505811401169924
         ],
         "to": [
-          -0.00000000000042272897431283866,
-          0.00000000006505814284373173
+          -0.0000000000004227293813903384,
+          0.00000000006505811401169924
         ],
         "units": "mm",
         "tag": null,
@@ -3099,8 +3099,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.00000000000042272897431283866,
-            0.00000000006505814284373173
+            -0.0000000000004227293813903384,
+            0.00000000006505811401169924
           ],
           "tag": {
             "commentStart": 3094,
@@ -3112,7 +3112,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "to": [
             29.99999999993579,
-            0.0000000000650581422134809
+            0.00000000006505811338144842
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3124,7 +3124,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "from": [
             29.99999999993579,
-            0.0000000000650581422134809
+            0.00000000006505811338144842
           ],
           "tag": {
             "commentStart": 3164,
@@ -3159,7 +3159,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line3"
           },
           "to": [
-            -0.00000000013222848488890493,
+            -0.00000000013223138252763111,
             20.5
           ],
           "type": "ToPoint",
@@ -3171,7 +3171,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.00000000013222848488890493,
+            -0.00000000013223138252763111,
             20.5
           ],
           "tag": {
@@ -3183,7 +3183,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line4"
           },
           "to": [
-            -0.0000000002628731991197869,
+            -0.0000000002628760609798414,
             25.499999999869885
           ],
           "type": "ToPoint",
@@ -3195,7 +3195,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0000000002628731991197869,
+            -0.0000000002628760609798414,
             25.499999999869885
           ],
           "tag": {
@@ -3280,7 +3280,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "to": [
             34.99999999907144,
-            -4.999999999577122
+            -4.999999999577121
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3292,7 +3292,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
           },
           "from": [
             34.99999999907144,
-            -4.999999999577122
+            -4.999999999577121
           ],
           "tag": {
             "commentStart": 3954,
@@ -3303,7 +3303,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line9"
           },
           "to": [
-            -0.0000000000004227295993767799,
+            -0.00000000000042273000645458984,
             -4.999999999625915
           ],
           "type": "ToPoint",
@@ -3315,7 +3315,7 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0000000000004227295993767799,
+            -0.00000000000042273000645458984,
             -4.999999999625915
           ],
           "tag": {
@@ -3327,8 +3327,8 @@ description: Variables in memory after executing desk-edge-stopper.kcl
             "value": "line10"
           },
           "to": [
-            -0.00000000000042272936691550484,
-            0.00000000013011628658927892
+            -0.00000000000042272977399300457,
+            0.00000000013011622892521313
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -3367,12 +3367,12 @@ description: Variables in memory after executing desk-edge-stopper.kcl
       },
       "start": {
         "from": [
-          -0.00000000000042272897431283866,
-          0.00000000006505814284373173
+          -0.0000000000004227293813903384,
+          0.00000000006505811401169924
         ],
         "to": [
-          -0.00000000000042272897431283866,
-          0.00000000006505814284373173
+          -0.0000000000004227293813903384,
+          0.00000000006505811401169924
         ],
         "units": "mm",
         "tag": null,

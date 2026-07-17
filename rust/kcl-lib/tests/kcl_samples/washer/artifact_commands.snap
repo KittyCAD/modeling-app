@@ -90,7 +90,7 @@ description: Artifact commands washer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000000025399999847706605,
+            "x": 0.0000000000253999998477066,
             "y": 0.0
           },
           "radius": 5.5626000000254,

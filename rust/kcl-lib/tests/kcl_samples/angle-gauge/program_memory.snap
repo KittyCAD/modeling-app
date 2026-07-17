@@ -213,8 +213,8 @@ description: Variables in memory after executing angle-gauge.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000021537579334933846,
-              -0.0000000000000006273214101066609
+              -0.000000000000000021537530944868012,
+              -0.0000000000000006273209532961677
             ],
             "tag": {
               "commentStart": 402,
@@ -225,7 +225,7 @@ description: Variables in memory after executing angle-gauge.kcl
               "value": "leftOuterEdge"
             },
             "to": [
-              -0.000000000000000021901701552242698,
+              -0.00000000000000002190165295538171,
               1.2499999999999993
             ],
             "type": "ToPoint",
@@ -237,7 +237,7 @@ description: Variables in memory after executing angle-gauge.kcl
               "sourceRange": []
             },
             "from": [
-              -0.000000000000000021901701552242698,
+              -0.00000000000000002190165295538171,
               1.2499999999999993
             ],
             "tag": {
@@ -285,7 +285,7 @@ description: Variables in memory after executing angle-gauge.kcl
               "sourceRange": []
             },
             "from": [
-              1.5,
+              1.4999999999999998,
               0.2999999999999969
             ],
             "tag": {
@@ -297,32 +297,8 @@ description: Variables in memory after executing angle-gauge.kcl
               "value": "lowerRightOuterEdge"
             },
             "to": [
-              1.5,
-              -0.0000000000000025080038165340132
-            ],
-            "type": "ToPoint",
-            "units": "in"
-          },
-          {
-            "__geoMeta": {
-              "id": "[uuid]",
-              "sourceRange": []
-            },
-            "from": [
-              1.5,
-              -0.0000000000000025080038165340132
-            ],
-            "tag": {
-              "commentStart": 871,
-              "end": 886,
-              "moduleId": 0,
-              "start": 871,
-              "type": "TagDeclarator",
-              "value": "bottomOuterEdge"
-            },
-            "to": [
-              -0.00000000000000004252897544730199,
-              -0.0000000000000012543514967141578
+              1.4999999999999998,
+              -0.000000000000002508001988051269
             ],
             "type": "ToPoint",
             "units": "in"
@@ -334,7 +310,31 @@ description: Variables in memory after executing angle-gauge.kcl
             },
             "from": [
               1.4999999999999998,
-              0.2999999999999962
+              -0.000000000000002508001988051269
+            ],
+            "tag": {
+              "commentStart": 871,
+              "end": 886,
+              "moduleId": 0,
+              "start": 871,
+              "type": "TagDeclarator",
+              "value": "bottomOuterEdge"
+            },
+            "to": [
+              -0.000000000000000042528878253580016,
+              -0.000000000000001254350582886376
+            ],
+            "type": "ToPoint",
+            "units": "in"
+          },
+          {
+            "__geoMeta": {
+              "id": "[uuid]",
+              "sourceRange": []
+            },
+            "from": [
+              1.4999999999999998,
+              0.29999999999999627
             ],
             "tag": {
               "commentStart": 1672,
@@ -369,7 +369,7 @@ description: Variables in memory after executing angle-gauge.kcl
               "value": "cutoutLeftVerticalEdge"
             },
             "to": [
-              0.5000000000000006,
+              0.5000000000000004,
               0.819999999999997
             ],
             "type": "ToPoint",
@@ -381,7 +381,7 @@ description: Variables in memory after executing angle-gauge.kcl
               "sourceRange": []
             },
             "from": [
-              0.5000000000000006,
+              0.5000000000000004,
               0.819999999999997
             ],
             "tag": {
@@ -433,12 +433,12 @@ description: Variables in memory after executing angle-gauge.kcl
         },
         "start": {
           "from": [
-            -0.000000000000000021537579334933846,
-            -0.0000000000000006273214101066609
+            -0.000000000000000021537530944868012,
+            -0.0000000000000006273209532961677
           ],
           "to": [
-            -0.000000000000000021537579334933846,
-            -0.0000000000000006273214101066609
+            -0.000000000000000021537530944868012,
+            -0.0000000000000006273209532961677
           ],
           "units": "in",
           "tag": null,
@@ -524,7 +524,7 @@ description: Variables in memory after executing angle-gauge.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000018812650537358733,
+                        "n": -0.000000000000001881263682477213,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -534,7 +534,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.00000000000000004252897544730199,
+                        "n": -0.000000000000000042528878253580016,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -542,7 +542,7 @@ description: Variables in memory after executing angle-gauge.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000012543514967141578,
+                        "n": -0.000000000000001254350582886376,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -654,7 +654,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     ],
                     "end": [
                       {
-                        "n": 2.2406109354570063,
+                        "n": 2.240610935240504,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -662,7 +662,7 @@ description: Variables in memory after executing angle-gauge.kcl
                         }
                       },
                       {
-                        "n": 0.2999999999999977,
+                        "n": 0.29999999999999777,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -765,7 +765,7 @@ description: Variables in memory after executing angle-gauge.kcl
                         }
                       },
                       {
-                        "n": 0.2999999999999962,
+                        "n": 0.29999999999999627,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -895,7 +895,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     ],
                     "end": [
                       {
-                        "n": 0.5000000000000006,
+                        "n": 0.5000000000000004,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -997,7 +997,7 @@ description: Variables in memory after executing angle-gauge.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 0.5000000000000004,
+                        "n": 0.5000000000000003,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1117,7 +1117,7 @@ description: Variables in memory after executing angle-gauge.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000000021537579334933846,
+                        "n": -0.000000000000000021537530944868012,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1125,7 +1125,7 @@ description: Variables in memory after executing angle-gauge.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000006273214101066609,
+                        "n": -0.0000000000000006273209532961677,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1135,7 +1135,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.000000000000000021901701552242698,
+                        "n": -0.00000000000000002190165295538171,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1237,7 +1237,7 @@ description: Variables in memory after executing angle-gauge.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 1.5,
+                        "n": 1.4999999999999998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1255,7 +1255,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     ],
                     "end": [
                       {
-                        "n": 1.5,
+                        "n": 1.4999999999999998,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1263,7 +1263,7 @@ description: Variables in memory after executing angle-gauge.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000025080038165340132,
+                        "n": -0.000000000000002508001988051269,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -1360,8 +1360,8 @@ description: Variables in memory after executing angle-gauge.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000000021537579334933846,
-                    -0.0000000000000006273214101066609
+                    -0.000000000000000021537530944868012,
+                    -0.0000000000000006273209532961677
                   ],
                   "tag": {
                     "commentStart": 402,
@@ -1372,7 +1372,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "value": "leftOuterEdge"
                   },
                   "to": [
-                    -0.000000000000000021901701552242698,
+                    -0.00000000000000002190165295538171,
                     1.2499999999999993
                   ],
                   "type": "ToPoint",
@@ -1384,7 +1384,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.000000000000000021901701552242698,
+                    -0.00000000000000002190165295538171,
                     1.2499999999999993
                   ],
                   "tag": {
@@ -1437,7 +1437,7 @@ description: Variables in memory after executing angle-gauge.kcl
                   ],
                   "tag": null,
                   "to": [
-                    1.5,
+                    1.4999999999999998,
                     0.2999999999999969
                   ],
                   "type": "ToPoint",
@@ -1449,7 +1449,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.5,
+                    1.4999999999999998,
                     0.2999999999999969
                   ],
                   "tag": {
@@ -1461,8 +1461,8 @@ description: Variables in memory after executing angle-gauge.kcl
                     "value": "lowerRightOuterEdge"
                   },
                   "to": [
-                    1.5,
-                    -0.0000000000000025080038165340132
+                    1.4999999999999998,
+                    -0.000000000000002508001988051269
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1473,8 +1473,8 @@ description: Variables in memory after executing angle-gauge.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    1.5,
-                    -0.0000000000000025080038165340132
+                    1.4999999999999998,
+                    -0.000000000000002508001988051269
                   ],
                   "tag": {
                     "commentStart": 871,
@@ -1485,8 +1485,8 @@ description: Variables in memory after executing angle-gauge.kcl
                     "value": "bottomOuterEdge"
                   },
                   "to": [
-                    -0.00000000000000004252897544730199,
-                    -0.0000000000000012543514967141578
+                    -0.000000000000000042528878253580016,
+                    -0.000000000000001254350582886376
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1497,13 +1497,13 @@ description: Variables in memory after executing angle-gauge.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.00000000000000004252897544730199,
-                    -0.0000000000000012543514967141578
+                    -0.000000000000000042528878253580016,
+                    -0.000000000000001254350582886376
                   ],
                   "tag": null,
                   "to": [
                     1.4999999999999998,
-                    0.2999999999999962
+                    0.29999999999999627
                   ],
                   "type": "ToPoint",
                   "units": "in"
@@ -1515,7 +1515,7 @@ description: Variables in memory after executing angle-gauge.kcl
                   },
                   "from": [
                     1.4999999999999998,
-                    0.2999999999999962
+                    0.29999999999999627
                   ],
                   "tag": {
                     "commentStart": 1672,
@@ -1550,7 +1550,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "value": "cutoutLeftVerticalEdge"
                   },
                   "to": [
-                    0.5000000000000006,
+                    0.5000000000000004,
                     0.819999999999997
                   ],
                   "type": "ToPoint",
@@ -1562,7 +1562,7 @@ description: Variables in memory after executing angle-gauge.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    0.5000000000000006,
+                    0.5000000000000004,
                     0.819999999999997
                   ],
                   "tag": {
@@ -1614,12 +1614,12 @@ description: Variables in memory after executing angle-gauge.kcl
               },
               "start": {
                 "from": [
-                  -0.000000000000000021537579334933846,
-                  -0.0000000000000006273214101066609
+                  -0.000000000000000021537530944868012,
+                  -0.0000000000000006273209532961677
                 ],
                 "to": [
-                  -0.000000000000000021537579334933846,
-                  -0.0000000000000006273214101066609
+                  -0.000000000000000021537530944868012,
+                  -0.0000000000000006273209532961677
                 ],
                 "units": "in",
                 "tag": null,
@@ -1804,7 +1804,7 @@ description: Variables in memory after executing angle-gauge.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.0000000000000000220837627642947,
+                        "n": -0.000000000000000022083714167433713,
                         "ty": {
                           "in": null,
                           "type": "Known",
@@ -2047,8 +2047,8 @@ description: Variables in memory after executing angle-gauge.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000000021537579334933846,
-            -0.0000000000000006273214101066609
+            -0.000000000000000021537530944868012,
+            -0.0000000000000006273209532961677
           ],
           "tag": {
             "commentStart": 402,
@@ -2059,7 +2059,7 @@ description: Variables in memory after executing angle-gauge.kcl
             "value": "leftOuterEdge"
           },
           "to": [
-            -0.000000000000000021901701552242698,
+            -0.00000000000000002190165295538171,
             1.2499999999999993
           ],
           "type": "ToPoint",
@@ -2071,7 +2071,7 @@ description: Variables in memory after executing angle-gauge.kcl
             "sourceRange": []
           },
           "from": [
-            -0.000000000000000021901701552242698,
+            -0.00000000000000002190165295538171,
             1.2499999999999993
           ],
           "tag": {
@@ -2119,7 +2119,7 @@ description: Variables in memory after executing angle-gauge.kcl
             "sourceRange": []
           },
           "from": [
-            1.5,
+            1.4999999999999998,
             0.2999999999999969
           ],
           "tag": {
@@ -2131,32 +2131,8 @@ description: Variables in memory after executing angle-gauge.kcl
             "value": "lowerRightOuterEdge"
           },
           "to": [
-            1.5,
-            -0.0000000000000025080038165340132
-          ],
-          "type": "ToPoint",
-          "units": "in"
-        },
-        {
-          "__geoMeta": {
-            "id": "[uuid]",
-            "sourceRange": []
-          },
-          "from": [
-            1.5,
-            -0.0000000000000025080038165340132
-          ],
-          "tag": {
-            "commentStart": 871,
-            "end": 886,
-            "moduleId": 0,
-            "start": 871,
-            "type": "TagDeclarator",
-            "value": "bottomOuterEdge"
-          },
-          "to": [
-            -0.00000000000000004252897544730199,
-            -0.0000000000000012543514967141578
+            1.4999999999999998,
+            -0.000000000000002508001988051269
           ],
           "type": "ToPoint",
           "units": "in"
@@ -2168,7 +2144,31 @@ description: Variables in memory after executing angle-gauge.kcl
           },
           "from": [
             1.4999999999999998,
-            0.2999999999999962
+            -0.000000000000002508001988051269
+          ],
+          "tag": {
+            "commentStart": 871,
+            "end": 886,
+            "moduleId": 0,
+            "start": 871,
+            "type": "TagDeclarator",
+            "value": "bottomOuterEdge"
+          },
+          "to": [
+            -0.000000000000000042528878253580016,
+            -0.000000000000001254350582886376
+          ],
+          "type": "ToPoint",
+          "units": "in"
+        },
+        {
+          "__geoMeta": {
+            "id": "[uuid]",
+            "sourceRange": []
+          },
+          "from": [
+            1.4999999999999998,
+            0.29999999999999627
           ],
           "tag": {
             "commentStart": 1672,
@@ -2203,7 +2203,7 @@ description: Variables in memory after executing angle-gauge.kcl
             "value": "cutoutLeftVerticalEdge"
           },
           "to": [
-            0.5000000000000006,
+            0.5000000000000004,
             0.819999999999997
           ],
           "type": "ToPoint",
@@ -2215,7 +2215,7 @@ description: Variables in memory after executing angle-gauge.kcl
             "sourceRange": []
           },
           "from": [
-            0.5000000000000006,
+            0.5000000000000004,
             0.819999999999997
           ],
           "tag": {
@@ -2267,12 +2267,12 @@ description: Variables in memory after executing angle-gauge.kcl
       },
       "start": {
         "from": [
-          -0.000000000000000021537579334933846,
-          -0.0000000000000006273214101066609
+          -0.000000000000000021537530944868012,
+          -0.0000000000000006273209532961677
         ],
         "to": [
-          -0.000000000000000021537579334933846,
-          -0.0000000000000006273214101066609
+          -0.000000000000000021537530944868012,
+          -0.0000000000000006273209532961677
         ],
         "units": "in",
         "tag": null,

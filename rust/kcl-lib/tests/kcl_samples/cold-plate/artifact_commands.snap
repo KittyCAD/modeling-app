@@ -68,7 +68,7 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.0000000000000000025158852018882583,
+          "x": 0.0000000000000000004641827796534327,
           "y": 31.75,
           "z": 0.0
         }
@@ -124,17 +124,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 25.399999999999924,
-            "y": 15.87698423269979
+            "x": 25.39999999999993,
+            "y": 15.87698423267967
           },
-          "radius": 7.937500248011221,
+          "radius": 7.937500248011224,
           "start": {
             "unit": "degrees",
-            "value": -179.98567708259506
+            "value": -179.9856770827403
           },
           "end": {
             "unit": "degrees",
-            "value": -0.007161166168315377
+            "value": -0.007161166637571878
           },
           "relative": false
         }
@@ -147,8 +147,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 33.337500000000034,
-          "y": 15.875992156891764,
+          "x": 33.33750000000003,
+          "y": 15.875992156806634,
           "z": 0.0
         }
       }
@@ -162,8 +162,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 33.337500000000034,
-            "y": 31.750992156891765,
+            "x": 33.33750000000003,
+            "y": 31.750992156806632,
             "z": 0.0
           },
           "relative": false
@@ -180,7 +180,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": 68.26250000000003,
-            "y": 31.750992156891765,
+            "y": 31.750992156806632,
             "z": 0.0
           },
           "relative": false
@@ -197,7 +197,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": 68.26250000000003,
-            "y": 15.875992156891764,
+            "y": 15.875992156806634,
             "z": 0.0
           },
           "relative": false
@@ -213,17 +213,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 76.19999999999997,
-            "y": 15.876984358976104
+            "x": 76.19999999999999,
+            "y": 15.876984358837921
           },
-          "radius": 7.937500062013485,
+          "radius": 7.9375000620134895,
           "start": {
             "unit": "degrees",
-            "value": -179.99283792232308
+            "value": -179.99283792270603
           },
           "end": {
             "unit": "degrees",
-            "value": -0.00473347542227232
+            "value": -0.004733476305112878
           },
           "relative": false
         }
@@ -236,8 +236,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 84.13750000000003,
-          "y": 15.876328604545865,
+          "x": 84.13750000000002,
+          "y": 15.876328604285376,
           "z": 0.0
         }
       }
@@ -251,8 +251,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 84.13750000000003,
-            "y": 31.75132860454586,
+            "x": 84.13750000000002,
+            "y": 31.751328604285376,
             "z": 0.0
           },
           "relative": false
@@ -269,7 +269,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": 101.60000000000002,
-            "y": 31.75132860454586,
+            "y": 31.751328604285376,
             "z": 0.0
           },
           "relative": false
@@ -286,7 +286,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": 102.79036599590297,
-            "y": 26.595287011723993,
+            "y": 26.59528701146351,
             "z": 0.0
           },
           "relative": false
@@ -302,17 +302,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 118.2590433712436,
-            "y": 30.163991439400228
+            "x": 118.25904337124115,
+            "y": 30.163991439150344
           },
-          "radius": 15.875000190062709,
+          "radius": 15.875000190062698,
           "start": {
             "unit": "degrees",
-            "value": -167.00886603183963
+            "value": -167.00886603180035
           },
           "end": {
             "unit": "degrees",
-            "value": -89.99603322609973
+            "value": -89.99603322547894
           },
           "relative": false
         }
@@ -325,8 +325,8 @@ description: Artifact commands cold-plate.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 118.2601424493311,
-          "y": 14.28899143940032,
+          "x": 118.26014244950063,
+          "y": 14.288991439150452,
           "z": 0.0
         }
       }
@@ -340,8 +340,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 143.6601424493311,
-            "y": 14.28899143940032,
+            "x": 143.66014244950063,
+            "y": 14.288991439150452,
             "z": 0.0
           },
           "relative": false
@@ -357,8 +357,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 143.6601424493311,
-            "y": -0.0010649554866665695,
+            "x": 143.66014244950063,
+            "y": -0.00106495573653521,
             "z": 0.0
           },
           "relative": false
@@ -374,8 +374,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -143.6601424495348,
-            "y": -0.001064955486666571,
+            "x": -143.66014244961264,
+            "y": -0.0010649557365352102,
             "z": 0.0
           },
           "relative": false
@@ -391,8 +391,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -143.6601424495348,
-            "y": 14.28899143940032,
+            "x": -143.66014244961264,
+            "y": 14.288991439150452,
             "z": 0.0
           },
           "relative": false
@@ -408,8 +408,8 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -118.2601424495348,
-            "y": 14.28899143940032,
+            "x": -118.26014244961263,
+            "y": 14.288991439150452,
             "z": 0.0
           },
           "relative": false
@@ -425,17 +425,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -118.2590433712327,
-            "y": 30.16399143940015
+            "x": -118.25904337123383,
+            "y": 30.163991439150266
           },
-          "radius": 15.875000038046222,
+          "radius": 15.875000038046215,
           "start": {
             "unit": "degrees",
-            "value": -90.00396677467488
+            "value": -90.0039667749517
           },
           "end": {
             "unit": "degrees",
-            "value": -12.991133968335603
+            "value": -12.991133968317277
           },
           "relative": false
         }
@@ -449,7 +449,7 @@ description: Artifact commands cold-plate.kcl
         "path": "[uuid]",
         "to": {
           "x": -102.79036599590297,
-          "y": 26.59528701167667,
+          "y": 26.595287011431743,
           "z": 0.0
         }
       }
@@ -464,7 +464,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": -101.60000000000002,
-            "y": 31.751328604498543,
+            "y": 31.75132860425361,
             "z": 0.0
           },
           "relative": false
@@ -481,7 +481,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": -84.13750000000002,
-            "y": 31.751328604498543,
+            "y": 31.75132860425361,
             "z": 0.0
           },
           "relative": false
@@ -498,7 +498,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": -84.13750000000002,
-            "y": 15.876328604498543,
+            "y": 15.876328604253615,
             "z": 0.0
           },
           "relative": false
@@ -514,17 +514,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -76.19999999999997,
-            "y": 15.87698435894187
+            "x": -76.19999999999999,
+            "y": 15.876984358849947
           },
           "radius": 7.937500027087535,
           "start": {
             "unit": "degrees",
-            "value": -179.99526652448327
+            "value": -179.9952665233788
           },
           "end": {
             "unit": "degrees",
-            "value": -0.00716207781951377
+            "value": -0.007162077058745458
           },
           "relative": false
         }
@@ -538,7 +538,7 @@ description: Artifact commands cold-plate.kcl
         "path": "[uuid]",
         "to": {
           "x": -68.26250000000003,
-          "y": 15.875992156837778,
+          "y": 15.875992156851254,
           "z": 0.0
         }
       }
@@ -553,7 +553,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": -68.26250000000003,
-            "y": 31.75099215683778,
+            "y": 31.750992156851254,
             "z": 0.0
           },
           "relative": false
@@ -570,7 +570,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": -33.33750000000003,
-            "y": 31.75099215683778,
+            "y": 31.750992156851254,
             "z": 0.0
           },
           "relative": false
@@ -587,7 +587,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": -33.33750000000003,
-            "y": 15.875992156837778,
+            "y": 15.875992156851254,
             "z": 0.0
           },
           "relative": false
@@ -603,17 +603,17 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -25.399999999999906,
-            "y": 15.876984232681325
+            "x": -25.39999999999991,
+            "y": 15.876984232673694
           },
-          "radius": 7.937500061997883,
+          "radius": 7.937500061997875,
           "start": {
             "unit": "degrees",
-            "value": -179.9928388335753
+            "value": -179.99283883372766
           },
           "end": {
             "unit": "degrees",
-            "value": -0.014322917271675194
+            "value": -0.014322917216552367
           },
           "relative": false
         }
@@ -658,7 +658,7 @@ description: Artifact commands cold-plate.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.000000000000000013543206311188809,
+            "x": -0.000000000000000010447532229945958,
             "y": 31.75,
             "z": 0.0
           },
@@ -1048,7 +1048,7 @@ description: Artifact commands cold-plate.kcl
         "path": "[uuid]",
         "to": {
           "x": 68.26250000000023,
-          "y": 31.751984383709853,
+          "y": 31.75198438375888,
           "z": 0.0
         }
       }
@@ -1072,14 +1072,14 @@ description: Artifact commands cold-plate.kcl
             "x": 76.19999999999999,
             "y": 43.65625
           },
-          "radius": 14.307880559788861,
+          "radius": 14.307880559748071,
           "start": {
             "unit": "degrees",
-            "value": -123.69447542157563
+            "value": -123.69447542168456
           },
           "end": {
             "unit": "degrees",
-            "value": -56.30552457842438
+            "value": -56.30552457831546
           },
           "relative": false
         }
@@ -1095,7 +1095,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": 84.13749999999976,
-            "y": 15.876984383709853,
+            "y": 15.87698438375888,
             "z": 0.0
           },
           "relative": false
@@ -1114,14 +1114,14 @@ description: Artifact commands cold-plate.kcl
             "x": 76.20000000000016,
             "y": 15.875
           },
-          "radius": 7.937500248048654,
+          "radius": 7.937500248048666,
           "start": {
             "unit": "degrees",
-            "value": 0.014324007450763948
+            "value": 0.014324007804665518
           },
           "end": {
             "unit": "degrees",
-            "value": 179.98567599254923
+            "value": 179.98567599219535
           },
           "relative": false
         }
@@ -1137,7 +1137,7 @@ description: Artifact commands cold-plate.kcl
           "type": "line",
           "end": {
             "x": 68.26250000000023,
-            "y": 31.751984383709853,
+            "y": 31.75198438375888,
             "z": 0.0
           },
           "relative": false

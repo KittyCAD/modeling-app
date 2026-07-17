@@ -69,7 +69,7 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "path": "[uuid]",
         "to": {
           "x": 9.999999999993895,
-          "y": -0.0000000000007111201869671793,
+          "y": -0.0000000000007111216060534296,
           "z": 0.0
         }
       }
@@ -125,7 +125,7 @@ description: Artifact commands hex-nut-with-chamfer.kcl
           "type": "line",
           "end": {
             "x": -9.99999999999574,
-            "y": -0.0000000000007111209079838314,
+            "y": -0.0000000000007111208180878218,
             "z": 0.0
           },
           "relative": false
@@ -176,7 +176,7 @@ description: Artifact commands hex-nut-with-chamfer.kcl
           "type": "line",
           "end": {
             "x": 9.999999999993895,
-            "y": -0.0000000000005417584559039567,
+            "y": -0.0000000000005417597800679854,
             "z": 0.0
           },
           "relative": false
@@ -190,8 +190,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 3.2508737898140208,
-          "y": 2.330626439963561,
+          "x": 3.25087378976057,
+          "y": 2.3306264400381163,
           "z": 0.0
         }
       }
@@ -205,17 +205,17 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000017475789678086058,
-            "y": -0.0000000000012528795904140175
+            "x": -0.0000000000017475792304150865,
+            "y": -0.0000000000012528803464413038
           },
           "radius": 3.9999999999967746,
           "start": {
             "unit": "radians",
-            "value": 0.6219936702365492
+            "value": 0.6219936702594832
           },
           "end": {
             "unit": "radians",
-            "value": 6.905178977416135
+            "value": 6.9051789774390695
           },
           "relative": false
         }
@@ -359,8 +359,8 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 9.668746132955034,
-          "y": 2.9198198930982904,
+          "x": 9.668746134821982,
+          "y": 2.9198198869160468,
           "z": 0.0
         }
       }
@@ -381,17 +381,17 @@ description: Artifact commands hex-nut-with-chamfer.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -0.0000000000987461500468549,
-            "y": -0.00000000002981989305277447
+            "x": -0.0000000000987461335740125,
+            "y": -0.00000000002981988687053093
           },
           "radius": 10.099999999690548,
           "start": {
             "unit": "radians",
-            "value": 0.29327723947737516
+            "value": 0.29327723883797024
           },
           "end": {
             "unit": "radians",
-            "value": 6.576462546656962
+            "value": 6.576462546017557
           },
           "relative": false
         }

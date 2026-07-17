@@ -69,7 +69,7 @@ description: Artifact commands thermal-block-insert.kcl
         "path": "[uuid]",
         "to": {
           "x": -200.0,
-          "y": -0.000000000000036437013862473185,
+          "y": -0.00000000000003643700893909418,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": -200.0,
-            "y": 24.999999999999943,
+            "y": 24.999999999999947,
             "z": 0.0
           },
           "relative": false
@@ -108,7 +108,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": -152.9411764705882,
-            "y": 24.999999999999908,
+            "y": 24.99999999999991,
             "z": 0.0
           },
           "relative": false
@@ -124,7 +124,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -164.70588235294113,
+            "x": -164.70588235294116,
             "y": 48.52941176470571,
             "z": 0.0
           },
@@ -158,7 +158,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -129.4117647058823,
+            "x": -129.41176470588232,
             "y": 24.99999999999972,
             "z": 0.0
           },
@@ -176,7 +176,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": -82.35294117647052,
-            "y": 24.999999999999684,
+            "y": 24.999999999999687,
             "z": 0.0
           },
           "relative": false
@@ -192,7 +192,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -94.11764705882347,
+            "x": -94.11764705882348,
             "y": 48.529411764705465,
             "z": 0.0
           },
@@ -209,8 +209,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -47.0588235294117,
-            "y": 48.52941176470543,
+            "x": -47.058823529411704,
+            "y": 48.529411764705436,
             "z": 0.0
           },
           "relative": false
@@ -227,7 +227,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": -58.82352941176463,
-            "y": 24.99999999999946,
+            "y": 24.999999999999464,
             "z": 0.0
           },
           "relative": false
@@ -243,8 +243,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -11.764705882352853,
-            "y": 24.999999999999428,
+            "x": -11.764705882352862,
+            "y": 24.999999999999435,
             "z": 0.0
           },
           "relative": false
@@ -260,7 +260,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -23.529411764705817,
+            "x": -23.529411764705827,
             "y": 48.52941176470521,
             "z": 0.0
           },
@@ -277,8 +277,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.529411764705955,
-            "y": 48.52941176470518,
+            "x": 23.529411764705944,
+            "y": 48.52941176470519,
             "z": 0.0
           },
           "relative": false
@@ -294,8 +294,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 11.764705882353024,
-            "y": 24.99999999999921,
+            "x": 11.764705882353015,
+            "y": 24.999999999999215,
             "z": 0.0
           },
           "relative": false
@@ -311,8 +311,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 58.823529411764795,
-            "y": 24.99999999999919,
+            "x": 58.82352941176479,
+            "y": 24.999999999999194,
             "z": 0.0
           },
           "relative": false
@@ -328,7 +328,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 47.05882352941182,
+            "x": 47.05882352941181,
             "y": 48.529411764704975,
             "z": 0.0
           },
@@ -363,7 +363,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": 82.35294117647065,
-            "y": 24.999999999998995,
+            "y": 24.99999999999899,
             "z": 0.0
           },
           "relative": false
@@ -380,7 +380,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": 129.4117647058824,
-            "y": 24.99999999999898,
+            "y": 24.999999999998977,
             "z": 0.0
           },
           "relative": false
@@ -396,7 +396,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 117.64705882352943,
+            "x": 117.64705882352942,
             "y": 48.529411764704776,
             "z": 0.0
           },
@@ -414,7 +414,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": 164.7058823529412,
-            "y": 48.52941176470477,
+            "y": 48.52941176470476,
             "z": 0.0
           },
           "relative": false
@@ -431,23 +431,6 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": 152.94117647058826,
-            "y": 24.99999999999881,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": 200.00000000000003,
             "y": 24.999999999998806,
             "z": 0.0
           },
@@ -465,7 +448,24 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": 200.00000000000003,
-            "y": -0.000000000000018282671556345457,
+            "y": 24.999999999998803,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 200.0,
+            "y": -0.000000000000018282669121125734,
             "z": 0.0
           },
           "relative": false
@@ -482,7 +482,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": -200.0,
-            "y": -0.00000000000003040774681420756,
+            "y": -0.00000000000003040774271139172,
             "z": 0.0
           },
           "relative": false
@@ -553,8 +553,8 @@ description: Artifact commands thermal-block-insert.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -200.0,
-          "y": 0.000000000000037840123833720815,
+          "x": -199.99999999999997,
+          "y": 0.00000000000003784013013352836,
           "z": 0.0
         }
       }
@@ -575,7 +575,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -200.0,
+            "x": -199.99999999999997,
             "y": -48.52941176470583,
             "z": 0.0
           },
@@ -592,7 +592,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -152.94117647058823,
+            "x": -152.9411764705882,
             "y": -48.52941176470579,
             "z": 0.0
           },
@@ -609,7 +609,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -164.70588235294116,
+            "x": -164.70588235294113,
             "y": -24.999999999999822,
             "z": 0.0
           },
@@ -626,8 +626,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -117.64705882352938,
-            "y": -24.999999999999783,
+            "x": -117.64705882352935,
+            "y": -24.999999999999787,
             "z": 0.0
           },
           "relative": false
@@ -643,7 +643,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -129.41176470588232,
+            "x": -129.4117647058823,
             "y": -48.52941176470559,
             "z": 0.0
           },
@@ -660,7 +660,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -82.35294117647054,
+            "x": -82.35294117647051,
             "y": -48.52941176470556,
             "z": 0.0
           },
@@ -677,8 +677,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -94.11764705882347,
-            "y": -24.999999999999567,
+            "x": -94.11764705882344,
+            "y": -24.999999999999563,
             "z": 0.0
           },
           "relative": false
@@ -694,8 +694,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -47.05882352941169,
-            "y": -24.999999999999535,
+            "x": -47.05882352941166,
+            "y": -24.99999999999953,
             "z": 0.0
           },
           "relative": false
@@ -711,8 +711,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -58.823529411764646,
-            "y": -48.52941176470532,
+            "x": -58.82352941176462,
+            "y": -48.529411764705316,
             "z": 0.0
           },
           "relative": false
@@ -728,7 +728,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -11.764705882352875,
+            "x": -11.76470588235285,
             "y": -48.52941176470529,
             "z": 0.0
           },
@@ -745,8 +745,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -23.52941176470579,
-            "y": -24.999999999999297,
+            "x": -23.529411764705767,
+            "y": -24.999999999999293,
             "z": 0.0
           },
           "relative": false
@@ -762,8 +762,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 23.52941176470598,
-            "y": -24.999999999999268,
+            "x": 23.529411764706,
+            "y": -24.999999999999265,
             "z": 0.0
           },
           "relative": false
@@ -779,7 +779,7 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 11.764705882353004,
+            "x": 11.764705882353024,
             "y": -48.52941176470506,
             "z": 0.0
           },
@@ -796,8 +796,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 58.823529411764774,
-            "y": -48.52941176470504,
+            "x": 58.823529411764795,
+            "y": -48.52941176470503,
             "z": 0.0
           },
           "relative": false
@@ -813,8 +813,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 47.05882352941186,
-            "y": -24.99999999999905,
+            "x": 47.058823529411875,
+            "y": -24.999999999999044,
             "z": 0.0
           },
           "relative": false
@@ -830,8 +830,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 94.11764705882362,
-            "y": -24.99999999999903,
+            "x": 94.11764705882365,
+            "y": -24.999999999999023,
             "z": 0.0
           },
           "relative": false
@@ -847,8 +847,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 82.35294117647064,
-            "y": -48.52941176470483,
+            "x": 82.35294117647065,
+            "y": -48.529411764704825,
             "z": 0.0
           },
           "relative": false
@@ -864,8 +864,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 129.4117647058824,
-            "y": -48.52941176470482,
+            "x": 129.41176470588243,
+            "y": -48.52941176470481,
             "z": 0.0
           },
           "relative": false
@@ -881,8 +881,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 117.64705882352949,
-            "y": -24.999999999998842,
+            "x": 117.6470588235295,
+            "y": -24.999999999998828,
             "z": 0.0
           },
           "relative": false
@@ -898,8 +898,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 164.70588235294125,
-            "y": -24.99999999999883,
+            "x": 164.70588235294127,
+            "y": -24.999999999998817,
             "z": 0.0
           },
           "relative": false
@@ -916,7 +916,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": 152.94117647058826,
-            "y": -48.52941176470465,
+            "y": -48.52941176470463,
             "z": 0.0
           },
           "relative": false
@@ -933,7 +933,7 @@ description: Artifact commands thermal-block-insert.kcl
           "type": "line",
           "end": {
             "x": 200.00000000000003,
-            "y": -48.52941176470464,
+            "y": -48.529411764704626,
             "z": 0.0
           },
           "relative": false
@@ -949,8 +949,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 200.0,
-            "y": 0.000000000000018985179454034933,
+            "x": 200.00000000000003,
+            "y": 0.000000000000018985182656878265,
             "z": 0.0
           },
           "relative": false
@@ -966,8 +966,8 @@ description: Artifact commands thermal-block-insert.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -200.0,
-            "y": 0.000000000000031577652124403386,
+            "x": -199.99999999999997,
+            "y": 0.000000000000031577657418359307,
             "z": 0.0
           },
           "relative": false

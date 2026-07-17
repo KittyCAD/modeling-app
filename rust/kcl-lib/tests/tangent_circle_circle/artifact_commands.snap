@@ -138,7 +138,7 @@ description: Artifact commands tangent_circle_circle.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 5.0,
+          "x": 5.000000000000001,
           "y": 0.0,
           "z": 0.0
         }
@@ -154,9 +154,9 @@ description: Artifact commands tangent_circle_circle.kcl
           "type": "arc",
           "center": {
             "x": 8.0,
-            "y": -0.00000000000000036739403974420594
+            "y": -0.00000000000000036739403974420584
           },
-          "radius": 3.0,
+          "radius": 2.999999999999999,
           "start": {
             "unit": "degrees",
             "value": 180.0
@@ -179,7 +179,7 @@ description: Artifact commands tangent_circle_circle.kcl
           "type": "arc",
           "center": {
             "x": 8.0,
-            "y": -0.000000000000001102182119232618
+            "y": -0.0000000000000011021821192326175
           },
           "radius": 3.0,
           "start": {

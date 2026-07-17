@@ -90,10 +90,10 @@ description: Artifact commands tangent_arc_arc_math_only.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.000000006000001384620646,
-            "y": -0.0000000000000006123233999410707
+            "x": 0.000000006000000496442226,
+            "y": -0.0000000000000006123233999410706
           },
-          "radius": 5.000000003000001,
+          "radius": 5.000000003,
           "start": {
             "unit": "degrees",
             "value": 180.0
@@ -113,7 +113,7 @@ description: Artifact commands tangent_arc_arc_math_only.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 5.0000000215000036,
+          "x": 5.000000021500002,
           "y": 0.0,
           "z": 0.0
         }
@@ -128,7 +128,7 @@ description: Artifact commands tangent_arc_arc_math_only.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 8.000000024000004,
+            "x": 8.000000024000002,
             "y": -0.0000000000000003673940400503677
           },
           "radius": 3.0000000025,

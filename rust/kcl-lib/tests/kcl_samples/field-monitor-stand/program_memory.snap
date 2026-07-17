@@ -241,7 +241,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             },
             "from": [
               -60.0,
-              -0.000000000000002377103574265782
+              -0.000000000000002377102603717967
             ],
             "tag": {
               "commentStart": 963,
@@ -252,8 +252,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "value": "line1"
             },
             "to": [
-              -0.0000000000000023751866546406846,
-              -0.0000000000000003703085505170184
+              -0.0000000000000023751874621789887,
+              -0.00000000000000037030719068267945
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -264,8 +264,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000000000023751866546406846,
-              -0.0000000000000003703085505170184
+              -0.0000000000000023751874621789887,
+              -0.00000000000000037030719068267945
             ],
             "tag": {
               "commentStart": 1034,
@@ -373,7 +373,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             },
             "to": [
               -60.0,
-              -0.000000000000001918847505899596
+              -0.0000000000000019188464294112706
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -413,11 +413,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "start": {
           "from": [
             -60.0,
-            -0.000000000000002377103574265782
+            -0.000000000000002377102603717967
           ],
           "to": [
             -60.0,
-            -0.000000000000002377103574265782
+            -0.000000000000002377102603717967
           ],
           "units": "mm",
           "tag": null,
@@ -613,7 +613,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             },
             "from": [
               -60.0,
-              -0.000000000000002377103574265782
+              -0.000000000000002377102603717967
             ],
             "tag": {
               "commentStart": 963,
@@ -624,8 +624,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "value": "line1"
             },
             "to": [
-              -0.0000000000000023751866546406846,
-              -0.0000000000000003703085505170184
+              -0.0000000000000023751874621789887,
+              -0.00000000000000037030719068267945
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -636,8 +636,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000000000023751866546406846,
-              -0.0000000000000003703085505170184
+              -0.0000000000000023751874621789887,
+              -0.00000000000000037030719068267945
             ],
             "tag": {
               "commentStart": 1034,
@@ -745,7 +745,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             },
             "to": [
               -60.0,
-              -0.000000000000001918847505899596
+              -0.0000000000000019188464294112706
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -785,11 +785,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "start": {
           "from": [
             -60.0,
-            -0.000000000000002377103574265782
+            -0.000000000000002377102603717967
           ],
           "to": [
             -60.0,
-            -0.000000000000002377103574265782
+            -0.000000000000002377102603717967
           ],
           "units": "mm",
           "tag": null,
@@ -985,7 +985,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             },
             "from": [
               -60.0,
-              -0.000000000000002377103574265782
+              -0.000000000000002377102603717967
             ],
             "tag": {
               "commentStart": 963,
@@ -996,8 +996,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "value": "line1"
             },
             "to": [
-              -0.0000000000000023751866546406846,
-              -0.0000000000000003703085505170184
+              -0.0000000000000023751874621789887,
+              -0.00000000000000037030719068267945
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1008,8 +1008,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "sourceRange": []
             },
             "from": [
-              -0.0000000000000023751866546406846,
-              -0.0000000000000003703085505170184
+              -0.0000000000000023751874621789887,
+              -0.00000000000000037030719068267945
             ],
             "tag": {
               "commentStart": 1034,
@@ -1117,7 +1117,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
             },
             "to": [
               -60.0,
-              -0.000000000000001918847505899596
+              -0.0000000000000019188464294112706
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -1157,11 +1157,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
         "start": {
           "from": [
             -60.0,
-            -0.000000000000002377103574265782
+            -0.000000000000002377102603717967
           ],
           "to": [
             -60.0,
-            -0.000000000000002377103574265782
+            -0.000000000000002377102603717967
           ],
           "units": "mm",
           "tag": null,
@@ -1296,7 +1296,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000002377103574265782,
+                        "n": -0.000000000000002377102603717967,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1306,7 +1306,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     ],
                     "end": [
                       {
-                        "n": -0.0000000000000023751866546406846,
+                        "n": -0.0000000000000023751874621789887,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1314,7 +1314,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000003703085505170184,
+                        "n": -0.00000000000000037030719068267945,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1408,7 +1408,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -0.000000000000004750385718916337,
+                        "n": -0.000000000000004750387333980021,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1416,7 +1416,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                         }
                       },
                       {
-                        "n": -0.0000000000000011988761908385648,
+                        "n": -0.0000000000000011988735769163252,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1914,7 +1914,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                         }
                       },
                       {
-                        "n": -0.000000000000001918847505899596,
+                        "n": -0.0000000000000019188464294112706,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -2012,7 +2012,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   },
                   "from": [
                     -60.0,
-                    -0.000000000000002377103574265782
+                    -0.000000000000002377102603717967
                   ],
                   "tag": {
                     "commentStart": 963,
@@ -2023,8 +2023,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "value": "line1"
                   },
                   "to": [
-                    -0.0000000000000023751866546406846,
-                    -0.0000000000000003703085505170184
+                    -0.0000000000000023751874621789887,
+                    -0.00000000000000037030719068267945
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2035,8 +2035,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -0.0000000000000023751866546406846,
-                    -0.0000000000000003703085505170184
+                    -0.0000000000000023751874621789887,
+                    -0.00000000000000037030719068267945
                   ],
                   "tag": {
                     "commentStart": 1034,
@@ -2144,7 +2144,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
                   },
                   "to": [
                     -60.0,
-                    -0.000000000000001918847505899596
+                    -0.0000000000000019188464294112706
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -2184,11 +2184,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
               "start": {
                 "from": [
                   -60.0,
-                  -0.000000000000002377103574265782
+                  -0.000000000000002377102603717967
                 ],
                 "to": [
                   -60.0,
-                  -0.000000000000002377103574265782
+                  -0.000000000000002377102603717967
                 ],
                 "units": "mm",
                 "tag": null,
@@ -2248,7 +2248,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           "from": [
             -60.0,
-            -0.000000000000002377103574265782
+            -0.000000000000002377102603717967
           ],
           "tag": {
             "commentStart": 963,
@@ -2259,8 +2259,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "value": "line1"
           },
           "to": [
-            -0.0000000000000023751866546406846,
-            -0.0000000000000003703085505170184
+            -0.0000000000000023751874621789887,
+            -0.00000000000000037030719068267945
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2271,8 +2271,8 @@ description: Variables in memory after executing field-monitor-stand.kcl
             "sourceRange": []
           },
           "from": [
-            -0.0000000000000023751866546406846,
-            -0.0000000000000003703085505170184
+            -0.0000000000000023751874621789887,
+            -0.00000000000000037030719068267945
           ],
           "tag": {
             "commentStart": 1034,
@@ -2380,7 +2380,7 @@ description: Variables in memory after executing field-monitor-stand.kcl
           },
           "to": [
             -60.0,
-            -0.000000000000001918847505899596
+            -0.0000000000000019188464294112706
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2420,11 +2420,11 @@ description: Variables in memory after executing field-monitor-stand.kcl
       "start": {
         "from": [
           -60.0,
-          -0.000000000000002377103574265782
+          -0.000000000000002377102603717967
         ],
         "to": [
           -60.0,
-          -0.000000000000002377103574265782
+          -0.000000000000002377102603717967
         ],
         "units": "mm",
         "tag": null,

@@ -69,7 +69,7 @@ description: Artifact commands sweep_mirror.kcl
         "path": "[uuid]",
         "to": {
           "x": -0.1250000000000005,
-          "y": 0.125,
+          "y": 0.12500000000000003,
           "z": 0.0
         }
       }
@@ -107,7 +107,7 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.125,
+            "x": 0.12499999999999999,
             "y": -0.12500000000000006,
             "z": 0.0
           },
@@ -226,8 +226,8 @@ description: Artifact commands sweep_mirror.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.01080702466452768,
-          "y": -0.0000000000000000004366950295151887,
+          "x": -0.010807057262052895,
+          "y": -0.0000000000000000004371986864549797,
           "z": 0.0
         }
       }
@@ -248,8 +248,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.6787107802984397,
-            "y": 3.8589157113722443,
+            "x": -0.6787107823514908,
+            "y": 3.85891567419851,
             "z": 0.0
           },
           "relative": false
@@ -265,17 +265,17 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.5481251779437636,
-            "y": 4.0711481731177965
+            "x": 0.5481252272084558,
+            "y": 4.071148137153565
           },
-          "radius": 1.2450578646210153,
+          "radius": 1.2450579153938752,
           "start": {
             "unit": "degrees",
-            "value": -170.18543925992657
+            "value": -170.18543960763444
           },
           "end": {
             "unit": "degrees",
-            "value": -275.16005406746115
+            "value": -275.1600513245183
           },
           "relative": false
         }
@@ -320,8 +320,8 @@ description: Artifact commands sweep_mirror.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.01080702466452768,
-          "y": -0.0000000000000000004366950295151887,
+          "x": -0.010807057262052895,
+          "y": -0.0000000000000000004371986864549797,
           "z": 0.0
         }
       }
@@ -342,8 +342,8 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.6787107802984397,
-            "y": 3.8589157113722443,
+            "x": -0.6787107823514908,
+            "y": 3.85891567419851,
             "z": 0.0
           },
           "relative": false
@@ -359,17 +359,17 @@ description: Artifact commands sweep_mirror.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.5481251779437636,
-            "y": 4.0711481731177965
+            "x": 0.5481252272084558,
+            "y": 4.071148137153565
           },
-          "radius": 1.2450578646210153,
+          "radius": 1.2450579153938752,
           "start": {
             "unit": "degrees",
-            "value": -170.18543925992657
+            "value": -170.18543960763444
           },
           "end": {
             "unit": "degrees",
-            "value": -275.16005406746115
+            "value": -275.1600513245183
           },
           "relative": false
         }

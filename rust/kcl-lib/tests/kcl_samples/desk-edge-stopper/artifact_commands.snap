@@ -68,8 +68,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.00000000000042272897431283866,
-          "y": 0.00000000006505814284373173,
+          "x": -0.0000000000004227293813903384,
+          "y": 0.00000000006505811401169924,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands desk-edge-stopper.kcl
           "type": "line",
           "end": {
             "x": 29.99999999993579,
-            "y": 0.0000000000650581422134809,
+            "y": 0.00000000006505811338144842,
             "z": 0.0
           },
           "relative": false
@@ -124,7 +124,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000013222848488890493,
+            "x": -0.00000000013223138252763111,
             "y": 20.5,
             "z": 0.0
           },
@@ -141,7 +141,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000002628731991197869,
+            "x": -0.0000000002628760609798414,
             "y": 25.499999999869885,
             "z": 0.0
           },
@@ -210,7 +210,7 @@ description: Artifact commands desk-edge-stopper.kcl
           "type": "line",
           "end": {
             "x": 34.99999999907144,
-            "y": -4.999999999577122,
+            "y": -4.999999999577121,
             "z": 0.0
           },
           "relative": false
@@ -226,7 +226,7 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.0000000000004227295993767799,
+            "x": -0.00000000000042273000645458984,
             "y": -4.999999999625915,
             "z": 0.0
           },
@@ -243,8 +243,8 @@ description: Artifact commands desk-edge-stopper.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000000042272936691550484,
-            "y": 0.00000000013011628658927892,
+            "x": -0.00000000000042272977399300457,
+            "y": 0.00000000013011622892521313,
             "z": 0.0
           },
           "relative": false

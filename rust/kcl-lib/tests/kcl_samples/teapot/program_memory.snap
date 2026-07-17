@@ -395,7 +395,7 @@ description: Variables in memory after executing teapot.kcl
             },
             "to": [
               32.0,
-              0.0008039422400929092
+              0.0008039425706525841
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -407,14 +407,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              31.998413155782767,
-              44.77813284758896
+              31.998413155804794,
+              44.77813284784308
             ],
             "from": [
               32.0,
-              0.0008039422400929092
+              0.0008039425706525841
             ],
-            "radius": 44.777328933466606,
+            "radius": 44.777328933390166,
             "tag": {
               "commentStart": 4415,
               "end": 4419,
@@ -424,8 +424,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc2"
             },
             "to": [
-              76.18953136400745,
-              51.9999233404362
+              76.18953136399595,
+              51.99992334042145
             ],
             "type": "Arc",
             "units": "mm"
@@ -437,14 +437,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              -127.40971662853894,
-              18.719179520086378
+              -127.40971662850977,
+              18.71917952005849
             ],
             "from": [
-              76.18953136400745,
-              51.9999233404362
+              76.18953136399595,
+              51.99992334042145
             ],
-            "radius": 206.30138558033525,
+            "radius": 206.30138558029725,
             "tag": {
               "commentStart": 4560,
               "end": 4564,
@@ -454,8 +454,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc3"
             },
             "to": [
-              53.332042065851,
-              118.18112378232703
+              53.332042065948926,
+              118.18112378209541
             ],
             "type": "Arc",
             "units": "mm"
@@ -467,14 +467,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              30.088942569708273,
-              105.39093731031544
+              30.088942569687372,
+              105.39093731036783
             ],
             "from": [
-              53.332042065851,
-              118.18112378232703
+              53.332042065948926,
+              118.18112378209541
             ],
-            "radius": 26.529804827333702,
+            "radius": 26.529804827300886,
             "tag": {
               "commentStart": 4717,
               "end": 4721,
@@ -484,8 +484,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc4"
             },
             "to": [
-              39.99996860076912,
-              129.9999215881773
+              39.99996860048466,
+              129.99992158830048
             ],
             "type": "Arc",
             "units": "mm"
@@ -497,14 +497,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              38.878877524200924,
-              127.21631148099318
+              38.878877523735774,
+              127.21631148117464
             ],
             "from": [
-              39.99996860076912,
-              129.9999215881773
+              39.99996860048466,
+              129.99992158830048
             ],
-            "radius": 3.00088827362473,
+            "radius": 3.0008882736381723,
             "tag": {
               "commentStart": 4871,
               "end": 4875,
@@ -514,8 +514,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc5"
             },
             "to": [
-              38.25998594967023,
-              124.2799355429101
+              38.259985949635556,
+              124.27993554298709
             ],
             "type": "Arc",
             "units": "mm"
@@ -527,14 +527,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              35.238701762306846,
-              109.99085345695413
+              35.23870176267988,
+              109.9908534569449
             ],
             "from": [
-              38.25998594967023,
-              124.2799355429101
+              38.259985949635556,
+              124.27993554298709
             ],
-            "radius": 14.604999999999992,
+            "radius": 14.605000000000004,
             "tag": {
               "commentStart": 5025,
               "end": 5029,
@@ -544,8 +544,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc6"
             },
             "to": [
-              47.33125887019062,
-              118.1808526994797
+              47.3312588705415,
+              118.1808526995032
             ],
             "type": "Arc",
             "units": "mm"
@@ -557,14 +557,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              -64.28983779360289,
-              42.58953036794827
+              -64.2898377936933,
+              42.58953036826327
             ],
             "from": [
-              47.33125887019062,
-              118.1808526994797
+              47.3312588705415,
+              118.1808526995032
             ],
-            "radius": 134.80844644256314,
+            "radius": 134.80844644276507,
             "tag": {
               "commentStart": 5183,
               "end": 5187,
@@ -574,8 +574,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc7"
             },
             "to": [
-              70.18975403168781,
-              51.999982788561354
+              70.18975403182128,
+              51.99998278856998
             ],
             "type": "Arc",
             "units": "mm"
@@ -587,14 +587,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": false,
             "center": [
-              27.02959088524959,
-              48.97950723029089
+              27.02959088528098,
+              48.97950723038204
             ],
             "from": [
-              70.18975403168781,
-              51.999982788561354
+              70.18975403182128,
+              51.99998278856998
             ],
-            "radius": 43.2657249497252,
+            "radius": 43.26572494982126,
             "tag": {
               "commentStart": 5339,
               "end": 5343,
@@ -604,8 +604,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc8"
             },
             "to": [
-              31.99997337975485,
-              6.000230208875223
+              31.999973379762643,
+              6.000230208866938
             ],
             "type": "Arc",
             "units": "mm"
@@ -616,8 +616,8 @@ description: Variables in memory after executing teapot.kcl
               "sourceRange": []
             },
             "from": [
-              31.99997337975485,
-              6.000230208875223
+              31.999973379762643,
+              6.000230208866938
             ],
             "tag": {
               "commentStart": 5486,
@@ -1048,7 +1048,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 26.000499311890184,
+                        "n": 26.000499311964578,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1058,7 +1058,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 88.98000738533139,
+                        "n": 88.98000738525978,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1066,7 +1066,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 32.63999457070597,
+                        "n": 32.63999457072062,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1076,7 +1076,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 75.99919030466958,
+                        "n": 75.99919030472901,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1084,7 +1084,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 42.00958587880411,
+                        "n": 42.00958587870663,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1192,7 +1192,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 88.9800073853306,
+                        "n": 88.98000738525899,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1200,7 +1200,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 32.639994570706556,
+                        "n": 32.63999457072119,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1210,7 +1210,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 117.36999782845572,
+                        "n": 117.36999782836764,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1218,7 +1218,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 95.75000070466696,
+                        "n": 95.75000070468953,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1228,7 +1228,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": -50.620161662065854,
+                        "n": -50.62016166208764,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1236,7 +1236,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 133.3796406327557,
+                        "n": 133.3796406326994,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1344,7 +1344,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 117.36999782845476,
+                        "n": 117.36999782836669,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1352,7 +1352,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 95.75000070466717,
+                        "n": 95.75000070468974,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1362,7 +1362,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 107.10005802413897,
+                        "n": 107.1000580241313,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1370,7 +1370,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 110.55042122469675,
+                        "n": 110.55042122459224,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1380,7 +1380,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 105.43082650042592,
+                        "n": 105.43082650047599,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1388,7 +1388,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 98.42880869335042,
+                        "n": 98.42880869337382,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1496,7 +1496,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 107.10005802413889,
+                        "n": 107.10005802413123,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1504,7 +1504,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 110.5504212246962,
+                        "n": 110.55042122459169,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1514,7 +1514,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 59.089995847962356,
+                        "n": 59.08999584796887,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1522,7 +1522,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 112.3600670884605,
+                        "n": 112.36006708836386,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1532,7 +1532,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 74.03002668534965,
+                        "n": 74.03002668531076,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1540,7 +1540,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": -129.04000100585512,
+                        "n": -129.0400010058536,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1674,7 +1674,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 26.000499311889683,
+                        "n": 26.00049931196408,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1768,7 +1768,7 @@ description: Variables in memory after executing teapot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 59.089995847962356,
+                        "n": 59.08999584796887,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1776,7 +1776,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 112.36006708846043,
+                        "n": 112.36006708836379,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -1904,7 +1904,7 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "to": [
                     76.0,
-                    26.000499311889683
+                    26.00049931196408
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -1916,14 +1916,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    75.99919030466958,
-                    42.009585878803605
+                    75.99919030472901,
+                    42.00958587870613
                   ],
                   "from": [
                     76.0,
-                    26.000499311889683
+                    26.00049931196408
                   ],
-                  "radius": 16.00908658739,
+                  "radius": 16.009086587218125,
                   "tag": {
                     "commentStart": 2522,
                     "end": 2526,
@@ -1933,8 +1933,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    88.98000738533547,
-                    32.63999457070253
+                    88.98000738526386,
+                    32.63999457071718
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -1946,14 +1946,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -50.620161662060966,
-                    133.37964063275166
+                    -50.62016166208278,
+                    133.37964063269538
                   ],
                   "from": [
-                    88.98000738533547,
-                    32.63999457070253
+                    88.98000738526386,
+                    32.63999457071718
                   ],
-                  "radius": 172.15308154886043,
+                  "radius": 172.15308154877854,
                   "tag": {
                     "commentStart": 2671,
                     "end": 2675,
@@ -1963,8 +1963,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    117.36999782846091,
-                    95.75000070466287
+                    117.36999782837285,
+                    95.75000070468545
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -1976,14 +1976,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    105.43082650043208,
-                    98.42880869334611
+                    105.43082650048214,
+                    98.42880869336953
                   ],
                   "from": [
-                    117.36999782846091,
-                    95.75000070466287
+                    117.36999782837285,
+                    95.75000070468545
                   ],
-                  "radius": 12.23600524028406,
+                  "radius": 12.236005240149465,
                   "tag": {
                     "commentStart": 2831,
                     "end": 2835,
@@ -1993,8 +1993,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    107.10005802414742,
-                    110.55042122470901
+                    107.10005802413973,
+                    110.55042122460452
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2006,14 +2006,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    74.0300266853582,
-                    -129.04000100584233
+                    74.03002668531929,
+                    -129.0400010058408
                   ],
                   "from": [
-                    107.10005802414742,
-                    110.55042122470901
+                    107.10005802413973,
+                    110.55042122460452
                   ],
-                  "radius": 241.86193871165915,
+                  "radius": 241.8619387115584,
                   "tag": {
                     "commentStart": 2991,
                     "end": 2995,
@@ -2023,8 +2023,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    59.08999584797085,
-                    112.36006708847341
+                    59.08999584797735,
+                    112.36006708837684
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -2035,8 +2035,8 @@ description: Variables in memory after executing teapot.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    59.08999584797085,
-                    112.36006708847341
+                    59.08999584797735,
+                    112.36006708837684
                   ],
                   "tag": {
                     "commentStart": 3152,
@@ -2161,11 +2161,11 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            0.03000277776548973,
+            0.03000277776503678,
             26.00000000925922
           ],
           "from": [
-            6.0300027777654845,
+            6.030002777765032,
             26.0
           ],
           "radius": 5.999999999999995,
@@ -2178,7 +2178,7 @@ description: Variables in memory after executing teapot.kcl
             "value": "circle1"
           },
           "to": [
-            6.0300027777654845,
+            6.030002777765032,
             26.0
           ],
           "type": "Circle",
@@ -2218,11 +2218,11 @@ description: Variables in memory after executing teapot.kcl
       },
       "start": {
         "from": [
-          6.0300027777654845,
+          6.030002777765032,
           26.0
         ],
         "to": [
-          6.0300027777654845,
+          6.030002777765032,
           26.0
         ],
         "units": "mm",
@@ -2273,7 +2273,7 @@ description: Variables in memory after executing teapot.kcl
           },
           "to": [
             32.0,
-            0.0008328574420018839
+            0.0008328577786275693
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2285,14 +2285,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            31.998356082131096,
-            44.77806569218996
+            31.998356082133018,
+            44.77806569244438
           ],
           "from": [
             32.0,
-            0.0008328574420018839
+            0.0008328577786275693
           ],
-          "radius": 44.77723286492475,
+          "radius": 44.77723286484254,
           "tag": {
             "commentStart": 1603,
             "end": 1607,
@@ -2302,8 +2302,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc2"
           },
           "to": [
-            76.18937027614635,
-            51.9998970073094
+            76.1893702761104,
+            51.99989700728579
           ],
           "type": "Arc",
           "units": "mm"
@@ -2315,14 +2315,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            -127.40967405185327,
-            18.71905624260861
+            -127.40967405182028,
+            18.719056242567696
           ],
           "from": [
-            76.18937027614635,
-            51.9998970073094
+            76.1893702761104,
+            51.99989700728579
           ],
-          "radius": 206.30120022258745,
+          "radius": 206.30120022252223,
           "tag": {
             "commentStart": 1748,
             "end": 1752,
@@ -2332,8 +2332,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc3"
           },
           "to": [
-            53.33186028933321,
-            118.18102373407655
+            53.33186028940963,
+            118.18102373382143
           ],
           "type": "Arc",
           "units": "mm"
@@ -2345,14 +2345,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            30.08934424289974,
-            105.39058126531292
+            30.08934424317871,
+            105.39058126537454
           ],
           "from": [
-            53.33186028933321,
-            118.18102373407655
+            53.33186028940963,
+            118.18102373382143
           ],
-          "radius": 26.529417082089637,
+          "radius": 26.529417081759483,
           "tag": {
             "commentStart": 1905,
             "end": 1909,
@@ -2362,8 +2362,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc4"
           },
           "to": [
-            39.99975629731726,
-            129.99939480085595
+            39.99975629720217,
+            129.99939480072032
           ],
           "type": "Arc",
           "units": "mm"
@@ -2374,8 +2374,8 @@ description: Variables in memory after executing teapot.kcl
             "sourceRange": []
           },
           "from": [
-            39.99975629731726,
-            129.99939480085595
+            39.99975629720217,
+            129.99939480072032
           ],
           "tag": {
             "commentStart": 2059,
@@ -2815,7 +2815,7 @@ description: Variables in memory after executing teapot.kcl
           },
           "to": [
             32.0,
-            0.0008039422400929092
+            0.0008039425706525841
           ],
           "type": "ToPoint",
           "units": "mm"
@@ -2827,14 +2827,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            31.998413155782767,
-            44.77813284758896
+            31.998413155804794,
+            44.77813284784308
           ],
           "from": [
             32.0,
-            0.0008039422400929092
+            0.0008039425706525841
           ],
-          "radius": 44.777328933466606,
+          "radius": 44.777328933390166,
           "tag": {
             "commentStart": 4415,
             "end": 4419,
@@ -2844,8 +2844,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc2"
           },
           "to": [
-            76.18953136400745,
-            51.9999233404362
+            76.18953136399595,
+            51.99992334042145
           ],
           "type": "Arc",
           "units": "mm"
@@ -2857,14 +2857,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            -127.40971662853894,
-            18.719179520086378
+            -127.40971662850977,
+            18.71917952005849
           ],
           "from": [
-            76.18953136400745,
-            51.9999233404362
+            76.18953136399595,
+            51.99992334042145
           ],
-          "radius": 206.30138558033525,
+          "radius": 206.30138558029725,
           "tag": {
             "commentStart": 4560,
             "end": 4564,
@@ -2874,8 +2874,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc3"
           },
           "to": [
-            53.332042065851,
-            118.18112378232703
+            53.332042065948926,
+            118.18112378209541
           ],
           "type": "Arc",
           "units": "mm"
@@ -2887,14 +2887,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            30.088942569708273,
-            105.39093731031544
+            30.088942569687372,
+            105.39093731036783
           ],
           "from": [
-            53.332042065851,
-            118.18112378232703
+            53.332042065948926,
+            118.18112378209541
           ],
-          "radius": 26.529804827333702,
+          "radius": 26.529804827300886,
           "tag": {
             "commentStart": 4717,
             "end": 4721,
@@ -2904,8 +2904,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc4"
           },
           "to": [
-            39.99996860076912,
-            129.9999215881773
+            39.99996860048466,
+            129.99992158830048
           ],
           "type": "Arc",
           "units": "mm"
@@ -2917,14 +2917,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": true,
           "center": [
-            38.878877524200924,
-            127.21631148099318
+            38.878877523735774,
+            127.21631148117464
           ],
           "from": [
-            39.99996860076912,
-            129.9999215881773
+            39.99996860048466,
+            129.99992158830048
           ],
-          "radius": 3.00088827362473,
+          "radius": 3.0008882736381723,
           "tag": {
             "commentStart": 4871,
             "end": 4875,
@@ -2934,8 +2934,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc5"
           },
           "to": [
-            38.25998594967023,
-            124.2799355429101
+            38.259985949635556,
+            124.27993554298709
           ],
           "type": "Arc",
           "units": "mm"
@@ -2947,14 +2947,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": false,
           "center": [
-            35.238701762306846,
-            109.99085345695413
+            35.23870176267988,
+            109.9908534569449
           ],
           "from": [
-            38.25998594967023,
-            124.2799355429101
+            38.259985949635556,
+            124.27993554298709
           ],
-          "radius": 14.604999999999992,
+          "radius": 14.605000000000004,
           "tag": {
             "commentStart": 5025,
             "end": 5029,
@@ -2964,8 +2964,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc6"
           },
           "to": [
-            47.33125887019062,
-            118.1808526994797
+            47.3312588705415,
+            118.1808526995032
           ],
           "type": "Arc",
           "units": "mm"
@@ -2977,14 +2977,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": false,
           "center": [
-            -64.28983779360289,
-            42.58953036794827
+            -64.2898377936933,
+            42.58953036826327
           ],
           "from": [
-            47.33125887019062,
-            118.1808526994797
+            47.3312588705415,
+            118.1808526995032
           ],
-          "radius": 134.80844644256314,
+          "radius": 134.80844644276507,
           "tag": {
             "commentStart": 5183,
             "end": 5187,
@@ -2994,8 +2994,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc7"
           },
           "to": [
-            70.18975403168781,
-            51.999982788561354
+            70.18975403182128,
+            51.99998278856998
           ],
           "type": "Arc",
           "units": "mm"
@@ -3007,14 +3007,14 @@ description: Variables in memory after executing teapot.kcl
           },
           "ccw": false,
           "center": [
-            27.02959088524959,
-            48.97950723029089
+            27.02959088528098,
+            48.97950723038204
           ],
           "from": [
-            70.18975403168781,
-            51.999982788561354
+            70.18975403182128,
+            51.99998278856998
           ],
-          "radius": 43.2657249497252,
+          "radius": 43.26572494982126,
           "tag": {
             "commentStart": 5339,
             "end": 5343,
@@ -3024,8 +3024,8 @@ description: Variables in memory after executing teapot.kcl
             "value": "arc8"
           },
           "to": [
-            31.99997337975485,
-            6.000230208875223
+            31.999973379762643,
+            6.000230208866938
           ],
           "type": "Arc",
           "units": "mm"
@@ -3036,8 +3036,8 @@ description: Variables in memory after executing teapot.kcl
             "sourceRange": []
           },
           "from": [
-            31.99997337975485,
-            6.000230208875223
+            31.999973379762643,
+            6.000230208866938
           ],
           "tag": {
             "commentStart": 5486,
@@ -3189,7 +3189,7 @@ description: Variables in memory after executing teapot.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 6.0300027777654845,
+                        "n": 6.030002777765032,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3207,7 +3207,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.03000277776548973,
+                        "n": 0.03000277776503678,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3309,7 +3309,7 @@ description: Variables in memory after executing teapot.kcl
                   "circle": {
                     "start": [
                       {
-                        "n": 4.529991666702424,
+                        "n": 4.529991666701971,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3317,7 +3317,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 26.00999998148156,
+                        "n": 26.009999981481563,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3327,7 +3327,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 0.030002777765495287,
+                        "n": 0.030002777765042333,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3433,11 +3433,11 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.03000277776548973,
+                    0.03000277776503678,
                     26.00000000925922
                   ],
                   "from": [
-                    6.0300027777654845,
+                    6.030002777765032,
                     26.0
                   ],
                   "radius": 5.999999999999995,
@@ -3450,7 +3450,7 @@ description: Variables in memory after executing teapot.kcl
                     "value": "circle1"
                   },
                   "to": [
-                    6.0300027777654845,
+                    6.030002777765032,
                     26.0
                   ],
                   "type": "Circle",
@@ -3462,13 +3462,13 @@ description: Variables in memory after executing teapot.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    6.0300027777654845,
+                    6.030002777765032,
                     26.0
                   ],
                   "tag": null,
                   "to": [
-                    4.529991666702424,
-                    26.00999998148156
+                    4.529991666701971,
+                    26.009999981481563
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -3480,12 +3480,12 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    0.030002777765495287,
+                    0.030002777765042333,
                     26.00000000925922
                   ],
                   "from": [
-                    4.529991666702424,
-                    26.00999998148156
+                    4.529991666701971,
+                    26.009999981481563
                   ],
                   "radius": 4.500000000000028,
                   "tag": {
@@ -3497,8 +3497,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "circle2"
                   },
                   "to": [
-                    4.529991666702424,
-                    26.00999998148156
+                    4.529991666701971,
+                    26.009999981481563
                   ],
                   "type": "Circle",
                   "units": "mm"
@@ -3537,11 +3537,11 @@ description: Variables in memory after executing teapot.kcl
               },
               "start": {
                 "from": [
-                  6.0300027777654845,
+                  6.030002777765032,
                   26.0
                 ],
                 "to": [
-                  6.0300027777654845,
+                  6.030002777765032,
                   26.0
                 ],
                 "units": "mm",
@@ -3596,7 +3596,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 0.0008328574428347414,
+                        "n": 0.0008328577794604272,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3606,7 +3606,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 76.18937027614095,
+                        "n": 76.189370276105,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3614,7 +3614,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 51.99989700730936,
+                        "n": 51.99989700728573,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3624,7 +3624,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 31.99835608213109,
+                        "n": 31.99835608213302,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3632,7 +3632,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 44.7780656921908,
+                        "n": 44.77806569244521,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3740,7 +3740,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 76.18937027613867,
+                        "n": 76.18937027610272,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3748,7 +3748,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 51.99989700730898,
+                        "n": 51.99989700728536,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3758,7 +3758,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 53.33186028932332,
+                        "n": 53.33186028939971,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3766,7 +3766,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 118.18102373407487,
+                        "n": 118.18102373381977,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3776,7 +3776,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": -127.4096740518609,
+                        "n": -127.40967405182796,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3784,7 +3784,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 18.71905624260818,
+                        "n": 18.719056242567266,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3892,7 +3892,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 53.331860289322606,
+                        "n": 53.331860289398996,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3900,7 +3900,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 118.18102373407447,
+                        "n": 118.18102373381937,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3910,7 +3910,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 39.999756297306476,
+                        "n": 39.999756297191354,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3918,7 +3918,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 129.99939480085342,
+                        "n": 129.99939480071782,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3928,7 +3928,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 30.08934424288914,
+                        "n": 30.089344243168075,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -3936,7 +3936,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 105.39058126531084,
+                        "n": 105.39058126537248,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4070,7 +4070,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 0.0008328574420018839,
+                        "n": 0.0008328577786275693,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4164,7 +4164,7 @@ description: Variables in memory after executing teapot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 39.999756297306725,
+                        "n": 39.999756297191595,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4172,7 +4172,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 129.99939480085405,
+                        "n": 129.99939480071842,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -4420,7 +4420,7 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "to": [
                     32.0,
-                    0.0008328574420018839
+                    0.0008328577786275693
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -4432,14 +4432,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    31.998356082131096,
-                    44.77806569218996
+                    31.998356082133018,
+                    44.77806569244438
                   ],
                   "from": [
                     32.0,
-                    0.0008328574420018839
+                    0.0008328577786275693
                   ],
-                  "radius": 44.77723286492475,
+                  "radius": 44.77723286484254,
                   "tag": {
                     "commentStart": 1603,
                     "end": 1607,
@@ -4449,8 +4449,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    76.18937027614635,
-                    51.9998970073094
+                    76.1893702761104,
+                    51.99989700728579
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -4462,14 +4462,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -127.40967405185327,
-                    18.71905624260861
+                    -127.40967405182028,
+                    18.719056242567696
                   ],
                   "from": [
-                    76.18937027614635,
-                    51.9998970073094
+                    76.1893702761104,
+                    51.99989700728579
                   ],
-                  "radius": 206.30120022258745,
+                  "radius": 206.30120022252223,
                   "tag": {
                     "commentStart": 1748,
                     "end": 1752,
@@ -4479,8 +4479,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    53.33186028933321,
-                    118.18102373407655
+                    53.33186028940963,
+                    118.18102373382143
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -4492,14 +4492,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    30.08934424289974,
-                    105.39058126531292
+                    30.08934424317871,
+                    105.39058126537454
                   ],
                   "from": [
-                    53.33186028933321,
-                    118.18102373407655
+                    53.33186028940963,
+                    118.18102373382143
                   ],
-                  "radius": 26.529417082089637,
+                  "radius": 26.529417081759483,
                   "tag": {
                     "commentStart": 1905,
                     "end": 1909,
@@ -4509,8 +4509,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    39.99975629731726,
-                    129.99939480085595
+                    39.99975629720217,
+                    129.99939480072032
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -4521,8 +4521,8 @@ description: Variables in memory after executing teapot.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    39.99975629731726,
-                    129.99939480085595
+                    39.99975629720217,
+                    129.99939480072032
                   ],
                   "tag": {
                     "commentStart": 2059,
@@ -5769,7 +5769,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 0.0008039422400929092,
+                        "n": 0.0008039425706525841,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5779,7 +5779,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 76.18953136400742,
+                        "n": 76.18953136399597,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5787,7 +5787,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 51.9999233404362,
+                        "n": 51.99992334042145,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5797,7 +5797,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 31.998413155782753,
+                        "n": 31.998413155804794,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5805,7 +5805,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 44.77813284758896,
+                        "n": 44.77813284784308,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5913,7 +5913,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 76.18953136400742,
+                        "n": 76.18953136399597,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5921,7 +5921,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 51.9999233404362,
+                        "n": 51.99992334042145,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5931,7 +5931,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 53.332042065851006,
+                        "n": 53.33204206594894,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5939,7 +5939,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 118.18112378232705,
+                        "n": 118.18112378209543,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5949,7 +5949,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": -127.40971662853899,
+                        "n": -127.40971662850976,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -5957,7 +5957,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 18.71917952008637,
+                        "n": 18.71917952005849,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6065,7 +6065,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 53.332042065851006,
+                        "n": 53.33204206594894,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6073,7 +6073,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 118.18112378232705,
+                        "n": 118.18112378209543,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6083,7 +6083,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 39.99996860076914,
+                        "n": 39.99996860048468,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6091,7 +6091,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 129.99992158817733,
+                        "n": 129.99992158830048,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6101,7 +6101,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 30.08894256970828,
+                        "n": 30.088942569687386,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6109,7 +6109,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 105.39093731031545,
+                        "n": 105.39093731036785,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6217,7 +6217,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 39.99996860076914,
+                        "n": 39.99996860048468,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6225,7 +6225,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 129.99992158817733,
+                        "n": 129.99992158830048,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6235,7 +6235,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 38.259985949670245,
+                        "n": 38.25998594963558,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6243,7 +6243,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 124.27993554291012,
+                        "n": 124.27993554298709,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6253,7 +6253,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 38.87887752420094,
+                        "n": 38.878877523735795,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6261,7 +6261,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 127.21631148099321,
+                        "n": 127.21631148117464,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6369,7 +6369,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 47.33125887019064,
+                        "n": 47.33125887054152,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6377,7 +6377,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 118.18085269947973,
+                        "n": 118.1808526995032,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6387,7 +6387,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 38.259985949670245,
+                        "n": 38.25998594963558,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6395,7 +6395,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 124.27993554291012,
+                        "n": 124.27993554298709,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6405,7 +6405,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 35.23870176230686,
+                        "n": 35.2387017626799,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6413,7 +6413,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 109.99085345695416,
+                        "n": 109.9908534569449,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6521,7 +6521,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 70.18975403168781,
+                        "n": 70.18975403182125,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6529,7 +6529,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 51.9999827885614,
+                        "n": 51.99998278856999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6539,7 +6539,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 47.33125887019064,
+                        "n": 47.33125887054152,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6547,7 +6547,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 118.18085269947973,
+                        "n": 118.1808526995032,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6557,7 +6557,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": -64.28983779360289,
+                        "n": -64.28983779369327,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6565,7 +6565,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 42.58953036794831,
+                        "n": 42.58953036826328,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6673,7 +6673,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": 31.99997337975486,
+                        "n": 31.999973379762622,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6681,7 +6681,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 6.00023020887525,
+                        "n": 6.0002302088669435,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6691,7 +6691,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": 70.18975403168781,
+                        "n": 70.18975403182125,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6699,7 +6699,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 51.9999827885614,
+                        "n": 51.99998278856999,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6709,7 +6709,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": 27.029590885249586,
+                        "n": 27.02959088528095,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6717,7 +6717,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 48.979507230290935,
+                        "n": 48.97950723038205,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -6851,7 +6851,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 0.0008039422400929092,
+                        "n": 0.0008039425706525841,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7065,7 +7065,7 @@ description: Variables in memory after executing teapot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": 31.99997337975486,
+                        "n": 31.999973379762622,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7073,7 +7073,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 6.00023020887525,
+                        "n": 6.0002302088669435,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7201,7 +7201,7 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "to": [
                     32.0,
-                    0.0008039422400929092
+                    0.0008039425706525841
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -7213,14 +7213,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    31.998413155782767,
-                    44.77813284758896
+                    31.998413155804794,
+                    44.77813284784308
                   ],
                   "from": [
                     32.0,
-                    0.0008039422400929092
+                    0.0008039425706525841
                   ],
-                  "radius": 44.777328933466606,
+                  "radius": 44.777328933390166,
                   "tag": {
                     "commentStart": 4415,
                     "end": 4419,
@@ -7230,8 +7230,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    76.18953136400745,
-                    51.9999233404362
+                    76.18953136399595,
+                    51.99992334042145
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -7243,14 +7243,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -127.40971662853894,
-                    18.719179520086378
+                    -127.40971662850977,
+                    18.71917952005849
                   ],
                   "from": [
-                    76.18953136400745,
-                    51.9999233404362
+                    76.18953136399595,
+                    51.99992334042145
                   ],
-                  "radius": 206.30138558033525,
+                  "radius": 206.30138558029725,
                   "tag": {
                     "commentStart": 4560,
                     "end": 4564,
@@ -7260,8 +7260,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc3"
                   },
                   "to": [
-                    53.332042065851,
-                    118.18112378232703
+                    53.332042065948926,
+                    118.18112378209541
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -7273,14 +7273,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    30.088942569708273,
-                    105.39093731031544
+                    30.088942569687372,
+                    105.39093731036783
                   ],
                   "from": [
-                    53.332042065851,
-                    118.18112378232703
+                    53.332042065948926,
+                    118.18112378209541
                   ],
-                  "radius": 26.529804827333702,
+                  "radius": 26.529804827300886,
                   "tag": {
                     "commentStart": 4717,
                     "end": 4721,
@@ -7290,8 +7290,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    39.99996860076912,
-                    129.9999215881773
+                    39.99996860048466,
+                    129.99992158830048
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -7303,14 +7303,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    38.878877524200924,
-                    127.21631148099318
+                    38.878877523735774,
+                    127.21631148117464
                   ],
                   "from": [
-                    39.99996860076912,
-                    129.9999215881773
+                    39.99996860048466,
+                    129.99992158830048
                   ],
-                  "radius": 3.00088827362473,
+                  "radius": 3.0008882736381723,
                   "tag": {
                     "commentStart": 4871,
                     "end": 4875,
@@ -7320,8 +7320,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc5"
                   },
                   "to": [
-                    38.25998594967023,
-                    124.2799355429101
+                    38.259985949635556,
+                    124.27993554298709
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -7333,14 +7333,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": false,
                   "center": [
-                    35.238701762306846,
-                    109.99085345695413
+                    35.23870176267988,
+                    109.9908534569449
                   ],
                   "from": [
-                    38.25998594967023,
-                    124.2799355429101
+                    38.259985949635556,
+                    124.27993554298709
                   ],
-                  "radius": 14.604999999999992,
+                  "radius": 14.605000000000004,
                   "tag": {
                     "commentStart": 5025,
                     "end": 5029,
@@ -7350,8 +7350,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc6"
                   },
                   "to": [
-                    47.33125887019062,
-                    118.1808526994797
+                    47.3312588705415,
+                    118.1808526995032
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -7363,14 +7363,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -64.28983779360289,
-                    42.58953036794827
+                    -64.2898377936933,
+                    42.58953036826327
                   ],
                   "from": [
-                    47.33125887019062,
-                    118.1808526994797
+                    47.3312588705415,
+                    118.1808526995032
                   ],
-                  "radius": 134.80844644256314,
+                  "radius": 134.80844644276507,
                   "tag": {
                     "commentStart": 5183,
                     "end": 5187,
@@ -7380,8 +7380,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc7"
                   },
                   "to": [
-                    70.18975403168781,
-                    51.999982788561354
+                    70.18975403182128,
+                    51.99998278856998
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -7393,14 +7393,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": false,
                   "center": [
-                    27.02959088524959,
-                    48.97950723029089
+                    27.02959088528098,
+                    48.97950723038204
                   ],
                   "from": [
-                    70.18975403168781,
-                    51.999982788561354
+                    70.18975403182128,
+                    51.99998278856998
                   ],
-                  "radius": 43.2657249497252,
+                  "radius": 43.26572494982126,
                   "tag": {
                     "commentStart": 5339,
                     "end": 5343,
@@ -7410,8 +7410,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc8"
                   },
                   "to": [
-                    31.99997337975485,
-                    6.000230208875223
+                    31.999973379762643,
+                    6.000230208866938
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -7422,8 +7422,8 @@ description: Variables in memory after executing teapot.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    31.99997337975485,
-                    6.000230208875223
+                    31.999973379762643,
+                    6.000230208866938
                   ],
                   "tag": {
                     "commentStart": 5486,
@@ -7600,11 +7600,11 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              0.03000277776548973,
+              0.03000277776503678,
               26.00000000925922
             ],
             "from": [
-              6.0300027777654845,
+              6.030002777765032,
               26.0
             ],
             "radius": 5.999999999999995,
@@ -7617,7 +7617,7 @@ description: Variables in memory after executing teapot.kcl
               "value": "circle1"
             },
             "to": [
-              6.0300027777654845,
+              6.030002777765032,
               26.0
             ],
             "type": "Circle",
@@ -7657,11 +7657,11 @@ description: Variables in memory after executing teapot.kcl
         },
         "start": {
           "from": [
-            6.0300027777654845,
+            6.030002777765032,
             26.0
           ],
           "to": [
-            6.0300027777654845,
+            6.030002777765032,
             26.0
           ],
           "units": "mm",
@@ -7838,7 +7838,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -107.24011967387054,
+                        "n": -107.24011967385758,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7846,7 +7846,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 66.26004355635028,
+                        "n": 66.26004355634171,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7864,7 +7864,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 26.00012735378593,
+                        "n": 26.000127353773035,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7874,7 +7874,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": -79.04976065225121,
+                        "n": -79.04976065230073,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7882,7 +7882,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 55.99965817986062,
+                        "n": 55.99965817980507,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7990,7 +7990,7 @@ description: Variables in memory after executing teapot.kcl
                   "arc": {
                     "start": [
                       {
-                        "n": -101.48038269814984,
+                        "n": -101.48038269819598,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -7998,7 +7998,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 82.09013928634371,
+                        "n": 82.09013928639261,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8008,7 +8008,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": -124.45985852680057,
+                        "n": -124.45985852678585,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8016,7 +8016,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 121.89080213415839,
+                        "n": 121.89080213435251,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8026,7 +8026,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "center": [
                       {
-                        "n": -129.66937607713223,
+                        "n": -129.6693760771073,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8034,7 +8034,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 92.3489192925315,
+                        "n": 92.34891929273721,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8168,7 +8168,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 26.000127353785803,
+                        "n": 26.000127353772907,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8262,7 +8262,7 @@ description: Variables in memory after executing teapot.kcl
                   "line": {
                     "start": [
                       {
-                        "n": -107.24011967387042,
+                        "n": -107.24011967385745,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8270,7 +8270,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 66.26004355635024,
+                        "n": 66.26004355634167,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8280,7 +8280,7 @@ description: Variables in memory after executing teapot.kcl
                     ],
                     "end": [
                       {
-                        "n": -101.48038269814946,
+                        "n": -101.48038269819561,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8288,7 +8288,7 @@ description: Variables in memory after executing teapot.kcl
                         }
                       },
                       {
-                        "n": 82.09013928634357,
+                        "n": 82.09013928639247,
                         "ty": {
                           "mm": null,
                           "type": "Known",
@@ -8398,7 +8398,7 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "to": [
                     -79.05,
-                    26.000127353785803
+                    26.000127353772907
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -8410,14 +8410,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": false,
                   "center": [
-                    -79.04976065225121,
-                    55.99965817986049
+                    -79.04976065230072,
+                    55.99965817980494
                   ],
                   "from": [
                     -79.05,
-                    26.000127353785803
+                    26.000127353772907
                   ],
-                  "radius": 29.99953082702949,
+                  "radius": 29.999530826986835,
                   "tag": {
                     "commentStart": 439,
                     "end": 443,
@@ -8427,8 +8427,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc2"
                   },
                   "to": [
-                    -107.2401196738708,
-                    66.26004355635021
+                    -107.2401196738578,
+                    66.26004355634166
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -8439,8 +8439,8 @@ description: Variables in memory after executing teapot.kcl
                     "sourceRange": []
                   },
                   "from": [
-                    -107.2401196738708,
-                    66.26004355635021
+                    -107.2401196738578,
+                    66.26004355634166
                   ],
                   "tag": {
                     "commentStart": 593,
@@ -8451,8 +8451,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "line3"
                   },
                   "to": [
-                    -101.48038269814946,
-                    82.09013928634357
+                    -101.48038269819561,
+                    82.09013928639247
                   ],
                   "type": "ToPoint",
                   "units": "mm"
@@ -8464,14 +8464,14 @@ description: Variables in memory after executing teapot.kcl
                   },
                   "ccw": true,
                   "center": [
-                    -129.66937607713186,
-                    92.34891929253136
+                    -129.66937607710693,
+                    92.34891929273707
                   ],
                   "from": [
-                    -101.48038269814946,
-                    82.09013928634357
+                    -101.48038269819561,
+                    82.09013928639247
                   ],
-                  "radius": 29.997698493979023,
+                  "radius": 29.997698493965864,
                   "tag": {
                     "commentStart": 722,
                     "end": 726,
@@ -8481,8 +8481,8 @@ description: Variables in memory after executing teapot.kcl
                     "value": "arc4"
                   },
                   "to": [
-                    -124.45985852680006,
-                    121.89080213415905
+                    -124.45985852678534,
+                    121.8908021343532
                   ],
                   "type": "Arc",
                   "units": "mm"
@@ -8676,7 +8676,7 @@ description: Variables in memory after executing teapot.kcl
             },
             "to": [
               32.0,
-              0.0008328574420018839
+              0.0008328577786275693
             ],
             "type": "ToPoint",
             "units": "mm"
@@ -8688,14 +8688,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              31.998356082131096,
-              44.77806569218996
+              31.998356082133018,
+              44.77806569244438
             ],
             "from": [
               32.0,
-              0.0008328574420018839
+              0.0008328577786275693
             ],
-            "radius": 44.77723286492475,
+            "radius": 44.77723286484254,
             "tag": {
               "commentStart": 1603,
               "end": 1607,
@@ -8705,8 +8705,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc2"
             },
             "to": [
-              76.18937027614635,
-              51.9998970073094
+              76.1893702761104,
+              51.99989700728579
             ],
             "type": "Arc",
             "units": "mm"
@@ -8718,14 +8718,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              -127.40967405185327,
-              18.71905624260861
+              -127.40967405182028,
+              18.719056242567696
             ],
             "from": [
-              76.18937027614635,
-              51.9998970073094
+              76.1893702761104,
+              51.99989700728579
             ],
-            "radius": 206.30120022258745,
+            "radius": 206.30120022252223,
             "tag": {
               "commentStart": 1748,
               "end": 1752,
@@ -8735,8 +8735,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc3"
             },
             "to": [
-              53.33186028933321,
-              118.18102373407655
+              53.33186028940963,
+              118.18102373382143
             ],
             "type": "Arc",
             "units": "mm"
@@ -8748,14 +8748,14 @@ description: Variables in memory after executing teapot.kcl
             },
             "ccw": true,
             "center": [
-              30.08934424289974,
-              105.39058126531292
+              30.08934424317871,
+              105.39058126537454
             ],
             "from": [
-              53.33186028933321,
-              118.18102373407655
+              53.33186028940963,
+              118.18102373382143
             ],
-            "radius": 26.529417082089637,
+            "radius": 26.529417081759483,
             "tag": {
               "commentStart": 1905,
               "end": 1909,
@@ -8765,8 +8765,8 @@ description: Variables in memory after executing teapot.kcl
               "value": "arc4"
             },
             "to": [
-              39.99975629731726,
-              129.99939480085595
+              39.99975629720217,
+              129.99939480072032
             ],
             "type": "Arc",
             "units": "mm"
@@ -8777,8 +8777,8 @@ description: Variables in memory after executing teapot.kcl
               "sourceRange": []
             },
             "from": [
-              39.99975629731726,
-              129.99939480085595
+              39.99975629720217,
+              129.99939480072032
             ],
             "tag": {
               "commentStart": 2059,

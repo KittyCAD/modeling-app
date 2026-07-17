@@ -108,7 +108,7 @@ description: Artifact commands crash-box.kcl
           "type": "line",
           "end": {
             "x": 200.00000000005593,
-            "y": 199.99999999958908,
+            "y": 199.9999999995891,
             "z": 0.0
           },
           "relative": false
@@ -125,7 +125,7 @@ description: Artifact commands crash-box.kcl
           "type": "line",
           "end": {
             "x": -199.999999999916,
-            "y": 199.99999999961992,
+            "y": 199.99999999961994,
             "z": 0.0
           },
           "relative": false
@@ -141,7 +141,7 @@ description: Artifact commands crash-box.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -199.99999999992096,
+            "x": -199.999999999921,
             "y": -200.00000000030815,
             "z": 0.0
           },
@@ -390,7 +390,7 @@ description: Artifact commands crash-box.kcl
         "path": "[uuid]",
         "to": {
           "x": -870.13,
-          "y": 0.000000000000000002000001952783788,
+          "y": 0.0000000000000000019999978168807254,
           "z": 0.0
         }
       }
@@ -412,7 +412,7 @@ description: Artifact commands crash-box.kcl
           "type": "line",
           "end": {
             "x": 873.9799999999998,
-            "y": 0.0000000000000000028000047191307736,
+            "y": 0.0000000000000000027999956201440355,
             "z": 0.0
           },
           "relative": false
@@ -463,7 +463,7 @@ description: Artifact commands crash-box.kcl
           "type": "line",
           "end": {
             "x": -870.13,
-            "y": 0.0000000000000000028000030647695485,
+            "y": 0.000000000000000002799998101685873,
             "z": 0.0
           },
           "relative": false

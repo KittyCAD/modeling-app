@@ -91,7 +91,7 @@ description: Artifact commands teapot.kcl
           "type": "line",
           "end": {
             "x": -79.05,
-            "y": 26.000127353785803,
+            "y": 26.000127353772907,
             "z": 0.0
           },
           "relative": false
@@ -107,17 +107,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -79.04976065225121,
-            "y": 55.99965817986049
+            "x": -79.04976065230072,
+            "y": 55.99965817980494
           },
-          "radius": 29.99953082702949,
+          "radius": 29.999530826986835,
           "start": {
             "unit": "degrees",
-            "value": -90.00045712767714
+            "value": -90.00045712758255
           },
           "end": {
             "unit": "degrees",
-            "value": -199.9998811890991
+            "value": -199.99988118922425
           },
           "relative": false
         }
@@ -132,8 +132,8 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -101.48038269814946,
-            "y": 82.09013928634357,
+            "x": -101.48038269819561,
+            "y": 82.09013928639247,
             "z": 0.0
           },
           "relative": false
@@ -149,17 +149,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -129.66937607713186,
-            "y": 92.34891929253136
+            "x": -129.66937607710693,
+            "y": 92.34891929273707
           },
-          "radius": 29.997698493979023,
+          "radius": 29.997698493965864,
           "start": {
             "unit": "degrees",
-            "value": -19.9978919540406
+            "value": -19.997891954368455
           },
           "end": {
             "unit": "degrees",
-            "value": 79.99908481550077
+            "value": 79.99908481551613
           },
           "relative": false
         }
@@ -243,7 +243,7 @@ description: Artifact commands teapot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 6.0300027777654845,
+          "x": 6.030002777765032,
           "y": 26.0,
           "z": 0.0
         }
@@ -265,7 +265,7 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.03000277776548973,
+            "x": 0.03000277776503678,
             "y": 26.00000000925922
           },
           "radius": 5.999999999999995,
@@ -288,8 +288,8 @@ description: Artifact commands teapot.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 4.529991666702424,
-          "y": 26.00999998148156,
+          "x": 4.529991666701971,
+          "y": 26.009999981481563,
           "z": 0.0
         }
       }
@@ -303,17 +303,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 0.030002777765495287,
+            "x": 0.030002777765042333,
             "y": 26.00000000925922
           },
           "radius": 4.500000000000028,
           "start": {
             "unit": "radians",
-            "value": 0.0022222178783868982
+            "value": 0.0022222178783876875
           },
           "end": {
             "unit": "radians",
-            "value": 6.285407525057973
+            "value": 6.285407525057974
           },
           "relative": false
         }
@@ -489,7 +489,7 @@ description: Artifact commands teapot.kcl
           "type": "line",
           "end": {
             "x": 32.0,
-            "y": 0.0008328574420018839,
+            "y": 0.0008328577786275693,
             "z": 0.0
           },
           "relative": false
@@ -505,17 +505,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 31.998356082131096,
-            "y": 44.77806569218996
+            "x": 31.998356082133018,
+            "y": 44.77806569244438
           },
-          "radius": 44.77723286492475,
+          "radius": 44.77723286484254,
           "start": {
             "unit": "degrees",
-            "value": -89.9978964855631
+            "value": -89.99789648556556
           },
           "end": {
             "unit": "degrees",
-            "value": 9.281406209104595
+            "value": 9.281406208761306
           },
           "relative": false
         }
@@ -530,17 +530,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -127.40967405185327,
-            "y": 18.71905624260861
+            "x": -127.40967405182028,
+            "y": 18.719056242567696
           },
-          "radius": 206.30120022258745,
+          "radius": 206.30120022252223,
           "start": {
             "unit": "degrees",
-            "value": 9.283615229385473
+            "value": 9.283615229393304
           },
           "end": {
             "unit": "degrees",
-            "value": 28.823964742130492
+            "value": 28.823964742072558
           },
           "relative": false
         }
@@ -555,17 +555,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 30.08934424289974,
-            "y": 105.39058126531292
+            "x": 30.08934424317871,
+            "y": 105.39058126537454
           },
-          "radius": 26.529417082089637,
+          "radius": 26.529417081759483,
           "start": {
             "unit": "degrees",
-            "value": 28.824151307908743
+            "value": 28.824151307520346
           },
           "end": {
             "unit": "degrees",
-            "value": 68.06446675723686
+            "value": 68.06446675786718
           },
           "relative": false
         }
@@ -756,7 +756,7 @@ description: Artifact commands teapot.kcl
           "type": "line",
           "end": {
             "x": 76.0,
-            "y": 26.000499311889683,
+            "y": 26.00049931196408,
             "z": 0.0
           },
           "relative": false
@@ -772,17 +772,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 75.99919030466958,
-            "y": 42.009585878803605
+            "x": 75.99919030472901,
+            "y": 42.00958587870613
           },
-          "radius": 16.00908658739,
+          "radius": 16.009086587218125,
           "start": {
             "unit": "degrees",
-            "value": -89.99710213790831
+            "value": -89.99710213812098
           },
           "end": {
             "unit": "degrees",
-            "value": -35.82185999834313
+            "value": -35.82185999829223
           },
           "relative": false
         }
@@ -797,17 +797,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -50.620161662060966,
-            "y": 133.37964063275166
+            "x": -50.62016166208278,
+            "y": 133.37964063269538
           },
-          "radius": 172.15308154886043,
+          "radius": 172.15308154877854,
           "start": {
             "unit": "degrees",
-            "value": -35.81534019875075
+            "value": -35.815340198741296
           },
           "end": {
             "unit": "degrees",
-            "value": -12.625786280356959
+            "value": -12.62578628033617
           },
           "relative": false
         }
@@ -822,17 +822,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 105.43082650043208,
-            "y": 98.42880869334611
+            "x": 105.43082650048214,
+            "y": 98.42880869336953
           },
-          "radius": 12.23600524028406,
+          "radius": 12.236005240149465,
           "start": {
             "unit": "degrees",
-            "value": -12.646095484465219
+            "value": -12.646095484610653
           },
           "end": {
             "unit": "degrees",
-            "value": 82.15928075270669
+            "value": 82.15928075289283
           },
           "relative": false
         }
@@ -847,17 +847,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 74.0300266853582,
-            "y": -129.04000100584233
+            "x": 74.03002668531929,
+            "y": -129.0400010058408
           },
-          "radius": 241.86193871165915,
+          "radius": 241.8619387115584,
           "start": {
             "unit": "degrees",
-            "value": 82.14127126061135
+            "value": 82.14127126060059
           },
           "end": {
             "unit": "degrees",
-            "value": 93.54146675550037
+            "value": 93.54146675549106
           },
           "relative": false
         }
@@ -1457,7 +1457,7 @@ description: Artifact commands teapot.kcl
           "type": "line",
           "end": {
             "x": 32.0,
-            "y": 0.0008039422400929092,
+            "y": 0.0008039425706525841,
             "z": 0.0
           },
           "relative": false
@@ -1473,17 +1473,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 31.998413155782767,
-            "y": 44.77813284758896
+            "x": 31.998413155804794,
+            "y": 44.77813284784308
           },
-          "radius": 44.777328933466606,
+          "radius": 44.777328933390166,
           "start": {
             "unit": "degrees",
-            "value": -89.99796951987587
+            "value": -89.99796951990405
           },
           "end": {
             "unit": "degrees",
-            "value": 9.281333192150184
+            "value": 9.281333191817556
           },
           "relative": false
         }
@@ -1498,17 +1498,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -127.40971662853894,
-            "y": 18.719179520086378
+            "x": -127.40971662850977,
+            "y": 18.71917952005849
           },
-          "radius": 206.30138558033525,
+          "radius": 206.30138558029725,
           "start": {
             "unit": "degrees",
-            "value": 9.283579532922953
+            "value": 9.283579532928375
           },
           "end": {
             "unit": "degrees",
-            "value": 28.823929049447308
+            "value": 28.823929049388536
           },
           "relative": false
         }
@@ -1523,17 +1523,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 30.088942569708273,
-            "y": 105.39093731031544
+            "x": 30.088942569687372,
+            "y": 105.39093731036783
           },
-          "radius": 26.529804827333702,
+          "radius": 26.529804827300886,
           "start": {
             "unit": "degrees",
-            "value": 28.82305943152604
+            "value": 28.823059430864934
           },
           "end": {
             "unit": "degrees",
-            "value": 68.06337451277808
+            "value": 68.06337451336319
           },
           "relative": false
         }
@@ -1548,17 +1548,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 38.878877524200924,
-            "y": 127.21631148099318
+            "x": 38.878877523735774,
+            "y": 127.21631148117464
           },
-          "radius": 3.00088827362473,
+          "radius": 3.0008882736381723,
           "start": {
             "unit": "degrees",
-            "value": 68.06302874688565
+            "value": 68.06302874326995
           },
           "end": {
             "unit": "degrees",
-            "value": 258.0981296909007
+            "value": 258.0981296993544
           },
           "relative": false
         }
@@ -1573,17 +1573,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 35.238701762306846,
-            "y": 109.99085345695413
+            "x": 35.23870176267988,
+            "y": 109.9908534569449
           },
-          "radius": 14.604999999999992,
+          "radius": 14.605000000000004,
           "start": {
             "unit": "degrees",
-            "value": 78.0612201410056
+            "value": 78.06122014264044
           },
           "end": {
             "unit": "degrees",
-            "value": 34.108844281937756
+            "value": 34.10884428209282
           },
           "relative": false
         }
@@ -1598,17 +1598,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": -64.28983779360289,
-            "y": 42.58953036794827
+            "x": -64.2898377936933,
+            "y": 42.58953036826327
           },
-          "radius": 134.80844644256314,
+          "radius": 134.80844644276507,
           "start": {
             "unit": "degrees",
-            "value": 34.10639065423317
+            "value": 34.10639065402542
           },
           "end": {
             "unit": "degrees",
-            "value": 4.002850547906744
+            "value": 4.002850547770206
           },
           "relative": false
         }
@@ -1623,17 +1623,17 @@ description: Artifact commands teapot.kcl
         "segment": {
           "type": "arc",
           "center": {
-            "x": 27.02959088524959,
-            "y": 48.97950723029089
+            "x": 27.02959088528098,
+            "y": 48.97950723038204
           },
-          "radius": 43.2657249497252,
+          "radius": 43.26572494982126,
           "start": {
             "unit": "degrees",
-            "value": 4.003200834786816
+            "value": 4.003200834668363
           },
           "end": {
             "unit": "degrees",
-            "value": -83.40327497059413
+            "value": -83.4032749706403
           },
           "relative": false
         }

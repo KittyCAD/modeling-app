@@ -644,8 +644,8 @@ description: Artifact commands gallows-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.29289321881344815,
-          "y": 1251.7071067811862,
+          "x": 0.2928932188134521,
+          "y": 1251.7071067811864,
           "z": 0.0
         }
       }
@@ -666,8 +666,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.29289321881345,
-            "y": 1175.7071067811862,
+            "x": 76.29289321881346,
+            "y": 1175.7071067811864,
             "z": 0.0
           },
           "relative": false
@@ -683,8 +683,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.29289321881345,
-            "y": 1252.7071067811862,
+            "x": 76.29289321881346,
+            "y": 1252.7071067811864,
             "z": 0.0
           },
           "relative": false
@@ -700,8 +700,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.29289321881344144,
-            "y": 1252.7071067811862,
+            "x": 0.2928932188134516,
+            "y": 1252.7071067811864,
             "z": 0.0
           },
           "relative": false
@@ -717,8 +717,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.2928932188134455,
-            "y": 1251.7071067811862,
+            "x": 0.29289321881345187,
+            "y": 1251.7071067811864,
             "z": 0.0
           },
           "relative": false
@@ -1496,8 +1496,8 @@ description: Artifact commands gallows-bracket.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 0.29289321881344815,
-          "y": 0.29289321881345054,
+          "x": 0.2928932188134521,
+          "y": 0.29289321881345226,
           "z": 0.0
         }
       }
@@ -1518,7 +1518,7 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.29289321881345,
+            "x": 76.29289321881346,
             "y": 76.29289321881343,
             "z": 0.0
           },
@@ -1535,8 +1535,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 76.29289321881345,
-            "y": -0.7071067811865575,
+            "x": 76.29289321881346,
+            "y": -0.70710678118655,
             "z": 0.0
           },
           "relative": false
@@ -1552,8 +1552,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.29289321881344144,
-            "y": -0.7071067811865549,
+            "x": 0.2928932188134516,
+            "y": -0.7071067811865492,
             "z": 0.0
           },
           "relative": false
@@ -1569,8 +1569,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.2928932188134455,
-            "y": 0.2928932188134485,
+            "x": 0.29289321881345187,
+            "y": 0.29289321881345176,
             "z": 0.0
           },
           "relative": false
@@ -1841,7 +1841,7 @@ description: Artifact commands gallows-bracket.kcl
         "path": "[uuid]",
         "to": {
           "x": 417.00000001425,
-          "y": -37.500000013,
+          "y": -37.500000013000005,
           "z": 0.0
         }
       }
@@ -1868,11 +1868,11 @@ description: Artifact commands gallows-bracket.kcl
           "radius": 4.5000000008333245,
           "start": {
             "unit": "radians",
-            "value": -0.000000000555554417181656
+            "value": -0.000000000555555996165513
           },
           "end": {
             "unit": "radians",
-            "value": 6.2831853066240315
+            "value": 6.283185306624031
           },
           "relative": false
         }
@@ -2304,7 +2304,7 @@ description: Artifact commands gallows-bracket.kcl
         "path": "[uuid]",
         "to": {
           "x": -69.29289321881345,
-          "y": 0.29289321881345065,
+          "y": 0.29289321881345226,
           "z": 0.0
         }
       }
@@ -2325,7 +2325,7 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7071067811865586,
+            "x": 0.7071067811865533,
             "y": 70.29289321881343,
             "z": 0.0
           },
@@ -2342,8 +2342,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7071067811865619,
-            "y": -0.7071067811865505,
+            "x": 0.7071067811865548,
+            "y": -0.7071067811865536,
             "z": 0.0
           },
           "relative": false
@@ -2360,7 +2360,7 @@ description: Artifact commands gallows-bracket.kcl
           "type": "line",
           "end": {
             "x": -69.29289321881345,
-            "y": -0.7071067811865506,
+            "y": -0.7071067811865513,
             "z": 0.0
           },
           "relative": false
@@ -2377,7 +2377,7 @@ description: Artifact commands gallows-bracket.kcl
           "type": "line",
           "end": {
             "x": -69.29289321881345,
-            "y": 0.29289321881345004,
+            "y": 0.2928932188134511,
             "z": 0.0
           },
           "relative": false
@@ -2574,7 +2574,7 @@ description: Artifact commands gallows-bracket.kcl
         "path": "[uuid]",
         "to": {
           "x": -69.29289321881345,
-          "y": 629.6179284748406,
+          "y": 629.6179284748407,
           "z": 0.0
         }
       }
@@ -2595,8 +2595,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7071067811865586,
-            "y": 559.6179284748406,
+            "x": 0.7071067811865533,
+            "y": 559.6179284748407,
             "z": 0.0
           },
           "relative": false
@@ -2612,25 +2612,8 @@ description: Artifact commands gallows-bracket.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 0.7071067811865619,
-            "y": 630.6179284748406,
-            "z": 0.0
-          },
-          "relative": false
-        }
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "extend_path",
-        "path": "[uuid]",
-        "segment": {
-          "type": "line",
-          "end": {
-            "x": -69.29289321881345,
-            "y": 630.6179284748406,
+            "x": 0.7071067811865548,
+            "y": 630.6179284748407,
             "z": 0.0
           },
           "relative": false
@@ -2647,7 +2630,24 @@ description: Artifact commands gallows-bracket.kcl
           "type": "line",
           "end": {
             "x": -69.29289321881345,
-            "y": 629.6179284748406,
+            "y": 630.6179284748407,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -69.29289321881345,
+            "y": 629.6179284748407,
             "z": 0.0
           },
           "relative": false

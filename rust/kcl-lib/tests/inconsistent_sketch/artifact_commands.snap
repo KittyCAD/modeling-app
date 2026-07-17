@@ -68,8 +68,8 @@ description: Artifact commands inconsistent_sketch.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -2.647045280194847,
-          "y": 2.7895988582954967,
+          "x": -2.6470451105581825,
+          "y": 2.789598916417392,
           "z": 0.0
         }
       }
@@ -90,8 +90,8 @@ description: Artifact commands inconsistent_sketch.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": 1.6970452527459619,
-            "y": 2.090401141704503,
+            "x": 1.6970454036727465,
+            "y": 2.090401083582608,
             "z": 0.0
           },
           "relative": false
