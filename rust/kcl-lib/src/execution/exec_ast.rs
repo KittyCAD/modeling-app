@@ -3375,7 +3375,16 @@ impl Node<MemberExpression> {
                     None,
                 );
                 if let Some(value) = value_of_arr {
+                    // Indexing into the array was successful.
                     Ok(value.to_owned().continue_())
+                } else if ctx.no_engine_commands().await {
+                    // In mock execution, we handle OOB errors
+                    // by trying to get index 0. This is because the array value might have
+                    // come from the engine, so the array's actual length isn't
+                    // known during mock execution runtime. Because it's mock execution
+                    // the specific value is hopefully not important.
+                    let value = arr.first();
+                    value.map(|value| value.to_owned().continue_()).ok_or(oob_error)
                 } else {
                     Err(oob_error)
                 }
