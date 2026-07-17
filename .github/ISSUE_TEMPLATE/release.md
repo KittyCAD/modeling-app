@@ -188,3 +188,16 @@ Paste a link to the PR below or replace `???` with `N/A`.
 </details><br>
 
 Release PR: ???
+
+# Engine
+
+<details><summary>Instructions</summary><br>
+
+Merge the latest `kcl-lib` Dependabot PR [here](https://github.com/KittyCAD/engine/pulls?q=is%3Apr+documentation). If none are present, click **Check for updates** [here](https://github.com/KittyCAD/engine/network/updates/12085128/jobs).
+If kcl-lib is overriden (via the `patch.crates-io` section at the end), comment that out, and point it to the latest crates.io release in the usual `[dependencies]` section.
+
+Paste a link to the PR below or replace `???` with `N/A`.
+
+</details><br>
+
+Release PR: ???
