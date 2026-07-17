@@ -163,10 +163,10 @@ export type LayoutContributionResult = {
 }
 
 export type LayoutService = {
-  current: ReadonlySignal<Layout>
-  applyContribution: (
-    contribution: LayoutContribution
-  ) => LayoutContributionResult
+  signal: ReadonlySignal<Layout>
+  get: () => Layout
+  set: (layout: Layout) => void
+  reset: () => void
   applyContributions: (
     contributions: readonly LayoutContribution[]
   ) => LayoutContributionResult[]

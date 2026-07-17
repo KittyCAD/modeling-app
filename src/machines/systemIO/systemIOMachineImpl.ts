@@ -16,7 +16,6 @@ import {
   getProjectInfo,
   mkdirOrNOOP,
   readAppSettingsFile,
-  renameProjectDirectory,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
 import {
@@ -35,7 +34,7 @@ import {
 } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { sanitizeProjectName } from '@src/lib/projectName'
+import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
@@ -387,7 +386,9 @@ const sharedBulkDeleteWorkflow = async ({
     (f) => f.name === input.requestedProjectName
   )
 
-  if (!project) return Promise.reject(new Error("Couldn't find project"))
+  if (!project) {
+    return Promise.reject(new Error("Couldn't find project"))
+  }
 
   const filesInProject = await collectProjectFiles({
     selectedFileContents: '',
@@ -423,35 +424,6 @@ const sharedBulkDeleteWorkflow = async ({
 
   // How many files we deleted successfully
   return totalDeleted
-}
-
-export function getCloudProjectFolderRenameName({
-  title,
-  currentName,
-  folders,
-}: {
-  title: string
-  currentName: string
-  folders: Project[]
-}) {
-  const baseName = sanitizeProjectName(title, currentName)
-  const existingNames = new Set(
-    folders
-      .filter((folder) => folder.name !== currentName)
-      .map((folder) => folder.name.toLowerCase())
-  )
-  if (!existingNames.has(baseName.toLowerCase())) {
-    return baseName
-  }
-
-  let index = 2
-  let candidate = `${baseName}-${index}`
-  while (existingNames.has(candidate.toLowerCase())) {
-    index += 1
-    candidate = `${baseName}-${index}`
-  }
-
-  return candidate
 }
 
 export const systemIOMachineImpl = systemIOMachine.provide({
@@ -558,9 +530,15 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       async ({
         input,
       }: {
-        input: { context: SystemIOContext; requestedProjectName: string }
+        input: {
+          context: SystemIOContext
+          requestedProjectName: string
+          requestedProjectTitle?: string
+        }
       }) => {
         const requestedProjectName = input.requestedProjectName
+        const requestedProjectTitle =
+          input.requestedProjectTitle ?? requestedProjectName
         const projectDirectoryPath =
           input.context.projectDirectoryPath &&
           input.context.projectDirectoryPath !== NO_PROJECT_DIRECTORY
@@ -571,16 +549,22 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           requestedProjectName,
           projectDirectoryPath,
         })
+        const uniqueProjectTitle = getProjectTitleFromUniqueDirectoryName({
+          requestedProjectTitle,
+          requestedProjectDirectoryName: requestedProjectName,
+          uniqueProjectDirectoryName: uniqueName,
+        })
         await createNewProjectDirectory(
           uniqueName,
           await input.context.wasmInstancePromise,
           undefined,
           undefined,
           undefined,
-          projectDirectoryPath
+          projectDirectoryPath,
+          uniqueProjectTitle
         )
         return {
-          message: `Successfully created "${uniqueName}"`,
+          message: `Successfully created "${uniqueProjectTitle}"`,
           name: uniqueName,
         }
       }
@@ -601,69 +585,41 @@ export const systemIOMachineImpl = systemIOMachine.provide({
           return Promise.reject(new Error('no folders'))
         }
 
-        const requestedProjectName = input.requestedProjectName
-        const projectName = input.projectName
-        const project = folders.find((p) => p.name === projectName)
-        const existingDisplayName = project
-          ? getProjectDisplayName(project)
-          : projectName
-        if (project?.cloudProjectId) {
-          const currentProjectPath = fsZds.join(
-            input.context.projectDirectoryPath,
-            projectName
-          )
-          await writeProjectTitleToProjectToml(
-            currentProjectPath,
-            requestedProjectName
-          )
-
-          const newProjectName = getCloudProjectFolderRenameName({
-            title: requestedProjectName,
-            currentName: projectName,
-            folders,
-          })
-          let renamedProjectName = projectName
-          if (newProjectName !== projectName) {
-            await renameProjectDirectory(currentProjectPath, newProjectName)
-              .then(() => {
-                renamedProjectName = newProjectName
-              })
-              .catch(() => undefined)
-          }
-
-          return {
-            message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectName}"`,
-            oldName: projectName,
-            newName: renamedProjectName,
-            redirect: input.redirect,
-          }
-        }
-
-        let newProjectName: string = requestedProjectName
-        if (doesProjectNameNeedInterpolated(requestedProjectName)) {
-          const nextIndex = getNextProjectIndex(requestedProjectName, folders)
-          newProjectName = interpolateProjectNameWithIndex(
-            requestedProjectName,
-            nextIndex
-          )
-        }
-
-        // Toast an error if the project name is taken
-        if (folders.find((p) => p.name === newProjectName)) {
+        const requestedProjectTitle = input.requestedProjectName
+        const projectDirectoryName = input.projectName
+        const project = folders.find((p) => p.name === projectDirectoryName)
+        if (!project) {
           return Promise.reject(
-            new Error(`Project with name "${newProjectName}" already exists`)
+            new Error(`Project "${projectDirectoryName}" does not exist`)
           )
         }
 
-        await renameProjectDirectory(
-          fsZds.join(input.context.projectDirectoryPath, projectName),
-          newProjectName
+        const existingDisplayName = getProjectDisplayName(project)
+        const projectPath = fsZds.join(
+          input.context.projectDirectoryPath,
+          projectDirectoryName
         )
 
+        if (
+          folders.some(
+            (folder) =>
+              folder.name !== projectDirectoryName &&
+              getProjectDisplayName(folder) === requestedProjectTitle
+          )
+        ) {
+          return Promise.reject(
+            new Error(
+              `Project with title "${requestedProjectTitle}" already exists`
+            )
+          )
+        }
+
+        await writeProjectTitleToProjectToml(projectPath, requestedProjectTitle)
+
         return {
-          message: `Successfully renamed "${existingDisplayName}" to "${newProjectName}"`,
-          oldName: projectName,
-          newName: newProjectName,
+          message: `Successfully renamed "${existingDisplayName}" to "${requestedProjectTitle}"`,
+          oldName: projectDirectoryName,
+          newName: projectDirectoryName,
           redirect: input.redirect,
         }
       }
@@ -1007,7 +963,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       // if there are any siblings with the same name, report error.
       const entries = await fsZds.readdir(fsZds.dirname(newPath))
 
-      for (let entry of entries) {
+      for (const entry of entries) {
         if (entry === requestedFolderName) {
           return Promise.reject(new Error('Folder name already exists.'))
         }
@@ -1074,7 +1030,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
       // if there are any siblings with the same name, report error.
       const entries = await fsZds.readdir(fsZds.dirname(newPath))
 
-      for (let entry of entries) {
+      for (const entry of entries) {
         if (entry === requestedFileNameWithExtension) {
           return Promise.reject(new Error('Filename already exists.'))
         }
@@ -1111,7 +1067,7 @@ export const systemIOMachineImpl = systemIOMachine.provide({
         }
       }) => {
         await fsZds.rm(input.requestedPath, { recursive: true })
-        let response = {
+        const response = {
           message: 'File deleted successfully',
           requestedPath: input.requestedPath,
           requestedProjectName: input.requestedProjectName || '',

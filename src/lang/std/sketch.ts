@@ -36,8 +36,6 @@ import {
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/langHelpers'
-import { toolTips } from '@src/lang/langHelpers'
 import {
   mutateKwArg,
   removeKwArgs,
@@ -60,6 +58,8 @@ import type {
   SketchLineHelperKw,
   addCall,
 } from '@src/lang/std/stdTypes'
+import type { ToolTip } from '@src/lang/toolTips'
+import { toolTips } from '@src/lang/toolTips'
 import {
   findKwArg,
   findKwArgAny,

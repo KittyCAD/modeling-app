@@ -1,4 +1,3 @@
-import tsParser from '@typescript-eslint/parser'
 import { RuleTester } from 'eslint'
 import { afterAll, describe, it } from 'vitest'
 import rule from './no-codemirror-printable-keymap-keystrokes.mjs'
@@ -9,7 +8,6 @@ RuleTester.it = it
 
 const ruleTester = new RuleTester({
   languageOptions: {
-    parser: tsParser,
     ecmaVersion: 2022,
     sourceType: 'module',
   },

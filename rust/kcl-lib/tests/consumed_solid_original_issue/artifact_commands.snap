@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 520
 description: Artifact commands consumed_solid_original_issue.kcl
 ---
 {
