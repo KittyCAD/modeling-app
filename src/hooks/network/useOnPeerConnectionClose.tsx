@@ -2,8 +2,14 @@ import type { ConnectionManager } from '@src/network/connectionManager'
 import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
 
+export type EngineDisconnectEvent =
+  | EngineCommandManagerEvents.peerConnectionClosed
+  | EngineCommandManagerEvents.peerConnectionDisconnected
+  | EngineCommandManagerEvents.peerConnectionFailed
+  | EngineCommandManagerEvents.dataChannelClose
+
 export interface IUseOnPeerConnectionClose {
-  callback: () => void
+  callback: (eventType: EngineDisconnectEvent) => void
   engineCommandManager: ConnectionManager
 }
 /**
@@ -20,8 +26,8 @@ export function useOnPeerConnectionClose({
 }: IUseOnPeerConnectionClose) {
   useEffect(() => {
     // same failure handler for all for now
-    const onFailure: EventListener = () => {
-      callback()
+    const onFailure: EventListener = (event) => {
+      callback(event.type as EngineDisconnectEvent)
     }
 
     engineCommandManager.addEventListener(
