@@ -6,7 +6,7 @@ import env, { getEnvironmentNameFromEnv } from '@src/env'
 import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import {
   readProjectSettingsFile,
-  writeProjectSettingsFile,
+  overwriteProjectTomlWithNewSettings,
 } from '@src/lib/desktop'
 import fsZds from '@src/lib/fs-zds'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
@@ -380,7 +380,7 @@ async function persistCloudProjectIdForEnvironment(
       return serialized
     }
 
-    await writeProjectSettingsFile(projectPath, serialized)
+    await overwriteProjectTomlWithNewSettings(projectPath, serialized)
     return true
   } catch (error) {
     return new Error(

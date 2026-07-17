@@ -152,7 +152,7 @@ import {
   themeCompartment,
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
-import { zookeeperHistoryExtension } from '@src/editor/plugins/zookeeper'
+import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'

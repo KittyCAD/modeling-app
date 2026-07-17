@@ -27,6 +27,7 @@ import {
   desktopSafePathJoin,
   desktopSafePathSplit,
   enforceFileEXT,
+  fileNameHasExtension,
   getEXTWithPeriod,
   getParentAbsolutePath,
   joinOSPaths,
@@ -1276,6 +1277,43 @@ export const ProjectExplorer = ({
                   }
                 }
               }
+            } else if (row.isFake) {
+              // create a new file. Respect a user-typed extension, otherwise
+              // assume the file is KCL.
+              const fileName = fileNameHasExtension(requestedName)
+                ? requestedName
+                : requestedName + FILE_EXT
+              const requestedAbsolutePath = joinOSPaths(
+                getParentAbsolutePath(row.path),
+                fileName
+              )
+
+              if (fileName.endsWith(FILE_EXT) && file && canNavigate) {
+                // Create the KCL file and navigate to (open) it in the editor.
+                const pathRelativeToParent = parentPathRelativeToProject(
+                  requestedAbsolutePath,
+                  overrideApplicationProjectDirectory ||
+                    applicationProjectDirectory
+                )
+                sendFileTreeMutationEvent({
+                  type: SystemIOMachineEvents.importFileFromURL,
+                  data: {
+                    requestedCode: '',
+                    requestedProjectName: project.name,
+                    requestedFileNameWithExtension: pathRelativeToParent,
+                  },
+                })
+              } else {
+                // Create a blank file. The actor seeds default KCL content only
+                // for .kcl files and writes an empty file for everything else,
+                // so non-KCL files (.md, .txt, ...) don't get KCL boilerplate.
+                sendFileTreeMutationEvent({
+                  type: SystemIOMachineEvents.createBlankFile,
+                  data: {
+                    requestedAbsolutePath,
+                  },
+                })
+              }
             } else {
               // rename a file
               const originalExt = getEXTWithPeriod(name)
@@ -1288,62 +1326,27 @@ export const ProjectExplorer = ({
                 return
               }
 
-              const pathRelativeToParent = parentPathRelativeToProject(
-                joinOSPaths(
-                  getParentAbsolutePath(row.path),
-                  fileNameForcedWithOriginalExt
-                ),
-                overrideApplicationProjectDirectory ||
-                  applicationProjectDirectory
+              const requestedAbsoluteFilePathWithExtension = joinOSPaths(
+                getParentAbsolutePath(row.path),
+                name
               )
-
-              if (row.isFake) {
-                // create a file if it is fake and navigate to that file!
-                if (file && canNavigate) {
-                  sendFileTreeMutationEvent({
-                    type: SystemIOMachineEvents.importFileFromURL,
-                    data: {
-                      requestedCode: '',
-                      requestedProjectName: project.name,
-                      requestedFileNameWithExtension: pathRelativeToParent,
-                    },
-                  })
-                } else {
-                  const requestedAbsolutePath = joinOSPaths(
-                    getParentAbsolutePath(row.path),
-                    fileNameForcedWithOriginalExt
-                  )
-                  sendFileTreeMutationEvent({
-                    type: SystemIOMachineEvents.createBlankFile,
-                    data: {
-                      requestedAbsolutePath,
-                    },
-                  })
-                }
-              } else {
-                const requestedAbsoluteFilePathWithExtension = joinOSPaths(
-                  getParentAbsolutePath(row.path),
-                  name
-                )
-                // If your router loader is within the file you are renaming then reroute to the new path on disk
-                // If you are renaming a file you are not loaded into, do not reload!
-                const shouldWeNavigate =
-                  requestedAbsoluteFilePathWithExtension === file?.path &&
-                  canNavigate
-                sendFileTreeMutationEvent({
-                  type: shouldWeNavigate
-                    ? SystemIOMachineEvents.renameFileAndNavigateToFile
-                    : SystemIOMachineEvents.renameFile,
-                  data: {
-                    requestedFileNameWithExtension:
-                      fileNameForcedWithOriginalExt,
-                    fileNameWithExtension: name,
-                    absolutePathToParentDirectory: getParentAbsolutePath(
-                      row.path
-                    ),
-                  },
-                })
-              }
+              // If your router loader is within the file you are renaming then reroute to the new path on disk
+              // If you are renaming a file you are not loaded into, do not reload!
+              const shouldWeNavigate =
+                requestedAbsoluteFilePathWithExtension === file?.path &&
+                canNavigate
+              sendFileTreeMutationEvent({
+                type: shouldWeNavigate
+                  ? SystemIOMachineEvents.renameFileAndNavigateToFile
+                  : SystemIOMachineEvents.renameFile,
+                data: {
+                  requestedFileNameWithExtension: fileNameForcedWithOriginalExt,
+                  fileNameWithExtension: name,
+                  absolutePathToParentDirectory: getParentAbsolutePath(
+                    row.path
+                  ),
+                },
+              })
             }
           },
         }
