@@ -1,6 +1,6 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-description: Lints sketch_on_face_index.kcl
+description: Lints surface_extrude_edge_from_surface.kcl
 ---
 [
   {
@@ -11,10 +11,10 @@ description: Lints sketch_on_face_index.kcl
       "experimental": false,
       "family": "simplify"
     },
-    "description": "fillet uses 'tags'; prefer edges",
+    "description": "extrude uses target with deprecated edge stdlib; prefer edge specifier { sideFaces = [...] }",
     "pos": [
-      332,
-      382,
+      713,
+      771,
       0
     ],
     "overridden": false,

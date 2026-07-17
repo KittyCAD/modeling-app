@@ -498,6 +498,16 @@ async fn inner_extrude(
                 ))
             })
         };
+        if is_edge
+            && let Some(edge_id) = sketch_or_face_id
+            && let Some(target_source_range) = args.unlabeled_kw_arg_unconverted().map(|arg| arg.source_range)
+            && let Some(pending) = exec_state.pending_edge_refactor_meta(edge_id, target_source_range)
+            && let Ok(meta) =
+                edge::get_refactor_meta_for_edge(exec_state, edge_id, &args, pending.source_range, pending.stdlib_fn)
+                    .await
+        {
+            exec_state.record_edge_refactor_meta(meta);
+        }
         let cmd = match (
             &twist_angle,
             &twist_angle_step,
@@ -553,18 +563,21 @@ async fn inner_extrude(
                     .build(),
             ),
             (None, None, None, Some(length), None, Some(dir)) => {
-                let direction3d = match dir {
-                    Point3dOrEdgeReference::Point(p) => Some(DirectionType::Axis {
-                        direction: KPoint3d {
-                            x: p[0].n,
-                            y: p[1].n,
-                            z: p[2].n,
-                        },
-                    }),
-                    Point3dOrEdgeReference::Edge(edge) => Some(match edge {
-                        crate::std::fillet::EdgeReference::Uuid(uuid) => DirectionType::Edge { id: *uuid },
-                        crate::std::fillet::EdgeReference::Tag(tag) => DirectionType::Edge {
-                            id: match tag.get_cur_info() {
+                let (direction3d, direction_edge_id) = match dir {
+                    Point3dOrEdgeReference::Point(p) => (
+                        Some(DirectionType::Axis {
+                            direction: KPoint3d {
+                                x: p[0].n,
+                                y: p[1].n,
+                                z: p[2].n,
+                            },
+                        }),
+                        None,
+                    ),
+                    Point3dOrEdgeReference::Edge(edge) => {
+                        let edge_id = match edge {
+                            crate::std::fillet::EdgeReference::Uuid(uuid) => *uuid,
+                            crate::std::fillet::EdgeReference::Tag(tag) => match tag.get_cur_info() {
                                 Some(info) => info.id,
                                 None => {
                                     return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -573,10 +586,25 @@ async fn inner_extrude(
                                     )));
                                 }
                             },
-                        },
-                    }),
-                    Point3dOrEdgeReference::EdgeSpecifier(_) => None,
+                        };
+                        (Some(DirectionType::Edge { id: edge_id }), Some(edge_id))
+                    }
+                    Point3dOrEdgeReference::EdgeSpecifier(_) => (None, None),
                 };
+                if let Some(edge_id) = direction_edge_id
+                    && let Some(direction_source_range) = args.labeled.get("direction").map(|arg| arg.source_range)
+                    && let Some(pending) = exec_state.pending_edge_refactor_meta(edge_id, direction_source_range)
+                    && let Ok(meta) = edge::get_refactor_meta_for_edge(
+                        exec_state,
+                        edge_id,
+                        &args,
+                        pending.source_range,
+                        pending.stdlib_fn,
+                    )
+                    .await
+                {
+                    exec_state.record_edge_refactor_meta(meta);
+                }
                 let direction_reference = match dir {
                     Point3dOrEdgeReference::EdgeSpecifier(spec) => {
                         Some(edge::resolve_edge_specifier_with_face_tags(spec, None, exec_state, &args).await?)
