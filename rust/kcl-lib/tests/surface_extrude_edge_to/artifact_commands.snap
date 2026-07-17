@@ -311,6 +311,15 @@ description: Artifact commands surface_extrude_edge_to.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "extrude_to_reference",
         "target": "[uuid]",
         "reference": {
