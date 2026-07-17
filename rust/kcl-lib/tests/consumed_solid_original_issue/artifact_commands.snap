@@ -68,8 +68,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": -0.00000000000000002975157815015101,
-          "y": -0.00000000000000007071155120770782,
+          "x": 0.00000000000000004751442319125145,
+          "y": -0.00000000000000001251222676741394,
           "z": 0.0
         }
       }
@@ -91,7 +91,7 @@ description: Artifact commands consumed_solid_original_issue.kcl
           "type": "line",
           "end": {
             "x": 15.0,
-            "y": -0.0000000000000000632469873332456,
+            "y": -0.000000000000000049629976485344605,
             "z": 0.0
           },
           "relative": false
@@ -130,7 +130,7 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.500000000000001,
+          "x": 7.500000000000002,
           "y": 12.990381056766578,
           "z": 0.0
         }
@@ -145,8 +145,8 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "segment": {
           "type": "line",
           "end": {
-            "x": -0.00000000000000010101505859054963,
-            "y": -0.00000000000000010359148424832314,
+            "x": 0.00000000000000007000425470851272,
+            "y": -0.0000000000000000022143988957514074,
             "z": 0.0
           },
           "relative": false
@@ -160,7 +160,7 @@ description: Artifact commands consumed_solid_original_issue.kcl
         "type": "move_path_pen",
         "path": "[uuid]",
         "to": {
-          "x": 7.500000000000001,
+          "x": 7.500000000000002,
           "y": 12.990381056766578,
           "z": 0.0
         }
@@ -178,7 +178,7 @@ description: Artifact commands consumed_solid_original_issue.kcl
             "x": 17.67766952966369,
             "y": 17.67766952966368
           },
-          "radius": 11.205160877167216,
+          "radius": 11.205160877167215,
           "start": {
             "unit": "degrees",
             "value": -155.2717389682246
@@ -786,6 +786,264 @@ description: Artifact commands consumed_solid_original_issue.kcl
           "[uuid]"
         ],
         "tool_ids": [
+          "[uuid]"
+        ],
+        "separate_bodies": false,
+        "tolerance": 0.0000001
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "make_plane",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "x_axis": {
+          "x": 1.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "y_axis": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 1.0
+        },
+        "size": 100.0,
+        "clobber": false,
+        "hide": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "plane_set_color",
+        "plane_id": "[uuid]",
+        "color": {
+          "r": 0.6,
+          "g": 0.6,
+          "b": 0.6,
+          "a": 0.3
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "enable_sketch_mode",
+        "entity_id": "[uuid]",
+        "ortho": false,
+        "animated": false,
+        "adjust_camera": false,
+        "planar_normal": {
+          "x": 0.0,
+          "y": -1.0,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "start_path"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "move_path_pen",
+        "path": "[uuid]",
+        "to": {
+          "x": -0.00000000000000000000420770827310535,
+          "y": 0.0000000000000000000000000000000000000000000000000000000000035782337847701565,
+          "z": 0.0
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "sketch_mode_disable"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 17.22059756513262,
+            "y": 0.0000000000000000000000000000000000000000000000000000000000046672614583958563,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": 17.22059756513262,
+            "y": 34.80477969331079,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "arc",
+          "center": {
+            "x": 2.0412659549877077,
+            "y": 34.80437917672039
+          },
+          "radius": 15.17933161542886,
+          "start": {
+            "unit": "degrees",
+            "value": 0.0015117866082072103
+          },
+          "end": {
+            "unit": "degrees",
+            "value": 97.72835929947483
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "extend_path",
+        "path": "[uuid]",
+        "segment": {
+          "type": "line",
+          "end": {
+            "x": -0.0000000000000000000084154165462107,
+            "y": 0.0000000000000000000000000000000000000000000000000000000000049784122222889134,
+            "z": 0.0
+          },
+          "relative": false
+        }
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_visible",
+        "object_id": "[uuid]",
+        "hidden": true
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "create_region",
+        "object_id": "[uuid]",
+        "segment": "[uuid]",
+        "intersection_segment": "[uuid]",
+        "intersection_index": -1,
+        "curve_clockwise": false
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "revolve",
+        "target": "[uuid]",
+        "origin": {
+          "x": 0.0,
+          "y": 0.0,
+          "z": 0.0
+        },
+        "axis": {
+          "x": 0.0,
+          "y": 1.0,
+          "z": 0.0
+        },
+        "axis_is_2d": true,
+        "angle": {
+          "unit": "degrees",
+          "value": 360.0
+        },
+        "tolerance": 0.0000001,
+        "opposite": "None",
+        "body_type": "solid"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "object_bring_to_front",
+        "object_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_extrusion_face_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_adjacency_info",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "boolean_intersection",
+        "solid_ids": [
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
+          "[uuid]",
           "[uuid]"
         ],
         "separate_bodies": false,
