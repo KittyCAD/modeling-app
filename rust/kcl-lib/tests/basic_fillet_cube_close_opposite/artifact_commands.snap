@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 505
 description: Artifact commands basic_fillet_cube_close_opposite.kcl
 ---
 {
@@ -208,9 +207,8 @@ description: Artifact commands basic_fillet_cube_close_opposite.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
     },
@@ -231,16 +229,8 @@ description: Artifact commands basic_fillet_cube_close_opposite.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

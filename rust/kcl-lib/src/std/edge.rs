@@ -125,10 +125,7 @@ pub(crate) async fn get_refactor_meta_for_edge(
         ))
     })?;
     let response = exec_state
-        .send_untracked_modeling_cmd(
-            ModelingCmdMeta::from_args(exec_state, args),
-            ModelingCmd::from(query),
-        )
+        .send_untracked_modeling_cmd(ModelingCmdMeta::from_args(exec_state, args), ModelingCmd::from(query))
         .await?;
     let OkWebSocketResponseData::Modeling {
         modeling_response: OkModelingCmdResponse::QueryEntityType(info),

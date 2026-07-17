@@ -334,10 +334,10 @@ description: Artifact commands fillet-and-shell.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -353,10 +353,10 @@ description: Artifact commands fillet-and-shell.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-      }
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -372,14 +372,10 @@ description: Artifact commands fillet-and-shell.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-<<<<<<< HEAD
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
-=======
-      }
     },
     {
       "cmdId": "[uuid]",
@@ -390,21 +386,15 @@ description: Artifact commands fillet-and-shell.kcl
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
->>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-<<<<<<< HEAD
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
-=======
-      }
->>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
@@ -413,12 +403,8 @@ description: Artifact commands fillet-and-shell.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-<<<<<<< HEAD
       },
       "omitFromGraph": true
-=======
-      }
->>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
@@ -427,11 +413,8 @@ description: Artifact commands fillet-and-shell.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-<<<<<<< HEAD
       },
       "omitFromGraph": true
-=======
-      }
     },
     {
       "cmdId": "[uuid]",
@@ -440,7 +423,8 @@ description: Artifact commands fillet-and-shell.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -449,8 +433,8 @@ description: Artifact commands fillet-and-shell.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
->>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

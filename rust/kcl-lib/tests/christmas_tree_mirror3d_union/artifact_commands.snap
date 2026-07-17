@@ -299,6 +299,15 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
         "face_ids": [
@@ -311,6 +320,15 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_get_common_edge",
         "object_id": "[uuid]",
         "face_ids": [
@@ -323,15 +341,10 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_all_edge_faces",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]"
-<<<<<<< HEAD
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
       },
       "omitFromGraph": true
-=======
-      }
->>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
@@ -340,12 +353,8 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-<<<<<<< HEAD
       },
       "omitFromGraph": true
-=======
-      }
->>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
     },
     {
       "cmdId": "[uuid]",
@@ -354,12 +363,18 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
         "type": "solid3d_get_all_edge_faces",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-<<<<<<< HEAD
       },
       "omitFromGraph": true
-=======
-      }
->>>>>>> parent of 612300545f (Fix lazy Z0006 edge refactor metadata)
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_all_edge_faces",
+        "object_id": "[uuid]",
+        "edge_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
