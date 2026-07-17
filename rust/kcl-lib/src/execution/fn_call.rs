@@ -1872,4 +1872,32 @@ x = f(1)
             "unused deprecated parameter should not warn: {warnings:#?}"
         );
     }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecated_calls_inside_kcl_stdlib_do_not_warn() {
+        let program = include_str!("../../tests/cube_with_hole/input.kcl");
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert!(
+            warnings.is_empty(),
+            "KCL stdlib internals should not emit deprecation warnings: {warnings:#?}"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deprecated_stdlib_call_from_user_code_still_warns() {
+        let program = r#"@settings(kclVersion = 2.0)
+plane = startSketchOn(XY)
+"#;
+
+        let result = parse_execute(program).await.unwrap();
+        let warnings = deprecation_warnings(&result);
+        assert_eq!(warnings.len(), 1, "expected one deprecation warning, got {warnings:#?}");
+        assert!(
+            warnings[0].message.contains("`startSketchOn` is deprecated"),
+            "found {}",
+            warnings[0].message
+        );
+    }
 }
