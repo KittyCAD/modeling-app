@@ -625,6 +625,40 @@ yo = extrude(
 )
 `
 
+const KCL_EXTRUDE_TARGET_AND_DIRECTION_GET_EDGE = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var -4.43mm, var 3.28mm], end = [var 3.16mm, var 3.28mm])
+  line2 = line(start = [var 3.16mm, var 3.28mm], end = [var 3.16mm, var -3.45mm])
+  line3 = line(start = [var 3.16mm, var -3.45mm], end = [var -4.43mm, var -3.45mm])
+  line4 = line(start = [var -4.43mm, var -3.45mm], end = [var -4.43mm, var 3.28mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+}
+hidden001 = hide(sketch001)
+region001 = region(point = [-0.635mm, 3.2775mm], sketch = sketch001)
+extrude001 = extrude(region001, length = 5)
+extrude002 = extrude(
+  getNextAdjacentEdge(extrude001.sketch.tags.line3),
+  length = 5,
+  direction = getOppositeEdge(extrude001.sketch.tags.line3),
+  method = NEW,
+  bodyType = SURFACE,
+)
+`
+
+const KCL_EXTRUDE_TARGET_AND_DIRECT_SEGMENT_DIRECTION =
+  KCL_EXTRUDE_TARGET_AND_DIRECTION_GET_EDGE.replace(
+    'direction = getOppositeEdge(extrude001.sketch.tags.line3)',
+    'direction = sketch001.line3'
+  )
+
 const KCL_EDGE_ID = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
   |> line(endAbsolute = [10, 0])
@@ -1572,6 +1606,42 @@ part = bracket()
         const n = norm(refactored)
         expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
         expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
+      }
+    )
+
+    it(
+      'refactors deprecated edge helpers in both the extrude target and direction',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_EXTRUDE_TARGET_AND_DIRECTION_GET_EDGE
+        )
+        const normalized = norm(refactored)
+        expect(normalized).not.toContain('getNextAdjacentEdge(')
+        expect(normalized).not.toContain('getOppositeEdge(')
+        expect(normalized).toContain('extrude( { sideFaces = [')
+        expect(normalized).toContain('direction = { sideFaces = [')
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
+      'refactors a direct sketch segment used as the extrude direction',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_EXTRUDE_TARGET_AND_DIRECT_SEGMENT_DIRECTION
+        )
+        const normalized = norm(refactored)
+        expect(normalized).not.toContain('direction = sketch001.line3')
+        expect(normalized).toContain('direction = { sideFaces = [')
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
       }
     )
 

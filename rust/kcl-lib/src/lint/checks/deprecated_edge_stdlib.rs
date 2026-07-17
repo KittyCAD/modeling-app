@@ -97,11 +97,21 @@ fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Pro
         arguments.push("target");
     }
     for label in ["to", "direction"] {
-        if get_arg(call, label).is_some_and(|expr| is_deprecated_edge_stdlib_or_variable_expr(expr, prog)) {
+        if get_arg(call, label).is_some_and(|expr| {
+            is_deprecated_edge_stdlib_or_variable_expr(expr, prog)
+                || (label == "direction" && is_direct_sketch_segment_ref(expr))
+        }) {
             arguments.push(label);
         }
     }
     arguments
+}
+
+fn is_direct_sketch_segment_ref(expr: &Expr) -> bool {
+    let Expr::MemberExpression(member) = expr else {
+        return false;
+    };
+    matches!((&member.object, &member.property), (Expr::Name(_), Expr::Name(_)))
 }
 
 fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
@@ -482,6 +492,17 @@ extrude(profile, length = 5, direction = directionEdge)
             1,
             "Z0006 fires for an extrude direction using deprecated edge stdlib"
         );
+        assert!(z0006[0].description.contains("direction"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_direct_segment_direction() {
+        let kcl = r#"extrude(profile, length = 5, direction = sketch001.line3)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for a direct segment direction");
         assert!(z0006[0].description.contains("direction"));
     }
 

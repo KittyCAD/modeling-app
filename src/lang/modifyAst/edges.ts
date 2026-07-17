@@ -30,6 +30,7 @@ import {
   getRegionSketchTagExprFromSourceSurface,
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
+  getSketchVariableNameForSegment,
   getVariableExprsFromSelection,
   locateVariableWithCallOrPipe,
   traverse,
@@ -1592,7 +1593,9 @@ function findExtrudeEdgeArgumentExpr(
 
 export function findExtrudeEdgeCallsToFix(
   program: Node<Program>,
-  edgeRefactorMetadata: EdgeRefactorMeta[]
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph?: ArtifactGraph,
+  wasmInstance?: ModuleType
 ): ExtrudeEdgeCallToFix[] {
   const results: ExtrudeEdgeCallToFix[] = []
 
@@ -1610,7 +1613,23 @@ export function findExtrudeEdgeCallsToFix(
         const deprecatedCall = expr
           ? findDeprecatedEdgeStdlibCallFromExpr(program, expr, pathToNode)
           : null
-        if (!deprecatedCall) continue
+        if (!deprecatedCall) {
+          if (
+            argument === 'direction' &&
+            expr &&
+            artifactGraph &&
+            wasmInstance
+          ) {
+            const payload = directSketchSegmentEdgePayload(
+              program,
+              expr,
+              artifactGraph,
+              wasmInstance
+            )
+            if (payload) replacements.push({ argument, payload })
+          }
+          continue
+        }
 
         const inner = deprecatedCall.call
         const meta = edgeRefactorMetadata.find((m) =>
@@ -1634,6 +1653,52 @@ export function findExtrudeEdgeCallsToFix(
   })
 
   return results
+}
+
+function directSketchSegmentEdgePayload(
+  program: Node<Program>,
+  expr: Expr,
+  artifactGraph: ArtifactGraph,
+  wasmInstance: ModuleType
+): FilletEdgeRefPayload | null {
+  if (
+    expr.type !== 'MemberExpression' ||
+    expr.object.type !== 'Name' ||
+    expr.property.type !== 'Name'
+  ) {
+    return null
+  }
+
+  const sketchName = expr.object.name.name
+  const segmentName = expr.property.name.name
+  const originalSegment = [...artifactGraph.values()].find(
+    (artifact) =>
+      artifact.type === 'segment' &&
+      !artifact.originalSegId &&
+      getSketchSegmentName(
+        program,
+        artifact.id,
+        artifactGraph,
+        wasmInstance
+      ) === segmentName &&
+      getSketchVariableNameForSegment(
+        program,
+        artifact.id,
+        artifactGraph,
+        wasmInstance
+      ) === sketchName
+  )
+  if (!originalSegment || originalSegment.type !== 'segment') return null
+
+  const regionSegment = [...artifactGraph.values()].find(
+    (artifact) =>
+      artifact.type === 'segment' &&
+      artifact.originalSegId === originalSegment.id &&
+      artifact.commonSurfaceIds.length === 2
+  )
+  if (!regionSegment || regionSegment.type !== 'segment') return null
+
+  return { side_faces: regionSegment.commonSurfaceIds }
 }
 
 export function findExtrudeToCallsToFix(
@@ -2004,7 +2069,12 @@ export function refactorZ0006Unified(
     sourceRange
   )
   const toFixExtrudeEdges = filterCallsBySourceRange(
-    findExtrudeEdgeCallsToFix(ast, edgeRefactorMetadata),
+    findExtrudeEdgeCallsToFix(
+      ast,
+      edgeRefactorMetadata,
+      artifactGraph,
+      wasmInstance
+    ),
     sourceRange
   )
   const toFixGdtEdges = filterCallsBySourceRange(

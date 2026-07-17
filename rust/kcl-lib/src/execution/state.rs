@@ -897,7 +897,23 @@ impl ExecState {
         self.mod_local.artifacts.pending_edge_refactor_metadata.push(meta);
     }
 
-    pub(crate) fn pending_edge_refactor_meta(&self, edge_id: Uuid) -> Option<PendingEdgeRefactorMeta> {
+    pub(crate) fn pending_edge_refactor_meta(
+        &self,
+        edge_id: Uuid,
+        argument_source_range: SourceRange,
+    ) -> Option<PendingEdgeRefactorMeta> {
+        if let Some(pending) = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .find(|meta| meta.edge_id == edge_id && argument_source_range.contains_range(&meta.source_range))
+        {
+            return Some(pending.clone());
+        }
+
+        // A helper assigned to a variable is outside the argument's source
+        // range. Fall back to the edge ID only when it identifies one helper.
         let mut matches = self
             .mod_local
             .artifacts
