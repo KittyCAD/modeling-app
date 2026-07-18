@@ -15,6 +15,11 @@ import {
   VERCEL_PLAYWRIGHT_TOKEN_QUERY_PARAM,
 } from '@src/lib/constants'
 import {
+  ClientErrorCode,
+  errorToMessage,
+  reportClientError,
+} from '@src/lib/clientErrors'
+import {
   readEnvironmentConfigurationKittycadWebSocketUrl,
   readEnvironmentConfigurationMlephantWebSocketUrl,
 } from '@src/lib/desktop'
@@ -29,7 +34,49 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { createKCClient, kcCall } from '@src/lib/kcClient'
 import { mark, markOnce } from '@src/lib/performance'
 import { withAPIBaseURL } from '@src/lib/withBaseURL'
+import { xstateEventError } from '@src/machines/utils'
 import { assign, fromPromise, setup } from 'xstate'
+
+const NO_TOKEN_FOUND_MESSAGE = 'No token found'
+
+type AuthClientErrorReportArgs = {
+  code: ClientErrorCode
+  error?: unknown
+  message?: string
+  dedupeKeyPrefix: string
+  extra?: Record<string, unknown>
+  suppressWhenOffline?: boolean
+}
+
+export function reportAuthClientError({
+  code,
+  error,
+  message,
+  dedupeKeyPrefix,
+  extra,
+  suppressWhenOffline,
+}: AuthClientErrorReportArgs) {
+  const online = typeof navigator === 'undefined' ? undefined : navigator.onLine
+  if (suppressWhenOffline && online === false) return
+
+  const reportMessage = message ?? errorToMessage(error, 'Unknown auth error')
+
+  void reportClientError({
+    code,
+    message: reportMessage,
+    error,
+    dedupeKey: `${dedupeKeyPrefix}:${reportMessage}`,
+    extra: {
+      source: 'AuthMachine',
+      ...extra,
+      online,
+    },
+  })
+}
+
+function isNoTokenFoundError(error: unknown) {
+  return error instanceof Error && error.message === NO_TOKEN_FOUND_MESSAGE
+}
 
 export interface UserContext {
   user?: UserResponse
@@ -93,9 +140,26 @@ export const authMachine = setup({
         onError: [
           {
             target: 'loggedOut',
-            actions: assign({
-              user: () => undefined,
-            }),
+            actions: [
+              ({ context, event }) => {
+                const error = xstateEventError(event)
+                if (isNoTokenFoundError(error)) return
+
+                reportAuthClientError({
+                  code: ClientErrorCode.AuthGetUserError,
+                  error,
+                  dedupeKeyPrefix: 'AuthMachine:get-user',
+                  suppressWhenOffline: true,
+                  extra: {
+                    eventType: event.type,
+                    hasContextToken: Boolean(context.token),
+                  },
+                })
+              },
+              assign({
+                user: () => undefined,
+              }),
+            ],
           },
         ],
       },
@@ -122,6 +186,16 @@ export const authMachine = setup({
                 'Error while logging out',
                 'error' in event ? `: ${event.error}` : ''
               )
+              const error = xstateEventError(event)
+              reportAuthClientError({
+                code: ClientErrorCode.AuthLogoutError,
+                error,
+                dedupeKeyPrefix: 'AuthMachine:logout',
+                extra: {
+                  eventType: event.type,
+                  logoutScope: 'current-environment',
+                },
+              })
             },
           ],
         },
@@ -139,6 +213,16 @@ export const authMachine = setup({
                 'Error while logging out',
                 'error' in event ? `: ${event.error}` : ''
               )
+              const error = xstateEventError(event)
+              reportAuthClientError({
+                code: ClientErrorCode.AuthLogoutError,
+                error,
+                dedupeKeyPrefix: 'AuthMachine:logout-all',
+                extra: {
+                  eventType: event.type,
+                  logoutScope: 'all-environments',
+                },
+              })
             },
           ],
         },
@@ -205,6 +289,16 @@ async function getUser(input: { token?: string }) {
     token = await getAndSyncStoredToken(input)
   } catch (e) {
     console.error(e)
+    reportAuthClientError({
+      code: ClientErrorCode.AuthTokenSyncError,
+      error: e,
+      dedupeKeyPrefix: 'AuthMachine:token-sync',
+      extra: {
+        hasInputToken: Boolean(input.token),
+        environment: env().VITE_ZOO_BASE_DOMAIN,
+        isDesktop: isDesktop(),
+      },
+    })
   }
   const client = createKCClient(token)
 
@@ -219,7 +313,7 @@ async function getUser(input: { token?: string }) {
     }
   }
 
-  if (!token) return Promise.reject(new Error('No token found'))
+  if (!token) return Promise.reject(new Error(NO_TOKEN_FOUND_MESSAGE))
 
   const me = await kcCall(() => users.get_user_self({ client }))
   if (me instanceof Error) return Promise.reject(me)
@@ -376,7 +470,17 @@ async function logoutEnvironment(requestedDomain?: string) {
     if (domain) {
       token = await readEnvironmentConfigurationToken(domain)
     } else {
-      return new Error('Unable to logout, cannot find domain')
+      const error = new Error('Unable to logout, cannot find domain')
+      reportAuthClientError({
+        code: ClientErrorCode.AuthLogoutError,
+        error,
+        dedupeKeyPrefix: 'AuthMachine:logout-missing-domain',
+        extra: {
+          requestedDomain,
+          hasRequestedDomain: Boolean(requestedDomain),
+        },
+      })
+      return error
     }
 
     if (token) {
@@ -392,7 +496,7 @@ async function logoutEnvironment(requestedDomain?: string) {
         })()
 
         const client = createKCClient(token, apiUrlBase)
-        await kcCall(() =>
+        const revokeResult = await kcCall(() =>
           oauth2.oauth2_token_revoke({
             client,
             body: {
@@ -401,8 +505,30 @@ async function logoutEnvironment(requestedDomain?: string) {
             },
           })
         )
+        if (revokeResult instanceof Error) {
+          reportAuthClientError({
+            code: ClientErrorCode.AuthTokenRevokeError,
+            error: revokeResult,
+            dedupeKeyPrefix: 'AuthMachine:token-revoke',
+            extra: {
+              domain,
+              requestedDomain,
+              hasToken: true,
+            },
+          })
+        }
       } catch (e) {
         console.error('Error revoking token:', e)
+        reportAuthClientError({
+          code: ClientErrorCode.AuthTokenRevokeError,
+          error: e,
+          dedupeKeyPrefix: 'AuthMachine:token-revoke',
+          extra: {
+            domain,
+            requestedDomain,
+            hasToken: true,
+          },
+        })
       }
 
       if (domain) {
@@ -413,6 +539,15 @@ async function logoutEnvironment(requestedDomain?: string) {
     }
   } catch (e) {
     console.error('Error reading token during logout (ignoring):', e)
+    reportAuthClientError({
+      code: ClientErrorCode.AuthLogoutTokenReadError,
+      error: e,
+      dedupeKeyPrefix: 'AuthMachine:logout-token-read',
+      extra: {
+        requestedDomain,
+        hasRequestedDomain: Boolean(requestedDomain),
+      },
+    })
   }
 
   return fetch(withAPIBaseURL('/logout'), {

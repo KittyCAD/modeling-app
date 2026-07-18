@@ -13,6 +13,13 @@ type ReportClientErrorParams = {
 }
 
 export enum ClientErrorCode {
+  AuthDeviceFlowLoginError = 'auth_device_flow_login_error',
+  AuthDeviceFlowStartError = 'auth_device_flow_start_error',
+  AuthGetUserError = 'auth_get_user_error',
+  AuthLogoutError = 'auth_logout_error',
+  AuthLogoutTokenReadError = 'auth_logout_token_read_error',
+  AuthTokenRevokeError = 'auth_token_revoke_error',
+  AuthTokenSyncError = 'auth_token_sync_error',
   EngineDisconnect = 'engine_disconnect',
   UserFeaturesFetchError = 'user_features_fetch_error',
   ZookeeperActorError = 'zookeeper_actor_error',
