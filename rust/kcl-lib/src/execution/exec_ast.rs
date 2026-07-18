@@ -1883,7 +1883,7 @@ impl Node<SketchBlock> {
                         // it's not a user error. We should investigate this.
                         #[cfg(target_arch = "wasm32")]
                         web_sys::console::error_1(
-                            &format!("Internal error from constraint solver: {}", &failure.error).into(),
+                            &format!("Internal error from constraint solver: {}", failure.error).into(),
                         );
                         return Err(internal_err(
                             format!("Internal error from constraint solver: {}", failure.error),
