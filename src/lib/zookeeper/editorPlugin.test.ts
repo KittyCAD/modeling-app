@@ -8,6 +8,14 @@ import fsZds from '@src/lib/fs-zds'
 import { createTwoFilesPatch } from 'diff'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
+const clientErrorMocks = vi.hoisted(() => ({
+  reportSystemIOError: vi.fn(),
+}))
+
+vi.mock('@src/lib/systemIOErrorReporting', () => ({
+  reportSystemIOError: clientErrorMocks.reportSystemIOError,
+}))
+
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
@@ -17,6 +25,7 @@ beforeAll(async () => {
 
 afterEach(() => {
   vi.restoreAllMocks()
+  clientErrorMocks.reportSystemIOError.mockClear()
 })
 
 describe('Zookeeper history patch replay', () => {
@@ -594,6 +603,7 @@ describe('Zookeeper history patch replay', () => {
     vi.spyOn(fsZds, 'writeFile').mockImplementation(async (path, data) => {
       if (path === modifiedPath && shouldFailModifiedWrite) {
         shouldFailModifiedWrite = false
+        await originalWriteFile(path, new Uint8Array())
         throw new Error('disk write failed')
       }
       return originalWriteFile(path, data)
@@ -630,8 +640,106 @@ describe('Zookeeper history patch replay', () => {
       await expect(fsZds.readFile(modifiedPath, 'utf8')).resolves.toBe(
         'length = 10\n'
       )
+      expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: 'zookeeper_history_replay',
+          risk: 'write',
+          source: 'ZookeeperEditor',
+          extra: expect.objectContaining({
+            phase: 'write',
+            totalCount: 2,
+            completedCount: 1,
+            rollbackAttempted: true,
+            rollbackAttemptedCount: 2,
+            rollbackFailureCount: 0,
+            partialMutationPossible: false,
+            dataLossPossible: false,
+          }),
+        })
+      )
     } finally {
       await fsZds.rm(projectPath, { recursive: true, force: true })
+    }
+  })
+
+  it('reports an incomplete rollback as a destructive failure', async () => {
+    const projectPath = `/tmp/zookeeper-history-${crypto.randomUUID()}`
+    const modifiedPath = fsZds.join(projectPath, 'modified.kcl')
+    const createdPath = fsZds.join(projectPath, 'created.kcl')
+    const originalWriteFile = fsZds.writeFile.bind(fsZds)
+    const originalRm = fsZds.rm.bind(fsZds)
+    let shouldFailModifiedWrite = true
+
+    await fsZds.mkdir(projectPath, { recursive: true })
+    await originalWriteFile(
+      modifiedPath,
+      new TextEncoder().encode('length = 10\n')
+    )
+
+    vi.spyOn(fsZds, 'writeFile').mockImplementation(async (path, data) => {
+      if (path === modifiedPath && shouldFailModifiedWrite) {
+        shouldFailModifiedWrite = false
+        await originalWriteFile(path, new Uint8Array())
+        throw new Error('disk write failed')
+      }
+      return originalWriteFile(path, data)
+    })
+    vi.spyOn(fsZds, 'rm').mockImplementation(async (path, options) => {
+      if (path === createdPath) {
+        throw new Error('rollback remove failed')
+      }
+      return originalRm(path, options)
+    })
+
+    try {
+      await expect(
+        applyZookeeperEditPatch({
+          projectPath,
+          patch: {
+            run_id: 'run-rollback-failure',
+            changed_files: [
+              {
+                path: 'created.kcl',
+                status: 'created',
+                contents: 'created = true\n',
+              },
+              {
+                path: 'modified.kcl',
+                status: 'modified',
+                diff: unifiedDiff(
+                  'modified.kcl',
+                  'length = 10\n',
+                  'length = 20\n'
+                ),
+              },
+            ],
+          },
+          direction: 'redo',
+        })
+      ).rejects.toThrow(
+        'Zookeeper edit replay failed and could not be fully rolled back.'
+      )
+
+      expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.any(AggregateError),
+          operation: 'zookeeper_history_replay',
+          risk: 'destructive',
+          source: 'ZookeeperEditor',
+          extra: expect.objectContaining({
+            phase: 'rollback',
+            totalCount: 2,
+            completedCount: 1,
+            rollbackAttempted: true,
+            rollbackAttemptedCount: 2,
+            rollbackFailureCount: 1,
+            partialMutationPossible: true,
+            dataLossPossible: true,
+          }),
+        })
+      )
+    } finally {
+      await originalRm(projectPath, { recursive: true, force: true })
     }
   })
 })

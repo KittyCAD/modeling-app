@@ -7,6 +7,14 @@ import { createEmptyAst } from '@src/editor/plugins/ast'
 import { File, KclManager } from '@src/lang/KclManager'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+const clientErrorMocks = vi.hoisted(() => ({
+  reportSystemIOError: vi.fn(),
+}))
+
+vi.mock('@src/lib/systemIOErrorReporting', () => ({
+  reportSystemIOError: clientErrorMocks.reportSystemIOError,
+}))
+
 import {
   createKclManagerTestHarness,
   getLatestDispatchedDiagnostics,
@@ -880,6 +888,70 @@ describe('KclManager diagnostics', () => {
     expect(writeSpy).not.toHaveBeenCalled()
     expect(kclManager.code).toBe('local newer')
     expect((kclManager as any).hasUnsavedLocalChanges()).toBe(true)
+  })
+
+  it('reports KCL autosave failures without including source or path', async () => {
+    const path = '/tmp/kcl-manager-reporting-test.kcl'
+    const newCode = 'local edits'
+    const { kclManager } = createKclManagerTestHarness(newCode)
+    const error = new Error('disk write failed')
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
+    vi.spyOn(kclManager, 'write').mockRejectedValue(error)
+
+    await expect(
+      (kclManager as any).performDelayedWriteToFile({
+        newCode,
+        requestedDocumentVersion: (kclManager as any)._documentVersion,
+        options: {},
+      })
+    ).rejects.toBe(error)
+
+    expect(clientErrorMocks.reportSystemIOError).toHaveBeenCalledWith({
+      error,
+      operation: 'save_kcl_file',
+      risk: 'write',
+      source: 'KclManager',
+      extra: {
+        phase: 'write',
+        partialMutationPossible: true,
+        dataLossPossible: true,
+        hasUnsavedChanges: true,
+        contentLength: newCode.length,
+      },
+    })
+    expect(
+      JSON.stringify(clientErrorMocks.reportSystemIOError.mock.calls)
+    ).not.toContain(path)
+    expect(
+      JSON.stringify(clientErrorMocks.reportSystemIOError.mock.calls)
+    ).not.toContain(newCode)
+  })
+
+  it('does not report KCL autosave writes after the file was removed', async () => {
+    const path = '/tmp/kcl-manager-removed-test.kcl'
+    const newCode = 'local edits'
+    const { kclManager } = createKclManagerTestHarness(newCode)
+    const error = Object.assign(new Error('file was removed'), {
+      code: 'ENOENT',
+    })
+
+    kclManager.path = path
+    ;(kclManager as any).markFileCodeAsSynced('disk base')
+    vi.spyOn(File.ioImplementations, 'read').mockResolvedValue('disk base')
+    vi.spyOn(kclManager, 'write').mockRejectedValue(error)
+
+    await expect(
+      (kclManager as any).performDelayedWriteToFile({
+        newCode,
+        requestedDocumentVersion: (kclManager as any)._documentVersion,
+        options: {},
+      })
+    ).rejects.toBe(error)
+
+    expect(clientErrorMocks.reportSystemIOError).not.toHaveBeenCalled()
   })
 
   it('restores the local recovery snapshot when reopening a file after unsaved edits', async () => {
