@@ -403,21 +403,28 @@ impl ArtifactGraph {
     /// selection and later operations need them, but omit that derived detail
     /// from test diagrams so large patterns remain readable.
     fn flowchart_omitted_pattern_copy_ids(&self) -> AHashSet<ArtifactId> {
-        self.map
-            .values()
-            .filter_map(|artifact| match artifact {
-                Artifact::Pattern(pattern) => Some(
-                    pattern
-                        .copy_ids
-                        .iter()
-                        .chain(&pattern.copy_face_ids)
-                        .chain(&pattern.copy_edge_ids),
-                ),
-                _ => None,
-            })
-            .flatten()
-            .copied()
-            .collect()
+        let mut omitted = AHashSet::default();
+
+        for artifact in self.map.values() {
+            let Artifact::Pattern(pattern) = artifact else {
+                continue;
+            };
+            for copy_id in &pattern.copy_ids {
+                match self.map.get(copy_id) {
+                    Some(Artifact::Sweep(copy)) if copy.code_ref == pattern.code_ref => {
+                        omitted.insert(*copy_id);
+                        omitted.extend(&copy.surface_ids);
+                        omitted.extend(&copy.edge_ids);
+                    }
+                    Some(Artifact::CompositeSolid(copy)) if copy.code_ref == pattern.code_ref => {
+                        omitted.insert(*copy_id);
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        omitted
     }
 
     /// Output the Mermaid flowchart for the artifact graph.
@@ -1308,6 +1315,8 @@ fn flowchart_omits_materialized_pattern_copy_artifacts() {
     let copy_id = ArtifactId::new(Uuid::new_v4());
     let copy_face_id = ArtifactId::new(Uuid::new_v4());
     let copy_edge_id = ArtifactId::new(Uuid::new_v4());
+    let later_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_code_ref = CodeRef::placeholder(SourceRange::synthetic());
     let mut graph = ArtifactGraph::default();
     graph.map.insert(
         pattern_id,
@@ -1315,16 +1324,49 @@ fn flowchart_omits_materialized_pattern_copy_artifacts() {
             id: pattern_id,
             sub_type: PatternSubType::Linear,
             source_id: ArtifactId::new(Uuid::new_v4()),
-            copy_ids: vec![copy_id],
+            copy_ids: vec![copy_id, later_sweep_id],
             copy_face_ids: vec![copy_face_id],
             copy_edge_ids: vec![copy_edge_id],
-            code_ref: CodeRef::placeholder(SourceRange::synthetic()),
+            code_ref: pattern_code_ref.clone(),
+        }),
+    );
+    graph.map.insert(
+        copy_id,
+        Artifact::Sweep(Sweep {
+            id: copy_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: ArtifactId::new(Uuid::new_v4()),
+            surface_ids: vec![copy_face_id],
+            edge_ids: vec![copy_edge_id],
+            code_ref: pattern_code_ref,
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    graph.map.insert(
+        later_sweep_id,
+        Artifact::Sweep(Sweep {
+            id: later_sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: ArtifactId::new(Uuid::new_v4()),
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: CodeRef::placeholder(SourceRange::new(1, 2, ModuleId::default())),
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            consumed: false,
+            pattern_ids: Vec::new(),
         }),
     );
 
     let omitted = graph.flowchart_omitted_pattern_copy_ids();
     assert_eq!(omitted, AHashSet::from_iter([copy_id, copy_face_id, copy_edge_id]));
     assert!(!omitted.contains(&pattern_id));
+    assert!(!omitted.contains(&later_sweep_id));
 }
 
 #[test]
