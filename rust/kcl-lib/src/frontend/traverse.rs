@@ -406,7 +406,7 @@ fn dfs_mut_expr<V: Visitor>(expr: &mut ast::Expr, visitor: &mut V) -> TraversalR
                 return ret;
             }
             if let Some(initial) = &mut node.initial {
-                ret = visitor.visit(NodeMut::from(&mut **initial));
+                ret = dfs_mut_expr(initial, visitor);
                 if ret.is_break() {
                     return ret;
                 }

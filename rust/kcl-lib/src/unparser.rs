@@ -35,7 +35,6 @@ use crate::parsing::ast::types::NodeList;
 use crate::parsing::ast::types::NonCodeMeta;
 use crate::parsing::ast::types::NonCodeNode;
 use crate::parsing::ast::types::NonCodeValue;
-use crate::parsing::ast::types::NumericLiteral;
 use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::Parameter;
 use crate::parsing::ast::types::PipeExpression;
@@ -423,7 +422,7 @@ impl Expr {
             }
             Expr::AscribedExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             Expr::SketchBlock(e) => e.recast(buf, options, indentation_level, ctxt),
-            Expr::SketchVar(e) => e.recast(buf),
+            Expr::SketchVar(e) => e.recast(buf, options, indentation_level),
             Expr::None(_) => {
                 unimplemented!("there is no literal None, see https://github.com/KittyCAD/modeling-app/issues/1115")
             }
@@ -481,7 +480,7 @@ impl BinaryPart {
             BinaryPart::ObjectExpression(e) => e.recast(buf, options, indentation_level, ctxt),
             BinaryPart::IfExpression(e) => e.recast(buf, options, indentation_level, ExprContext::Other),
             BinaryPart::AscribedExpression(e) => e.recast(buf, options, indentation_level, ExprContext::Other),
-            BinaryPart::SketchVar(e) => e.recast(buf),
+            BinaryPart::SketchVar(e) => e.recast(buf, options, indentation_level),
         }
     }
 }
@@ -750,17 +749,6 @@ fn write<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Display) {
 fn write_dbg<W: std::fmt::Write>(f: &mut W, s: impl std::fmt::Debug) {
     f.write_fmt(format_args!("{s:?}"))
         .expect("writing to a string should always succeed")
-}
-
-impl NumericLiteral {
-    fn recast(&self, buf: &mut String) {
-        if self.raw.contains('.') && self.value.fract() == 0.0 {
-            write_dbg(buf, self.value);
-            write(buf, self.suffix);
-        } else {
-            write(buf, &self.raw);
-        }
-    }
 }
 
 impl Literal {
@@ -1306,10 +1294,10 @@ impl Block {
 }
 
 impl SketchVar {
-    fn recast(&self, buf: &mut String) {
+    fn recast(&self, buf: &mut String, options: &FormatOptions, indentation_level: usize) {
         if let Some(initial) = &self.initial {
             write!(buf, "var ").no_fail();
-            initial.recast(buf);
+            initial.recast(buf, options, indentation_level, ExprContext::Other);
         } else {
             write!(buf, "var").no_fail();
         }

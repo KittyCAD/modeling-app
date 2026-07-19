@@ -80,7 +80,6 @@ use crate::parsing::ast::types::NodeList;
 use crate::parsing::ast::types::NonCodeMeta;
 use crate::parsing::ast::types::NonCodeNode;
 use crate::parsing::ast::types::NonCodeValue;
-use crate::parsing::ast::types::NumericLiteral;
 use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::ObjectProperty;
 use crate::parsing::ast::types::Parameter;
@@ -736,70 +735,6 @@ fn bool_value(i: &mut TokenSlice) -> ModalResult<Node<Literal>> {
     ))
 }
 
-fn minus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
-    any.verify_map(|token: Token| {
-        if token.token_type == TokenType::Operator && token.value == "-" {
-            Some(token)
-        } else {
-            None
-        }
-    })
-    .context(expected("a minus sign `-`"))
-    .parse_next(i)
-}
-
-fn plus_sign(i: &mut TokenSlice) -> ModalResult<Token> {
-    any.verify_map(|token: Token| {
-        if token.token_type == TokenType::Operator && token.value == "+" {
-            Some(token)
-        } else {
-            None
-        }
-    })
-    .context(expected("a plus sign `+`"))
-    .parse_next(i)
-}
-
-/// Numeric literal with suffix and optional leading negative sign.
-fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
-    let prefix_token = opt(alt((minus_sign, plus_sign))).parse_next(i)?;
-    let is_negative = prefix_token.as_ref().is_some_and(|tok| tok.value == "-");
-    let (value, suffix, number_token) = any
-        .try_map(|token: Token| match token.token_type {
-            TokenType::Number => {
-                let value: f64 = token.numeric_value().ok_or_else(|| {
-                    CompilationIssue::fatal(token.as_source_range(), format!("Invalid float: {}", token.value))
-                })?;
-
-                let suffix = token.numeric_suffix();
-                if let NumericSuffix::Unknown = suffix {
-                    ParseContext::warn(CompilationIssue::err(token.as_source_range(), "The 'unknown' numeric suffix is not properly supported; it is likely to change or be removed, and may be buggy."));
-                }
-
-                Ok((value, suffix, token))
-            }
-            _ => Err(CompilationIssue::fatal(token.as_source_range(), "invalid number literal")),
-        })
-        .context(expected("a number literal (e.g. 3 or 12.5)"))
-        .parse_next(i)?;
-    let start = prefix_token.as_ref().map(|t| t.start).unwrap_or(number_token.start);
-    Ok(Node::new(
-        NumericLiteral {
-            value: if is_negative { -value } else { value },
-            suffix,
-            raw: format!(
-                "{}{}",
-                prefix_token.map(|t| t.value).unwrap_or_default(),
-                number_token.value
-            ),
-            digest: None,
-        },
-        start,
-        number_token.end,
-        number_token.module_id,
-    ))
-}
-
 fn literal(i: &mut TokenSlice) -> ModalResult<BoxNode<Literal>> {
     alt((string_literal, unsigned_number_literal, bool_value))
         .map(Box::new)
@@ -900,14 +835,14 @@ pub(crate) fn unsigned_number_literal(i: &mut TokenSlice) -> ModalResult<Node<Li
 
 fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
     let var_token = keyword(i, "var")?;
-    let literal = opt(preceded(require_whitespace, numeric_literal)).parse_next(i)?;
-    let end = literal.as_ref().map(|t| t.end).unwrap_or(var_token.end);
+    let initial = opt(preceded(require_whitespace, expression.map(Box::new))).parse_next(i)?;
+    let end = initial.as_ref().map(|expr| expr.end()).unwrap_or(var_token.end);
     if !ParseContext::is_in_sketch_block() {
         ParseContext::experimental(
             "sketch var",
             SourceRange::new(var_token.start, end, var_token.module_id),
         );
-    } else if literal.is_none() {
+    } else if initial.is_none() {
         ParseContext::experimental(
             "sketch var without initial value",
             SourceRange::new(var_token.start, end, var_token.module_id),
@@ -915,10 +850,7 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
     }
 
     Ok(Node::new(
-        SketchVar {
-            initial: literal.map(Box::new),
-            digest: None,
-        },
+        SketchVar { initial, digest: None },
         var_token.start,
         end,
         var_token.module_id,
@@ -4356,23 +4288,30 @@ e
         let tokens = crate::parsing::token::lex("var 1.5", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
-        let initial = actual.inner.initial.unwrap();
-        assert_eq!(initial.value, 1.5);
-        assert_eq!(initial.suffix, NumericSuffix::None);
+        assert_eq!(
+            actual.inner.initial.unwrap().literal_num(),
+            Some((1.5, NumericSuffix::None))
+        );
 
         let tokens = crate::parsing::token::lex("var -1.5", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
-        let initial = actual.inner.initial.unwrap();
-        assert_eq!(initial.value, -1.5);
-        assert_eq!(initial.suffix, NumericSuffix::None);
+        let Expr::UnaryExpression(initial) = *actual.inner.initial.unwrap() else {
+            panic!("not a unary expression")
+        };
+        assert_eq!(initial.operator, UnaryOperator::Neg);
+        assert_eq!(
+            Expr::from(&initial.argument).literal_num(),
+            Some((1.5, NumericSuffix::None))
+        );
 
         let tokens = crate::parsing::token::lex("var 1.5ft", ModuleId::default()).unwrap();
         let tokens = tokens.as_slice();
         let actual = in_sketch_ctx(|| sketch_var.parse(tokens)).unwrap();
-        let initial = actual.inner.initial.unwrap();
-        assert_eq!(initial.value, 1.5);
-        assert_eq!(initial.suffix, NumericSuffix::Ft);
+        assert_eq!(
+            actual.inner.initial.unwrap().literal_num(),
+            Some((1.5, NumericSuffix::Ft))
+        );
     }
 
     #[test]
@@ -4443,7 +4382,10 @@ e
         let Expr::SketchVar(sketch_var) = &var_dec.inner.declaration.init else {
             panic!("not a sketch var")
         };
-        assert_eq!(sketch_var.inner.initial.as_ref().unwrap().value, 1.5);
+        assert_eq!(
+            sketch_var.inner.initial.as_ref().unwrap().literal_num(),
+            Some((1.5, NumericSuffix::None))
+        );
     }
 
     #[test]

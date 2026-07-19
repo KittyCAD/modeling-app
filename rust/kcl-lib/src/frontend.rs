@@ -6256,7 +6256,9 @@ fn process(ctx: &AstMutateContext, node: NodeMut) -> TraversalReturn<Result<AstM
                         *value
                     ))));
                 };
-                sketch_var.initial = Some(Box::new(ast::Node::no_src(literal)));
+                sketch_var.initial = Some(Box::new(ast::Expr::Literal(Box::new(ast::Node::no_src(
+                    literal.into(),
+                )))));
                 return TraversalReturn::new_break(Ok(AstMutateCommandReturn::None));
             }
         }
@@ -6467,11 +6469,24 @@ impl<'a> crate::walk::Visitor<'a> for &FindNumericLiteral {
             return Ok(true);
         };
 
-        if node_range == self.target
-            && let crate::walk::Node::NumericLiteral(literal) = node
-        {
-            self.found.set(Some(literal.inner.clone()));
-            return Ok(false);
+        if node_range == self.target {
+            let literal = match node {
+                crate::walk::Node::NumericLiteral(literal) => Some(literal.inner.clone()),
+                crate::walk::Node::Literal(literal) => match literal.value {
+                    ast::LiteralValue::Number { value, suffix } => Some(ast::NumericLiteral {
+                        value,
+                        suffix,
+                        raw: literal.raw.clone(),
+                        digest: literal.digest,
+                    }),
+                    _ => None,
+                },
+                _ => None,
+            };
+            if let Some(literal) = literal {
+                self.found.set(Some(literal));
+                return Ok(false);
+            }
         }
 
         for child in node.children().iter() {
@@ -6508,8 +6523,15 @@ impl<'a, 'b> crate::walk::Visitor<'b> for &FindSketchVarInitialByNodePath<'a> {
             && sketch_var.node_path.as_ref() == Some(self.target)
         {
             self.sketch_var_found.set(true);
-            if let Some(initial) = &sketch_var.initial {
-                self.initial_literal.set(Some(initial.inner.clone()));
+            if let Some(ast::Expr::Literal(initial)) = sketch_var.initial.as_deref()
+                && let ast::LiteralValue::Number { value, suffix } = initial.value
+            {
+                self.initial_literal.set(Some(ast::NumericLiteral {
+                    value,
+                    suffix,
+                    raw: initial.raw.clone(),
+                    digest: initial.digest,
+                }));
             }
             return Ok(false);
         }
@@ -6677,8 +6699,8 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
         }))),
         Expr::Var(number) => Ok(ast::Expr::SketchVar(Box::new(ast::Node {
             inner: ast::SketchVar {
-                initial: Some(Box::new(ast::Node {
-                    inner: to_source_number(*number)?,
+                initial: Some(Box::new(ast::Expr::Literal(Box::new(ast::Node {
+                    inner: ast::Literal::from(to_source_number(*number)?),
                     start: Default::default(),
                     end: Default::default(),
                     module_id: Default::default(),
@@ -6686,7 +6708,7 @@ fn to_source_expr(expr: &Expr) -> anyhow::Result<ast::Expr> {
                     outer_attrs: Default::default(),
                     pre_comments: Default::default(),
                     comment_start: Default::default(),
-                })),
+                })))),
                 digest: None,
             },
             start: Default::default(),
@@ -8986,8 +9008,10 @@ sketch(on = XY) {
             type Error = crate::front::Error;
             fn visit_node(&self, node: crate::walk::Node<'a>) -> anyhow::Result<bool, Self::Error> {
                 if let crate::walk::Node::SketchVar(sketch_var) = node
-                    && let (Some(initial), Some(node_path)) = (&sketch_var.initial, &sketch_var.node_path)
-                    && (initial.value - self.target).abs() < 1e-9
+                    && let (Some(ast::Expr::Literal(initial)), Some(node_path)) =
+                        (sketch_var.initial.as_deref(), &sketch_var.node_path)
+                    && let ast::LiteralValue::Number { value, .. } = initial.value
+                    && (value - self.target).abs() < 1e-9
                 {
                     self.out
                         .borrow_mut()

@@ -2284,7 +2284,7 @@ impl SketchBlock {
 }
 
 impl Node<SketchVar> {
-    pub async fn get_result(&self, exec_state: &mut ExecState, _ctx: &ExecutorContext) -> Result<KclValue, KclError> {
+    pub async fn get_result(&self, exec_state: &mut ExecState, ctx: &ExecutorContext) -> Result<KclValue, KclError> {
         let Some(sketch_block_state) = &exec_state.mod_local.sketch_block else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
                 "Cannot use a sketch variable outside of a sketch block".to_owned(),
@@ -2293,7 +2293,30 @@ impl Node<SketchVar> {
         };
         let id = sketch_block_state.next_sketch_var_id();
         let sketch_var = if let Some(initial) = &self.initial {
-            KclValue::from_sketch_var_literal(initial, id, self.node_path.clone(), exec_state)
+            let source_range = SourceRange::from(initial.as_ref());
+            let metadata = Metadata { source_range };
+            let initial = ctx
+                .execute_expr(initial, exec_state, &metadata, &[], StatementKind::Expression)
+                .await?
+                .into_value();
+            let KclValue::Number { value, ty, .. } = initial else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "Sketch variable initial value must be a number, but found {}",
+                        initial.human_friendly_type()
+                    ),
+                    vec![source_range],
+                )));
+            };
+            KclValue::SketchVar {
+                value: Box::new(super::SketchVar {
+                    id,
+                    initial_value: value,
+                    ty,
+                    node_path: self.node_path.clone(),
+                    meta: vec![metadata],
+                }),
+            }
         } else {
             let metadata = Metadata {
                 source_range: SourceRange::from(self),
@@ -6415,6 +6438,33 @@ s = sketch(on = XY) {
         // sketch block fields.
         assert!(!value.contains_key("line"));
         assert!(!value.contains_key("coincident"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_var_initial_value_can_be_an_expression() {
+        let result = parse_execute(
+            r#"
+width = 2mm
+s = sketch(on = XY) {
+  line(start = [var width / 2, var 0mm], end = [var width, var 0mm])
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        assert!(result.exec_state.issues().is_empty());
+
+        let err = parse_execute(
+            r#"
+sketch(on = XY) {
+  x = var "not a number"
+}
+"#,
+        )
+        .await
+        .unwrap_err();
+        assert!(err.message().contains("must be a number"));
     }
 
     #[tokio::test(flavor = "multi_thread")]
