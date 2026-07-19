@@ -2309,6 +2309,10 @@ impl Node<SketchVar> {
                 }),
             }
         };
+        let mut sketch_var = sketch_var;
+        if let KclValue::SketchVar { value } = &mut sketch_var {
+            value.initial_value += (id.0 + 1) as f64 * f64::EPSILON;
+        }
 
         let Some(sketch_block_state) = &mut exec_state.mod_local.sketch_block else {
             return Err(KclError::new_semantic(KclErrorDetails::new(
@@ -6419,6 +6423,33 @@ s = sketch(on = XY) {
         // sketch block fields.
         assert!(!value.contains_key("line"));
         assert!(!value.contains_key("coincident"));
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn sketch_var_initial_values_are_seeded_by_runtime_creation_order() {
+        let result = parse_execute(
+            r#"
+sketch(on = XY) {
+  fn makePoint(@_) {
+    return point(at = [var 0mm, var 0mm])
+  }
+
+  mappedPoints = map([0, 1], f = makePoint)
+  points = reduce([2, 3], initial = mappedPoints, f = fn(@i, accum) {
+    return push(accum, item = makePoint(i))
+  })
+  coincident(points)
+}
+"#,
+        )
+        .await
+        .unwrap();
+
+        let solutions = &result.exec_state.global.root_module_artifacts.var_solutions;
+        assert_eq!(solutions.len(), 8);
+        for (index, (_, _, solution)) in solutions.iter().enumerate() {
+            assert_eq!(solution.value, (index + 1) as f64 * f64::EPSILON);
+        }
     }
 
     #[tokio::test(flavor = "multi_thread")]
