@@ -64,6 +64,8 @@ mod execution;
 mod fmt;
 mod frontend;
 mod fs;
+#[cfg(test)]
+mod geo_dbg;
 pub(crate) mod id;
 pub mod lint;
 mod log;

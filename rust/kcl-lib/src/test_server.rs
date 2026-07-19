@@ -91,6 +91,30 @@ pub async fn execute_and_snapshot_ast(
     ),
     ExecErrorWithState,
 > {
+    let result = execute_and_snapshot_ast_with_open_context(ast, current_file, with_export_step).await;
+    if let Ok((_, ctx, _, _, _)) = &result {
+        ctx.close().await;
+    }
+    result
+}
+
+/// Executes a KCL program and takes a snapshot, leaving the returned engine context open.
+/// The caller is responsible for closing the context.
+#[cfg(test)]
+pub(crate) async fn execute_and_snapshot_ast_with_open_context(
+    ast: Program,
+    current_file: Option<PathBuf>,
+    with_export_step: bool,
+) -> Result<
+    (
+        ExecState,
+        ExecutorContext,
+        EnvironmentRef,
+        image::DynamicImage,
+        Option<Vec<u8>>,
+    ),
+    ExecErrorWithState,
+> {
     let ctx = new_context(true, current_file).await?;
     let (exec_state, env, img) = match do_execute_and_snapshot(&ctx, ast).await {
         Ok((exec_state, env_ref, img)) => (exec_state, env_ref, img),
@@ -118,7 +142,6 @@ pub async fn execute_and_snapshot_ast(
 
         step = files.into_iter().next().map(|f| f.contents);
     }
-    ctx.close().await;
     Ok((exec_state, ctx, env, img, step))
 }
 

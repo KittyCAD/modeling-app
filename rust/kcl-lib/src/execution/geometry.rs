@@ -2462,6 +2462,20 @@ pub enum SegmentKind {
     },
 }
 
+impl SegmentKind {
+    /// Should not be used for typechecking or anything,
+    /// but can be used for display in error msgs.
+    pub fn human_friendly_type(&self) -> &'static str {
+        match self {
+            SegmentKind::Point { .. } => "Point ",
+            SegmentKind::Line { .. } => "Line ",
+            SegmentKind::Arc { .. } => "Arc ",
+            SegmentKind::Circle { .. } => "Circle ",
+            SegmentKind::ControlPointSpline { .. } => "ControlPointSpline ",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Geometry.ts")]
 #[serde(rename_all = "camelCase")]
