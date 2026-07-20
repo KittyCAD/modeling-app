@@ -2,11 +2,17 @@
 source: kcl-lib/src/simulation_tests.rs
 description: Error from executing add_arrays.kcl
 ---
-KCL Semantic error
+[31mKCL EngineHangup error[0m
 
-  × semantic: Expected a number, but found an array of `number`, `number`
+  [31m×[0m engine hangup: could
+  [31m│[0m not send request to
+  [31m│[0m the engine: could
+  [31m│[0m not send json over
+  [31m│[0m websocket: Trying to
+  [31m│[0m work with closed
+  [31m│[0m connection
    ╭────
- 1 │ answer = [0, 1] + [2]
-   ·          ───┬──
-   ·             ╰── tests/add_arrays/input.kcl
+ [2m1[0m │ answer = [0, 1] + [2]
+   · [35;1m▲[0m
+   · [35;1m╰── [35;1mmain[0m[0m
    ╰────
