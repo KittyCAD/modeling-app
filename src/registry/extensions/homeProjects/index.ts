@@ -7,6 +7,7 @@ import {
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
 import {
+  createNewProjectDirectory,
   getProjectInfo,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
@@ -15,8 +16,10 @@ import {
   homeProjectEntryFromProject,
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
+  DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultDirectoryProjectLibraryPath,
   type ProjectLibrary,
   projectLibraryFromSetting,
@@ -248,16 +251,58 @@ const configuredProjectLibraries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.configured-project-libraries')
 
-const directoryProjectLibraryType = defineRegistryItem({
-  id: 'home-projects.directory-library-type',
-  provides: [
-    provide(projectLibraryTypesValueSpec, {
-      type: 'directory',
-      title: 'Directory',
-      icon: 'folder',
+const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
+  const systemIO = ctx.services.signal(systemIOService)
+  const getWasmPromise = () =>
+    ctx.valueSpecs.get(wasmPromiseValueSpec) ??
+    Promise.reject(new Error('Missing WASM promise registry value.'))
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.directory-library-type',
+      provides: [
+        provide(projectLibraryTypesValueSpec, {
+          type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          title: 'Directory',
+          icon: 'folder',
+          readEntries: async ({ library, signal }) => {
+            const projects = await readProjectsFromProjectDirectory({
+              projectDirectoryPath: library.path,
+              wasmInstancePromise: getWasmPromise(),
+              signal,
+            })
+
+            return localHomeProjectEntriesFromProjects(projects, library.id)
+          },
+          operations: {
+            createProject: {
+              run: async ({
+                library,
+                requestedProjectName,
+                requestedProjectTitle,
+              }) => {
+                const project = await createNewProjectDirectory(
+                  requestedProjectName,
+                  await getWasmPromise(),
+                  undefined,
+                  undefined,
+                  undefined,
+                  library.path,
+                  requestedProjectTitle
+                )
+                systemIO.value?.actor.send({
+                  type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
+                })
+
+                return project
+              },
+            },
+          },
+        }),
+      ],
     }),
-  ],
-})
+  }
+}, 'home-projects.directory-library-type')
 
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
