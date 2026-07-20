@@ -11,7 +11,6 @@ use kittycad_modeling_cmds::{self as kcmc};
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::exec::KclValue;
-use crate::execution::EdgeRefactorMeta;
 use crate::execution::EdgeRefactorStdlibFn;
 use crate::execution::ExecState;
 use crate::execution::ExtrudeSurface;
@@ -26,6 +25,7 @@ use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::std::Args;
 use crate::std::args::TyF64;
+use crate::std::edge;
 
 /// Translates face indices to face IDs.
 pub async fn face_id(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
@@ -173,13 +173,17 @@ async fn inner_edge_id(
         };
         let edge_id = inner_resp.edge_id;
 
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        if let Ok(meta) = edge::get_refactor_meta_for_edge(
+            exec_state,
             edge_id,
-            object_id: Some(body.id),
-            face_ids: None,
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::EdgeId,
-        });
+            &args,
+            args.source_range,
+            EdgeRefactorStdlibFn::EdgeId,
+        )
+        .await
+        {
+            exec_state.record_edge_refactor_meta(meta);
+        }
 
         edge_id
     };
@@ -233,13 +237,17 @@ async fn inner_edge_id_by_point(
             )));
         };
 
-        exec_state.record_edge_refactor_meta(EdgeRefactorMeta {
+        if let Ok(meta) = edge::get_refactor_meta_for_edge(
+            exec_state,
             edge_id,
-            object_id: Some(body.id),
-            face_ids: None,
-            source_range: args.source_range,
-            stdlib_fn: EdgeRefactorStdlibFn::EdgeId,
-        });
+            &args,
+            args.source_range,
+            EdgeRefactorStdlibFn::EdgeId,
+        )
+        .await
+        {
+            exec_state.record_edge_refactor_meta(meta);
+        }
 
         edge_id
     };

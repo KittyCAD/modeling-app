@@ -1,6 +1,6 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, extrude `to`, `getBoundedEdge`
-//! `edge`, GD&T `edges`, or GD&T distance `from`/`to` arguments.
+//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, mirror3d `across`, extrude edge arguments,
+//! `getBoundedEdge` `edge`, GD&T `edges`, or GD&T distance `from`/`to` arguments.
 //! Step 2 of the Z0006 upgrade path: detection only; auto-fix is Step 3.
 
 use anyhow::Result;
@@ -21,10 +21,10 @@ def_finding!(
     Z0006,
     "Prefer edges or edge specifiers over deprecated edge stdlib calls",
     "\
-Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, or 'to' in extrude with deprecated \
-stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Deprecated stdlib \
-usage in getBoundedEdge 'edge' arguments is also deprecated. Prefer 'edges' (fillet/chamfer) \
-or an edge specifier object such as { sideFaces = [tag1, tag2] }. \
+Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated \
+stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Deprecated stdlib usage \
+in getBoundedEdge 'edge' arguments is also deprecated. Prefer 'edges' (fillet/chamfer) or an edge \
+specifier object such as { sideFaces = [tag1, tag2] }. \
 The auto-fix will convert it.
 ",
     FindingFamily::Simplify
@@ -43,8 +43,12 @@ fn is_fillet_or_chamfer(callee_name: &str) -> bool {
     matches!(callee_name, "fillet" | "chamfer")
 }
 
-fn is_revolve_or_helix(callee_name: &str) -> bool {
-    matches!(callee_name, "revolve" | "helix")
+fn edge_reference_argument(callee_name: &str) -> Option<&'static str> {
+    match callee_name {
+        "revolve" | "helix" => Some("axis"),
+        "mirror3d" => Some("across"),
+        _ => None,
+    }
 }
 
 fn is_extrude(callee_name: &str) -> bool {
@@ -75,30 +79,48 @@ fn is_gdt_edge_command(callee_name: &str) -> bool {
     )
 }
 
-/// Axis argument for revolve/helix: axis = getOppositeEdge(...) etc.
-fn get_axis_arg(call: &CallExpressionKw) -> Option<&Expr> {
-    let axis_arg = call
-        .arguments
-        .iter()
-        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "axis")?;
-    Some(&axis_arg.arg)
-}
-
-/// `to` argument for extrude: to = getCommonEdge(...) etc.
-fn get_to_arg(call: &CallExpressionKw) -> Option<&Expr> {
-    let to_arg = call
-        .arguments
-        .iter()
-        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "to")?;
-    Some(&to_arg.arg)
-}
-
 fn get_arg<'a>(call: &'a CallExpressionKw, label: &str) -> Option<&'a Expr> {
     let arg = call
         .arguments
         .iter()
         .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == label)?;
     Some(&arg.arg)
+}
+
+fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Program>) -> Vec<&'static str> {
+    let mut arguments = Vec::with_capacity(3);
+    if call.unlabeled.as_ref().is_some_and(|expr| {
+        is_deprecated_edge_stdlib_or_variable_expr(expr, prog)
+            || (matches!(expr, Expr::MemberExpression(_)) && is_direct_tag_ref(expr))
+    }) {
+        arguments.push("target");
+    }
+    for label in ["to", "direction"] {
+        if get_arg(call, label).is_some_and(|expr| {
+            is_deprecated_edge_stdlib_or_variable_expr(expr, prog)
+                || (label == "direction" && is_direct_sketch_segment_ref(expr, prog))
+        }) {
+            arguments.push(label);
+        }
+    }
+    arguments
+}
+
+fn is_direct_sketch_segment_ref(expr: &Expr, prog: &AstNode<Program>) -> bool {
+    let Expr::MemberExpression(member) = expr else {
+        return false;
+    };
+    let (Expr::Name(object), Expr::Name(_)) = (&member.object, &member.property) else {
+        return false;
+    };
+    let Some(init) = top_level_variable_init(prog, object.name.name.as_str()) else {
+        return false;
+    };
+    match init {
+        Expr::SketchBlock(_) => true,
+        Expr::CallExpressionKw(call) => call.callee.name.name == "startSketchOn",
+        _ => false,
+    }
 }
 
 fn is_deprecated_edge_stdlib(callee_name: &str) -> bool {
@@ -163,6 +185,12 @@ fn is_direct_tag_ref(element: &Expr) -> bool {
         return true;
     }
 
+    is_qualified_tag_ref(element)
+}
+
+/// True for a qualified tag reference such as `body.sketch.tags.edge1`.
+/// Unlike a bare name, this cannot be confused with an axis or point variable.
+fn is_qualified_tag_ref(element: &Expr) -> bool {
     let Expr::MemberExpression(member) = element else {
         return false;
     };
@@ -202,29 +230,33 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, prog: &AstNode<
                 findings.push(Z0006.at(format!("{} uses 'tags'; prefer edges", callee_name), pos, None));
             }
         }
-    } else if is_revolve_or_helix(callee_name)
-        && let Some(axis_expr) = get_axis_arg(call_node)
-        && is_deprecated_edge_stdlib_or_variable_expr(axis_expr, prog)
+    } else if let Some(argument_name) = edge_reference_argument(callee_name)
+        && let Some(edge_expr) = get_arg(call_node, argument_name)
+        && (is_deprecated_edge_stdlib_or_variable_expr(edge_expr, prog)
+            || (callee_name == "mirror3d" && is_qualified_tag_ref(edge_expr)))
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
             format!(
-                "{} uses 'axis' with deprecated stdlib; prefer an edge specifier object",
-                callee_name
+                "{} uses '{}' with deprecated stdlib; prefer an edge specifier object",
+                callee_name, argument_name
             ),
             pos,
             None,
         ));
-    } else if is_extrude(callee_name)
-        && let Some(to_expr) = get_to_arg(call_node)
-        && is_deprecated_edge_stdlib_or_variable_expr(to_expr, prog)
-    {
-        let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
-        findings.push(Z0006.at(
-            "extrude uses 'to' with deprecated stdlib; prefer edge specifier { sideFaces = [...] }".to_string(),
-            pos,
-            None,
-        ));
+    } else if is_extrude(callee_name) {
+        let deprecated_arguments = deprecated_extrude_edge_arguments(call_node, prog);
+        if !deprecated_arguments.is_empty() {
+            let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
+            findings.push(Z0006.at(
+                format!(
+                    "extrude uses {} with deprecated edge stdlib; prefer edge specifier {{ sideFaces = [...] }}",
+                    deprecated_arguments.join(" and ")
+                ),
+                pos,
+                None,
+            ));
+        }
     } else if is_get_bounded_edge(callee_name)
         && let Some(edge_expr) = get_arg(call_node, "edge")
         && let Expr::CallExpressionKw(inner) = edge_expr
@@ -435,6 +467,38 @@ revolve(profile, axis = axisEdge)
     }
 
     #[test]
+    fn z0006_fires_for_mirror3d_with_deprecated_edge() {
+        let kcl = r#"mirror3d(body, across = getOppositeEdge(seg01))
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for mirror3d with deprecated across edge");
+        assert!(z0006[0].description.contains("across"));
+    }
+
+    #[test]
+    fn z0006_fires_for_mirror3d_with_solid_edge_tag() {
+        let kcl = r#"mirror3d(body, across = body.sketch.tags.line4)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for a solid edge tag used by mirror3d");
+    }
+
+    #[test]
+    fn z0006_does_not_fire_for_mirror3d_with_sketch_segment() {
+        let kcl = r#"baseSketch = sketch(on = XY) {}
+mirror3d(body, across = baseSketch.line4)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert!(z0006.is_empty(), "sketch segments remain valid mirror3d axes");
+    }
+
+    #[test]
     fn z0006_fires_for_extrude_with_deprecated_to() {
         let kcl = r#"extrude(cylinder3, to = getCommonEdge(faces = [facetag0, facetag1]))
 "#;
@@ -474,6 +538,74 @@ extrude(cylinder3, to = targetEdge)
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert_eq!(z0006.len(), 1, "Z0006 fires for extrude with deprecated to variable");
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_target() {
+        let kcl = r#"extrude(getOppositeEdge(edge1), length = 5, bodyType = SURFACE)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(
+            z0006.len(),
+            1,
+            "Z0006 fires for an extrude target using deprecated edge stdlib"
+        );
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_direct_tagged_edge_target() {
+        let kcl = r#"extrude(body.sketch.tags.edge1, length = 5, bodyType = SURFACE)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for a direct tagged-edge target");
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_direction_variable() {
+        let kcl = r#"directionEdge = getOppositeEdge(edge1)
+extrude(profile, length = 5, direction = directionEdge)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(
+            z0006.len(),
+            1,
+            "Z0006 fires for an extrude direction using deprecated edge stdlib"
+        );
+        assert!(z0006[0].description.contains("direction"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_direct_segment_direction() {
+        let kcl = r#"sketch001 = sketch(on = XY) {}
+extrude(profile, length = 5, direction = sketch001.line3)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for a direct segment direction");
+        assert!(z0006[0].description.contains("direction"));
+    }
+
+    #[test]
+    fn z0006_does_not_fire_for_object_property_point_direction() {
+        let kcl = r#"directions = { up = [0, 0, 1] }
+extrude(profile, length = 5, direction = directions.up)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert!(
+            z0006.is_empty(),
+            "point-valued object properties are not sketch segments"
+        );
     }
 
     #[test]

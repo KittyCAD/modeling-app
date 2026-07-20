@@ -63,6 +63,7 @@ pub use state::ExecState;
 pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::PendingEdgeRefactorMeta;
 pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
@@ -2227,6 +2228,12 @@ mod tests {
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 
+    macro_rules! kcl_input {
+        ($file:literal) => {
+            include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
+        };
+    }
+
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
@@ -3608,6 +3615,18 @@ w = f() + f()
 
         ctx.close().await;
         ctx2.close().await;
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/12498
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_succeeds_after_split() {
+        let code = kcl_input!("repro_mock_extrude");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let _result = match ctx.run_mock(&program, &MockConfig::default()).await {
+            Ok(res) => res,
+            Err(e) => panic!("{}", e.error),
+        };
     }
 
     #[tokio::test(flavor = "multi_thread")]

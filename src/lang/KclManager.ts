@@ -12,7 +12,6 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
-import { hydrateEdgeRefactorMetadata } from '@src/lang/lintRefactorActions'
 import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
@@ -152,7 +151,7 @@ import {
   themeCompartment,
 } from '@src/editor/plugins/theme'
 import { requestWriteToFile } from '@src/editor/plugins/write'
-import { zookeeperHistoryExtension } from '@src/editor/plugins/zookeeper'
+import { zookeeperHistoryExtension } from '@src/lib/zookeeper/editorPlugin'
 import { projectFsManager } from '@src/lang/std/fileSystemManager'
 import type { App } from '@src/lib/app'
 import { getAutomaticallyRenderEnabledFromSettings } from '@src/lib/automaticRendering'
@@ -1243,13 +1242,9 @@ export class KclManager extends File {
     if (!this.artifactGraph?.size) return false
 
     const instance = await this.wasmInstancePromise
-    const hydratedEdgeRefactorMetadata = await hydrateEdgeRefactorMetadata({
-      edgeRefactorMetadata: execState.edgeRefactorMetadata,
-      engineCommandManager: this.engineCommandManager,
-    })
     const newSource = refactorZ0006Unified(
       this.ast,
-      hydratedEdgeRefactorMetadata,
+      execState.edgeRefactorMetadata ?? [],
       execState.directTagFilletMetadata ?? [],
       this.artifactGraph,
       instance
@@ -2426,7 +2421,6 @@ export class KclManager extends File {
           edgeRefactorMetadata: execState.edgeRefactorMetadata,
           directTagFilletMetadata: execState.directTagFilletMetadata,
           artifactGraph: execState.artifactGraph,
-          engineCommandManager: this.engineCommandManager,
         })
       )
       if (this.sceneEntitiesManager) {

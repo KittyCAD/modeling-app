@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 505
 description: Artifact commands rotate_after_fillet.kcl
 ---
 {
@@ -177,6 +176,15 @@ description: Artifact commands rotate_after_fillet.kcl
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -550,6 +558,15 @@ description: Artifact commands rotate_after_fillet.kcl
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

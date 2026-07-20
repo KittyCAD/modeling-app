@@ -24,6 +24,11 @@ export const PROJECT_FOLDER = 'zoo-design-studio-projects'
  * @link - https://zoo.dev/docs/kcl
  * */
 export const FILE_EXT = '.kcl'
+/**
+ * Non-KCL text files that can be opened and edited directly in the code pane.
+ * Lowercased, with leading dot. Add extensions here to broaden support.
+ */
+export const EDITABLE_TEXT_FILE_EXTENSIONS = ['.md', '.txt'] as const
 export const DEFAULT_KCL_VERSION = '2.0'
 export const BODIES_PANE_FEATURE_FLAG: Feature = 'bodies_pane'
 export const EXPERIMENTAL_POINT_AND_CLICK_FLAG: Feature =
@@ -405,8 +410,8 @@ export type KclPreludeExtrudeMethod = 'MERGE' | 'NEW'
 export const KCL_PRELUDE_EXTRUDE_METHOD_MERGE: KclPreludeExtrudeMethod = 'MERGE'
 export const KCL_PRELUDE_EXTRUDE_METHOD_NEW: KclPreludeExtrudeMethod = 'NEW'
 export const KCL_PRELUDE_EXTRUDE_METHOD_VALUES: KclPreludeExtrudeMethod[] = [
-  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
   KCL_PRELUDE_EXTRUDE_METHOD_NEW,
+  KCL_PRELUDE_EXTRUDE_METHOD_MERGE,
 ]
 
 export const ARCHIVE_DIR = 'archive'

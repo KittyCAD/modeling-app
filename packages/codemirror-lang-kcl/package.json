@@ -4,7 +4,7 @@
   "description": "Zoo KCL language support for CodeMirror 6.",
   "main": "src/index.ts",
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc --emitDeclarationOnly && rollup -c",
     "tsc": "tsc",
     "test": "vitest --config vitest.main.config.ts run"
   },
@@ -22,13 +22,12 @@
     "@codemirror/language": "^6.12.3",
     "@codemirror/state": "^6.5.4",
     "@lezer/highlight": "^1.2.1",
-    "typescript": "^6.0.2"
+    "typescript": "7.0.2"
   },
   "devDependencies": {
     "@lezer/generator": "^1.7.3",
-    "@rollup/plugin-typescript": "^12.1.4",
     "rollup": "^4.61.0",
-    "rollup-plugin-dts": "^6.4.1",
+    "rollup-plugin-esbuild": "^6.2.1",
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.1.9"
   },
