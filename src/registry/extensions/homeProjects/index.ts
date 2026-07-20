@@ -30,7 +30,10 @@ import {
   homeProjectActionsService,
   homeProjectEntriesValueSpec,
 } from '@src/registry/contracts/homeProjects'
-import { projectLibrariesValueSpec } from '@src/registry/contracts/projectLibraries'
+import {
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
 import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
@@ -245,10 +248,22 @@ const configuredProjectLibraries = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.configured-project-libraries')
 
+const directoryProjectLibraryType = defineRegistryItem({
+  id: 'home-projects.directory-library-type',
+  provides: [
+    provide(projectLibraryTypesValueSpec, {
+      type: 'directory',
+      title: 'Directory',
+      icon: 'folder',
+    }),
+  ],
+})
+
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
   uses: [
     configuredProjectLibraries,
+    directoryProjectLibraryType,
     homeProjectActions,
     systemIOLocalHomeProjectEntries,
   ],
