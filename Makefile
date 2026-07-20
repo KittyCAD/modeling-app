@@ -97,6 +97,7 @@ check: format lint
 .PHONY: format
 format: install ## Format the code
 	npm run fmt
+	cd rust && cargo +nightly fmt
 
 .PHONY: lint
 lint: install public/kcl_wasm_lib_bg.wasm ## Lint the code
