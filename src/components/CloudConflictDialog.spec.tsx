@@ -68,7 +68,10 @@ vi.mock('@src/lib/fs-zds', () => ({
       const dotIndex = path.lastIndexOf('.')
       return dotIndex === -1 ? '' : path.slice(dotIndex)
     },
-    join: (...parts: string[]) => parts.join('/').replaceAll(/\/+/g, '/'),
+    join: (...parts: string[]) =>
+      parts
+        .reduce((left, right) => (left ? `${left}/${right}` : right), '')
+        .replaceAll(/\/+/g, '/'),
     relative: (root: string, path: string) =>
       path.startsWith(`${root}/`) ? path.slice(root.length + 1) : path,
     readdir: vi.fn(),

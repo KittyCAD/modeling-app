@@ -274,10 +274,10 @@ function buildChangedFileComparison({
 
 async function loadConflictInspection(
   projectPath: string
-): Promise<ConflictInspection> {
+): Promise<ConflictInspection | Error> {
   const metadata = await getCloudSyncProjectMetadata(projectPath)
   if (!metadata?.conflict) {
-    throw new Error('Cloud conflict metadata was not found for this project.')
+    return new Error('Cloud conflict metadata was not found for this project.')
   }
 
   const conflictProjectPath = metadata.conflict.conflictProjectPath
@@ -692,9 +692,19 @@ export function CloudConflictDialog({
 
     loadConflictInspection(projectPath)
       .then((inspection) => {
-        if (!cancelled) {
-          setInspectionState({ status: 'ready', inspection })
+        if (cancelled) {
+          return
         }
+
+        if (inspection instanceof Error) {
+          setInspectionState({
+            status: 'error',
+            message: messageFromError(inspection),
+          })
+          return
+        }
+
+        setInspectionState({ status: 'ready', inspection })
       })
       .catch((error: unknown) => {
         if (!cancelled) {
