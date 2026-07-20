@@ -2065,7 +2065,10 @@ fn artifacts_to_update(
         }) => {
             let face_edge_infos = match response {
                 Some(OkModelingCmdResponse::EntityMirrorAcross(resp)) => resp.entity_face_edge_ids.as_slice(),
-                _ => internal_error!(
+                // A rejected modeling command has no response. Execution will
+                // report the engine error; there is no mirrored artifact to add.
+                None => return Ok(Vec::new()),
+                Some(_) => internal_error!(
                     range,
                     "EntityMirrorAcross response variant not handled: id={id:?}, cmd={cmd:?}, response={response:?}"
                 ),

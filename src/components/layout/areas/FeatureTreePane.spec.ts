@@ -28,7 +28,6 @@ describe('FeatureTreePane', () => {
       'extrude',
       'revolve',
       'helix',
-      'mirror3d',
       'gdt::flatness',
       'gdt::straightness',
       'gdt::circularity',
@@ -51,7 +50,7 @@ describe('FeatureTreePane', () => {
       )
     })
 
-    it.each(['gdt::note', 'appearance', 'scale'])(
+    it.each(['mirror3d', 'gdt::note', 'appearance', 'scale'])(
       'does not support pre-edit Z0006 auto-fix for %s',
       (name) => {
         expect(
