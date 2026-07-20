@@ -172,6 +172,22 @@ pub(crate) async fn get_refactor_meta_for_edge(
     })
 }
 
+pub(crate) async fn record_refactor_meta_for_consumed_edge(
+    exec_state: &mut ExecState,
+    edge_id: Uuid,
+    argument_source_range: SourceRange,
+    args: &Args,
+) {
+    let Some(pending) = exec_state.pending_edge_refactor_meta(edge_id, argument_source_range) else {
+        return;
+    };
+    let Ok(meta) = get_refactor_meta_for_edge(exec_state, edge_id, args, pending.source_range, pending.stdlib_fn).await
+    else {
+        return;
+    };
+    exec_state.record_edge_refactor_meta(meta);
+}
+
 fn record_pending_edge_refactor_meta(
     exec_state: &mut ExecState,
     edge_id: Uuid,

@@ -663,6 +663,15 @@ description: Artifact commands crazy_multi_profile.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "revolve_about_edge",
         "target": "[uuid]",
         "edge_id": "[uuid]",
