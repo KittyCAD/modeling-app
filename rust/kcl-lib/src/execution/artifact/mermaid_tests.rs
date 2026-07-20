@@ -2,6 +2,8 @@
 use std::collections::BTreeMap;
 use std::fmt::Write;
 
+use ahash::AHashSet;
+
 use super::*;
 
 type NodeId = u32;
@@ -396,6 +398,35 @@ impl Artifact {
 }
 
 impl ArtifactGraph {
+    /// Pattern nodes already summarize their generated copies and topology.
+    /// Keep the materialized copy artifacts in the production graph, where
+    /// selection and later operations need them, but omit that derived detail
+    /// from test diagrams so large patterns remain readable.
+    fn flowchart_omitted_pattern_copy_ids(&self) -> AHashSet<ArtifactId> {
+        let mut omitted = AHashSet::default();
+
+        for artifact in self.map.values() {
+            let Artifact::Pattern(pattern) = artifact else {
+                continue;
+            };
+            for copy_id in &pattern.copy_ids {
+                match self.map.get(copy_id) {
+                    Some(Artifact::Sweep(copy)) if copy.code_ref == pattern.code_ref => {
+                        omitted.insert(*copy_id);
+                        omitted.extend(&copy.surface_ids);
+                        omitted.extend(&copy.edge_ids);
+                    }
+                    Some(Artifact::CompositeSolid(copy)) if copy.code_ref == pattern.code_ref => {
+                        omitted.insert(*copy_id);
+                    }
+                    _ => {}
+                }
+            }
+        }
+
+        omitted
+    }
+
     /// Output the Mermaid flowchart for the artifact graph.
     pub(crate) fn to_mermaid_flowchart(&self) -> Result<String, std::fmt::Error> {
         let mut output = String::new();
@@ -404,8 +435,9 @@ impl ArtifactGraph {
 
         let mut next_id = 1_u32;
         let mut stable_id_map = AHashMap::default();
+        let omitted_ids = self.flowchart_omitted_pattern_copy_ids();
 
-        for id in self.map.keys() {
+        for id in self.map.keys().filter(|id| !omitted_ids.contains(id)) {
             stable_id_map.insert(*id, next_id);
             next_id = next_id.checked_add(1).unwrap();
         }
@@ -435,6 +467,9 @@ impl ArtifactGraph {
 
         for artifact in self.map.values() {
             let id = artifact.id();
+            if !stable_id_map.contains_key(&id) {
+                continue;
+            }
 
             let grouped = match artifact {
                 Artifact::CompositeSolid(_) => false,
@@ -819,7 +854,9 @@ impl ArtifactGraph {
         // would otherwise render `a --- b` and `b --- a` as two edges.
         let mut edges = IndexMap::default();
         for artifact in self.map.values() {
-            let source_id = *stable_id_map.get(&artifact.id()).unwrap();
+            let Some(&source_id) = stable_id_map.get(&artifact.id()) else {
+                continue;
+            };
             // In Mermaid, the textual order defines the rank, even though the
             // edge arrow can go in either direction.
             //
@@ -845,7 +882,9 @@ impl ArtifactGraph {
                     }
                     _ => EdgeKind::Other,
                 };
-                let target_id = *stable_id_map.get(&target_id).unwrap();
+                let Some(&target_id) = stable_id_map.get(&target_id) else {
+                    continue;
+                };
                 add_unique_edge(&mut edges, source_id, target_id, flow, edge_kind);
             }
         }
@@ -1268,6 +1307,66 @@ fn duplicate_segment_key_is_none_for_non_segments() {
         code_ref: CodeRef::placeholder(SourceRange::synthetic()),
     });
     assert!(ArtifactGraph::flowchart_duplicate_segment_key(&pattern).is_none());
+}
+
+#[test]
+fn flowchart_omits_materialized_pattern_copy_artifacts() {
+    let pattern_id = ArtifactId::new(Uuid::new_v4());
+    let copy_id = ArtifactId::new(Uuid::new_v4());
+    let copy_face_id = ArtifactId::new(Uuid::new_v4());
+    let copy_edge_id = ArtifactId::new(Uuid::new_v4());
+    let later_sweep_id = ArtifactId::new(Uuid::new_v4());
+    let pattern_code_ref = CodeRef::placeholder(SourceRange::synthetic());
+    let mut graph = ArtifactGraph::default();
+    graph.map.insert(
+        pattern_id,
+        Artifact::Pattern(Pattern {
+            id: pattern_id,
+            sub_type: PatternSubType::Linear,
+            source_id: ArtifactId::new(Uuid::new_v4()),
+            copy_ids: vec![copy_id, later_sweep_id],
+            copy_face_ids: vec![copy_face_id],
+            copy_edge_ids: vec![copy_edge_id],
+            code_ref: pattern_code_ref.clone(),
+        }),
+    );
+    graph.map.insert(
+        copy_id,
+        Artifact::Sweep(Sweep {
+            id: copy_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: ArtifactId::new(Uuid::new_v4()),
+            surface_ids: vec![copy_face_id],
+            edge_ids: vec![copy_edge_id],
+            code_ref: pattern_code_ref,
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+    graph.map.insert(
+        later_sweep_id,
+        Artifact::Sweep(Sweep {
+            id: later_sweep_id,
+            sub_type: SweepSubType::Extrusion,
+            path_id: ArtifactId::new(Uuid::new_v4()),
+            surface_ids: Vec::new(),
+            edge_ids: Vec::new(),
+            code_ref: CodeRef::placeholder(SourceRange::new(1, 2, ModuleId::default())),
+            source_sweep_id: None,
+            trajectory_id: None,
+            method: kittycad_modeling_cmds::shared::ExtrudeMethod::New,
+            consumed: false,
+            pattern_ids: Vec::new(),
+        }),
+    );
+
+    let omitted = graph.flowchart_omitted_pattern_copy_ids();
+    assert_eq!(omitted, AHashSet::from_iter([copy_id, copy_face_id, copy_edge_id]));
+    assert!(!omitted.contains(&pattern_id));
+    assert!(!omitted.contains(&later_sweep_id));
 }
 
 #[test]

@@ -92,6 +92,11 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
     pub drag_anchors: Vec<SegmentDragAnchor>,
+    /// True if this execution is sketch mode execution, executing a single
+    /// sketch block. Unlike [`ModuleState::sketch_mode`], this is constant for
+    /// the entire execution, including while executing the body of the sketch
+    /// block being edited.
+    pub sketch_mode: bool,
 }
 
 impl GlobalState {
@@ -361,6 +366,10 @@ impl ConsumedSolidInfo {
     pub(crate) fn should_report_reused_engine_id_as_consumed(&self, key: ConsumedSolidKey) -> bool {
         !self.returned_solid_keys.contains(&key)
     }
+
+    pub(crate) fn contains_returned_solid(&self, key: &ConsumedSolidKey) -> bool {
+        self.returned_solid_keys.contains(key)
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -432,6 +441,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.sketch_mode = mock_config.sketch_block_id.is_some();
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -454,6 +464,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.sketch_mode = mock_config.sketch_block_id.is_some();
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -620,6 +631,13 @@ impl ExecState {
             }
     }
 
+    /// Returns true if this execution is sketch mode execution, executing a
+    /// single sketch block. Unlike [`Self::sketch_mode`], this doesn't vary
+    /// during the execution.
+    pub(crate) fn is_sketch_mode_execution(&self) -> bool {
+        self.global.sketch_mode
+    }
+
     pub fn next_object_id(&mut self) -> ObjectId {
         ObjectId(self.mod_local.artifacts.object_id_generator.next_id())
     }
@@ -754,6 +772,16 @@ impl ExecState {
     /// boolean operation.
     pub(crate) fn check_solid_id_consumed(&self, id: &Uuid) -> Option<&ConsumedSolidInfo> {
         self.mod_local.consumed_solid_ids.get(id)
+    }
+
+    /// Check whether a solid value was produced by an operation that consumed
+    /// its input bodies. These outputs own engine topology that is distinct
+    /// from the source sketch topology retained in program memory.
+    pub(crate) fn is_consuming_operation_output(&self, key: &ConsumedSolidKey) -> bool {
+        self.mod_local
+            .consumed_solids
+            .values()
+            .any(|info| info.contains_returned_solid(key))
     }
 
     /// Follow direct replacement links until we find the latest known output.
@@ -1162,6 +1190,7 @@ impl GlobalState {
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
+            sketch_mode: false,
         };
 
         let root_id = ModuleId::default();

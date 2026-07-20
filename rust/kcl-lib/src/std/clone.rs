@@ -10,6 +10,7 @@ use kcmc::websocket::OkWebSocketResponseData;
 use kittycad_modeling_cmds::{self as kcmc};
 
 use super::extrude::do_post_extrude;
+use super::solid_consumption::is_consuming_operation_output;
 use crate::errors::KclError;
 use crate::errors::KclErrorDetails;
 use crate::execution::EntityCloneInfo;
@@ -72,7 +73,13 @@ async fn inner_clone(
         // the clone's child IDs.
         let source_topology_id = match &geometry {
             GeometryWithImportedGeometry::Sketch(sketch) => sketch.original_id,
-            GeometryWithImportedGeometry::Solid(solid) => solid.original_id(),
+            GeometryWithImportedGeometry::Solid(solid) => {
+                if is_consuming_operation_output(solid, exec_state) {
+                    solid.id
+                } else {
+                    solid.original_id()
+                }
+            }
             GeometryWithImportedGeometry::ImportedGeometry(_) => old_id,
         };
         let mut entity_clone_info = None;
@@ -626,7 +633,7 @@ clonedComposite = clone(composite)
         assert_eq!(composite.artifact_id, composite.id.into());
         assert_eq!(cloned_composite.artifact_id, cloned_composite.id.into());
         assert_ne!(composite.id, cloned_composite.id);
-        assert_eq!(composite.original_id(), composite.id);
+        assert_ne!(composite.original_id(), composite.id);
         assert_eq!(cloned_composite.original_id(), cloned_composite.id);
 
         let Some(Artifact::CompositeSolid(cloned_artifact)) = result.artifact_graph.get(&cloned_composite.artifact_id)
@@ -754,8 +761,14 @@ clonedCube = clone(cube)
 
             assert_ne!(tag_info.id, cloned_tag_info.id);
             assert_ne!(tag_info.geometry.id(), cloned_tag_info.geometry.id());
-            assert_ne!(tag_info.path, cloned_tag_info.path);
-            assert_ne!(tag_info.surface, cloned_tag_info.surface);
+            assert_eq!(tag_info.path.is_some(), cloned_tag_info.path.is_some());
+            if let (Some(path), Some(cloned_path)) = (&tag_info.path, &cloned_tag_info.path) {
+                assert_ne!(path, cloned_path);
+            }
+            assert_eq!(tag_info.surface.is_some(), cloned_tag_info.surface.is_some());
+            if let (Some(surface), Some(cloned_surface)) = (&tag_info.surface, &cloned_tag_info.surface) {
+                assert_ne!(surface, cloned_surface);
+            }
         }
 
         for (tag_name, tag) in &cube.faces {
