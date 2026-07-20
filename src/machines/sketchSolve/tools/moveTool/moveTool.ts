@@ -53,7 +53,10 @@ import {
   getSketchHoverDistance,
 } from '@src/machines/sketchSolve/interaction/interactionHelpers'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
-import { toastSketchSolveError } from '@src/machines/sketchSolve/sketchSolveErrors'
+import {
+  getSketchSolveBlockingIssues,
+  toastSketchSolveError,
+} from '@src/machines/sketchSolve/sketchSolveErrors'
 import {
   ORIGIN_TARGET,
   type SelectionCoordinates,
@@ -930,7 +933,7 @@ function getAxisConstraintWithOrigin(
 }
 
 function hasSketchSolveIssues(sceneGraphDelta?: SceneGraphDelta): boolean {
-  return (sceneGraphDelta?.exec_outcome?.issues.length ?? 0) > 0
+  return getSketchSolveBlockingIssues(sceneGraphDelta).length > 0
 }
 
 function buildPreviewOutcomeWithPreservedGeometry({

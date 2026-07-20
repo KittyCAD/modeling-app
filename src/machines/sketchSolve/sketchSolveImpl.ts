@@ -62,6 +62,7 @@ import { updateOriginSprite } from '@src/machines/sketchSolve/originSprite'
 import { getCurrentSketchObjectsById } from '@src/machines/sketchSolve/sceneGraphUtils'
 import { deriveSegmentFreedom } from '@src/machines/sketchSolve/segmentsUtils'
 import {
+  getSketchSolveBlockingIssues,
   getSketchSolveExecOutcomeIssues,
   toastSketchSolveError,
   toastSketchSolveExecOutcomeErrors,
@@ -565,7 +566,7 @@ export function updateSceneGraphFromDelta({
 }: IUpdateSketchSceneGraph): void {
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
+    getSketchSolveBlockingIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -922,7 +923,7 @@ export function refreshSelectionStyling({ context }: SolveActionArgs) {
   const sceneGraphDelta = context.sketchExecOutcome.sceneGraphDelta
   const objects = sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeIssues(sceneGraphDelta).length > 0
+    getSketchSolveBlockingIssues(sceneGraphDelta).length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
     context.sketchId
@@ -1152,7 +1153,7 @@ export function refreshSketchSolveScale(context: SketchSolveContext): void {
 
   const objects = context.sketchExecOutcome.sceneGraphDelta.new_graph.objects
   const hasSolveErrors =
-    getSketchSolveExecOutcomeIssues(context.sketchExecOutcome.sceneGraphDelta)
+    getSketchSolveBlockingIssues(context.sketchExecOutcome.sceneGraphDelta)
       .length > 0
   const currentSketchObjects = getCurrentSketchObjectsById(
     objects,
