@@ -2521,73 +2521,17 @@ fn artifacts_to_update(
             }
             return Ok(return_arr);
         }
-        ModelingCmd::Solid3dGetPrevAdjacentEdge(kcmc::Solid3dGetPrevAdjacentEdge { edge_id, face_id, .. }) => {
-            let Some(OkModelingCmdResponse::Solid3dGetPrevAdjacentEdge(info)) = response else {
-                return Ok(Vec::new());
-            };
-            let Some(previous_edge_id) = info.edge.map(ArtifactId::new) else {
-                return Ok(Vec::new());
-            };
-            if matches!(artifacts.get(&previous_edge_id), Some(Artifact::SweepEdge(_))) {
-                return Ok(Vec::new());
-            }
-
-            let edge_id = ArtifactId::new(*edge_id);
-            let Some(Artifact::Segment(segment)) = artifacts.get(&edge_id) else {
-                return Ok(Vec::new());
-            };
-            let Some(surface_id) = segment.surface_id else {
-                return Ok(Vec::new());
-            };
-            let Some(Artifact::Wall(wall)) = artifacts.get(&surface_id) else {
-                return Ok(Vec::new());
-            };
-            let Some(Artifact::Sweep(sweep)) = artifacts.get(&wall.sweep_id) else {
-                return Ok(Vec::new());
-            };
-            let Some(Artifact::Path(_)) = artifacts.get(&sweep.path_id) else {
-                return Ok(Vec::new());
-            };
-
-            let (cmd_id, index) = artifacts
-                .values()
-                .find_map(|artifact| {
-                    let Artifact::SweepEdge(sweep_edge) = artifact else {
-                        return None;
-                    };
-                    (sweep_edge.seg_id == edge_id && sweep_edge.sweep_id == sweep.id)
-                        .then_some((sweep_edge.cmd_id, sweep_edge.index))
-                })
-                .unwrap_or((artifact_command.cmd_id, 0));
-
-            let mut new_segment = segment.clone();
-            new_segment.edge_ids = vec![previous_edge_id];
-            let mut new_sweep = sweep.clone();
-            new_sweep.edge_ids = vec![previous_edge_id];
-            let mut new_wall = wall.clone();
-            new_wall.edge_cut_edge_ids = vec![previous_edge_id];
-
-            return Ok(vec![
-                Artifact::SweepEdge(SweepEdge {
-                    id: previous_edge_id,
-                    sub_type: SweepEdgeSubType::PreviousAdjacent,
-                    seg_id: edge_id,
-                    cmd_id,
-                    index,
-                    sweep_id: sweep.id,
-                    common_surface_ids: vec![ArtifactId::new(*face_id)],
-                }),
-                Artifact::Segment(new_segment),
-                Artifact::Sweep(new_sweep),
-                Artifact::Wall(new_wall),
-            ]);
-        }
         ModelingCmd::Solid3dGetAdjacencyInfo(kcmc::Solid3dGetAdjacencyInfo { .. }) => {
             let Some(OkModelingCmdResponse::Solid3dGetAdjacencyInfo(info)) = response else {
                 return Ok(Vec::new());
             };
 
             let mut return_arr = Vec::new();
+            let adjacent_edge_ids = info
+                .edges
+                .iter()
+                .filter_map(|edge| edge.adjacent_info.as_ref().map(|info| info.edge_id))
+                .collect::<AHashSet<_>>();
             for (index, edge) in info.edges.iter().enumerate() {
                 let Some(original_info) = &edge.original_info else {
                     continue;
@@ -2668,7 +2612,11 @@ fn artifacts_to_update(
                     new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Wall(new_wall));
                 }
-                if let Some(previous_adjacent_info) = &edge.previous_adjacent_info {
+                // Internal edges are already represented as the next adjacent edge of
+                // the preceding segment. Only add the open component's start edge.
+                if let Some(previous_adjacent_info) = &edge.previous_adjacent_info
+                    && !adjacent_edge_ids.contains(&previous_adjacent_info.edge_id)
+                {
                     return_arr.push(Artifact::SweepEdge(SweepEdge {
                         id: previous_adjacent_info.edge_id.into(),
                         sub_type: SweepEdgeSubType::PreviousAdjacent,
