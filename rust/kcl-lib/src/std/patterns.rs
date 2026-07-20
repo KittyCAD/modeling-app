@@ -503,9 +503,6 @@ impl GeometryTrait for Solid {
         // We need this for in extrude.rs when you sketch on face.
         if let Some(sketch) = self.sketch_mut() {
             sketch.id = id;
-            // Outside a pattern operation, a reassigned body owns its new
-            // topology (for example, a boolean/composite result).
-            sketch.original_id = id;
         }
     }
 
