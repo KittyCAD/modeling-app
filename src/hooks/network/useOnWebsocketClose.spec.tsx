@@ -57,6 +57,7 @@ describe('useOnWebsocketClose', () => {
       )
       unmount()
       expect(callback).toHaveBeenCalledTimes(1)
+      expect(callback).toHaveBeenCalledWith(undefined)
     })
     test('should call infinite detection loop callback on close event', async () => {
       const callback = vi.fn(() => 1)
@@ -82,6 +83,7 @@ describe('useOnWebsocketClose', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
       expect(infiniteLoopCallback).toHaveBeenCalledTimes(1)
+      expect(infiniteLoopCallback).toHaveBeenCalledWith('1006')
     })
   })
 })

@@ -273,6 +273,9 @@ describe('mlEphantManagerMachine', () => {
       )
 
       expect(actor.getSnapshot().context.awaitingResponse).toBe(true)
+      expect(actor.getSnapshot().context.projectNameCurrentlyOpened).toBe(
+        'zoo-project'
+      )
       expect(ws.sentPayloads).toStrictEqual([
         JSON.stringify({
           type: 'system',
