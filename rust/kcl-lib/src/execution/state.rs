@@ -92,6 +92,11 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
     pub drag_anchors: Vec<SegmentDragAnchor>,
+    /// True if this execution is sketch mode execution, executing a single
+    /// sketch block. Unlike [`ModuleState::sketch_mode`], this is constant for
+    /// the entire execution, including while executing the body of the sketch
+    /// block being edited.
+    pub sketch_mode: bool,
 }
 
 impl GlobalState {
@@ -436,6 +441,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.sketch_mode = mock_config.sketch_block_id.is_some();
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -458,6 +464,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.sketch_mode = mock_config.sketch_block_id.is_some();
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -622,6 +629,13 @@ impl ExecState {
                 ModulePath::Local { .. } => true,
                 ModulePath::Std { .. } => false,
             }
+    }
+
+    /// Returns true if this execution is sketch mode execution, executing a
+    /// single sketch block. Unlike [`Self::sketch_mode`], this doesn't vary
+    /// during the execution.
+    pub(crate) fn is_sketch_mode_execution(&self) -> bool {
+        self.global.sketch_mode
     }
 
     pub fn next_object_id(&mut self) -> ObjectId {
@@ -1176,6 +1190,7 @@ impl GlobalState {
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
+            sketch_mode: false,
         };
 
         let root_id = ModuleId::default();
