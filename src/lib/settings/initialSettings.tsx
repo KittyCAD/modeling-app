@@ -18,6 +18,10 @@ import {
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import {
+  isProjectLibrarySettings,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type {
   DynamicSettingsCategories,
   ResolvedExtensionSettings,
@@ -247,7 +251,7 @@ function createCoreSettings() {
         defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from.',
         hideOnLevel: 'project',
-        hideOnPlatform: 'web',
+        hideOnPlatform: 'both',
         validate: (v) =>
           typeof v === 'string' && (v.length > 0 || !isDesktop()),
         Component: ({ value, updateValue }) => {
@@ -294,6 +298,13 @@ function createCoreSettings() {
             </div>
           )
         },
+      }),
+      libraries: new Setting<ProjectLibrarySetting[]>({
+        defaultValue: [],
+        description: 'Project libraries shown on the home page.',
+        hideOnLevel: 'project',
+        hideOnPlatform: 'both',
+        validate: isProjectLibrarySettings,
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},

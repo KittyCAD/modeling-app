@@ -86,12 +86,6 @@ export function modelingMenuCallbackMostActions({
         return
       }
       void navigate(filePath + PATHS.SETTINGS_KEYBINDINGS)
-    } else if (data.menuLabel === 'Edit.Change project directory') {
-      if (!filePath) {
-        console.warn('filePath is undefined')
-        return
-      }
-      void navigate(filePath + PATHS.SETTINGS_USER + '#projectDirectory')
     } else if (data.menuLabel === 'File.Preferences.Project settings') {
       if (!filePath) {
         console.warn('filePath is undefined')

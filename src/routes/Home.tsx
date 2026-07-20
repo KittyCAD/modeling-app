@@ -36,7 +36,7 @@ import { isDesktop } from '@src/lib/isDesktop'
 import { openExternalBrowserIfDesktop } from '@src/lib/openWindow'
 import { PATHS } from '@src/lib/paths'
 import { markOnce } from '@src/lib/performance'
-import type { SettingsType } from '@src/lib/settings/initialSettings'
+import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import {
   getNextSearchParams,
   getSortFunction,
@@ -83,12 +83,7 @@ import {
 import type { HTMLProps } from 'react'
 import { useEffect, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import {
-  Link,
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import { waitFor } from 'xstate'
 
 type ReadWriteProjectState = {
@@ -210,6 +205,9 @@ const Home = () => {
   const autoUpdateDownloadProgress = autoUpdateDownloadProgressSignal.value
   const autoUpdateReady = autoUpdateReadySignal.value
   const settingsValues = settings.useSettings()
+  const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
+    settingsValues.app.libraries.current
+  )
   const machineApiEnabled = settingsValues.app.machineApi.current
   const onboardingStatus = settingsValues.app.onboardingStatus.current
 
@@ -305,7 +303,7 @@ const Home = () => {
     } else if (data.menuLabel === 'File.Preferences.User default units') {
       void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#defaultUnit`)
     } else if (data.menuLabel === 'Edit.Change project directory') {
-      void navigate(`${PATHS.HOME}${PATHS.SETTINGS_USER}#projectDirectory`)
+      void navigate(PATHS.HOME + PATHS.SETTINGS)
     } else if (data.menuLabel === 'File.Sign out') {
       auth.send({ type: 'Log out' })
     } else if (
@@ -351,7 +349,7 @@ const Home = () => {
           setQuery={setQuery}
           sort={sort}
           setSearchParams={setSearchParams}
-          settings={settingsValues}
+          projectDirectoryPath={defaultDirectoryLibraryPath}
           readWriteProjectDir={readWriteProjectDir}
           projectSearchKeybinding={projectSearchKeybinding}
           className="col-start-2 -col-end-1"
@@ -543,7 +541,7 @@ interface HomeHeaderProps extends HTMLProps<HTMLDivElement> {
   setQuery: (query: string) => void
   sort: string
   setSearchParams: (params: Record<string, string>) => void
-  settings: SettingsType
+  projectDirectoryPath?: string
   readWriteProjectDir: ReadWriteProjectState
   projectSearchKeybinding?: string
 }
@@ -552,7 +550,7 @@ function HomeHeader({
   setQuery,
   sort,
   setSearchParams,
-  settings,
+  projectDirectoryPath,
   readWriteProjectDir,
   projectSearchKeybinding,
   ...rest
@@ -615,29 +613,16 @@ function HomeHeader({
           </div>
         </div>
       </div>
-      <p className="my-4 text-sm text-chalkboard-80 dark:text-chalkboard-30">
-        Loaded from{' '}
-        <Link
-          data-testid="project-directory-settings-link"
-          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-          className="text-chalkboard-90 dark:text-chalkboard-20 underline underline-offset-2"
-        >
-          {settings.app.projectDirectory.current}
-        </Link>
-        .
-      </p>
+      {projectDirectoryPath ? (
+        <p className="my-4 break-words text-sm text-chalkboard-80 dark:text-chalkboard-30">
+          Loaded from {projectDirectoryPath}.
+        </p>
+      ) : null}
       {!readWriteProjectDir.value && (
         <section>
           <div className="flex items-center select-none">
-            <div className="flex gap-8 items-center justify-between grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
-              <p className="">{errorMessage(readWriteProjectDir.error)}</p>
-              <Link
-                data-testid="project-directory-settings-link"
-                to={`${PATHS.HOME + PATHS.SETTINGS_USER}#projectDirectory`}
-                className="py-1 text-white underline underline-offset-2 text-sm"
-              >
-                Change Project Directory
-              </Link>
+            <div className="flex gap-8 items-center grow bg-destroy-80 text-white py-1 px-4 my-2 rounded-sm">
+              <p>{errorMessage(readWriteProjectDir.error)}</p>
             </div>
           </div>
         </section>

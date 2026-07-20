@@ -32,7 +32,6 @@ type FileRoleLabel =
 type EditRoleLabel =
   | 'Rename Project'
   | 'Delete Project'
-  | 'Change Project Directory'
   | 'Undo'
   | 'Redo'
   | 'Speech'

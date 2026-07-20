@@ -28,6 +28,7 @@ export interface HomeProjectEntry {
   id: string
   source: HomeProjectSource
   status: HomeProjectStatus
+  libraryIds?: readonly string[]
   name: string
   title?: string
   localProjectPath?: string
@@ -44,9 +45,11 @@ export interface HomeProjectEntry {
 
 export type HomeProjectEntryContribution = Omit<
   HomeProjectEntry,
-  'id' | 'source'
+  'id' | 'libraryIds' | 'source'
 > & {
   id?: string
+  libraryId?: string
+  libraryIds?: readonly string[]
   source: Exclude<HomeProjectSource, 'both'>
 }
 
@@ -89,12 +92,29 @@ function contributionStableId(entry: HomeProjectEntryContribution) {
   return `${entry.source}:${entry.id ?? entry.name}`
 }
 
+function uniqueStrings(values: readonly (string | undefined)[]) {
+  return Array.from(
+    new Set(values.filter((value): value is string => Boolean(value)))
+  )
+}
+
+function contributionLibraryIds(entry: HomeProjectEntryContribution) {
+  return uniqueStrings([entry.libraryId, ...(entry.libraryIds ?? [])])
+}
+
 function entryFromContribution(
   contribution: HomeProjectEntryContribution
 ): HomeProjectEntry {
+  const {
+    libraryId: _libraryId,
+    libraryIds: _libraryIds,
+    ...entry
+  } = contribution
+
   return {
-    ...contribution,
+    ...entry,
     id: contribution.id ?? contributionStableId(contribution),
+    libraryIds: contributionLibraryIds(contribution),
   }
 }
 
@@ -128,6 +148,30 @@ function mergeHomeProjectEntries(
     modified: Math.max(local.modified ?? 0, remote.modified ?? 0) || undefined,
     thumbnail: local.thumbnail ?? remote.thumbnail,
     readWriteAccess: local.readWriteAccess,
+    libraryIds: uniqueStrings([
+      ...(local.libraryIds ?? []),
+      ...(remote.libraryIds ?? []),
+    ]),
+  }
+}
+
+function mergeSameSourceHomeProjectEntries(
+  existing: HomeProjectEntry | undefined,
+  next: HomeProjectEntry
+): HomeProjectEntry {
+  if (!existing) {
+    return next
+  }
+
+  return {
+    ...existing,
+    ...next,
+    modified: Math.max(existing.modified ?? 0, next.modified ?? 0) || undefined,
+    thumbnail: existing.thumbnail ?? next.thumbnail,
+    libraryIds: uniqueStrings([
+      ...(existing.libraryIds ?? []),
+      ...(next.libraryIds ?? []),
+    ]),
   }
 }
 
@@ -155,9 +199,9 @@ export function coalesceHomeProjectEntries(
     const bucket = buckets.get(key) ?? {}
 
     if (contribution.source === 'local') {
-      bucket.local = entry
+      bucket.local = mergeSameSourceHomeProjectEntries(bucket.local, entry)
     } else {
-      bucket.remote = entry
+      bucket.remote = mergeSameSourceHomeProjectEntries(bucket.remote, entry)
     }
 
     buckets.set(key, bucket)
