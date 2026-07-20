@@ -142,10 +142,13 @@ impl Node<'_> {
     /// This merely indicates that this [Node] specifically is the exact same
     /// borrowed object as [Node].
     pub fn ptr_eq(&self, other: Node) -> bool {
-        unsafe { std::ptr::eq(self.ptr(), other.ptr()) }
+        // Comparing addresses alone isn't enough: a struct and its first
+        // field share an address, so two different variants can point to the
+        // same location without being the same object.
+        std::mem::discriminant(self) == std::mem::discriminant(&other) && std::ptr::eq(self.ptr(), other.ptr())
     }
 
-    unsafe fn ptr(&self) -> *const () {
+    fn ptr(&self) -> *const () {
         match self {
             Node::Program(n) => *n as *const _ as *const (),
             Node::ImportStatement(n) => *n as *const _ as *const (),
@@ -578,5 +581,22 @@ fn myfn() {
         let foo: Node = (&program.body[0]).into();
         assert!(foo.ptr_eq((&program.body[0]).into()));
         assert!(!foo.ptr_eq((&program.body[1]).into()));
+    }
+
+    #[test]
+    fn check_ptr_eq_different_variants() {
+        let program = kcl!("foo = 1");
+
+        let types::BodyItem::VariableDeclaration(decl) = &program.body[0] else {
+            panic!("expected a variable declaration");
+        };
+        let declaration: Node = decl.as_ref().into();
+        // The declarator is the first field of the declaration, so the two
+        // may share an address, but they are not the same object.
+        let declarator: Node = (&decl.declaration).into();
+        assert!(declaration.ptr_eq(decl.as_ref().into()));
+        assert!(declarator.ptr_eq((&decl.declaration).into()));
+        assert!(!declaration.ptr_eq(declarator));
+        assert!(!declarator.ptr_eq(declaration));
     }
 }

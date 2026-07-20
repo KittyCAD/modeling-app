@@ -1,24 +1,23 @@
 name: ruff
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
-on:
-  push:
-    branches: main
-    paths:
-      - '**.py'
-      - .github/workflows/ruff.yml
-  pull_request:
-    paths:
-      - '**.py'
-      - .github/workflows/ruff.yml
+
 permissions:
   contents: read
   pull-requests: write
+
 jobs:
   ruff:
     runs-on: namespace-profile-ubuntu-2-cores
     steps:
       - uses: actions/checkout@v7.0.0
-      - uses: astral-sh/ruff-action@v3
+      - uses: astral-sh/ruff-action@v4.1.0
 

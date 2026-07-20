@@ -12,10 +12,10 @@ import {
 } from '@src/lib/cameraControls'
 import {
   getInitialDefaultDir,
+  overwriteProjectTomlWithNewSettings,
   readAppSettingsFile,
   readProjectSettingsFile,
   writeAppSettingsFile,
-  writeProjectSettingsFile,
 } from '@src/lib/desktop'
 import { isDesktop } from '@src/lib/isDesktop'
 import type {
@@ -27,6 +27,12 @@ import {
   parseLayoutJsonWithMigrations,
   parseLayoutWithMigrations,
 } from '@src/lib/layout/utils'
+import {
+  getDefaultProjectLibrarySettings,
+  isProjectLibrarySettings,
+  mergeProjectLibrarySettings,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type { ResolvedExtensionSettings } from '@src/lib/settings/extensionSettings'
 import {
   Setting,
@@ -440,6 +446,18 @@ const USER_APP_ONLY_SETTINGS_SECTIONS = [
     defineBooleanAppOnlyField(
       { category: 'app', field: 'showAllFiles' },
       'show_all_files'
+    ),
+    defineMappedAppOnlyField(
+      { category: 'app', field: 'libraries' },
+      'libraries',
+      {
+        fromToml: (value) =>
+          isProjectLibrarySettings(value) ? value : undefined,
+        toToml: (value) =>
+          isProjectLibrarySettings(value)
+            ? (value as unknown as JsonValue)
+            : undefined,
+      }
     ),
   ]),
   defineAppOnlySection('debug', [
@@ -902,6 +920,7 @@ export async function loadAndValidateSettings(
   projectPathOrOptions:
     | string
     | {
+        defaultProjectLibraries?: readonly ProjectLibrarySetting[]
         extensionSettings?: ResolvedExtensionSettings
         projectPath?: string
       }
@@ -911,7 +930,11 @@ export async function loadAndValidateSettings(
     typeof projectPathOrOptions === 'string'
       ? { projectPath: projectPathOrOptions }
       : projectPathOrOptions
-  const { extensionSettings = {}, projectPath } = options
+  const {
+    defaultProjectLibraries = [],
+    extensionSettings = {},
+    projectPath,
+  } = options
   // Make sure we have wasm initialized.
   const wasmInstance = await initPromise
 
@@ -922,15 +945,26 @@ export async function loadAndValidateSettings(
     return Promise.reject(appSettingsPayload)
   }
 
-  let settingsNext = createSettings(extensionSettings)
-
-  settingsNext.app.projectDirectory.default = await getInitialDefaultDir()
-
-  settingsNext = setSettingsAtLevel(
-    settingsNext,
-    'user',
-    configurationToSettingsPayload(appSettingsPayload, extensionSettings)
+  const appSettings = configurationToSettingsPayload(
+    appSettingsPayload,
+    extensionSettings
   )
+  const initialDefaultDir = await getInitialDefaultDir()
+  const legacyProjectDirectory =
+    typeof appSettings.app?.projectDirectory === 'string'
+      ? appSettings.app.projectDirectory
+      : undefined
+  const defaultDirectoryLibraryPath =
+    legacyProjectDirectory ?? initialDefaultDir
+
+  let settingsNext = createSettings(extensionSettings)
+  settingsNext.app.projectDirectory.default = initialDefaultDir
+  settingsNext.app.libraries.default = mergeProjectLibrarySettings(
+    getDefaultProjectLibrarySettings(defaultDirectoryLibraryPath),
+    defaultProjectLibraries
+  )
+
+  settingsNext = setSettingsAtLevel(settingsNext, 'user', appSettings)
 
   // Load the project settings if they exist
   if (projectPath) {
@@ -958,7 +992,7 @@ export async function loadAndValidateSettings(
         )
       }
 
-      await writeProjectSettingsFile(projectPath, projectTomlString)
+      await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
     }
 
     const projectSettingsPayload = projectSettings
@@ -1084,7 +1118,7 @@ export async function saveSettings(
   }
 
   // Write the project settings.
-  await writeProjectSettingsFile(projectPath, projectTomlString)
+  await overwriteProjectTomlWithNewSettings(projectPath, projectTomlString)
 }
 
 export function getChangedSettingsAtLevel(

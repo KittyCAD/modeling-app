@@ -1,6 +1,6 @@
 import path from 'path'
 import * as TOML from '@iarna/toml'
-import type { OutputFormat3d, UserFeature } from '@kittycad/lib'
+import type { Feature, OutputFormat3d } from '@kittycad/lib'
 import type { BrowserContext, Locator, Page, TestInfo } from '@playwright/test'
 import { expect } from '@playwright/test'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
@@ -942,7 +942,7 @@ export async function setup(
   context: BrowserContext,
   page: Page,
   testInfo?: TestInfo,
-  userFeatures: readonly UserFeature[] = []
+  userFeatures: readonly Feature[] = []
 ) {
   const testProjectSettings =
     TEST_SETTINGS.project &&
@@ -1203,7 +1203,7 @@ export async function createProject({
 }) {
   await test.step(`Create project and navigate to it`, async () => {
     await page.getByRole('button', { name: 'Create project' }).click()
-    await page.getByRole('textbox', { name: 'Name' }).fill(name)
+    await page.getByTestId('cmd-bar-arg-value').fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
     await closeOnboardingModalIfPresent(page)

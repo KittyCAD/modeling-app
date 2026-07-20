@@ -35,6 +35,26 @@ function getProjectDirectorySetting(
   return typeof directory === 'string' ? directory : undefined
 }
 
+function getRelativePathIfContained(
+  parentDirectory: string,
+  targetPath: string
+): string | undefined {
+  const relativePath = fsZds.relative(parentDirectory, targetPath)
+  if (relativePath === '') {
+    return relativePath
+  }
+  if (
+    relativePath === '..' ||
+    relativePath.startsWith(`..${fsZds.sep}`) ||
+    relativePath.startsWith('/') ||
+    relativePath.startsWith('\\') ||
+    /^[a-zA-Z]:/.test(relativePath)
+  ) {
+    return undefined
+  }
+  return relativePath
+}
+
 export const PATHS = {
   INDEX: '/',
   HOME,
@@ -111,10 +131,14 @@ export function parseProjectRoute(
   let currentFileName = null
   let currentFilePath = null
   const projectDirectory = getProjectDirectorySetting(configuration)
-  if (projectDirectory && id.startsWith(projectDirectory)) {
-    const relativeToRoot = fsZds.relative(projectDirectory, id)
+  const relativeToRoot = projectDirectory
+    ? getRelativePathIfContained(projectDirectory, id)
+    : undefined
+  if (projectDirectory && relativeToRoot !== undefined) {
     projectName = relativeToRoot.split(fsZds.sep)[0]
-    projectPath = fsZds.join(projectDirectory, projectName)
+    projectPath = projectName
+      ? fsZds.join(projectDirectory, projectName)
+      : projectDirectory
     projectName = projectName === '' ? null : projectName
   } else {
     projectPath = id
@@ -202,37 +226,35 @@ export function getProjectDirectoryFromKCLFilePath(
   targetPath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = targetPath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, projectDirectory] = desktopSafePathSplit(replacedPath)
-  if (iAmABlankString === '') {
-    return projectDirectory
-  }
-  return ''
+  const relativePath = getRelativePathIfContained(
+    applicationProjectDirectory,
+    targetPath
+  )
+  if (relativePath === undefined) return ''
+  return desktopSafePathSplit(relativePath)[0] ?? ''
 }
 
 export function parentPathRelativeToProject(
   absoluteFilePath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, _projectDirectory, ...rest] =
-    desktopSafePathSplit(replacedPath)
-  if (iAmABlankString === '') {
-    return desktopSafePathJoin(rest)
-  }
-  return ''
+  const relativePath = getRelativePathIfContained(
+    applicationProjectDirectory,
+    absoluteFilePath
+  )
+  if (relativePath === undefined) return ''
+  const [_projectDirectory, ...rest] = desktopSafePathSplit(relativePath)
+  return desktopSafePathJoin(rest)
 }
 
 export function parentPathRelativeToApplicationDirectory(
   absoluteFilePath: string,
   applicationProjectDirectory: string
 ): string {
-  const replacedPath = absoluteFilePath.replace(applicationProjectDirectory, '')
-  const [iAmABlankString, ...rest] = desktopSafePathSplit(replacedPath)
-  if (iAmABlankString === '') {
-    return desktopSafePathJoin(rest)
-  }
-  return ''
+  return (
+    getRelativePathIfContained(applicationProjectDirectory, absoluteFilePath) ??
+    ''
+  )
 }
 
 export { webSafeJoin, webSafePathSplit } from '@src/lib/pathUtils'
@@ -293,6 +315,16 @@ export const enforceFileEXT = (
 export const getEXTNoPeriod = (filePath: string) => {
   const extension = filePath.split('.').pop() || null
   return extension
+}
+
+/**
+ * Whether a file name includes a user-typed extension: a `.` that is neither the
+ * first character (so dotfiles like `.gitignore` don't count) nor the last.
+ * `bracket` -> false, `notes.txt` -> true, `archive.tar.gz` -> true.
+ */
+export const fileNameHasExtension = (fileName: string): boolean => {
+  const lastDot = fileName.lastIndexOf('.')
+  return lastDot > 0 && lastDot < fileName.length - 1
 }
 
 export const getEXTWithPeriod = (filePath: string) => {

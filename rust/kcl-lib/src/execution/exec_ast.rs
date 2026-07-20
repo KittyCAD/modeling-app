@@ -1831,6 +1831,16 @@ impl Node<SketchBlock> {
 
         let (solve_outcome, solve_analysis) = match solve_result {
             Ok((solved, freedom)) => {
+                if solved
+                    .final_values()
+                    .iter()
+                    .any(|number| number.is_infinite() || number.is_nan())
+                {
+                    return Err(KclError::new_internal(KclErrorDetails::new(
+                        "KCL's 2D constraint solver returned an invalid number".to_owned(),
+                        vec![SourceRange::from(self)],
+                    )));
+                }
                 let outcome = Solved::from_ezpz_outcome(solved, &all_constraints, num_required_constraints);
                 if !outcome.converged {
                     exec_state.warn(
@@ -1876,14 +1886,14 @@ impl Node<SketchBlock> {
                             &format!("Internal error from constraint solver: {}", &failure.error).into(),
                         );
                         return Err(internal_err(
-                            format!("Internal error from constraint solver: {}", &failure.error),
+                            format!("Internal error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
                     _ => {
                         // Catch all error case so that it's not a breaking change to publish new errors.
                         return Err(internal_err(
-                            format!("Error from constraint solver: {}", &failure.error),
+                            format!("Error from constraint solver: {}", failure.error),
                             self,
                         ));
                     }
@@ -1893,9 +1903,9 @@ impl Node<SketchBlock> {
         // Propagate warnings.
         for warning in &solve_outcome.warnings {
             let message = if let Some(index) = warning.about_constraint.as_ref() {
-                format!("{}; constraint index {}", &warning.content, index)
+                format!("{}; constraint index {}", warning.content, index)
             } else {
-                format!("{}", &warning.content)
+                format!("{}", warning.content)
             };
             exec_state.warn(CompilationIssue::err(range, message), annotations::WARN_SOLVER);
         }
@@ -1984,7 +1994,7 @@ impl Node<SketchBlock> {
             debug_assert!(
                 false,
                 "{}; scene_objects={:#?}",
-                &message, &exec_state.mod_local.artifacts.scene_objects
+                message, exec_state.mod_local.artifacts.scene_objects
             );
             return Err(internal_err(message, range));
         };
@@ -3356,16 +3366,31 @@ impl Node<MemberExpression> {
             }
             (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
+                // Out-of-bounds error.
+                let oob_error = KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("The array doesn't have any item at index {index}"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                );
                 if let Some(value) = value_of_arr {
+                    // Indexing into the array was successful.
                     Ok(value.to_owned().continue_())
+                } else if ctx.no_engine_commands().await && !exec_state.is_sketch_mode_execution() {
+                    // In mock execution, we handle OOB errors
+                    // by trying to get index 0. This is because the array value might have
+                    // come from the engine, so the array's actual length isn't
+                    // known during mock execution runtime. Because it's mock execution
+                    // the specific value is hopefully not important.
+                    //
+                    // We don't do this in sketch mode execution since it's
+                    // forbidden from contacting the engine, meaning array
+                    // lengths are always accurate, and the OOB error is real.
+                    let value = arr.first();
+                    value.map(|value| value.to_owned().continue_()).ok_or(oob_error)
                 } else {
-                    Err(KclError::new_undefined_value(
-                        KclErrorDetails::new(
-                            format!("The array doesn't have any item at index {index}"),
-                            vec![self.clone().into()],
-                        ),
-                        None,
-                    ))
+                    Err(oob_error)
                 }
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.

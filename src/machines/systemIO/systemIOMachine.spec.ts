@@ -1,11 +1,11 @@
 import path from 'node:path'
 import { App } from '@src/lib/app'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
+import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import {
-  getCloudProjectFolderRenameName,
   shouldSendProjectFolderReadProgress,
   sortProjectDirectoryEntriesByModifiedDesc,
   systemIOMachineImpl,
@@ -16,7 +16,10 @@ import {
   SystemIOMachineEvents,
   SystemIOMachineStates,
 } from '@src/machines/systemIO/utils'
-import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+import {
+  buildTheWorldAndNoEngineConnection,
+  createTestWasmRegistryItem,
+} from '@src/unitTestUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
 
@@ -103,37 +106,13 @@ beforeEach(async () => {
 
   const { instance } = await buildTheWorldAndNoEngineConnection()
   appInstanceInThisFile = App.fromProvided({
-    wasmPromise: Promise.resolve(instance),
+    registryOverrides: [createTestWasmRegistryItem(Promise.resolve(instance))],
   })
   instanceInThisFile = instance
 })
 
 describe('systemIOMachine - XState', () => {
-  describe('cloud-backed project folder names', () => {
-    it('uses a title-derived folder name when it is available', () => {
-      expect(
-        getCloudProjectFolderRenameName({
-          title: 'Some demo',
-          currentName: 'Some demo 2',
-          folders: [mockProject('Some demo 2')],
-        })
-      ).toBe('Some demo')
-    })
-
-    it('adds numeric suffixes when title-derived folder names already exist', () => {
-      expect(
-        getCloudProjectFolderRenameName({
-          title: 'Some demo',
-          currentName: 'Some demo 2',
-          folders: [
-            mockProject('Some demo'),
-            mockProject('Some demo-2'),
-            mockProject('Some demo 2'),
-          ],
-        })
-      ).toBe('Some demo-3')
-    })
-
+  describe('project folder reads', () => {
     it('only emits folder read progress for initial loads', () => {
       expect(shouldSendProjectFolderReadProgress(undefined)).toBe(true)
       expect(shouldSendProjectFolderReadProgress([])).toBe(true)
@@ -468,6 +447,57 @@ describe('systemIOMachine - XState', () => {
           )
         } finally {
           actor.stop()
+        }
+      })
+      it('should reject project deletion with an empty project name', async () => {
+        const rmSpy = vi.spyOn(fsZds, 'rm').mockResolvedValue(undefined)
+        const actor = createActor(
+          systemIOMachineImpl.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        let sawDeletingProject = false
+        const settled = new Promise<ReturnType<typeof actor.getSnapshot>>(
+          (resolve) => {
+            actor.subscribe((state) => {
+              if (state.matches(SystemIOMachineStates.deletingProject)) {
+                sawDeletingProject = true
+              }
+              if (
+                sawDeletingProject &&
+                (state.matches(SystemIOMachineStates.idle) ||
+                  state.matches(SystemIOMachineStates.readingFolders))
+              ) {
+                resolve(state)
+              }
+            })
+          }
+        )
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.deleteProject,
+            data: { requestedProjectName: '' },
+          })
+
+          const settledState = await settled
+          expect(settledState).toMatchObject({
+            value: SystemIOMachineStates.idle,
+          })
+          expect(rmSpy).not.toHaveBeenCalled()
+        } finally {
+          actor.stop()
+          rmSpy.mockRestore()
         }
       })
       it('should accept file rename while reading folders', async () => {
@@ -885,7 +915,7 @@ describe('systemIOMachine - XState', () => {
             requestedProjectDirectoryPath: kclSamplesPath,
           },
         })
-        let context = actor.getSnapshot().context
+        const context = actor.getSnapshot().context
         expect(context.projectDirectoryPath).toBe(kclSamplesPath)
       })
       it('should defer project imports while checking read/write access', async () => {
@@ -1180,7 +1210,7 @@ describe('systemIOMachine - XState', () => {
             requestedDefaultProjectFolderName: expected,
           },
         })
-        let context = actor.getSnapshot().context
+        const context = actor.getSnapshot().context
         expect(context.defaultProjectFolderName).toBe(expected)
       })
     })

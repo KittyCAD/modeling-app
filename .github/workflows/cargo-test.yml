@@ -22,7 +22,7 @@ jobs:
     name: Build test artifacts
     runs-on: namespace-profile-ubuntu-8-cores
     steps:
-      - uses: runs-on/action@v2.1.2
+      - uses: runs-on/action@v2.2.0
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
@@ -46,7 +46,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -163,7 +163,7 @@ jobs:
         partitionIndex: [1, 2, 3]
         partitionTotal: [3]
     steps:
-      - uses: runs-on/action@v2.1.2
+      - uses: runs-on/action@v2.2.0
       - uses: actions/create-github-app-token@v3.2.0
         id: app-token
         with:
@@ -178,7 +178,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install Rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml
@@ -247,7 +247,7 @@ jobs:
         run: |
           [ -e rust-toolchain.toml ] || cp rust/rust-toolchain.toml ./
       - name: Install rust
-        uses: actions-rust-lang/setup-rust-toolchain@v1.16.1
+        uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           cache: false # Configured below.
           rustflags: '' # Use .cargo/config.toml

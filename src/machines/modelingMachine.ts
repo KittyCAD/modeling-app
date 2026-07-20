@@ -232,18 +232,10 @@ function findSceneObjectForPlaneSelection(
   if (plane.faceInfo.type === 'cap') {
     const capKind = plane.faceInfo.subType
     return sceneGraphObjects.find((object) => {
-      if (
-        object.kind.type !== 'Cap' ||
-        object.kind.kind !== capKind ||
-        object.source.type !== 'BackTrace'
-      ) {
+      if (object.kind.type !== 'Cap' || object.kind.kind !== capKind) {
         return false
       }
-      const sweepSource = object.source.ranges.at(-1)
-      return (
-        sweepSource !== undefined &&
-        sourceRangesEqual(sweepSource[0], sweepRange)
-      )
+      return sourceRangesEqual(object.kind.source.sweep.range, sweepRange)
     })
   }
 
@@ -255,16 +247,13 @@ function findSceneObjectForPlaneSelection(
   if (err(segmentRange)) return undefined
 
   return sceneGraphObjects.find((object) => {
-    if (object.kind.type !== 'Wall' || object.source.type !== 'BackTrace') {
+    if (object.kind.type !== 'Wall') {
       return false
     }
-    const sweepSource = object.source.ranges.at(-2)
-    const segmentSource = object.source.ranges.at(-1)
+
     return (
-      sweepSource !== undefined &&
-      segmentSource !== undefined &&
-      sourceRangesEqual(sweepSource[0], sweepRange) &&
-      sourceRangesEqual(segmentSource[0], segmentRange)
+      sourceRangesEqual(object.kind.source.sweep.range, sweepRange) &&
+      sourceRangesEqual(object.kind.source.segment.range, segmentRange)
     )
   })
 }
@@ -1694,12 +1683,6 @@ export const modelingMachine = setup({
         },
       }
     }),
-    'enable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(true)
-    },
-    'disable copilot': ({ context: { kclManager } }) => {
-      kclManager.setCopilotEnabled(false)
-    },
     'Set selection': assign(
       ({
         context: {
@@ -4251,9 +4234,7 @@ export const modelingMachine = setup({
       }
     }),
     'submit-prompt-edit': fromPromise(
-      async ({}: {
-        input: ModelingCommandSchema['Prompt-to-edit']
-      }) => {}
+      async ({}: { input: ModelingCommandSchema['Prompt-to-edit'] }) => {}
     ),
 
     /* Below are recent modeling codemods that are using updateModelinState,
@@ -6341,14 +6322,11 @@ export const modelingMachine = setup({
         },
       },
 
-      exit: ['enable copilot'],
-
       entry: ['add axis n grid', 'clientToEngine cam sync direction'],
     },
 
     'Sketch no face': {
       entry: [
-        'disable copilot',
         'show planes sketch no face',
         'set selection filter to faces only',
       ],
@@ -6359,19 +6337,11 @@ export const modelingMachine = setup({
           {
             guard: 'Artifact graph is empty',
             target: '#Modeling.idle.showPlanes',
-            actions: [
-              'reset sketch metadata',
-              'enable copilot',
-              'stop scene infra',
-            ],
+            actions: ['reset sketch metadata', 'stop scene infra'],
           },
           {
             target: '#Modeling.idle.hidePlanes',
-            actions: [
-              'reset sketch metadata',
-              'enable copilot',
-              'stop scene infra',
-            ],
+            actions: ['reset sketch metadata', 'stop scene infra'],
           },
         ],
 
@@ -6422,7 +6392,7 @@ export const modelingMachine = setup({
 
         onDone: {
           target: 'Sketch',
-          actions: ['disable copilot', 'set new sketch metadata'],
+          actions: ['set new sketch metadata'],
         },
 
         onError: 'idle',
@@ -7668,7 +7638,6 @@ export const modelingMachine = setup({
       // maybe cancel needs to have a guard for if else logic?
       actions: [
         'reset sketch metadata',
-        'enable copilot',
         ({ context }) => {
           context.kclManager.sceneInfra.stop()
         },
