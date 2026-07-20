@@ -327,16 +327,6 @@ description: Artifact commands blend-tutorial.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_prev_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
         "type": "object_visible",
         "object_id": "[uuid]",
         "hidden": true
@@ -462,16 +452,6 @@ description: Artifact commands blend-tutorial.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_prev_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
       }
     },
     {
@@ -745,16 +725,6 @@ description: Artifact commands blend-tutorial.kcl
         "type": "solid3d_get_adjacency_info",
         "object_id": "[uuid]",
         "edge_id": "[uuid]"
-      }
-    },
-    {
-      "cmdId": "[uuid]",
-      "range": [],
-      "command": {
-        "type": "solid3d_get_prev_adjacent_edge",
-        "object_id": "[uuid]",
-        "edge_id": "[uuid]",
-        "face_id": "[uuid]"
       }
     },
     {

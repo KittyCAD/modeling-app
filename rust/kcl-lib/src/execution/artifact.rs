@@ -2668,6 +2668,30 @@ fn artifacts_to_update(
                     new_wall.edge_cut_edge_ids = vec![adjacent_info.edge_id.into()];
                     return_arr.push(Artifact::Wall(new_wall));
                 }
+                if let Some(previous_adjacent_info) = &edge.previous_adjacent_info {
+                    return_arr.push(Artifact::SweepEdge(SweepEdge {
+                        id: previous_adjacent_info.edge_id.into(),
+                        sub_type: SweepEdgeSubType::PreviousAdjacent,
+                        seg_id: edge_id,
+                        cmd_id: artifact_command.cmd_id,
+                        index,
+                        sweep_id: sweep.id,
+                        common_surface_ids: previous_adjacent_info
+                            .faces
+                            .iter()
+                            .map(|face| ArtifactId::new(*face))
+                            .collect(),
+                    }));
+                    let mut new_segment = segment.clone();
+                    new_segment.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Segment(new_segment));
+                    let mut new_sweep = sweep.clone();
+                    new_sweep.edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Sweep(new_sweep));
+                    let mut new_wall = wall.clone();
+                    new_wall.edge_cut_edge_ids = vec![previous_adjacent_info.edge_id.into()];
+                    return_arr.push(Artifact::Wall(new_wall));
+                }
             }
             return Ok(return_arr);
         }
