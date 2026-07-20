@@ -52,26 +52,30 @@ test.describe('Onboarding tests', { tag: ['@desktop'] }, () => {
 
     await test.step('Test the clicking through the onboarding flow', async () => {
       await test.step('Going forward', async () => {
+        let advances = 0
         while ((await nextButton.innerText()) !== 'Finish') {
-          await nextButton.hover()
+          if (++advances > 30) {
+            throw new Error('Onboarding did not reach Finish')
+          }
+          const urlBefore = page.url()
           await nextButton.click()
-          // Clicking too fast fucks everything.
-          await new Promise((r) => setTimeout(r, 1000))
+          await expect.poll(() => page.url()).not.toBe(urlBefore)
         }
       })
 
       await test.step('Going backward', async () => {
+        let advances = 0
         while ((await prevButton.innerText()) !== 'Dismiss') {
-          await prevButton.hover()
+          if (++advances > 30) {
+            throw new Error('Onboarding did not reach Dismiss')
+          }
+          const urlBefore = page.url()
           await prevButton.click()
-          // Clicking too fast fucks everything.
-          await new Promise((r) => setTimeout(r, 1000))
+          await expect.poll(() => page.url()).not.toBe(urlBefore)
         }
       })
 
-      // Dismiss the onboarding
       await test.step('Dismiss the onboarding', async () => {
-        await prevButton.hover()
         await prevButton.click()
       })
     })
