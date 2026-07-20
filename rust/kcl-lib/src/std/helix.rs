@@ -198,6 +198,12 @@ async fn inner_helix(
             }
             Axis3dOrEdgeReference::Edge(edge) => {
                 let edge_id = edge.get_engine_id(exec_state, &args)?;
+                let source_range = args
+                    .labeled
+                    .get("axis")
+                    .map(|arg| arg.source_range)
+                    .unwrap_or(args.source_range);
+                edge::record_refactor_meta_for_consumed_edge(exec_state, edge_id, source_range, &args).await;
 
                 // For backwards compatibility, use edge_id directly instead of querying for EdgeReference
                 let cmd = if let Some(length) = length {

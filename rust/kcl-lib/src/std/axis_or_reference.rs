@@ -36,6 +36,8 @@ pub enum MirrorAcross3d {
     },
     /// Tagged edge.
     Edge(Box<EdgeReference>),
+    /// Edge identified by adjacent faces.
+    EdgeSpecifier(UnresolvedEdgeSpecifier),
     /// A plane.
     Plane(Box<Plane>),
 }

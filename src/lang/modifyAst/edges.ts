@@ -32,6 +32,7 @@ import {
   getSketchSegmentName,
   getSketchSegmentNameFromSourceSurface,
   getSketchVariableNameForSegment,
+  getVariableNameFromNodePath,
   getVariableExprsFromSelection,
   resolveToCodeRef,
   traverse,
@@ -1020,8 +1021,10 @@ function isFilletOrChamfer(callee: string): boolean {
   return callee === 'fillet' || callee === 'chamfer'
 }
 
-function isRevolveOrHelix(callee: string): boolean {
-  return callee === 'revolve' || callee === 'helix'
+function edgeReferenceArgument(callee: string): 'axis' | 'across' | null {
+  if (callee === 'revolve' || callee === 'helix') return 'axis'
+  if (callee === 'mirror3d') return 'across'
+  return null
 }
 
 function isExtrude(callee: string): boolean {
@@ -1589,6 +1592,7 @@ function findFilletChamferCallsToFixUnified(
 interface RevolveHelixCallToFix {
   range: Z0006SourceRange
   faceIds: [string, string]
+  argument: 'axis' | 'across'
   /** When range is 0,0 we use this path to find the call (fallback). */
   pathToCall?: PathToNode
 }
@@ -1649,8 +1653,10 @@ function getCallPathFromExpr(
 
 /** Exported for tests: find revolve/helic calls with deprecated axis to fix. */
 export function findRevolveHelixCallsToFix(
-  program: Program,
-  edgeRefactorMetadata: EdgeRefactorMeta[]
+  program: Node<Program>,
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph?: ArtifactGraph,
+  wasmInstance?: ModuleType
 ): RevolveHelixCallToFix[] {
   const results: RevolveHelixCallToFix[] = []
 
@@ -1662,15 +1668,43 @@ export function findRevolveHelixCallsToFix(
     }
     const callPath = getCallPathFromExpr(expr, pathPrefix)
     const calleeName = getCalleeName(call)
-    if (!calleeName || !isRevolveOrHelix(calleeName)) {
+    if (!calleeName) {
       walk(expr)
       return
     }
-    const axisArg = findKwArg('axis', call)
-    const deprecatedCall = axisArg
-      ? findDeprecatedEdgeStdlibCallFromExpr(program, axisArg, pathPrefix ?? [])
+    const argument = edgeReferenceArgument(calleeName)
+    if (!argument) {
+      walk(expr)
+      return
+    }
+    const edgeArg = findKwArg(argument, call)
+    const deprecatedCall = edgeArg
+      ? findDeprecatedEdgeStdlibCallFromExpr(program, edgeArg, pathPrefix ?? [])
       : null
     if (!deprecatedCall) {
+      if (
+        calleeName === 'mirror3d' &&
+        edgeArg &&
+        getTagInfoFromExpr(edgeArg)?.tagsBaseExpr &&
+        artifactGraph &&
+        wasmInstance
+      ) {
+        const payload = directSketchSegmentEdgePayload(
+          program,
+          edgeArg,
+          artifactGraph,
+          wasmInstance
+        )
+        const [firstFaceId, secondFaceId] = payload?.side_faces ?? []
+        if (firstFaceId && secondFaceId) {
+          results.push({
+            range: [call.start, call.end, call.moduleId],
+            faceIds: [firstFaceId, secondFaceId],
+            argument,
+            pathToCall: callPath,
+          })
+        }
+      }
       walk(expr)
       return
     }
@@ -1689,6 +1723,7 @@ export function findRevolveHelixCallsToFix(
       results.push({
         range: [callStart, callEnd, moduleId],
         faceIds: [meta.faceIds[0], meta.faceIds[1]],
+        argument,
         pathToCall: callPath,
       })
     }
@@ -1744,7 +1779,7 @@ export function findExtrudeEdgeCallsToFix(
         : null
       if (!deprecatedCall) {
         if (
-          argument === 'direction' &&
+          (argument === 'target' || argument === 'direction') &&
           argumentExpr &&
           artifactGraph &&
           wasmInstance
@@ -1753,7 +1788,8 @@ export function findExtrudeEdgeCallsToFix(
             program,
             argumentExpr,
             artifactGraph,
-            wasmInstance
+            wasmInstance,
+            argument === 'target' ? call : undefined
           )
           if (payload) replacements.push({ argument, payload })
         }
@@ -1794,18 +1830,81 @@ function directSketchSegmentEdgePayload(
   program: Node<Program>,
   expr: Expr,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  targetExtrudeCall?: Node<CallExpressionKw>
 ): FilletEdgeRefPayload | null {
-  if (
-    expr.type !== 'MemberExpression' ||
-    expr.object.type !== 'Name' ||
-    expr.property.type !== 'Name'
-  ) {
+  if (expr.type !== 'MemberExpression' || expr.property.type !== 'Name') {
     return null
   }
 
-  const sketchName = expr.object.name.name
   const segmentName = expr.property.name.name
+  const tagInfo = getTagInfoFromExpr(expr)
+  const owningBodyExpr = tagInfo?.tagsBaseExpr
+    ? getBodyExprFromSketchTagsBaseExpr(tagInfo.tagsBaseExpr)
+    : null
+
+  if (owningBodyExpr) {
+    const bodyKey = exprPathKey(owningBodyExpr)
+    if (!bodyKey) return null
+
+    const owningSweep = [...artifactGraph.values()].find((artifact) => {
+      if (artifact.type !== 'sweep') return false
+      return [
+        artifact.codeRef.pathToNode,
+        getNodePathFromSourceRange(program, artifact.codeRef.range),
+      ].some(
+        (pathToNode) =>
+          getVariableNameFromNodePath(pathToNode, program, wasmInstance) ===
+          bodyKey
+      )
+    })
+    if (!owningSweep || owningSweep.type !== 'sweep') return null
+
+    const candidateSegments = [...artifactGraph.values()].filter(
+      (artifact): artifact is Artifact & { type: 'segment' } => {
+        if (
+          artifact.type !== 'segment' ||
+          artifact.pathId !== owningSweep.pathId ||
+          artifact.commonSurfaceIds.length !== 2
+        ) {
+          return false
+        }
+        const sourceSegmentId = artifact.originalSegId ?? artifact.id
+        return (
+          getSketchSegmentName(
+            program,
+            sourceSegmentId,
+            artifactGraph,
+            wasmInstance
+          ) === segmentName
+        )
+      }
+    )
+    if (candidateSegments.length === 0) return null
+
+    const targetSweep = targetExtrudeCall
+      ? [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweep' &&
+            artifact.codeRef.range[0] === targetExtrudeCall.start &&
+            artifact.codeRef.range[1] === targetExtrudeCall.end &&
+            (artifact.codeRef.range[2] ?? 0) === targetExtrudeCall.moduleId
+        )
+      : undefined
+    const segment =
+      targetSweep?.type === 'sweep'
+        ? candidateSegments.find(
+            (candidate) => candidate.surfaceId === targetSweep.pathId
+          )
+        : candidateSegments.length === 1
+          ? candidateSegments[0]
+          : undefined
+
+    return segment ? { side_faces: segment.commonSurfaceIds } : null
+  }
+
+  if (expr.object.type !== 'Name') return null
+  const sketchName = expr.object.name.name
   const originalSegment = [...artifactGraph.values()].find(
     (artifact) =>
       artifact.type === 'segment' &&
@@ -2025,7 +2124,7 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
 ): Node<Program> {
   if (toFix.length === 0) return modifiedAst
   for (let i = 0; i < toFix.length; i++) {
-    const { faceIds, pathToCall } = toFix[i]
+    const { faceIds, argument, pathToCall } = toFix[i]
     const path = pathToCall && pathToCall.length > 0 ? pathToCall : pathList[i]
     const result = createEdgeRefObjectExpression(
       { side_faces: faceIds },
@@ -2044,9 +2143,9 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
     if (err(nodeResult)) continue
     const callNode = nodeResult.node
     const newArgs = (callNode.arguments ?? []).filter(
-      (a) => getLabelName(a) !== 'axis'
+      (a) => getLabelName(a) !== argument
     )
-    newArgs.push(createLabeledArg('axis', result.expr))
+    newArgs.push(createLabeledArg(argument, result.expr))
     callNode.arguments = newArgs
   }
   return modifiedAst
@@ -2299,7 +2398,12 @@ export function refactorZ0006Unified(
     sourceRange
   )
   const toFixRH = filterCallsBySourceRange(
-    findRevolveHelixCallsToFix(ast, edgeRefactorMetadata),
+    findRevolveHelixCallsToFix(
+      ast,
+      edgeRefactorMetadata,
+      artifactGraph,
+      wasmInstance
+    ),
     sourceRange
   )
   const toFixExtrudeEdges = filterCallsBySourceRange(

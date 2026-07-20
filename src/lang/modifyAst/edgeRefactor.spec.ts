@@ -614,6 +614,12 @@ extrude002 = extrude(
 )
 `
 
+const KCL_EXTRUDE_TARGET_DIRECT_TAG =
+  KCL_EXTRUDE_TARGET_GET_OPPOSITE_EDGE.replace(
+    'getOppositeEdge(extrude001.sketch.tags.line1)',
+    'extrude001.sketch.tags.line1'
+  )
+
 const KCL_EXTRUDE_DIRECTION_GET_COMMON_EDGE = `sketch001 = startSketchOn(XY)
 profile001 = startProfile(sketch001, at = [2, 2])
   |> yLine(length = 1)
@@ -800,6 +806,43 @@ helix001 = helix(
   angleStart = 360deg,
   radius = 5,
 )
+`
+
+const KCL_MIRROR3D_GET_OPPOSITE_EDGE = `sketch001 = startSketchOn(XY)
+profile = startProfile(sketch001, at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $seg01)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+body = extrude(profile, length = 5, tagEnd = $capEnd001)
+mirrored = mirror3d(body, across = getOppositeEdge(seg01))
+`
+
+const KCL_MIRROR3D_SOLID_EDGE_TAG = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [10, 0])
+  line2 = line(start = [10, 0], end = [10, 10])
+  line3 = line(start = [10, 10], end = [0, 10])
+  line4 = line(start = [0, 10], end = [0, 0])
+}
+baseRegion = region(point = [5, 5], sketch = baseSketch)
+baseSolid = extrude(baseRegion, length = 5)
+mirrored = mirror3d(baseSolid, across = baseSolid.sketch.tags.line4)
+`
+
+const KCL_MIRROR3D_SKETCH_SEGMENT = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+
+baseSketch = sketch(on = XY) {
+  line1 = line(start = [0, 0], end = [10, 0])
+  line2 = line(start = [10, 0], end = [10, 10])
+  line3 = line(start = [10, 10], end = [0, 10])
+  line4 = line(start = [0, 10], end = [0, 0])
+}
+baseRegion = region(point = [5, 5], sketch = baseSketch)
+baseSolid = extrude(baseRegion, length = 5)
+mirrored = mirror3d(baseSolid, across = baseSketch.line4)
 `
 
 /** Direct tag (no stdlib call): fillet(radius = 1, tags = [e1]). Should convert to edges = [{ sideFaces = [e1, capStart001] }]. */
@@ -1079,6 +1122,29 @@ describe('refactorZ0006Unified', () => {
         ).toEqual([argument])
       }
     )
+
+    it('finds a direct tagged-edge extrude target from the artifact graph', () => {
+      const ast = assertParse(KCL_EXTRUDE_TARGET_DIRECT_TAG, wasmInstance)
+      const graph = createTaggedWallAndCapGraph(
+        ast,
+        KCL_EXTRUDE_TARGET_DIRECT_TAG,
+        {
+          segmentId: 'segment-1',
+          wallId: 'wall-1',
+          capId: 'cap-1',
+          pathId: 'path-1',
+          sweepId: 'sweep-1',
+          segmentSnippet:
+            'line1 = line(start = [-6.36mm, -3.01mm], end = [3.61mm, 6.24mm])',
+          extrudeSnippet: 'extrude(region001, length = 5mm)',
+        }
+      )
+      const callsToFix = findExtrudeEdgeCallsToFix(ast, [], graph, wasmInstance)
+      expect(callsToFix).toHaveLength(1)
+      expect(callsToFix[0]?.replacements.map((item) => item.argument)).toEqual([
+        'target',
+      ])
+    })
 
     it('finds revolve call with axis = helper variable for Z0006 refactor', () => {
       const ast = assertParse(
@@ -1551,9 +1617,6 @@ part = bracket()
       const ast = assertParse(kcl, instanceInThisFile)
       await kclManagerInThisFile.executeAst({ ast })
       const execState = kclManagerInThisFile.execState
-      expect(
-        execState.edgeRefactorMetadata?.length ?? 0
-      ).toBeGreaterThanOrEqual(1)
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
       const refactored = refactorZ0006Unified(
         ast,
@@ -1660,6 +1723,25 @@ part = bracket()
         expect(normalized).not.toContain('getOppositeEdge(')
         expect(normalized).toContain('extrude( { sideFaces = [')
         expect(normalized).toContain('direction = { sideFaces = [')
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
+      'refactors a direct tagged-edge extrude target',
+      { timeout: 30_000 },
+      async () => {
+        const refactored = await runIntegrationRefactor(
+          KCL_EXTRUDE_TARGET_DIRECT_TAG
+        )
+        const normalized = norm(refactored)
+        expect(normalized).not.toContain(
+          'extrude( extrude001.sketch.tags.line1,'
+        )
+        expect(normalized).toContain('extrude( { sideFaces = [')
 
         const refactoredAst = assertParse(refactored, instanceInThisFile)
         await kclManagerInThisFile.executeAst({ ast: refactoredAst })
@@ -2011,6 +2093,79 @@ part = bracket()
         expect(n).toContain('helix(')
         expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
+      }
+    )
+
+    it(
+      'refactors mirror3d with a deprecated across edge to an edge reference payload',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_MIRROR3D_GET_OPPOSITE_EDGE,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(execState.edgeRefactorMetadata?.length ?? 0).toBeGreaterThan(0)
+
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+
+        const normalized = norm(refactored)
+        expect(normalized).toContain('mirror3d(')
+        expect(normalized).toContain('across = {')
+        expect(normalized).toContain('sideFaces = [')
+        expect(normalized).not.toContain('across = getOppositeEdge')
+      }
+    )
+
+    it(
+      'refactors a mirror3d solid edge tag but preserves a sketch segment axis',
+      { timeout: 30_000 },
+      async () => {
+        const taggedEdgeAst = assertParse(
+          KCL_MIRROR3D_SOLID_EDGE_TAG,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast: taggedEdgeAst })
+        const execState = kclManagerInThisFile.execState
+        const refactored = refactorZ0006Unified(
+          taggedEdgeAst,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+        const normalized = norm(refactored)
+        expect(normalized).toContain('across = {')
+        expect(normalized).toContain('sideFaces = [')
+        expect(normalized).not.toContain('across = baseSolid.sketch.tags.line4')
+
+        const segmentAst = assertParse(
+          KCL_MIRROR3D_SKETCH_SEGMENT,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast: segmentAst })
+        const segmentState = kclManagerInThisFile.execState
+        const unchanged = refactorZ0006Unified(
+          segmentAst,
+          segmentState.edgeRefactorMetadata ?? [],
+          segmentState.directTagFilletMetadata ?? [],
+          segmentState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(unchanged)).toBe(true)
+        if (!err(unchanged)) throw new Error('Expected no Z0006 refactor')
+        expect(unchanged.message).toBe('No Z0006 fixes to apply')
       }
     )
 
