@@ -6479,3 +6479,21 @@ mod mirror3d_edge_specifier {
         super::execute(TEST_NAME, true).await
     }
 }
+mod mirror3d_edge_specifier_after_subtract {
+    const TEST_NAME: &str = "mirror3d_edge_specifier_after_subtract";
+
+    #[test]
+    fn parse() {
+        super::parse(TEST_NAME)
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn unparse() {
+        super::unparse(TEST_NAME).await
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_execute() {
+        super::execute(TEST_NAME, true).await
+    }
+}

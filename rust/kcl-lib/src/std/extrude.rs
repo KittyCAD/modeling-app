@@ -1259,9 +1259,20 @@ pub(crate) async fn do_post_extrude<'a>(
     });
     new_value.extend(inner_surfaces);
 
-    // Add the tags for the start or end caps.
+    // Add the tags for the start or end caps. A CSG can split or remove a
+    // canonical cap before a body is cloned or mirrored, so reconstruction
+    // cannot preserve that tag as one cap when the engine no longer reports it.
     if let Some(tag_start) = named_cap_tags.start {
-        let Some(start_cap_id) = start_cap_id else {
+        if let Some(start_cap_id) = start_cap_id {
+            new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+                face_id: start_cap_id,
+                tag: Some(tag_start.clone()),
+                geo_meta: GeoMeta {
+                    id: start_cap_id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        } else if clone_id_map.is_none() {
             return Err(KclError::new_type(KclErrorDetails::new(
                 format!(
                     "Expected a start cap ID for tag `{}` for extrusion of sketch {:?}",
@@ -1269,19 +1280,19 @@ pub(crate) async fn do_post_extrude<'a>(
                 ),
                 vec![args.source_range],
             )));
-        };
-
-        new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
-            face_id: start_cap_id,
-            tag: Some(tag_start.clone()),
-            geo_meta: GeoMeta {
-                id: start_cap_id,
-                metadata: args.source_range.into(),
-            },
-        }));
+        }
     }
     if let Some(tag_end) = named_cap_tags.end {
-        let Some(end_cap_id) = end_cap_id else {
+        if let Some(end_cap_id) = end_cap_id {
+            new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
+                face_id: end_cap_id,
+                tag: Some(tag_end.clone()),
+                geo_meta: GeoMeta {
+                    id: end_cap_id,
+                    metadata: args.source_range.into(),
+                },
+            }));
+        } else if clone_id_map.is_none() {
             return Err(KclError::new_type(KclErrorDetails::new(
                 format!(
                     "Expected an end cap ID for tag `{}` for extrusion of sketch {:?}",
@@ -1289,16 +1300,7 @@ pub(crate) async fn do_post_extrude<'a>(
                 ),
                 vec![args.source_range],
             )));
-        };
-
-        new_value.push(ExtrudeSurface::ExtrudePlane(crate::execution::ExtrudePlane {
-            face_id: end_cap_id,
-            tag: Some(tag_end.clone()),
-            geo_meta: GeoMeta {
-                id: end_cap_id,
-                metadata: args.source_range.into(),
-            },
-        }));
+        }
     }
 
     let meta = sketch.meta.clone();
