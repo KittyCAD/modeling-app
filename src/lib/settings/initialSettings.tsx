@@ -19,8 +19,10 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
+  getDefaultDirectoryProjectLibrarySetting,
   isProjectLibrarySettings,
   type ProjectLibrarySetting,
+  updateDefaultDirectoryProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type {
   DynamicSettingsCategories,
@@ -251,60 +253,103 @@ function createCoreSettings() {
         defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from.',
         hideOnLevel: 'project',
-        hideOnPlatform: 'web',
+        hideOnPlatform: 'both',
         validate: (v) =>
           typeof v === 'string' && (v.length > 0 || !isDesktop()),
-        Component: ({ value, updateValue }) => {
-          const inputRef = useRef<HTMLInputElement>(null)
-          return (
-            <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
-              <input
-                className="flex-grow text-xs px-2 bg-transparent"
-                value={value}
-                disabled
-                data-testid="project-directory-input"
-                ref={inputRef}
-              />
-              <button
-                onClick={toSync(async () => {
-                  // In desktop end-to-end tests we can't control the file picker,
-                  // so we seed the new directory value in the element's dataset
-                  const inputRefVal = inputRef.current?.dataset.testValue
-                  if (
-                    inputRef.current &&
-                    inputRefVal &&
-                    !isArray(inputRefVal)
-                  ) {
-                    updateValue(inputRefVal)
-                  } else {
-                    if (!window.electron) {
-                      return Promise.reject(new Error("Can't open file dialog"))
-                    }
-                    const newPath = await window.electron.open({
-                      properties: ['openDirectory', 'createDirectory'],
-                      defaultPath: value,
-                      title: 'Choose a new project directory',
-                    })
-                    if (newPath.canceled) return
-                    updateValue(newPath.filePaths[0])
-                  }
-                }, reportRejection)}
-                className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
-                data-testid="project-directory-button"
-              >
-                <CustomIcon name="folder" className="w-5 h-5" />
-                <Tooltip position="top-right">Choose a folder</Tooltip>
-              </button>
-            </div>
-          )
-        },
       }),
       libraries: new Setting<ProjectLibrarySetting[]>({
         defaultValue: [],
-        description: 'Project libraries shown on the home page.',
+        description: 'The default library to save and load projects from.',
         hideOnLevel: 'project',
-        hideOnPlatform: 'both',
+        hideOnPlatform: 'web',
         validate: isProjectLibrarySettings,
+        Component: ({ value, updateValue }) => {
+          const inputRef = useRef<HTMLInputElement>(null)
+          const defaultDirectoryLibrary =
+            getDefaultDirectoryProjectLibrarySetting(value)
+
+          if (!defaultDirectoryLibrary) {
+            return (
+              <p className="text-xs text-chalkboard-80 dark:text-chalkboard-30">
+                No default projects directory library is configured.
+              </p>
+            )
+          }
+
+          const updateDefaultDirectoryLibrary = (
+            updates: Partial<Pick<ProjectLibrarySetting, 'title' | 'path'>>
+          ) => {
+            updateValue(
+              updateDefaultDirectoryProjectLibrarySetting(value, updates)
+            )
+          }
+
+          return (
+            <div className="flex flex-col gap-3 p-1">
+              <label className="flex flex-col gap-1 text-xs">
+                <span className="font-medium text-chalkboard-80 dark:text-chalkboard-30">
+                  Title
+                </span>
+                <input
+                  className="w-full px-2 py-1 bg-transparent border rounded-sm border-chalkboard-30"
+                  value={defaultDirectoryLibrary.title}
+                  data-testid="project-library-title-input"
+                  onChange={(event) =>
+                    updateDefaultDirectoryLibrary({
+                      title: event.target.value,
+                    })
+                  }
+                />
+              </label>
+              <label className="flex flex-col gap-1 text-xs">
+                <span className="font-medium text-chalkboard-80 dark:text-chalkboard-30">
+                  Folder
+                </span>
+                <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
+                  <input
+                    className="flex-grow text-xs px-2 bg-transparent"
+                    value={defaultDirectoryLibrary.path}
+                    disabled
+                    data-testid="project-directory-input"
+                    ref={inputRef}
+                  />
+                  <button
+                    onClick={toSync(async () => {
+                      const inputRefVal = inputRef.current?.dataset.testValue
+                      if (
+                        inputRef.current &&
+                        inputRefVal &&
+                        !isArray(inputRefVal)
+                      ) {
+                        updateDefaultDirectoryLibrary({ path: inputRefVal })
+                      } else {
+                        if (!window.electron) {
+                          return Promise.reject(
+                            new Error("Can't open file dialog")
+                          )
+                        }
+                        const newPath = await window.electron.open({
+                          properties: ['openDirectory', 'createDirectory'],
+                          defaultPath: defaultDirectoryLibrary.path,
+                          title: 'Choose a projects library folder',
+                        })
+                        if (newPath.canceled) return
+                        updateDefaultDirectoryLibrary({
+                          path: newPath.filePaths[0],
+                        })
+                      }
+                    }, reportRejection)}
+                    className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
+                    data-testid="project-directory-button"
+                  >
+                    <CustomIcon name="folder" className="w-5 h-5" />
+                    <Tooltip position="top-right">Choose a folder</Tooltip>
+                  </button>
+                </div>
+              </label>
+            </div>
+          )
+        },
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},
