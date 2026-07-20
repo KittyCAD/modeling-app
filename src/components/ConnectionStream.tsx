@@ -8,7 +8,10 @@ import { useOnPageExit } from '@src/hooks/network/useOnPageExit'
 import { useOnPageIdle } from '@src/hooks/network/useOnPageIdle'
 import { useOnPageMounted } from '@src/hooks/network/useOnPageMounted'
 import { useOnPageResize } from '@src/hooks/network/useOnPageResize'
-import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
+import {
+  type EngineDisconnectEvent,
+  useOnPeerConnectionClose,
+} from '@src/hooks/network/useOnPeerConnectionClose'
 import { useOnVitestEngineOnline } from '@src/hooks/network/useOnVitestEngineOnline'
 import { useOnWebsocketClose } from '@src/hooks/network/useOnWebsocketClose'
 import { useOnWindowOnlineOffline } from '@src/hooks/network/useOnWindowOnlineOffline'
@@ -20,6 +23,7 @@ import {
   artifactToEntityRef,
   findOperationForArtifact,
 } from '@src/lang/queryAst'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import {
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
@@ -38,6 +42,7 @@ import {
 } from '@src/lib/selections'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
+import { EngineCommandManagerEvents } from '@src/network/utils'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
@@ -46,6 +51,14 @@ import type { MouseEventHandler } from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
+
+const stringHash = (value: string) => {
+  let hash = 0
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) | 0
+  }
+  return hash.toString(36)
+}
 
 interface ConnectionStreamProps {
   authToken: string | undefined
@@ -86,6 +99,45 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     return isSafari ? ' object-fill' : ''
   }, [])
+
+  const reportEngineDisconnect = useCallback(
+    (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
+      const kclSource = kclManager.code
+      const connection = engineCommandManager.connection
+
+      void reportClientError({
+        code: ClientErrorCode.EngineDisconnect,
+        message: `Engine disconnected: ${eventType}`,
+        dedupeKey: `ConnectionStream:engine-disconnect:${eventType}:${kclManager.currentFileName ?? 'unknown'}:${stringHash(kclSource)}`,
+        extra: {
+          source: 'ConnectionStream',
+          eventType,
+          projectName: project?.name,
+          currentFileName: kclManager.currentFileName,
+          isSceneReady,
+          numberOfConnectionAttempts,
+          pendingCommandCount: Object.keys(engineCommandManager.pendingCommands)
+            .length,
+          hasConnection: Boolean(connection),
+          connectionId: connection?.id,
+          connectionConnected: connection?.connected,
+          peerConnectionState: connection?.peerConnection?.connectionState,
+          iceConnectionState: connection?.peerConnection?.iceConnectionState,
+          dataChannelReadyState: connection?.unreliableDataChannel?.readyState,
+          ...extra,
+          kclSourceLength: kclSource.length,
+          kclSource,
+        },
+      })
+    },
+    [
+      engineCommandManager,
+      isSceneReady,
+      kclManager,
+      numberOfConnectionAttempts,
+      project?.name,
+    ]
+  )
 
   const handleMouseUp: MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
@@ -384,7 +436,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   const onWebSocketCloseParams = useMemo(
     () => ({
-      callback: () => {
+      callback: (code: string | undefined) => {
+        reportEngineDisconnect(EngineCommandManagerEvents.WebsocketClosed, {
+          websocketCloseCode: code,
+        })
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -403,13 +458,22 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           setShowManualConnect(true)
         })
       },
-      infiniteDetectionLoopCallback: () => {
+      infiniteDetectionLoopCallback: (code: string | undefined) => {
+        reportEngineDisconnect(EngineCommandManagerEvents.WebsocketClosed, {
+          websocketCloseCode: code,
+        })
         setShowManualConnect(true)
       },
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      reportEngineDisconnect,
+      settings,
+    ]
   )
   useOnWebsocketClose(onWebSocketCloseParams)
 
@@ -443,7 +507,8 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
 
   const onPeerConnectionCloseParams = useMemo(
     () => ({
-      callback: () => {
+      callback: (eventType: EngineDisconnectEvent) => {
+        reportEngineDisconnect(eventType)
         setShowManualConnect(false)
         tryConnecting({
           authToken: props.authToken || '',
@@ -465,7 +530,13 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       engineCommandManager,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [isConnecting, numberOfConnectionAttempts, props.authToken, settings]
+    [
+      isConnecting,
+      numberOfConnectionAttempts,
+      props.authToken,
+      reportEngineDisconnect,
+      settings,
+    ]
   )
   useOnPeerConnectionClose(onPeerConnectionCloseParams)
 

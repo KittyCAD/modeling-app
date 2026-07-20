@@ -198,11 +198,29 @@ description: Artifact commands fillet_duplicate_tags.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "solid3d_get_prev_adjacent_edge",
         "object_id": "[uuid]",
         "edge_id": "[uuid]",
         "face_id": "[uuid]"
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     }
   ]
 }

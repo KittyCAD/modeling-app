@@ -1120,6 +1120,46 @@ plane001 = offsetPlane(YZ, offset = 10)
 })
 
 describe('Testing getVariableExprsFromSelection', () => {
+  it('should use the input solid for an unassigned edge cut', () => {
+    const code = `extrude001 = extrude(profile001, length = 5)
+chamfer(extrude001, tags = edge001, length = 1)`
+    const ast = assertParse(code, instanceInThisFile)
+    const chamferStart = code.indexOf('chamfer(')
+    const codeRef = {
+      ...codeRefFromRange([chamferStart, code.length, 0], ast),
+      nodePath: defaultNodePath(),
+    }
+    const edgeCut: Artifact = {
+      type: 'edgeCut',
+      id: 'edge-cut-1',
+      subType: 'chamfer',
+      consumedEdgeId: 'edge-1',
+      edgeIds: [],
+      codeRef,
+    }
+    const artifactGraph = new Map([[edgeCut.id, edgeCut]])
+
+    const vars = getVariableExprsFromSelection(
+      {
+        graphSelections: [{ artifact: edgeCut, codeRef }],
+        otherSelections: [],
+      },
+      artifactGraph,
+      ast,
+      instanceInThisFile
+    )
+    if (err(vars)) {
+      throw vars
+    }
+
+    expect(vars.exprs).toHaveLength(1)
+    expect(vars.exprs[0]).toMatchObject({
+      type: 'Name',
+      name: { name: 'extrude001' },
+    })
+    expect(vars.pathIfPipe).toBeUndefined()
+  })
+
   it('should find the variable expr in a simple profile selection', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

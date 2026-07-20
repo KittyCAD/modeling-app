@@ -290,11 +290,11 @@ mod tests {
         assert_eq!(
             sh.signatures[0].label,
             r#"extrude(
-  @sketches: [Sketch | Face | TaggedFace | TaggedEdge | Edge | Segment; 1+],
+  @sketches: [Sketch | Face | TaggedFace | TaggedEdge | Edge | Segment | any; 1+],
   length?: number(Length),
   to?: Point3d | Axis3d | Plane | Edge | Face | Sketch | Solid | TaggedEdge | TaggedFace | any,
   symmetric?: bool,
-  direction?: Point3d | Edge | TaggedEdge | Segment,
+  direction?: Point3d | Edge | TaggedEdge | Segment | any,
   bidirectionalLength?: number(Length),
   tagStart?: TagDecl,
   tagEnd?: TagDecl,

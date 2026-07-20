@@ -14,7 +14,7 @@
     overlays = [
       (import rust-overlay)
       (self: super: {
-        rustToolchain = super.rust-bin.stable."1.95.0".default.override {
+        rustToolchain = super.rust-bin.stable."1.96.0".default.override {
           targets = ["wasm32-unknown-unknown"];
           extensions = [
             "rustfmt"
@@ -112,7 +112,12 @@
 
           src = ./rust;
 
-          cargoLock.lockFile = ./rust/Cargo.lock;
+          cargoLock = {
+            lockFile = ./rust/Cargo.lock;
+            outputHashes = {
+              "kittycad-modeling-cmds-0.2.214" = "sha256-U82Orij2cy0I/+KL0W7OJPp1VQrVk2gu04mxc6bBhlw=";
+            };
+          };
           cargoBuildFlags = [
             "-p"
             "kcl-language-server"

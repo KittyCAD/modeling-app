@@ -92,6 +92,11 @@ pub(super) struct GlobalState {
     pub segment_ids_edited: AhashIndexSet<ObjectId>,
     /// Segment-body drag anchors that temporarily pull a point on a segment toward the cursor.
     pub drag_anchors: Vec<SegmentDragAnchor>,
+    /// True if this execution is sketch mode execution, executing a single
+    /// sketch block. Unlike [`ModuleState::sketch_mode`], this is constant for
+    /// the entire execution, including while executing the body of the sketch
+    /// block being edited.
+    pub sketch_mode: bool,
 }
 
 impl GlobalState {
@@ -160,10 +165,18 @@ pub enum EdgeRefactorStdlibFn {
 #[serde(rename_all = "camelCase")]
 pub struct EdgeRefactorMeta {
     pub edge_id: Uuid,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub object_id: Option<Uuid>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub face_ids: Option<[Uuid; 2]>,
+    pub face_ids: [Uuid; 2],
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub end_face_ids: Vec<Uuid>,
+    pub source_range: SourceRange,
+    pub stdlib_fn: EdgeRefactorStdlibFn,
+}
+
+/// Metadata for a deprecated edge stdlib function whose edge ID was resolved,
+/// but whose adjacent face IDs could not be recorded at the helper callsite.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct PendingEdgeRefactorMeta {
+    pub edge_id: Uuid,
     pub source_range: SourceRange,
     pub stdlib_fn: EdgeRefactorStdlibFn,
 }
@@ -226,6 +239,10 @@ pub struct ModuleArtifactState {
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
     /// Metadata collected during execution for refactor lint/code-mod paths (Z0006 and future).
     pub refactor_metadata: Vec<RefactorMetadata>,
+    /// Deprecated edge helper callsites that may be completed by a downstream
+    /// operation that knows the target solid.
+    #[serde(skip)]
+    pub(crate) pending_edge_refactor_metadata: Vec<PendingEdgeRefactorMeta>,
 }
 
 #[derive(Debug, Clone)]
@@ -420,6 +437,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.sketch_mode = mock_config.sketch_block_id.is_some();
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -442,6 +460,7 @@ impl ExecState {
         let segment_ids_edited = mock_config.segment_ids_edited.clone();
         let mut global = GlobalState::new(&exec_context.settings, segment_ids_edited);
         global.drag_anchors = mock_config.drag_anchors.clone();
+        global.sketch_mode = mock_config.sketch_block_id.is_some();
         ExecState {
             execution_callbacks: exec_context.execution_callbacks.clone(),
             global,
@@ -606,6 +625,13 @@ impl ExecState {
                 ModulePath::Local { .. } => true,
                 ModulePath::Std { .. } => false,
             }
+    }
+
+    /// Returns true if this execution is sketch mode execution, executing a
+    /// single sketch block. Unlike [`Self::sketch_mode`], this doesn't vary
+    /// during the execution.
+    pub(crate) fn is_sketch_mode_execution(&self) -> bool {
+        self.global.sketch_mode
     }
 
     pub fn next_object_id(&mut self) -> ObjectId {
@@ -881,50 +907,83 @@ impl ExecState {
             .push(RefactorMetadata::EdgeRefactor(meta));
     }
 
+    pub(crate) fn record_pending_edge_refactor_meta(&mut self, meta: PendingEdgeRefactorMeta) {
+        self.mod_local.artifacts.pending_edge_refactor_metadata.push(meta);
+    }
+
+    pub(crate) fn pending_edge_refactor_meta(
+        &self,
+        edge_id: Uuid,
+        argument_source_range: SourceRange,
+    ) -> Option<PendingEdgeRefactorMeta> {
+        if let Some(pending) = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .find(|meta| meta.edge_id == edge_id && argument_source_range.contains_range(&meta.source_range))
+        {
+            return Some(pending.clone());
+        }
+
+        // A helper assigned to a variable is outside the argument's source
+        // range. Fall back to the edge ID only when it identifies one helper.
+        let mut matches = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .filter(|meta| meta.edge_id == edge_id);
+        let pending = matches.next()?.clone();
+        matches.next().is_none().then_some(pending)
+    }
+
     pub(crate) fn record_edge_refactor_meta_from_pending(
         &mut self,
         edge_id: Uuid,
-        object_id: Option<Uuid>,
         source_range: SourceRange,
-        face_ids: Option<[Uuid; 2]>,
+        face_ids: [Uuid; 2],
     ) -> bool {
-        let exact_meta_index = self.mod_local.artifacts.refactor_metadata.iter().position(|meta| {
+        if self.mod_local.artifacts.refactor_metadata.iter().any(|meta| {
             matches!(
                 meta,
                 RefactorMetadata::EdgeRefactor(meta)
                     if meta.edge_id == edge_id && meta.source_range == source_range
             )
-        });
+        }) {
+            return true;
+        }
 
-        let unique_edge_meta_index = || {
+        let exact_pending_meta = self
+            .mod_local
+            .artifacts
+            .pending_edge_refactor_metadata
+            .iter()
+            .find(|meta| meta.edge_id == edge_id && meta.source_range == source_range)
+            .cloned();
+
+        let edge_pending_meta = || {
             let mut matches = self
                 .mod_local
                 .artifacts
-                .refactor_metadata
+                .pending_edge_refactor_metadata
                 .iter()
-                .enumerate()
-                .filter_map(|(index, meta)| match meta {
-                    RefactorMetadata::EdgeRefactor(meta) if meta.edge_id == edge_id => Some(index),
-                    _ => None,
-                });
-            let index = matches.next()?;
-            matches.next().is_none().then_some(index)
+                .filter(|meta| meta.edge_id == edge_id);
+            let pending_meta = matches.next()?.clone();
+            matches.next().is_none().then_some(pending_meta)
         };
 
-        let Some(meta_index) = exact_meta_index.or_else(unique_edge_meta_index) else {
-            return false;
-        };
-        let RefactorMetadata::EdgeRefactor(existing_meta) = &mut self.mod_local.artifacts.refactor_metadata[meta_index]
-        else {
+        let Some(pending_meta) = exact_pending_meta.or_else(edge_pending_meta) else {
             return false;
         };
 
-        if object_id.is_some() {
-            existing_meta.object_id = object_id;
-        }
-        if existing_meta.face_ids.is_none() {
-            existing_meta.face_ids = face_ids;
-        }
+        self.record_edge_refactor_meta(EdgeRefactorMeta {
+            edge_id,
+            face_ids,
+            end_face_ids: Vec::new(),
+            source_range: pending_meta.source_range,
+            stdlib_fn: pending_meta.stdlib_fn,
+        });
 
         true
     }
@@ -1144,6 +1203,7 @@ impl GlobalState {
             id_to_source: Default::default(),
             segment_ids_edited,
             drag_anchors: Vec::new(),
+            sketch_mode: false,
         };
 
         let root_id = ModuleId::default();

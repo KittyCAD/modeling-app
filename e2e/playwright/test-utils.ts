@@ -1209,7 +1209,7 @@ export async function createProject({
 }) {
   await test.step(`Create project and navigate to it`, async () => {
     await page.getByRole('button', { name: 'Create project' }).click()
-    await page.getByRole('textbox', { name: 'Name' }).fill(name)
+    await page.getByTestId('cmd-bar-arg-value').fill(name)
     await page.getByRole('button', { name: 'Continue' }).click()
 
     await closeOnboardingModalIfPresent(page)

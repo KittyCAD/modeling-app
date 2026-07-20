@@ -15,6 +15,7 @@ import {
   getRouterSearchFromRequestUrl,
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
+import { isPathInDirectoryProjectLibrary } from '@src/lib/projectLibraries'
 import {
   loadHomeProjects,
   webHomeRouteEnabled,
@@ -223,9 +224,12 @@ export const fileLoader =
     }
 
     const appProjectDir = settings.settings.app.projectDirectory.current
-    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
+    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
+      project.path,
+      appProjectDir
+    )
       ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
+      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {

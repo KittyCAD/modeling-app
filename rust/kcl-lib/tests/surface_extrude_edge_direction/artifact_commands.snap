@@ -263,6 +263,15 @@ description: Artifact commands surface_extrude_edge_direction.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
         "type": "extrude",
         "target": "[uuid]",
         "distance": 6.7,

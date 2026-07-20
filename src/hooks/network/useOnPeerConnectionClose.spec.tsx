@@ -163,6 +163,9 @@ describe('useOnPeerConnectionClose', () => {
         )
         unmount()
         expect(callback).toHaveBeenCalledTimes(1)
+        expect(callback).toHaveBeenCalledWith(
+          EngineCommandManagerEvents.peerConnectionDisconnected
+        )
       })
       test('dispatched peerConnectionFailed', async () => {
         const callback = vi.fn(() => 1)

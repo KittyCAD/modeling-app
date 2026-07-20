@@ -967,3 +967,37 @@ fn mirror_3d_artifacts_include_mirrored_body_with_face_and_edge_ids() {
         )
     }));
 }
+
+#[test]
+fn failed_mirror_3d_command_does_not_update_artifact_graph() {
+    let cmd_id = Uuid::new_v4();
+    let command = ModelingCmd::from(
+        kcmc::each_cmd::EntityMirrorAcross::builder()
+            .ids(vec![Uuid::new_v4()])
+            .across(kittycad_modeling_cmds::shared::MirrorAcross::Plane { id: Uuid::new_v4() })
+            .build(),
+    );
+    let artifact_command = ArtifactCommand {
+        cmd_id,
+        range: SourceRange::synthetic(),
+        command,
+        omit_from_graph: false,
+    };
+    let ast = crate::parsing::parse_str("", ModuleId::default()).unwrap();
+    let programs = crate::execution::ProgramLookup::new(ast, Default::default());
+
+    let updated = artifacts_to_update(
+        &IndexMap::default(),
+        &artifact_command,
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &AHashMap::default(),
+        &programs,
+        0,
+        &IndexMap::default(),
+        &AHashMap::default(),
+    )
+    .unwrap();
+
+    assert!(updated.is_empty());
+}

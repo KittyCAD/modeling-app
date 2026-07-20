@@ -7,7 +7,7 @@ import Tooltip from '@src/components/Tooltip'
 import {
   type Exchange,
   isMlCopilotUserRequest,
-} from '@src/machines/mlEphantManagerMachine'
+} from '@src/lib/zookeeper/mlEphantManagerMachine'
 import ms from 'ms'
 import {
   type ComponentProps,
@@ -425,7 +425,7 @@ export const ResponsesCard = (props: ResponsesCardProp) => {
 }
 
 export const ExchangeCard = (props: ExchangeCardProps) => {
-  let [startedAt] = useState<Date>(new Date())
+  let [startedAt] = useState<Date>(props.startedAt ?? new Date())
   const [updatedAt, setUpdatedAt] = useState<Date | undefined>(undefined)
 
   const [showFullReasoning, setShowFullReasoning] = useState<boolean>(true)

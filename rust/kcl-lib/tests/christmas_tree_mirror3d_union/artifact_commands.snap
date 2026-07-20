@@ -290,13 +290,10 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
       "cmdId": "[uuid]",
       "range": [],
       "command": {
-        "type": "solid3d_get_common_edge",
-        "object_id": "[uuid]",
-        "face_ids": [
-          "[uuid]",
-          "[uuid]"
-        ]
-      }
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",
@@ -309,6 +306,36 @@ description: Artifact commands christmas_tree_mirror3d_union.kcl
           "[uuid]"
         ]
       }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "solid3d_get_common_edge",
+        "object_id": "[uuid]",
+        "face_ids": [
+          "[uuid]",
+          "[uuid]"
+        ]
+      }
+    },
+    {
+      "cmdId": "[uuid]",
+      "range": [],
+      "command": {
+        "type": "query_entity_type",
+        "entity_id": "[uuid]"
+      },
+      "omitFromGraph": true
     },
     {
       "cmdId": "[uuid]",

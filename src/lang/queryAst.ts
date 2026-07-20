@@ -50,6 +50,7 @@ import type {
   SegmentArtifact,
   SourceRange,
   SyntaxType,
+  UnaryExpression,
   VariableDeclaration,
   VariableDeclarator,
   VariableMap,
@@ -77,7 +78,6 @@ import type {
   Selection,
   Selections,
 } from '@src/machines/modelingSharedTypes'
-import type { UnaryExpression } from 'typescript'
 
 /**
  * Retrieves a node from a given path within a Program node structure, optionally stopping at a specified node type.
@@ -1334,6 +1334,44 @@ export function getVariableExprsFromSelection(
       continue
     }
 
+    if (s.artifact?.type === 'edgeCut' && s.codeRef) {
+      const edgeCutVariable = getNodeFromPath<VariableDeclaration>(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance,
+        'VariableDeclaration',
+        false,
+        true
+      )
+      if (
+        !err(edgeCutVariable) &&
+        edgeCutVariable.node.type === 'VariableDeclaration'
+      ) {
+        const name = edgeCutVariable.node.declaration.id.name
+        if (pushedNames[name]) continue
+        exprs.push(createLocalName(name))
+        pushedNames[name] = true
+        continue
+      }
+
+      const edgeCutCall = getNodeFromPath<CallExpressionKw>(
+        ast,
+        s.codeRef.pathToNode,
+        wasmInstance,
+        'CallExpressionKw',
+        false,
+        true
+      )
+      if (!err(edgeCutCall) && edgeCutCall.node.unlabeled) {
+        const input = structuredClone(edgeCutCall.node.unlabeled)
+        const key = splitOutputExprKey(input)
+        if (pushedNames[key]) continue
+        exprs.push(input)
+        pushedNames[key] = true
+        continue
+      }
+    }
+
     const directArtifact =
       preferDirectSegment && s.entityRef != null
         ? artifactGraph.get(entityRefToArtifactId(s.entityRef) ?? '')
@@ -1862,7 +1900,7 @@ function hasLaterMatchingArtifact(
   return false
 }
 
-function getSketchVariableNameForSegment(
+export function getSketchVariableNameForSegment(
   ast: Node<Program>,
   segmentId: string,
   artifactGraph: ArtifactGraph,
