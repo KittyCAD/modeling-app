@@ -2259,6 +2259,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             selectionTypes: [
               'cap',
               'wall',
+              'edgeCut',
               'primitiveFace',
               'enginePrimitiveFace',
             ],

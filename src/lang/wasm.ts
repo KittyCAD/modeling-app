@@ -19,12 +19,14 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import type { OperationCallbackArgs } from '@rust/kcl-lib/bindings/OperationCallbackArgs'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
-import type { RefactorMetadata } from '@rust/kcl-lib/bindings/RefactorMetadata'
 import type { Sketch } from '@rust/kcl-lib/bindings/Sketch'
 import type { SourceRange } from '@rust/kcl-lib/bindings/SourceRange'
 
+import type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
+import type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
 import type { Number } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { NumericType } from '@rust/kcl-lib/bindings/NumericType'
+import type { RefactorMetadata } from '@rust/kcl-lib/bindings/RefactorMetadata'
 import type { WarningLevel } from '@rust/kcl-lib/bindings/WarningLevel'
 import { KCLError } from '@src/lang/errors'
 import {
@@ -68,6 +70,9 @@ export type { BinaryExpression } from '@rust/kcl-lib/bindings/BinaryExpression'
 export type { BinaryPart } from '@rust/kcl-lib/bindings/BinaryPart'
 export type { CallExpressionKw } from '@rust/kcl-lib/bindings/CallExpressionKw'
 export type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
+export type { EdgeRefactorMeta } from '@rust/kcl-lib/bindings/EdgeRefactorMeta'
+export type { DirectTagFilletMeta } from '@rust/kcl-lib/bindings/DirectTagFilletMeta'
+export type { DirectTagFilletTagEntry } from '@rust/kcl-lib/bindings/DirectTagFilletTagEntry'
 export type { Expr } from '@rust/kcl-lib/bindings/Expr'
 export type { ExpressionStatement } from '@rust/kcl-lib/bindings/ExpressionStatement'
 export type { Identifier } from '@rust/kcl-lib/bindings/Identifier'
@@ -277,6 +282,10 @@ export interface ExecState {
   issues: CompilationIssue[]
   filenames: { [x: number]: ModulePath | undefined }
   defaultPlanes: DefaultPlanes | null
+  /** Populated when deprecated edge stdlib functions run (e.g. getOppositeEdge in a fillet). */
+  edgeRefactorMetadata: EdgeRefactorMeta[]
+  /** Populated when fillet/chamfer is called with direct tags (e.g. tags = [e1]). Used for Z0006 code mod. */
+  directTagFilletMetadata: DirectTagFilletMeta[]
 }
 
 export function emptyOperationsByModule(): OperationsByModule {
@@ -317,7 +326,33 @@ export function emptyExecState(): ExecState {
     issues: [],
     filenames: [],
     defaultPlanes: null,
+    edgeRefactorMetadata: [],
+    directTagFilletMetadata: [],
   }
+}
+
+function edgeRefactorMetadataFromUnified(
+  metadata: RefactorMetadata[]
+): EdgeRefactorMeta[] {
+  return metadata
+    .filter(
+      (entry): entry is Extract<RefactorMetadata, { kind: 'edgeRefactor' }> =>
+        entry.kind === 'edgeRefactor'
+    )
+    .map((entry) => entry.data)
+}
+
+function directTagFilletMetadataFromUnified(
+  metadata: RefactorMetadata[]
+): DirectTagFilletMeta[] {
+  return metadata
+    .filter(
+      (
+        entry
+      ): entry is Extract<RefactorMetadata, { kind: 'directTagFillet' }> =>
+        entry.kind === 'directTagFillet'
+    )
+    .map((entry) => entry.data)
 }
 
 export function getOperationsForModule(
@@ -388,6 +423,12 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
         metadata.kind === 'legacyAngle'
     )
     .map((metadata) => metadata.data)
+  const edgeRefactorMetadata = edgeRefactorMetadataFromUnified(
+    execOutcome.refactorMetadata
+  )
+  const directTagFilletMetadata = directTagFilletMetadataFromUnified(
+    execOutcome.refactorMetadata
+  )
 
   return {
     variables: execOutcome.variables,
@@ -397,6 +438,8 @@ export function execStateFromRust(execOutcome: RustExecOutcome): ExecState {
     issues: execOutcome.issues,
     filenames: execOutcome.filenames,
     defaultPlanes: execOutcome.defaultPlanes,
+    edgeRefactorMetadata,
+    directTagFilletMetadata,
   }
 }
 

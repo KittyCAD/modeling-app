@@ -12,6 +12,7 @@ import {
   kclErrorsToDiagnostics,
 } from '@src/lang/errors'
 import { executeAst, executeAstMock, lintAst } from '@src/lang/langHelpers'
+import { refactorZ0006Unified } from '@src/lang/modifyAst/edges'
 import { getNodeFromPath, getSettingsAnnotation } from '@src/lang/queryAst'
 import { CommandLogType } from '@src/lang/std/commandLog'
 import { isTopLevelModule, topLevelRange } from '@src/lang/util'
@@ -277,6 +278,13 @@ const syntheticHistoryCommitEffect =
   StateEffect.define<SyntheticHistoryCommit>()
 const directSketchHistoryMarkerEffect =
   StateEffect.define<DirectSketchHistoryMarker>()
+
+type ExecutionCompletionStatus = 'completed' | 'cancelled' | 'cleanup'
+
+type ExecutionCompletionResult = {
+  generation: number
+  status: ExecutionCompletionStatus
+}
 
 // Each of our singletons has dependencies on _other_ singletons, so importing
 // can easily become cyclic. Each will have its own Singletons type.
@@ -886,6 +894,15 @@ export class KclManager extends File {
   livePathsToWatch = signal<string[]>([])
 
   private _execState = signal<ExecState>(emptyExecState())
+  private _executionGeneration = 0
+  private _lastExecutionCompletion: ExecutionCompletionResult = {
+    generation: 0,
+    status: 'completed',
+  }
+  private _executionCompletionWaiters: {
+    afterGeneration: number
+    resolve: (result: ExecutionCompletionResult) => void
+  }[] = []
   private _liveOperationsByModule = signal<OperationsByModule>(
     emptyOperationsByModule()
   )
@@ -1209,6 +1226,73 @@ export class KclManager extends File {
       pendingFeatureTreeSourceSelection
   }
 
+  async applyZ0006FixBeforeEdit(): Promise<boolean> {
+    const execState = this.execState
+    const hasMeta =
+      (execState.edgeRefactorMetadata?.length ?? 0) > 0 ||
+      (execState.directTagFilletMetadata?.length ?? 0) > 0
+    if (!hasMeta || !this.artifactGraph?.size) return false
+
+    const instance = await this.wasmInstancePromise
+    const newSource = refactorZ0006Unified(
+      this.ast,
+      execState.edgeRefactorMetadata ?? [],
+      execState.directTagFilletMetadata ?? [],
+      this.artifactGraph,
+      instance
+    )
+    if (err(newSource)) return false
+    const trimmed = newSource.trim()
+    if (!trimmed) return false
+    if (trimmed === this.code.trim()) return false
+
+    // Feature-tree edits must wait for the refactored code to execute cleanly
+    // so the operation graph is not stale. Cancel/cleanup still release the
+    // waiter, but return false below.
+    const generationBeforeDispatch = this._executionGeneration
+    this._editorView.dispatch({
+      changes: {
+        from: 0,
+        to: this._editorView.state.doc.length,
+        insert: trimmed,
+      },
+    })
+    const completion = await this.waitForExecutionGenerationAfter(
+      generationBeforeDispatch
+    )
+    return (
+      completion.status === 'completed' &&
+      this.lastSuccessfulCode.trim() === trimmed
+    )
+  }
+
+  private waitForExecutionGenerationAfter(
+    afterGeneration: number
+  ): Promise<ExecutionCompletionResult> {
+    if (this._executionGeneration > afterGeneration) {
+      return Promise.resolve(this._lastExecutionCompletion)
+    }
+    return new Promise((resolve) => {
+      this._executionCompletionWaiters.push({ afterGeneration, resolve })
+    })
+  }
+
+  private notifyExecutionCompletion(status: ExecutionCompletionStatus): void {
+    this._executionGeneration += 1
+    const generation = this._executionGeneration
+    const completion = { generation, status }
+    this._lastExecutionCompletion = completion
+    this._executionCompletionWaiters = this._executionCompletionWaiters.filter(
+      (waiter) => {
+        if (waiter.afterGeneration < generation) {
+          waiter.resolve(completion)
+          return false
+        }
+        return true
+      }
+    )
+  }
+
   // Get the kcl version from the wasm module
   // and store it in the singleton
   // so we don't waste time getting it multiple times
@@ -1303,6 +1387,9 @@ export class KclManager extends File {
       instance,
       rustContext: this.rustContext,
       legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+      edgeRefactorMetadata: execState.edgeRefactorMetadata,
+      directTagFilletMetadata: execState.directTagFilletMetadata,
+      artifactGraph: execState.artifactGraph,
     })
 
     if (this.code !== code) {
@@ -2356,6 +2443,9 @@ export class KclManager extends File {
           instance: await this.systemDeps.wasmInstancePromise,
           rustContext: this.rustContext,
           legacyAngleRefactorMetadata: execState.legacyAngleRefactorMetadata,
+          edgeRefactorMetadata: execState.edgeRefactorMetadata,
+          directTagFilletMetadata: execState.directTagFilletMetadata,
+          artifactGraph: execState.artifactGraph,
         })
       )
       if (this.sceneEntitiesManager) {
@@ -2374,6 +2464,8 @@ export class KclManager extends File {
     if (this._cancelTokens.get(currentExecutionId)) {
       this.endLiveOperationUpdates()
       this._cancelTokens.delete(currentExecutionId)
+      markOnce('code/endExecuteAst')
+      this.notifyExecutionCompletion('cancelled')
       return
     }
 
@@ -2436,6 +2528,7 @@ export class KclManager extends File {
 
     this._cancelTokens.delete(currentExecutionId)
     markOnce('code/endExecuteAst')
+    this.notifyExecutionCompletion('completed')
 
     // Update project thumbnail after successful execution
     if (!isInterrupted && errors.length === 0 && projectFsManager.dir) {
@@ -2456,6 +2549,7 @@ export class KclManager extends File {
     this.endLiveOperationUpdates()
     this.isExecuting = false
     this.executeIsStale = null
+    this.notifyExecutionCompletion('cleanup')
     this.engineCommandManager.addCommandLog({
       type: CommandLogType.ExecutionDone,
       data: null,

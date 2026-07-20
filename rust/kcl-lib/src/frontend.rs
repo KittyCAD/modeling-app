@@ -2007,6 +2007,7 @@ impl FrontendState {
             scene_objects,
             source_range_to_object,
             var_solutions,
+            refactor_metadata,
             filenames,
             default_planes,
             ..
@@ -2023,10 +2024,10 @@ impl FrontendState {
             filenames,
             operations,
             artifact_graph,
-            refactor_metadata: Default::default(),
             scene_objects,
             source_range_to_object,
             var_solutions,
+            refactor_metadata,
             issues: non_fatal,
             default_planes,
         })
@@ -7492,6 +7493,43 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_edit_constraint_array_index_oob_fails_in_sketch_mode() {
+        let initial_source = "\
+arr = [0]
+sketch(on = XY) {
+  line1 = line(start = [var 0, var 0], end = [var 10, var 0])
+  distance([line1.start, line1.end]) == 10
+}
+";
+        let program = Program::parse(initial_source).unwrap().0.unwrap();
+
+        let mut frontend = FrontendState::new();
+        let mock_ctx = ExecutorContext::new_mock(None).await;
+        let version = Version(0);
+
+        seed_frontend_with_mock(&mut frontend, &mock_ctx, &program).await;
+        let sketch_object = find_first_sketch_object(&frontend.scene_graph).unwrap();
+        let sketch_id = sketch_object.id;
+        let sketch = expect_sketch(sketch_object);
+        let constraint_id = *sketch.constraints.first().expect("expected distance constraint");
+
+        // In sketch mode execution, an out-of-bounds array index is an error.
+        // It should not fall back to the first element of the array the way
+        // plain mock execution does.
+        let err = frontend
+            .edit_constraint(&mock_ctx, version, sketch_id, constraint_id, "arr[5]".to_owned())
+            .await
+            .expect_err("expected out-of-bounds array index to be an error in sketch mode execution");
+        let message = err.error.message();
+        assert!(
+            message.contains("The array doesn't have any item at index 5"),
+            "unexpected error message: {message}"
+        );
+
+        mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_sketch_checkpoint_round_trip_restores_state() {
         let mut frontend = FrontendState::new();
         let ctx = ExecutorContext::new_with_default_client().await.unwrap();
@@ -9062,10 +9100,10 @@ cylinder = startSketchOn(XY)
             variables: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
-            refactor_metadata: Default::default(),
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions: Default::default(),
+            refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
             default_planes: Default::default(),
@@ -9215,10 +9253,10 @@ sketch(on = XY) {
             variables: Default::default(),
             operations: Default::default(),
             artifact_graph: Default::default(),
-            refactor_metadata: Default::default(),
             scene_objects: Default::default(),
             source_range_to_object: Default::default(),
             var_solutions,
+            refactor_metadata: Default::default(),
             issues: Default::default(),
             filenames: Default::default(),
             default_planes: Default::default(),
