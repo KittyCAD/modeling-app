@@ -251,7 +251,7 @@ function createCoreSettings() {
         defaultValue: '', // gets set async in settingsUtils.ts
         description: 'The directory to save and load projects from.',
         hideOnLevel: 'project',
-        hideOnPlatform: 'both',
+        hideOnPlatform: 'web',
         validate: (v) =>
           typeof v === 'string' && (v.length > 0 || !isDesktop()),
         Component: ({ value, updateValue }) => {

@@ -38,6 +38,12 @@ export const projectEditRole = (
         click: sendMenuAction(mainWindow, 'Edit.Delete project'),
       },
       { type: 'separator' },
+      {
+        label: 'Change Project Directory',
+        id: 'Edit.Change project directory',
+        click: sendMenuAction(mainWindow, 'Edit.Change project directory'),
+      },
+      { type: 'separator' },
       { role: 'undo' },
       { role: 'redo' },
       { type: 'separator' },
@@ -93,6 +99,12 @@ export const modelingEditRole = (
         label: 'Delete Project',
         id: 'Edit.Delete project',
         click: sendMenuAction(mainWindow, 'Edit.Delete project'),
+      },
+      { type: 'separator' },
+      {
+        label: 'Change Project Directory',
+        id: 'Edit.Change project directory',
+        click: sendMenuAction(mainWindow, 'Edit.Change project directory'),
       },
       { type: 'separator' },
       {

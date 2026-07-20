@@ -185,6 +185,14 @@ test.describe(
         await cmdBar.toBeOpened()
         await cmdBar.expectCommandName('Delete project')
       })
+      await test.step('Home.Edit.Change project directory', async () => {
+        await page.reload()
+        await homePage.projectsLoaded()
+        await homePage.isNativeFileMenuCreated()
+        await nativeMenu.click('Edit.Change project directory')
+        await openSettingsExpectLocator(page, '#projectDirectory')
+      })
+
       await test.step('Home.View.Command Palette...', async () => {
         await page.reload()
         await homePage.projectsLoaded()
@@ -322,6 +330,11 @@ test.describe(
         await page.waitForTimeout(250)
         await nativeMenu.click('Edit.Delete project')
         await cmdBar.expectCommandName('Delete project')
+      })
+      await test.step('Modeling.Edit.Change project directory', async () => {
+        await page.waitForTimeout(250)
+        await nativeMenu.click('Edit.Change project directory')
+        await openSettingsExpectLocator(page, '#projectDirectory')
       })
       await test.step('Modeling.View.Orthographic view', async () => {
         await nativeMenu.click('View.Orthographic view')

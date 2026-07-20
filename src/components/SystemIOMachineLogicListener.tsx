@@ -16,7 +16,6 @@ import {
   safeEncodeForRouterPaths,
   webSafePathSplit,
 } from '@src/lib/paths'
-import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import {
   useHasListedProjects,
   useLastOperation,
@@ -45,9 +44,6 @@ export function SystemIOMachineLogicListener() {
 
   const navigate = useNavigate()
   const settingsValues = settings.useSettings()
-  const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
-    settingsValues.app.libraries.current
-  )
   const { onFileOpen, onFileClose } = useLspContext()
   const { pathname } = useLocation()
 
@@ -71,9 +67,11 @@ export function SystemIOMachineLogicListener() {
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
+      const applicationProjectDirectory =
+        settingsValues.app.projectDirectory.current
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
-        projectDirectoryPath
+        applicationProjectDirectory
       )
     }
 
@@ -217,12 +215,13 @@ export function SystemIOMachineLogicListener() {
         systemIOActor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
-            requestedProjectDirectoryPath: defaultDirectoryLibraryPath || '',
+            requestedProjectDirectoryPath:
+              settingsValues.app.projectDirectory.current || '',
           },
         })
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [defaultDirectoryLibraryPath, pathname])
+    }, [settingsValues.app.projectDirectory.current, pathname])
   }
 
   const useDefaultProjectName = () => {
@@ -268,7 +267,9 @@ export function SystemIOMachineLogicListener() {
           })
         }
       },
-      defaultDirectoryLibraryPath ? [defaultDirectoryLibraryPath] : []
+      settingsValues.app.projectDirectory.current
+        ? [settingsValues.app.projectDirectory.current]
+        : []
     )
   }
 

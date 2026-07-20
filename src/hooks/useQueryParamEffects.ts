@@ -27,7 +27,6 @@ import {
 import fsZds from '@src/lib/fs-zds'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS, safeEncodeForRouterPaths } from '@src/lib/paths'
-import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import { DEFAULT_WEB_PROJECT_NAME } from '@src/lib/routeLoaders'
 import { err } from '@src/lib/trap'
 import { getAllSubDirectoriesAtProjectRoot } from '@src/machines/systemIO/snapshotContext'
@@ -227,9 +226,7 @@ export function useQueryParamEffects(kclManager: KclManager) {
     await waitFor(app.settings.actor, (state) => state.matches('idle'))
 
     const systemIOContext = app.systemIOActor.getSnapshot().context
-    const projectDirectoryPath = getDefaultDirectoryProjectLibraryPath(
-      app.settings.get().app.libraries.current
-    )
+    const projectDirectoryPath = app.settings.get().app.projectDirectory.current
     if (!projectDirectoryPath) {
       return new Error('Unable to determine the project directory.')
     }
