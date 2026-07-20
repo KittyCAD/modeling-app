@@ -1,5 +1,5 @@
 //! Lint for deprecated edge stdlib functions (getOppositeEdge, getNextAdjacentEdge, etc.)
-//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, extrude edge arguments, GD&T `edges`, or
+//! when used inside fillet/chamfer `tags`, revolve/helix `axis`, mirror3d `across`, extrude edge arguments, GD&T `edges`, or
 //! GD&T distance `from`/`to` arguments.
 //! Step 2 of the Z0006 upgrade path: detection only; auto-fix is Step 3.
 
@@ -21,7 +21,7 @@ def_finding!(
     Z0006,
     "Prefer edges or edge specifiers over deprecated edge stdlib calls",
     "\
-Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, or edge arguments in extrude with deprecated \
+Using 'tags' in fillet/chamfer, 'axis' in revolve/helix, 'across' in mirror3d, or edge arguments in extrude with deprecated \
 stdlib (e.g. getOppositeEdge, getCommonEdge) or direct tags is deprecated. Prefer 'edges' \
 (fillet/chamfer) or an edge specifier object such as { sideFaces = [tag1, tag2] }. \
 The auto-fix will convert it.
@@ -42,8 +42,12 @@ fn is_fillet_or_chamfer(callee_name: &str) -> bool {
     matches!(callee_name, "fillet" | "chamfer")
 }
 
-fn is_revolve_or_helix(callee_name: &str) -> bool {
-    matches!(callee_name, "revolve" | "helix")
+fn edge_reference_argument(callee_name: &str) -> Option<&'static str> {
+    match callee_name {
+        "revolve" | "helix" => Some("axis"),
+        "mirror3d" => Some("across"),
+        _ => None,
+    }
 }
 
 fn is_extrude(callee_name: &str) -> bool {
@@ -68,15 +72,6 @@ fn is_gdt_edge_command(callee_name: &str) -> bool {
             | "parallelism"
             | "annotation"
     )
-}
-
-/// Axis argument for revolve/helix: axis = getOppositeEdge(...) etc.
-fn get_axis_arg(call: &CallExpressionKw) -> Option<&Expr> {
-    let axis_arg = call
-        .arguments
-        .iter()
-        .find(|arg| arg.label.as_ref().map(|l| l.name.as_str()).unwrap_or("") == "axis")?;
-    Some(&axis_arg.arg)
 }
 
 fn get_arg<'a>(call: &'a CallExpressionKw, label: &str) -> Option<&'a Expr> {
@@ -224,15 +219,15 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, prog: &AstNode<
                 findings.push(Z0006.at(format!("{} uses 'tags'; prefer edges", callee_name), pos, None));
             }
         }
-    } else if is_revolve_or_helix(callee_name)
-        && let Some(axis_expr) = get_axis_arg(call_node)
-        && is_deprecated_edge_stdlib_or_variable_expr(axis_expr, prog)
+    } else if let Some(argument_name) = edge_reference_argument(callee_name)
+        && let Some(edge_expr) = get_arg(call_node, argument_name)
+        && is_deprecated_edge_stdlib_or_variable_expr(edge_expr, prog)
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
             format!(
-                "{} uses 'axis' with deprecated stdlib; prefer an edge specifier object",
-                callee_name
+                "{} uses '{}' with deprecated stdlib; prefer an edge specifier object",
+                callee_name, argument_name
             ),
             pos,
             None,
@@ -446,6 +441,17 @@ revolve(profile, axis = axisEdge)
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert_eq!(z0006.len(), 1, "Z0006 fires for helix with deprecated axis");
+    }
+
+    #[test]
+    fn z0006_fires_for_mirror3d_with_deprecated_edge() {
+        let kcl = r#"mirror3d(body, across = getOppositeEdge(seg01))
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for mirror3d with deprecated across edge");
+        assert!(z0006[0].description.contains("across"));
     }
 
     #[test]

@@ -28,6 +28,7 @@ describe('FeatureTreePane', () => {
       'extrude',
       'revolve',
       'helix',
+      'mirror3d',
       'gdt::flatness',
       'gdt::straightness',
       'gdt::circularity',

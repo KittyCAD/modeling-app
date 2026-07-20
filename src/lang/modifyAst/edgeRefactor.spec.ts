@@ -793,6 +793,17 @@ helix001 = helix(
 )
 `
 
+const KCL_MIRROR3D_GET_OPPOSITE_EDGE = `sketch001 = startSketchOn(XY)
+profile = startProfile(sketch001, at = [0, 0])
+  |> line(endAbsolute = [10, 0], tag = $seg01)
+  |> line(endAbsolute = [10, 10])
+  |> line(endAbsolute = [0, 10])
+  |> line(endAbsolute = [0, 0])
+  |> close()
+body = extrude(profile, length = 5, tagEnd = $capEnd001)
+mirrored = mirror3d(body, across = getOppositeEdge(seg01))
+`
+
 /** Direct tag (no stdlib call): fillet(radius = 1, tags = [e1]). Should convert to edges = [{ sideFaces = [e1, capStart001] }]. */
 const KCL_DIRECT_TAG_FILLET = `body = startSketchOn(XY)
   |> startProfile(at = [0, 0])
@@ -2016,6 +2027,36 @@ part = bracket()
         expect(n).toContain('helix(')
         expect(n).toContain('axis')
         expect(n).not.toContain('axis = getOppositeEdge')
+      }
+    )
+
+    it(
+      'refactors mirror3d with a deprecated across edge to an edge reference payload',
+      { timeout: 30_000 },
+      async () => {
+        const ast = assertParse(
+          KCL_MIRROR3D_GET_OPPOSITE_EDGE,
+          instanceInThisFile
+        )
+        await kclManagerInThisFile.executeAst({ ast })
+        const execState = kclManagerInThisFile.execState
+        expect(execState.edgeRefactorMetadata?.length ?? 0).toBeGreaterThan(0)
+
+        const refactored = refactorZ0006Unified(
+          ast,
+          execState.edgeRefactorMetadata ?? [],
+          execState.directTagFilletMetadata ?? [],
+          execState.artifactGraph,
+          instanceInThisFile
+        )
+        expect(err(refactored)).toBe(false)
+        if (err(refactored)) throw refactored
+
+        const normalized = norm(refactored)
+        expect(normalized).toContain('mirror3d(')
+        expect(normalized).toContain('across = {')
+        expect(normalized).toContain('sideFaces = [')
+        expect(normalized).not.toContain('across = getOppositeEdge')
       }
     )
 

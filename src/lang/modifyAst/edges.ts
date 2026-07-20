@@ -1076,8 +1076,10 @@ function isFilletOrChamfer(callee: string): boolean {
   return callee === 'fillet' || callee === 'chamfer'
 }
 
-function isRevolveOrHelix(callee: string): boolean {
-  return callee === 'revolve' || callee === 'helix'
+function edgeReferenceArgument(callee: string): 'axis' | 'across' | null {
+  if (callee === 'revolve' || callee === 'helix') return 'axis'
+  if (callee === 'mirror3d') return 'across'
+  return null
 }
 
 function isExtrude(callee: string): boolean {
@@ -1499,6 +1501,7 @@ function findFilletChamferCallsToFixUnified(
 interface RevolveHelixCallToFix {
   range: Z0006SourceRange
   faceIds: [string, string]
+  argument: 'axis' | 'across'
   pathToCall?: PathToNode
 }
 
@@ -1552,11 +1555,13 @@ export function findRevolveHelixCallsToFix(
 
       const call = node
       const calleeName = getCalleeName(call)
-      if (!calleeName || !isRevolveOrHelix(calleeName)) return
+      if (!calleeName) return
+      const argument = edgeReferenceArgument(calleeName)
+      if (!argument) return
 
-      const axisArg = findKwArg('axis', call)
-      const deprecatedCall = axisArg
-        ? findDeprecatedEdgeStdlibCallFromExpr(program, axisArg, pathToNode)
+      const edgeArg = findKwArg(argument, call)
+      const deprecatedCall = edgeArg
+        ? findDeprecatedEdgeStdlibCallFromExpr(program, edgeArg, pathToNode)
         : null
       if (!deprecatedCall) return
       const inner = deprecatedCall.call
@@ -1574,6 +1579,7 @@ export function findRevolveHelixCallsToFix(
         results.push({
           range: [callStart, callEnd, moduleId],
           faceIds: meta.faceIds,
+          argument,
           pathToCall: pathToNode,
         })
       }
@@ -1910,7 +1916,7 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
 ): Node<Program> {
   if (toFix.length === 0) return modifiedAst
   for (let index = 0; index < toFix.length; index++) {
-    const { faceIds, pathToCall } = toFix[index]
+    const { faceIds, argument, pathToCall } = toFix[index]
     const path = pathToCall?.length ? pathToCall : pathList[index]
     const result = createEdgeRefObjectExpression(
       { side_faces: faceIds },
@@ -1929,9 +1935,9 @@ function refactorRevolveHelixAxisToEdgeRefInPlace(
     if (err(nodeResult)) continue
     const callNode = nodeResult.node
     const newArgs = (callNode.arguments ?? []).filter(
-      (a) => getLabelName(a) !== 'axis'
+      (a) => getLabelName(a) !== argument
     )
-    newArgs.push(createLabeledArg('axis', result.expr))
+    newArgs.push(createLabeledArg(argument, result.expr))
     callNode.arguments = newArgs
   }
   return modifiedAst
