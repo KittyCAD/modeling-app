@@ -1625,7 +1625,8 @@ export function findExtrudeEdgeCallsToFix(
               program,
               expr,
               artifactGraph,
-              wasmInstance
+              wasmInstance,
+              argument === 'target' ? call : undefined
             )
             if (payload) replacements.push({ argument, payload })
           }
@@ -1660,7 +1661,8 @@ function directSketchSegmentEdgePayload(
   program: Node<Program>,
   expr: Expr,
   artifactGraph: ArtifactGraph,
-  wasmInstance: ModuleType
+  wasmInstance: ModuleType,
+  targetExtrudeCall?: Node<CallExpressionKw>
 ): FilletEdgeRefPayload | null {
   if (expr.type !== 'MemberExpression' || expr.property.type !== 'Name') {
     return null
@@ -1689,21 +1691,47 @@ function directSketchSegmentEdgePayload(
     })
     if (!owningSweep || owningSweep.type !== 'sweep') return null
 
-    const segment = [...artifactGraph.values()].find(
-      (artifact) =>
-        artifact.type === 'segment' &&
-        artifact.pathId === owningSweep.pathId &&
-        artifact.commonSurfaceIds.length === 2 &&
-        getSketchSegmentName(
-          program,
-          artifact.id,
-          artifactGraph,
-          wasmInstance
-        ) === segmentName
+    const candidateSegments = [...artifactGraph.values()].filter(
+      (artifact): artifact is Artifact & { type: 'segment' } => {
+        if (
+          artifact.type !== 'segment' ||
+          artifact.pathId !== owningSweep.pathId ||
+          artifact.commonSurfaceIds.length !== 2
+        ) {
+          return false
+        }
+        const sourceSegmentId = artifact.originalSegId ?? artifact.id
+        return (
+          getSketchSegmentName(
+            program,
+            sourceSegmentId,
+            artifactGraph,
+            wasmInstance
+          ) === segmentName
+        )
+      }
     )
-    return segment?.type === 'segment'
-      ? { side_faces: segment.commonSurfaceIds }
-      : null
+    if (candidateSegments.length === 0) return null
+
+    const targetSweep = targetExtrudeCall
+      ? [...artifactGraph.values()].find(
+          (artifact) =>
+            artifact.type === 'sweep' &&
+            artifact.codeRef.range[0] === targetExtrudeCall.start &&
+            artifact.codeRef.range[1] === targetExtrudeCall.end &&
+            (artifact.codeRef.range[2] ?? 0) === targetExtrudeCall.moduleId
+        )
+      : undefined
+    const segment =
+      targetSweep?.type === 'sweep'
+        ? candidateSegments.find(
+            (candidate) => candidate.surfaceId === targetSweep.pathId
+          )
+        : candidateSegments.length === 1
+          ? candidateSegments[0]
+          : undefined
+
+    return segment ? { side_faces: segment.commonSurfaceIds } : null
   }
 
   if (expr.object.type !== 'Name') return null

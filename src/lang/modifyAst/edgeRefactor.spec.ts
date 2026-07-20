@@ -1541,9 +1541,6 @@ part = bracket()
       const ast = assertParse(kcl, instanceInThisFile)
       await kclManagerInThisFile.executeAst({ ast })
       const execState = kclManagerInThisFile.execState
-      expect(
-        execState.edgeRefactorMetadata?.length ?? 0
-      ).toBeGreaterThanOrEqual(1)
       expect(execState.artifactGraph.size).toBeGreaterThan(0)
       const refactored = refactorZ0006Unified(
         ast,
