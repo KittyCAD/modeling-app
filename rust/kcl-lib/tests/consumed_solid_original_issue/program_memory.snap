@@ -1,6 +1,5 @@
 ---
 source: kcl-lib/src/simulation_tests.rs
-assertion_line: 460
 description: Variables in memory after executing consumed_solid_original_issue.kcl
 ---
 {
