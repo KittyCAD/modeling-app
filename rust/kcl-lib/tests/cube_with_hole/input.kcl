@@ -1,0 +1,70 @@
+// Counterbored grid plate
+// 100 mm square plate with a 5 x 5 counterbored hole pattern.
+@settings(kclVersion = 2.0, defaultLengthUnit = mm)
+
+plateLength = 100mm
+plateWidth = 100mm
+plateThickness = 10mm
+
+holeGridCount = 5
+holePitch = 20mm
+holeGridSpan = holePitch * (holeGridCount - 1)
+holeOffset = holeGridSpan / 2
+clearanceHoleDiameter = 5.5mm
+counterboreDiameter = 10mm
+counterboreDepth = 4mm
+throughCutDepth = plateThickness + 1mm
+
+holeCenters = [
+  [-holeOffset, -holeOffset],
+  [-holePitch, -holeOffset],
+  [0mm, -holeOffset],
+  [holePitch, -holeOffset],
+]
+
+plateSketch = sketch(on = XY) {
+  bottomEdge = line(start = [var -50mm, var -50mm], end = [var 50mm, var -50mm])
+  rightEdge = line(start = [var 50mm, var -50mm], end = [var 50mm, var 50mm])
+  topEdge = line(start = [var 50mm, var 50mm], end = [var -50mm, var 50mm])
+  leftEdge = line(start = [var -50mm, var 50mm], end = [var -50mm, var -50mm])
+
+  coincident([bottomEdge.end, rightEdge.start])
+  coincident([rightEdge.end, topEdge.start])
+  coincident([topEdge.end, leftEdge.start])
+  coincident([leftEdge.end, bottomEdge.start])
+
+  horizontal(bottomEdge)
+  vertical(rightEdge)
+  horizontal(topEdge)
+  vertical(leftEdge)
+
+  distance([bottomEdge.start, bottomEdge.end]) == plateLength
+  distance([rightEdge.start, rightEdge.end]) == plateWidth
+  horizontalDistance([bottomEdge.start, ORIGIN]) == plateLength / 2
+  verticalDistance([bottomEdge.start, ORIGIN]) == plateWidth / 2
+}
+
+plateRegion = region(point = [0mm, 0mm], sketch = plateSketch)
+basePlate = extrude(
+  plateRegion,
+  length = plateThickness,
+  tagStart = $bottomFace,
+  tagEnd = $topFace,
+)
+hiddenPlateSketch = hide(plateSketch)
+
+counterboredPlate = hole::holes(
+  basePlate,
+  face = topFace,
+  cutsAt = holeCenters,
+  holeBottom = hole::flat(),
+  holeBody = hole::blind(depth = throughCutDepth, diameter = clearanceHoleDiameter),
+  holeType = hole::counterbore(diameter = counterboreDiameter, depth = counterboreDepth),
+)
+
+finishedPlate = appearance(
+  counterboredPlate,
+  color = "#b8b8b8",
+  metalness = 35,
+  roughness = 32,
+)
