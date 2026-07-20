@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { App } from '@src/lib/app'
+import type * as ClientErrors from '@src/lib/clientErrors'
 import { DEFAULT_PROJECT_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import type { Project } from '@src/lib/project'
@@ -22,6 +23,18 @@ import {
 } from '@src/unitTestUtils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { createActor, fromPromise, waitFor } from 'xstate'
+
+const clientErrorMocks = vi.hoisted(() => ({
+  reportClientError: vi.fn(),
+}))
+
+vi.mock('@src/lib/clientErrors', async (importOriginal) => {
+  const original = await importOriginal<typeof ClientErrors>()
+  return {
+    ...original,
+    reportClientError: clientErrorMocks.reportClientError,
+  }
+})
 
 let appInstanceInThisFile: App = null!
 let instanceInThisFile: ModuleType = null!
@@ -100,6 +113,7 @@ const fileTreeMutationCases = [
  * Reuse the world for this file. This is not the same as global singleton imports!
  */
 beforeEach(async () => {
+  clientErrorMocks.reportClientError.mockClear()
   if (instanceInThisFile) {
     return
   }
@@ -745,6 +759,16 @@ describe('systemIOMachine - XState', () => {
 
           expect(actor.getSnapshot().context.folders).toStrictEqual([])
           expect(actor.getSnapshot().context.hasListedProjects).toBe(true)
+          expect(clientErrorMocks.reportClientError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              code: 'system_io_error',
+              extra: expect.objectContaining({
+                operation:
+                  SystemIOMachineActors.readFoldersFromProjectDirectory,
+                risk: 'read',
+              }),
+            })
+          )
         } finally {
           actor.stop()
         }
@@ -1192,6 +1216,126 @@ describe('systemIOMachine - XState', () => {
           })
         } finally {
           actor.stop()
+        }
+      })
+    })
+    describe('when moving files recursively', () => {
+      it('reports when source removal fails after the fallback copy completes', async () => {
+        const src = '/projects/source.kcl'
+        const target = '/archive/source.kcl'
+        const removeError = new Error('source removal failed')
+        const statSpy = vi
+          .spyOn(fsZds, 'stat')
+          .mockImplementation(async (path) => {
+            if (path === src) {
+              return { mode: 0 } as Awaited<ReturnType<typeof fsZds.stat>>
+            }
+            return Promise.reject('ENOENT')
+          })
+        const mkdirSpy = vi.spyOn(fsZds, 'mkdir').mockResolvedValue(undefined)
+        const renameSpy = vi
+          .spyOn(fsZds, 'rename')
+          .mockRejectedValue(new Error('cross-device move'))
+        const copySpy = vi.spyOn(fsZds, 'cp').mockResolvedValue(undefined)
+        const removeSpy = vi.spyOn(fsZds, 'rm').mockRejectedValue(removeError)
+        const actor = createActor(
+          systemIOMachineImpl.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise<Project[]>(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.moveRecursive,
+            data: { src, target },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(copySpy).toHaveBeenCalledWith(src, target, { recursive: true })
+          expect(removeSpy).toHaveBeenCalledWith(src, { recursive: true })
+          expect(clientErrorMocks.reportClientError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              error: removeError,
+              extra: expect.objectContaining({
+                operation: SystemIOMachineActors.moveRecursive,
+                risk: 'destructive',
+                phase: 'remove_source_after_copy',
+                renameFallbackUsed: true,
+                copyCompleted: true,
+                sourceMayBePartiallyRemoved: true,
+                dataLossPossible: true,
+              }),
+            })
+          )
+        } finally {
+          actor.stop()
+          statSpy.mockRestore()
+          mkdirSpy.mockRestore()
+          renameSpy.mockRestore()
+          copySpy.mockRestore()
+          removeSpy.mockRestore()
+        }
+      })
+    })
+    describe('when creating a blank file', () => {
+      it('does not write when checking the destination fails unexpectedly', async () => {
+        const statError = Object.assign(new Error('permission denied'), {
+          code: 'EACCES',
+        })
+        const statSpy = vi.spyOn(fsZds, 'stat').mockRejectedValue(statError)
+        const writeSpy = vi.spyOn(fsZds, 'writeFile')
+        const actor = createActor(
+          systemIOMachineImpl.provide({
+            actors: {
+              [SystemIOMachineActors.readFoldersFromProjectDirectory]:
+                fromPromise(async () => new Promise<Project[]>(() => {})),
+            },
+          }),
+          {
+            input: {
+              wasmInstancePromise: Promise.resolve(instanceInThisFile),
+              app: appInstanceInThisFile,
+            },
+          }
+        ).start()
+
+        try {
+          actor.send({
+            type: SystemIOMachineEvents.createBlankFile,
+            data: { requestedAbsolutePath: '/projects/existing.kcl' },
+          })
+
+          await waitFor(actor, (state) =>
+            state.matches(SystemIOMachineStates.idle)
+          )
+
+          expect(statSpy).toHaveBeenCalledWith('/projects/existing.kcl')
+          expect(writeSpy).not.toHaveBeenCalled()
+          expect(clientErrorMocks.reportClientError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              extra: expect.objectContaining({
+                operation: SystemIOMachineActors.createBlankFile,
+                phase: 'check_file_destination',
+                dataLossPossible: false,
+              }),
+            })
+          )
+        } finally {
+          actor.stop()
+          statSpy.mockRestore()
+          writeSpy.mockRestore()
         }
       })
     })

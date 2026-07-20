@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   readFile: vi.fn<(path: string, options: unknown) => Promise<string>>(),
   writeFile: vi.fn<(path: string, data: Uint8Array) => Promise<void>>(),
   basename: vi.fn((path: string) => path.slice(path.lastIndexOf('/') + 1)),
+  reportSystemIOError: vi.fn(),
 }))
 
 vi.mock('@src/lib/fs-zds', () => ({
@@ -21,6 +22,10 @@ vi.mock('@src/lib/desktop', () => ({
       error !== null &&
       'code' in error &&
       (error as { code?: string }).code === 'ENOENT'),
+}))
+
+vi.mock('@src/lib/systemIOErrorReporting', () => ({
+  reportSystemIOError: mocks.reportSystemIOError,
 }))
 
 const importModule = () => import('@src/lib/activeTextFile')
@@ -185,6 +190,36 @@ describe('scheduleActiveTextFileWrite', () => {
     await vi.advanceTimersByTimeAsync(1000)
 
     expect(mocks.writeFile).toHaveBeenCalledTimes(1)
+    expect(mocks.reportSystemIOError).not.toHaveBeenCalled()
+  })
+
+  it('reports autosave failures without including the path or contents', async () => {
+    vi.useFakeTimers()
+    await openReady('/proj/readme.md')
+    const error = new Error('permission denied')
+    mocks.writeFile.mockRejectedValueOnce(error)
+
+    mod.scheduleActiveTextFileWrite('/proj/readme.md', 'private contents')
+    await vi.advanceTimersByTimeAsync(1000)
+
+    expect(mocks.reportSystemIOError).toHaveBeenCalledWith({
+      error,
+      operation: 'save_text_file',
+      risk: 'write',
+      source: 'ActiveTextFile',
+      extra: {
+        phase: 'write',
+        partialMutationPossible: true,
+        dataLossPossible: true,
+        contentLength: 16,
+      },
+    })
+    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
+      '/proj/readme.md'
+    )
+    expect(JSON.stringify(mocks.reportSystemIOError.mock.calls)).not.toContain(
+      'private contents'
+    )
   })
 })
 

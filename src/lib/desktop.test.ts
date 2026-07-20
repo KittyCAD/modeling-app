@@ -34,6 +34,7 @@ describe('createNewProjectDirectory', () => {
       )
     )
     createdProjectDirectoryPaths.length = 0
+    vi.restoreAllMocks()
   })
 
   it('creates project.toml title metadata for new projects', async () => {
@@ -91,6 +92,37 @@ describe('createNewProjectDirectory', () => {
     expect(project.name).toBe('human-project')
     expect(project.title).toBe('Human Project')
     expect(projectToml).toContain('title = "Human Project"')
+  })
+
+  it('does not write when checking an existing project directory fails', async () => {
+    const projectDirectoryPath = `/tmp/create-project-${crypto.randomUUID()}`
+    const projectName = 'existing-project'
+    const projectPath = fsZds.join(projectDirectoryPath, projectName)
+    const originalStat = fsZds.stat.bind(fsZds)
+    const statError = Object.assign(new Error('permission denied'), {
+      code: 'EACCES',
+    })
+    createdProjectDirectoryPaths.push(projectDirectoryPath)
+    await fsZds.mkdir(projectPath, { recursive: true })
+
+    vi.spyOn(fsZds, 'stat').mockImplementation((path, options) => {
+      if (path === projectPath) {
+        return Promise.reject(statError)
+      }
+      return originalStat(path, options)
+    })
+    const writeSpy = vi.spyOn(fsZds, 'writeFile')
+
+    await expect(
+      createNewProjectDirectory(projectName, wasmInstance, undefined, {
+        settings: {
+          project: {
+            directory: projectDirectoryPath,
+          },
+        },
+      })
+    ).rejects.toBe(statError)
+    expect(writeSpy).not.toHaveBeenCalled()
   })
 
   it('treats serialized ENOENT strings as missing project.toml metadata', async () => {

@@ -120,6 +120,20 @@ function getPaddedIdentifierRegExp() {
   return new RegExp(`${escapedIdentifier}(${escapedIdentifier.slice(-1)}*)`)
 }
 
+function isPathNotFoundError(error: unknown) {
+  return (
+    error === 'ENOENT' ||
+    (typeof error === 'string' && error.startsWith('ENOENT')) ||
+    (typeof error === 'object' &&
+      error !== null &&
+      (('code' in error && error.code === 'ENOENT') ||
+        ('cause' in error && error.cause === 'ENOENT') ||
+        ('message' in error &&
+          typeof error.message === 'string' &&
+          error.message.startsWith('ENOENT'))))
+  )
+}
+
 export async function getSettingsFolderPaths(projectPath?: string) {
   const user = await fsZds.getPath('appData')
   const project = projectPath !== undefined ? projectPath : undefined
@@ -162,20 +176,20 @@ export async function getNextFileName({
   let createdName = entryName.replace(extension, '') + extension
   let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
-  try {
-    while (await fsZds.stat(createdPath)) {
+  while (true) {
+    try {
+      await fsZds.stat(createdPath)
       const matchOnIndexAndExtension = new RegExp(`(-\\d+)?(${extension})?$`)
       createdName =
         entryName.replace(matchOnIndexAndExtension, '') + `-${i}` + extension
       createdPath = fsZds.join(baseDir, createdName)
       i++
+    } catch (error) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
+      break
     }
-  } catch (e) {
-    // I (lee) know, the behavior is weird. It's because `stat` is the way to
-    // check for file existence, and on throw, it will escape this loop, which
-    // I did not originally write - this code used the synchronous, deprecated
-    // `exists` method.
-    console.error(e)
   }
 
   return {
@@ -198,16 +212,18 @@ export async function getNextDirName({
   let createdPath = fsZds.join(baseDir, createdName)
   let i = 1
 
-  // This code is fucking cursed -- lee
-  try {
-    while (true) {
+  while (true) {
+    try {
       await fsZds.stat(createdPath)
       createdName = entryName.replace(/-\d+$/, '') + `-${i}`
       createdPath = fsZds.join(baseDir, createdName)
       i++
+    } catch (error) {
+      if (!isPathNotFoundError(error)) {
+        return Promise.reject(error)
+      }
+      break
     }
-  } catch (e) {
-    console.error(e)
   }
   return {
     name: createdName,

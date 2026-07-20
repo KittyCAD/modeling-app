@@ -46,6 +46,7 @@ import {
 } from '@src/lib/constants'
 import { getOperationKey } from '@src/lib/featureTreeOperationTree'
 import fsZds from '@src/lib/fs-zds'
+import { reportSystemIOError } from '@src/lib/systemIOErrorReporting'
 import { markOnce } from '@src/lib/performance'
 import type RustContext from '@src/lib/rustContext'
 import type {
@@ -3715,6 +3716,18 @@ export class KclManager extends File {
       if (isPathNotFoundError(err)) {
         currentDiskCode = null
       } else {
+        reportSystemIOError({
+          error: err,
+          operation: 'save_kcl_file',
+          risk: 'write',
+          source: 'KclManager',
+          extra: {
+            phase: 'read_before_write',
+            dataLossPossible: true,
+            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
+            contentLength: newCode.length,
+          },
+        })
         return Promise.reject(err)
       }
     }
@@ -3758,6 +3771,21 @@ export class KclManager extends File {
     } catch (err: unknown) {
       // TODO: add tracing per GH issue #254 (https://github.com/KittyCAD/modeling-app/issues/254)
       console.warn('error saving file', err)
+      if (!isPathNotFoundError(err)) {
+        reportSystemIOError({
+          error: err,
+          operation: 'save_kcl_file',
+          risk: 'write',
+          source: 'KclManager',
+          extra: {
+            phase: 'write',
+            partialMutationPossible: true,
+            dataLossPossible: true,
+            hasUnsavedChanges: this.hasUnsavedLocalChanges(),
+            contentLength: newCode.length,
+          },
+        })
+      }
       toast.error('Error saving file, please check file permissions.')
       return Promise.reject(err)
     }

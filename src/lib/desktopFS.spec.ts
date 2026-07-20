@@ -3,13 +3,17 @@ import { StorageName, moduleFsViaModuleImport } from '@src/lib/fs-zds'
 import fsZds from '@src/lib/fs-zds'
 import type { FileEntry } from '@src/lib/project'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import { beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 beforeAll(async () => {
   await moduleFsViaModuleImport({
     type: StorageName.NodeFS,
     options: {},
   })
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
 })
 
 const wasmInstance = {
@@ -92,5 +96,20 @@ describe(`Getting unique project names`, () => {
     } finally {
       await fsZds.rm(baseDir, { recursive: true, force: true })
     }
+  })
+
+  it('rejects unexpected stat failures instead of selecting a file to overwrite', async () => {
+    const error = Object.assign(new Error('permission denied'), {
+      code: 'EACCES',
+    })
+    vi.spyOn(fsZds, 'stat').mockRejectedValue(error)
+
+    await expect(
+      getNextFileName({
+        entryName: 'main.kcl',
+        baseDir: '/projects/existing-project',
+        wasmInstance,
+      })
+    ).rejects.toBe(error)
   })
 })
