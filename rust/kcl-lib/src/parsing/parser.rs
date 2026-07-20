@@ -3923,7 +3923,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     callee: _,
                     unlabeled,
                     mut arguments,
-                    non_code_meta,
+                    mut non_code_meta,
                     digest: _,
                 },
         } = fn_call;
@@ -3936,6 +3936,14 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                         arg: unlabeled,
                     },
                 );
+                // The shorthand argument now occupies the first slot of the
+                // argument sequence, so shift the non-code nodes (e.g.
+                // comments) to keep them positioned after it.
+                non_code_meta.non_code_nodes = non_code_meta
+                    .non_code_nodes
+                    .into_iter()
+                    .map(|(index, nodes)| (index + 1, nodes))
+                    .collect();
             } else {
                 ParseContext::err(CompilationIssue::err(
                     unlabeled.into(),

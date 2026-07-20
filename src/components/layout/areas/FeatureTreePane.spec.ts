@@ -2,12 +2,64 @@ import type { Operation } from '@rust/kcl-lib/bindings/Operation'
 import {
   buildOperationTree,
   getFeatureTreeValueDetail,
+  supportsZ0006AutoFixBeforeFeatureTreeEdit,
 } from '@src/components/layout/areas/FeatureTreePane'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import { type OperationsByModule, defaultNodePath } from '@src/lang/wasm'
 import { describe, expect, it } from 'vitest'
 
 describe('FeatureTreePane', () => {
+  describe('supportsZ0006AutoFixBeforeFeatureTreeEdit', () => {
+    function stdLibCall(name: string): Operation {
+      return {
+        type: 'StdLibCall',
+        name,
+        unlabeledArg: null,
+        labeledArgs: {},
+        nodePath: defaultNodePath(),
+        sourceRange: defaultSourceRange(),
+        isError: false,
+      }
+    }
+
+    it.each([
+      'fillet',
+      'chamfer',
+      'extrude',
+      'revolve',
+      'helix',
+      'gdt::flatness',
+      'gdt::straightness',
+      'gdt::circularity',
+      'gdt::cylindricity',
+      'gdt::position',
+      'gdt::profile',
+      'gdt::profileLine',
+      'gdt::profileSurface',
+      'gdt::distance',
+      'gdt::perpendicularity',
+      'gdt::angularity',
+      'gdt::concentricity',
+      'gdt::symmetry',
+      'gdt::runout',
+      'gdt::parallelism',
+      'gdt::annotation',
+    ])('supports pre-edit Z0006 auto-fix for %s', (name) => {
+      expect(supportsZ0006AutoFixBeforeFeatureTreeEdit(stdLibCall(name))).toBe(
+        true
+      )
+    })
+
+    it.each(['gdt::note', 'appearance', 'scale'])(
+      'does not support pre-edit Z0006 auto-fix for %s',
+      (name) => {
+        expect(
+          supportsZ0006AutoFixBeforeFeatureTreeEdit(stdLibCall(name))
+        ).toBe(false)
+      }
+    )
+  })
+
   describe('buildOperationTree', () => {
     function createModuleInstanceOperation(
       moduleId: number,

@@ -36,8 +36,6 @@ import {
   createTagDeclarator,
   findUniqueName,
 } from '@src/lang/create'
-import type { ToolTip } from '@src/lang/langHelpers'
-import { toolTips } from '@src/lang/langHelpers'
 import {
   mutateKwArg,
   removeKwArgs,
@@ -60,6 +58,8 @@ import type {
   SketchLineHelperKw,
   addCall,
 } from '@src/lang/std/stdTypes'
+import type { ToolTip } from '@src/lang/toolTips'
+import { toolTips } from '@src/lang/toolTips'
 import {
   findKwArg,
   findKwArgAny,
@@ -3918,9 +3918,23 @@ export function addTagForSketchOnFace(
   }
   if (expressionName === 'chamfer' || expressionName === 'fillet') {
     if (edgeCutMeta === null) {
-      return new Error(
-        'Cannot add tag to edge cut because no edge cut was provided'
+      const callExpr = getNodeFromPath<Node<CallExpressionKw>>(
+        tagInfo.node,
+        tagInfo.pathToNode,
+        wasmInstance,
+        ['CallExpressionKw']
       )
+      if (err(callExpr)) return callExpr
+      const inputTags = findKwArg('tags', callExpr.node)
+      if (
+        inputTags?.type === 'ArrayExpression' &&
+        inputTags.elements.length > 1
+      ) {
+        return new Error(
+          'Cannot add tag to edge cut because no edge cut was provided'
+        )
+      }
+      return addTagKw()(tagInfo)
     }
     return addTagToEdgeCut(tagInfo, edgeCutMeta, wasmInstance)
   }

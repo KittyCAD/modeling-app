@@ -65,6 +65,11 @@ pub struct ArtifactCommand {
     /// without an engine command, in which case, we would make this field
     /// optional.
     pub command: ModelingCmd,
+    /// Whether this command should be omitted when deriving the semantic
+    /// artifact graph. Query-only commands can still be useful in command
+    /// snapshots without becoming frontend selection artifacts.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub omit_from_graph: bool,
 }
 
 pub type DummyPathToNode = Vec<()>;
@@ -980,6 +985,9 @@ pub(super) fn build_artifact_graph(
     }
 
     for artifact_command in artifact_commands {
+        if artifact_command.omit_from_graph {
+            continue;
+        }
         if let ModelingCmd::EnableSketchMode(EnableSketchMode { entity_id, .. }) = artifact_command.command {
             current_plane_id = Some(entity_id);
         }
@@ -2178,11 +2186,24 @@ fn artifacts_to_update(
 
             return Ok(cloned_artifacts);
         }
-        ModelingCmd::Extrude(kcmc::Extrude { target, .. })
-        | ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
-        | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
-        | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
-        | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => {
+        ModelingCmd::Extrude(_)
+        | ModelingCmd::TwistExtrude(_)
+        | ModelingCmd::Revolve(_)
+        | ModelingCmd::RevolveAboutEdge(_)
+        | ModelingCmd::ExtrudeToReference(_) => {
+            let target = match cmd {
+                ModelingCmd::Extrude(kcmc::Extrude {
+                    target: Some(target), ..
+                }) => target,
+                // Reference-based extrusions do not have a path UUID until the
+                // engine resolves their topology payload.
+                ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
+                ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
+                | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
+                | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })
+                | ModelingCmd::ExtrudeToReference(kcmc::ExtrudeToReference { target, .. }) => target,
+                _ => internal_error!(range, "Sweep-like command variant not handled: id={id:?}, cmd={cmd:?}"),
+            };
             // Determine the resulting method from the specific command, if provided
             let method = match cmd {
                 ModelingCmd::Extrude(kcmc::Extrude { extrude_method, .. }) => *extrude_method,
