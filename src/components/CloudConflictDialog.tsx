@@ -15,7 +15,6 @@ import {
   editorTheme,
   editorVisualTheme,
 } from '@src/editor/plugins/theme'
-import { useApp } from '@src/lib/boot'
 import {
   type CloudSyncConflictResolution,
   type CloudSyncProjectMetadata,
@@ -28,12 +27,14 @@ import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
 import { getProjectTitleFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
-import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
+
+type CloudConflictDialogResolvedTheme = 'light' | 'dark'
 
 type CloudConflictDialogProps = {
   projectPath: string
   projectName?: string
+  resolvedTheme: CloudConflictDialogResolvedTheme
   onDismiss: () => void
   onResolved?: () => void
 }
@@ -313,7 +314,7 @@ async function loadConflictInspection(
 
 function mergeLanguageExtensions(
   relativePath: string,
-  resolvedTheme: 'light' | 'dark'
+  resolvedTheme: CloudConflictDialogResolvedTheme
 ) {
   const extension = fsZds.extname(relativePath).toLowerCase()
   if (extension === '.kcl') {
@@ -353,7 +354,7 @@ const mergeEditorTheme = EditorView.theme({
 
 function mergeEditorExtensions(
   relativePath: string,
-  resolvedTheme: 'light' | 'dark'
+  resolvedTheme: CloudConflictDialogResolvedTheme
 ): Extension[] {
   return [
     ...mergeLanguageExtensions(relativePath, resolvedTheme),
@@ -369,7 +370,7 @@ function ConflictMergeView({
   resolvedTheme,
 }: {
   comparison: ConflictFileComparison
-  resolvedTheme: 'light' | 'dark'
+  resolvedTheme: CloudConflictDialogResolvedTheme
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -433,7 +434,7 @@ function ChangedFilesTable({
   resolvedTheme,
 }: {
   files: ConflictFileComparison[]
-  resolvedTheme: 'light' | 'dark'
+  resolvedTheme: CloudConflictDialogResolvedTheme
 }) {
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(
     () => new Set(files.filter(canShowDiff).map((file) => file.relativePath))
@@ -664,12 +665,10 @@ export function useCloudSyncProjectConflicts() {
 export function CloudConflictDialog({
   projectPath,
   projectName,
+  resolvedTheme,
   onDismiss,
   onResolved,
 }: CloudConflictDialogProps) {
-  const { settings } = useApp()
-  const settingsValues = settings.useSettings()
-  const resolvedTheme = getResolvedTheme(settingsValues.app.theme.current)
   const [resolving, setResolving] =
     useState<CloudSyncConflictResolution | null>(null)
   const [inspectionState, setInspectionState] =

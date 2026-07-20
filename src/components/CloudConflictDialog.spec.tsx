@@ -23,20 +23,6 @@ vi.mock('@codemirror/merge', () => ({
   },
 }))
 
-vi.mock('@src/lib/boot', () => ({
-  useApp: () => ({
-    settings: {
-      useSettings: () => ({
-        app: {
-          theme: {
-            current: 'light',
-          },
-        },
-      }),
-    },
-  }),
-}))
-
 vi.mock('@src/lib/cloudSync', async () => {
   const { signal } = await import('@preact/signals-core')
 
@@ -156,6 +142,7 @@ describe('CloudConflictDialog', () => {
       <CloudConflictDialog
         projectPath="/projects/local"
         projectName="local-folder"
+        resolvedTheme="light"
         onDismiss={onDismiss}
       />
     )
