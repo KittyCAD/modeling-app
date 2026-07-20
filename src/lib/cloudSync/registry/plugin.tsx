@@ -419,11 +419,6 @@ function CloudSyncStatusBarItem() {
     isFileRoute &&
     status.activeProjectPath &&
     conflictMetadata?.conflict
-  const projectName = status.activeProjectPath
-    ?.split(/[\\/]/)
-    .filter(Boolean)
-    .at(-1)
-  const selectedConflictProjectName = selectedConflict?.projectName
   const selectedConflictProjectPath = selectedConflict?.localProjectPath
   const shouldListConflicts = status.state === 'conflict' && isHomeRoute
 
@@ -511,15 +506,13 @@ function CloudSyncStatusBarItem() {
       {isInspectingConflict && status.activeProjectPath && (
         <CloudConflictDialog
           projectPath={status.activeProjectPath}
-          projectName={projectName || 'this project'}
           onDismiss={() => setIsInspectingConflict(false)}
           onResolved={() => setIsInspectingConflict(false)}
         />
       )}
-      {selectedConflictProjectPath && selectedConflictProjectName && (
+      {selectedConflictProjectPath && (
         <CloudConflictDialog
           projectPath={selectedConflictProjectPath}
-          projectName={selectedConflictProjectName}
           onDismiss={() => setSelectedConflict(undefined)}
           onResolved={() => setSelectedConflict(undefined)}
         />
