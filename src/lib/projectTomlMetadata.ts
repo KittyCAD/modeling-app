@@ -70,9 +70,7 @@ function normalizeTomlValue(value: TomlValue, path: string[]): TomlValue {
     return normalizeTomlTable(value, path)
   }
   if (isArray(value)) {
-    return value.map((item) =>
-      normalizeTomlValue(item as TomlValue, path)
-    ) as TomlValue
+    return value.map((item) => normalizeTomlValue(item, path))
   }
   return value
 }
