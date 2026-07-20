@@ -5,7 +5,7 @@ import { EditorState, type Extension } from '@codemirror/state'
 import { EditorView, lineNumbers } from '@codemirror/view'
 import { kcl } from '@kittycad/codemirror-lang-kcl'
 import { useSignals } from '@preact/signals-react/runtime'
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { ActionButton } from '@src/components/ActionButton'
@@ -24,14 +24,16 @@ import {
   getCloudSyncProjectMetadataIndex,
   resolveCloudSyncProjectConflict,
 } from '@src/lib/cloudSync'
+import { PROJECT_SETTINGS_FILE_NAME } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { fsZdsConstants } from '@src/lib/fs-zds/constants'
+import { getProjectTitleFromProjectTomlContents } from '@src/lib/projectTomlMetadata'
 import { getResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 
 type CloudConflictDialogProps = {
   projectPath: string
-  projectName: string
+  projectName?: string
   onDismiss: () => void
   onResolved?: () => void
 }
@@ -57,12 +59,11 @@ type ConflictFileComparison = {
 }
 
 type ConflictInspection = {
-  metadata: CloudSyncProjectMetadata
-  conflictProjectPath: string
+  projectTitle?: string
+  remoteProjectId?: string
   localSavedAtMs?: number
   cloudSavedAtMs?: number
   changedFiles: ConflictFileComparison[]
-  unchangedFileCount: number
 }
 
 type ConflictInspectionState =
@@ -193,6 +194,16 @@ function latestModifiedAt(files: Iterable<ScannedProjectFile>) {
   return latest
 }
 
+function getProjectTitleFromScannedFiles(
+  files: Map<string, ScannedProjectFile>
+) {
+  const projectToml = files.get(PROJECT_SETTINGS_FILE_NAME)
+  const projectTomlText = decodeMergeableText(projectToml)
+  return projectTomlText
+    ? getProjectTitleFromProjectTomlContents(projectTomlText)
+    : undefined
+}
+
 async function scanProjectFiles(projectRoot: string) {
   const files = new Map<string, ScannedProjectFile>()
 
@@ -275,7 +286,6 @@ async function loadConflictInspection(
     scanProjectFiles(conflictProjectPath),
   ])
   const relativePaths = new Set([...localFiles.keys(), ...cloudFiles.keys()])
-  let unchangedFileCount = 0
   const changedFiles: ConflictFileComparison[] = []
 
   for (const relativePath of Array.from(relativePaths).toSorted()) {
@@ -287,18 +297,17 @@ async function loadConflictInspection(
 
     if (comparison) {
       changedFiles.push(comparison)
-    } else {
-      unchangedFileCount += 1
     }
   }
 
   return {
-    metadata,
-    conflictProjectPath,
+    projectTitle:
+      getProjectTitleFromScannedFiles(localFiles) ??
+      getProjectTitleFromScannedFiles(cloudFiles),
+    remoteProjectId: metadata.remoteProjectId,
     localSavedAtMs: latestModifiedAt(localFiles.values()),
     cloudSavedAtMs: Date.parse(metadata.conflict.createdAt),
     changedFiles,
-    unchangedFileCount,
   }
 }
 
@@ -322,12 +331,14 @@ function mergeLanguageExtensions(
 
 const mergeEditorTheme = EditorView.theme({
   '&': {
-    height: '100%',
-    minHeight: '14rem',
+    maxWidth: '100%',
+    minHeight: '8rem',
+    minWidth: 0,
   },
   '.cm-scroller': {
     fontFamily:
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace',
+    overflowX: 'auto',
   },
   '.cm-content': {
     paddingBlock: '0.5rem',
@@ -408,65 +419,32 @@ function ConflictMergeView({
   return (
     <div
       ref={containerRef}
-      className="h-[24rem] overflow-hidden rounded border border-chalkboard-20 dark:border-chalkboard-70 [&_.cm-mergeView]:h-full [&_.cm-mergeView]:overflow-auto [&_.cm-mergeViewEditors]:h-full [&_.cm-mergeViewEditor]:min-w-0 [&_.cm-editor]:h-full"
+      className="max-h-[18rem] min-h-32 w-full max-w-full min-w-0 overflow-auto rounded border border-chalkboard-20 dark:border-chalkboard-70 [&_.cm-editor]:max-w-full [&_.cm-editor]:min-w-0 [&_.cm-mergeView]:max-h-[18rem] [&_.cm-mergeView]:max-w-full [&_.cm-mergeView]:min-w-0 [&_.cm-mergeView]:overflow-auto [&_.cm-mergeView]:w-full [&_.cm-mergeViewEditor]:max-w-full [&_.cm-mergeViewEditor]:min-w-0 [&_.cm-mergeViewEditors]:max-w-full [&_.cm-mergeViewEditors]:min-w-0 [&_.cm-mergeViewEditors]:w-full [&_.cm-scroller]:overflow-auto"
     />
   )
 }
 
-function ConflictSummary({
-  inspection,
-  projectPath,
-}: {
-  inspection: ConflictInspection
-  projectPath: string
-}) {
-  const totalFiles =
-    inspection.changedFiles.length + inspection.unchangedFileCount
-
-  return (
-    <div className="overflow-hidden rounded border border-chalkboard-20 text-xs dark:border-chalkboard-70">
-      <table className="w-full table-fixed border-collapse">
-        <thead className="bg-chalkboard-20/60 text-left text-chalkboard-70 dark:bg-chalkboard-90 dark:text-chalkboard-20">
-          <tr>
-            <th className="w-28 px-3 py-2 font-medium">Version</th>
-            <th className="w-52 px-3 py-2 font-medium">Saved</th>
-            <th className="px-3 py-2 font-medium">Project path</th>
-            <th className="w-32 px-3 py-2 text-right font-medium">Detail</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr className="border-t border-chalkboard-20 dark:border-chalkboard-70">
-            <td className="px-3 py-2 font-medium">Local</td>
-            <td className="px-3 py-2">
-              {formatDateTime(inspection.localSavedAtMs)}
-            </td>
-            <td className="truncate px-3 py-2" title={projectPath}>
-              {projectPath}
-            </td>
-            <td className="px-3 py-2 text-right">{totalFiles} files</td>
-          </tr>
-          <tr className="border-t border-chalkboard-20 dark:border-chalkboard-70">
-            <td className="px-3 py-2 font-medium">Cloud</td>
-            <td className="px-3 py-2">
-              {formatDateTime(inspection.cloudSavedAtMs)}
-            </td>
-            <td
-              className="truncate px-3 py-2"
-              title={inspection.conflictProjectPath}
-            >
-              {inspection.conflictProjectPath}
-            </td>
-            <td className="px-3 py-2 text-right">
-              {inspection.metadata.conflict?.remoteRevision ?? 'No revision'}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  )
+function canShowDiff(file: ConflictFileComparison) {
+  return !file.textUnavailableReason
 }
 
-function ChangedFilesTable({ files }: { files: ConflictFileComparison[] }) {
+function ChangedFilesTable({
+  files,
+  resolvedTheme,
+}: {
+  files: ConflictFileComparison[]
+  resolvedTheme: 'light' | 'dark'
+}) {
+  const [expandedPaths, setExpandedPaths] = useState<Set<string>>(
+    () => new Set(files.filter(canShowDiff).map((file) => file.relativePath))
+  )
+
+  useEffect(() => {
+    setExpandedPaths(
+      new Set(files.filter(canShowDiff).map((file) => file.relativePath))
+    )
+  }, [files])
+
   if (files.length === 0) {
     return (
       <p className="rounded border border-chalkboard-20 bg-chalkboard-20/40 px-3 py-2 text-sm dark:border-chalkboard-70 dark:bg-chalkboard-90">
@@ -476,9 +454,21 @@ function ChangedFilesTable({ files }: { files: ConflictFileComparison[] }) {
     )
   }
 
+  function toggleExpanded(relativePath: string) {
+    setExpandedPaths((currentPaths) => {
+      const nextPaths = new Set(currentPaths)
+      if (nextPaths.has(relativePath)) {
+        nextPaths.delete(relativePath)
+      } else {
+        nextPaths.add(relativePath)
+      }
+      return nextPaths
+    })
+  }
+
   return (
-    <div className="max-h-52 overflow-auto rounded border border-chalkboard-20 text-xs dark:border-chalkboard-70">
-      <table className="w-full min-w-[42rem] border-collapse">
+    <div className="max-w-full overflow-x-auto overflow-y-visible rounded border border-chalkboard-20 text-xs dark:border-chalkboard-70">
+      <table className="w-full min-w-[42rem] table-fixed border-collapse">
         <thead className="sticky top-0 bg-chalkboard-20 text-left text-chalkboard-70 dark:bg-chalkboard-90 dark:text-chalkboard-20">
           <tr>
             <th className="px-3 py-2 font-medium">File</th>
@@ -489,109 +479,90 @@ function ChangedFilesTable({ files }: { files: ConflictFileComparison[] }) {
           </tr>
         </thead>
         <tbody>
-          {files.map((file) => (
-            <tr
-              key={file.relativePath}
-              className="border-t border-chalkboard-20 dark:border-chalkboard-70"
-            >
-              <td
-                className="max-w-0 truncate px-3 py-2"
-                title={file.relativePath}
-              >
-                {file.relativePath}
-              </td>
-              <td className="px-3 py-2">
-                <span
-                  className={`rounded px-1.5 py-0.5 font-medium ${statusBadgeClassName(
-                    file.status
-                  )}`}
-                >
-                  {conflictStatusLabel(file.status)}
-                </span>
-              </td>
-              <td className="px-3 py-2">
-                {formatDateTime(file.local?.modifiedAtMs)}
-              </td>
-              <td className="px-3 py-2">
-                {formatDateTime(file.cloud?.modifiedAtMs)}
-              </td>
-              <td className="px-3 py-2 text-right">
-                {formatFileSize(file.local?.size)}
-                {' / '}
-                {formatFileSize(file.cloud?.size)}
-              </td>
-            </tr>
-          ))}
+          {files.map((file) => {
+            const showDiff = canShowDiff(file)
+            const expanded = expandedPaths.has(file.relativePath)
+            const diffId = `cloud-conflict-diff-${file.relativePath.replace(
+              /[^a-zA-Z0-9_-]/g,
+              '-'
+            )}`
+
+            return (
+              <Fragment key={file.relativePath}>
+                <tr className="border-t border-chalkboard-20 dark:border-chalkboard-70">
+                  <td className="max-w-0 px-3 py-2">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <button
+                        type="button"
+                        aria-controls={diffId}
+                        aria-expanded={expanded}
+                        onClick={() => toggleExpanded(file.relativePath)}
+                        className="m-0 flex h-5 w-5 shrink-0 items-center justify-center border-none p-0 text-chalkboard-70 hover:bg-chalkboard-20 focus:bg-chalkboard-20 focus:outline-none focus:ring-0 dark:text-chalkboard-30 dark:hover:bg-chalkboard-80 dark:focus:bg-chalkboard-80"
+                        data-testid={`cloud-conflict-file-toggle-${file.relativePath}`}
+                      >
+                        <CustomIcon
+                          name="caretDown"
+                          className={`h-4 w-4 transition-transform ${
+                            expanded ? '' : '-rotate-90'
+                          }`}
+                        />
+                      </button>
+                      <span className="truncate" title={file.relativePath}>
+                        {file.relativePath}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="px-3 py-2">
+                    <span
+                      className={`rounded px-1.5 py-0.5 font-medium ${statusBadgeClassName(
+                        file.status
+                      )}`}
+                    >
+                      {conflictStatusLabel(file.status)}
+                    </span>
+                  </td>
+                  <td className="px-3 py-2">
+                    {formatDateTime(file.local?.modifiedAtMs)}
+                  </td>
+                  <td className="px-3 py-2">
+                    {formatDateTime(file.cloud?.modifiedAtMs)}
+                  </td>
+                  <td className="px-3 py-2 text-right">
+                    {formatFileSize(file.local?.size)}
+                    {' / '}
+                    {formatFileSize(file.cloud?.size)}
+                  </td>
+                </tr>
+                {expanded && (
+                  <tr
+                    id={diffId}
+                    className="border-t border-chalkboard-20 bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100"
+                  >
+                    <td colSpan={5} className="max-w-0 p-3">
+                      {showDiff ? (
+                        <>
+                          <div className="mb-2 grid grid-cols-2 gap-3 text-xs font-medium text-chalkboard-70 dark:text-chalkboard-30">
+                            <span>Local</span>
+                            <span>Cloud</span>
+                          </div>
+                          <ConflictMergeView
+                            comparison={file}
+                            resolvedTheme={resolvedTheme}
+                          />
+                        </>
+                      ) : (
+                        <p className="rounded border border-chalkboard-20 bg-chalkboard-20/40 px-3 py-2 text-sm text-chalkboard-70 dark:border-chalkboard-70 dark:bg-chalkboard-90 dark:text-chalkboard-30">
+                          Diff unavailable: {file.textUnavailableReason}
+                        </p>
+                      )}
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
+            )
+          })}
         </tbody>
       </table>
-    </div>
-  )
-}
-
-function ConflictMergeAccordions({
-  files,
-  resolvedTheme,
-}: {
-  files: ConflictFileComparison[]
-  resolvedTheme: 'light' | 'dark'
-}) {
-  const mergeableFiles = files.filter((file) => !file.textUnavailableReason)
-  const nonMergeableFiles = files.filter((file) => file.textUnavailableReason)
-
-  return (
-    <div className="space-y-2">
-      {mergeableFiles.map((file, index) => (
-        <details
-          key={file.relativePath}
-          open={index === 0 ? true : undefined}
-          className="rounded border border-chalkboard-20 bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100"
-        >
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2 text-sm font-medium [&::-webkit-details-marker]:hidden">
-            <span className="truncate" title={file.relativePath}>
-              {file.relativePath}
-            </span>
-            <span
-              className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] ${statusBadgeClassName(
-                file.status
-              )}`}
-            >
-              {conflictStatusLabel(file.status)}
-            </span>
-          </summary>
-          <div className="border-t border-chalkboard-20 p-3 dark:border-chalkboard-70">
-            <div className="mb-2 grid grid-cols-2 gap-3 text-xs font-medium text-chalkboard-70 dark:text-chalkboard-30">
-              <span>Local</span>
-              <span>Cloud</span>
-            </div>
-            <ConflictMergeView
-              comparison={file}
-              resolvedTheme={resolvedTheme}
-            />
-          </div>
-        </details>
-      ))}
-      {nonMergeableFiles.length > 0 && (
-        <details className="rounded border border-chalkboard-20 bg-chalkboard-10 dark:border-chalkboard-70 dark:bg-chalkboard-100">
-          <summary className="cursor-pointer px-3 py-2 text-sm font-medium">
-            Files without text diff views ({nonMergeableFiles.length})
-          </summary>
-          <ul className="space-y-1 border-t border-chalkboard-20 p-3 text-xs dark:border-chalkboard-70">
-            {nonMergeableFiles.map((file) => (
-              <li
-                key={file.relativePath}
-                className="flex items-center justify-between gap-3"
-              >
-                <span className="truncate" title={file.relativePath}>
-                  {file.relativePath}
-                </span>
-                <span className="shrink-0 text-chalkboard-60">
-                  {file.textUnavailableReason}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </details>
-      )}
     </div>
   )
 }
@@ -703,6 +674,17 @@ export function CloudConflictDialog({
     useState<CloudSyncConflictResolution | null>(null)
   const [inspectionState, setInspectionState] =
     useState<ConflictInspectionState>({ status: 'loading' })
+  const inspection =
+    inspectionState.status === 'ready' ? inspectionState.inspection : undefined
+  const displayProjectName = inspection
+    ? inspection.projectTitle || projectName
+    : undefined
+  const projectNameCopy = displayProjectName
+    ? `"${displayProjectName}"`
+    : 'this project'
+  const cloudIdSuffix = inspection?.remoteProjectId
+    ? ` (cloud ID: ${inspection.remoteProjectId})`
+    : ''
 
   useEffect(() => {
     let cancelled = false
@@ -759,11 +741,8 @@ export function CloudConflictDialog({
           <div className="flex items-start justify-between gap-4 border-b border-chalkboard-20 p-4 dark:border-chalkboard-70">
             <div className="min-w-0">
               <Dialog.Title as="h2" className="text-2xl font-bold">
-                Cloud conflict
+                Resolve conflicts to resume cloud sync
               </Dialog.Title>
-              <p className="mt-1 break-words text-sm font-medium text-chalkboard-80 dark:text-chalkboard-30">
-                {projectName}
-              </p>
             </div>
             <button
               type="button"
@@ -777,11 +756,14 @@ export function CloudConflictDialog({
           </div>
 
           <div className="flex-1 space-y-4 overflow-auto p-4">
-            <Dialog.Description as="div" className="space-y-2 text-sm">
+            <Dialog.Description
+              as="div"
+              className="space-y-2 text-sm max-w-3xl my-4"
+            >
               <p className="break-words">
-                Local and cloud data both changed for "{projectName}". Review
-                the saved versions, then choose which version should become the
-                project source of truth.
+                Local and cloud data both changed for {projectNameCopy}
+                {cloudIdSuffix}. Review the saved versions, then choose which
+                version should become the project source of truth.
               </p>
               <p>
                 Using local data uploads your current local project to the
@@ -803,43 +785,48 @@ export function CloudConflictDialog({
             )}
 
             {inspectionState.status === 'ready' && (
-              <>
-                <ConflictSummary
-                  inspection={inspectionState.inspection}
-                  projectPath={projectPath}
-                />
-                <ChangedFilesTable
-                  files={inspectionState.inspection.changedFiles}
-                />
-                <ConflictMergeAccordions
-                  files={inspectionState.inspection.changedFiles}
-                  resolvedTheme={resolvedTheme}
-                />
-              </>
+              <ChangedFilesTable
+                files={inspectionState.inspection.changedFiles}
+                resolvedTheme={resolvedTheme}
+              />
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 border-t border-chalkboard-20 p-4 dark:border-chalkboard-70">
-            <ActionButton
-              Element="button"
-              data-testid="use-local-data"
-              disabled={resolving !== null}
-              tabIndex={0}
-              onClick={() => void resolveConflict('local')}
-              className="justify-self-start border-warn-70 bg-warn-10/30 py-1 dark:bg-warn-80/20"
-            >
-              {resolving === 'local' ? 'Using local data...' : 'Use local data'}
-            </ActionButton>
-            <ActionButton
-              Element="button"
-              data-testid="use-cloud-data"
-              disabled={resolving !== null}
-              tabIndex={0}
-              onClick={() => void resolveConflict('cloud')}
-              className="justify-self-end py-1"
-            >
-              {resolving === 'cloud' ? 'Using cloud data...' : 'Use cloud data'}
-            </ActionButton>
+          <div className="border-t border-chalkboard-20 p-4 dark:border-chalkboard-70">
+            <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+              <div className="min-w-40 text-right text-xs text-chalkboard-70 dark:text-chalkboard-30">
+                <div className="font-medium">Local version</div>
+                <div>Saved {formatDateTime(inspection?.localSavedAtMs)}</div>
+              </div>
+              <ActionButton
+                Element="button"
+                data-testid="use-local-data"
+                disabled={resolving !== null}
+                tabIndex={0}
+                onClick={() => void resolveConflict('local')}
+                className="border-warn-70 bg-warn-10/30 py-1 dark:bg-warn-80/20"
+              >
+                {resolving === 'local'
+                  ? 'Using local data...'
+                  : 'Use local data'}
+              </ActionButton>
+              <ActionButton
+                Element="button"
+                data-testid="use-cloud-data"
+                disabled={resolving !== null}
+                tabIndex={0}
+                onClick={() => void resolveConflict('cloud')}
+                className="py-1"
+              >
+                {resolving === 'cloud'
+                  ? 'Using cloud data...'
+                  : 'Use cloud data'}
+              </ActionButton>
+              <div className="min-w-40 text-xs text-chalkboard-70 dark:text-chalkboard-30">
+                <div className="font-medium">Cloud version</div>
+                <div>Saved {formatDateTime(inspection?.cloudSavedAtMs)}</div>
+              </div>
+            </div>
           </div>
         </Dialog.Panel>
       </div>

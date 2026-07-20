@@ -101,13 +101,13 @@ function directoryStat() {
 }
 
 describe('CloudConflictDialog', () => {
-  test('shows conflict summary, changed files, merge views, and resolution actions', async () => {
+  test('shows changed files with expanded diffs and resolution actions', async () => {
     vi.mocked(fsZds.readdir).mockImplementation(async (path) => {
       if (path === '/projects/local') {
-        return ['main.kcl', 'local-only.txt']
+        return ['main.kcl', 'local-only.txt', 'thumbnail.png', 'project.toml']
       }
       if (path === '/projects/local (cloud conflict)') {
-        return ['main.kcl', 'cloud-only.txt']
+        return ['main.kcl', 'cloud-only.txt', 'thumbnail.png', 'project.toml']
       }
       return []
     })
@@ -133,6 +133,18 @@ describe('CloudConflictDialog', () => {
       if (path === '/projects/local/local-only.txt') {
         return encoder.encode('local\n')
       }
+      if (path === '/projects/local/thumbnail.png') {
+        return new Uint8Array([0, 1, 2])
+      }
+      if (path === '/projects/local (cloud conflict)/thumbnail.png') {
+        return new Uint8Array([0, 3, 4])
+      }
+      if (
+        path === '/projects/local/project.toml' ||
+        path === '/projects/local (cloud conflict)/project.toml'
+      ) {
+        return encoder.encode('title = "User-facing project title"\n')
+      }
       return encoder.encode('cloud\n')
     })
     const onDismiss = vi.fn()
@@ -140,16 +152,36 @@ describe('CloudConflictDialog', () => {
     render(
       <CloudConflictDialog
         projectPath="/projects/local"
-        projectName="Local project"
+        projectName="local-folder"
         onDismiss={onDismiss}
       />
     )
 
-    expect(await screen.findByText('remote-revision-2')).toBeInTheDocument()
+    expect(await screen.findByText('main.kcl')).toBeInTheDocument()
+    const intro = screen.getByText(/Local and cloud data both changed for/)
+    expect(intro).toHaveTextContent('"User-facing project title"')
+    expect(intro).toHaveTextContent('(cloud ID: remote-123)')
+    expect(intro).not.toHaveTextContent('local-folder')
     expect(screen.getAllByText('main.kcl')).not.toHaveLength(0)
     expect(screen.getAllByText('local-only.txt')).not.toHaveLength(0)
     expect(screen.getAllByText('cloud-only.txt')).not.toHaveLength(0)
+    expect(screen.getByText('thumbnail.png')).toBeInTheDocument()
     expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(3)
+    expect(
+      screen.queryByText('Diff unavailable: Binary or non-UTF-8 file.')
+    ).not.toBeInTheDocument()
+    expect(screen.getByText('Local version')).toBeInTheDocument()
+    expect(screen.getByText('Cloud version')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByTestId('cloud-conflict-file-toggle-main.kcl'))
+    expect(screen.getAllByTestId('mock-merge-view')).toHaveLength(2)
+
+    fireEvent.click(
+      screen.getByTestId('cloud-conflict-file-toggle-thumbnail.png')
+    )
+    expect(
+      screen.getByText('Diff unavailable: Binary or non-UTF-8 file.')
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('cloud-conflict-close-button'))
     expect(onDismiss).toHaveBeenCalledTimes(1)
