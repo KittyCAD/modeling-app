@@ -5,6 +5,8 @@ import {
   getFilePathRelativeToProject,
   getProjectRelativeFilePath,
   getRouterSearchFromRequestUrl,
+  parentPathRelativeToApplicationDirectory,
+  parentPathRelativeToProject,
   parseProjectRoute,
   toProjectRelativePath,
   toWebSafePath,
@@ -83,6 +85,43 @@ describe('testing parseProjectRoute', () => {
       currentFilePath: route,
     })
   })
+
+  it('should not parse a sibling path with the same prefix as inside the project dir', async () => {
+    let config = {
+      settings: {
+        project: {
+          directory: '/home/somebody/Documents/zoo-design-studio-projects',
+        },
+      },
+    }
+    const route =
+      '/home/somebody/Documents/zoo-design-studio-projects-2/project'
+    expect(parseProjectRoute(config, route)).toEqual({
+      projectName: 'project',
+      projectPath: route,
+      currentFileName: null,
+      currentFilePath: null,
+    })
+  })
+
+  it('should not parse a file in a sibling path with the same prefix as inside the project dir', async () => {
+    let config = {
+      settings: {
+        project: {
+          directory: '/home/somebody/Documents/zoo-design-studio-projects',
+        },
+      },
+    }
+    const route =
+      '/home/somebody/Documents/zoo-design-studio-projects-2/project/main.kcl'
+    expect(parseProjectRoute(config, route)).toEqual({
+      projectName: 'project',
+      projectPath:
+        '/home/somebody/Documents/zoo-design-studio-projects-2/project',
+      currentFileName: 'main.kcl',
+      currentFilePath: route,
+    })
+  })
 })
 
 describe('testing getFilePathRelativeToProject', () => {
@@ -125,6 +164,44 @@ describe('testing web-safe project paths', () => {
         children: null,
       })
     ).toEqual('nested-part.kcl')
+  })
+})
+
+describe('testing project-relative paths', () => {
+  it('returns the file path relative to the project when the file is inside the project directory', () => {
+    expect(
+      parentPathRelativeToProject(
+        '/home/somebody/Documents/zoo-design-studio-projects/project/main.kcl',
+        '/home/somebody/Documents/zoo-design-studio-projects'
+      )
+    ).toEqual('main.kcl')
+  })
+
+  it('returns an empty path when the file is in a sibling directory with the same prefix', () => {
+    expect(
+      parentPathRelativeToProject(
+        '/home/somebody/Documents/zoo-design-studio-projects-2/project/main.kcl',
+        '/home/somebody/Documents/zoo-design-studio-projects'
+      )
+    ).toEqual('')
+  })
+
+  it('returns the file path relative to the application directory when contained', () => {
+    expect(
+      parentPathRelativeToApplicationDirectory(
+        '/home/somebody/Documents/zoo-design-studio-projects/project/main.kcl',
+        '/home/somebody/Documents/zoo-design-studio-projects'
+      )
+    ).toEqual('project/main.kcl')
+  })
+
+  it('returns an empty path relative to the application directory when the file is in a sibling prefix directory', () => {
+    expect(
+      parentPathRelativeToApplicationDirectory(
+        '/home/somebody/Documents/zoo-design-studio-projects-2/project/main.kcl',
+        '/home/somebody/Documents/zoo-design-studio-projects'
+      )
+    ).toEqual('')
   })
 })
 
