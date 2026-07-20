@@ -623,8 +623,7 @@ export function addMirror3D({
   const isEdgeSelection = across.graphSelections.some(
     (selection) =>
       selection.artifact?.type === 'segment' ||
-      selection.artifact?.type === 'sweepEdge' ||
-      selection.artifact?.type === 'edgeCutEdge'
+      selection.artifact?.type === 'edgeCut'
   )
   let acrossArg: Expr
   if (isEdgeSelection) {
