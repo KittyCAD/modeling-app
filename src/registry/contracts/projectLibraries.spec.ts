@@ -11,6 +11,7 @@ import {
   getDefaultDirectoryProjectLibraryPath,
   getProjectLibraryIdFromSetting,
   projectLibraryFromSetting,
+  updateDefaultDirectoryProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import { describe, expect, test } from 'vitest'
 
@@ -101,6 +102,55 @@ describe('project library settings', () => {
         '/projects/client/bracket'
       )
     ).toBe('/projects/client')
+  })
+
+  test('does not treat an empty directory library path as containing every path', () => {
+    expect(
+      getContainingDirectoryProjectLibraryPath(
+        [
+          {
+            title: 'Empty Projects',
+            path: '',
+            type: 'directory',
+          },
+        ],
+        '/projects/client/bracket'
+      )
+    ).toBeUndefined()
+  })
+
+  test('updates the first directory library without changing other libraries', () => {
+    expect(
+      updateDefaultDirectoryProjectLibrarySetting(
+        [
+          {
+            title: 'Default',
+            path: '/projects',
+            type: 'directory',
+          },
+          {
+            title: 'External',
+            path: 'external://projects',
+            type: 'external',
+          },
+        ],
+        {
+          title: 'Renamed',
+          path: '/renamed',
+        }
+      )
+    ).toEqual([
+      {
+        title: 'Renamed',
+        path: '/renamed',
+        type: 'directory',
+      },
+      {
+        title: 'External',
+        path: 'external://projects',
+        type: 'external',
+      },
+    ])
   })
 })
 

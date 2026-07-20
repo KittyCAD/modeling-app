@@ -28,6 +28,7 @@ import {
   parseLayoutWithMigrations,
 } from '@src/lib/layout/utils'
 import {
+  getDefaultDirectoryProjectLibraryPath,
   getDefaultProjectLibrarySettings,
   isProjectLibrarySettings,
   mergeProjectLibrarySettings,
@@ -400,6 +401,27 @@ function mergeSettingsPayloads(
   )
 }
 
+function withLegacyProjectDirectoryMirroredFromLibraries(
+  payload: DeepPartial<SaveSettingsPayload>
+): DeepPartial<SaveSettingsPayload> {
+  const libraries = payload.app?.libraries
+  if (!isProjectLibrarySettings(libraries)) {
+    return payload
+  }
+
+  const defaultDirectoryLibraryPath =
+    getDefaultDirectoryProjectLibraryPath(libraries)
+  if (!defaultDirectoryLibraryPath) {
+    return payload
+  }
+
+  return mergeSettingsPayloads(payload, {
+    app: {
+      projectDirectory: defaultDirectoryLibraryPath,
+    },
+  })
+}
+
 function mergeTomlSections(
   ...sections: (Record<string, unknown> | undefined)[]
 ): Record<string, unknown> | undefined {
@@ -614,7 +636,7 @@ export function configurationToSettingsPayload(
   configuration: DeepPartial<Configuration>,
   extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<SaveSettingsPayload> {
-  return mergeSettingsPayloads(
+  const payload = mergeSettingsPayloads(
     {
       app: {
         theme: configuration?.settings?.app?.appearance?.theme
@@ -661,40 +683,66 @@ export function configurationToSettingsPayload(
       'user'
     )
   )
+
+  return withLegacyProjectDirectoryMirroredFromLibraries(payload)
 }
 
 export function settingsPayloadToConfiguration(
   configuration: DeepPartial<SaveSettingsPayload>,
   extensionSettings: ResolvedExtensionSettings = {}
 ): DeepPartial<Configuration> {
+  const configurationWithLegacyProjectDirectory =
+    withLegacyProjectDirectoryMirroredFromLibraries(configuration)
   const appearance = compactRecord({
-    theme: toUndefinedIfNull(configuration?.app?.theme),
+    theme: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.app?.theme
+    ),
   })
 
   const typedAppSection = compactRecord({
     appearance,
-    stream_idle_mode: toUndefinedIfNull(configuration?.app?.streamIdleMode),
+    stream_idle_mode: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.app?.streamIdleMode
+    ),
   })
 
   const typedModelingSection = compactRecord({
-    base_unit: toUndefinedIfNull(configuration?.modeling?.defaultUnit),
-    camera_projection: toUndefinedIfNull(
-      configuration?.modeling?.cameraProjection
+    base_unit: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.defaultUnit
     ),
-    camera_orbit: toUndefinedIfNull(configuration?.modeling?.cameraOrbit),
-    highlight_edges: toUndefinedIfNull(configuration?.modeling?.highlightEdges),
-    enable_ssao: toUndefinedIfNull(configuration?.modeling?.enableSSAO),
-    backface_color: toUndefinedIfNull(configuration?.modeling?.backfaceColor),
-    show_scale_grid: toUndefinedIfNull(configuration?.modeling?.showScaleGrid),
-    fixed_size_grid: toUndefinedIfNull(configuration?.modeling?.fixedSizeGrid),
+    camera_projection: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.cameraProjection
+    ),
+    camera_orbit: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.cameraOrbit
+    ),
+    highlight_edges: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.highlightEdges
+    ),
+    enable_ssao: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.enableSSAO
+    ),
+    backface_color: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.backfaceColor
+    ),
+    show_scale_grid: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.showScaleGrid
+    ),
+    fixed_size_grid: toUndefinedIfNull(
+      configurationWithLegacyProjectDirectory?.modeling?.fixedSizeGrid
+    ),
   })
 
   const appOnlySections = mergeSettingsSectionMaps(
     writeAppOnlySettingsSections(
-      configuration,
+      configurationWithLegacyProjectDirectory,
       USER_APP_ONLY_SETTINGS_SECTIONS
     ),
-    writeExtensionSettingsSections(configuration, extensionSettings, 'user')
+    writeExtensionSettingsSections(
+      configurationWithLegacyProjectDirectory,
+      extensionSettings,
+      'user'
+    )
   )
 
   const settings = compactRecord({
@@ -1078,7 +1126,17 @@ export async function saveSettings(
   const wasmInstance = await initPromise
 
   // Get the user settings.
-  const jsAppSettings = getChangedSettingsAtLevel(allSettings, 'user')
+  const userSettingsChanges = getChangedSettingsAtLevel(allSettings, 'user')
+  const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
+    allSettings.app.libraries.current
+  )
+  const jsAppSettings = defaultDirectoryLibraryPath
+    ? mergeSettingsPayloads(userSettingsChanges, {
+        app: {
+          projectDirectory: defaultDirectoryLibraryPath,
+        },
+      })
+    : userSettingsChanges
   const appTomlString = serializeConfiguration(
     settingsPayloadToConfiguration(jsAppSettings, extensionSettings),
     wasmInstance

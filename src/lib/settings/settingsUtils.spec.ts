@@ -327,6 +327,54 @@ describe('project settings serialization regression', () => {
     )
   })
 
+  it('uses the default directory library as the legacy project directory when parsing settings', () => {
+    const parsedPayload = configurationToSettingsPayload({
+      settings: {
+        app: {
+          libraries: [
+            {
+              title: 'Projects',
+              path: '/library-projects',
+              type: 'directory',
+            },
+          ],
+        },
+        project: {
+          directory: '/legacy-projects',
+        },
+      },
+    })
+
+    expect(parsedPayload.app?.projectDirectory).toBe('/library-projects')
+  })
+
+  it('mirrors the default directory library into the legacy project directory when serializing settings', async () => {
+    const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
+    const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
+
+    const serializedToml = serializeConfiguration(
+      settingsPayloadToConfiguration({
+        app: {
+          projectDirectory: '/legacy-projects',
+          libraries: [
+            {
+              title: 'Projects',
+              path: '/library-projects',
+              type: 'directory',
+            },
+          ],
+        },
+      }),
+      wasmInstance
+    )
+    if (serializedToml instanceof Error) {
+      throw serializedToml
+    }
+
+    expect(serializedToml).toContain('[settings.project]')
+    expect(serializedToml).toContain('directory = "/library-projects"')
+  })
+
   it('preserves extension-contributed plugin settings through wasm round-trip', async () => {
     const WASM_PATH = join(process.cwd(), 'public/kcl_wasm_lib_bg.wasm')
     const wasmInstance = await loadAndInitialiseWasmInstance(WASM_PATH)
