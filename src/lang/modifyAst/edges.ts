@@ -1545,7 +1545,9 @@ function getCallFromExpr(expr: Expr): Node<CallExpressionKw> | null {
 
 export function findRevolveHelixCallsToFix(
   program: Node<Program>,
-  edgeRefactorMetadata: EdgeRefactorMeta[]
+  edgeRefactorMetadata: EdgeRefactorMeta[],
+  artifactGraph?: ArtifactGraph,
+  wasmInstance?: ModuleType
 ): RevolveHelixCallToFix[] {
   const results: RevolveHelixCallToFix[] = []
 
@@ -1563,7 +1565,32 @@ export function findRevolveHelixCallsToFix(
       const deprecatedCall = edgeArg
         ? findDeprecatedEdgeStdlibCallFromExpr(program, edgeArg, pathToNode)
         : null
-      if (!deprecatedCall) return
+      if (!deprecatedCall) {
+        if (
+          calleeName !== 'mirror3d' ||
+          !edgeArg ||
+          !getTagInfoFromExpr(edgeArg)?.tagsBaseExpr ||
+          !artifactGraph ||
+          !wasmInstance
+        ) {
+          return
+        }
+        const payload = directSketchSegmentEdgePayload(
+          program,
+          edgeArg,
+          artifactGraph,
+          wasmInstance
+        )
+        const [firstFaceId, secondFaceId] = payload?.side_faces ?? []
+        if (!firstFaceId || !secondFaceId) return
+        results.push({
+          range: [call.start, call.end, call.moduleId],
+          faceIds: [firstFaceId, secondFaceId],
+          argument,
+          pathToCall: pathToNode,
+        })
+        return
+      }
       const inner = deprecatedCall.call
 
       const innerStart = inner.start
@@ -2136,7 +2163,12 @@ export function refactorZ0006Unified(
     sourceRange
   )
   const toFixRevolveHelix = filterCallsBySourceRange(
-    findRevolveHelixCallsToFix(ast, edgeRefactorMetadata),
+    findRevolveHelixCallsToFix(
+      ast,
+      edgeRefactorMetadata,
+      artifactGraph,
+      wasmInstance
+    ),
     sourceRange
   )
   const toFixExtrudeEdges = filterCallsBySourceRange(

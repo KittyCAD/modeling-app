@@ -180,6 +180,12 @@ fn is_direct_tag_ref(element: &Expr) -> bool {
         return true;
     }
 
+    is_qualified_tag_ref(element)
+}
+
+/// True for a qualified tag reference such as `body.sketch.tags.edge1`.
+/// Unlike a bare name, this cannot be confused with an axis or point variable.
+fn is_qualified_tag_ref(element: &Expr) -> bool {
     let Expr::MemberExpression(member) = element else {
         return false;
     };
@@ -221,7 +227,8 @@ pub fn lint_deprecated_edge_stdlib_in_fillet_chamfer(node: Node, prog: &AstNode<
         }
     } else if let Some(argument_name) = edge_reference_argument(callee_name)
         && let Some(edge_expr) = get_arg(call_node, argument_name)
-        && is_deprecated_edge_stdlib_or_variable_expr(edge_expr, prog)
+        && (is_deprecated_edge_stdlib_or_variable_expr(edge_expr, prog)
+            || (callee_name == "mirror3d" && is_qualified_tag_ref(edge_expr)))
     {
         let pos = SourceRange::new(call_node.start, call_node.end, call_node.module_id);
         findings.push(Z0006.at(
@@ -452,6 +459,27 @@ revolve(profile, axis = axisEdge)
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert_eq!(z0006.len(), 1, "Z0006 fires for mirror3d with deprecated across edge");
         assert!(z0006[0].description.contains("across"));
+    }
+
+    #[test]
+    fn z0006_fires_for_mirror3d_with_solid_edge_tag() {
+        let kcl = r#"mirror3d(body, across = body.sketch.tags.line4)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for a solid edge tag used by mirror3d");
+    }
+
+    #[test]
+    fn z0006_does_not_fire_for_mirror3d_with_sketch_segment() {
+        let kcl = r#"baseSketch = sketch(on = XY) {}
+mirror3d(body, across = baseSketch.line4)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert!(z0006.is_empty(), "sketch segments remain valid mirror3d axes");
     }
 
     #[test]
