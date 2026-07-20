@@ -74,6 +74,7 @@ export async function buildTheWorldAndConnectToEngine() {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      defaultProjectLibraries: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
@@ -179,6 +180,7 @@ export async function buildTheWorldAndNoEngineConnection(mockWasm = false) {
   const settingsActor = createActor(settingsMachine, {
     input: {
       commandBarActor,
+      defaultProjectLibraries: [],
       extensionSettings: {},
       ...createSettings(),
       wasmInstancePromise: instancePromise,
