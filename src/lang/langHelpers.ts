@@ -196,14 +196,6 @@ export async function lintAst({
       )
     }
 
-    discovered_findings = discovered_findings.filter(
-      (lint) =>
-        lint.finding.code !== 'Z0007' ||
-        legacyAngleRefactorMetadata.some((metadata) =>
-          sourceRangesEqual(metadata.sourceRange, lint.pos)
-        )
-    )
-
     // Process findings - for Z0005 without suggestion, we'll create actions async
     const z0006RefactorCache: Z0006RefactorCache = {}
     const diagnosticsPromises = discovered_findings.map(async (lint) => {
