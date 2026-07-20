@@ -6,6 +6,7 @@ import { MlEphantConversationWelcome } from '@src/lib/zookeeper/components/MlEph
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import type { KclManager } from '@src/lang/KclManager'
 import { SEARCH_PARAM_ML_PROMPT_KEY } from '@src/lib/constants'
+import { getParentAbsolutePath } from '@src/lib/paths'
 import type { FileEntry, Project } from '@src/lib/project'
 import { activeFileRelativeToProject } from '@src/lib/promptToEdit'
 import type { SettingsType } from '@src/lib/settings/initialSettings'
@@ -128,7 +129,7 @@ export const MlEphantConversationPane = (props: {
       type: MlEphantManagerTransitions.MessageSend,
       prompt: request,
       projectForPromptOutput: project,
-      applicationProjectDirectory: props.settings.app.projectDirectory.current,
+      applicationProjectDirectory: getParentAbsolutePath(project.path),
       fileSelectedDuringPrompting: {
         entry: props.loaderFile,
         content: props.kclManager.code,
@@ -391,8 +392,9 @@ export const MlEphantConversationPane = (props: {
               activeFile: currentLoaderFile
                 ? activeFileRelativeToProject({
                     currentFileEntry: currentLoaderFile,
-                    applicationProjectDirectory:
-                      props.settings.app.projectDirectory.current,
+                    applicationProjectDirectory: getParentAbsolutePath(
+                      project.path
+                    ),
                   })
                 : undefined,
             })

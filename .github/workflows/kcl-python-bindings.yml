@@ -129,7 +129,7 @@ jobs:
           CI_SUITE: integration:kcl
           CI_STEP: setup
       - name: Install uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v8.3.2
       - uses: actions-rust-lang/setup-rust-toolchain@v1.17.0
         with:
           rustflags: '' # Use .cargo/config.toml
@@ -163,7 +163,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.0
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v8.3.2
       - name: Create venv
         run: |
           uv venv .venv
@@ -194,7 +194,7 @@ jobs:
         with:
           path: rust/kcl-python-bindings
       - name: Install the latest version of uv
-        uses: astral-sh/setup-uv@v8.2.0
+        uses: astral-sh/setup-uv@v8.3.2
       - name: do uv things
         run: |
           cd rust/kcl-python-bindings
