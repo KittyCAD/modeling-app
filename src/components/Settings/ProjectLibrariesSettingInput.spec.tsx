@@ -86,6 +86,7 @@ describe('ProjectLibrariesSettingInput', () => {
       setData: vi.fn((key: string, value: string) => {
         dataTransferStore.set(key, value)
       }),
+      setDragImage: vi.fn(),
     }
 
     render(
@@ -106,9 +107,21 @@ describe('ProjectLibrariesSettingInput', () => {
     const dragHandles = screen.getAllByTestId('project-library-drag-handle')
     const rows = screen.getAllByTestId('project-library-row')
     fireEvent.dragStart(dragHandles[1], { dataTransfer })
+    expect(dataTransfer.setDragImage).toHaveBeenCalledWith(
+      expect.any(HTMLElement),
+      0,
+      0
+    )
+    expect(
+      document.getElementById('project-library-drag-preview-1')
+    ).toHaveTextContent('Client Projects')
+
     fireEvent.dragOver(rows[0], { dataTransfer })
     fireEvent.drop(rows[0], { dataTransfer })
 
+    expect(
+      document.getElementById('project-library-drag-preview-1')
+    ).not.toBeInTheDocument()
     expect(updateValue).toHaveBeenLastCalledWith([
       {
         title: 'Client Projects',

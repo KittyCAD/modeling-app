@@ -1,6 +1,7 @@
 import { ActionButton } from '@src/components/ActionButton'
 import { CustomIcon } from '@src/components/CustomIcon'
 import Tooltip from '@src/components/Tooltip'
+import { removeDragPreviewElement, setDragPreview } from '@src/lib/dragPreview'
 import {
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
@@ -10,7 +11,7 @@ import {
 import { reportRejection } from '@src/lib/trap'
 import { toSync } from '@src/lib/utils'
 import type { ProjectLibraryTypeContribution } from '@src/registry/contracts/projectLibraries'
-import { type DragEvent, useEffect, useState } from 'react'
+import { type DragEvent, useEffect, useRef, useState } from 'react'
 
 interface ProjectLibrariesSettingInputProps {
   value: ProjectLibrarySetting[]
@@ -186,10 +187,19 @@ export function ProjectLibrariesSettingInput({
   const [dragOverLibraryIndex, setDragOverLibraryIndex] = useState<
     number | null
   >(null)
+  const dragPreviewIdRef = useRef<string | null>(null)
 
   useEffect(() => {
     setDraftLibraries(value)
   }, [value])
+
+  useEffect(() => {
+    return () => {
+      if (dragPreviewIdRef.current) {
+        removeDragPreviewElement(dragPreviewIdRef.current)
+      }
+    }
+  }, [])
 
   function commit(nextLibraries: ProjectLibrarySetting[]) {
     const normalizedLibraries = nextLibraries.map((library) =>
@@ -280,9 +290,17 @@ export function ProjectLibrariesSettingInput({
   }
 
   function handleDragStart(event: DragEvent<HTMLButtonElement>, index: number) {
+    const library = draftLibraries[index]
+    const dragPreviewId = `project-library-drag-preview-${index}`
+
     setDraggedLibraryIndex(index)
+    dragPreviewIdRef.current = dragPreviewId
     event.dataTransfer.effectAllowed = 'move'
     event.dataTransfer.setData('text/plain', String(index))
+    setDragPreview(event.dataTransfer, {
+      id: dragPreviewId,
+      text: library?.title.trim() || library?.path || 'Project library',
+    })
   }
 
   function handleDragOver(event: DragEvent<HTMLLIElement>, index: number) {
@@ -304,6 +322,7 @@ export function ProjectLibrariesSettingInput({
 
     setDraggedLibraryIndex(null)
     setDragOverLibraryIndex(null)
+    removeCurrentDragPreview()
 
     if (fromIndex === null) {
       return
@@ -315,6 +334,16 @@ export function ProjectLibrariesSettingInput({
   function handleDragEnd() {
     setDraggedLibraryIndex(null)
     setDragOverLibraryIndex(null)
+    removeCurrentDragPreview()
+  }
+
+  function removeCurrentDragPreview() {
+    if (!dragPreviewIdRef.current) {
+      return
+    }
+
+    removeDragPreviewElement(dragPreviewIdRef.current)
+    dragPreviewIdRef.current = null
   }
 
   async function chooseLibraryDirectory(index: number) {
