@@ -2,7 +2,7 @@ import { hashString } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
-export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Default Projects Directory'
+export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Projects'
 export const DIRECTORY_PROJECT_LIBRARY_TYPE = 'directory'
 
 export type ProjectLibraryType = string

@@ -16,11 +16,13 @@ import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
 import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
+  clearSettingsAtLevel,
   configurationToSettingsPayload,
   formatSettingsLabel,
   getAllCurrentSettings,
   getChangedSettingsAtLevel,
   hiddenOnPlatform,
+  migrateLegacyProjectDirectoryToLibraries,
   mergeProjectConfiguration,
   projectConfigurationToSettingsPayload,
   replaceProjectSettingsPreservingMetadata,
@@ -112,7 +114,7 @@ describe('testing settings initialization', () => {
 
     expect(settings.app.libraries.current).toEqual([
       {
-        title: 'Default Projects Directory',
+        title: 'Projects',
         path: '/tmp/projects',
         type: 'directory',
       },
@@ -128,6 +130,111 @@ describe('testing settings initialization', () => {
     expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toEqual(
       []
     )
+  })
+
+  it('migrates changed legacy project directory to a user library value', () => {
+    expect(
+      migrateLegacyProjectDirectoryToLibraries(
+        {
+          app: {
+            projectDirectory: '/custom/projects',
+          },
+        },
+        '/default/projects'
+      )
+    ).toEqual({
+      app: {
+        projectDirectory: '/custom/projects',
+        libraries: [
+          {
+            title: 'Projects',
+            path: '/custom/projects',
+            type: 'directory',
+          },
+        ],
+      },
+    })
+  })
+
+  it('keeps the app-owned libraries default when legacy project directory is unchanged', () => {
+    expect(
+      migrateLegacyProjectDirectoryToLibraries(
+        {
+          app: {
+            projectDirectory: '/default/projects',
+          },
+        },
+        '/default/projects'
+      )
+    ).toEqual({
+      app: {
+        projectDirectory: '/default/projects',
+      },
+    })
+  })
+
+  it('does not migrate legacy project directory over explicit libraries', () => {
+    expect(
+      migrateLegacyProjectDirectoryToLibraries(
+        {
+          app: {
+            projectDirectory: '/custom/projects',
+            libraries: [],
+          },
+        },
+        '/default/projects'
+      )
+    ).toEqual({
+      app: {
+        projectDirectory: '/custom/projects',
+        libraries: [],
+      },
+    })
+  })
+
+  it('keeps migrated legacy project directory separate from the libraries default', () => {
+    const settings = createSettings()
+    settings.app.projectDirectory.default = '/default/projects'
+    settings.app.libraries.default =
+      getDefaultProjectLibrarySettings('/default/projects')
+
+    setSettingsAtLevel(
+      settings,
+      'user',
+      migrateLegacyProjectDirectoryToLibraries(
+        {
+          app: {
+            projectDirectory: '/custom/projects',
+          },
+        },
+        '/default/projects'
+      )
+    )
+
+    expect(settings.app.libraries.default).toEqual([
+      {
+        title: 'Projects',
+        path: '/default/projects',
+        type: 'directory',
+      },
+    ])
+    expect(settings.app.libraries.current).toEqual([
+      {
+        title: 'Projects',
+        path: '/custom/projects',
+        type: 'directory',
+      },
+    ])
+
+    clearSettingsAtLevel(settings, 'user')
+
+    expect(settings.app.libraries.current).toEqual([
+      {
+        title: 'Projects',
+        path: '/default/projects',
+        type: 'directory',
+      },
+    ])
   })
 })
 
