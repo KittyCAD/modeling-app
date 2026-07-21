@@ -299,19 +299,6 @@ export function desktopSafePathJoin(paths: string[]): string {
   return paths.join(fsZds.sep)
 }
 
-/**
- * Don't pass a folder path, only files with extensions for best results.
- */
-export const enforceFileEXT = (
-  filePath: string,
-  ext: string | null
-): string | null => {
-  if (ext === null) {
-    return null
-  }
-  return filePath ? (filePath.endsWith(ext) ? filePath : filePath + ext) : null
-}
-
 export const getEXTNoPeriod = (filePath: string) => {
   const extension = filePath.split('.').pop() || null
   return extension
