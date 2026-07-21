@@ -16,7 +16,7 @@
 /// therefore retain their original representations. Empty strings and strings
 /// without cased characters are returned unchanged.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun
 /// result = "Straße"
 ///   |> string::uppercase()
 ///
@@ -41,7 +41,7 @@ export fn uppercase(
 /// therefore retain their original representations. Empty strings and strings
 /// without cased characters are returned unchanged.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun
 /// result = "KCL ΟΣ"
 ///   |> string::lowercase()
 ///
@@ -70,7 +70,7 @@ export fn lowercase(
 /// This function always returns a Boolean predicate, including inside a sketch
 /// block. It does not create an equivalence constraint.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun
 /// matches = "Straße"
 ///   |> string::isEqual(to = "STRASSE", caseInsensitive = true)
 ///
@@ -95,7 +95,7 @@ export fn isEqual(
 /// If the input is empty or contains only whitespace, this returns an empty
 /// string. Unicode normalization and case conversion are not performed.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun
 /// result = "  KCL strings  "
 ///   |> string::trim()
 ///
@@ -119,7 +119,7 @@ export fn trim(
 /// whitespace, this returns an empty string. Unicode normalization and case
 /// conversion are not performed.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun
 /// result = "  KCL strings  "
 ///   |> string::trimStart()
 ///
@@ -143,7 +143,7 @@ export fn trimStart(
 /// this returns an empty string. Unicode normalization and case conversion are
 /// not performed.
 ///
-/// ```kcl,sketchSyntaxAgnostic
+/// ```kcl,norun
 /// result = "  KCL strings  "
 ///   |> string::trimEnd()
 ///

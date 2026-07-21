@@ -186,6 +186,13 @@ layout: manual
   * [`solver::tangent`](/docs/kcl-std/functions/std-solver-tangent)
   * [`solver::vertical`](/docs/kcl-std/functions/std-solver-vertical)
   * [`solver::verticalDistance`](/docs/kcl-std/functions/std-solver-verticalDistance)
+* [**std::string**](/docs/kcl-std/modules/std-string)
+  * [`string::isEqual`](/docs/kcl-std/functions/std-string-isEqual)
+  * [`string::lowercase`](/docs/kcl-std/functions/std-string-lowercase)
+  * [`string::trim`](/docs/kcl-std/functions/std-string-trim)
+  * [`string::trimEnd`](/docs/kcl-std/functions/std-string-trimEnd)
+  * [`string::trimStart`](/docs/kcl-std/functions/std-string-trimStart)
+  * [`string::uppercase`](/docs/kcl-std/functions/std-string-uppercase)
 * [**std::transform**](/docs/kcl-std/modules/std-transform)
   * [`delete`](/docs/kcl-std/functions/std-transform-delete) Experimental
   * [`hide`](/docs/kcl-std/functions/std-transform-hide)
