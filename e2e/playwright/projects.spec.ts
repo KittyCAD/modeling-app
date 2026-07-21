@@ -1,10 +1,6 @@
 import nodeFsSync from 'fs'
 import path from 'path'
-import {
-  DEFAULT_PROJECT_KCL_FILE,
-  OPFS_CLOUD_FEATURE_FLAG,
-  REGEXP_UUIDV4,
-} from '@src/lib/constants'
+import { DEFAULT_PROJECT_KCL_FILE, REGEXP_UUIDV4 } from '@src/lib/constants'
 import nodeFs from 'fs/promises'
 import { NIL as uuidNIL } from 'uuid'
 
@@ -1323,117 +1319,113 @@ test(
   }
 )
 
-test.describe('project library settings', () => {
-  test.use({ userFeatures: [OPFS_CLOUD_FEATURE_FLAG] })
+// desktop-only reason: changing roots in OPFS is not a thing.
+test(
+  'You can change the root projects directory and nothing is lost',
+  {
+    tag: '@desktop',
+  },
+  async ({ page, tronApp, homePage, folderSetupFn }, testInfo) => {
+    if (!tronApp) throw new Error('tronApp is missing.')
 
-  // desktop-only reason: changing roots in OPFS is not a thing.
-  test(
-    'You can change the root projects directory and nothing is lost',
-    {
-      tag: '@desktop',
-    },
-    async ({ page, tronApp, homePage, folderSetupFn }, testInfo) => {
-      if (!tronApp) throw new Error('tronApp is missing.')
+    await folderSetupFn(async (dir) => {
+      await Promise.all([
+        nodeFs.mkdir(`${dir}/router-template-slate`, { recursive: true }),
+        nodeFs.mkdir(`${dir}/bracket`, { recursive: true }),
+      ])
+      await Promise.all([
+        nodeFs.copyFile(
+          executorInputPath('router-template-slate.kcl'),
+          `${dir}/router-template-slate/main.kcl`
+        ),
+        nodeFs.copyFile(
+          executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
+          `${dir}/bracket/main.kcl`
+        ),
+      ])
+    })
+    await page.setBodyDimensions({ width: 1200, height: 500 })
 
-      await folderSetupFn(async (dir) => {
-        await Promise.all([
-          nodeFs.mkdir(`${dir}/router-template-slate`, { recursive: true }),
-          nodeFs.mkdir(`${dir}/bracket`, { recursive: true }),
-        ])
-        await Promise.all([
-          nodeFs.copyFile(
-            executorInputPath('router-template-slate.kcl'),
-            `${dir}/router-template-slate/main.kcl`
-          ),
-          nodeFs.copyFile(
-            executorInputPath('focusrite_scarlett_mounting_bracket.kcl'),
-            `${dir}/bracket/main.kcl`
-          ),
-        ])
-      })
-      await page.setBodyDimensions({ width: 1200, height: 500 })
+    // we'll grab this from the settings on screen before we switch
+    let originalProjectDirName: string
+    const newProjectDirName = testInfo.outputPath(
+      'electron-test-projects-dir-2'
+    )
+    if (nodeFsSync.existsSync(newProjectDirName)) {
+      await nodeFs.rm(newProjectDirName, { recursive: true })
+    }
 
-      // we'll grab this from the settings on screen before we switch
-      let originalProjectDirName: string
-      const newProjectDirName = testInfo.outputPath(
-        'electron-test-projects-dir-2'
+    await homePage.projectsLoaded()
+
+    await test.step('We can change the root project directory', async () => {
+      // expect to see the project directory settings link
+      await expect(
+        page.getByTestId('project-directory-settings-link')
+      ).toBeVisible()
+
+      await page.getByTestId('project-directory-settings-link').click()
+
+      await expect(page.getByTestId('project-directory-button')).toBeVisible()
+      originalProjectDirName = await page
+        .getByTestId('project-directory-input')
+        .inputValue()
+
+      const handleFile = tronApp.electron.evaluate(
+        async ({ dialog }, filePaths) => {
+          dialog.showOpenDialog = () =>
+            Promise.resolve({ canceled: false, filePaths })
+        },
+        [newProjectDirName]
       )
-      if (nodeFsSync.existsSync(newProjectDirName)) {
-        await nodeFs.rm(newProjectDirName, { recursive: true })
-      }
+      await page.getByTestId('project-directory-button').click()
+      await handleFile
+
+      await expect
+        .poll(() => page.getByTestId('project-directory-input').inputValue())
+        .toContain(newProjectDirName)
+
+      await page.getByTestId('settings-close-button').click()
 
       await homePage.projectsLoaded()
 
-      await test.step('We can change the root project directory', async () => {
-        // expect to see the project directory settings link
-        await expect(
-          page.getByTestId('project-directory-settings-link')
-        ).toBeVisible()
+      await expect(page.getByText('No projects found')).toBeVisible()
+      await createProject({ name: 'project-000', page, returnHome: true })
+      await expect(
+        page.getByTestId('project-link').filter({ hasText: 'project-000' })
+      ).toBeVisible()
+    })
 
-        await page.getByTestId('project-directory-settings-link').click()
+    await test.step('We can change back to the original root project directory', async () => {
+      await expect(
+        page.getByTestId('project-directory-settings-link')
+      ).toBeVisible()
 
-        await expect(page.getByTestId('project-directory-button')).toBeVisible()
-        originalProjectDirName = await page
-          .getByTestId('project-directory-input')
-          .inputValue()
+      await page.getByTestId('project-directory-settings-link').click()
 
-        const handleFile = tronApp.electron.evaluate(
-          async ({ dialog }, filePaths) => {
-            dialog.showOpenDialog = () =>
-              Promise.resolve({ canceled: false, filePaths })
-          },
-          [newProjectDirName]
-        )
-        await page.getByTestId('project-directory-button').click()
-        await handleFile
+      const handleFile = tronApp.electron.evaluate(
+        async ({ dialog }, filePaths) => {
+          dialog.showOpenDialog = () =>
+            Promise.resolve({ canceled: false, filePaths })
+        },
+        [originalProjectDirName]
+      )
+      await expect(page.getByTestId('project-directory-button')).toBeVisible()
 
-        await expect
-          .poll(() => page.getByTestId('project-directory-input').inputValue())
-          .toContain(newProjectDirName)
+      await page.getByTestId('project-directory-button').click()
+      await handleFile
 
-        await page.getByTestId('settings-close-button').click()
+      await homePage.projectsLoaded()
+      await expect(page.getByTestId('project-directory-input')).toHaveValue(
+        originalProjectDirName
+      )
 
-        await homePage.projectsLoaded()
+      await page.getByTestId('settings-close-button').click()
 
-        await expect(page.getByText('No projects found')).toBeVisible()
-        await createProject({ name: 'project-000', page, returnHome: true })
-        await expect(
-          page.getByTestId('project-link').filter({ hasText: 'project-000' })
-        ).toBeVisible()
-      })
-
-      await test.step('We can change back to the original root project directory', async () => {
-        await expect(
-          page.getByTestId('project-directory-settings-link')
-        ).toBeVisible()
-
-        await page.getByTestId('project-directory-settings-link').click()
-
-        const handleFile = tronApp.electron.evaluate(
-          async ({ dialog }, filePaths) => {
-            dialog.showOpenDialog = () =>
-              Promise.resolve({ canceled: false, filePaths })
-          },
-          [originalProjectDirName]
-        )
-        await expect(page.getByTestId('project-directory-button')).toBeVisible()
-
-        await page.getByTestId('project-directory-button').click()
-        await handleFile
-
-        await homePage.projectsLoaded()
-        await expect(page.getByTestId('project-directory-input')).toHaveValue(
-          originalProjectDirName
-        )
-
-        await page.getByTestId('settings-close-button').click()
-
-        await expect(page.getByText('bracket')).toBeVisible()
-        await expect(page.getByText('router-template-slate')).toBeVisible()
-      })
-    }
-  )
-})
+      await expect(page.getByText('bracket')).toBeVisible()
+      await expect(page.getByText('router-template-slate')).toBeVisible()
+    })
+  }
+)
 
 test(
   'Search projects on desktop home',
