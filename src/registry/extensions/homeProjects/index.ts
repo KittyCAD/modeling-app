@@ -7,7 +7,6 @@ import {
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
 import {
-  createNewProjectDirectory,
   getProjectInfo,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
@@ -18,6 +17,7 @@ import {
 } from '@src/lib/homeProjects'
 import type { Project } from '@src/lib/project'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
+import { createProjectInLocalDirectory } from '@src/lib/projectLibraryOperations'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
@@ -353,15 +353,12 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 requestedProjectName,
                 requestedProjectTitle,
               }) => {
-                const project = await createNewProjectDirectory(
+                const project = await createProjectInLocalDirectory({
+                  projectDirectoryPath: library.path,
                   requestedProjectName,
-                  await getWasmPromise(),
-                  undefined,
-                  undefined,
-                  undefined,
-                  library.path,
-                  requestedProjectTitle
-                )
+                  requestedProjectTitle,
+                  wasmInstancePromise: getWasmPromise(),
+                })
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })

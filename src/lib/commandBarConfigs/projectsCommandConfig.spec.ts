@@ -1,6 +1,7 @@
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import type { CommandArgumentOption } from '@src/lib/commandTypes'
 import type { Project } from '@src/lib/project'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
@@ -37,6 +38,15 @@ function createSystemIOActor(folders: Project[] = []) {
     }),
     send: vi.fn(),
   } as unknown as ActorRefFrom<typeof systemIOMachine>
+}
+
+function createLibrary(id: string, title: string): ProjectLibrary {
+  return {
+    id,
+    title,
+    path: `/projects/${id}`,
+    type: 'directory',
+  }
 }
 
 function projectOptions(
@@ -98,6 +108,86 @@ describe('project command config', () => {
         requestedProjectTitle: 'My Cool Project!',
       },
     })
+  })
+
+  it('creates projects through the selected library target', () => {
+    const systemIOActor = createSystemIOActor()
+    const library = createLibrary('client-projects', 'Client Projects')
+    const createProject = {
+      run: vi.fn(),
+    }
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+      getCreateProjectLibraryTargets: () => [
+        {
+          library,
+          createProject,
+        },
+      ],
+    })
+    const createCommand = commands.find(
+      (command) => command.name === 'Create project'
+    )
+
+    createCommand?.onSubmit({
+      name: ' Client Gear! ',
+      libraryId: library.id,
+    })
+
+    expect(createProject.run).toHaveBeenCalledWith({
+      library,
+      requestedProjectName: 'client-gear',
+      requestedProjectTitle: 'Client Gear!',
+    })
+    expect(systemIOActor.send).not.toHaveBeenCalled()
+  })
+
+  it('defaults create project to the current library route', () => {
+    window.location.hash = '#/library/client-projects'
+    try {
+      const commands = createProjectCommands({
+        systemIOActor: createSystemIOActor(),
+        enableProjectDirectoryCommands: true,
+        getCreateProjectLibraryTargets: () => [
+          {
+            library: createLibrary('default-projects', 'Default Projects'),
+            createProject: {
+              run: vi.fn(),
+            },
+          },
+          {
+            library: createLibrary('client-projects', 'Client Projects'),
+            createProject: {
+              run: vi.fn(),
+            },
+          },
+        ],
+      })
+      const createCommand = commands.find(
+        (command) => command.name === 'Create project'
+      )
+      const libraryArg = createCommand?.args?.libraryId as unknown as {
+        defaultValue: () => string
+        options: () => CommandArgumentOption<string>[]
+      }
+
+      expect(libraryArg.defaultValue()).toBe('client-projects')
+      expect(libraryArg.options()).toEqual([
+        {
+          name: 'Default Projects',
+          value: 'default-projects',
+          isCurrent: false,
+        },
+        {
+          name: 'Client Projects',
+          value: 'client-projects',
+          isCurrent: false,
+        },
+      ])
+    } finally {
+      window.location.hash = ''
+    }
   })
 
   it('labels existing project options by title while submitting directory names', () => {

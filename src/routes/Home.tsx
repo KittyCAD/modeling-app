@@ -444,6 +444,11 @@ const Home = () => {
                     data: {
                       groupId: 'projects',
                       name: 'Create project',
+                      argDefaultValues: selectedProjectLibrary
+                        ? {
+                            libraryId: selectedProjectLibrary.id,
+                          }
+                        : undefined,
                     },
                   })
                 }

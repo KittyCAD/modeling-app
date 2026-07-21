@@ -1,18 +1,30 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
 import type { Command } from '@src/lib/commandTypes'
+import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
+import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDirectoryOptions,
   getProjectDisplayName,
   getProjectOptionNameFromDirectoryName,
 } from '@src/lib/projectDisplayName'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type {
+  ProjectLibraryCreateProjectInput,
+  ProjectLibraryOperation,
+} from '@src/registry/contracts/projectLibraries'
+import toast from 'react-hot-toast'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 export type ProjectsCommandSchema = {
+  'Create project': {
+    name: string
+    libraryId?: string
+  }
   'Import file from URL': {
     name: string
     code?: string
@@ -21,18 +33,43 @@ export type ProjectsCommandSchema = {
   }
 }
 
+export interface CreateProjectLibraryTarget {
+  library: ProjectLibrary
+  createProject: ProjectLibraryOperation<ProjectLibraryCreateProjectInput>
+}
+
 function defaultEnableProjectDirectoryCommands() {
   return typeof window !== 'undefined' && Boolean(window.electron)
+}
+
+function currentLibraryIdFromLocation() {
+  if (typeof window === 'undefined') {
+    return undefined
+  }
+
+  const pathname = window.location.hash
+    ? window.location.hash.replace(/^#/, '').split('?')[0]
+    : window.location.pathname
+  const libraryPathPrefix = `${PATHS.LIBRARY}/`
+  if (!pathname.startsWith(libraryPathPrefix)) {
+    return undefined
+  }
+
+  return decodeURIComponent(
+    webSafePathSplit(pathname.slice(libraryPathPrefix.length))[0] ?? ''
+  )
 }
 
 export function createProjectCommands({
   systemIOActor,
   enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
   getCurrentProjectDirectoryName,
+  getCreateProjectLibraryTargets,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   enableProjectDirectoryCommands?: boolean
   getCurrentProjectDirectoryName?: () => string | undefined
+  getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -52,6 +89,41 @@ export function createProjectCommands({
 
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
+  const createProjectTargetsSnapshot = () => getCreateProjectLibraryTargets?.()
+
+  const selectedCreateProjectTarget = (libraryId: unknown) => {
+    const createProjectTargets = createProjectTargetsSnapshot()
+    if (!createProjectTargets) {
+      return undefined
+    }
+
+    const requestedLibraryId =
+      typeof libraryId === 'string' && libraryId.length > 0
+        ? libraryId
+        : undefined
+
+    return (
+      createProjectTargets.find(
+        (target) => target.library.id === requestedLibraryId
+      ) ?? createProjectTargets[0]
+    )
+  }
+
+  const createProjectLibraryOptions = () =>
+    createProjectTargetsSnapshot()?.map((target) => ({
+      name: target.library.title,
+      value: target.library.id,
+      isCurrent: false,
+    })) ?? []
+  const defaultCreateProjectLibraryId = () => {
+    const options = createProjectLibraryOptions()
+    const routeLibraryId = currentLibraryIdFromLocation()
+    return (
+      options.find((option) => option.value === routeLibraryId)?.value ??
+      options[0]?.value ??
+      ''
+    )
+  }
 
   const openProjectCommand: Command = {
     icon: 'folder',
@@ -90,15 +162,39 @@ export function createProjectCommands({
     needsReview: false,
     onSubmit: (record) => {
       if (record) {
+        const target = selectedCreateProjectTarget(record.libraryId)
+        if (getCreateProjectLibraryTargets && !target) {
+          toast.error(
+            'Add a writable project library before creating a project.'
+          )
+          return
+        }
+
         const requestedProjectTitle =
           String(record.name ?? '').trim() || defaultProjectFolderNameSnapshot()
+        const requestedProjectName = getProjectDirectoryNameFromTitle(
+          requestedProjectTitle,
+          defaultProjectFolderNameSnapshot()
+        )
+        if (requestedProjectName.length > MAX_PROJECT_NAME_LENGTH) {
+          toast.error(
+            `Project name is too long, must be less than or equal to ${MAX_PROJECT_NAME_LENGTH} characters.`
+          )
+          return
+        }
+
+        if (target) {
+          return target.createProject.run({
+            library: target.library,
+            requestedProjectName,
+            requestedProjectTitle,
+          })
+        }
+
         systemIOActor.send({
           type: SystemIOMachineEvents.createProject,
           data: {
-            requestedProjectName: getProjectDirectoryNameFromTitle(
-              requestedProjectTitle,
-              defaultProjectFolderNameSnapshot()
-            ),
+            requestedProjectName,
             requestedProjectTitle,
           },
         })
@@ -110,6 +206,21 @@ export function createProjectCommands({
         required: true,
         inputType: 'string',
         defaultValue: defaultProjectFolderNameSnapshot,
+      },
+      libraryId: {
+        displayName: 'Library',
+        required: false,
+        hidden: () => createProjectLibraryOptions().length <= 1,
+        inputType: 'options',
+        options: createProjectLibraryOptions,
+        defaultValue: defaultCreateProjectLibraryId,
+        valueSummary(value) {
+          return (
+            createProjectLibraryOptions().find(
+              (option) => option.value === value
+            )?.name ?? 'Library'
+          )
+        },
       },
     },
   }

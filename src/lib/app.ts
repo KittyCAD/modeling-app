@@ -62,6 +62,11 @@ import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
+  getProjectLibraryCreateProjectOperation,
+  projectLibrariesValueSpec,
+  projectLibraryTypesValueSpec,
+} from '@src/registry/contracts/projectLibraries'
+import {
   type SettingsRegistryService,
   settingsService,
 } from '@src/registry/contracts/settings'
@@ -476,6 +481,18 @@ export class App implements AppSubsystems {
     setKclRuntimeFlagsOnWasm(this.activeWasmInstance, this.userFeatures)
   }
 
+  getCreateProjectLibraryTargets = () => {
+    const libraryTypes = this.registry.get(projectLibraryTypesValueSpec)
+    return this.registry.get(projectLibrariesValueSpec).flatMap((library) => {
+      const createProject = getProjectLibraryCreateProjectOperation(
+        libraryTypes.get(library.type),
+        library
+      )
+
+      return createProject ? [{ library, createProject }] : []
+    })
+  }
+
   syncAppCommands = () => {
     const enableProjectDirectoryCommands =
       typeof window !== 'undefined' &&
@@ -498,6 +515,7 @@ export class App implements AppSubsystems {
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
           }).map(provideCommand),
         ],
       }),
