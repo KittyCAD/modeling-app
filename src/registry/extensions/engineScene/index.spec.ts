@@ -27,6 +27,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
 import { measurementToolService } from './measurementToolService'
+import { saveViewportScreenshot } from './saveViewportScreenshot'
 
 vi.mock('@src/components/ExperimentalFeaturesMenu', () => ({
   ExperimentalFeaturesMenu: () => null,
@@ -156,6 +157,27 @@ describe('engineScene extension', () => {
     expect(measurementToolService.isOpen.value).toBe(true)
 
     measurementToolService.close()
+  })
+
+  it('contributes the capture screenshot command', () => {
+    const registry = new Registry()
+    registry.configure([engineSceneExtension])
+
+    const command = registry
+      .get(commandsValueSpec)
+      .find(
+        (candidate) =>
+          candidate.id === ENGINE_SCENE_COMMAND_IDS.captureScreenshot
+      )
+
+    expect(command).toMatchObject({
+      displayName: 'Capture screenshot',
+      description: 'Save the current modeling viewport as a PNG image.',
+      icon: 'camera',
+      needsReview: false,
+      onSubmit: saveViewportScreenshot,
+    })
+    expect(command?.hideFromSearch).not.toBe(true)
   })
 
   it('hides the experimental features item when file settings deny it', () => {

@@ -26,6 +26,7 @@ import {
 import { Suspense, createElement, lazy } from 'react'
 import executionIndicator from './executionIndicator'
 import { measurementToolService } from './measurementToolService'
+import { saveViewportScreenshot } from './saveViewportScreenshot'
 import {
   EngineSceneGizmoViewExtension,
   EngineSceneToolbarViewExtension,
@@ -37,8 +38,20 @@ const ENGINE_SCENE_COMMAND_GROUP_ID = 'engineScene'
 const ENGINE_SCENE_KEYMAP_SOURCE = 'Engine scene'
 
 export const ENGINE_SCENE_COMMAND_IDS = Object.freeze({
+  captureScreenshot: 'zds.engineScene.captureScreenshot',
   openMeasureTool: 'zds.engineScene.openMeasureTool',
 } as const)
+
+const captureScreenshotCommand: Command = {
+  id: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
+  name: ENGINE_SCENE_COMMAND_IDS.captureScreenshot,
+  groupId: ENGINE_SCENE_COMMAND_GROUP_ID,
+  displayName: 'Capture screenshot',
+  description: 'Save the current modeling viewport as a PNG image.',
+  icon: 'camera',
+  needsReview: false,
+  onSubmit: saveViewportScreenshot,
+}
 
 const openMeasureToolCommand: Command = {
   id: ENGINE_SCENE_COMMAND_IDS.openMeasureTool,
@@ -259,6 +272,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
     item: defineRuntimeRegistryItem({
       id: 'engine-scene-extension',
       provides: [
+        provideCommand(captureScreenshotCommand),
         provideCommand(openMeasureToolCommand),
         provideKeymapItem(openMeasureToolKeymapItem),
         provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
