@@ -14,7 +14,7 @@ import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { createLayoutWithMetadata } from '@src/lib/layout/utils'
 import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import { type Setting, createSettings } from '@src/lib/settings/initialSettings'
+import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
   formatSettingsLabel,
@@ -371,7 +371,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
-    expect(parsedPayload.layout?.configs?.default.version).toBe('v2')
+    expect(parsedPayload.layout?.configs?.default.version).toBe('v3')
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )

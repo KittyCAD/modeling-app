@@ -35,7 +35,7 @@ import {
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { PATHS } from '@src/lib/paths'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { getResolvedTheme, type ResolvedTheme } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
 import {
@@ -67,14 +67,6 @@ type CloudSyncStatusBarPresentation = {
   iconClassName: string
   isBlocked: boolean
   tooltip: string
-}
-
-type CloudConflictDialogResolvedTheme = 'light' | 'dark'
-
-function getCloudConflictDialogResolvedTheme(
-  theme: Parameters<typeof getResolvedTheme>[0]
-): CloudConflictDialogResolvedTheme {
-  return getResolvedTheme(theme) === Themes.Dark ? 'dark' : 'light'
 }
 
 type CloudSyncProjectMenuDialog =
@@ -220,7 +212,7 @@ function CloudSyncDisconnectProjectDialog({
 function CloudSyncProjectMenuDialogHost({
   resolvedTheme,
 }: {
-  resolvedTheme: CloudConflictDialogResolvedTheme
+  resolvedTheme: ResolvedTheme
 }) {
   useSignals()
   const dialog = cloudSyncProjectMenuDialog.value
@@ -415,7 +407,7 @@ export function getCloudSyncStatusBarPresentation(
 function CloudSyncStatusBarItem({
   resolvedTheme,
 }: {
-  resolvedTheme: CloudConflictDialogResolvedTheme
+  resolvedTheme: ResolvedTheme
 }) {
   useSignals()
   const location = useLocation()
@@ -550,9 +542,7 @@ const cloudSyncStatusBarItem = defineRegistryItemFactory((ctx) => {
     const settingsValues = settings.value!.useSettings()
     return (
       <CloudSyncStatusBarItem
-        resolvedTheme={getCloudConflictDialogResolvedTheme(
-          settingsValues.app.theme.current
-        )}
+        resolvedTheme={getResolvedTheme(settingsValues.app.theme.current)}
       />
     )
   }
