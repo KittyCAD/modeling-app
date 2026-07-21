@@ -1,10 +1,5 @@
 import { newKclFile } from '@src/lang/project'
 import {
-  cloudSyncStatus,
-  getCloudSyncProjectMetadataIndex,
-  getCloudSyncProjectModifiedTime,
-} from '@src/lib/cloudSync'
-import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   FILE_EXT,
   ZOOKEEPER_FILE_WRITE_TOAST_ID,
@@ -13,8 +8,6 @@ import {
   canReadWriteDirectory,
   createNewProjectDirectory,
   ensureProjectDirectoryExists,
-  getProjectInfo,
-  mkdirOrNOOP,
   readAppSettingsFile,
   writeProjectTitleToProjectToml,
 } from '@src/lib/desktop'
@@ -32,7 +25,8 @@ import {
   getStringAfterLastSeparator,
   parentPathRelativeToProject,
 } from '@src/lib/paths'
-import type { FileEntry, Project } from '@src/lib/project'
+import type { FileEntry } from '@src/lib/project'
+import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
 import { getProjectDisplayName } from '@src/lib/projectDisplayName'
 import { getProjectTitleFromUniqueDirectoryName } from '@src/lib/projectName'
 import { err, isErr } from '@src/lib/trap'
@@ -52,6 +46,11 @@ import {
   SystemIOMachineEvents,
 } from '@src/machines/systemIO/utils'
 import { fromPromise } from 'xstate'
+
+export {
+  shouldSendProjectFolderReadProgress,
+  sortProjectDirectoryEntriesByModifiedDesc,
+} from '@src/lib/projectDirectoryScanner'
 
 async function getProjectDirectoryEntryNames(projectDirectoryPath?: string) {
   if (!projectDirectoryPath) {
@@ -150,30 +149,6 @@ async function getUniqueProjectNameForCreate({
     })
   )
   return getUniqueProjectName(requestedProjectName, existingEntries)
-}
-
-export function shouldSendProjectFolderReadProgress(
-  folders: SystemIOContext['folders']
-) {
-  return !folders?.length
-}
-
-type ProjectDirectoryEntry = {
-  name: string
-  path: string
-  modified: number
-}
-
-export function sortProjectDirectoryEntriesByModifiedDesc(
-  entries: ProjectDirectoryEntry[]
-) {
-  return entries.toSorted(
-    (a, b) => b.modified - a.modified || a.name.localeCompare(b.name)
-  )
-}
-
-function normalizeProjectPathForCloudMetadata(projectPath: string) {
-  return projectPath.replaceAll('\\', '/').replace(/\/+$/g, '')
 }
 
 const prepareBulkProjectWrite = async ({
@@ -430,100 +405,23 @@ export const systemIOMachineImpl = systemIOMachine.provide({
   actors: {
     [SystemIOMachineActors.readFoldersFromProjectDirectory]: fromPromise(
       async ({ input: context, signal }) => {
-        const PROJECT_FOLDER_PROGRESS_CHUNK_SIZE = 12
-        const projects: Project[] = []
         const projectDirectoryPath = context.projectDirectoryPath
-        const canSendProgress = shouldSendProjectFolderReadProgress(
-          context.folders
-        )
         if (projectDirectoryPath === NO_PROJECT_DIRECTORY) {
           return []
         }
-        const sendFoldersProgress = (folders: Project[]) => {
-          if (signal.aborted) {
-            return
-          }
-          context.app.systemIOActor.send({
-            type: SystemIOMachineEvents.setFolders,
-            data: { folders },
-          })
-        }
 
-        await mkdirOrNOOP(projectDirectoryPath)
-        const cloudProjectMetadataByPath = cloudSyncStatus.value.enabled
-          ? await getCloudSyncProjectMetadataIndex().catch(() => new Map())
-          : new Map()
-        // Gotcha: readdir will list all folders at this project directory even if you do not have readwrite access on the directory path
-        const entries: ProjectDirectoryEntry[] = []
-        for (const entry of await fsZds.readdir(projectDirectoryPath)) {
-          if (entry.startsWith('.')) {
-            continue
-          }
-
-          const projectPath = fsZds.join(projectDirectoryPath, entry)
-          let stat: Awaited<ReturnType<typeof fsZds.stat>>
-          try {
-            stat = await fsZds.stat(projectPath)
-          } catch {
-            continue
-          }
-          if (!(stat.mode & fsZdsConstants.S_IFDIR)) {
-            continue
-          }
-
-          entries.push({
-            name: entry,
-            path: projectPath,
-            modified:
-              getCloudSyncProjectModifiedTime(
-                cloudProjectMetadataByPath.get(
-                  normalizeProjectPathForCloudMetadata(projectPath)
-                ),
-                stat.mtimeMs
-              ) ?? stat.mtimeMs,
-          })
-        }
-        const { value: canReadWriteProjectDirectory } =
-          await canReadWriteDirectory(projectDirectoryPath)
-
-        for (const entry of sortProjectDirectoryEntriesByModifiedDesc(
-          entries
-        )) {
-          if (signal.aborted) {
-            return projects
-          }
-          const project: Project = await getProjectInfo(
-            entry.path,
-            await context.wasmInstancePromise
-          )
-          const cloudMetadata = cloudProjectMetadataByPath.get(
-            normalizeProjectPathForCloudMetadata(entry.path)
-          )
-          project.cloudProjectId ??= cloudMetadata?.remoteProjectId
-          project.cloudConflict = cloudMetadata?.conflict
-          if (project.metadata) {
-            project.metadata.modified = getCloudSyncProjectModifiedTime(
-              cloudMetadata,
-              project.metadata.modified
-            )
-          }
-          if (
-            project.kcl_file_count === 0 &&
-            project.readWriteAccess &&
-            canReadWriteProjectDirectory
-          ) {
-            continue
-          }
-          projects.push(project)
-          if (
-            canSendProgress &&
-            projects.length % PROJECT_FOLDER_PROGRESS_CHUNK_SIZE === 0
-          ) {
-            sendFoldersProgress([...projects])
-          }
-        }
-        sendFoldersProgress(projects)
-        return projects
+        return readProjectsFromProjectDirectory({
+          projectDirectoryPath,
+          wasmInstancePromise: context.wasmInstancePromise,
+          previousProjects: context.folders,
+          signal,
+          onProgress: (folders) => {
+            context.app.systemIOActor.send({
+              type: SystemIOMachineEvents.setFolders,
+              data: { folders },
+            })
+          },
+        })
       }
     ),
     [SystemIOMachineActors.createProject]: fromPromise(

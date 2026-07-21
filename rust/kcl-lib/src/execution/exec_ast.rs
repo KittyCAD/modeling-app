@@ -5194,6 +5194,21 @@ impl Node<BinaryExpression> {
             }
         }
 
+        // Inside sketch blocks, `==` is reserved for equivalence constraints
+        // and has already been handled above.
+        if matches!(self.operator, BinaryOperator::Eq | BinaryOperator::Neq)
+            && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
+                (&left_value, &right_value)
+        {
+            let is_equal = left == right;
+            let value = if self.operator == BinaryOperator::Eq {
+                is_equal
+            } else {
+                !is_equal
+            };
+            return Ok(KclValue::Bool { value, meta });
+        }
+
         let left = number_as_f64(&left_value, self.left.clone().into())?;
         let right = number_as_f64(&right_value, self.right.clone().into())?;
 

@@ -1,7 +1,6 @@
 import { ProjectCard as UiProjectCard } from '@kittycad/ui-components'
 import { ActionButton } from '@src/components/ActionButton'
 import { ProjectCardRenameForm } from '@src/components/AppProjectCard/ProjectCardRenameForm'
-import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
 import { DeleteConfirmationDialog } from '@src/components/DeleteProjectDialog'
 import Tooltip from '@src/components/Tooltip'
 import type { ProjectStatus } from '@src/hooks/useProjectStatus'
@@ -122,7 +121,6 @@ function AppProjectCard({
   useHotkeys('esc', () => setIsEditing(false))
   const [isEditing, setIsEditing] = useState(false)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
-  const [isInspectingConflict, setIsInspectingConflict] = useState(false)
   const hasChangesRequested =
     projectStatus?.publicationStatus === 'changes_requested'
   const hasCloudConflict = Boolean(
@@ -199,7 +197,7 @@ function AppProjectCard({
   const projectName = getHomeProjectDisplayName(displayedProject)
   const canRename = projectActions.canRename(project)
   const canDelete = projectActions.canDelete(project)
-  const canOpen = projectActions.canOpen(project) || hasCloudConflict
+  const canOpen = projectActions.canOpen(project)
   const openHref =
     project.readWriteAccess && project.defaultFile
       ? `${PATHS.FILE}/${encodeURIComponent(project.defaultFile)}`
@@ -226,7 +224,7 @@ function AppProjectCard({
           className="rounded bg-warn-20 px-1.5 py-0.5 text-[10px] font-medium text-warn-90 dark:bg-warn-80 dark:text-warn-10"
           data-testid="cloud-conflict-badge"
         >
-          Inspect Conflicts
+          Cloud conflict
         </span>
       )}
       {hasChangesRequested && (
@@ -328,14 +326,6 @@ function AppProjectCard({
           </p>
         </DeleteConfirmationDialog>
       )}
-      {isInspectingConflict && project.localProjectPath && (
-        <CloudConflictDialog
-          projectPath={project.localProjectPath}
-          projectName={projectName}
-          onDismiss={() => setIsInspectingConflict(false)}
-          onResolved={() => setIsInspectingConflict(false)}
-        />
-      )}
     </>
   )
 
@@ -365,10 +355,6 @@ function AppProjectCard({
       onOpen={(e) => {
         e.preventDefault()
         if (!canOpen) {
-          return
-        }
-        if (hasCloudConflict) {
-          setIsInspectingConflict(true)
           return
         }
 

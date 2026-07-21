@@ -20,6 +20,7 @@ import {
 } from '@src/lib/cloudSync/paths'
 import {
   getRemoteProjectTitleForProjectToml,
+  normalizeProjectArchiveFilesForCloudSync,
   parseProjectArchive,
   projectManifestFromFiles,
   projectManifestsEqual,
@@ -318,10 +319,7 @@ export function getCloudSyncConflictCopyCleanupPlan(
 export function filterCloudSyncProjectFilesForSync(
   files: ProjectArchiveFile[]
 ) {
-  const normalizedFiles = files.map((file) => ({
-    ...file,
-    relativePath: normalizeRelativePath(file.relativePath),
-  }))
+  const normalizedFiles = normalizeProjectArchiveFilesForCloudSync(files)
   const gitignoreStack = createGitignoreStackFromFiles(
     normalizedFiles
       .filter((file) => projectNameFromPath(file.relativePath) === '.gitignore')
@@ -680,7 +678,9 @@ async function collectLocalProjectFiles(projectRoot: string) {
     projectRoot
   )
   await walk(projectRoot, gitignoreStack)
-  return files.sort((a, b) => a.relativePath.localeCompare(b.relativePath))
+  return normalizeProjectArchiveFilesForCloudSync(files).sort((a, b) =>
+    a.relativePath.localeCompare(b.relativePath)
+  )
 }
 
 async function replaceLocalProjectWithFiles(
