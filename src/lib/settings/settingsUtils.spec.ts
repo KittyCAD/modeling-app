@@ -11,8 +11,9 @@ import {
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
 import { createLayoutWithMetadata } from '@src/lib/layout/utils'
+import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
-import { type Setting, createSettings } from '@src/lib/settings/initialSettings'
+import { createSettings, type Setting } from '@src/lib/settings/initialSettings'
 import {
   configurationToSettingsPayload,
   formatSettingsLabel,
@@ -101,6 +102,31 @@ describe('testing settings initialization', () => {
     expect(settings.app.theme.current).toBe('dark')
     // But the 'project'-level for `defaultUnit` setting should be applied
     expect(settings.modeling.defaultUnit.current).toBe('ft')
+  })
+
+  it('treats an empty project libraries setting as an explicit non-default value', () => {
+    const settings = createSettings()
+    settings.app.libraries.default =
+      getDefaultProjectLibrarySettings('/tmp/projects')
+
+    expect(settings.app.libraries.current).toEqual([
+      {
+        title: 'Default Projects Directory',
+        path: '/tmp/projects',
+        type: 'directory',
+      },
+    ])
+
+    setSettingsAtLevel(settings, 'user', {
+      app: {
+        libraries: [],
+      },
+    })
+
+    expect(settings.app.libraries.current).toEqual([])
+    expect(getChangedSettingsAtLevel(settings, 'user').app?.libraries).toEqual(
+      []
+    )
   })
 })
 
@@ -191,6 +217,13 @@ describe('project settings serialization regression', () => {
           machineApi: true,
           showAllFiles: true,
           projectDirectory: '/tmp/projects',
+          libraries: [
+            {
+              title: 'Default Projects Directory',
+              path: '/tmp/projects',
+              type: 'directory',
+            },
+          ],
         },
         debug: {
           showPanel: true,
@@ -232,6 +265,7 @@ describe('project settings serialization regression', () => {
     expect(serializedToml).toContain('allow_orbit_in_sketch_mode = true')
     expect(serializedToml).toContain('machine_api = true')
     expect(serializedToml).toContain('show_all_files = true')
+    expect(serializedToml).toContain('[[settings.app.libraries]]')
     expect(serializedToml).toContain('[settings.debug]')
     expect(serializedToml).toContain('show_panel = true')
     expect(serializedToml).toContain('show_modeling_machine_state = true')
@@ -266,6 +300,13 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.app?.machineApi).toBe(true)
     expect(parsedPayload.app?.showAllFiles).toBe(true)
     expect(parsedPayload.app?.projectDirectory).toBe('/tmp/projects')
+    expect(parsedPayload.app?.libraries).toEqual([
+      {
+        title: 'Default Projects Directory',
+        path: '/tmp/projects',
+        type: 'directory',
+      },
+    ])
     expect(parsedPayload.debug?.showPanel).toBe(true)
     expect(parsedPayload.debug?.showModelingMachineState).toBe(true)
     expect(parsedPayload.projects?.defaultProjectName).toBe('plugin-template')
@@ -280,7 +321,7 @@ describe('project settings serialization regression', () => {
     expect(parsedPayload.commandBar?.includeSettings).toBe(false)
     expect(parsedPayload.textEditor?.textWrapping).toBe(false)
     expect(parsedPayload.textEditor?.blinkingCursor).toBe(false)
-    expect(parsedPayload.layout?.configs?.default.version).toBe('v2')
+    expect(parsedPayload.layout?.configs?.default.version).toBe('v3')
     expect(parsedPayload.layout?.configs?.default.layout.id).toBe(
       defaultLayoutConfig.id
     )

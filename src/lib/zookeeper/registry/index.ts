@@ -107,7 +107,7 @@ const zookeeperCreditsStatusBarItem = defineRegistryItemFactory((ctx) => {
 
     return nullableStatusBarItem(
       layoutSystem &&
-        hasOpenToolbarPane(layoutSystem.current.value, ZOOKEEPER_PANE_ID)
+        hasOpenToolbarPane(layoutSystem.signal.value, ZOOKEEPER_PANE_ID)
         ? {
             id: 'zookeeper-credits',
             scopes: ['file'],

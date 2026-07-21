@@ -50,6 +50,7 @@ vi.mock('@src/lib/screenshot', async (importOriginal) => {
 
 import { Registry } from '@kittycad/registry'
 import { useSignals } from '@preact/signals-react/runtime'
+import { ExchangeCard } from '@src/components/ExchangeCard'
 import { MAKEATHON_ANNOUNCEMENT_DISMISSED_STORAGE_KEY } from '@src/components/MakeathonAnnouncement'
 import { MlEphantConversation } from '@src/lib/zookeeper/components/MlEphantConversation'
 import { takeViewportScreenshot } from '@src/lib/screenshot'
@@ -574,6 +575,38 @@ describe('MlEphantConversation', () => {
       expect(screen.queryByText('See reasoning')).not.toBeInTheDocument()
     }
   )
+
+  test('preserves active reasoning time when its exchange remounts', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-07-15T12:20:00.000Z'))
+
+    const renderExchange = () =>
+      render(
+        <ExchangeCard
+          request={{ type: 'user', content: 'Render an assembly' }}
+          responses={[
+            { reasoning: { type: 'text', content: 'Checking constraints' } },
+          ]}
+          deltasAggregated=""
+          startedAt={new Date('2026-07-15T12:00:00.000Z')}
+          isLastResponse={true}
+          onClickClearChat={() => {}}
+        />
+      )
+
+    try {
+      const { unmount } = renderExchange()
+      expect(screen.getByText('Reasoned for 20 minutes')).toBeInTheDocument()
+      unmount()
+
+      vi.setSystemTime(new Date('2026-07-15T12:21:00.000Z'))
+      renderExchange()
+      expect(screen.getByText('Reasoned for 21 minutes')).toBeInTheDocument()
+    } finally {
+      vi.clearAllTimers()
+      vi.useRealTimers()
+    }
+  })
 
   test('hides the immediate thought when end_of_stream is followed by another response', () => {
     const finalResponse = 'Rendered.'

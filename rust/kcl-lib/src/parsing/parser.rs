@@ -3614,6 +3614,9 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
             if *result == PrimitiveType::None {
                 ParseContext::experimental("none type", result.as_source_range());
             }
+            if *result == PrimitiveType::Never {
+                ParseContext::experimental("never type", result.as_source_range());
+            }
 
             result
         }),
@@ -3923,7 +3926,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                     callee: _,
                     unlabeled,
                     mut arguments,
-                    non_code_meta,
+                    mut non_code_meta,
                     digest: _,
                 },
         } = fn_call;
@@ -3936,6 +3939,14 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                         arg: unlabeled,
                     },
                 );
+                // The shorthand argument now occupies the first slot of the
+                // argument sequence, so shift the non-code nodes (e.g.
+                // comments) to keep them positioned after it.
+                non_code_meta.non_code_nodes = non_code_meta
+                    .non_code_nodes
+                    .into_iter()
+                    .map(|(index, nodes)| (index + 1, nodes))
+                    .collect();
             } else {
                 ParseContext::err(CompilationIssue::err(
                     unlabeled.into(),
@@ -6325,6 +6336,29 @@ type foo = fn(fn, f: fn(number(_))): [fn([any]): string]
     "#;
         let (_, errs) = assert_no_err(code);
         assert_eq!(errs.len(), 1);
+    }
+
+    #[test]
+    fn never_type_is_experimental() {
+        let code = "fn stop(): never {}";
+        assert_err(
+            code,
+            "Use of never type is experimental and may change or be removed.",
+            [11, 16],
+        );
+
+        let code = r#"@settings(experimentalFeatures = allow)
+fn stop(): never {}"#;
+        assert_no_err(code);
+
+        let code = r#"@settings(experimentalFeatures = warn)
+fn stop(): never {}"#;
+        let (_, errs) = assert_no_err(code);
+        assert_eq!(errs.len(), 1);
+        assert_eq!(
+            errs[0].message,
+            "Use of never type is experimental and may change or be removed."
+        );
     }
 
     #[test]

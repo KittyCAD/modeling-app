@@ -55,10 +55,16 @@ pub(crate) use state::ConstraintState;
 pub(crate) use state::ConsumedSolidInfo;
 pub(crate) use state::ConsumedSolidKey;
 pub(crate) use state::ConsumedSolidOperation;
+pub use state::DirectTagFilletMeta;
+pub use state::DirectTagFilletTagEntry;
+pub use state::EdgeRefactorMeta;
+pub use state::EdgeRefactorStdlibFn;
 pub use state::ExecState;
 pub(crate) use state::KclVersion;
 pub use state::MetaSettings;
 pub(crate) use state::ModuleArtifactState;
+pub(crate) use state::PendingEdgeRefactorMeta;
+pub use state::RefactorMetadata;
 pub(crate) use state::TangencyMode;
 
 use crate::CompilationIssue;
@@ -313,6 +319,8 @@ pub struct ExecOutcome {
     pub source_range_to_object: BTreeMap<SourceRange, ObjectId>,
     #[serde(skip)]
     pub var_solutions: Vec<(SourceRange, Option<NodePath>, Number)>,
+    /// Execution-backed metadata used by Z0006 and future auto-refactors.
+    pub refactor_metadata: Vec<RefactorMetadata>,
     /// Non-fatal errors and warnings.
     pub issues: Vec<CompilationIssue>,
     /// File Names in module Id array index order
@@ -2220,6 +2228,12 @@ mod tests {
     use crate::execution::memory::Stack;
     use crate::execution::types::RuntimeType;
 
+    macro_rules! kcl_input {
+        ($file:literal) => {
+            include_str!(concat!("../../e2e/executor/inputs/", $file, ".kcl"))
+        };
+    }
+
     /// Convenience function to get a JSON value from memory and unwrap.
     #[track_caller]
     fn mem_get_json(memory: &Stack, env: EnvironmentRef, name: &str) -> KclValue {
@@ -3061,6 +3075,71 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_operators() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+equal_same_ascii = "KCL" == "KCL"
+equal_different_case = "KCL" == "kcl"
+not_equal_same_ascii = "KCL" != "KCL"
+not_equal_different_case = "KCL" != "kcl"
+equal_same_unicode = "{composed}" == "{composed}"
+not_equal_same_unicode = "{composed}" != "{composed}"
+equal_without_normalization = "{composed}" == "{decomposed}"
+not_equal_without_normalization = "{composed}" != "{decomposed}"
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("equal_same_ascii", true),
+            ("equal_different_case", false),
+            ("not_equal_same_ascii", false),
+            ("not_equal_different_case", true),
+            ("equal_same_unicode", true),
+            ("not_equal_same_unicode", false),
+            ("equal_without_normalization", false),
+            ("not_equal_without_normalization", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_inside_sketch_block_fails_like_number_equality() {
+        let string_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = "KCL" == "KCL"
+}
+"#;
+        let number_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  numbersAreEqual = 1 == 1
+}
+"#;
+
+        assert_eq!(
+            parse_execute(string_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a string and a string"
+        );
+        assert_eq!(
+            parse_execute(number_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a number and a number"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"myVar = -5 + 6"#;
         let result = parse_execute(ast).await.unwrap();
@@ -3601,6 +3680,18 @@ w = f() + f()
 
         ctx.close().await;
         ctx2.close().await;
+    }
+
+    /// Regression test for https://github.com/KittyCAD/modeling-app/issues/12498
+    #[tokio::test(flavor = "multi_thread")]
+    async fn mock_execution_succeeds_after_split() {
+        let code = kcl_input!("repro_mock_extrude");
+        let ctx = ExecutorContext::new_mock(None).await;
+        let program = crate::Program::parse_no_errs(code).unwrap();
+        let _result = match ctx.run_mock(&program, &MockConfig::default()).await {
+            Ok(res) => res,
+            Err(e) => panic!("{}", e.error),
+        };
     }
 
     #[tokio::test(flavor = "multi_thread")]

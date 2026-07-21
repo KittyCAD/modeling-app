@@ -419,6 +419,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
+            crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer,
         ];
 
         let mut findings = vec![];
@@ -3610,11 +3611,11 @@ pub enum BinaryOperator {
     #[serde(rename = "^")]
     #[display("^")]
     Pow,
-    /// Are two numbers equal?
+    /// Are two numbers or strings equal?
     #[serde(rename = "==")]
     #[display("==")]
     Eq,
-    /// Are two numbers not equal?
+    /// Are two numbers or strings not equal?
     #[serde(rename = "!=")]
     #[display("!=")]
     Neq,
@@ -3847,6 +3848,8 @@ impl PipeExpression {
 pub enum PrimitiveType {
     /// The super type of all other types.
     Any,
+    /// `never`, the uninhabited subtype of all other types.
+    Never,
     /// `none`, the type of none values.
     None,
     /// A string type.
@@ -3870,6 +3873,7 @@ impl PrimitiveType {
     pub fn primitive_from_str(s: &str, suffix: Option<NumericSuffix>) -> Option<Self> {
         match (s, suffix) {
             ("any", None) => Some(PrimitiveType::Any),
+            ("never", None) => Some(PrimitiveType::Never),
             ("none", None) => Some(PrimitiveType::None),
             ("string", None) => Some(PrimitiveType::String),
             ("bool", None) => Some(PrimitiveType::Boolean),
@@ -3884,6 +3888,7 @@ impl PrimitiveType {
     fn display_multiple(&self) -> String {
         match self {
             PrimitiveType::Any => "values".to_owned(),
+            PrimitiveType::Never => "values of type `never`".to_owned(),
             PrimitiveType::None => "none".to_owned(),
             PrimitiveType::Number(_) => "numbers".to_owned(),
             PrimitiveType::String => "strings".to_owned(),
@@ -3900,6 +3905,7 @@ impl fmt::Display for PrimitiveType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveType::Any => write!(f, "any"),
+            PrimitiveType::Never => write!(f, "never"),
             PrimitiveType::None => write!(f, "none"),
             PrimitiveType::Number(suffix) => {
                 write!(f, "number")?;
@@ -4707,6 +4713,31 @@ cylinder = startSketchOn(-XZ)
         assert_eq!(
             params[2].param_type.as_ref().unwrap().inner,
             Type::Primitive(PrimitiveType::String)
+        );
+    }
+
+    #[test]
+    fn test_parse_never_type() {
+        let program =
+            parse("@settings(experimentalFeatures = allow)\nfn stop(@impossible: never): never { return impossible }");
+        let BodyItem::VariableDeclaration(var_decl) = program.body.first().unwrap() else {
+            panic!("expected a variable declaration")
+        };
+        let Expr::FunctionExpression(function) = &var_decl.declaration.init else {
+            panic!("expected a function expression")
+        };
+
+        assert_eq!(
+            function.params[0].param_type.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Never)
+        );
+        assert_eq!(
+            function.return_type.as_ref().unwrap().inner,
+            Type::Primitive(PrimitiveType::Never)
+        );
+        assert_eq!(
+            serde_json::to_value(PrimitiveType::Never).unwrap(),
+            serde_json::json!({ "p_type": "Never" })
         );
     }
 
