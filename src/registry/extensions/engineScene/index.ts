@@ -21,6 +21,7 @@ import {
 } from '@src/registry/contracts/keymap'
 import {
   nullableStatusBarItem,
+  statusBarGlobalItemsValueSpec,
   statusBarLocalItemsValueSpec,
 } from '@src/registry/contracts/statusBar'
 import { Suspense, createElement, lazy } from 'react'
@@ -299,7 +300,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         provideCommand(captureScreenshotCommand),
         provideCommand(openMeasureToolCommand),
         provideKeymapItem(openMeasureToolKeymapItem),
-        provide(statusBarLocalItemsValueSpec, screenshotStatusBarItem),
+        provide(statusBarGlobalItemsValueSpec, screenshotStatusBarItem),
         provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),

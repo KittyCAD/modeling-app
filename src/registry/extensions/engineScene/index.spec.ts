@@ -22,7 +22,10 @@ import {
   keymapValueSpec,
 } from '@src/registry/contracts/keymap'
 import { settingsValueSpec } from '@src/registry/contracts/settings'
-import { statusBarLocalItemsValueSpec } from '@src/registry/contracts/statusBar'
+import {
+  statusBarGlobalItemsValueSpec,
+  statusBarLocalItemsValueSpec,
+} from '@src/registry/contracts/statusBar'
 import { describe, expect, it, vi } from 'vitest'
 import type { StateFrom } from 'xstate'
 import engineSceneExtension, { ENGINE_SCENE_COMMAND_IDS } from '.'
@@ -97,7 +100,7 @@ describe('engineScene extension', () => {
     ).toBeUndefined()
   })
 
-  it('contributes ordered engine scene local status bar items', () => {
+  it('contributes ordered engine scene status bar items', () => {
     const registry = new Registry()
     registry.configure([
       defineRegistryItem({
@@ -115,7 +118,6 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
-      'capture-screenshot',
       'measure',
       'selection',
       'selection-filter',
@@ -124,7 +126,13 @@ describe('engineScene extension', () => {
     ])
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
-    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file'], ['file']])
+    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file']])
+    expect(registry.get(statusBarGlobalItemsValueSpec)).toMatchObject([
+      {
+        id: 'capture-screenshot',
+        scopes: ['file'],
+      },
+    ])
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {
@@ -202,20 +210,13 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual([
-      'capture-screenshot',
-      'measure',
-      'selection',
-      'selection-filter',
-      'units',
-    ])
+    ).toEqual(['measure', 'selection', 'selection-filter', 'units'])
 
     showExperimentalFeaturesStatusBarItem.value = true
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
-      'capture-screenshot',
       'measure',
       'selection',
       'selection-filter',
