@@ -36,7 +36,7 @@ import {
 } from '@src/lib/selections'
 import { Themes, getResolvedTheme } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import { EngineCommandManagerEvents } from '@src/lib/engineConnection/utils'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,

@@ -1,4 +1,4 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import {
   ConnectingTypeGroup,
   DisconnectingType,
@@ -6,12 +6,12 @@ import {
   EngineConnectionEvents,
   EngineConnectionStateType,
   initialConnectingTypeGroupState,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 import type {
   ConnectingType,
   EngineConnectionState,
   IErrorType,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 import { useEffect, useState } from 'react'
 
 export enum NetworkHealthState {

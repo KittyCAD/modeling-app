@@ -1,5 +1,5 @@
 import { useOnPeerConnectionClose } from '@src/hooks/network/useOnPeerConnectionClose'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import { EngineCommandManagerEvents } from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'

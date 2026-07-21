@@ -6,7 +6,7 @@ import type {
 } from '@kittycad/lib/dist/types/src'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import type { SourceRange } from '@src/lang/wasm'
-import type { Connection } from '@src/network/connection'
+import type { Connection } from '@src/lib/engineConnection/connection'
 
 // Ping/Pong every 1 second
 export const PING_INTERVAL_MS = 1_000

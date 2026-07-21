@@ -1,4 +1,4 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { useEffect } from 'react'
 let didUseEffectRunOnce = false
 

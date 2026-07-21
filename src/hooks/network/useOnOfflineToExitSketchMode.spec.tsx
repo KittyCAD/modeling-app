@@ -1,5 +1,5 @@
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
-import { EngineConnectionEvents } from '@src/network/utils'
+import { EngineConnectionEvents } from '@src/lib/engineConnection/utils'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { renderHook } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'

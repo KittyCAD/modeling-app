@@ -5,17 +5,17 @@ import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
 import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
-import type { Connection } from '@src/network/connection'
+import type { Connection } from '@src/lib/engineConnection/connection'
 import type {
   IEventListenerTracked,
   NewTrackArgs,
   UnreliableResponses,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 import {
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   isHighlightSetEntity_type,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 
 export const createOnEngineConnectionRestartRequest = ({
   dispatchEvent,

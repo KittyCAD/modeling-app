@@ -40,7 +40,7 @@ import {
 } from '@src/lib/utils'
 import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
-import { Connection } from '@src/network/connection'
+import { Connection } from '@src/lib/engineConnection/connection'
 import {
   createOnDarkThemeMediaQueryChange,
   createOnEngineConnectionClosed,
@@ -48,7 +48,7 @@ import {
   createOnEngineConnectionRestartRequest,
   createOnEngineConnectionStarted,
   createOnEngineOffline,
-} from '@src/network/connectionManagerEvents'
+} from '@src/lib/engineConnection/connectionManagerEvents'
 import type {
   IEventListenerTracked,
   ManagerTearDown,
@@ -57,14 +57,14 @@ import type {
   Subscription,
   UnreliableResponses,
   UnreliableSubscription,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 import {
   ConnectingType,
   EngineCommandManagerEvents,
   EngineConnectionEvents,
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType

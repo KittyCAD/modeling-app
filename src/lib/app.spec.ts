@@ -1,7 +1,6 @@
 import type { Feature } from '@kittycad/lib'
 import { pluginsValueSpec } from '@kittycad/registry'
 import { signal } from '@preact/signals-core'
-import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { File, type KclManager } from '@src/lang/KclManager'
 import { App } from '@src/lib/app'
 import {
@@ -13,11 +12,13 @@ import type { Project } from '@src/lib/project'
 import { getChangedSettingsAtLevel } from '@src/lib/settings/settingsUtils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { notifyActiveWasmInstance } from '@src/lib/wasmLifecycle'
+import { zookeeperEditPatchHistoryEvent } from '@src/lib/zookeeper/editorPlugin'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
+import { engineCommandManagerService } from '@src/registry/contracts/engineCommandManager'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
@@ -159,7 +160,9 @@ async function writeText(path: string, contents: string) {
 
 async function waitForHistoryIdle(kclManager: KclManager) {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    if (!kclManager.historyOperationInProgress.value) return
+    if (!kclManager.historyOperationInProgress.value) {
+      return
+    }
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
   throw new Error('History operation did not settle')
@@ -198,10 +201,16 @@ describe('project system', () => {
     try {
       const registryUserFeatures = app.registry.get(userFeaturesService)
       const registryMachineManager = app.registry.get(machineManagerService)
+      const registryEngineCommandManager = app.registry.get(
+        engineCommandManagerService
+      )
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
       expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
+      expect(app.engineCommandManager).toBe(
+        registryEngineCommandManager.manager
+      )
     } finally {
       app.dispose()
     }
@@ -297,8 +306,11 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Missing ${pluginId} plugin registry item`)
+      }
 
-      const pluginToggle = app.registry.get(plugin!.service)
+      const pluginToggle = app.registry.get(plugin.service)
       expect(pluginToggle.active.value).toBe(true)
       expect(syncActivePlugins).toHaveBeenCalledWith(
         expect.arrayContaining([pluginId])
@@ -450,13 +462,16 @@ describe('project system', () => {
         .get(pluginsValueSpec)
         .find((plugin) => plugin.id === pluginId)
       expect(plugin).toBeDefined()
+      if (!plugin) {
+        throw new Error(`Missing ${pluginId} plugin registry item`)
+      }
 
       app.settings.actor.send({ type: 'reload.settings' } as never)
 
       await waitForSettingsIdle(app)
 
       expect(app.settings.get().plugins[pluginId].current).toBe(true)
-      expect(app.registry.get(plugin!.service).active.value).toBe(true)
+      expect(app.registry.get(plugin.service).active.value).toBe(true)
     } finally {
       app.dispose()
     }
@@ -545,7 +560,13 @@ describe('project system', () => {
       expect(app.project?.executingPath).toBeNull()
       expect(app.project?.executingFileEntry.value.name).toEqual('')
 
-      await project.openEditor(mockProject.children![0].path)
+      const [mainEntry] = mockProject.children ?? []
+      expect(mainEntry).toBeDefined()
+      if (!mainEntry) {
+        throw new Error('Missing main project file entry')
+      }
+
+      await project.openEditor(mainEntry.path)
       expect(app.project?.executingPath).toEqual('/some-dir/test/main.kcl')
       expect(app.project?.executingFileEntry.value.name).toEqual('main.kcl')
 

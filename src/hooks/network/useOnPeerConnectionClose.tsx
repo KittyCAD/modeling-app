@@ -1,5 +1,5 @@
-import type { ConnectionManager } from '@src/network/connectionManager'
-import { EngineCommandManagerEvents } from '@src/network/utils'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
+import { EngineCommandManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
 export type EngineDisconnectEvent =
