@@ -928,7 +928,7 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
     })
 
     it('should preserve method and compose edge references for extruded edge profiles', async () => {
-      const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+      const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
@@ -1032,7 +1032,7 @@ extrude002 = extrude(
     })
 
     it('should use edge expressions for extrude direction body edge selections', async () => {
-      const code = `@settings(kclVersion = 2.0, experimentalFeatures = allow)
+      const code = `@settings(kclVersion = 2.0)
 
 sketch001 = sketch(on = XZ) {
   line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
