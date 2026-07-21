@@ -420,6 +420,7 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
   const entries = signal<HomeProjectEntryContribution[]>([])
   const entriesByLibraryId = new Map<string, HomeProjectEntryContribution[]>()
   let abortController: AbortController | undefined
+  let disposeConfiguredProjectLibraryEntriesEffect: (() => void) | undefined
   let disposed = false
   let loadId = 0
 
@@ -427,69 +428,77 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
     entries.value = Array.from(entriesByLibraryId.values()).flat()
   }
 
-  const disposeConfiguredProjectLibraryEntriesEffect = effect(() => {
-    const currentSettings = settings.value?.current.value
-    const typeById = libraryTypes.value
-    const refreshCount = configuredProjectLibraryEntriesRefreshToken.value
-    const nextLoadId = ++loadId + refreshCount * 0
-
-    abortController?.abort()
-    const loadController = new AbortController()
-    abortController = loadController
-    entriesByLibraryId.clear()
-    entries.value = []
-
-    if (!currentSettings) {
+  // Defer because `effect` runs immediately, and service reads are blocked
+  // while the registry graph is still being built.
+  queueMicrotask(() => {
+    if (disposed) {
       return
     }
 
-    const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
-      currentSettings.app.libraries.current
-    )
-    const configuredLibraries = currentSettings.app.libraries.current
-      .map((library, index) =>
-        projectLibraryFromSetting(library, index, {
-          defaultProjectDirectory,
-        })
-      )
-      .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+    disposeConfiguredProjectLibraryEntriesEffect = effect(() => {
+      const currentSettings = settings.value?.current.value
+      const typeById = libraryTypes.value
+      const refreshCount = configuredProjectLibraryEntriesRefreshToken.value
+      const nextLoadId = ++loadId + refreshCount * 0
 
-    for (const library of configuredLibraries) {
-      const readEntries = typeById.get(library.type)?.readEntries
-      if (!readEntries) {
-        continue
+      abortController?.abort()
+      const loadController = new AbortController()
+      abortController = loadController
+      entriesByLibraryId.clear()
+      entries.value = []
+
+      if (!currentSettings) {
+        return
       }
 
-      readEntries({
-        library,
-        signal: loadController.signal,
-      })
-        .then((libraryEntries) => {
-          if (
-            disposed ||
-            loadController.signal.aborted ||
-            nextLoadId !== loadId
-          ) {
-            return
-          }
+      const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+        currentSettings.app.libraries.current
+      )
+      const configuredLibraries = currentSettings.app.libraries.current
+        .map((library, index) =>
+          projectLibraryFromSetting(library, index, {
+            defaultProjectDirectory,
+          })
+        )
+        .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
 
-          entriesByLibraryId.set(library.id, libraryEntries)
-          updateEntries()
-        })
-        .catch((error: unknown) => {
-          if (
-            disposed ||
-            loadController.signal.aborted ||
-            nextLoadId !== loadId
-          ) {
-            return
-          }
+      for (const library of configuredLibraries) {
+        const readEntries = typeById.get(library.type)?.readEntries
+        if (!readEntries) {
+          continue
+        }
 
-          entriesByLibraryId.delete(library.id)
-          updateEntries()
-          reportRejection(error)
+        readEntries({
+          library,
+          signal: loadController.signal,
         })
-    }
+          .then((libraryEntries) => {
+            if (
+              disposed ||
+              loadController.signal.aborted ||
+              nextLoadId !== loadId
+            ) {
+              return
+            }
+
+            entriesByLibraryId.set(library.id, libraryEntries)
+            updateEntries()
+          })
+          .catch((error: unknown) => {
+            if (
+              disposed ||
+              loadController.signal.aborted ||
+              nextLoadId !== loadId
+            ) {
+              return
+            }
+
+            entriesByLibraryId.delete(library.id)
+            updateEntries()
+            reportRejection(error)
+          })
+      }
+    })
   })
 
   return {
@@ -503,7 +512,7 @@ const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
       dispose: () => {
         disposed = true
         abortController?.abort()
-        disposeConfiguredProjectLibraryEntriesEffect()
+        disposeConfiguredProjectLibraryEntriesEffect?.()
       },
     }),
   }
