@@ -63,7 +63,10 @@ export interface ProjectLibraryTypeContribution {
   title: string
   icon?: string
   order?: number
+  /** Initial value used when settings are seeded or migrated for this type. */
   defaultSetting?: ProjectLibrarySetting
+  /** Template used when a user manually adds a new library of this type. */
+  newLibrarySetting?: ProjectLibrarySetting
   operations?: ProjectLibraryTypeOperations
   readEntries?: (input: {
     library: ProjectLibrary

@@ -17,16 +17,78 @@ const defaultLibraries: ProjectLibrarySetting[] = [
 const libraryTypeOptions: ProjectLibraryTypeOption[] = [
   {
     label: 'Directory',
+    icon: 'folder',
     value: 'directory',
     defaultLibrary: {
-      title: 'Local Projects',
+      title: 'Default Projects Directory',
+      path: 'projects',
+      type: 'directory',
+    },
+    newLibrary: {
+      title: 'Project Library',
       path: 'projects',
       type: 'directory',
     },
   },
 ]
 
+const multipleLibraryTypeOptions: ProjectLibraryTypeOption[] = [
+  ...libraryTypeOptions,
+  {
+    label: 'Cloud',
+    icon: 'network',
+    value: 'cloud',
+    defaultLibrary: {
+      title: 'Cloud',
+      path: 'zoo-cloud',
+      type: 'cloud',
+    },
+    newLibrary: {
+      title: 'Cloud',
+      path: 'zoo-cloud',
+      type: 'cloud',
+    },
+  },
+]
+
 describe('ProjectLibrariesSettingInput', () => {
+  test('does not update project libraries when blurring unchanged fields', () => {
+    const updateValue = vi.fn()
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={libraryTypeOptions}
+      />
+    )
+
+    fireEvent.blur(screen.getByTestId('project-library-title'))
+    fireEvent.blur(screen.getByTestId('project-directory-input'))
+
+    expect(updateValue).not.toHaveBeenCalled()
+  })
+
+  test('does not update project libraries when normalization matches the current value', () => {
+    const updateValue = vi.fn()
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={libraryTypeOptions}
+      />
+    )
+
+    fireEvent.change(screen.getByTestId('project-library-title'), {
+      target: { value: ' Default Projects Directory ' },
+    })
+    fireEvent.blur(screen.getByTestId('project-library-title'))
+
+    expect(screen.getByTestId('project-library-title')).toHaveValue(
+      'Default Projects Directory'
+    )
+    expect(updateValue).not.toHaveBeenCalled()
+  })
+
   test('edits, adds, and removes project libraries', () => {
     const updateValue = vi.fn()
     render(
@@ -59,7 +121,7 @@ describe('ProjectLibrariesSettingInput', () => {
         type: 'directory',
       },
       {
-        title: 'Local Projects',
+        title: 'Project Library',
         path: 'projects',
         type: 'directory',
       },
@@ -72,6 +134,37 @@ describe('ProjectLibrariesSettingInput', () => {
         title: 'Client Projects',
         path: '/projects',
         type: 'directory',
+      },
+    ])
+  })
+
+  test('shows library type as an icon button with icon and label options', () => {
+    const updateValue = vi.fn()
+    render(
+      <ProjectLibrariesSettingInput
+        value={defaultLibraries}
+        updateValue={updateValue}
+        libraryTypeOptions={multipleLibraryTypeOptions}
+      />
+    )
+
+    const typeButton = screen.getByLabelText('Library type: Directory')
+    expect(
+      typeButton.querySelector('svg[aria-label="folder"]')
+    ).toBeInTheDocument()
+
+    fireEvent.click(typeButton)
+
+    expect(screen.getByRole('option', { name: /Directory/ })).toBeVisible()
+    expect(screen.getByRole('option', { name: /Cloud/ })).toBeVisible()
+
+    fireEvent.click(screen.getByRole('option', { name: /Cloud/ }))
+
+    expect(updateValue).toHaveBeenLastCalledWith([
+      {
+        title: 'Cloud',
+        path: '/projects',
+        type: 'cloud',
       },
     ])
   })

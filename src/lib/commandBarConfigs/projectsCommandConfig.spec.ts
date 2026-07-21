@@ -235,6 +235,54 @@ describe('project command config', () => {
     }
   })
 
+  it('shows a prepopulated library picker when creating into multiple libraries', () => {
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor(),
+      enableProjectDirectoryCommands: true,
+      getCreateProjectLibraryTargets: () => [
+        {
+          library: createLibrary('default-projects', 'Default Projects'),
+          createProject: {
+            run: vi.fn(),
+          },
+        },
+        {
+          library: createLibrary('client-projects', 'Client Projects'),
+          createProject: {
+            run: vi.fn(),
+          },
+        },
+      ],
+    })
+    const createCommand = commands.find(
+      (command) => command.name === 'Create project'
+    )
+    const libraryArg = createCommand?.args?.libraryId as unknown as {
+      defaultValue: () => string
+      hidden: () => boolean
+      options: () => CommandArgumentOption<string>[]
+      prepopulate: boolean
+      required: () => boolean
+    }
+
+    expect(libraryArg.hidden()).toBe(false)
+    expect(libraryArg.prepopulate).toBe(true)
+    expect(libraryArg.required()).toBe(true)
+    expect(libraryArg.defaultValue()).toBe('default-projects')
+    expect(libraryArg.options()).toEqual([
+      {
+        name: 'Default Projects',
+        value: 'default-projects',
+        isCurrent: false,
+      },
+      {
+        name: 'Client Projects',
+        value: 'client-projects',
+        isCurrent: false,
+      },
+    ])
+  })
+
   it('labels existing project options by title while submitting directory names', () => {
     const systemIOActor = createSystemIOActor([
       createProject({

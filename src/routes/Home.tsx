@@ -381,7 +381,7 @@ const Home = () => {
               ? selectedProjectLibrary.title
               : libraryId
                 ? 'Library not found'
-                : 'Projects'
+                : 'Project Libraries'
           }
           library={selectedProjectLibrary}
           showLibraryBackLink={Boolean(routeSelectedProjectLibrary)}

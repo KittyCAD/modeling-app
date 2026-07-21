@@ -22,6 +22,7 @@ import {
   DEFAULT_PROJECT_LIBRARY_ID,
   DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
+  NEW_PROJECT_LIBRARY_TITLE,
   getDefaultDirectoryProjectLibraryPath,
   type ProjectLibrary,
   projectLibraryFromSetting,
@@ -334,6 +335,11 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           order: 0,
           defaultSetting: {
             title: DEFAULT_PROJECT_LIBRARY_TITLE,
+            path: 'projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          },
+          newLibrarySetting: {
+            title: NEW_PROJECT_LIBRARY_TITLE,
             path: 'projects',
             type: DIRECTORY_PROJECT_LIBRARY_TYPE,
           },

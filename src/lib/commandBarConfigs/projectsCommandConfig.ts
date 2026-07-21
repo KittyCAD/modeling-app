@@ -331,7 +331,8 @@ export function createProjectCommands({
       },
       libraryId: {
         displayName: 'Library',
-        required: false,
+        required: () => createProjectLibraryOptions().length > 1,
+        prepopulate: true,
         hidden: () => createProjectLibraryOptions().length <= 1,
         inputType: 'options',
         options: createProjectLibraryOptions,
