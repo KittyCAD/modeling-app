@@ -7,8 +7,7 @@ import { useRef } from 'react'
 
 import { NIL as uuidNIL } from 'uuid'
 
-import { CustomIcon } from '@src/components/CustomIcon'
-import Tooltip from '@src/components/Tooltip'
+import { ProjectLibrariesSettingInput } from '@src/components/Settings/ProjectLibrariesSettingInput'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
@@ -20,10 +19,8 @@ import {
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
-  getDefaultDirectoryProjectLibrarySetting,
   isProjectLibrarySettings,
   type ProjectLibrarySetting,
-  updateDefaultDirectoryProjectLibrarySetting,
 } from '@src/lib/projectLibraries'
 import type {
   DynamicSettingsCategories,
@@ -36,9 +33,8 @@ import type {
 } from '@src/lib/settings/settingsTypes'
 import { baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { Themes } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
 import { isEnumMember } from '@src/lib/types'
-import { capitaliseFC, isArray, toSync } from '@src/lib/utils'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
 
 /**
@@ -264,99 +260,13 @@ function createCoreSettings() {
       }),
       libraries: new Setting<ProjectLibrarySetting[]>({
         defaultValue: [],
-        description: 'The default library to save and load projects from.',
+        description: 'Project libraries shown on the home page.',
         hideOnLevel: 'project',
         hideWithoutFeatureOnPlatform: {
           web: OPFS_CLOUD_FEATURE_FLAG,
         },
         validate: isProjectLibrarySettings,
-        Component: ({ value, updateValue }) => {
-          const inputRef = useRef<HTMLInputElement>(null)
-          const defaultDirectoryLibrary =
-            getDefaultDirectoryProjectLibrarySetting(value)
-
-          if (!defaultDirectoryLibrary) {
-            return (
-              <p className="text-xs text-chalkboard-80 dark:text-chalkboard-30">
-                No default projects directory library is configured.
-              </p>
-            )
-          }
-
-          const updateDefaultDirectoryLibrary = (
-            updates: Partial<Pick<ProjectLibrarySetting, 'title' | 'path'>>
-          ) => {
-            updateValue(
-              updateDefaultDirectoryProjectLibrarySetting(value, updates)
-            )
-          }
-
-          return (
-            <div className="flex flex-col gap-3 p-1">
-              <label className="flex flex-col gap-1 text-xs">
-                <span className="font-medium text-chalkboard-80 dark:text-chalkboard-30">
-                  Title
-                </span>
-                <input
-                  className="w-full px-2 py-1 bg-transparent border rounded-sm border-chalkboard-30"
-                  value={defaultDirectoryLibrary.title}
-                  data-testid="project-library-title-input"
-                  onChange={(event) =>
-                    updateDefaultDirectoryLibrary({
-                      title: event.target.value,
-                    })
-                  }
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-xs">
-                <span className="font-medium text-chalkboard-80 dark:text-chalkboard-30">
-                  Folder
-                </span>
-                <div className="flex gap-4 p-1 border rounded-sm border-chalkboard-30">
-                  <input
-                    className="flex-grow text-xs px-2 bg-transparent"
-                    value={defaultDirectoryLibrary.path}
-                    disabled
-                    data-testid="project-directory-input"
-                    ref={inputRef}
-                  />
-                  <button
-                    onClick={toSync(async () => {
-                      const inputRefVal = inputRef.current?.dataset.testValue
-                      if (
-                        inputRef.current &&
-                        inputRefVal &&
-                        !isArray(inputRefVal)
-                      ) {
-                        updateDefaultDirectoryLibrary({ path: inputRefVal })
-                      } else {
-                        if (!window.electron) {
-                          return Promise.reject(
-                            new Error("Can't open file dialog")
-                          )
-                        }
-                        const newPath = await window.electron.open({
-                          properties: ['openDirectory', 'createDirectory'],
-                          defaultPath: defaultDirectoryLibrary.path,
-                          title: 'Choose a projects library folder',
-                        })
-                        if (newPath.canceled) return
-                        updateDefaultDirectoryLibrary({
-                          path: newPath.filePaths[0],
-                        })
-                      }
-                    }, reportRejection)}
-                    className="p-0 m-0 border-none hover:bg-primary/10 focus:bg-primary/10 dark:hover:bg-primary/20 dark:focus::bg-primary/20"
-                    data-testid="project-directory-button"
-                  >
-                    <CustomIcon name="folder" className="w-5 h-5" />
-                    <Tooltip position="top-right">Choose a folder</Tooltip>
-                  </button>
-                </div>
-              </label>
-            </div>
-          )
-        },
+        Component: ProjectLibrariesSettingInput,
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},

@@ -20,6 +20,7 @@ import type { Project } from '@src/lib/project'
 import { readProjectsFromProjectDirectory } from '@src/lib/projectDirectoryScanner'
 import {
   DEFAULT_PROJECT_LIBRARY_ID,
+  DEFAULT_PROJECT_LIBRARY_TITLE,
   DIRECTORY_PROJECT_LIBRARY_TYPE,
   getDefaultDirectoryProjectLibraryPath,
   type ProjectLibrary,
@@ -330,6 +331,12 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
           type: DIRECTORY_PROJECT_LIBRARY_TYPE,
           title: 'Directory',
           icon: 'folder',
+          order: 0,
+          defaultSetting: {
+            title: DEFAULT_PROJECT_LIBRARY_TITLE,
+            path: 'projects',
+            type: DIRECTORY_PROJECT_LIBRARY_TYPE,
+          },
           readEntries: async ({ library, signal }) => {
             const projects = await readProjectsFromProjectDirectory({
               projectDirectoryPath: library.path,
