@@ -1,9 +1,9 @@
 import type { TooltipProps } from '@src/components/Tooltip'
 import { LAYOUT_SAVE_THROTTLE } from '@src/lib/constants'
 import {
-  DefaultLayoutPaneID,
   DefaultLayoutToolbarID,
   defaultLayoutConfig,
+  featureTreePaneConfig,
   isDefaultLayoutPaneID,
 } from '@src/lib/layout/configs/default'
 import { parseLayoutInner } from '@src/lib/layout/parse'
@@ -19,7 +19,6 @@ import type {
   LayoutTransformation,
   LayoutWithMetadata,
   Orientation,
-  PaneChild,
   Side,
 } from '@src/lib/layout/types'
 import { AreaType, LayoutType } from '@src/lib/layout/types'
@@ -28,94 +27,9 @@ import { capitaliseFC, throttle } from '@src/lib/utils'
 import type React from 'react'
 
 /** Most recent layout system version */
-export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v2'
+export const LATEST_LAYOUT_VERSION: LayoutWithMetadata['version'] = 'v3'
 
 export const defaultLayout = defaultLayoutConfig
-
-const featureTreePaneWithBodies: PaneChild = {
-  id: DefaultLayoutPaneID.FeatureTree,
-  label: 'Feature Tree',
-  icon: 'model',
-  type: LayoutType.Splits,
-  orientation: 'block',
-  sizes: [70, 30],
-  children: [
-    {
-      id: 'operations-list',
-      label: 'Feature Tree',
-      type: LayoutType.Simple,
-      areaType: AreaType.FeatureTree,
-    },
-    {
-      id: 'bodies-list',
-      label: 'Bodies',
-      type: LayoutType.Simple,
-      areaType: AreaType.Bodies,
-    },
-  ],
-}
-
-const featureTreePaneWithoutBodies: PaneChild = {
-  id: DefaultLayoutPaneID.FeatureTree,
-  label: 'Feature Tree',
-  type: LayoutType.Simple,
-  icon: 'model',
-  areaType: AreaType.FeatureTree,
-}
-
-function isFeatureTreePaneWithoutBodies(layout: Layout) {
-  return (
-    layout.id === DefaultLayoutPaneID.FeatureTree &&
-    layout.type === LayoutType.Simple &&
-    layout.areaType === AreaType.FeatureTree
-  )
-}
-
-function isFeatureTreePaneWithBodies(layout: Layout) {
-  return (
-    layout.id === DefaultLayoutPaneID.FeatureTree &&
-    layout.type === LayoutType.Splits &&
-    layout.children.some(
-      (child) =>
-        child.type === LayoutType.Simple &&
-        child.areaType === AreaType.FeatureTree
-    ) &&
-    layout.children.some(
-      (child) =>
-        child.type === LayoutType.Simple && child.areaType === AreaType.Bodies
-    )
-  )
-}
-
-export function setBodiesPaneLayoutEnabled(
-  rootLayout: Layout,
-  enabled: boolean
-): Layout {
-  const featureTreePane = findLayoutChildNode({
-    rootLayout,
-    targetNodeId: DefaultLayoutPaneID.FeatureTree,
-  })
-  const replacement =
-    enabled &&
-    featureTreePane &&
-    isFeatureTreePaneWithoutBodies(featureTreePane)
-      ? featureTreePaneWithBodies
-      : !enabled &&
-          featureTreePane &&
-          isFeatureTreePaneWithBodies(featureTreePane)
-        ? featureTreePaneWithoutBodies
-        : undefined
-
-  if (!replacement) {
-    return rootLayout
-  }
-
-  return findAndReplaceLayoutChildNode({
-    rootLayout: structuredClone(rootLayout),
-    targetNodeId: DefaultLayoutPaneID.FeatureTree,
-    newNode: replacement,
-  })
-}
 
 export function getOppositeSide(side: Side): Side {
   switch (side) {
@@ -1031,6 +945,21 @@ function getLayoutMigrations(): LayoutMigrationMap {
       {
         newVersion: 'v2',
         transformationSets: [{ matcher: true, transformations: [(l) => l] }],
+      },
+    ],
+    [
+      'v2',
+      {
+        newVersion: 'v3',
+        transformationSets: [
+          {
+            matcher: (layout) =>
+              layout.id === featureTreePaneConfig.id &&
+              layout.type === LayoutType.Simple &&
+              layout.areaType === AreaType.FeatureTree,
+            transformations: [() => structuredClone(featureTreePaneConfig)],
+          },
+        ],
       },
     ],
   ])

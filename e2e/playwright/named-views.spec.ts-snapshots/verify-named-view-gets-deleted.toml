@@ -1,5 +1,5 @@
-default_file = "main.kcl"
 title = "named-views"
+default_file = "main.kcl"
 
 [settings]
 app = { }

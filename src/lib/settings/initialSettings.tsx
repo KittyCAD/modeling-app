@@ -20,6 +20,10 @@ import {
   REGEXP_UUIDV4,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
+import {
+  isProjectLibrarySettings,
+  type ProjectLibrarySetting,
+} from '@src/lib/projectLibraries'
 import type {
   DynamicSettingsCategories,
   ResolvedExtensionSettings,
@@ -296,6 +300,13 @@ function createCoreSettings() {
             </div>
           )
         },
+      }),
+      libraries: new Setting<ProjectLibrarySetting[]>({
+        defaultValue: [],
+        description: 'Project libraries shown on the home page.',
+        hideOnLevel: 'project',
+        hideOnPlatform: 'both',
+        validate: isProjectLibrarySettings,
       }),
       namedViews: new Setting<{ [key in string]: NamedView }>({
         defaultValue: {},

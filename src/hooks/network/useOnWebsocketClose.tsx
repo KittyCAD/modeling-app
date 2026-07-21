@@ -4,8 +4,8 @@ import { EngineCommandManagerEvents } from '@src/network/utils'
 import { useEffect } from 'react'
 
 export interface IUseOnWebsocketClose {
-  callback: () => void
-  infiniteDetectionLoopCallback: () => void
+  callback: (code: string | undefined) => void
+  infiniteDetectionLoopCallback: (code: string | undefined) => void
   engineCommandManager: ConnectionManager
 }
 
@@ -20,7 +20,7 @@ export function useOnWebsocketClose({
   engineCommandManager,
 }: IUseOnWebsocketClose) {
   useEffect(() => {
-    const onWebsocketClose = (event: CustomEvent) => {
+    const onWebsocketClose = (event: CustomEvent<{ code?: string }>) => {
       if (event?.detail?.code === '1006') {
         // Most likely your internet is out. Do not try to auto reconnect
         // This will result in an infinite loop
@@ -32,11 +32,11 @@ export function useOnWebsocketClose({
           },
         })
 
-        infiniteDetectionLoopCallback()
+        infiniteDetectionLoopCallback(event.detail.code)
         return
       }
 
-      callback()
+      callback(event?.detail?.code)
     }
 
     engineCommandManager.addEventListener(

@@ -419,6 +419,7 @@ impl Node<Program> {
             crate::lint::checks::lint_should_be_default_plane,
             crate::lint::checks::lint_should_be_offset_plane,
             crate::lint::checks::lint_profiles_should_not_be_chained,
+            crate::lint::checks::lint_deprecated_edge_stdlib_in_fillet_chamfer,
         ];
 
         let mut findings = vec![];
@@ -3610,11 +3611,11 @@ pub enum BinaryOperator {
     #[serde(rename = "^")]
     #[display("^")]
     Pow,
-    /// Are two numbers equal?
+    /// Are two numbers or strings equal?
     #[serde(rename = "==")]
     #[display("==")]
     Eq,
-    /// Are two numbers not equal?
+    /// Are two numbers or strings not equal?
     #[serde(rename = "!=")]
     #[display("!=")]
     Neq,
