@@ -1285,13 +1285,26 @@ export function createPathToNodeForLastVariable(
   return pathToCall
 }
 
+function pathsReferToSamePipe(first: PathToNode, second: PathToNode): boolean {
+  if (stringifyPathToNode(first) === stringifyPathToNode(second)) {
+    return true
+  }
+
+  const firstPipe = splitPathAtPipeExpression(first)
+  const secondPipe = splitPathAtPipeExpression(second)
+  return (
+    firstPipe.index !== -1 &&
+    secondPipe.index !== -1 &&
+    stringifyPathToNode(firstPipe.path) === stringifyPathToNode(secondPipe.path)
+  )
+}
+
 export function setCallInAst({
   ast,
   call,
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
-  preserveExistingUnlabeled = true,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1299,21 +1312,11 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
-  /**
-   * Keep an existing unlabeled argument when an edit cannot reconstruct it.
-   * Set this to false when an edit intentionally removes that argument.
-   */
-  preserveExistingUnlabeled?: boolean
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
-    // An edit can reuse its current pipe input, but moving the call to another
-    // pipe is not an in-place edit. Do not silently keep the previous input.
-    if (
-      pathIfNewPipe &&
-      stringifyPathToNode(pathIfNewPipe) !== stringifyPathToNode(pathToEdit)
-    ) {
+    if (pathIfNewPipe && !pathsReferToSamePipe(pathIfNewPipe, pathToEdit)) {
       return new Error(
         'Cannot edit the call in place because its reconstructed input belongs to a different pipe'
       )
@@ -1329,11 +1332,7 @@ export function setCallInAst({
       return result
     }
 
-    if (
-      preserveExistingUnlabeled &&
-      call.unlabeled === null &&
-      result.node.unlabeled !== null
-    ) {
+    if (call.unlabeled === null && result.node.unlabeled !== null) {
       call.unlabeled = structuredClone(result.node.unlabeled)
     }
 

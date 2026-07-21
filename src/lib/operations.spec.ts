@@ -417,6 +417,49 @@ describe('operations.test.ts', () => {
   }
 
   describe('Extrude edit flow', () => {
+    it('continues when the unlabeled selection cannot be retrieved', async () => {
+      const { rustContext } = await buildTheWorldAndNoEngineConnection()
+      const code =
+        'extrude001 = extrude(region(point = [1, 1], sketch = s), length = 10)'
+      const operation = stdlib('extrude')
+      if (operation.type !== 'StdLibCall') {
+        throw new Error('Expected operation to be a StdLibCall')
+      }
+      operation.unlabeledArg = {
+        value: { type: 'Number', value: 0, ty: { type: 'Any' } },
+        sourceRange: rangeOfText(code, 'region(point = [1, 1], sketch = s)'),
+      }
+      operation.labeledArgs = {
+        length: {
+          value: { type: 'Number', value: 10, ty: { type: 'Any' } },
+          sourceRange: rangeOfText(code, '10'),
+        },
+      }
+
+      const result = await enterEditFlow({
+        operation,
+        code,
+        artifactGraph: new Map(),
+        rustContext,
+      })
+      if (result instanceof Error) {
+        throw result
+      }
+      if (result.type !== 'Find and select command') {
+        throw new Error(`Expected edit flow event, got ${result.type}`)
+      }
+
+      const argDefaultValues = result.data.argDefaultValues as {
+        sketches?: { graphSelections: unknown[]; otherSelections: unknown[] }
+        length?: { valueText: string }
+      }
+      expect(argDefaultValues.sketches).toEqual({
+        graphSelections: [],
+        otherSelections: [],
+      })
+      expect(argDefaultValues.length?.valueText).toBe('10')
+    })
+
     it('preserves draftAngle in the command defaults', async () => {
       const { rustContext } = await buildTheWorldAndNoEngineConnection()
       const code =
