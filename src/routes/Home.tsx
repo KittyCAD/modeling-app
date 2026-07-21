@@ -776,6 +776,10 @@ function ProjectLibraryOverview({
     </div>
   ) : null
 
+  if (libraries.length === 0) {
+    return <ProjectLibrariesEmptyState {...rest} />
+  }
+
   return (
     <section data-testid="home-section" {...rest}>
       {!localProjectsLoaded && projects.length === 0 ? (
@@ -810,6 +814,38 @@ function ProjectLibraryOverview({
           {loadingMore}
         </>
       )}
+    </section>
+  )
+}
+
+function ProjectLibrariesEmptyState(props: HTMLProps<HTMLDivElement>) {
+  return (
+    <section data-testid="home-section" {...props}>
+      <div
+        className="my-8 flex max-w-xl flex-col items-start gap-4 rounded-sm border border-dashed border-chalkboard-30 p-6 dark:border-chalkboard-70"
+        data-testid="project-libraries-empty"
+      >
+        <span className="grid h-10 w-10 place-content-center rounded-sm bg-primary/10 text-primary dark:bg-chalkboard-90 dark:text-chalkboard-20">
+          <CustomIcon name="folderPlus" className="h-6 w-6" />
+        </span>
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold">No project libraries</h2>
+          <p className="text-sm text-chalkboard-70 dark:text-chalkboard-30">
+            Add a library to choose where projects are loaded from.
+          </p>
+        </div>
+        <ActionButton
+          Element="link"
+          to={`${PATHS.HOME + PATHS.SETTINGS_USER}#libraries`}
+          iconStart={{
+            icon: 'plus',
+            bgClassName: '!bg-transparent',
+          }}
+          data-testid="project-libraries-empty-add"
+        >
+          Add library
+        </ActionButton>
+      </div>
     </section>
   )
 }
