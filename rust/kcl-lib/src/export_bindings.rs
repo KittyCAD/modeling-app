@@ -1,11 +1,17 @@
 #[cfg(test)]
 mod tests {
-    use crate::front::{FrontendRenderPacket, FrontendRenderPacketSketchSegment};
-    use kittycad_modeling_cmds::format::render_packet::{
-        RenderPacket, RenderPacketEdge, RenderPacketPrimitive, RenderPacketRegion,
-        RenderPacketRegionLoop, RenderPacketSketchSegment, RenderPacketTrimLoop,
-    };
-    use ts_rs::{Config, TS};
+    use kittycad_modeling_cmds::format::render_packet::RenderPacket;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketEdge;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketPrimitive;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketRegion;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketRegionLoop;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketSketchSegment;
+    use kittycad_modeling_cmds::format::render_packet::RenderPacketTrimLoop;
+    use ts_rs::Config;
+    use ts_rs::TS;
+
+    use crate::front::FrontendRenderPacket;
+    use crate::front::FrontendRenderPacketSketchSegment;
 
     #[test]
     fn export_bindings_renderpacket() {

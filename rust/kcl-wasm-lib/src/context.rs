@@ -4,22 +4,22 @@ use std::sync::Arc;
 
 use gloo_utils::format::JsValueSerdeExt;
 use kcl_lib::ExecOutcome;
-use kcl_lib::NodePath;
 use kcl_lib::ExecutionCallbacks;
 use kcl_lib::KclError;
 use kcl_lib::KclErrorWithOutputs;
 use kcl_lib::MockConfig;
+use kcl_lib::NodePath;
 use kcl_lib::OperationCallbackArgs;
 use kcl_lib::Program;
 use kcl_lib::ProjectManager;
-use kcl_lib::front::FrontendState;
+use kcl_lib::SourceRange;
 use kcl_lib::front::FrontendRenderPacket;
 use kcl_lib::front::FrontendRenderPacketSketchSegment;
+use kcl_lib::front::FrontendState;
 use kcl_lib::front::ObjectKind;
 use kcl_lib::front::SceneGraphDelta;
 use kcl_lib::front::SourceRef;
 use kcl_lib::wasm_engine::FileManager;
-use kcl_lib::SourceRange;
 use wasm_bindgen::prelude::*;
 
 pub(crate) const TRUE_BUG: &str = "This is a bug in KCL and not in your code, please report this to Zoo.";
@@ -271,7 +271,9 @@ impl Context {
 
         let ctx = self.create_executor_ctx(settings, None, false)?;
         let files = ctx
-            .export(kittycad_modeling_cmds::format::OutputFormat3d::RenderPacket(Default::default()))
+            .export(kittycad_modeling_cmds::format::OutputFormat3d::RenderPacket(
+                Default::default(),
+            ))
             .await
             .map_err(|err| serde_json::to_string(&err).unwrap_or_else(|serde_err| serde_err.to_string()))?;
 
@@ -298,10 +300,7 @@ struct FrontendSketchSegmentIdentity {
     node_path: Option<NodePath>,
 }
 
-fn source_ref_identity(
-    artifact_id: uuid::Uuid,
-    source: &SourceRef,
-) -> FrontendSketchSegmentIdentity {
+fn source_ref_identity(artifact_id: uuid::Uuid, source: &SourceRef) -> FrontendSketchSegmentIdentity {
     match source {
         SourceRef::Simple { range, node_path } => FrontendSketchSegmentIdentity {
             artifact_id,
@@ -386,7 +385,11 @@ fn enrich_render_packet(
 ) -> FrontendRenderPacket {
     let packet_groups = group_packet_sketch_indices(&packet);
     let scene_graph_groups = collect_scene_graph_sketch_segments(scene_graph);
-    let packet_sketch_ids = packet.sketches.iter().map(|segment| segment.sketch_id).collect::<Vec<_>>();
+    let packet_sketch_ids = packet
+        .sketches
+        .iter()
+        .map(|segment| segment.sketch_id)
+        .collect::<Vec<_>>();
     let mut region_sketch_artifact_ids = std::collections::HashMap::new();
     let mut sketches = packet
         .sketches

@@ -60,9 +60,9 @@ pub mod collections;
 mod docs;
 mod engine;
 mod errors;
+mod execution;
 #[cfg(test)]
 mod export_bindings;
-mod execution;
 mod fmt;
 mod frontend;
 mod fs;

@@ -2191,12 +2191,7 @@ fn artifacts_to_update(
         | ModelingCmd::RevolveAboutEdge(_)
         | ModelingCmd::ExtrudeToReference(_) => {
             let target = match cmd {
-                ModelingCmd::Extrude(kcmc::Extrude {
-                    target: Some(target), ..
-                }) => target,
-                // Reference-based extrusions do not have a path UUID until the
-                // engine resolves their topology payload.
-                ModelingCmd::Extrude(kcmc::Extrude { target: None, .. }) => return Ok(Vec::new()),
+                ModelingCmd::Extrude(kcmc::Extrude { target, .. }) => target,
                 ModelingCmd::TwistExtrude(kcmc::TwistExtrude { target, .. })
                 | ModelingCmd::Revolve(kcmc::Revolve { target, .. })
                 | ModelingCmd::RevolveAboutEdge(kcmc::RevolveAboutEdge { target, .. })

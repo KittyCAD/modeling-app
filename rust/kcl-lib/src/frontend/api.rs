@@ -5,9 +5,9 @@
 pub use kcl_api::ObjectId;
 use kcl_api::UnitLength;
 use kcl_error::SourceRange;
-use kittycad_modeling_cmds::format::render_packet::{
-    RenderPacketEdge, RenderPacketPrimitive, RenderPacketRegion,
-};
+use kittycad_modeling_cmds::format::render_packet::RenderPacketEdge;
+use kittycad_modeling_cmds::format::render_packet::RenderPacketPrimitive;
+use kittycad_modeling_cmds::format::render_packet::RenderPacketRegion;
 use serde::Deserialize;
 use serde::Serialize;
 
