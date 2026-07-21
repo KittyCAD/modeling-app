@@ -2,6 +2,8 @@ import { hashString } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
+export const DEFAULT_PROJECT_LIBRARY_TITLE = 'Default Projects Directory'
+export const DIRECTORY_PROJECT_LIBRARY_TYPE = 'directory'
 
 export type ProjectLibraryType = string
 
@@ -22,9 +24,9 @@ export function getDefaultProjectLibrarySettings(
 ): ProjectLibrarySetting[] {
   return [
     {
-      title: 'Default Projects Directory',
+      title: DEFAULT_PROJECT_LIBRARY_TITLE,
       path: projectDirectory,
-      type: 'directory',
+      type: DIRECTORY_PROJECT_LIBRARY_TYPE,
     },
   ]
 }
@@ -32,7 +34,9 @@ export function getDefaultProjectLibrarySettings(
 export function getDefaultDirectoryProjectLibrarySetting(
   libraries: readonly ProjectLibrarySetting[]
 ) {
-  return libraries.find((library) => library.type === 'directory')
+  return libraries.find(
+    (library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE
+  )
 }
 
 export function getDefaultDirectoryProjectLibraryPath(
@@ -52,6 +56,10 @@ export function isPathInDirectoryProjectLibrary(
   const normalizedTargetPath = normalizeLibraryPath(targetPath)
   const normalizedLibraryPath = normalizeLibraryPath(libraryPath)
 
+  if (!normalizedLibraryPath) {
+    return false
+  }
+
   return (
     normalizedTargetPath === normalizedLibraryPath ||
     normalizedTargetPath.startsWith(`${normalizedLibraryPath}/`)
@@ -63,7 +71,7 @@ export function getContainingDirectoryProjectLibraryPath(
   projectPath: string
 ) {
   return libraries
-    .filter((library) => library.type === 'directory')
+    .filter((library) => library.type === DIRECTORY_PROJECT_LIBRARY_TYPE)
     .filter((library) =>
       isPathInDirectoryProjectLibrary(projectPath, library.path)
     )
@@ -124,10 +132,31 @@ export function projectLibraryFromSetting(
   return {
     ...library,
     id:
-      library.type === 'directory' &&
+      library.type === DIRECTORY_PROJECT_LIBRARY_TYPE &&
       library.path === options.defaultProjectDirectory
         ? DEFAULT_PROJECT_LIBRARY_ID
         : getProjectLibraryIdFromSetting(library),
     order: index,
   }
+}
+
+export function updateDefaultDirectoryProjectLibrarySetting(
+  libraries: readonly ProjectLibrarySetting[],
+  updates: Partial<Pick<ProjectLibrarySetting, 'title' | 'path'>>
+): ProjectLibrarySetting[] {
+  const defaultDirectoryLibrary =
+    getDefaultDirectoryProjectLibrarySetting(libraries)
+
+  if (!defaultDirectoryLibrary) {
+    return [...libraries]
+  }
+
+  return libraries.map((library) =>
+    library === defaultDirectoryLibrary
+      ? {
+          ...library,
+          ...updates,
+        }
+      : library
+  )
 }

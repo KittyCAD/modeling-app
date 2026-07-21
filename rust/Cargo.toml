@@ -76,6 +76,9 @@ lossy_float_literal = "warn"
 redundant_clone = "warn"
 result_large_err = "allow"
 
+[workspace.lints.rust]
+unsafe_code = "deny"
+
 [profile.release]
 debug = true
 
