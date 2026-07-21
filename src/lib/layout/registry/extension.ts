@@ -5,7 +5,6 @@ import {
   provideService,
 } from '@kittycad/registry'
 import { computed, effect, signal } from '@preact/signals-core'
-import { BODIES_PANE_FEATURE_FLAG } from '@src/lib/constants'
 import { playwrightLayoutConfig } from '@src/lib/layout/configs/playwright'
 import type { Layout, LayoutService } from '@src/lib/layout/types'
 import {
@@ -14,12 +13,12 @@ import {
   defaultLayout,
   loadLayout,
   saveLayout,
-  setBodiesPaneLayoutEnabled,
   setLayoutSaveHandler,
 } from '@src/lib/layout/utils'
 import {
   layoutContributionsValueSpec,
   layoutService,
+  layoutUserFeatureTransformationsValueSpec,
 } from '@src/lib/layout/registry/contract'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { userFeaturesContextHas } from '@src/machines/userFeaturesMachine'
@@ -53,19 +52,8 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       : defaultLayout
     const layoutSignal = signal<Layout>(runtimeDefaultLayout)
     let hasHydratedLayout = false
-    let lastBodiesPaneFeatureEnabled: boolean | undefined
+    let lastUserFeatureValues = new Map<string, boolean>()
 
-    const isBodiesPaneFeatureEnabled = () =>
-      userFeaturesContextHas(
-        userFeatures.context.value,
-        BODIES_PANE_FEATURE_FLAG,
-        false
-      )
-    const getRuntimeDefaultLayout = () =>
-      setBodiesPaneLayoutEnabled(
-        structuredClone(runtimeDefaultLayout),
-        !usePlaywrightLayout && isBodiesPaneFeatureEnabled()
-      )
     const applyContributions: LayoutService['applyContributions'] = (
       contributions
     ) => {
@@ -87,7 +75,9 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
         layoutSignal.value = structuredClone(nextLayout)
       },
       reset: () => {
-        layoutSignal.value = getRuntimeDefaultLayout()
+        layoutSignal.value = structuredClone(runtimeDefaultLayout)
+        lastUserFeatureValues.clear()
+        syncUserFeatureLayout()
       },
       applyContributions,
     }
@@ -95,26 +85,44 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
       coreLayoutService.applyContributions(
         ctx.valueSpecs.get(layoutContributionsValueSpec)
       )
-    const syncBodiesPaneFeatureLayout = () => {
-      if (usePlaywrightLayout) {
-        return
-      }
-
-      const enabled = isBodiesPaneFeatureEnabled()
+    const syncUserFeatureLayout = () => {
+      const transformations = ctx.valueSpecs.signal(
+        layoutUserFeatureTransformationsValueSpec
+      ).value
+      const userFeaturesContext = userFeatures.context.value
       if (!hasHydratedLayout) {
         return
       }
 
-      if (enabled === lastBodiesPaneFeatureEnabled) {
+      const featureValues = new Map(
+        transformations.map((transformation) => [
+          transformation.id,
+          userFeaturesContextHas(
+            userFeaturesContext,
+            transformation.feature,
+            transformation.defaultValue ?? false
+          ),
+        ])
+      )
+      const changedTransformations = transformations.filter(
+        (transformation) =>
+          lastUserFeatureValues.get(transformation.id) !==
+          featureValues.get(transformation.id)
+      )
+      if (changedTransformations.length === 0) {
+        lastUserFeatureValues = featureValues
         return
       }
 
-      const currentLayout = layoutSignal.peek()
-      const nextLayout = setBodiesPaneLayoutEnabled(currentLayout, enabled)
-      if (nextLayout !== currentLayout) {
-        layoutSignal.value = nextLayout
+      let nextLayout = structuredClone(layoutSignal.peek())
+      for (const transformation of changedTransformations) {
+        nextLayout = transformation.transform(
+          nextLayout,
+          featureValues.get(transformation.id) ?? false
+        )
       }
-      lastBodiesPaneFeatureEnabled = enabled
+      layoutSignal.value = nextLayout
+      lastUserFeatureValues = featureValues
     }
     const hydrateLayoutFromSettings = (
       snapshot: SnapshotFrom<typeof settingsActor>
@@ -161,15 +169,15 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
 
       hasHydratedLayout = true
       applyRegistryLayoutContributions()
-      syncBodiesPaneFeatureLayout()
+      syncUserFeatureLayout()
     }
 
     const settingsSubscription = settingsActor.subscribe(
       hydrateLayoutFromSettings
     )
     hydrateLayoutFromSettings(settingsActor.getSnapshot())
-    const stopUserFeaturesEffect = effect(() => {
-      syncBodiesPaneFeatureLayout()
+    const stopUserFeatureLayoutEffect = effect(() => {
+      syncUserFeatureLayout()
     })
     const stopLayoutContributionsEffect = effect(() => {
       const contributions = ctx.valueSpecs.signal(
@@ -186,7 +194,7 @@ export const layoutExtension = defineRegistryItemFactory((ctx) => {
     layout = coreLayoutService
     disposeLayout = () => {
       settingsSubscription.unsubscribe()
-      stopUserFeaturesEffect()
+      stopUserFeatureLayoutEffect()
       stopLayoutContributionsEffect()
       saveEffectUnsubscribeFn()
       setLayoutSaveHandler(undefined)
