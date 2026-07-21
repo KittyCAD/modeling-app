@@ -3075,6 +3075,71 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_operators() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+equal_same_ascii = "KCL" == "KCL"
+equal_different_case = "KCL" == "kcl"
+not_equal_same_ascii = "KCL" != "KCL"
+not_equal_different_case = "KCL" != "kcl"
+equal_same_unicode = "{composed}" == "{composed}"
+not_equal_same_unicode = "{composed}" != "{composed}"
+equal_without_normalization = "{composed}" == "{decomposed}"
+not_equal_without_normalization = "{composed}" != "{decomposed}"
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("equal_same_ascii", true),
+            ("equal_different_case", false),
+            ("not_equal_same_ascii", false),
+            ("not_equal_different_case", true),
+            ("equal_same_unicode", true),
+            ("not_equal_same_unicode", false),
+            ("equal_without_normalization", false),
+            ("not_equal_without_normalization", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_equality_inside_sketch_block_fails_like_number_equality() {
+        let string_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = "KCL" == "KCL"
+}
+"#;
+        let number_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  numbersAreEqual = 1 == 1
+}
+"#;
+
+        assert_eq!(
+            parse_execute(string_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a string and a string"
+        );
+        assert_eq!(
+            parse_execute(number_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a number and a number"
+        );
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_math_execute_start_negative() {
         let ast = r#"myVar = -5 + 6"#;
         let result = parse_execute(ast).await.unwrap();
