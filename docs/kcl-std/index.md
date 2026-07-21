@@ -255,6 +255,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`any`](/docs/kcl-std/types/std-types-any)
   * [`bool`](/docs/kcl-std/types/std-types-bool)
   * [`fn`](/docs/kcl-std/types/std-types-fn)
+  * [`never`](/docs/kcl-std/types/std-types-never) Experimental
   * [`none`](/docs/kcl-std/types/std-types-none) Experimental
   * [`number`](/docs/kcl-std/types/std-types-number)
   * [`string`](/docs/kcl-std/types/std-types-string)
