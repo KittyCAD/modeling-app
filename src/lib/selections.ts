@@ -58,6 +58,7 @@ import {
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
   getPatternArtifactForCopyId,
+  getPatternSelectionIndex,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSweepArtifactFromSelection,
@@ -1181,7 +1182,7 @@ export async function getEventForSelectWithPoint(
   }
 
   const selectedEngineEntityId = data.entity_id
-  let _artifact =
+  const _artifact =
     getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph) ??
     artifactGraph.get(selectedEngineEntityId)
   if (!_artifact) {
@@ -1231,6 +1232,52 @@ export async function getEventForSelectWithPoint(
   }
   const codeRefs = getCodeRefsByArtifactId(_artifact.id, artifactGraph)
   if (_artifact && codeRefs) {
+    let bodyEngineEntityId = selectedEngineEntityId
+    let patternIndex: number | undefined
+    if (_artifact.type === 'pattern') {
+      const selectedArtifact = artifactGraph.get(selectedEngineEntityId)
+      let materializedBodyId: ArtifactId | undefined
+      if (
+        selectedArtifact?.type === 'wall' ||
+        selectedArtifact?.type === 'cap' ||
+        selectedArtifact?.type === 'sweepEdge'
+      ) {
+        materializedBodyId = selectedArtifact.sweepId
+      } else if (
+        selectedArtifact?.type === 'primitiveFace' ||
+        selectedArtifact?.type === 'primitiveEdge'
+      ) {
+        materializedBodyId = selectedArtifact.solidId
+      }
+
+      if (
+        materializedBodyId &&
+        _artifact.copyIds.includes(materializedBodyId)
+      ) {
+        bodyEngineEntityId = materializedBodyId
+      } else if (
+        !_artifact.copyIds.includes(selectedEngineEntityId) &&
+        (_artifact.copyFaceIds.includes(selectedEngineEntityId) ||
+          _artifact.copyEdgeIds.includes(selectedEngineEntityId))
+      ) {
+        const parentEntityId = await getParentEntityIdForEntity(
+          selectedEngineEntityId,
+          engineCommandManager
+        )
+        if (parentEntityId) {
+          bodyEngineEntityId = parentEntityId
+        }
+      }
+
+      const resolvedPatternIndex = getPatternSelectionIndex({
+        artifact: _artifact,
+        codeRef: codeRefs[0],
+        engineEntityId: bodyEngineEntityId,
+      })
+      if (!(resolvedPatternIndex instanceof Error)) {
+        patternIndex = resolvedPatternIndex
+      }
+    }
     return {
       type: 'Set selection',
       data: {
@@ -1238,7 +1285,8 @@ export async function getEventForSelectWithPoint(
         selection: {
           artifact: _artifact,
           codeRef: codeRefs[0],
-          engineEntityId: selectedEngineEntityId,
+          engineEntityId: bodyEngineEntityId,
+          ...(patternIndex !== undefined ? { patternIndex } : {}),
         },
       },
     }

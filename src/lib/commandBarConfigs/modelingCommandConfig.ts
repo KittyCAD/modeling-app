@@ -7,7 +7,9 @@ import type {
 
 import { angleLengthInfo } from '@src/components/Toolbar/angleLengthInfo'
 import { findUniqueName } from '@src/lang/create'
+import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
 import { createModelingCodemodReviewValidation } from '@src/lang/modifyAst/modelingCodemod'
+import { BODY_ARTIFACT_TYPES } from '@src/lang/std/artifactGraph'
 import { transformAstSketchLines } from '@src/lang/std/sketchcombos'
 import type { Artifact, PathToNode } from '@src/lang/wasm'
 import { modelingCommandCodemods } from '@src/lib/commandBarConfigs/modelingCommandCodemods'
@@ -15,6 +17,7 @@ import {
   modelingStdLibCommandArgs,
   modelingStdLibCommandStatus,
 } from '@src/lib/commandBarConfigs/modelingCommandStdLib'
+import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 import type {
   CommandArgumentConfig,
   KclCommandValue,
@@ -48,16 +51,13 @@ import type { components } from '@src/lib/machine-api'
 import { isEnginePrimitiveSelection } from '@src/lib/selections'
 import { baseUnitLabels, baseUnitsUnion } from '@src/lib/settings/settingsTypes'
 import { err } from '@src/lib/trap'
+import { capitaliseFC, isArray } from '@src/lib/utils'
 import type { modelingMachine } from '@src/machines/modelingMachine'
-import type { Selections } from '@src/machines/modelingSharedTypes'
 import type {
   ModelingMachineContext,
+  Selections,
   SketchTool,
 } from '@src/machines/modelingSharedTypes'
-
-import { getNextAvailableDatumName } from '@src/lang/modifyAst/gdt'
-import type { StdLibModelingCommandSchema } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
-import { capitaliseFC, isArray } from '@src/lib/utils'
 
 export type { HelixModes } from '@src/lib/commandBarConfigs/modelingCommandStdLibTypes'
 
@@ -106,7 +106,13 @@ const objectsTypesAndFilters: {
   selectionTypes: Artifact['type'][]
   selectionFilter: EntityType[]
 } = {
-  selectionTypes: ['path', 'sweep', 'compositeSolid'],
+  selectionTypes: [...BODY_ARTIFACT_TYPES],
+  selectionFilter: ['object'],
+}
+
+// Helix accepts one concrete cylinder, not a pattern of cylinders.
+const singleSolidTypesAndFilters: typeof objectsTypesAndFilters = {
+  selectionTypes: BODY_ARTIFACT_TYPES.filter((type) => type !== 'pattern'),
   selectionFilter: ['object'],
 }
 
@@ -1161,7 +1167,7 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
             !['Edge'].includes(context.argumentsToSubmit.mode as string),
         },
         cylinder: {
-          ...objectsTypesAndFilters,
+          ...singleSolidTypesAndFilters,
           inputType: 'selection',
           multiple: false,
           required: (context) =>
@@ -1490,9 +1496,8 @@ export const modelingMachineCommandConfig: StateMachineCommandSetConfig<
         overrides: {
           objects: {
             // selectionMixed allows for feature tree selection of module imports
+            ...objectsTypesAndFilters,
             inputType: 'selectionMixed',
-            selectionTypes: ['path', 'sweep', 'compositeSolid'],
-            selectionFilter: ['object'],
             multiple: true,
             hidden: isEditingNodeSelection,
           },

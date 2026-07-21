@@ -14,6 +14,7 @@ import {
   codeToIdSelections,
   findLastRangeStartingBefore,
   getBodySelectionFromPrimitiveParentEntityId,
+  getEventForSelectWithPoint,
   getSelectionReferences,
   getSelectionTypeDisplayText,
   getStableOffsetPlaneData,
@@ -23,6 +24,120 @@ import {
 import { enginelessExecutor } from '@src/lib/testHelpers'
 import type { Selection } from '@src/machines/modelingSharedTypes'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
+
+test('materialized pattern topology resolves to its copy body locally', async () => {
+  const pattern: Artifact = {
+    type: 'pattern',
+    id: 'pattern-command',
+    subType: 'linear',
+    sourceId: 'source-body',
+    copyIds: ['copy-body-1', 'copy-body-2'],
+    copyFaceIds: ['copy-face-2'],
+    copyEdgeIds: [],
+    codeRef: {
+      range: [0, 100, 0],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    },
+  }
+  const copyFace: Artifact = {
+    type: 'wall',
+    id: 'copy-face-2',
+    segId: 'source-segment',
+    edgeCutEdgeIds: [],
+    sweepId: 'copy-body-2',
+    pathIds: [],
+    faceCodeRef: pattern.codeRef,
+    cmdId: 'pattern-command',
+  }
+  const artifactGraph: ArtifactGraph = new Map<string, Artifact>([
+    [pattern.id, pattern],
+    [copyFace.id, copyFace],
+  ])
+  const sendSceneCommand = vi.fn()
+
+  const event = await getEventForSelectWithPoint(
+    { data: { entity_id: copyFace.id } } as Parameters<
+      typeof getEventForSelectWithPoint
+    >[0],
+    {
+      engineCommandManager: { sendSceneCommand },
+      kclManager: { ast: null, artifactGraph },
+      rustContext: { defaultPlanes: null },
+      wasmInstance: null,
+      useSegmentsBasedRegions: false,
+    } as unknown as Parameters<typeof getEventForSelectWithPoint>[1]
+  )
+
+  expect(sendSceneCommand).not.toHaveBeenCalled()
+  expect(event).toMatchObject({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: {
+        artifact: pattern,
+        engineEntityId: 'copy-body-2',
+        patternIndex: 2,
+      },
+    },
+  })
+})
+
+test('unmaterialized pattern topology falls back to its engine parent', async () => {
+  const pattern: Artifact = {
+    type: 'pattern',
+    id: 'pattern-command',
+    subType: 'linear',
+    sourceId: 'source-body',
+    copyIds: ['copy-body-1', 'copy-body-2'],
+    copyFaceIds: ['copy-face-2'],
+    copyEdgeIds: [],
+    codeRef: {
+      range: [0, 100, 0],
+      pathToNode: [],
+      nodePath: { steps: [] },
+    },
+  }
+  const artifactGraph: ArtifactGraph = new Map([[pattern.id, pattern]])
+  const sendSceneCommand = vi.fn(async () => ({
+    success: true,
+    resp: {
+      type: 'modeling',
+      data: {
+        modeling_response: {
+          type: 'entity_get_parent_id',
+          data: { entity_id: 'copy-body-2' },
+        },
+      },
+    },
+  }))
+
+  const event = await getEventForSelectWithPoint(
+    { data: { entity_id: 'copy-face-2' } } as Parameters<
+      typeof getEventForSelectWithPoint
+    >[0],
+    {
+      engineCommandManager: { sendSceneCommand },
+      kclManager: { ast: null, artifactGraph },
+      rustContext: { defaultPlanes: null },
+      wasmInstance: null,
+      useSegmentsBasedRegions: false,
+    } as unknown as Parameters<typeof getEventForSelectWithPoint>[1]
+  )
+
+  expect(sendSceneCommand).toHaveBeenCalledOnce()
+  expect(event).toMatchObject({
+    type: 'Set selection',
+    data: {
+      selectionType: 'singleCodeCursor',
+      selection: {
+        artifact: pattern,
+        engineEntityId: 'copy-body-2',
+        patternIndex: 2,
+      },
+    },
+  })
+})
 
 describe('testing source range to artifact conversion', () => {
   const MY_CODE = `sketch001 = startSketchOn(XZ)

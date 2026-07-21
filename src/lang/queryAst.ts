@@ -20,6 +20,7 @@ import {
   getCodeRefsByArtifactId,
   getFaceCodeRef,
   getPatternArtifactForCopyId,
+  getPatternSelectionIndex,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -1283,6 +1284,9 @@ export function getVariableExprsFromSelection(
       ast,
       wasmInstance
     )
+    if (patternCopyExpr instanceof Error) {
+      return patternCopyExpr
+    }
     if (patternCopyExpr) {
       const key = outputExprKey(patternCopyExpr)
       if (pushedNames[key]) {
@@ -1517,19 +1521,15 @@ function getPatternCopyExprFromSelection(
   selection: Selection,
   ast: Node<Program>,
   wasmInstance: ModuleType
-): Expr | null {
+): Expr | null | Error {
   const artifact = selection.artifact
   if (artifact?.type !== 'pattern') {
     return null
   }
 
-  const patternIndex =
-    selection.patternIndex ??
-    (selection.engineEntityId
-      ? artifact.copyIds.indexOf(selection.engineEntityId) + 1
-      : -1)
-  if (patternIndex < 0) {
-    return null
+  const patternIndex = getPatternSelectionIndex({ ...selection, artifact })
+  if (patternIndex instanceof Error) {
+    return patternIndex
   }
 
   const pathCandidates = [
@@ -1545,6 +1545,9 @@ function getPatternCopyExprFromSelection(
       wasmInstance
     )
     if (patternVariableName) {
+      if (patternIndex === undefined) {
+        return createLocalName(patternVariableName)
+      }
       return createMemberExpression(
         patternVariableName,
         createLiteral(patternIndex, wasmInstance),
@@ -1817,10 +1820,22 @@ export function retrieveSelectionsFromOpArg(
       )
     }
 
-    graphSelections.push({
+    const graphSelection: Selection = {
       artifact,
       codeRef: codeRefs[0],
-    })
+    }
+    if (artifact.type === 'pattern') {
+      graphSelection.engineEntityId = artifactId
+      const patternIndex = getPatternSelectionIndex({
+        ...graphSelection,
+        artifact,
+      })
+      if (patternIndex instanceof Error || patternIndex === undefined) {
+        return new Error("Couldn't retrieve pattern instance from operation")
+      }
+      graphSelection.patternIndex = patternIndex
+    }
+    graphSelections.push(graphSelection)
   }
 
   if (graphSelections.length === 0) {
