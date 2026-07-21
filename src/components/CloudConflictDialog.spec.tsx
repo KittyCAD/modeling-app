@@ -1,9 +1,8 @@
 import { CloudConflictDialog } from '@src/components/CloudConflictDialog'
 import fsZds from '@src/lib/fs-zds'
-import {
-  getCloudSyncProjectMetadata,
-  resolveCloudSyncProjectConflict,
-} from '@src/lib/cloudSync'
+import { resolveCloudSyncProjectConflict } from '@src/lib/cloudSync'
+import { getCloudSyncProjectMetadata } from '@src/lib/cloudSync/syncDb'
+import { Themes } from '@src/lib/theme'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, test, vi } from 'vitest'
 
@@ -47,6 +46,20 @@ vi.mock('@src/lib/cloudSync', async () => {
     resolveCloudSyncProjectConflict: vi.fn().mockResolvedValue(undefined),
   }
 })
+
+vi.mock('@src/lib/cloudSync/syncDb', () => ({
+  getCloudSyncProjectMetadata: vi.fn().mockResolvedValue({
+    schemaVersion: 1,
+    localProjectPath: '/projects/local',
+    projectName: 'Local project',
+    remoteProjectId: 'remote-123',
+    conflict: {
+      conflictProjectPath: '/projects/local (cloud conflict)',
+      createdAt: '2026-07-17T12:00:00.000Z',
+      remoteRevision: 'remote-revision-2',
+    },
+  }),
+}))
 
 vi.mock('@src/lib/fs-zds', () => ({
   default: {
@@ -142,7 +155,7 @@ describe('CloudConflictDialog', () => {
       <CloudConflictDialog
         projectPath="/projects/local"
         projectName="local-folder"
-        resolvedTheme="light"
+        resolvedTheme={Themes.Light}
         onDismiss={onDismiss}
       />
     )

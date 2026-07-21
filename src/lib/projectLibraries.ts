@@ -1,3 +1,4 @@
+import { hashString } from '@src/lib/stringUtils'
 import { isArray } from '@src/lib/utils'
 
 export const DEFAULT_PROJECT_LIBRARY_ID = 'default-project-directory'
@@ -83,17 +84,6 @@ export function mergeProjectLibrarySettings(
   }
 
   return Array.from(librariesByKey.values())
-}
-
-function hashString(input: string) {
-  let hash = 0
-
-  for (let i = 0; i < input.length; i += 1) {
-    hash = (hash << 5) - hash + input.charCodeAt(i)
-    hash |= 0
-  }
-
-  return Math.abs(hash).toString(36)
 }
 
 export function getProjectLibraryIdFromSetting(library: ProjectLibrarySetting) {
