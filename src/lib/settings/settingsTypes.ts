@@ -1,4 +1,4 @@
-import type { UnitAngle, UnitLength } from '@kittycad/lib'
+import type { Feature, UnitAngle, UnitLength } from '@kittycad/lib'
 
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
@@ -130,6 +130,19 @@ export interface SettingProps<T = unknown> {
   hideOnPlatform?:
     | HideOnPlatformValue
     | (() => Promise<HideOnPlatformValue | null>)
+  /**
+   * Whether to hide the setting unless a user feature flag is enabled.
+   * This will be applied in the settings panel, settings search, and command bar.
+   */
+  hideWithoutFeature?: Feature
+  /**
+   * Whether to hide the setting on a specific platform unless a user feature
+   * flag is enabled. This is useful when a feature flag gates web-only access
+   * to a desktop-default capability.
+   */
+  hideWithoutFeatureOnPlatform?: Partial<
+    Record<Exclude<HideOnPlatformValue, 'both'>, Feature>
+  >
   /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`

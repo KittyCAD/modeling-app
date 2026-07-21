@@ -1,12 +1,7 @@
+import type { KclRuntimeFlags } from '@rust/kcl-lib/bindings/KclRuntimeFlags'
 import { KCL_NEW_LEXER_PARSER_FEATURE_FLAG } from '@src/lib/constants'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { UserFeaturesRegistryService } from '@src/registry/contracts/userFeatures'
-
-export type KclRuntimeFlag = 'Unset' | 'On' | 'Off'
-
-export type KclRuntimeFlags = {
-  use_new_lexer_parser: KclRuntimeFlag
-}
 
 type RuntimeFlagUserFeatures = Pick<UserFeaturesRegistryService, 'has'>
 type RuntimeFlagWasmInstance = Pick<ModuleType, 'set_kcl_runtime_flags'>

@@ -1883,7 +1883,7 @@ impl Node<SketchBlock> {
                         // it's not a user error. We should investigate this.
                         #[cfg(target_arch = "wasm32")]
                         web_sys::console::error_1(
-                            &format!("Internal error from constraint solver: {}", &failure.error).into(),
+                            &format!("Internal error from constraint solver: {}", failure.error).into(),
                         );
                         return Err(internal_err(
                             format!("Internal error from constraint solver: {}", failure.error),
@@ -3366,16 +3366,31 @@ impl Node<MemberExpression> {
             }
             (KclValue::HomArray { value: arr, .. }, Property::UInt(index), _) => {
                 let value_of_arr = arr.get(index);
+                // Out-of-bounds error.
+                let oob_error = KclError::new_undefined_value(
+                    KclErrorDetails::new(
+                        format!("The array doesn't have any item at index {index}"),
+                        vec![self.clone().into()],
+                    ),
+                    None,
+                );
                 if let Some(value) = value_of_arr {
+                    // Indexing into the array was successful.
                     Ok(value.to_owned().continue_())
+                } else if ctx.no_engine_commands().await && !exec_state.is_sketch_mode_execution() {
+                    // In mock execution, we handle OOB errors
+                    // by trying to get index 0. This is because the array value might have
+                    // come from the engine, so the array's actual length isn't
+                    // known during mock execution runtime. Because it's mock execution
+                    // the specific value is hopefully not important.
+                    //
+                    // We don't do this in sketch mode execution since it's
+                    // forbidden from contacting the engine, meaning array
+                    // lengths are always accurate, and the OOB error is real.
+                    let value = arr.first();
+                    value.map(|value| value.to_owned().continue_()).ok_or(oob_error)
                 } else {
-                    Err(KclError::new_undefined_value(
-                        KclErrorDetails::new(
-                            format!("The array doesn't have any item at index {index}"),
-                            vec![self.clone().into()],
-                        ),
-                        None,
-                    ))
+                    Err(oob_error)
                 }
             }
             // Singletons and single-element arrays should be interchangeable, but only indexing by 0 should work.
@@ -5177,6 +5192,21 @@ impl Node<BinaryExpression> {
                     )));
                 }
             }
+        }
+
+        // Inside sketch blocks, `==` is reserved for equivalence constraints
+        // and has already been handled above.
+        if matches!(self.operator, BinaryOperator::Eq | BinaryOperator::Neq)
+            && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
+                (&left_value, &right_value)
+        {
+            let is_equal = left == right;
+            let value = if self.operator == BinaryOperator::Eq {
+                is_equal
+            } else {
+                !is_equal
+            };
+            return Ok(KclValue::Bool { value, meta });
         }
 
         let left = number_as_f64(&left_value, self.left.clone().into())?;

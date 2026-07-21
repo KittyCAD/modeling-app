@@ -10,7 +10,8 @@ use serde::Serialize;
 /// feature entry. Rust keeps a third state so code that was not initialized
 /// through the TS/wasm path can still fall back to Rust-side defaults, such as
 /// env-based configuration.
-#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Default, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export)]
 pub enum RuntimeFlag {
     /// No TS/wasm runtime flag has been installed; fall back to Rust defaults.
     #[default]
@@ -22,7 +23,8 @@ pub enum RuntimeFlag {
 }
 
 /// Maps 1-1 to the KCL related flags added to the Admin portal and TS.
-#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, PartialEq, Eq, ts_rs::TS)]
+#[ts(export)]
 pub struct KclRuntimeFlags {
     pub use_new_lexer_parser: RuntimeFlag,
 }

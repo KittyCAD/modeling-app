@@ -186,6 +186,13 @@ layout: manual
   * [`solver::tangent`](/docs/kcl-std/functions/std-solver-tangent)
   * [`solver::vertical`](/docs/kcl-std/functions/std-solver-vertical)
   * [`solver::verticalDistance`](/docs/kcl-std/functions/std-solver-verticalDistance)
+* [**std::string**](/docs/kcl-std/modules/std-string)
+  * [`string::isEqual`](/docs/kcl-std/functions/std-string-isEqual)
+  * [`string::lowercase`](/docs/kcl-std/functions/std-string-lowercase)
+  * [`string::trim`](/docs/kcl-std/functions/std-string-trim)
+  * [`string::trimEnd`](/docs/kcl-std/functions/std-string-trimEnd)
+  * [`string::trimStart`](/docs/kcl-std/functions/std-string-trimStart)
+  * [`string::uppercase`](/docs/kcl-std/functions/std-string-uppercase)
 * [**std::transform**](/docs/kcl-std/modules/std-transform)
   * [`delete`](/docs/kcl-std/functions/std-transform-delete) Experimental
   * [`hide`](/docs/kcl-std/functions/std-transform-hide)
@@ -255,6 +262,7 @@ See also the [types overview](/docs/kcl-lang/types)
   * [`any`](/docs/kcl-std/types/std-types-any)
   * [`bool`](/docs/kcl-std/types/std-types-bool)
   * [`fn`](/docs/kcl-std/types/std-types-fn)
+  * [`never`](/docs/kcl-std/types/std-types-never) Experimental
   * [`none`](/docs/kcl-std/types/std-types-none) Experimental
   * [`number`](/docs/kcl-std/types/std-types-number)
   * [`string`](/docs/kcl-std/types/std-types-string)

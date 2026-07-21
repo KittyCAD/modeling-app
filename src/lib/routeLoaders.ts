@@ -16,6 +16,10 @@ import {
   safeEncodeForRouterPaths,
 } from '@src/lib/paths'
 import {
+  getDefaultDirectoryProjectLibraryPath,
+  isPathInDirectoryProjectLibrary,
+} from '@src/lib/projectLibraries'
+import {
   loadHomeProjects,
   webHomeRouteEnabled,
 } from '@src/lib/routeLoaderUtils'
@@ -66,8 +70,11 @@ export const baseLoader =
 
     const settings = await loadAndValidateSettings(wasmInstance, undefined)
 
+    const defaultDirectoryLibraryPath = getDefaultDirectoryProjectLibraryPath(
+      settings.settings.app.libraries.current
+    )
     const requestedProjectName = fsZds.resolve(
-      settings.settings.app.projectDirectory.current,
+      defaultDirectoryLibraryPath ?? '',
       DEFAULT_WEB_PROJECT_NAME
     )
 
@@ -222,10 +229,16 @@ export const fileLoader =
       requestedFileName.onProjectLoaderComplete?.()
     }
 
-    const appProjectDir = settings.settings.app.projectDirectory.current
-    const requestedProjectDirectoryPath = project.path.includes(appProjectDir)
+    const appProjectDir =
+      getDefaultDirectoryProjectLibraryPath(
+        settings.settings.app.libraries.current
+      ) ?? ''
+    const requestedProjectDirectoryPath = isPathInDirectoryProjectLibrary(
+      project.path,
+      appProjectDir
+    )
       ? appProjectDir
-      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir
+      : getParentAbsolutePath(project.path) // Fallback to parent directory if foreign to app project dir.
     app.systemIOActor.send({
       type: SystemIOMachineEvents.setProjectDirectoryPath,
       data: {
