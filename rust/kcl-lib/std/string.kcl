@@ -27,3 +27,28 @@ export fn uppercase(
   /// The string to convert.
   @text: string,
 ): string {}
+
+/// Convert all cased characters in a string to lowercase.
+///
+/// This conversion is Unicode-aware and locale-independent. Some conversions
+/// depend on the surrounding characters; for example, a Greek capital sigma
+/// becomes `ς` at the end of a word and `σ` elsewhere. Some characters expand
+/// into multiple characters; for example, `İ` becomes `i` followed by a
+/// combining dot above. The exact mappings follow the Unicode data bundled
+/// with KCL.
+///
+/// Unicode normalization is not performed. Canonically equivalent strings
+/// therefore retain their original representations. Empty strings and strings
+/// without cased characters are returned unchanged.
+///
+/// ```kcl,sketchSyntaxAgnostic
+/// result = "KCL ΟΣ"
+///   |> string::lowercase()
+///
+/// assertIs(result == "kcl ος")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn lowercase(
+  /// The string to convert.
+  @text: string,
+): string {}

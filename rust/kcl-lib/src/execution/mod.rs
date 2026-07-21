@@ -3113,6 +3113,49 @@ piped = "ready" |> string::uppercase()
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_lowercase() {
+        let composed = "\u{c9}";
+        let lowercase_composed = "\u{e9}";
+        let decomposed = "E\u{301}";
+        let lowercase_decomposed = "e\u{301}";
+        let expanded = "i\u{307}";
+        let code = format!(
+            r#"
+ascii = string::lowercase("KCL")
+final_sigma = string::lowercase("ΟΣ")
+medial_sigma = string::lowercase("ΟΣΑ")
+unicode_expansion = string::lowercase("İ")
+uncased = string::lowercase("東京")
+empty = string::lowercase("")
+composed = string::lowercase("{composed}")
+decomposed = string::lowercase("{decomposed}")
+piped = "READY" |> string::lowercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "kcl"),
+            ("final_sigma", "ος"),
+            ("medial_sigma", "οσα"),
+            ("unicode_expansion", expanded),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", lowercase_composed),
+            ("decomposed", lowercase_decomposed),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_string_equality_operators() {
         let composed = "\u{e9}";
         let decomposed = "e\u{301}";

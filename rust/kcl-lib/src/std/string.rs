@@ -15,3 +15,13 @@ pub async fn uppercase(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         meta: args.into(),
     })
 }
+
+/// Convert all cased characters in a string to lowercase.
+pub async fn lowercase(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let text: String = args.get_unlabeled_kw_arg("text", &RuntimeType::string(), exec_state)?;
+
+    Ok(KclValue::String {
+        value: text.to_lowercase(),
+        meta: args.into(),
+    })
+}
