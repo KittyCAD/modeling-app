@@ -44,6 +44,7 @@ import {
   enginelessExecutor,
   getAstAndArtifactGraph,
 } from '@src/lib/testHelpers'
+import { enterEditFlow } from '@src/lib/operations'
 import { err } from '@src/lib/trap'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 
@@ -1458,6 +1459,52 @@ extrude001 = extrude(profile001, length = 1)
 })
 
 describe('Testing retrieveSelectionsFromOpArg', () => {
+  it('finds a profile selection from an inline region extrude argument', async () => {
+    const code = `@settings(defaultLengthUnit = mm, kclVersion = 2.0)
+profileSketch = sketch(on = XY) {
+  profile = circle(center = [0mm, 0mm], start = [10mm, 0mm])
+}
+body = extrude(
+  region(point = [5mm, 0mm], sketch = profileSketch),
+  length = 10mm,
+)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const { artifactGraph, operations } = await enginelessExecutor(
+      ast,
+      rustContextInThisFile
+    )
+    const op = getAllOperations(operations).find(
+      (operation) =>
+        operation.type === 'StdLibCall' && operation.name === 'extrude'
+    )
+    if (!op || op.type !== 'StdLibCall' || !op.unlabeledArg) {
+      throw new Error('Extrude operation not found')
+    }
+
+    const selections = retrieveSelectionsFromOpArg(
+      op.unlabeledArg,
+      artifactGraph
+    )
+    if (err(selections)) {
+      throw new Error(
+        `${selections.message}: ${JSON.stringify(op.unlabeledArg.value)}`
+      )
+    }
+
+    expect(selections.graphSelections).toHaveLength(1)
+    expect(selections.graphSelections[0].artifact?.type).toBe('path')
+
+    const editEvent = await enterEditFlow({
+      operation: op,
+      code,
+      artifactGraph,
+      rustContext: rustContextInThisFile,
+    })
+    if (err(editEvent)) throw editEvent
+    expect(editEvent.type).toBe('Find and select command')
+  })
+
   it('should find the profile selection from simple extrude op', async () => {
     const circleProfileInVar = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)

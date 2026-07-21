@@ -303,7 +303,21 @@ export function addExtrude({
     ? [createLabeledArg('bodyType', createLocalName(bodyType))]
     : []
 
-  const sketchesExpr = createVariableExpressionsArray(vars.exprs)
+  let sketchesExpr = createVariableExpressionsArray(vars.exprs)
+  // Preserve an existing expression, such as an inline region(...), when it
+  // cannot be reconstructed from the artifact selection during an edit.
+  if (!sketchesExpr && mNodeToEdit) {
+    const existingCall = getNodeFromPath<CallExpressionKw>(
+      modifiedAst,
+      mNodeToEdit,
+      wasmInstance,
+      'CallExpressionKw'
+    )
+    if (err(existingCall)) {
+      return existingCall
+    }
+    sketchesExpr = structuredClone(existingCall.node.unlabeled)
+  }
   const call = createCallExpressionStdLibKw(
     modelingStdLibCommandName('Extrude'),
     sketchesExpr,
