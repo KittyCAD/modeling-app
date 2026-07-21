@@ -59,6 +59,10 @@ import {
 import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
+import {
+  homeProjectActionsService,
+  homeProjectEntriesValueSpec,
+} from '@src/registry/contracts/homeProjects'
 import { keymapService } from '@src/registry/contracts/keymap'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import {
@@ -516,6 +520,10 @@ export class App implements AppSubsystems {
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
+            getHomeProjectActions: () =>
+              this.registry.get(homeProjectActionsService),
+            getHomeProjectEntries: () =>
+              this.registry.get(homeProjectEntriesValueSpec),
           }).map(provideCommand),
         ],
       }),

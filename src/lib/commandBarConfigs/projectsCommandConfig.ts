@@ -1,5 +1,5 @@
 import { CommandBarOverwriteWarning } from '@src/components/CommandBarOverwriteWarning'
-import type { Command } from '@src/lib/commandTypes'
+import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
@@ -11,9 +11,14 @@ import {
 } from '@src/lib/projectDisplayName'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
+import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
+} from '@src/registry/contracts/homeProjects'
 import type {
   ProjectLibraryCreateProjectInput,
   ProjectLibraryOperation,
@@ -36,6 +41,13 @@ export type ProjectsCommandSchema = {
 export interface CreateProjectLibraryTarget {
   library: ProjectLibrary
   createProject: ProjectLibraryOperation<ProjectLibraryCreateProjectInput>
+}
+
+type HomeProjectCommandAction = 'open' | 'rename' | 'delete'
+
+interface HomeProjectCommandTarget {
+  actions: HomeProjectActionsService
+  project: HomeProjectEntry
 }
 
 function defaultEnableProjectDirectoryCommands() {
@@ -65,11 +77,15 @@ export function createProjectCommands({
   enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
   getCurrentProjectDirectoryName,
   getCreateProjectLibraryTargets,
+  getHomeProjectActions,
+  getHomeProjectEntries,
 }: {
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   enableProjectDirectoryCommands?: boolean
   getCurrentProjectDirectoryName?: () => string | undefined
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
+  getHomeProjectActions?: () => HomeProjectActionsService | undefined
+  getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
 }) {
   /**
    * Helper functions instead of importing these due to circular deps.
@@ -90,6 +106,107 @@ export function createProjectCommands({
   const currentProjectDirectoryNameSnapshot = () =>
     getCurrentProjectDirectoryName?.()
   const createProjectTargetsSnapshot = () => getCreateProjectLibraryTargets?.()
+  const homeProjectActionsSnapshot = () => getHomeProjectActions?.()
+  const homeProjectEntriesSnapshot = () => getHomeProjectEntries?.()
+
+  const isCurrentHomeProject = (project: HomeProjectEntry) => {
+    const currentProjectDirectoryName = currentProjectDirectoryNameSnapshot()
+    return Boolean(
+      currentProjectDirectoryName &&
+        (project.localProjectName === currentProjectDirectoryName ||
+          project.name === currentProjectDirectoryName)
+    )
+  }
+
+  const canUseHomeProjectAction = (
+    actions: HomeProjectActionsService,
+    action: HomeProjectCommandAction,
+    project: HomeProjectEntry
+  ) => {
+    switch (action) {
+      case 'open':
+        return actions.canOpen(project)
+      case 'rename':
+        return actions.canRename(project)
+      case 'delete':
+        return actions.canDelete(project)
+    }
+  }
+
+  const homeProjectCommandTargets = (
+    action: HomeProjectCommandAction
+  ): HomeProjectCommandTarget[] | undefined => {
+    const actions = homeProjectActionsSnapshot()
+    const entries = homeProjectEntriesSnapshot()
+    if (!actions || !entries) {
+      return undefined
+    }
+
+    return entries
+      .filter((project) => canUseHomeProjectAction(actions, action, project))
+      .map((project) => ({ actions, project }))
+  }
+
+  const selectedHomeProjectTarget = (
+    value: unknown,
+    action: HomeProjectCommandAction
+  ) => {
+    if (typeof value !== 'string') {
+      return undefined
+    }
+
+    return homeProjectCommandTargets(action)?.find(
+      ({ project }) => project.id === value
+    )
+  }
+
+  const homeProjectOptions = (
+    action: HomeProjectCommandAction
+  ): CommandArgumentOption<string>[] | undefined =>
+    homeProjectCommandTargets(action)?.map(({ project }) => ({
+      name: getHomeProjectDisplayName(project),
+      value: project.id,
+      isCurrent: isCurrentHomeProject(project),
+    }))
+
+  const projectOptions = (action: HomeProjectCommandAction) => {
+    return (
+      homeProjectOptions(action) ??
+      getProjectDirectoryOptions(folderSnapshot(), {
+        defaultValue: currentProjectDirectoryNameSnapshot(),
+      })
+    )
+  }
+
+  const projectDisplayNameFromCommandValue = (
+    value: unknown,
+    action: HomeProjectCommandAction
+  ) => {
+    const target = selectedHomeProjectTarget(value, action)
+    if (target) {
+      return getHomeProjectDisplayName(target.project)
+    }
+
+    return getProjectOptionNameFromDirectoryName({
+      projects: folderSnapshot(),
+      directoryName: String(value ?? ''),
+    })
+  }
+
+  const navigateToProjectFile = (filePath: string) => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    const targetPath = `${PATHS.FILE}/${encodeURIComponent(filePath)}`
+    if (window.location.hash) {
+      window.location.hash = targetPath
+      return
+    }
+
+    window.history.pushState(null, '', targetPath)
+    window.dispatchEvent(new PopStateEvent('popstate'))
+  }
 
   const selectedCreateProjectTarget = (libraryId: unknown) => {
     const createProjectTargets = createProjectTargetsSnapshot()
@@ -134,6 +251,15 @@ export function createProjectCommands({
     needsReview: false,
     onSubmit: (record) => {
       if (record) {
+        const target = selectedHomeProjectTarget(record.name, 'open')
+        if (target) {
+          return target.actions.open(target.project).then((result) => {
+            if (result?.defaultFile) {
+              navigateToProjectFile(result.defaultFile)
+            }
+          })
+        }
+
         systemIOActor.send({
           type: SystemIOMachineEvents.navigateToProject,
           data: { requestedProjectName: record.name },
@@ -144,11 +270,7 @@ export function createProjectCommands({
       name: {
         required: true,
         inputType: 'options',
-        options: () => {
-          return getProjectDirectoryOptions(folderSnapshot(), {
-            defaultValue: currentProjectDirectoryNameSnapshot(),
-          })
-        },
+        options: () => projectOptions('open'),
       },
     },
   }
@@ -234,6 +356,11 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
+        const target = selectedHomeProjectTarget(record.name, 'delete')
+        if (target) {
+          return target.actions.delete(target.project)
+        }
+
         systemIOActor.send({
           type: SystemIOMachineEvents.deleteProject,
           data: { requestedProjectName: record.name },
@@ -243,22 +370,16 @@ export function createProjectCommands({
     reviewMessage: ({ argumentsToSubmit }) =>
       CommandBarOverwriteWarning({
         heading: 'Are you sure you want to delete?',
-        message: `This will permanently delete the project "${getProjectOptionNameFromDirectoryName(
-          {
-            projects: folderSnapshot(),
-            directoryName: String(argumentsToSubmit.name ?? ''),
-          }
+        message: `This will permanently delete the project "${projectDisplayNameFromCommandValue(
+          argumentsToSubmit.name,
+          'delete'
         )}" and all its contents.`,
       }),
     args: {
       name: {
         inputType: 'options',
         required: true,
-        options: () => {
-          return getProjectDirectoryOptions(folderSnapshot(), {
-            defaultValue: currentProjectDirectoryNameSnapshot(),
-          })
-        },
+        options: () => projectOptions('delete'),
       },
     },
   }
@@ -272,6 +393,11 @@ export function createProjectCommands({
     needsReview: true,
     onSubmit: (record) => {
       if (record) {
+        const target = selectedHomeProjectTarget(record.oldName, 'rename')
+        if (target) {
+          return target.actions.rename(target.project, record.newName)
+        }
+
         // Only redirect back to the project when not on the home page
         const hash = window.location.hash
         const pathname = hash
@@ -291,15 +417,10 @@ export function createProjectCommands({
     args: {
       oldName: {
         displayName: 'Project',
-        description:
-          'Project to retitle. The value submitted to system IO is the project directory name.',
+        description: 'Project to retitle.',
         inputType: 'options',
         required: true,
-        options: () => {
-          return getProjectDirectoryOptions(folderSnapshot(), {
-            defaultValue: currentProjectDirectoryNameSnapshot(),
-          })
-        },
+        options: () => projectOptions('rename'),
       },
       newName: {
         displayName: 'New title',
@@ -309,6 +430,14 @@ export function createProjectCommands({
           const projectDirectoryName = context.argumentsToSubmit.oldName as
             | string
             | undefined
+          const target = selectedHomeProjectTarget(
+            projectDirectoryName,
+            'rename'
+          )
+          if (target) {
+            return getHomeProjectDisplayName(target.project)
+          }
+
           const folder = folderSnapshot()?.find(
             (item) => item.name === projectDirectoryName
           )

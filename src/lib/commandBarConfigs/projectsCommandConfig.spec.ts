@@ -5,6 +5,10 @@ import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
 import type { systemIOMachine } from '@src/machines/systemIO/systemIOMachine'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
+import type {
+  HomeProjectActionsService,
+  HomeProjectEntry,
+} from '@src/registry/contracts/homeProjects'
 import { describe, expect, it, vi } from 'vitest'
 import type { ActorRefFrom, ContextFrom } from 'xstate'
 
@@ -46,6 +50,47 @@ function createLibrary(id: string, title: string): ProjectLibrary {
     title,
     path: `/projects/${id}`,
     type: 'directory',
+  }
+}
+
+function createHomeProject({
+  id,
+  title,
+  localProjectName,
+  localProjectPath,
+  libraryIds,
+}: {
+  id: string
+  title: string
+  localProjectName: string
+  localProjectPath: string
+  libraryIds: readonly string[]
+}): HomeProjectEntry {
+  return {
+    id,
+    source: 'local',
+    status: 'local',
+    libraryIds,
+    name: localProjectName,
+    title,
+    localProjectName,
+    localProjectPath,
+    defaultFile: `${localProjectPath}/main.kcl`,
+    readWriteAccess: true,
+  }
+}
+
+function createHomeProjectActions(
+  overrides: Partial<HomeProjectActionsService> = {}
+): HomeProjectActionsService {
+  return {
+    canOpen: vi.fn(() => true),
+    canRename: vi.fn(() => true),
+    canDelete: vi.fn(() => true),
+    open: vi.fn(async (project) => ({ defaultFile: project.defaultFile! })),
+    rename: vi.fn(async () => undefined),
+    delete: vi.fn(async () => undefined),
+    ...overrides,
   }
 }
 
@@ -277,6 +322,145 @@ describe('project command config', () => {
         redirect: true,
       },
     })
+  })
+
+  it('uses home project entries for project command options', () => {
+    const homeProject = createHomeProject({
+      id: 'local:/client-projects/bracket',
+      title: 'Client Bracket',
+      localProjectName: 'bracket',
+      localProjectPath: '/client-projects/bracket',
+      libraryIds: ['client-projects'],
+    })
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor([
+        createProject({
+          name: 'default-project',
+          title: 'Default Project',
+        }),
+      ]),
+      enableProjectDirectoryCommands: true,
+      getCurrentProjectDirectoryName: () => 'bracket',
+      getHomeProjectActions: () => createHomeProjectActions(),
+      getHomeProjectEntries: () => [homeProject],
+    })
+    const openCommand = commands.find(
+      (command) => command.name === 'Open project'
+    )
+    const deleteCommand = commands.find(
+      (command) => command.name === 'Delete project'
+    )
+    const renameCommand = commands.find(
+      (command) => command.name === 'Rename project'
+    )
+
+    expect(openCommand && projectOptions(openCommand, 'name')).toEqual([
+      {
+        name: 'Client Bracket',
+        value: 'local:/client-projects/bracket',
+        isCurrent: true,
+      },
+    ])
+    expect(deleteCommand && projectOptions(deleteCommand, 'name')).toEqual([
+      {
+        name: 'Client Bracket',
+        value: 'local:/client-projects/bracket',
+        isCurrent: true,
+      },
+    ])
+    expect(renameCommand && projectOptions(renameCommand, 'oldName')).toEqual([
+      {
+        name: 'Client Bracket',
+        value: 'local:/client-projects/bracket',
+        isCurrent: true,
+      },
+    ])
+  })
+
+  it('opens, renames, and deletes home project entries through project actions', async () => {
+    const systemIOActor = createSystemIOActor()
+    const homeProject = createHomeProject({
+      id: 'local:/client-projects/bracket',
+      title: 'Client Bracket',
+      localProjectName: 'bracket',
+      localProjectPath: '/client-projects/bracket',
+      libraryIds: ['client-projects'],
+    })
+    const homeProjectActions = createHomeProjectActions()
+    const commands = createProjectCommands({
+      systemIOActor,
+      enableProjectDirectoryCommands: true,
+      getHomeProjectActions: () => homeProjectActions,
+      getHomeProjectEntries: () => [homeProject],
+    })
+    const openCommand = commands.find(
+      (command) => command.name === 'Open project'
+    )
+    const deleteCommand = commands.find(
+      (command) => command.name === 'Delete project'
+    )
+    const renameCommand = commands.find(
+      (command) => command.name === 'Rename project'
+    )
+
+    window.location.hash = '#/home'
+    try {
+      await openCommand?.onSubmit({
+        name: homeProject.id,
+      })
+      await renameCommand?.onSubmit({
+        oldName: homeProject.id,
+        newName: 'Updated Client Bracket',
+      })
+      await deleteCommand?.onSubmit({
+        name: homeProject.id,
+      })
+
+      expect(homeProjectActions.open).toHaveBeenCalledWith(homeProject)
+      expect(window.location.hash).toBe(
+        '#/file/%2Fclient-projects%2Fbracket%2Fmain.kcl'
+      )
+      expect(homeProjectActions.rename).toHaveBeenCalledWith(
+        homeProject,
+        'Updated Client Bracket'
+      )
+      expect(homeProjectActions.delete).toHaveBeenCalledWith(homeProject)
+      expect(systemIOActor.send).not.toHaveBeenCalled()
+    } finally {
+      window.location.hash = ''
+    }
+  })
+
+  it('defaults home project rename titles from the selected entry', () => {
+    const homeProject = createHomeProject({
+      id: 'local:/client-projects/bracket',
+      title: 'Client Bracket',
+      localProjectName: 'bracket',
+      localProjectPath: '/client-projects/bracket',
+      libraryIds: ['client-projects'],
+    })
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor(),
+      enableProjectDirectoryCommands: true,
+      getHomeProjectActions: () => createHomeProjectActions(),
+      getHomeProjectEntries: () => [homeProject],
+    })
+    const renameCommand = commands.find(
+      (command) => command.name === 'Rename project'
+    )
+    const newTitleArg = renameCommand?.args?.newName as unknown as {
+      defaultValue: (
+        context: ContextFrom<typeof commandBarMachine>
+      ) => string | undefined
+    }
+
+    expect(
+      newTitleArg.defaultValue({
+        argumentsToSubmit: {
+          oldName: homeProject.id,
+        },
+      } as unknown as ContextFrom<typeof commandBarMachine>)
+    ).toBe('Client Bracket')
   })
 
   it('marks the current project directory option as current', () => {
