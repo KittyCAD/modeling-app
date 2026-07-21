@@ -13,6 +13,7 @@ import opfs from '@src/lib/fs-zds/opfs'
 import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectTitleFromProjectTomlContents,
+  normalizeProjectTomlContents,
   setCloudProjectIdInProjectTomlContents,
   setProjectTitleInProjectTomlContents,
 } from '@src/lib/projectTomlMetadata'
@@ -31,7 +32,7 @@ export function prepareProjectFilesForCloudUpload(
   files: ProjectArchiveFile[],
   expectedRevision?: Revision
 ) {
-  const normalizedFiles = normalizeProjectArchiveFiles(files)
+  const normalizedFiles = normalizeProjectArchiveFilesForCloudSync(files)
   const entrypointPath = getUploadEntrypointPath(normalizedFiles)
   const projectTomlPath = ensureProjectTomlUploadFile(
     normalizedFiles,
@@ -58,11 +59,22 @@ export function prepareProjectFilesForCloudUpload(
   }
 }
 
-function normalizeProjectArchiveFiles(files: ProjectArchiveFile[]) {
-  return files.map((file) => ({
-    ...file,
-    relativePath: normalizeRelativePath(file.relativePath),
-  }))
+export function normalizeProjectArchiveFilesForCloudSync(
+  files: ProjectArchiveFile[]
+) {
+  return files.map((file) => {
+    const relativePath = normalizeRelativePath(file.relativePath)
+    return {
+      ...file,
+      relativePath,
+      data:
+        relativePath === PROJECT_SETTINGS_FILE_NAME
+          ? new TextEncoder().encode(
+              normalizeProjectTomlContents(new TextDecoder().decode(file.data))
+            )
+          : file.data,
+    }
+  })
 }
 
 function ensureProjectTomlUploadFile(
