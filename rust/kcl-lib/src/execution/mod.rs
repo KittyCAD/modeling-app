@@ -3313,6 +3313,54 @@ piped = "  ready  " |> string::trimStart()
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_end() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimEnd("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimEnd("KCL{tab}strings  ")
+unicode = string::trimEnd("{non_breaking_space}KCL{em_space}{ideographic_space}")
+all_whitespace = string::trimEnd("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimEnd("")
+unchanged = string::trimEnd("KCL")
+without_normalization = string::trimEnd("{decomposed} ")
+non_whitespace_suffix = string::trimEnd("KCL{ascii_whitespace}{zero_width_space}")
+piped = "  ready  " |> string::trimEnd()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("{ascii_whitespace}KCL");
+        let unicode = format!("{non_breaking_space}KCL");
+        let non_whitespace_suffix = format!("KCL{ascii_whitespace}{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_suffix", non_whitespace_suffix.as_str()),
+            ("piped", "  ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_string_equality_operators() {
         let composed = "\u{e9}";
         let decomposed = "e\u{301}";

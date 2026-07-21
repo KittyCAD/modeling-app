@@ -76,3 +76,14 @@ pub async fn trim_start(exec_state: &mut ExecState, args: Args) -> Result<KclVal
         meta: args.into(),
     })
 }
+
+/// Remove whitespace from the end of a string.
+pub async fn trim_end(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let text: String = args.get_unlabeled_kw_arg("text", &RuntimeType::string(), exec_state)?;
+    let value = trim_whitespace(&text, false, true).to_owned();
+
+    Ok(KclValue::String {
+        value,
+        meta: args.into(),
+    })
+}
