@@ -927,6 +927,63 @@ extrude001 = extrude(region001, length = 1, bodyType = SURFACE)`
       expect(error).not.toBeInstanceOf(Error)
     })
 
+    it('should add a surface extrude from the previous edge of an open profile', async () => {
+      const code = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)`
+      const { ast, artifactGraph } = await getAstAndArtifactGraph(
+        code,
+        instanceInThisFile,
+        kclManagerInThisFile
+      )
+      const previousAdjacentEdge = [...artifactGraph.values()].find(
+        (artifact) =>
+          artifact.type === 'sweepEdge' &&
+          artifact.subType === 'previousAdjacent'
+      )
+      if (!previousAdjacentEdge) {
+        throw new Error('previous adjacent sweepEdge artifact not found')
+      }
+
+      const sketches = createSelectionFromArtifacts(
+        [previousAdjacentEdge],
+        artifactGraph
+      )
+      const length = await getKclCommandValue(
+        '5',
+        instanceInThisFile,
+        rustContextInThisFile
+      )
+      const result = addExtrude({
+        ast,
+        sketches,
+        length,
+        method: 'NEW',
+        bodyType: 'SURFACE',
+        artifactGraph,
+        wasmInstance: instanceInThisFile,
+      })
+      if (err(result)) throw result
+
+      const newCode = recast(result.modifiedAst, instanceInThisFile)
+      expect(newCode).toBe(`@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XZ) {
+  line1 = line(start = [var -2.2mm, var 0.4mm], end = [var 3.48mm, var 1.03mm])
+}
+extrude001 = extrude(sketch001.line1, length = 5, bodyType = SURFACE)
+extrude002 = extrude(
+  getPreviousAdjacentEdge(extrude001.sketch.tags.line1),
+  length = 5,
+  method = NEW,
+  bodyType = SURFACE,
+)
+`)
+    })
+
     it('should preserve method and compose edge references for extruded edge profiles', async () => {
       const code = `@settings(kclVersion = 2.0)
 
