@@ -91,7 +91,7 @@ impl Operation {
 #[derive(Debug, Clone, Serialize, PartialEq, ts_rs::TS)]
 #[ts(export_to = "Operation.ts")]
 #[serde(tag = "type")]
-#[expect(clippy::large_enum_variant)]
+#[cfg_attr(not(target_arch = "wasm32"), expect(clippy::large_enum_variant))]
 pub enum Group {
     /// A function call.
     #[serde(rename_all = "camelCase")]
