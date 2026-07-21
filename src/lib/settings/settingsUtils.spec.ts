@@ -10,6 +10,7 @@ import {
 } from '@src/lang/wasm'
 import { loadAndInitialiseWasmInstance } from '@src/lang/wasmUtilsNode'
 import { defaultLayoutConfig } from '@src/lib/layout/configs/default'
+import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import { createLayoutWithMetadata } from '@src/lib/layout/utils'
 import { getDefaultProjectLibrarySettings } from '@src/lib/projectLibraries'
 import { defineBooleanExtensionSetting } from '@src/lib/settings/extensionSettings'
@@ -193,6 +194,22 @@ describe('testing hiddenOnPlatform', () => {
     expect(hiddenOnPlatform(setting2, false)).toBe(false)
     expect(hiddenOnPlatform(setting3, false)).toBe(true)
     expect(hiddenOnPlatform(setting4, false)).toBe(false)
+  })
+
+  it('hides feature-gated settings unless the feature is enabled', () => {
+    const setting = {
+      hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+    } as Setting<unknown>
+
+    expect(hiddenOnPlatform(setting, true)).toBe(true)
+    expect(hiddenOnPlatform(setting, false, () => false)).toBe(true)
+    expect(
+      hiddenOnPlatform(
+        setting,
+        false,
+        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+      )
+    ).toBe(false)
   })
 })
 

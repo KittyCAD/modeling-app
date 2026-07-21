@@ -16,6 +16,7 @@ import {
   DEFAULT_DEFAULT_LENGTH_UNIT,
   DEFAULT_PROJECT_NAME,
   REGEXP_UUIDV4,
+  OPFS_CLOUD_FEATURE_FLAG,
 } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import {
@@ -51,6 +52,7 @@ export class Setting<T = unknown> {
   public current: T
   public hideOnLevel: SettingProps<T>['hideOnLevel']
   public hideOnPlatform: SettingProps<T>['hideOnPlatform']
+  public hideWithoutFeature: SettingProps<T>['hideWithoutFeature']
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
   public description?: string
@@ -68,6 +70,7 @@ export class Setting<T = unknown> {
     this.description = props.description
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform
+    this.hideWithoutFeature = props.hideWithoutFeature
     this.commandConfig = props.commandConfig
     this.Component = props.Component
   }
@@ -261,7 +264,7 @@ function createCoreSettings() {
         defaultValue: [],
         description: 'The default library to save and load projects from.',
         hideOnLevel: 'project',
-        hideOnPlatform: 'web',
+        hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
         validate: isProjectLibrarySettings,
         Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)

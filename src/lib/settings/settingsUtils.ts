@@ -2,6 +2,7 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { ProjectConfiguration } from '@rust/kcl-lib/bindings/ProjectConfiguration'
 import type { JsonValue } from '@rust/kcl-lib/bindings/serde_json/JsonValue'
+import type { Feature } from '@kittycad/lib'
 import {
   serializeConfiguration,
   serializeProjectConfiguration,
@@ -1277,12 +1278,17 @@ export function setSettingsAtLevel(
  */
 export function shouldHideSetting(
   setting: Setting<unknown>,
-  settingsLevel: SettingsLevel
+  settingsLevel: SettingsLevel,
+  hasFeature?: (feature: Feature) => boolean
 ): boolean {
   // Async functions should have been resolved in loadAndValidateSettings,
   // but if we encounter one (shouldn't happen), default to hidden
   const hideOnPlatform = setting.hideOnPlatform
   if (typeof hideOnPlatform === 'function') {
+    return true
+  }
+
+  if (setting.hideWithoutFeature && !hasFeature?.(setting.hideWithoutFeature)) {
     return true
   }
 
@@ -1302,9 +1308,10 @@ export function shouldHideSetting(
  */
 export function shouldShowSettingInput(
   setting: Setting<unknown>,
-  settingsLevel: SettingsLevel
+  settingsLevel: SettingsLevel,
+  hasFeature?: (feature: Feature) => boolean
 ): boolean {
-  const isHidden = shouldHideSetting(setting, settingsLevel)
+  const isHidden = shouldHideSetting(setting, settingsLevel, hasFeature)
   if (isHidden) {
     return false
   }
@@ -1363,8 +1370,16 @@ export function jsAppSettings(s: SettingsType | SettingsActorType) {
  * we can't resolve them synchronously. The actual visibility will be resolved
  * asynchronously and commands will be updated reactively.
  */
-export function hiddenOnPlatform(setting: Setting, desktop: boolean): boolean {
+export function hiddenOnPlatform(
+  setting: Setting,
+  desktop: boolean,
+  hasFeature?: (feature: Feature) => boolean
+): boolean {
   const hideOnPlatform = setting.hideOnPlatform
+
+  if (setting.hideWithoutFeature && !hasFeature?.(setting.hideWithoutFeature)) {
+    return true
+  }
 
   // Async functions should have been resolved in loadAndValidateSettings,
   // but if we encounter one (shouldn't happen), default to hidden
