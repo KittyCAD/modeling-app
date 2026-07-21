@@ -382,6 +382,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-string-lowercase-0",
     "std-string-isEqual-0",
     "std-string-trim-0",
+    "std-string-trimStart-0",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",

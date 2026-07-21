@@ -3265,6 +3265,54 @@ piped = "  ready  " |> string::trim()
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim_start() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trimStart("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trimStart("  KCL{tab}strings")
+unicode = string::trimStart("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trimStart("{ascii_whitespace}{non_breaking_space}")
+empty = string::trimStart("")
+unchanged = string::trimStart("KCL")
+without_normalization = string::trimStart(" {decomposed}")
+non_whitespace_prefix = string::trimStart("{zero_width_space}{ascii_whitespace}KCL")
+piped = "  ready  " |> string::trimStart()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let ascii = format!("KCL{ascii_whitespace}");
+        let unicode = format!("KCL{ideographic_space}");
+        let non_whitespace_prefix = format!("{zero_width_space}{ascii_whitespace}KCL");
+        for (name, expected) in [
+            ("ascii", ascii.as_str()),
+            ("internal", "KCL\tstrings"),
+            ("unicode", unicode.as_str()),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace_prefix", non_whitespace_prefix.as_str()),
+            ("piped", "ready  "),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_string_equality_operators() {
         let composed = "\u{e9}";
         let decomposed = "e\u{301}";
