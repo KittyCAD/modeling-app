@@ -41,6 +41,29 @@ export const debugPaneConfig: PaneLayout['children'][number] = {
   areaType: AreaType.Debug,
 }
 
+export const featureTreePaneConfig: PaneChild = {
+  id: DefaultLayoutPaneID.FeatureTree,
+  label: 'Feature Tree',
+  type: LayoutType.Splits,
+  orientation: 'block',
+  sizes: [70, 30],
+  icon: 'model',
+  children: [
+    {
+      id: 'operations-list',
+      label: 'Feature Tree',
+      type: LayoutType.Simple,
+      areaType: AreaType.FeatureTree,
+    },
+    {
+      id: 'bodies-list',
+      label: 'Bodies',
+      type: LayoutType.Simple,
+      areaType: AreaType.Bodies,
+    },
+  ],
+}
+
 const primaryPane: Layout = {
   id: DefaultLayoutToolbarID.Left,
   label: 'left-toolbar',
@@ -61,13 +84,7 @@ const primaryPane: Layout = {
           } satisfies PaneChild,
         ]
       : []),
-    {
-      id: DefaultLayoutPaneID.FeatureTree,
-      label: 'Feature Tree',
-      type: LayoutType.Simple,
-      icon: 'model',
-      areaType: AreaType.FeatureTree,
-    },
+    featureTreePaneConfig,
     {
       id: DefaultLayoutPaneID.Code,
       label: 'Code Editor',
