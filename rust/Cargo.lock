@@ -2652,8 +2652,9 @@ dependencies = [
 
 [[package]]
 name = "kittycad-modeling-cmds"
-version = "0.2.214"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=kurt-mirror-edge-specifiers#1326879621db706295f9b2ce63303e438bf20f91"
+version = "0.2.216"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "758111ce21d88949e4df265aec15ef78e2d4218faa32ccce132cec70d8b21205"
 dependencies = [
  "anyhow",
  "bon",
@@ -2684,7 +2685,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros"
 version = "0.1.13"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=kurt-mirror-edge-specifiers#1326879621db706295f9b2ce63303e438bf20f91"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb4ba190f74f6d32f4607ecac4bdebd4a935d4943b8ca8369305e6e7a59b5976"
 dependencies = [
  "kittycad-modeling-cmds-macros-impl",
  "proc-macro2",
@@ -2695,7 +2697,8 @@ dependencies = [
 [[package]]
 name = "kittycad-modeling-cmds-macros-impl"
 version = "0.1.14"
-source = "git+https://github.com/KittyCAD/modeling-api.git?branch=kurt-mirror-edge-specifiers#1326879621db706295f9b2ce63303e438bf20f91"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "743b6533d1848de67e3455a28614a2b7896807ab0d3358ccd3ea1863de3c4e6b"
 dependencies = [
  "proc-macro2",
  "quote",
