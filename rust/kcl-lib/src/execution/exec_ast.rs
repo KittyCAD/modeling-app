@@ -3582,21 +3582,6 @@ impl Node<BinaryExpression> {
             });
         }
 
-        // String equality remains an ordinary boolean expression inside sketch
-        // blocks; only non-string `==` reaches constraint handling below.
-        if matches!(self.operator, BinaryOperator::Eq | BinaryOperator::Neq)
-            && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
-                (&left_value, &right_value)
-        {
-            let is_equal = left == right;
-            let value = if self.operator == BinaryOperator::Eq {
-                is_equal
-            } else {
-                !is_equal
-            };
-            return Ok(KclValue::Bool { value, meta });
-        }
-
         // Then check if we have solids.
         if self.operator == BinaryOperator::Add || self.operator == BinaryOperator::Or {
             if let (KclValue::Solid { value: left }, KclValue::Solid { value: right }) = (&left_value, &right_value) {
@@ -5207,6 +5192,21 @@ impl Node<BinaryExpression> {
                     )));
                 }
             }
+        }
+
+        // Inside sketch blocks, `==` is reserved for equivalence constraints
+        // and has already been handled above.
+        if matches!(self.operator, BinaryOperator::Eq | BinaryOperator::Neq)
+            && let (KclValue::String { value: left, .. }, KclValue::String { value: right, .. }) =
+                (&left_value, &right_value)
+        {
+            let is_equal = left == right;
+            let value = if self.operator == BinaryOperator::Eq {
+                is_equal
+            } else {
+                !is_equal
+            };
+            return Ok(KclValue::Bool { value, meta });
         }
 
         let left = number_as_f64(&left_value, self.left.clone().into())?;

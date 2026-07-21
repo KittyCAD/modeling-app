@@ -3113,17 +3113,30 @@ not_equal_without_normalization = "{composed}" != "{decomposed}"
     }
 
     #[tokio::test(flavor = "multi_thread")]
-    async fn test_string_equality_inside_sketch_block() {
-        let code = r#"
+    async fn test_string_equality_inside_sketch_block_fails_like_number_equality() {
+        let string_code = r#"
 @settings(experimentalFeatures = allow)
 
 sketch(on = XY) {
   stringsAreEqual = "KCL" == "KCL"
-  assertIs(stringsAreEqual, error = "expected strings to be equal")
+}
+"#;
+        let number_code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  numbersAreEqual = 1 == 1
 }
 "#;
 
-        parse_execute(code).await.unwrap();
+        assert_eq!(
+            parse_execute(string_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a string and a string"
+        );
+        assert_eq!(
+            parse_execute(number_code).await.unwrap_err().message(),
+            "Cannot create an equivalence constraint between values of these types: a number and a number"
+        );
     }
 
     #[tokio::test(flavor = "multi_thread")]
