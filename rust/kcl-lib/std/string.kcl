@@ -85,3 +85,24 @@ export fn isEqual(
   /// Whether to compare using locale-independent full Unicode case folding.
   caseInsensitive?: bool = false,
 ): bool {}
+
+/// Remove whitespace from the start and end of a string.
+///
+/// Whitespace is defined by Unicode's `White_Space` property and includes
+/// spaces, tabs, newlines, and non-breaking spaces. Whitespace inside the
+/// string is preserved.
+///
+/// If the input is empty or contains only whitespace, this returns an empty
+/// string. Unicode normalization and case conversion are not performed.
+///
+/// ```kcl,sketchSyntaxAgnostic
+/// result = "  KCL strings  "
+///   |> string::trim()
+///
+/// assertIs(result == "KCL strings")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn trim(
+  /// The string to trim.
+  @text: string,
+): string {}

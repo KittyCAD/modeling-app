@@ -313,6 +313,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
             |e, a| Box::pin(crate::std::string::is_equal(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::string::isEqual"),
         ),
+        ("string", "trim") => (
+            |e, a| Box::pin(crate::std::string::trim(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::trim"),
+        ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a).map(|r| r.map(KclValue::continue_))),
             StdFnProps::default("std::solid::fillet"),

@@ -3219,6 +3219,52 @@ sketch(on = XY) {
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_trim() {
+        let ascii_whitespace = " \t\n";
+        let tab = "\t";
+        let non_breaking_space = "\u{a0}";
+        let em_space = "\u{2003}";
+        let ideographic_space = "\u{3000}";
+        let zero_width_space = "\u{200b}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+ascii = string::trim("{ascii_whitespace}KCL{ascii_whitespace}")
+internal = string::trim("  KCL{tab}strings  ")
+unicode = string::trim("{non_breaking_space}{em_space}KCL{ideographic_space}")
+all_whitespace = string::trim("{ascii_whitespace}{non_breaking_space}")
+empty = string::trim("")
+unchanged = string::trim("KCL")
+without_normalization = string::trim(" {decomposed} ")
+non_whitespace = string::trim("{zero_width_space}KCL{zero_width_space}")
+piped = "  ready  " |> string::trim()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        let non_whitespace = format!("{zero_width_space}KCL{zero_width_space}");
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("internal", "KCL\tstrings"),
+            ("unicode", "KCL"),
+            ("all_whitespace", ""),
+            ("empty", ""),
+            ("unchanged", "KCL"),
+            ("without_normalization", decomposed),
+            ("non_whitespace", non_whitespace.as_str()),
+            ("piped", "ready"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_string_equality_operators() {
         let composed = "\u{e9}";
         let decomposed = "e\u{301}";

@@ -45,3 +45,23 @@ pub async fn is_equal(exec_state: &mut ExecState, args: Args) -> Result<KclValue
         meta: args.into(),
     })
 }
+
+fn trim_whitespace(text: &str, at_start: bool, at_end: bool) -> &str {
+    match (at_start, at_end) {
+        (true, true) => text.trim(),
+        (true, false) => text.trim_start(),
+        (false, true) => text.trim_end(),
+        (false, false) => text,
+    }
+}
+
+/// Remove whitespace from the start and end of a string.
+pub async fn trim(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let text: String = args.get_unlabeled_kw_arg("text", &RuntimeType::string(), exec_state)?;
+    let value = trim_whitespace(&text, true, true).to_owned();
+
+    Ok(KclValue::String {
+        value,
+        meta: args.into(),
+    })
+}
