@@ -3611,11 +3611,11 @@ pub enum BinaryOperator {
     #[serde(rename = "^")]
     #[display("^")]
     Pow,
-    /// Are two numbers equal?
+    /// Are two numbers or strings equal?
     #[serde(rename = "==")]
     #[display("==")]
     Eq,
-    /// Are two numbers not equal?
+    /// Are two numbers or strings not equal?
     #[serde(rename = "!=")]
     #[display("!=")]
     Neq,
