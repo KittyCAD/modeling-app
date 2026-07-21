@@ -1290,6 +1290,7 @@ export function setCallInAst({
   pathToEdit,
   pathIfNewPipe,
   variableIfNewDecl,
+  preserveExistingUnlabeled = true,
   wasmInstance,
 }: {
   ast: Node<Program>
@@ -1297,6 +1298,11 @@ export function setCallInAst({
   pathToEdit?: PathToNode
   pathIfNewPipe?: PathToNode
   variableIfNewDecl?: string
+  /**
+   * Keep an existing unlabeled argument when an edit cannot reconstruct it.
+   * Set this to false when an edit intentionally removes that argument.
+   */
+  preserveExistingUnlabeled?: boolean
   wasmInstance: ModuleType
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
@@ -1309,6 +1315,14 @@ export function setCallInAst({
     )
     if (err(result)) {
       return result
+    }
+
+    if (
+      preserveExistingUnlabeled &&
+      call.unlabeled === null &&
+      result.node.unlabeled !== null
+    ) {
+      call.unlabeled = structuredClone(result.node.unlabeled)
     }
 
     Object.assign(result.node, call)

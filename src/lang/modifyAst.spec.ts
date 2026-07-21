@@ -1244,6 +1244,74 @@ extrude001 = extrude(profile001, length = 123)
 })
 
 describe('Testing setCallInAst', () => {
+  it('preserves an existing unlabeled argument when an edit cannot rebuild it', () => {
+    const code = `translated = translate(
+  extrude(profileSketch, length = 1mm),
+  x = 1mm,
+)
+`
+    const ast = assertParse(code, instanceInThisFile)
+    const call = createCallExpressionStdLibKw('translate', null, [
+      createLabeledArg('x', createLiteral(2, instanceInThisFile, 'Mm')),
+    ])
+    const pathToNode = setCallInAst({
+      ast,
+      call,
+      pathToEdit: createPathToNodeForLastVariable(ast, false),
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(pathToNode)) throw pathToNode
+
+    expect(recast(ast, instanceInThisFile)).toContain(
+      `translated = translate(extrude(profileSketch, length = 1mm), x = 2mm)`
+    )
+  })
+
+  it('replaces an existing unlabeled argument when an edit rebuilds it', () => {
+    const ast = assertParse(
+      `translated = translate(body, x = 1mm)`,
+      instanceInThisFile
+    )
+    const call = createCallExpressionStdLibKw(
+      'translate',
+      createLocalName('replacementBody'),
+      [createLabeledArg('x', createLiteral(2, instanceInThisFile, 'Mm'))]
+    )
+    const pathToNode = setCallInAst({
+      ast,
+      call,
+      pathToEdit: createPathToNodeForLastVariable(ast, false),
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(pathToNode)) throw pathToNode
+
+    expect(recast(ast, instanceInThisFile)).toBe(
+      `translated = translate(replacementBody, x = 2mm)\n`
+    )
+  })
+
+  it('can intentionally remove an existing unlabeled argument', () => {
+    const ast = assertParse(
+      `translated = translate(body, x = 1mm)`,
+      instanceInThisFile
+    )
+    const call = createCallExpressionStdLibKw('translate', null, [
+      createLabeledArg('x', createLiteral(2, instanceInThisFile, 'Mm')),
+    ])
+    const pathToNode = setCallInAst({
+      ast,
+      call,
+      pathToEdit: createPathToNodeForLastVariable(ast, false),
+      preserveExistingUnlabeled: false,
+      wasmInstance: instanceInThisFile,
+    })
+    if (err(pathToNode)) throw pathToNode
+
+    expect(recast(ast, instanceInThisFile)).toBe(
+      `translated = translate(x = 2mm)\n`
+    )
+  })
+
   it('should push an extrude call with variable on variable profile', () => {
     const code = `sketch001 = startSketchOn(XY)
 profile001 = circle(sketch001, center = [0, 0], radius = 1)
