@@ -22,6 +22,7 @@ import {
   getFaceCodeRef,
   getPatternArtifactForCopyId,
   getSegmentForEdgeCut,
+  getSweepEdgeCodeRef,
   getSweepFromSuspectedSweepSurface,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
@@ -1941,6 +1942,8 @@ export function retrieveSelectionsFromOpArg(
     artifactIds = [opArg.value.value.artifactId]
   } else if (opArg.value.type === 'Segment') {
     artifactIds = [opArg.value.artifact_id]
+  } else if (opArg.value.type === 'Uuid') {
+    artifactIds = [opArg.value.value]
   } else if (opArg.value.type === 'ImportedGeometry') {
     artifactIds = [opArg.value.artifact_id]
   } else if (opArg.value.type === 'Array') {
@@ -1950,6 +1953,9 @@ export function retrieveSelectionsFromOpArg(
       }
       if (v.type === 'Segment') {
         return [v.artifact_id]
+      }
+      if (v.type === 'Uuid') {
+        return [v.value]
       }
       if (v.type === 'TagIdentifier' && v.artifact_id) {
         return [v.artifact_id]
@@ -1980,7 +1986,12 @@ export function retrieveSelectionsFromOpArg(
       }
     }
 
-    const codeRefs = getCodeRefsByArtifactId(artifact.id, artifactGraph)
+    const codeRefs =
+      artifact.type === 'sweepEdge'
+        ? [getSweepEdgeCodeRef(artifact, artifactGraph)].filter(
+            (codeRef): codeRef is CodeRef => !err(codeRef)
+          )
+        : getCodeRefsByArtifactId(artifact.id, artifactGraph)
     if (!codeRefs || codeRefs.length === 0) {
       continue
     }

@@ -557,8 +557,8 @@ filleted = fillet(
   edges = [
     {
       sideFaces = [
-        baseRegion.tags.edge1,
-        capEnd001
+        capEnd001,
+        baseRegion.tags.edge1
       ]
     }
   ],
@@ -1706,7 +1706,9 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('getCommonEdge(faces = [facetag0, facetag1])')
       }
     )
@@ -1790,7 +1792,9 @@ part = bracket()
         expect(err(refactored)).toBe(false)
         if (err(refactored)) throw refactored
         const n = norm(refactored)
-        expect(n).toContain('to = { sideFaces = [facetag0, facetag1] }')
+        expect(n).toContain(
+          'to = { sideFaces = [facetag1, facetag0], endFaces = [capStart001, capEnd001] }'
+        )
         expect(n).not.toContain('to = targetEdge')
       }
     )
@@ -2224,16 +2228,16 @@ part = bracket()
        radius = radius,
        edges = [
          {
-           sideFaces = [bs.tags.edge6, bs.tags.edge7]
+           sideFaces = [bs.tags.edge7, bs.tags.edge6]
          },
          {
-           sideFaces = [bs.tags.edge1, bs.tags.edge2]
+           sideFaces = [bs.tags.edge2, bs.tags.edge1]
          },
          {
            sideFaces = [bs.tags.edge2, bs.tags.edge3]
          },
          {
-           sideFaces = [bs.tags.edge5, bs.tags.edge6]
+           sideFaces = [bs.tags.edge6, bs.tags.edge5]
          }
        ],
      )`

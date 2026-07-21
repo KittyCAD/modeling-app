@@ -417,6 +417,18 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     }
   }
 
+  let direction: ModelingCommandSchema['Extrude']['direction'] | undefined
+  if ('direction' in operation.labeledArgs && operation.labeledArgs.direction) {
+    const axisEdgeSelection = retrieveAxisOrEdgeSelectionsFromOpArg(
+      operation.labeledArgs.direction,
+      artifactGraph
+    )
+    if (err(axisEdgeSelection) || !axisEdgeSelection.edge) {
+      return { reason: 'Missing or invalid direction edge selection' }
+    }
+    direction = axisEdgeSelection.edge
+  }
+
   // symmetric argument from a string to boolean
   let symmetric: boolean | undefined
   if ('symmetric' in operation.labeledArgs && operation.labeledArgs.symmetric) {
@@ -567,6 +579,7 @@ const prepareToEditExtrude: PrepareToEditCallback = async ({
     sketches,
     length,
     to,
+    direction,
     symmetric,
     bidirectionalLength,
     tagStart,
