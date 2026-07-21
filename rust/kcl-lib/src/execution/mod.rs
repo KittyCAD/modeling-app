@@ -3075,6 +3075,44 @@ shape = layer() |> patternTransform(instances = 10, transform = transform)
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_uppercase() {
+        let composed = "\u{e9}";
+        let uppercase_composed = "\u{c9}";
+        let decomposed = "e\u{301}";
+        let uppercase_decomposed = "E\u{301}";
+        let code = format!(
+            r#"
+ascii = string::uppercase("Kcl")
+unicode_expansion = string::uppercase("Straße")
+uncased = string::uppercase("東京")
+empty = string::uppercase("")
+composed = string::uppercase("{composed}")
+decomposed = string::uppercase("{decomposed}")
+piped = "ready" |> string::uppercase()
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("ascii", "KCL"),
+            ("unicode_expansion", "STRASSE"),
+            ("uncased", "東京"),
+            ("empty", ""),
+            ("composed", uppercase_composed),
+            ("decomposed", uppercase_decomposed),
+            ("piped", "READY"),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_str()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_string_equality_operators() {
         let composed = "\u{e9}";
         let decomposed = "e\u{301}";

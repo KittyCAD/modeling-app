@@ -1,0 +1,29 @@
+/// Operations on KCL strings.
+///
+/// This module provides functions for transforming strings and inspecting
+/// their contents.
+
+@no_std
+@settings(defaultLengthUnit = mm, kclVersion = 1.0)
+
+/// Convert all cased characters in a string to uppercase.
+///
+/// This conversion is Unicode-aware and locale-independent. Some characters
+/// expand into multiple characters; for example, `ß` becomes `SS`. The exact
+/// mappings follow the Unicode data bundled with KCL.
+///
+/// Unicode normalization is not performed. Canonically equivalent strings
+/// therefore retain their original representations. Empty strings and strings
+/// without cased characters are returned unchanged.
+///
+/// ```kcl,sketchSyntaxAgnostic
+/// result = "Straße"
+///   |> string::uppercase()
+///
+/// assertIs(result == "STRASSE")
+/// ```
+@(impl = std_rust, feature_tree = false)
+export fn uppercase(
+  /// The string to convert.
+  @text: string,
+): string {}

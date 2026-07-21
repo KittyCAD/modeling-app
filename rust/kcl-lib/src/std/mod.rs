@@ -29,6 +29,7 @@ pub mod shell;
 pub mod sketch;
 pub(crate) mod solid_consumption;
 pub(crate) mod solver;
+pub mod string;
 pub mod surfaces;
 pub mod sweep;
 pub mod transform;
@@ -299,6 +300,10 @@ pub(crate) fn std_fn(path: &str, fn_name: &str) -> (crate::std::StdFn, StdFnProp
         ("runtime", "exit") => (
             |e, a| Box::pin(crate::std::runtime::exit(e, a)),
             StdFnProps::default("std::runtime::exit"),
+        ),
+        ("string", "uppercase") => (
+            |e, a| Box::pin(crate::std::string::uppercase(e, a).map(|r| r.map(KclValue::continue_))),
+            StdFnProps::default("std::string::uppercase"),
         ),
         ("solid", "fillet") => (
             |e, a| Box::pin(crate::std::fillet::fillet(e, a).map(|r| r.map(KclValue::continue_))),

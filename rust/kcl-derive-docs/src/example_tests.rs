@@ -378,6 +378,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-blend-1",
     "std-solid-blend-2",
     "std-solid-joinSurfaces-0",
+    "std-string-uppercase-0",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",
