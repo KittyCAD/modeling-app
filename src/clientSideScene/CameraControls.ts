@@ -447,7 +447,27 @@ export class CameraControls {
   }
 
   onMouseDown = (event: PointerEvent) => {
-    this.domElement.setPointerCapture(event.pointerId)
+    this.capturePointer(event)
+    this.onMouseDownInternal(event)
+  }
+
+  onExternalMouseDown = (event: PointerEvent) => {
+    this.onMouseDownInternal(event)
+  }
+
+  private capturePointer(event: PointerEvent) {
+    if (!this.domElement.hasPointerCapture?.(event.pointerId)) {
+      this.domElement.setPointerCapture(event.pointerId)
+    }
+  }
+
+  private releasePointer(event: PointerEvent) {
+    if (this.domElement.hasPointerCapture?.(event.pointerId)) {
+      this.domElement.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  private onMouseDownInternal(event: PointerEvent) {
     this.isDragging = true
     // Reset the wasDragging flag to false when starting a new drag
     this.wasDragging = false
@@ -570,11 +590,18 @@ export class CameraControls {
       // We support momentum flick gestures so we have to do these things after that completes
       return
     }
+    this.releasePointer(event)
+    this.onMouseUpInner(event)
+  }
+
+  onExternalMouseUp = (event: PointerEvent) => {
+    if (event.pointerType === 'touch') {
+      return
+    }
     this.onMouseUpInner(event)
   }
 
   onMouseUpInner = (event: PointerEvent) => {
-    this.domElement.releasePointerCapture(event.pointerId)
     this.isDragging = false
     this.handleEnd()
     if (this.syncDirection === 'engineToClient') {

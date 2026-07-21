@@ -1,5 +1,6 @@
 import { useAppState } from '@src/AppState'
 import { ClientSideScene } from '@src/clientSideScene/ClientSideSceneComp'
+import { LocalWebGPUScene } from '@src/clientSideScene/LocalWebGPUScene'
 import Loading from '@src/components/Loading'
 import { ViewControlContextMenu } from '@src/components/ViewControlMenu'
 import { useOnOfflineToExitSketchMode } from '@src/hooks/network/useOnOfflineToExitSketchMode'
@@ -41,10 +42,28 @@ import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
 } from '@src/registry/contracts/engineScene'
-import type { MouseEventHandler } from 'react'
+import { getNormalisedCoordinates, throttle, uuidv4 } from '@src/lib/utils'
+import type {
+  MouseEventHandler,
+  PointerEventHandler,
+  WheelEventHandler,
+} from 'react'
 import { use, useCallback, useMemo, useRef, useState } from 'react'
 
 const TIME_TO_CONNECT = 30_000
+const WEBGPU_PORT_LOG_PREFIX = '[WEBGPU_POC]'
+const WEBGPU_PORT_POC_STORAGE_KEY = 'webgpu-port-poc'
+const WEBGPU_PORT_DEBUG_STORAGE_KEY = 'webgpu-port-debug'
+
+function shouldDebugLocalWebGpuPreview() {
+  return localStorage.getItem(WEBGPU_PORT_DEBUG_STORAGE_KEY) === 'true'
+}
+
+function shouldEnableLocalWebGpuPreview() {
+  return localStorage.getItem(WEBGPU_PORT_POC_STORAGE_KEY) !== 'false'
+}
+
+type LocalWebGpuViewMode = 'auto' | 'stream' | 'webgpu'
 
 const stringHash = (value: string) => {
   let hash = 0
@@ -71,6 +90,9 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const [showManualConnect, setShowManualConnect] = useState(false)
   const isIdle = useRef(false)
   const [isSceneReady, setIsSceneReady] = useState(false)
+  const [isLocalRenderVisible, setIsLocalRenderVisible] = useState(false)
+  const [localWebGpuViewMode, setLocalWebGpuViewMode] =
+    useState<LocalWebGpuViewMode>('auto')
   const settingsValues = settings.useSettings()
   const { setAppState } = useAppState()
   const { overallState } = useNetworkContext()
@@ -93,6 +115,10 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
     return isSafari ? ' object-fill' : ''
   }, [])
+
+  const isSketchInteractionMode =
+    modelingMachineState.matches('Sketch') ||
+    modelingMachineState.matches('sketchSolveMode')
 
   const reportEngineDisconnect = useCallback(
     (eventType: EngineDisconnectEvent, extra?: Record<string, unknown>) => {
@@ -156,6 +182,86 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       modelingMachineState,
       sceneInfra.camControls.wasDragging,
     ]
+  )
+
+  const throttledLocalHover = useMemo(
+    () =>
+      throttle<React.MouseEvent<HTMLDivElement, MouseEvent>>((event) => {
+        if (!videoRef.current) return
+        const { x, y } = getNormalisedCoordinates(
+          event,
+          videoRef.current,
+          engineCommandManager.streamDimensions
+        )
+        void engineCommandManager.sendSceneCommand({
+          type: 'modeling_cmd_req',
+          cmd: {
+            type: 'highlight_set_entity',
+            selected_at_window: { x, y },
+          },
+          cmd_id: uuidv4(),
+        })
+      }, 30),
+    [engineCommandManager]
+  )
+
+  const handleMouseMove: MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      if (!isNetworkOkay) return
+      if (!videoRef.current) return
+      if (!isLocalRenderVisible) return
+      if (isSketchInteractionMode) return
+      if (sceneInfra.camControls.wasDragging === true) return
+
+      throttledLocalHover(e)
+    },
+    [
+      isNetworkOkay,
+      isLocalRenderVisible,
+      isSketchInteractionMode,
+      sceneInfra.camControls.wasDragging,
+      throttledLocalHover,
+    ]
+  )
+
+  const handlePointerDown: PointerEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      if (!isLocalRenderVisible) return
+      if (isSketchInteractionMode) return
+
+      sceneInfra.camControls.onExternalMouseDown(e.nativeEvent)
+    },
+    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
+  )
+
+  const handlePointerMove: PointerEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      if (!isLocalRenderVisible) return
+      if (isSketchInteractionMode) return
+
+      sceneInfra.camControls.onMouseMove(e.nativeEvent)
+    },
+    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
+  )
+
+  const handlePointerUp: PointerEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      if (!isLocalRenderVisible) return
+      if (isSketchInteractionMode) return
+
+      sceneInfra.camControls.onExternalMouseUp(e.nativeEvent)
+    },
+    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
+  )
+
+  const handleWheel: WheelEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      if (!isLocalRenderVisible) return
+      if (isSketchInteractionMode) return
+
+      sceneInfra.camControls.onMouseWheel(e.nativeEvent)
+    },
+    [isLocalRenderVisible, isSketchInteractionMode, sceneInfra.camControls]
   )
 
   /**
@@ -561,6 +667,35 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     [sceneInfra.camControls.wasDragging]
   )
 
+  const handleLocalVisibilityChange = useCallback((isVisible: boolean) => {
+    EngineDebugger.addLog({
+      label: 'ConnectionStream.tsx',
+      message: 'local webgpu visibility changed',
+      metadata: { isVisible },
+    })
+    if (shouldDebugLocalWebGpuPreview()) {
+      console.info(
+        `${WEBGPU_PORT_LOG_PREFIX}[ConnectionStream] local webgpu visibility changed`,
+        {
+          isVisible,
+        }
+      )
+    }
+    setIsLocalRenderVisible(isVisible)
+  }, [])
+
+  const shouldShowLocalWebGpuDebugToggle = shouldEnableLocalWebGpuPreview()
+  const shouldShowLocalWebGpuScene =
+    localWebGpuViewMode === 'stream'
+      ? false
+      : localWebGpuViewMode === 'webgpu'
+        ? isLocalRenderVisible
+        : isLocalRenderVisible
+  const shouldEnableLocalWebGpuSelectionProxy =
+    shouldShowLocalWebGpuScene && !isSketchInteractionMode
+  const shouldShowClientSideScene =
+    !isLocalRenderVisible || isSketchInteractionMode
+
   return (
     <div
       role="presentation"
@@ -569,7 +704,12 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
       style={style}
       id="stream"
       data-testid="stream"
+      onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onWheel={handleWheel}
       onDoubleClick={enterEditModeForViewportSelection}
       onContextMenu={(e) => e.preventDefault()}
       onContextMenuCapture={(e) => e.preventDefault()}
@@ -580,24 +720,33 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         key={id + 'video'}
         ref={videoRef}
         controls={false}
-        className={`w-full cursor-pointer h-full${safariObjectFitClass}`}
+        className={`w-full cursor-pointer h-full transition-opacity duration-200 ${
+          shouldShowLocalWebGpuScene ? 'opacity-0' : 'opacity-100'
+        }${safariObjectFitClass}`}
         disablePictureInPicture
         id="video-stream"
       />
       <canvas
         key={id + 'canvas'}
         ref={canvasRef}
-        className="cursor-pointer"
+        className={shouldShowLocalWebGpuScene ? 'opacity-0' : 'cursor-pointer'}
         id="freeze-frame"
       >
         No canvas support
       </canvas>
+      <LocalWebGPUScene
+        backgroundColor={style.backgroundColor}
+        onVisibilityChange={handleLocalVisibilityChange}
+        forceHide={!shouldShowLocalWebGpuScene}
+        commandProxyEnabled={shouldEnableLocalWebGpuSelectionProxy}
+      />
       <ClientSideScene
         cameraControls={settingsValues.modeling.mouseControls.current}
         enableTouchControls={
           settingsValues.modeling.enableTouchControls.current
         }
         sketchSolveStreamDimming={props.sketchSolveStreamDimming}
+        forceHide={!shouldShowClientSideScene}
       />
       {props.streamLayers.map((layer) => {
         return (
@@ -615,6 +764,44 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         guard={viewControlContextMenuGuard}
         menuTargetElement={videoWrapperRef}
       />
+      {shouldShowLocalWebGpuDebugToggle && (
+        <div className="pointer-events-auto absolute left-1/2 top-16 z-40 -translate-x-1/2 rounded-full border border-chalkboard-30/80 bg-chalkboard-10/90 p-1 shadow-md backdrop-blur dark:border-chalkboard-70 dark:bg-chalkboard-90/90">
+          <div className="flex items-center gap-1 text-xs">
+            <span className="px-2 py-1 text-chalkboard-70 dark:text-chalkboard-30">
+              View
+            </span>
+            {(
+              [
+                ['auto', 'Auto'],
+                ['stream', 'Stream'],
+                ['webgpu', 'WebGPU'],
+              ] as const
+            ).map(([value, label]) => {
+              const isActive = localWebGpuViewMode === value
+              const isDisabled = value === 'webgpu' && !isLocalRenderVisible
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  disabled={isDisabled}
+                  onClick={() => setLocalWebGpuViewMode(value)}
+                  className={`rounded-full px-3 py-1 transition-colors ${
+                    isActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-chalkboard-80 hover:bg-chalkboard-20 dark:text-chalkboard-20 dark:hover:bg-chalkboard-80'
+                  } ${
+                    isDisabled
+                      ? 'cursor-not-allowed opacity-40 hover:bg-transparent dark:hover:bg-transparent'
+                      : ''
+                  }`}
+                >
+                  {label}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
       {(!isSceneReady || showManualConnect) && (
         <Loading
           isRetrying={false}
@@ -645,6 +832,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
           Connecting and setting up scene...
         </Loading>
       )}
+      )
     </div>
   )
 }

@@ -3,6 +3,7 @@ import {
   decode as msgpackDecode,
   encode as msgpackEncode,
 } from '@msgpack/msgpack'
+import { maybeHandleLocalSelectionCommand } from '@src/clientSideScene/localSelectionCommandProxy'
 import type { useModelingContext } from '@src/hooks/useModelingContext'
 import { defaultSourceRange } from '@src/lang/sourceRange'
 import type { EngineCommand, ResponseMap } from '@src/lang/std/artifactGraph'
@@ -344,6 +345,10 @@ export class ConnectionManager extends EventTarget {
    */
   handleOnDataChannelMessage(event: MessageEvent<any>) {
     const result: UnreliableResponses = JSON.parse(event.data)
+    this.dispatchUnreliableSubscribers(result)
+  }
+
+  private dispatchUnreliableSubscribers(result: UnreliableResponses) {
     Object.values(this.unreliableSubscriptions[result.type] || {}).forEach(
       // TODO: There is only one response that uses the unreliable channel atm,
       // highlight_set_entity, if there are more it's likely they will all have the same
@@ -362,6 +367,15 @@ export class ConnectionManager extends EventTarget {
         }
       }
     )
+  }
+
+  private dispatchReliableSubscribers(result: {
+    type: string
+    data: Record<string, unknown>
+  }) {
+    Object.values(this.subscriptions[result.type] || {}).forEach((callback) => {
+      callback(result)
+    })
   }
 
   generateWebsocketURL() {
@@ -591,6 +605,22 @@ export class ConnectionManager extends EventTarget {
     command: EngineCommand,
     forceWebsocket = false
   ): Promise<WebSocketResponse | [WebSocketResponse] | null> {
+    const localSelectionResult = await maybeHandleLocalSelectionCommand(
+      command,
+      { streamDimensions: this.streamDimensions }
+    )
+    if (localSelectionResult) {
+      if (localSelectionResult.unreliableModelingResponse) {
+        this.dispatchUnreliableSubscribers(
+          localSelectionResult.unreliableModelingResponse as UnreliableResponses
+        )
+      }
+      if (localSelectionResult.modelingResponse) {
+        this.dispatchReliableSubscribers(localSelectionResult.modelingResponse)
+      }
+      return Promise.resolve(localSelectionResult.websocketResponse ?? null)
+    }
+
     if (
       this.connection === undefined ||
       !this.started ||

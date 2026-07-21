@@ -26,6 +26,30 @@ export function useEngineConnectionSubscriptions() {
   useEffect(() => {
     if (!engineCommandManager) return
 
+    const shouldAllowSelectWithPointInCurrentState = (
+      entityId: string | undefined
+    ) => {
+      if (!entityId) {
+        return !(
+          stateRef.current.matches('Sketch no face') ||
+          stateRef.current.matches('sketchSolveMode')
+        )
+      }
+
+      const artifact = kclManager.artifactGraph.get(entityId)
+      const isSegmentSelection = artifact?.type === 'segment'
+
+      if (stateRef.current.matches('Sketch no face')) {
+        return isSegmentSelection
+      }
+
+      if (stateRef.current.matches('sketchSolveMode')) {
+        return isSegmentSelection
+      }
+
+      return true
+    }
+
     const unSubHover = engineCommandManager.subscribeToUnreliable({
       // Note this is our hover logic, "highlight_set_entity" is the event that is fired when we hover over an entity
       event: 'highlight_set_entity',
@@ -53,10 +77,9 @@ export function useEngineConnectionSubscriptions() {
       callback: (engineEvent) => {
         ;(async () => {
           if (
-            stateRef.current.matches('Sketch no face') ||
-            // Ignore select_with_point in sketch solve: without this selection is overridden
-            // and breaks multiple line highlights
-            stateRef.current.matches('sketchSolveMode')
+            !shouldAllowSelectWithPointInCurrentState(
+              engineEvent.data.entity_id
+            )
           ) {
             return
           }
@@ -70,12 +93,15 @@ export function useEngineConnectionSubscriptions() {
           // Check state again, in case we went into sketch mode before getEventForSelectWithPoint returned.
           // This is probably rare, but we do go into sketch mode on double click.
           if (
-            stateRef.current.matches('Sketch no face') ||
-            stateRef.current.matches('sketchSolveMode')
+            !shouldAllowSelectWithPointInCurrentState(
+              engineEvent.data.entity_id
+            )
           ) {
             return
           }
-          if (event) send(event)
+          if (event) {
+            send(event)
+          }
         })().catch(reportRejection)
       },
     })

@@ -12,6 +12,8 @@ import type {
   ApiProjectId,
   ApiVersion,
   ExistingSegmentCtor,
+  FrontendRenderPacket,
+  FrontendRenderPacketSketchSegment,
   Number,
   SetProgramOutcome as RustSetProgramOutcome,
   SceneGraphDelta,
@@ -21,6 +23,13 @@ import type {
   SourceDelta,
 } from '@rust/kcl-lib/bindings/FrontendApi'
 import type { KclError as RustKclError } from '@rust/kcl-lib/bindings/KclError'
+import type {
+  RenderPacketEdge,
+  RenderPacketPrimitive,
+  RenderPacketRegion,
+  RenderPacketRegionLoop,
+  RenderPacketTrimLoop,
+} from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { OutputFormat3d } from '@rust/kcl-lib/bindings/ModelingCmd'
 import type { Node } from '@rust/kcl-lib/bindings/Node'
 import type { Program } from '@rust/kcl-lib/bindings/Program'
@@ -45,6 +54,16 @@ import {
 import { Signal as LegacySignal } from '@src/lib/signal'
 import type { SettingsActorType } from '@src/machines/settingsMachine'
 import type { ConnectionManager } from '@src/network/connectionManager'
+
+export type {
+  FrontendRenderPacket as RenderPacket,
+  RenderPacketEdge,
+  RenderPacketPrimitive,
+  RenderPacketRegion,
+  RenderPacketRegionLoop,
+  FrontendRenderPacketSketchSegment as RenderPacketSketchSegment,
+  RenderPacketTrimLoop,
+}
 
 export default class RustContext {
   private rustInstance: ModuleType | null = null
@@ -204,7 +223,7 @@ export default class RustContext {
   async export(
     format: DeepPartial<OutputFormat3d>,
     settings: DeepPartial<Configuration>,
-    toastId: string
+    toastId?: string
   ): Promise<ModelingAppFile[] | undefined> {
     const instance = await this._checkContextInstance()
 
@@ -215,7 +234,30 @@ export default class RustContext {
       )
     } catch (e: any) {
       const parsed: RustKclError = JSON.parse(e.toString())
-      toast.error(parsed.details.msg, { id: toastId })
+      if (toastId) {
+        toast.error(parsed.details.msg, { id: toastId })
+      }
+      return
+    }
+  }
+
+  /** Export a scene to a browser render packet. */
+  async exportRenderPacket(
+    settings: DeepPartial<Configuration>,
+    toastId?: string
+  ): Promise<FrontendRenderPacket | undefined> {
+    const instance = await this._checkContextInstance()
+
+    try {
+      const wasmContext = instance as unknown as {
+        exportRenderPacket: (settings: string) => Promise<FrontendRenderPacket>
+      }
+      return await wasmContext.exportRenderPacket(JSON.stringify(settings))
+    } catch (e: any) {
+      const parsed: RustKclError = JSON.parse(e.toString())
+      if (toastId) {
+        toast.error(parsed.details.msg, { id: toastId })
+      }
       return
     }
   }
