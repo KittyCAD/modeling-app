@@ -25,6 +25,7 @@ import {
   type ProjectLibrary,
   projectLibraryFromSetting,
 } from '@src/lib/projectLibraries'
+import { reportRejection } from '@src/lib/trap'
 import { SystemIOMachineEvents } from '@src/machines/systemIO/utils'
 import { cloudSyncService } from '@src/registry/contracts/cloudSync'
 import {
@@ -44,6 +45,12 @@ import { settingsService } from '@src/registry/contracts/settings'
 import { systemIOService } from '@src/registry/contracts/systemIO'
 import { wasmPromiseValueSpec } from '@src/registry/contracts/wasm'
 import toast from 'react-hot-toast'
+
+const configuredProjectLibraryEntriesRefreshToken = signal(0)
+
+function refreshConfiguredProjectLibraryEntries() {
+  configuredProjectLibraryEntriesRefreshToken.value += 1
+}
 
 function localHomeProjectEntriesFromProjects(
   projects: readonly Project[] | undefined,
@@ -351,6 +358,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
+                refreshConfiguredProjectLibraryEntries()
 
                 return project
               },
@@ -377,6 +385,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
+                refreshConfiguredProjectLibraryEntries()
               },
             },
             deleteProject: {
@@ -391,6 +400,7 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
                 systemIO.value?.actor.send({
                   type: SystemIOMachineEvents.readFoldersFromProjectDirectory,
                 })
+                refreshConfiguredProjectLibraryEntries()
               },
             },
           },
@@ -400,10 +410,106 @@ const directoryProjectLibraryType = defineRegistryItemFactory((ctx) => {
   }
 }, 'home-projects.directory-library-type')
 
+const configuredProjectLibraryEntries = defineRegistryItemFactory((ctx) => {
+  const settings = ctx.services.signal(settingsService)
+  const libraryTypes = ctx.valueSpecs.signal(projectLibraryTypesValueSpec)
+  const entries = signal<HomeProjectEntryContribution[]>([])
+  const entriesByLibraryId = new Map<string, HomeProjectEntryContribution[]>()
+  let abortController: AbortController | undefined
+  let disposed = false
+  let loadId = 0
+
+  const updateEntries = () => {
+    entries.value = Array.from(entriesByLibraryId.values()).flat()
+  }
+
+  const disposeConfiguredProjectLibraryEntriesEffect = effect(() => {
+    const currentSettings = settings.value?.current.value
+    const typeById = libraryTypes.value
+    const refreshCount = configuredProjectLibraryEntriesRefreshToken.value
+    const nextLoadId = ++loadId + refreshCount * 0
+
+    abortController?.abort()
+    const loadController = new AbortController()
+    abortController = loadController
+    entriesByLibraryId.clear()
+    entries.value = []
+
+    if (!currentSettings) {
+      return
+    }
+
+    const defaultProjectDirectory = getDefaultDirectoryProjectLibraryPath(
+      currentSettings.app.libraries.current
+    )
+    const configuredLibraries = currentSettings.app.libraries.current
+      .map((library, index) =>
+        projectLibraryFromSetting(library, index, {
+          defaultProjectDirectory,
+        })
+      )
+      .filter((library) => library.id !== DEFAULT_PROJECT_LIBRARY_ID)
+
+    for (const library of configuredLibraries) {
+      const readEntries = typeById.get(library.type)?.readEntries
+      if (!readEntries) {
+        continue
+      }
+
+      readEntries({
+        library,
+        signal: loadController.signal,
+      })
+        .then((libraryEntries) => {
+          if (
+            disposed ||
+            loadController.signal.aborted ||
+            nextLoadId !== loadId
+          ) {
+            return
+          }
+
+          entriesByLibraryId.set(library.id, libraryEntries)
+          updateEntries()
+        })
+        .catch((error: unknown) => {
+          if (
+            disposed ||
+            loadController.signal.aborted ||
+            nextLoadId !== loadId
+          ) {
+            return
+          }
+
+          entriesByLibraryId.delete(library.id)
+          updateEntries()
+          reportRejection(error)
+        })
+    }
+  })
+
+  return {
+    item: defineRuntimeRegistryItem({
+      id: 'home-projects.configured-project-library-entries',
+      provides: [
+        provide(homeProjectEntriesValueSpec, entries, {
+          key: 'home-projects.configured-project-library-entries',
+        }),
+      ],
+      dispose: () => {
+        disposed = true
+        abortController?.abort()
+        disposeConfiguredProjectLibraryEntriesEffect()
+      },
+    }),
+  }
+}, 'home-projects.configured-project-library-entries')
+
 const homeProjectsExtension = defineRegistryItem({
   id: 'home-projects',
   uses: [
     configuredProjectLibraries,
+    configuredProjectLibraryEntries,
     directoryProjectLibraryType,
     homeProjectActions,
     systemIOLocalHomeProjectEntries,
