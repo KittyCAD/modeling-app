@@ -25,3 +25,23 @@ pub async fn lowercase(exec_state: &mut ExecState, args: Args) -> Result<KclValu
         meta: args.into(),
     })
 }
+
+/// Compare two strings for equality.
+pub async fn is_equal(exec_state: &mut ExecState, args: Args) -> Result<KclValue, KclError> {
+    let text: String = args.get_unlabeled_kw_arg("text", &RuntimeType::string(), exec_state)?;
+    let to: String = args.get_kw_arg("to", &RuntimeType::string(), exec_state)?;
+    let case_insensitive = args
+        .get_kw_arg_opt("caseInsensitive", &RuntimeType::bool(), exec_state)?
+        .unwrap_or(false);
+
+    let value = if case_insensitive {
+        unicase::eq(&text, &to)
+    } else {
+        text == to
+    };
+
+    Ok(KclValue::Bool {
+        value,
+        meta: args.into(),
+    })
+}

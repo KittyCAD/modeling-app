@@ -380,6 +380,7 @@ pub const TEST_NAMES: &[&str] = &[
     "std-solid-joinSurfaces-0",
     "std-string-uppercase-0",
     "std-string-lowercase-0",
+    "std-string-isEqual-0",
     "std-transform-mirror2d-0",
     "std-transform-mirror2d-1",
     "std-transform-mirror2d-2",

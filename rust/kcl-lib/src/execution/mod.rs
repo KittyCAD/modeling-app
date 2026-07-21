@@ -3156,6 +3156,69 @@ piped = "READY" |> string::lowercase()
     }
 
     #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal() {
+        let composed = "\u{e9}";
+        let decomposed = "e\u{301}";
+        let code = format!(
+            r#"
+exact_same = string::isEqual("KCL", to = "KCL")
+exact_different_case = string::isEqual("KCL", to = "kcl")
+explicit_case_sensitive = string::isEqual("KCL", to = "kcl", caseInsensitive = false)
+case_insensitive_ascii = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+case_fold_expansion = string::isEqual("Straße", to = "STRASSE", caseInsensitive = true)
+case_fold_expansion_reversed = string::isEqual("STRASSE", to = "Straße", caseInsensitive = true)
+case_fold_sigma = string::isEqual("ος", to = "οσ", caseInsensitive = true)
+case_fold_non_turkic = string::isEqual("I", to = "i", caseInsensitive = true)
+case_fold_not_turkic = string::isEqual("I", to = "ı", caseInsensitive = true)
+empty_same = string::isEqual("", to = "")
+empty_different = string::isEqual("", to = "KCL")
+exact_without_normalization = string::isEqual("{composed}", to = "{decomposed}")
+case_fold_without_normalization = string::isEqual("{composed}", to = "{decomposed}", caseInsensitive = true)
+piped = "ready" |> string::isEqual(to = "READY", caseInsensitive = true)
+"#
+        );
+
+        let result = parse_execute(&code).await.unwrap();
+        for (name, expected) in [
+            ("exact_same", true),
+            ("exact_different_case", false),
+            ("explicit_case_sensitive", false),
+            ("case_insensitive_ascii", true),
+            ("case_fold_expansion", true),
+            ("case_fold_expansion_reversed", true),
+            ("case_fold_sigma", true),
+            ("case_fold_non_turkic", true),
+            ("case_fold_not_turkic", false),
+            ("empty_same", true),
+            ("empty_different", false),
+            ("exact_without_normalization", false),
+            ("case_fold_without_normalization", false),
+            ("piped", true),
+        ] {
+            assert_eq!(
+                mem_get_json(result.exec_state.stack(), result.mem_env, name)
+                    .as_bool()
+                    .unwrap(),
+                expected,
+                "{name}"
+            );
+        }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_string_is_equal_inside_sketch_block_is_predicate() {
+        let code = r#"
+@settings(experimentalFeatures = allow)
+
+sketch(on = XY) {
+  stringsAreEqual = string::isEqual("KCL", to = "kcl", caseInsensitive = true)
+}
+"#;
+
+        parse_execute(code).await.unwrap();
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
     async fn test_string_equality_operators() {
         let composed = "\u{e9}";
         let decomposed = "e\u{301}";
