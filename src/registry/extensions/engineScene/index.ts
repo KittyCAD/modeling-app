@@ -115,6 +115,11 @@ const MeasurementStatusBarItem = lazy(async () => {
   return { default: MeasurementStatusBarItem }
 })
 
+const ScreenshotStatusBarItem = lazy(async () => {
+  const { ScreenshotStatusBarItem } = await import('./ScreenshotStatusBarItem')
+  return { default: ScreenshotStatusBarItem }
+})
+
 const EngineSceneUnitsMenu = () =>
   createElement(Suspense, { fallback: null }, createElement(UnitsMenu))
 
@@ -194,6 +199,13 @@ const EngineSceneMeasurementStatusBarItem = () =>
     createElement(MeasurementStatusBarItem)
   )
 
+const EngineSceneScreenshotStatusBarItem = () =>
+  createElement(
+    Suspense,
+    { fallback: null },
+    createElement(ScreenshotStatusBarItem)
+  )
+
 /**
  * Engine scene extension.
  *
@@ -226,6 +238,18 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
             id: 'measure',
             component: EngineSceneMeasurementStatusBarItem,
             order: 9,
+            scopes: ['file'],
+          }
+        : null
+    )
+  )
+  const screenshotStatusBarItem = computed(() =>
+    nullableStatusBarItem(
+      executionService.value
+        ? {
+            id: 'capture-screenshot',
+            component: EngineSceneScreenshotStatusBarItem,
+            order: 8,
             scopes: ['file'],
           }
         : null
@@ -275,6 +299,7 @@ const engineSceneExtension = defineRegistryItemFactory((ctx) => {
         provideCommand(captureScreenshotCommand),
         provideCommand(openMeasureToolCommand),
         provideKeymapItem(openMeasureToolKeymapItem),
+        provide(statusBarLocalItemsValueSpec, screenshotStatusBarItem),
         provide(statusBarLocalItemsValueSpec, measurementStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionFilterStatusBarItem),
         provide(statusBarLocalItemsValueSpec, selectionStatusBarItem),

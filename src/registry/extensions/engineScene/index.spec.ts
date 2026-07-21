@@ -115,6 +115,7 @@ describe('engineScene extension', () => {
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
+      'capture-screenshot',
       'measure',
       'selection',
       'selection-filter',
@@ -123,7 +124,7 @@ describe('engineScene extension', () => {
     ])
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.scopes)
-    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file']])
+    ).toEqual([['file'], ['file'], ['file'], ['file'], ['file'], ['file']])
   })
 
   it('contributes a command and modeling keybinding to open the measure tool', () => {
@@ -201,13 +202,20 @@ describe('engineScene extension', () => {
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
-    ).toEqual(['measure', 'selection', 'selection-filter', 'units'])
+    ).toEqual([
+      'capture-screenshot',
+      'measure',
+      'selection',
+      'selection-filter',
+      'units',
+    ])
 
     showExperimentalFeaturesStatusBarItem.value = true
 
     expect(
       registry.get(statusBarLocalItemsValueSpec).map((item) => item.id)
     ).toEqual([
+      'capture-screenshot',
       'measure',
       'selection',
       'selection-filter',
