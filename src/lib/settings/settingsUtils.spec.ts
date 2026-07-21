@@ -211,6 +211,39 @@ describe('testing hiddenOnPlatform', () => {
       )
     ).toBe(false)
   })
+
+  it('can scope feature-gated settings to web', () => {
+    const setting = {
+      hideWithoutFeatureOnPlatform: {
+        web: OPFS_CLOUD_FEATURE_FLAG,
+      },
+    } as Setting<unknown>
+
+    expect(hiddenOnPlatform(setting, true)).toBe(false)
+    expect(hiddenOnPlatform(setting, false, () => false)).toBe(true)
+    expect(
+      hiddenOnPlatform(
+        setting,
+        false,
+        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+      )
+    ).toBe(false)
+  })
+
+  it('keeps libraries visible on desktop and feature-gated on web', () => {
+    const settings = createSettings()
+    const libraries = settings.app.libraries as Setting
+
+    expect(hiddenOnPlatform(libraries, true, () => false)).toBe(false)
+    expect(hiddenOnPlatform(libraries, false, () => false)).toBe(true)
+    expect(
+      hiddenOnPlatform(
+        libraries,
+        false,
+        (feature) => feature === OPFS_CLOUD_FEATURE_FLAG
+      )
+    ).toBe(false)
+  })
 })
 
 // This tests if default project level settings can override non-default user level settings.

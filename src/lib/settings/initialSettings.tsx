@@ -53,6 +53,7 @@ export class Setting<T = unknown> {
   public hideOnLevel: SettingProps<T>['hideOnLevel']
   public hideOnPlatform: SettingProps<T>['hideOnPlatform']
   public hideWithoutFeature: SettingProps<T>['hideWithoutFeature']
+  public hideWithoutFeatureOnPlatform: SettingProps<T>['hideWithoutFeatureOnPlatform']
   public commandConfig: SettingProps<T>['commandConfig']
   public Component: SettingProps<T>['Component']
   public description?: string
@@ -71,6 +72,7 @@ export class Setting<T = unknown> {
     this.hideOnLevel = props.hideOnLevel
     this.hideOnPlatform = props.hideOnPlatform
     this.hideWithoutFeature = props.hideWithoutFeature
+    this.hideWithoutFeatureOnPlatform = props.hideWithoutFeatureOnPlatform
     this.commandConfig = props.commandConfig
     this.Component = props.Component
   }
@@ -264,7 +266,9 @@ function createCoreSettings() {
         defaultValue: [],
         description: 'The default library to save and load projects from.',
         hideOnLevel: 'project',
-        hideWithoutFeature: OPFS_CLOUD_FEATURE_FLAG,
+        hideWithoutFeatureOnPlatform: {
+          web: OPFS_CLOUD_FEATURE_FLAG,
+        },
         validate: isProjectLibrarySettings,
         Component: ({ value, updateValue }) => {
           const inputRef = useRef<HTMLInputElement>(null)

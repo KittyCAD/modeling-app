@@ -1288,7 +1288,7 @@ export function shouldHideSetting(
     return true
   }
 
-  if (setting.hideWithoutFeature && !hasFeature?.(setting.hideWithoutFeature)) {
+  if (hiddenWithoutFeature(setting, isDesktop(), hasFeature)) {
     return true
   }
 
@@ -1377,7 +1377,7 @@ export function hiddenOnPlatform(
 ): boolean {
   const hideOnPlatform = setting.hideOnPlatform
 
-  if (setting.hideWithoutFeature && !hasFeature?.(setting.hideWithoutFeature)) {
+  if (hiddenWithoutFeature(setting, desktop, hasFeature)) {
     return true
   }
 
@@ -1396,4 +1396,18 @@ export function hiddenOnPlatform(
     hideOnPlatform === 'both' ||
     hideOnPlatform === (desktop ? 'desktop' : 'web')
   )
+}
+
+function hiddenWithoutFeature(
+  setting: Setting<unknown>,
+  desktop: boolean,
+  hasFeature?: (feature: Feature) => boolean
+): boolean {
+  if (setting.hideWithoutFeature && !hasFeature?.(setting.hideWithoutFeature)) {
+    return true
+  }
+
+  const platformFeature =
+    setting.hideWithoutFeatureOnPlatform?.[desktop ? 'desktop' : 'web']
+  return !!platformFeature && !hasFeature?.(platformFeature)
 }

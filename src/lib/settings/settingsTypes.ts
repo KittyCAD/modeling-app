@@ -136,6 +136,14 @@ export interface SettingProps<T = unknown> {
    */
   hideWithoutFeature?: Feature
   /**
+   * Whether to hide the setting on a specific platform unless a user feature
+   * flag is enabled. This is useful when a feature flag gates web-only access
+   * to a desktop-default capability.
+   */
+  hideWithoutFeatureOnPlatform?: Partial<
+    Record<Exclude<HideOnPlatformValue, 'both'>, Feature>
+  >
+  /**
    * A React component to use for the setting in the settings panel.
    * If this is not provided but a commandConfig is, the `inputType`
    * of the commandConfig will be used to determine the component.
