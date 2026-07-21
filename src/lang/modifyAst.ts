@@ -27,6 +27,7 @@ import {
   isCallExprWithName,
   isNodeSafeToReplace,
   isNodeSafeToReplacePath,
+  stringifyPathToNode,
   valueOrVariable,
 } from '@src/lang/queryAst'
 import { ARG_INDEX_FIELD, LABELED_ARG_FIELD } from '@src/lang/queryAstConstants'
@@ -1307,6 +1308,17 @@ export function setCallInAst({
 }): Error | PathToNode {
   let pathToNode: PathToNode | undefined
   if (pathToEdit) {
+    // An edit can reuse its current pipe input, but moving the call to another
+    // pipe is not an in-place edit. Do not silently keep the previous input.
+    if (
+      pathIfNewPipe &&
+      stringifyPathToNode(pathIfNewPipe) !== stringifyPathToNode(pathToEdit)
+    ) {
+      return new Error(
+        'Cannot edit the call in place because its reconstructed input belongs to a different pipe'
+      )
+    }
+
     const result = getNodeFromPath<CallExpressionKw>(
       ast,
       pathToEdit,
