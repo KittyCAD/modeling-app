@@ -24,6 +24,7 @@ import {
   groupNestedOperations,
   groupOperationTypeStreaks,
 } from '@src/lib/operations'
+import { isErr } from '@src/lib/trap'
 import { buildTheWorldAndNoEngineConnection } from '@src/unitTestUtils'
 import { describe, expect, it } from 'vitest'
 
@@ -442,7 +443,7 @@ describe('operations.test.ts', () => {
         artifactGraph: new Map(),
         rustContext,
       })
-      if (result instanceof Error) {
+      if (isErr(result)) {
         throw result
       }
       if (result.type !== 'Find and select command') {

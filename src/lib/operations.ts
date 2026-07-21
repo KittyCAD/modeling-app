@@ -64,7 +64,7 @@ import {
 import { getStringValue, stringToKclExpression } from '@src/lib/kclHelpers'
 import { isDefaultPlaneStr } from '@src/lib/planes'
 import type RustContext from '@src/lib/rustContext'
-import { err } from '@src/lib/trap'
+import { err, isErr } from '@src/lib/trap'
 import { isNonNullable, stripQuotes } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import type { CommandBarMachineEvent } from '@src/machines/commandBarMachine'
@@ -113,7 +113,7 @@ function retrieveUnlabeledSelectionsForEdit(
     operation.unlabeledArg,
     artifactGraph
   )
-  return selections instanceof Error
+  return isErr(selections)
     ? { graphSelections: [], otherSelections: [] }
     : selections
 }
