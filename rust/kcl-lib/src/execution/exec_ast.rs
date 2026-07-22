@@ -91,9 +91,11 @@ use crate::parsing::ast::types::BinaryPart;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CodeBlock;
 use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::MemberExpression;
 use crate::parsing::ast::types::Name;
@@ -101,12 +103,15 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::ReturnStatement;
 use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclaration;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
+use crate::parsing::ast::types::VariableDeclaration;
 use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -731,173 +736,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-                    if !matches!(body_type, BodyType::Root) {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Imports are only supported at the top-level of a file.".to_owned(),
-                            vec![import_stmt.into()],
-                        )));
-                    }
-
-                    let source_range = SourceRange::from(import_stmt);
-                    let attrs = &import_stmt.outer_attrs;
-                    let module_path = ModulePath::from_import_path(
-                        &import_stmt.path,
-                        &self.settings.project_directory,
-                        &exec_state.mod_local.path,
-                    )?;
-                    let module_id = self
-                        .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
-                        .await?;
-
-                    if let ModulePath::Local { value, .. } = &module_path {
-                        let name = import_stmt
-                            .module_name()
-                            .unwrap_or_else(|| value.file_name().unwrap_or_default());
-                        exec_state.push_op(Operation::ModuleInstance {
-                            name,
-                            module_id,
-                            glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
-                            node_path: NodePath::placeholder(),
-                            source_range,
-                        });
-                    }
-
-                    match &import_stmt.selector {
-                        ImportSelector::List { items } => {
-                            let (env_ref, module_exports) =
-                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
-                            for import_item in items {
-                                // Extract the item from the module.
-                                let mem = &exec_state.stack().memory;
-                                let mut value =
-                                    mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
-                                let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                                let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
-                                let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                                let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
-
-                                if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return Err(KclError::new_undefined_value(
-                                        KclErrorDetails::new(
-                                            format!("{} is not defined in module", import_item.name.name),
-                                            vec![SourceRange::from(&import_item.name)],
-                                        ),
-                                        None,
-                                    ));
-                                }
-
-                                // Check that the item is allowed to be imported (in at least one namespace).
-                                if value.is_ok() && !module_exports.contains(&import_item.name.name) {
-                                    value = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if ty.is_ok() && !module_exports.contains(&ty_name) {
-                                    ty = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if mod_value.is_ok() && !module_exports.contains(&mod_name) {
-                                    mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return value.map(|v| Some(v.continue_()));
-                                }
-
-                                // Add the item to the current module.
-                                if let Ok(value) = value {
-                                    exec_state.mut_stack().add(
-                                        import_item.identifier().to_owned(),
-                                        value,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state
-                                            .mod_local
-                                            .module_exports
-                                            .push(import_item.identifier().to_owned());
-                                    }
-                                }
-
-                                if let Ok(ty) = ty {
-                                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
-                                    exec_state.mut_stack().add(
-                                        ty_name.clone(),
-                                        ty,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state.mod_local.module_exports.push(ty_name);
-                                    }
-                                }
-
-                                if let Ok(mod_value) = mod_value {
-                                    let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
-                                    exec_state.mut_stack().add(
-                                        mod_name.clone(),
-                                        mod_value,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state.mod_local.module_exports.push(mod_name);
-                                    }
-                                }
-                            }
-                        }
-                        ImportSelector::Glob(_) => {
-                            let (env_ref, module_exports) =
-                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
-                            for name in module_exports.iter() {
-                                let item = exec_state
-                                    .stack()
-                                    .memory
-                                    .get_from_owned(name, env_ref, source_range, 0)
-                                    .map_err(|_err| {
-                                        internal_err(
-                                            format!("{name} is not defined in module (but was exported?)"),
-                                            source_range,
-                                        )
-                                    })?;
-                                exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
-
-                                if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.mod_local.module_exports.push(name.clone());
-                                }
-                            }
-                        }
-                        ImportSelector::None { .. } => {
-                            let name = import_stmt.module_name().unwrap();
-                            let item = KclValue::Module {
-                                value: module_id,
-                                meta: vec![source_range.into()],
-                            };
-                            exec_state.mut_stack().add(
-                                format!("{}{}", memory::MODULE_PREFIX, name),
-                                item,
-                                source_range,
-                            )?;
-                        }
-                    }
+                    self.exec_import_statement(import_stmt, body_type, exec_state).await?;
                     last_expr = None;
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
@@ -956,91 +795,8 @@ impl ExecutorContext {
                         last_expr = Some(rhs);
                         break;
                     }
-                    let mut rhs = rhs.into_value();
-
-                    // Attach the variable name to unsolved segments as a tag.
-                    // While executing the body of a sketch block, the segments
-                    // won't have been solved yet.
-                    if let KclValue::Segment { value } = &mut rhs
-                        && let SegmentRepr::Unsolved { segment } = &mut value.repr
-                    {
-                        segment.tag = Some(TagIdentifier {
-                            value: variable_declaration.declaration.id.name.clone(),
-                            info: Default::default(),
-                            meta: vec![SourceRange::from(&variable_declaration.declaration.id).into()],
-                        });
-                    }
-                    let rhs = rhs; // Remove mutability.
-
-                    let should_bind_name =
-                        if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
-                            // Declaring a function with a name, so only bind
-                            // the variable name if it differs from the function
-                            // name.
-                            var_name != fn_name
-                        } else {
-                            // Not declaring a function, so we should bind the
-                            // variable name.
-                            true
-                        };
-                    if should_bind_name {
-                        exec_state
-                            .mut_stack()
-                            .add(var_name.clone(), rhs.clone(), source_range)?;
-                    }
-
-                    if let Some(sketch_block_state) = exec_state.mod_local.sketch_block.as_mut()
-                        && let KclValue::Segment { value } = &rhs
-                    {
-                        // Add segment to mapping so that we can tag it when
-                        // sending to the engine.
-                        let segment_object_id = match &value.repr {
-                            SegmentRepr::Unsolved { segment } => segment.object_id,
-                            SegmentRepr::Solved { segment } => segment.object_id,
-                        };
-                        sketch_block_state
-                            .segment_tags
-                            .entry(segment_object_id)
-                            .or_insert_with(|| {
-                                let id_node = &variable_declaration.declaration.id;
-                                Node::new(
-                                    TagDeclarator {
-                                        name: id_node.name.clone(),
-                                        digest: None,
-                                    },
-                                    id_node.start,
-                                    id_node.end,
-                                    id_node.module_id,
-                                )
-                            });
-                    }
-
-                    // Track operations, for the feature tree.
-                    // Don't track these operations if the KCL code being executed is in the stdlib,
-                    // because users shouldn't know about stdlib internals -- it's useless noise, to them.
-                    let should_show_in_feature_tree =
-                        !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
-                    if should_show_in_feature_tree {
-                        exec_state.push_op(Operation::VariableDeclaration {
-                            name: var_name.clone(),
-                            value: op_from_kcl_value(&rhs),
-                            visibility: variable_declaration.visibility,
-                            node_path: NodePath::placeholder(),
-                            source_range,
-                        });
-                    }
-
-                    // Track exports.
-                    if let ItemVisibility::Export = variable_declaration.visibility {
-                        if matches!(body_type, BodyType::Root) {
-                            exec_state.mod_local.module_exports.push(var_name);
-                        } else {
-                            exec_state.err(CompilationIssue::err(
-                                variable_declaration.as_source_range(),
-                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
-                            ));
-                        }
-                    }
+                    let rhs =
+                        self.bind_variable_declaration(variable_declaration, rhs.into_value(), body_type, exec_state)?;
                     // Variable declaration can be the return value of a module.
                     last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
@@ -1048,85 +804,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-
-                    let metadata = Metadata::from(&**ty);
-                    let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
-                    match attrs.impl_ {
-                        annotations::Impl::Rust
-                        | annotations::Impl::RustConstrainable
-                        | annotations::Impl::RustConstraint => {
-                            let std_path = match &exec_state.mod_local.path {
-                                ModulePath::Std { value } => value,
-                                ModulePath::Local { .. } | ModulePath::Main => {
-                                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                                        "User-defined types are not yet supported.".to_owned(),
-                                        vec![metadata.source_range],
-                                    )));
-                                }
-                            };
-                            let (t, props) = crate::std::std_ty(std_path, &ty.name.name);
-                            let value = KclValue::Type {
-                                value: TypeDef::RustRepr(t, props),
-                                meta: vec![metadata],
-                                experimental: attrs.experimental,
-                            };
-                            let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
-                            exec_state
-                                .mut_stack()
-                                .add(name_in_mem.clone(), value, metadata.source_range)
-                                .map_err(|_| {
-                                    KclError::new_semantic(KclErrorDetails::new(
-                                        format!("Redefinition of type {}.", ty.name.name),
-                                        vec![metadata.source_range],
-                                    ))
-                                })?;
-
-                            if let ItemVisibility::Export = ty.visibility {
-                                exec_state.mod_local.module_exports.push(name_in_mem);
-                            }
-                        }
-                        // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
-                        annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
-                            Some(alias) => {
-                                let value = KclValue::Type {
-                                    value: TypeDef::Alias(
-                                        RuntimeType::from_parsed(
-                                            alias.inner.clone(),
-                                            exec_state,
-                                            metadata.source_range,
-                                            attrs.impl_ == annotations::Impl::KclConstrainable,
-                                            false,
-                                        )
-                                        .map_err(|e| KclError::new_semantic(e.into()))?,
-                                    ),
-                                    meta: vec![metadata],
-                                    experimental: attrs.experimental,
-                                };
-                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
-                                exec_state
-                                    .mut_stack()
-                                    .add(name_in_mem.clone(), value, metadata.source_range)
-                                    .map_err(|_| {
-                                        KclError::new_semantic(KclErrorDetails::new(
-                                            format!("Redefinition of type {}.", ty.name.name),
-                                            vec![metadata.source_range],
-                                        ))
-                                    })?;
-
-                                if let ItemVisibility::Export = ty.visibility {
-                                    exec_state.mod_local.module_exports.push(name_in_mem);
-                                }
-                            }
-                            None => {
-                                return Err(KclError::new_semantic(KclErrorDetails::new(
-                                    "User-defined types are not yet supported.".to_owned(),
-                                    vec![metadata.source_range],
-                                )));
-                            }
-                        },
-                    }
-
+                    self.exec_type_declaration(ty, exec_state)?;
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
@@ -1157,15 +835,7 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
-                    exec_state
-                        .mut_stack()
-                        .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
-                        .map_err(|_| {
-                            KclError::new_semantic(KclErrorDetails::new(
-                                "Multiple returns from a single function.".to_owned(),
-                                vec![metadata.source_range],
-                            ))
-                        })?;
+                    Self::bind_return_value(return_statement, value, exec_state)?;
                     last_expr = None;
                 }
             }
@@ -1184,6 +854,388 @@ impl ExecutorContext {
         }
 
         Ok(last_expr)
+    }
+
+    /// Execute an import statement. Flat: this does not evaluate KCL
+    /// sub-expressions (module execution happens in its own fresh root), so
+    /// both executors share it.
+    pub(super) async fn exec_import_statement(
+        &self,
+        import_stmt: &Node<ImportStatement>,
+        body_type: BodyType,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        if !matches!(body_type, BodyType::Root) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Imports are only supported at the top-level of a file.".to_owned(),
+                vec![import_stmt.into()],
+            )));
+        }
+
+        let source_range = SourceRange::from(import_stmt);
+        let attrs = &import_stmt.outer_attrs;
+        let module_path = ModulePath::from_import_path(
+            &import_stmt.path,
+            &self.settings.project_directory,
+            &exec_state.mod_local.path,
+        )?;
+        let module_id = self
+            .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
+            .await?;
+
+        if let ModulePath::Local { value, .. } = &module_path {
+            let name = import_stmt
+                .module_name()
+                .unwrap_or_else(|| value.file_name().unwrap_or_default());
+            exec_state.push_op(Operation::ModuleInstance {
+                name,
+                module_id,
+                glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
+                node_path: NodePath::placeholder(),
+                source_range,
+            });
+        }
+
+        match &import_stmt.selector {
+            ImportSelector::List { items } => {
+                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                for import_item in items {
+                    // Extract the item from the module.
+                    let mem = &exec_state.stack().memory;
+                    let mut value = mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
+                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
+                    let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
+                    let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
+                    let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
+
+                    if value.is_err() && ty.is_err() && mod_value.is_err() {
+                        return Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("{} is not defined in module", import_item.name.name),
+                                vec![SourceRange::from(&import_item.name)],
+                            ),
+                            None,
+                        ));
+                    }
+
+                    // Check that the item is allowed to be imported (in at least one namespace).
+                    if value.is_ok() && !module_exports.contains(&import_item.name.name) {
+                        value = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if ty.is_ok() && !module_exports.contains(&ty_name) {
+                        ty = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if mod_value.is_ok() && !module_exports.contains(&mod_name) {
+                        mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if value.is_err() && ty.is_err() && mod_value.is_err() {
+                        return value.map(|_| ());
+                    }
+
+                    // Add the item to the current module.
+                    if let Ok(value) = value {
+                        exec_state.mut_stack().add(
+                            import_item.identifier().to_owned(),
+                            value,
+                            SourceRange::from(&import_item.name),
+                        )?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state
+                                .mod_local
+                                .module_exports
+                                .push(import_item.identifier().to_owned());
+                        }
+                    }
+
+                    if let Ok(ty) = ty {
+                        let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
+                        exec_state
+                            .mut_stack()
+                            .add(ty_name.clone(), ty, SourceRange::from(&import_item.name))?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state.mod_local.module_exports.push(ty_name);
+                        }
+                    }
+
+                    if let Ok(mod_value) = mod_value {
+                        let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
+                        exec_state.mut_stack().add(
+                            mod_name.clone(),
+                            mod_value,
+                            SourceRange::from(&import_item.name),
+                        )?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state.mod_local.module_exports.push(mod_name);
+                        }
+                    }
+                }
+            }
+            ImportSelector::Glob(_) => {
+                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                for name in module_exports.iter() {
+                    let item = exec_state
+                        .stack()
+                        .memory
+                        .get_from_owned(name, env_ref, source_range, 0)
+                        .map_err(|_err| {
+                            internal_err(
+                                format!("{name} is not defined in module (but was exported?)"),
+                                source_range,
+                            )
+                        })?;
+                    exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
+
+                    if let ItemVisibility::Export = import_stmt.visibility {
+                        exec_state.mod_local.module_exports.push(name.clone());
+                    }
+                }
+            }
+            ImportSelector::None { .. } => {
+                let name = import_stmt.module_name().unwrap();
+                let item = KclValue::Module {
+                    value: module_id,
+                    meta: vec![source_range.into()],
+                };
+                exec_state
+                    .mut_stack()
+                    .add(format!("{}{}", memory::MODULE_PREFIX, name), item, source_range)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Execute a type declaration. Flat; shared by both executors.
+    pub(super) fn exec_type_declaration(
+        &self,
+        ty: &Node<TypeDeclaration>,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        let metadata = Metadata::from(ty);
+        let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+        match attrs.impl_ {
+            annotations::Impl::Rust | annotations::Impl::RustConstrainable | annotations::Impl::RustConstraint => {
+                let std_path = match &exec_state.mod_local.path {
+                    ModulePath::Std { value } => value,
+                    ModulePath::Local { .. } | ModulePath::Main => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "User-defined types are not yet supported.".to_owned(),
+                            vec![metadata.source_range],
+                        )));
+                    }
+                };
+                let (t, props) = crate::std::std_ty(std_path, &ty.name.name);
+                let value = KclValue::Type {
+                    value: TypeDef::RustRepr(t, props),
+                    meta: vec![metadata],
+                    experimental: attrs.experimental,
+                };
+                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                exec_state
+                    .mut_stack()
+                    .add(name_in_mem.clone(), value, metadata.source_range)
+                    .map_err(|_| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!("Redefinition of type {}.", ty.name.name),
+                            vec![metadata.source_range],
+                        ))
+                    })?;
+
+                if let ItemVisibility::Export = ty.visibility {
+                    exec_state.mod_local.module_exports.push(name_in_mem);
+                }
+            }
+            // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
+            annotations::Impl::Primitive => {}
+            annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
+                Some(alias) => {
+                    let value = KclValue::Type {
+                        value: TypeDef::Alias(
+                            RuntimeType::from_parsed(
+                                alias.inner.clone(),
+                                exec_state,
+                                metadata.source_range,
+                                attrs.impl_ == annotations::Impl::KclConstrainable,
+                                false,
+                            )
+                            .map_err(|e| KclError::new_semantic(e.into()))?,
+                        ),
+                        meta: vec![metadata],
+                        experimental: attrs.experimental,
+                    };
+                    let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                    exec_state
+                        .mut_stack()
+                        .add(name_in_mem.clone(), value, metadata.source_range)
+                        .map_err(|_| {
+                            KclError::new_semantic(KclErrorDetails::new(
+                                format!("Redefinition of type {}.", ty.name.name),
+                                vec![metadata.source_range],
+                            ))
+                        })?;
+
+                    if let ItemVisibility::Export = ty.visibility {
+                        exec_state.mod_local.module_exports.push(name_in_mem);
+                    }
+                }
+                None => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "User-defined types are not yet supported.".to_owned(),
+                        vec![metadata.source_range],
+                    )));
+                }
+            },
+        }
+
+        Ok(())
+    }
+
+    /// Bind the evaluated right-hand side of a variable declaration: segment
+    /// tag attachment, name binding, sketch-block segment tags, feature-tree
+    /// operation, and export tracking. The evaluation-free second half of
+    /// variable-declaration execution, shared by both executors. Returns the
+    /// bound value (which becomes the module result when this is the last
+    /// Root statement).
+    pub(super) fn bind_variable_declaration(
+        &self,
+        variable_declaration: &Node<VariableDeclaration>,
+        rhs: KclValue,
+        body_type: BodyType,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let var_name = variable_declaration.declaration.id.name.to_string();
+        let source_range = SourceRange::from(&variable_declaration.declaration.init);
+        let mut rhs = rhs;
+
+        // Attach the variable name to unsolved segments as a tag.
+        // While executing the body of a sketch block, the segments
+        // won't have been solved yet.
+        if let KclValue::Segment { value } = &mut rhs
+            && let SegmentRepr::Unsolved { segment } = &mut value.repr
+        {
+            segment.tag = Some(TagIdentifier {
+                value: variable_declaration.declaration.id.name.clone(),
+                info: Default::default(),
+                meta: vec![SourceRange::from(&variable_declaration.declaration.id).into()],
+            });
+        }
+        let rhs = rhs; // Remove mutability.
+
+        let should_bind_name = if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
+            // Declaring a function with a name, so only bind
+            // the variable name if it differs from the function
+            // name.
+            var_name != fn_name
+        } else {
+            // Not declaring a function, so we should bind the
+            // variable name.
+            true
+        };
+        if should_bind_name {
+            exec_state
+                .mut_stack()
+                .add(var_name.clone(), rhs.clone(), source_range)?;
+        }
+
+        if let Some(sketch_block_state) = exec_state.mod_local.sketch_block.as_mut()
+            && let KclValue::Segment { value } = &rhs
+        {
+            // Add segment to mapping so that we can tag it when
+            // sending to the engine.
+            let segment_object_id = match &value.repr {
+                SegmentRepr::Unsolved { segment } => segment.object_id,
+                SegmentRepr::Solved { segment } => segment.object_id,
+            };
+            sketch_block_state
+                .segment_tags
+                .entry(segment_object_id)
+                .or_insert_with(|| {
+                    let id_node = &variable_declaration.declaration.id;
+                    Node::new(
+                        TagDeclarator {
+                            name: id_node.name.clone(),
+                            digest: None,
+                        },
+                        id_node.start,
+                        id_node.end,
+                        id_node.module_id,
+                    )
+                });
+        }
+
+        // Track operations, for the feature tree.
+        // Don't track these operations if the KCL code being executed is in the stdlib,
+        // because users shouldn't know about stdlib internals -- it's useless noise, to them.
+        let should_show_in_feature_tree = !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
+        if should_show_in_feature_tree {
+            exec_state.push_op(Operation::VariableDeclaration {
+                name: var_name.clone(),
+                value: op_from_kcl_value(&rhs),
+                visibility: variable_declaration.visibility,
+                node_path: NodePath::placeholder(),
+                source_range,
+            });
+        }
+
+        // Track exports.
+        if let ItemVisibility::Export = variable_declaration.visibility {
+            if matches!(body_type, BodyType::Root) {
+                exec_state.mod_local.module_exports.push(var_name);
+            } else {
+                exec_state.err(CompilationIssue::err(
+                                variable_declaration.as_source_range(),
+                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
+                            ));
+            }
+        }
+        Ok(rhs)
+    }
+
+    /// Record a return statement's evaluated value as the function result
+    /// (`__return`). NOTE: deliberately does NOT stop the enclosing block --
+    /// statements after a `return` still execute, exactly like the historical
+    /// behavior (see the ReturnStatement arm of exec_block); a second
+    /// executed `return` is the "Multiple returns" error. Shared by both
+    /// executors.
+    pub(super) fn bind_return_value(
+        return_statement: &Node<ReturnStatement>,
+        value: KclValue,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        let metadata = Metadata::from(return_statement);
+        exec_state
+            .mut_stack()
+            .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
+            .map_err(|_| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "Multiple returns from a single function.".to_owned(),
+                    vec![metadata.source_range],
+                ))
+            })?;
+        Ok(())
     }
 
     pub async fn open_module(
@@ -1387,128 +1439,14 @@ impl ExecutorContext {
             Expr::None(none) => KclValue::from(none).continue_(),
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
-            Expr::Name(name) => {
-                let being_declared = exec_state.mod_local.being_declared.clone();
-                let value = name
-                    .get_result(exec_state, self)
-                    .await
-                    .map_err(|e| var_in_own_ref_err(e, &being_declared))?
-                    .clone();
-                if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(
-                        module_id,
-                        exec_state,
-                        metadata.source_range
-                        ).await?.map(|v| v.continue_())
-                        .unwrap_or_else(|| {
-                            exec_state.warn(CompilationIssue::err(
-                                metadata.source_range,
-                                "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
-                            ),
-                        annotations::WARN_MOD_RETURN_VALUE);
-
-                            let mut new_meta = vec![metadata.to_owned()];
-                            new_meta.extend(meta);
-                            KclValue::KclNone {
-                                value: Default::default(),
-                                meta: new_meta,
-                            }.continue_()
-                        })
-                } else {
-                    value.continue_()
-                }
-            }
+            Expr::Name(name) => self
+                .resolve_name_for_eval(name, metadata, exec_state)
+                .await?
+                .continue_(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
-            Expr::FunctionExpression(function_expression) => {
-                let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs
-                    .as_ref()
-                    .map(|a| a.experimental)
-                    // Use the default for the field, not the bool type.
-                    .unwrap_or_else(|| FnAttrs::default().experimental);
-
-                // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs
-                    .as_ref()
-                    .map(|a| a.include_in_feature_tree)
-                    // Use the default for the field, not the bool type.
-                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
-                let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
-                    && (attrs.impl_ == annotations::Impl::Rust
-                        || attrs.impl_ == annotations::Impl::RustConstrainable
-                        || attrs.impl_ == annotations::Impl::RustConstraint)
-                {
-                    if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
-                        let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
-                        (
-                            KclValue::Function {
-                                value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
-                                meta: vec![metadata.to_owned()],
-                            },
-                            None,
-                        )
-                    } else {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Rust implementation of functions is restricted to the standard library".to_owned(),
-                            vec![metadata.source_range],
-                        )));
-                    }
-                } else {
-                    let std_props = function_expression
-                        .name_str()
-                        .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
-                        .map(|name| StdFnProps::default(&name));
-                    // Snapshotting memory here is crucial for semantics so that we close
-                    // over variables. Variables defined lexically later shouldn't
-                    // be available to the function body.
-                    let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
-                        // Recursive function needs a snapshot that includes
-                        // itself.
-                        let dummy = EnvironmentRef::dummy();
-                        (dummy, Some(dummy))
-                    } else {
-                        (exec_state.mut_stack().snapshot()?, None)
-                    };
-                    (
-                        KclValue::Function {
-                            value: Box::new(FunctionSource::kcl(
-                                function_expression.clone(),
-                                env_ref,
-                                KclFunctionSourceParams {
-                                    std_props,
-                                    experimental,
-                                    include_in_feature_tree,
-                                },
-                            )),
-                            meta: vec![metadata.to_owned()],
-                        },
-                        placeholder_env_ref,
-                    )
-                };
-
-                // If the function expression has a name, i.e. `fn name() {}`,
-                // bind it in the current scope.
-                if let Some(fn_name) = &function_expression.name {
-                    // If we used a placeholder env ref for recursion, fix it up
-                    // with the name recursively bound so that it's available in
-                    // the function body.
-                    if let Some(placeholder_env_ref) = placeholder_env_ref {
-                        closure = exec_state.mut_stack().add_recursive_closure(
-                            fn_name.name.to_owned(),
-                            closure,
-                            placeholder_env_ref,
-                            metadata.source_range,
-                        )?;
-                    } else {
-                        // Regular non-recursive binding.
-                        exec_state
-                            .mut_stack()
-                            .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
-                    }
-                }
-
-                closure.continue_()
-            }
+            Expr::FunctionExpression(function_expression) => self
+                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)?
+                .continue_(),
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
             Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
@@ -1554,6 +1492,144 @@ impl ExecutorContext {
             Expr::SketchVar(expr) => expr.get_result(exec_state, self).await?.continue_(),
         };
         Ok(item)
+    }
+
+    /// Resolve a name to its value, running the module body first when the
+    /// name refers to a module. Flat (module execution happens in its own
+    /// fresh root); shared by both executors.
+    pub(super) async fn resolve_name_for_eval(
+        &self,
+        name: &Node<Name>,
+        metadata: &Metadata,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let being_declared = exec_state.mod_local.being_declared.clone();
+        let value = name
+            .get_result(exec_state, self)
+            .await
+            .map_err(|e| var_in_own_ref_err(e, &being_declared))?
+            .clone();
+        if let KclValue::Module { value: module_id, meta } = value {
+            Ok(self
+                        .exec_module_for_result(module_id, exec_state, metadata.source_range)
+                        .await?
+                        .unwrap_or_else(|| {
+                            exec_state.warn(CompilationIssue::err(
+                                metadata.source_range,
+                                "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
+                            ),
+                        annotations::WARN_MOD_RETURN_VALUE);
+
+                            let mut new_meta = vec![metadata.to_owned()];
+                            new_meta.extend(meta);
+                            KclValue::KclNone {
+                                value: Default::default(),
+                                meta: new_meta,
+                            }
+                        }))
+        } else {
+            Ok(value)
+        }
+    }
+
+    /// Create the closure value for a function expression, including the
+    /// recursive-closure placeholder fixup and binding a named `fn name() {}`
+    /// in the current scope. Flat; shared by both executors.
+    pub(super) fn create_function_closure(
+        &self,
+        function_expression: &crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        annotations: &[Node<Annotation>],
+        metadata: &Metadata,
+        statement_kind: StatementKind<'_>,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+        let experimental = attrs
+            .as_ref()
+            .map(|a| a.experimental)
+            // Use the default for the field, not the bool type.
+            .unwrap_or_else(|| FnAttrs::default().experimental);
+
+        // Check the KCL @(feature_tree = ) annotation.
+        let include_in_feature_tree = attrs
+            .as_ref()
+            .map(|a| a.include_in_feature_tree)
+            // Use the default for the field, not the bool type.
+            .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
+        let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
+            && (attrs.impl_ == annotations::Impl::Rust
+                || attrs.impl_ == annotations::Impl::RustConstrainable
+                || attrs.impl_ == annotations::Impl::RustConstraint)
+        {
+            if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
+                let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
+                (
+                    KclValue::Function {
+                        value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
+                        meta: vec![metadata.to_owned()],
+                    },
+                    None,
+                )
+            } else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Rust implementation of functions is restricted to the standard library".to_owned(),
+                    vec![metadata.source_range],
+                )));
+            }
+        } else {
+            let std_props = function_expression
+                .name_str()
+                .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
+                .map(|name| StdFnProps::default(&name));
+            // Snapshotting memory here is crucial for semantics so that we close
+            // over variables. Variables defined lexically later shouldn't
+            // be available to the function body.
+            let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
+                // Recursive function needs a snapshot that includes
+                // itself.
+                let dummy = EnvironmentRef::dummy();
+                (dummy, Some(dummy))
+            } else {
+                (exec_state.mut_stack().snapshot()?, None)
+            };
+            (
+                KclValue::Function {
+                    value: Box::new(FunctionSource::kcl(
+                        function_expression.clone(),
+                        env_ref,
+                        KclFunctionSourceParams {
+                            std_props,
+                            experimental,
+                            include_in_feature_tree,
+                        },
+                    )),
+                    meta: vec![metadata.to_owned()],
+                },
+                placeholder_env_ref,
+            )
+        };
+
+        // If the function expression has a name, i.e. `fn name() {}`,
+        // bind it in the current scope.
+        if let Some(fn_name) = &function_expression.name {
+            // If we used a placeholder env ref for recursion, fix it up
+            // with the name recursively bound so that it's available in
+            // the function body.
+            if let Some(placeholder_env_ref) = placeholder_env_ref {
+                closure = exec_state.mut_stack().add_recursive_closure(
+                    fn_name.name.to_owned(),
+                    closure,
+                    placeholder_env_ref,
+                    metadata.source_range,
+                )?;
+            } else {
+                // Regular non-recursive binding.
+                exec_state
+                    .mut_stack()
+                    .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
+            }
+        }
+        Ok(closure)
     }
 }
 
@@ -2533,7 +2609,22 @@ impl Node<MemberExpression> {
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
         let object = control_continue!(object_cf);
+        self.apply_member(object, property, exec_state, ctx).await
+    }
 
+    /// Apply property access or indexing to an already-evaluated object: the
+    /// evaluation-free second half of member-expression execution, shared by
+    /// both executors.
+    pub(super) async fn apply_member(
+        &self,
+        object: KclValue,
+        property: Property,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        let meta = Metadata {
+            source_range: SourceRange::from(self),
+        };
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
             (KclValue::Segment { value: segment }, Property::String(property), false) => match property.as_str() {
@@ -3579,7 +3670,7 @@ impl Node<BinaryExpression> {
             .ok_or_else(|| Self::missing_result_error(self))
     }
 
-    async fn apply_operator(
+    pub(super) async fn apply_operator(
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
@@ -5323,10 +5414,16 @@ impl Node<UnaryExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        let value = self.argument.get_result(exec_state, ctx).await?;
+        let value = control_continue!(value);
+        self.apply_unary(value, exec_state).map(KclValue::continue_)
+    }
+
+    /// Apply the unary operator to an already-evaluated operand. Shared by
+    /// both executors.
+    pub(super) fn apply_unary(&self, value: KclValue, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         match self.operator {
             UnaryOperator::Not => {
-                let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = control_continue!(value);
                 let KclValue::Bool {
                     value: bool_value,
                     meta: _,
@@ -5348,11 +5445,9 @@ impl Node<UnaryExpression> {
                     meta,
                 };
 
-                Ok(negated.continue_())
+                Ok(negated)
             }
             UnaryOperator::Neg => {
-                let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = control_continue!(value);
                 let err = || {
                     KclError::new_semantic(KclErrorDetails::new(
                         format!(
@@ -5371,8 +5466,7 @@ impl Node<UnaryExpression> {
                             value: -value,
                             meta,
                             ty: *ty,
-                        }
-                        .continue_())
+                        })
                     }
                     KclValue::Plane { value } => {
                         let mut plane = value.clone();
@@ -5390,7 +5484,7 @@ impl Node<UnaryExpression> {
 
                         plane.id = exec_state.next_uuid();
                         plane.object_id = None;
-                        Ok(KclValue::Plane { value: plane }.continue_())
+                        Ok(KclValue::Plane { value: plane })
                     }
                     KclValue::Object {
                         value: values, meta, ..
@@ -5450,26 +5544,21 @@ impl Node<UnaryExpression> {
                             meta: meta.clone(),
                             constrainable: false,
                             object_kind: KclObjectKind::Default,
-                        }
-                        .continue_())
+                        })
                     }
                     _ => Err(err()),
                 }
             }
-            UnaryOperator::Plus => {
-                let operand = self.argument.get_result(exec_state, ctx).await?;
-                let operand = control_continue!(operand);
-                match operand {
-                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.continue_()),
-                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "You can only apply unary + to numbers or planes, but this is a {}",
-                            operand.human_friendly_type()
-                        ),
-                        vec![self.into()],
-                    ))),
-                }
-            }
+            UnaryOperator::Plus => match value {
+                KclValue::Number { .. } | KclValue::Plane { .. } => Ok(value),
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "You can only apply unary + to numbers or planes, but this is a {}",
+                        value.human_friendly_type()
+                    ),
+                    vec![self.into()],
+                ))),
+            },
         }
     }
 }
@@ -5775,7 +5864,7 @@ impl Node<IfExpression> {
 }
 
 #[derive(Debug)]
-enum Property {
+pub(super) enum Property {
     UInt(usize),
     String(String),
 }
@@ -5812,6 +5901,13 @@ impl Property {
         // If the property expression exited, e.g. by calling exit(), propagate
         // the exit so that it terminates the enclosing module.
         let prop_value = early_return!(prop_value);
+        Ok(Self::from_value(prop_value, sr)?)
+    }
+
+    /// Convert an already-evaluated computed-property value (the expression
+    /// inside array brackets) into a Property. Shared by both executors.
+    pub(super) fn from_value(prop_value: KclValue, sr: SourceRange) -> Result<Self, KclError> {
+        let property_sr = vec![sr];
         match prop_value {
             KclValue::Number { value, ty, meta: _ } => {
                 if !matches!(
@@ -5825,8 +5921,7 @@ impl Property {
                             "{value} is not a valid index, indices must be non-dimensional numbers. If you're sure this is correct, you can add `: number(Count)` to tell KCL this number is an index"
                         ),
                         property_sr,
-                    ))
-                    .into());
+                    )));
                 }
                 if let Some(x) = crate::try_f64_to_usize(value) {
                     Ok(Property::UInt(x))
@@ -5834,15 +5929,13 @@ impl Property {
                     Err(KclError::new_semantic(KclErrorDetails::new(
                         format!("{value} is not a valid index, indices must be whole numbers >= 0"),
                         property_sr,
-                    ))
-                    .into())
+                    )))
                 }
             }
             _ => Err(KclError::new_semantic(KclErrorDetails::new(
                 "Only numbers (>= 0) can be indexes".to_owned(),
                 vec![sr],
-            ))
-            .into()),
+            ))),
         }
     }
 }
