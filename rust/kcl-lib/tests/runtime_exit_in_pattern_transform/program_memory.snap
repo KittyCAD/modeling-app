@@ -1,0 +1,9 @@
+---
+source: kcl-lib/src/simulation_tests.rs
+description: Variables in memory after executing runtime_exit_in_pattern_transform.kcl
+---
+{
+  "transform": {
+    "type": "Function"
+  }
+}

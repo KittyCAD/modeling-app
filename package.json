@@ -100,6 +100,8 @@
     "build:wasm:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm.ps1",
     "build:wasm:dev": "./scripts/build-wasm-dev.sh",
     "build:wasm:dev:windows": "powershell -ExecutionPolicy Bypass -File ./scripts/build-wasm-dev.ps1",
+    "bindings:update": "npm run build:wasm && ./scripts/update-expected-bindings.sh",
+    "bindings:check": "npm run build:wasm && ./scripts/update-expected-bindings.sh && git diff --exit-code -- rust/kcl-lib/expected-bindings/",
     "pretest": "npm run remove-importmeta",
     "tsc": "tsc",
     "playwright": "playwright",

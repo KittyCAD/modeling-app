@@ -21,7 +21,6 @@ use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::BodyType;
 use crate::execution::ConstraintKind;
-use crate::execution::ControlFlowKind;
 use crate::execution::EarlyReturn;
 use crate::execution::EnvironmentRef;
 use crate::execution::ExecState;
@@ -92,9 +91,11 @@ use crate::parsing::ast::types::BinaryPart;
 use crate::parsing::ast::types::BodyItem;
 use crate::parsing::ast::types::CodeBlock;
 use crate::parsing::ast::types::Expr;
+use crate::parsing::ast::types::FunctionExpression;
 use crate::parsing::ast::types::IfExpression;
 use crate::parsing::ast::types::ImportPath;
 use crate::parsing::ast::types::ImportSelector;
+use crate::parsing::ast::types::ImportStatement;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::MemberExpression;
 use crate::parsing::ast::types::Name;
@@ -102,12 +103,15 @@ use crate::parsing::ast::types::Node;
 use crate::parsing::ast::types::ObjectExpression;
 use crate::parsing::ast::types::PipeExpression;
 use crate::parsing::ast::types::Program;
+use crate::parsing::ast::types::ReturnStatement;
 use crate::parsing::ast::types::SketchBlock;
 use crate::parsing::ast::types::SketchVar;
 use crate::parsing::ast::types::TagDeclarator;
 use crate::parsing::ast::types::Type;
+use crate::parsing::ast::types::TypeDeclaration;
 use crate::parsing::ast::types::UnaryExpression;
 use crate::parsing::ast::types::UnaryOperator;
+use crate::parsing::ast::types::VariableDeclaration;
 use crate::std::StdFnProps;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -722,8 +726,12 @@ impl ExecutorContext {
         body_type: BodyType,
     ) -> Result<Option<KclValueControlFlow>, KclError>
     where
-        B: CodeBlock + Sync,
+        B: CodeBlock + crate::execution::machine::ToMachineBlock + Sync,
     {
+        if self.is_machine_executor() {
+            return crate::execution::machine::run_block(self, block.to_machine_block(), exec_state, body_type).await;
+        }
+
         let mut last_expr = None;
         // Iterate over the body of the program.
         for statement in block.body() {
@@ -732,173 +740,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-                    if !matches!(body_type, BodyType::Root) {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Imports are only supported at the top-level of a file.".to_owned(),
-                            vec![import_stmt.into()],
-                        )));
-                    }
-
-                    let source_range = SourceRange::from(import_stmt);
-                    let attrs = &import_stmt.outer_attrs;
-                    let module_path = ModulePath::from_import_path(
-                        &import_stmt.path,
-                        &self.settings.project_directory,
-                        &exec_state.mod_local.path,
-                    )?;
-                    let module_id = self
-                        .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
-                        .await?;
-
-                    if let ModulePath::Local { value, .. } = &module_path {
-                        let name = import_stmt
-                            .module_name()
-                            .unwrap_or_else(|| value.file_name().unwrap_or_default());
-                        exec_state.push_op(Operation::ModuleInstance {
-                            name,
-                            module_id,
-                            glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
-                            node_path: NodePath::placeholder(),
-                            source_range,
-                        });
-                    }
-
-                    match &import_stmt.selector {
-                        ImportSelector::List { items } => {
-                            let (env_ref, module_exports) =
-                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
-                            for import_item in items {
-                                // Extract the item from the module.
-                                let mem = &exec_state.stack().memory;
-                                let mut value =
-                                    mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
-                                let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
-                                let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
-                                let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
-                                let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
-
-                                if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return Err(KclError::new_undefined_value(
-                                        KclErrorDetails::new(
-                                            format!("{} is not defined in module", import_item.name.name),
-                                            vec![SourceRange::from(&import_item.name)],
-                                        ),
-                                        None,
-                                    ));
-                                }
-
-                                // Check that the item is allowed to be imported (in at least one namespace).
-                                if value.is_ok() && !module_exports.contains(&import_item.name.name) {
-                                    value = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if ty.is_ok() && !module_exports.contains(&ty_name) {
-                                    ty = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if mod_value.is_ok() && !module_exports.contains(&mod_name) {
-                                    mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
-                                        format!(
-                                            "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
-                                            import_item.name.name
-                                        ),
-                                        vec![SourceRange::from(&import_item.name)],
-                                    )));
-                                }
-
-                                if value.is_err() && ty.is_err() && mod_value.is_err() {
-                                    return value.map(|v| Some(v.continue_()));
-                                }
-
-                                // Add the item to the current module.
-                                if let Ok(value) = value {
-                                    exec_state.mut_stack().add(
-                                        import_item.identifier().to_owned(),
-                                        value,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state
-                                            .mod_local
-                                            .module_exports
-                                            .push(import_item.identifier().to_owned());
-                                    }
-                                }
-
-                                if let Ok(ty) = ty {
-                                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
-                                    exec_state.mut_stack().add(
-                                        ty_name.clone(),
-                                        ty,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state.mod_local.module_exports.push(ty_name);
-                                    }
-                                }
-
-                                if let Ok(mod_value) = mod_value {
-                                    let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
-                                    exec_state.mut_stack().add(
-                                        mod_name.clone(),
-                                        mod_value,
-                                        SourceRange::from(&import_item.name),
-                                    )?;
-
-                                    if let ItemVisibility::Export = import_stmt.visibility {
-                                        exec_state.mod_local.module_exports.push(mod_name);
-                                    }
-                                }
-                            }
-                        }
-                        ImportSelector::Glob(_) => {
-                            let (env_ref, module_exports) =
-                                self.exec_module_for_items(module_id, exec_state, source_range).await?;
-                            for name in module_exports.iter() {
-                                let item = exec_state
-                                    .stack()
-                                    .memory
-                                    .get_from_owned(name, env_ref, source_range, 0)
-                                    .map_err(|_err| {
-                                        internal_err(
-                                            format!("{name} is not defined in module (but was exported?)"),
-                                            source_range,
-                                        )
-                                    })?;
-                                exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
-
-                                if let ItemVisibility::Export = import_stmt.visibility {
-                                    exec_state.mod_local.module_exports.push(name.clone());
-                                }
-                            }
-                        }
-                        ImportSelector::None { .. } => {
-                            let name = import_stmt.module_name().unwrap();
-                            let item = KclValue::Module {
-                                value: module_id,
-                                meta: vec![source_range.into()],
-                            };
-                            exec_state.mut_stack().add(
-                                format!("{}{}", memory::MODULE_PREFIX, name),
-                                item,
-                                source_range,
-                            )?;
-                        }
-                    }
+                    self.exec_import_statement(import_stmt, body_type, exec_state).await?;
                     last_expr = None;
                 }
                 BodyItem::ExpressionStatement(expression_statement) => {
@@ -957,91 +799,8 @@ impl ExecutorContext {
                         last_expr = Some(rhs);
                         break;
                     }
-                    let mut rhs = rhs.into_value();
-
-                    // Attach the variable name to unsolved segments as a tag.
-                    // While executing the body of a sketch block, the segments
-                    // won't have been solved yet.
-                    if let KclValue::Segment { value } = &mut rhs
-                        && let SegmentRepr::Unsolved { segment } = &mut value.repr
-                    {
-                        segment.tag = Some(TagIdentifier {
-                            value: variable_declaration.declaration.id.name.clone(),
-                            info: Default::default(),
-                            meta: vec![SourceRange::from(&variable_declaration.declaration.id).into()],
-                        });
-                    }
-                    let rhs = rhs; // Remove mutability.
-
-                    let should_bind_name =
-                        if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
-                            // Declaring a function with a name, so only bind
-                            // the variable name if it differs from the function
-                            // name.
-                            var_name != fn_name
-                        } else {
-                            // Not declaring a function, so we should bind the
-                            // variable name.
-                            true
-                        };
-                    if should_bind_name {
-                        exec_state
-                            .mut_stack()
-                            .add(var_name.clone(), rhs.clone(), source_range)?;
-                    }
-
-                    if let Some(sketch_block_state) = exec_state.mod_local.sketch_block.as_mut()
-                        && let KclValue::Segment { value } = &rhs
-                    {
-                        // Add segment to mapping so that we can tag it when
-                        // sending to the engine.
-                        let segment_object_id = match &value.repr {
-                            SegmentRepr::Unsolved { segment } => segment.object_id,
-                            SegmentRepr::Solved { segment } => segment.object_id,
-                        };
-                        sketch_block_state
-                            .segment_tags
-                            .entry(segment_object_id)
-                            .or_insert_with(|| {
-                                let id_node = &variable_declaration.declaration.id;
-                                Node::new(
-                                    TagDeclarator {
-                                        name: id_node.name.clone(),
-                                        digest: None,
-                                    },
-                                    id_node.start,
-                                    id_node.end,
-                                    id_node.module_id,
-                                )
-                            });
-                    }
-
-                    // Track operations, for the feature tree.
-                    // Don't track these operations if the KCL code being executed is in the stdlib,
-                    // because users shouldn't know about stdlib internals -- it's useless noise, to them.
-                    let should_show_in_feature_tree =
-                        !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
-                    if should_show_in_feature_tree {
-                        exec_state.push_op(Operation::VariableDeclaration {
-                            name: var_name.clone(),
-                            value: op_from_kcl_value(&rhs),
-                            visibility: variable_declaration.visibility,
-                            node_path: NodePath::placeholder(),
-                            source_range,
-                        });
-                    }
-
-                    // Track exports.
-                    if let ItemVisibility::Export = variable_declaration.visibility {
-                        if matches!(body_type, BodyType::Root) {
-                            exec_state.mod_local.module_exports.push(var_name);
-                        } else {
-                            exec_state.err(CompilationIssue::err(
-                                variable_declaration.as_source_range(),
-                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
-                            ));
-                        }
-                    }
+                    let rhs =
+                        self.bind_variable_declaration(variable_declaration, rhs.into_value(), body_type, exec_state)?;
                     // Variable declaration can be the return value of a module.
                     last_expr = matches!(body_type, BodyType::Root).then_some(rhs.continue_());
                 }
@@ -1049,85 +808,7 @@ impl ExecutorContext {
                     if exec_state.sketch_mode() {
                         continue;
                     }
-
-                    let metadata = Metadata::from(&**ty);
-                    let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
-                    match attrs.impl_ {
-                        annotations::Impl::Rust
-                        | annotations::Impl::RustConstrainable
-                        | annotations::Impl::RustConstraint => {
-                            let std_path = match &exec_state.mod_local.path {
-                                ModulePath::Std { value } => value,
-                                ModulePath::Local { .. } | ModulePath::Main => {
-                                    return Err(KclError::new_semantic(KclErrorDetails::new(
-                                        "User-defined types are not yet supported.".to_owned(),
-                                        vec![metadata.source_range],
-                                    )));
-                                }
-                            };
-                            let (t, props) = crate::std::std_ty(std_path, &ty.name.name);
-                            let value = KclValue::Type {
-                                value: TypeDef::RustRepr(t, props),
-                                meta: vec![metadata],
-                                experimental: attrs.experimental,
-                            };
-                            let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
-                            exec_state
-                                .mut_stack()
-                                .add(name_in_mem.clone(), value, metadata.source_range)
-                                .map_err(|_| {
-                                    KclError::new_semantic(KclErrorDetails::new(
-                                        format!("Redefinition of type {}.", ty.name.name),
-                                        vec![metadata.source_range],
-                                    ))
-                                })?;
-
-                            if let ItemVisibility::Export = ty.visibility {
-                                exec_state.mod_local.module_exports.push(name_in_mem);
-                            }
-                        }
-                        // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
-                        annotations::Impl::Primitive => {}
-                        annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
-                            Some(alias) => {
-                                let value = KclValue::Type {
-                                    value: TypeDef::Alias(
-                                        RuntimeType::from_parsed(
-                                            alias.inner.clone(),
-                                            exec_state,
-                                            metadata.source_range,
-                                            attrs.impl_ == annotations::Impl::KclConstrainable,
-                                            false,
-                                        )
-                                        .map_err(|e| KclError::new_semantic(e.into()))?,
-                                    ),
-                                    meta: vec![metadata],
-                                    experimental: attrs.experimental,
-                                };
-                                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
-                                exec_state
-                                    .mut_stack()
-                                    .add(name_in_mem.clone(), value, metadata.source_range)
-                                    .map_err(|_| {
-                                        KclError::new_semantic(KclErrorDetails::new(
-                                            format!("Redefinition of type {}.", ty.name.name),
-                                            vec![metadata.source_range],
-                                        ))
-                                    })?;
-
-                                if let ItemVisibility::Export = ty.visibility {
-                                    exec_state.mod_local.module_exports.push(name_in_mem);
-                                }
-                            }
-                            None => {
-                                return Err(KclError::new_semantic(KclErrorDetails::new(
-                                    "User-defined types are not yet supported.".to_owned(),
-                                    vec![metadata.source_range],
-                                )));
-                            }
-                        },
-                    }
-
+                    self.exec_type_declaration(ty, exec_state)?;
                     last_expr = None;
                 }
                 BodyItem::ReturnStatement(return_statement) => {
@@ -1158,15 +839,7 @@ impl ExecutorContext {
                         break;
                     }
                     let value = value_cf.into_value();
-                    exec_state
-                        .mut_stack()
-                        .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
-                        .map_err(|_| {
-                            KclError::new_semantic(KclErrorDetails::new(
-                                "Multiple returns from a single function.".to_owned(),
-                                vec![metadata.source_range],
-                            ))
-                        })?;
+                    Self::bind_return_value(return_statement, value, exec_state)?;
                     last_expr = None;
                 }
             }
@@ -1185,6 +858,388 @@ impl ExecutorContext {
         }
 
         Ok(last_expr)
+    }
+
+    /// Execute an import statement. Flat: this does not evaluate KCL
+    /// sub-expressions (module execution happens in its own fresh root), so
+    /// both executors share it.
+    pub(super) async fn exec_import_statement(
+        &self,
+        import_stmt: &Node<ImportStatement>,
+        body_type: BodyType,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        if !matches!(body_type, BodyType::Root) {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Imports are only supported at the top-level of a file.".to_owned(),
+                vec![import_stmt.into()],
+            )));
+        }
+
+        let source_range = SourceRange::from(import_stmt);
+        let attrs = &import_stmt.outer_attrs;
+        let module_path = ModulePath::from_import_path(
+            &import_stmt.path,
+            &self.settings.project_directory,
+            &exec_state.mod_local.path,
+        )?;
+        let module_id = self
+            .open_module(&import_stmt.path, attrs, &module_path, exec_state, source_range)
+            .await?;
+
+        if let ModulePath::Local { value, .. } = &module_path {
+            let name = import_stmt
+                .module_name()
+                .unwrap_or_else(|| value.file_name().unwrap_or_default());
+            exec_state.push_op(Operation::ModuleInstance {
+                name,
+                module_id,
+                glob: matches!(import_stmt.selector, ImportSelector::Glob(_)),
+                node_path: NodePath::placeholder(),
+                source_range,
+            });
+        }
+
+        match &import_stmt.selector {
+            ImportSelector::List { items } => {
+                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                for import_item in items {
+                    // Extract the item from the module.
+                    let mem = &exec_state.stack().memory;
+                    let mut value = mem.get_from_owned(&import_item.name.name, env_ref, import_item.into(), 0);
+                    let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.name.name);
+                    let mut ty = mem.get_from_owned(&ty_name, env_ref, import_item.into(), 0);
+                    let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.name.name);
+                    let mut mod_value = mem.get_from_owned(&mod_name, env_ref, import_item.into(), 0);
+
+                    if value.is_err() && ty.is_err() && mod_value.is_err() {
+                        return Err(KclError::new_undefined_value(
+                            KclErrorDetails::new(
+                                format!("{} is not defined in module", import_item.name.name),
+                                vec![SourceRange::from(&import_item.name)],
+                            ),
+                            None,
+                        ));
+                    }
+
+                    // Check that the item is allowed to be imported (in at least one namespace).
+                    if value.is_ok() && !module_exports.contains(&import_item.name.name) {
+                        value = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if ty.is_ok() && !module_exports.contains(&ty_name) {
+                        ty = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if mod_value.is_ok() && !module_exports.contains(&mod_name) {
+                        mod_value = Err(KclError::new_semantic(KclErrorDetails::new(
+                            format!(
+                                "Cannot import \"{}\" from module because it is not exported. Add \"export\" before the definition to export it.",
+                                import_item.name.name
+                            ),
+                            vec![SourceRange::from(&import_item.name)],
+                        )));
+                    }
+
+                    if value.is_err() && ty.is_err() && mod_value.is_err() {
+                        return value.map(|_| ());
+                    }
+
+                    // Add the item to the current module.
+                    if let Ok(value) = value {
+                        exec_state.mut_stack().add(
+                            import_item.identifier().to_owned(),
+                            value,
+                            SourceRange::from(&import_item.name),
+                        )?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state
+                                .mod_local
+                                .module_exports
+                                .push(import_item.identifier().to_owned());
+                        }
+                    }
+
+                    if let Ok(ty) = ty {
+                        let ty_name = format!("{}{}", memory::TYPE_PREFIX, import_item.identifier());
+                        exec_state
+                            .mut_stack()
+                            .add(ty_name.clone(), ty, SourceRange::from(&import_item.name))?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state.mod_local.module_exports.push(ty_name);
+                        }
+                    }
+
+                    if let Ok(mod_value) = mod_value {
+                        let mod_name = format!("{}{}", memory::MODULE_PREFIX, import_item.identifier());
+                        exec_state.mut_stack().add(
+                            mod_name.clone(),
+                            mod_value,
+                            SourceRange::from(&import_item.name),
+                        )?;
+
+                        if let ItemVisibility::Export = import_stmt.visibility {
+                            exec_state.mod_local.module_exports.push(mod_name);
+                        }
+                    }
+                }
+            }
+            ImportSelector::Glob(_) => {
+                let (env_ref, module_exports) = self.exec_module_for_items(module_id, exec_state, source_range).await?;
+                for name in module_exports.iter() {
+                    let item = exec_state
+                        .stack()
+                        .memory
+                        .get_from_owned(name, env_ref, source_range, 0)
+                        .map_err(|_err| {
+                            internal_err(
+                                format!("{name} is not defined in module (but was exported?)"),
+                                source_range,
+                            )
+                        })?;
+                    exec_state.mut_stack().add(name.to_owned(), item, source_range)?;
+
+                    if let ItemVisibility::Export = import_stmt.visibility {
+                        exec_state.mod_local.module_exports.push(name.clone());
+                    }
+                }
+            }
+            ImportSelector::None { .. } => {
+                let name = import_stmt.module_name().unwrap();
+                let item = KclValue::Module {
+                    value: module_id,
+                    meta: vec![source_range.into()],
+                };
+                exec_state
+                    .mut_stack()
+                    .add(format!("{}{}", memory::MODULE_PREFIX, name), item, source_range)?;
+            }
+        }
+        Ok(())
+    }
+
+    /// Execute a type declaration. Flat; shared by both executors.
+    pub(super) fn exec_type_declaration(
+        &self,
+        ty: &Node<TypeDeclaration>,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        let metadata = Metadata::from(ty);
+        let attrs = annotations::get_fn_attrs(&ty.outer_attrs, metadata.source_range)?.unwrap_or_default();
+        match attrs.impl_ {
+            annotations::Impl::Rust | annotations::Impl::RustConstrainable | annotations::Impl::RustConstraint => {
+                let std_path = match &exec_state.mod_local.path {
+                    ModulePath::Std { value } => value,
+                    ModulePath::Local { .. } | ModulePath::Main => {
+                        return Err(KclError::new_semantic(KclErrorDetails::new(
+                            "User-defined types are not yet supported.".to_owned(),
+                            vec![metadata.source_range],
+                        )));
+                    }
+                };
+                let (t, props) = crate::std::std_ty(std_path, &ty.name.name);
+                let value = KclValue::Type {
+                    value: TypeDef::RustRepr(t, props),
+                    meta: vec![metadata],
+                    experimental: attrs.experimental,
+                };
+                let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                exec_state
+                    .mut_stack()
+                    .add(name_in_mem.clone(), value, metadata.source_range)
+                    .map_err(|_| {
+                        KclError::new_semantic(KclErrorDetails::new(
+                            format!("Redefinition of type {}.", ty.name.name),
+                            vec![metadata.source_range],
+                        ))
+                    })?;
+
+                if let ItemVisibility::Export = ty.visibility {
+                    exec_state.mod_local.module_exports.push(name_in_mem);
+                }
+            }
+            // Do nothing for primitive types, they get special treatment and their declarations are just for documentation.
+            annotations::Impl::Primitive => {}
+            annotations::Impl::Kcl | annotations::Impl::KclConstrainable => match &ty.alias {
+                Some(alias) => {
+                    let value = KclValue::Type {
+                        value: TypeDef::Alias(
+                            RuntimeType::from_parsed(
+                                alias.inner.clone(),
+                                exec_state,
+                                metadata.source_range,
+                                attrs.impl_ == annotations::Impl::KclConstrainable,
+                                false,
+                            )
+                            .map_err(|e| KclError::new_semantic(e.into()))?,
+                        ),
+                        meta: vec![metadata],
+                        experimental: attrs.experimental,
+                    };
+                    let name_in_mem = format!("{}{}", memory::TYPE_PREFIX, ty.name.name);
+                    exec_state
+                        .mut_stack()
+                        .add(name_in_mem.clone(), value, metadata.source_range)
+                        .map_err(|_| {
+                            KclError::new_semantic(KclErrorDetails::new(
+                                format!("Redefinition of type {}.", ty.name.name),
+                                vec![metadata.source_range],
+                            ))
+                        })?;
+
+                    if let ItemVisibility::Export = ty.visibility {
+                        exec_state.mod_local.module_exports.push(name_in_mem);
+                    }
+                }
+                None => {
+                    return Err(KclError::new_semantic(KclErrorDetails::new(
+                        "User-defined types are not yet supported.".to_owned(),
+                        vec![metadata.source_range],
+                    )));
+                }
+            },
+        }
+
+        Ok(())
+    }
+
+    /// Bind the evaluated right-hand side of a variable declaration: segment
+    /// tag attachment, name binding, sketch-block segment tags, feature-tree
+    /// operation, and export tracking. The evaluation-free second half of
+    /// variable-declaration execution, shared by both executors. Returns the
+    /// bound value (which becomes the module result when this is the last
+    /// Root statement).
+    pub(super) fn bind_variable_declaration(
+        &self,
+        variable_declaration: &Node<VariableDeclaration>,
+        rhs: KclValue,
+        body_type: BodyType,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let var_name = variable_declaration.declaration.id.name.to_string();
+        let source_range = SourceRange::from(&variable_declaration.declaration.init);
+        let mut rhs = rhs;
+
+        // Attach the variable name to unsolved segments as a tag.
+        // While executing the body of a sketch block, the segments
+        // won't have been solved yet.
+        if let KclValue::Segment { value } = &mut rhs
+            && let SegmentRepr::Unsolved { segment } = &mut value.repr
+        {
+            segment.tag = Some(TagIdentifier {
+                value: variable_declaration.declaration.id.name.clone(),
+                info: Default::default(),
+                meta: vec![SourceRange::from(&variable_declaration.declaration.id).into()],
+            });
+        }
+        let rhs = rhs; // Remove mutability.
+
+        let should_bind_name = if let Some(fn_name) = variable_declaration.declaration.init.fn_declaring_name() {
+            // Declaring a function with a name, so only bind
+            // the variable name if it differs from the function
+            // name.
+            var_name != fn_name
+        } else {
+            // Not declaring a function, so we should bind the
+            // variable name.
+            true
+        };
+        if should_bind_name {
+            exec_state
+                .mut_stack()
+                .add(var_name.clone(), rhs.clone(), source_range)?;
+        }
+
+        if let Some(sketch_block_state) = exec_state.mod_local.sketch_block.as_mut()
+            && let KclValue::Segment { value } = &rhs
+        {
+            // Add segment to mapping so that we can tag it when
+            // sending to the engine.
+            let segment_object_id = match &value.repr {
+                SegmentRepr::Unsolved { segment } => segment.object_id,
+                SegmentRepr::Solved { segment } => segment.object_id,
+            };
+            sketch_block_state
+                .segment_tags
+                .entry(segment_object_id)
+                .or_insert_with(|| {
+                    let id_node = &variable_declaration.declaration.id;
+                    Node::new(
+                        TagDeclarator {
+                            name: id_node.name.clone(),
+                            digest: None,
+                        },
+                        id_node.start,
+                        id_node.end,
+                        id_node.module_id,
+                    )
+                });
+        }
+
+        // Track operations, for the feature tree.
+        // Don't track these operations if the KCL code being executed is in the stdlib,
+        // because users shouldn't know about stdlib internals -- it's useless noise, to them.
+        let should_show_in_feature_tree = !exec_state.mod_local.inside_stdlib && rhs.show_variable_in_feature_tree();
+        if should_show_in_feature_tree {
+            exec_state.push_op(Operation::VariableDeclaration {
+                name: var_name.clone(),
+                value: op_from_kcl_value(&rhs),
+                visibility: variable_declaration.visibility,
+                node_path: NodePath::placeholder(),
+                source_range,
+            });
+        }
+
+        // Track exports.
+        if let ItemVisibility::Export = variable_declaration.visibility {
+            if matches!(body_type, BodyType::Root) {
+                exec_state.mod_local.module_exports.push(var_name);
+            } else {
+                exec_state.err(CompilationIssue::err(
+                                variable_declaration.as_source_range(),
+                                "Exports are only supported at the top-level of a file. Remove `export` or move it to the top-level.",
+                            ));
+            }
+        }
+        Ok(rhs)
+    }
+
+    /// Record a return statement's evaluated value as the function result
+    /// (`__return`). NOTE: deliberately does NOT stop the enclosing block --
+    /// statements after a `return` still execute, exactly like the historical
+    /// behavior (see the ReturnStatement arm of exec_block); a second
+    /// executed `return` is the "Multiple returns" error. Shared by both
+    /// executors.
+    pub(super) fn bind_return_value(
+        return_statement: &Node<ReturnStatement>,
+        value: KclValue,
+        exec_state: &mut ExecState,
+    ) -> Result<(), KclError> {
+        let metadata = Metadata::from(return_statement);
+        exec_state
+            .mut_stack()
+            .add(memory::RETURN_NAME.to_owned(), value, metadata.source_range)
+            .map_err(|_| {
+                KclError::new_semantic(KclErrorDetails::new(
+                    "Multiple returns from a single function.".to_owned(),
+                    vec![metadata.source_range],
+                ))
+            })?;
+        Ok(())
     }
 
     pub async fn open_module(
@@ -1388,128 +1443,14 @@ impl ExecutorContext {
             Expr::None(none) => KclValue::from(none).continue_(),
             Expr::Literal(literal) => KclValue::from_literal((**literal).clone(), exec_state).continue_(),
             Expr::TagDeclarator(tag) => tag.execute(exec_state).await?.continue_(),
-            Expr::Name(name) => {
-                let being_declared = exec_state.mod_local.being_declared.clone();
-                let value = name
-                    .get_result(exec_state, self)
-                    .await
-                    .map_err(|e| var_in_own_ref_err(e, &being_declared))?
-                    .clone();
-                if let KclValue::Module { value: module_id, meta } = value {
-                    self.exec_module_for_result(
-                        module_id,
-                        exec_state,
-                        metadata.source_range
-                        ).await?.map(|v| v.continue_())
-                        .unwrap_or_else(|| {
-                            exec_state.warn(CompilationIssue::err(
-                                metadata.source_range,
-                                "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
-                            ),
-                        annotations::WARN_MOD_RETURN_VALUE);
-
-                            let mut new_meta = vec![metadata.to_owned()];
-                            new_meta.extend(meta);
-                            KclValue::KclNone {
-                                value: Default::default(),
-                                meta: new_meta,
-                            }.continue_()
-                        })
-                } else {
-                    value.continue_()
-                }
-            }
+            Expr::Name(name) => self
+                .resolve_name_for_eval(name, metadata, exec_state)
+                .await?
+                .continue_(),
             Expr::BinaryExpression(binary_expression) => binary_expression.get_result(exec_state, self).await?,
-            Expr::FunctionExpression(function_expression) => {
-                let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
-                let experimental = attrs
-                    .as_ref()
-                    .map(|a| a.experimental)
-                    // Use the default for the field, not the bool type.
-                    .unwrap_or_else(|| FnAttrs::default().experimental);
-
-                // Check the KCL @(feature_tree = ) annotation.
-                let include_in_feature_tree = attrs
-                    .as_ref()
-                    .map(|a| a.include_in_feature_tree)
-                    // Use the default for the field, not the bool type.
-                    .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
-                let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
-                    && (attrs.impl_ == annotations::Impl::Rust
-                        || attrs.impl_ == annotations::Impl::RustConstrainable
-                        || attrs.impl_ == annotations::Impl::RustConstraint)
-                {
-                    if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
-                        let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
-                        (
-                            KclValue::Function {
-                                value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
-                                meta: vec![metadata.to_owned()],
-                            },
-                            None,
-                        )
-                    } else {
-                        return Err(KclError::new_semantic(KclErrorDetails::new(
-                            "Rust implementation of functions is restricted to the standard library".to_owned(),
-                            vec![metadata.source_range],
-                        )));
-                    }
-                } else {
-                    let std_props = function_expression
-                        .name_str()
-                        .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
-                        .map(|name| StdFnProps::default(&name));
-                    // Snapshotting memory here is crucial for semantics so that we close
-                    // over variables. Variables defined lexically later shouldn't
-                    // be available to the function body.
-                    let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
-                        // Recursive function needs a snapshot that includes
-                        // itself.
-                        let dummy = EnvironmentRef::dummy();
-                        (dummy, Some(dummy))
-                    } else {
-                        (exec_state.mut_stack().snapshot()?, None)
-                    };
-                    (
-                        KclValue::Function {
-                            value: Box::new(FunctionSource::kcl(
-                                function_expression.clone(),
-                                env_ref,
-                                KclFunctionSourceParams {
-                                    std_props,
-                                    experimental,
-                                    include_in_feature_tree,
-                                },
-                            )),
-                            meta: vec![metadata.to_owned()],
-                        },
-                        placeholder_env_ref,
-                    )
-                };
-
-                // If the function expression has a name, i.e. `fn name() {}`,
-                // bind it in the current scope.
-                if let Some(fn_name) = &function_expression.name {
-                    // If we used a placeholder env ref for recursion, fix it up
-                    // with the name recursively bound so that it's available in
-                    // the function body.
-                    if let Some(placeholder_env_ref) = placeholder_env_ref {
-                        closure = exec_state.mut_stack().add_recursive_closure(
-                            fn_name.name.to_owned(),
-                            closure,
-                            placeholder_env_ref,
-                            metadata.source_range,
-                        )?;
-                    } else {
-                        // Regular non-recursive binding.
-                        exec_state
-                            .mut_stack()
-                            .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
-                    }
-                }
-
-                closure.continue_()
-            }
+            Expr::FunctionExpression(function_expression) => self
+                .create_function_closure(function_expression, annotations, metadata, statement_kind, exec_state)?
+                .continue_(),
             Expr::CallExpressionKw(call_expression) => call_expression.execute(exec_state, self).await?,
             Expr::PipeExpression(pipe_expression) => pipe_expression.get_result(exec_state, self).await?,
             Expr::PipeSubstitution(pipe_substitution) => match statement_kind {
@@ -1556,11 +1497,165 @@ impl ExecutorContext {
         };
         Ok(item)
     }
+
+    /// Evaluate a single expression on whichever executor is active, as a
+    /// fresh root. For bounded internal evaluations (e.g. GD&T's constant
+    /// plane lookup).
+    pub(crate) async fn eval_expr_fresh_root(
+        &self,
+        expr: &Expr,
+        exec_state: &mut ExecState,
+        metadata: &Metadata,
+    ) -> Result<KclValueControlFlow, KclError> {
+        if self.is_machine_executor() {
+            return crate::execution::machine::run_expr(self, expr, exec_state, metadata).await;
+        }
+        self.execute_expr(expr, exec_state, metadata, &[], StatementKind::Expression)
+            .await
+    }
+
+    /// Resolve a name to its value, running the module body first when the
+    /// name refers to a module. Flat (module execution happens in its own
+    /// fresh root); shared by both executors.
+    pub(super) async fn resolve_name_for_eval(
+        &self,
+        name: &Node<Name>,
+        metadata: &Metadata,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let being_declared = exec_state.mod_local.being_declared.clone();
+        let value = name
+            .get_result(exec_state, self)
+            .await
+            .map_err(|e| var_in_own_ref_err(e, &being_declared))?
+            .clone();
+        if let KclValue::Module { value: module_id, meta } = value {
+            Ok(self
+                        .exec_module_for_result(module_id, exec_state, metadata.source_range)
+                        .await?
+                        .unwrap_or_else(|| {
+                            exec_state.warn(CompilationIssue::err(
+                                metadata.source_range,
+                                "Imported module has no return value. The last statement of the module must be an expression, usually the Solid.",
+                            ),
+                        annotations::WARN_MOD_RETURN_VALUE);
+
+                            let mut new_meta = vec![metadata.to_owned()];
+                            new_meta.extend(meta);
+                            KclValue::KclNone {
+                                value: Default::default(),
+                                meta: new_meta,
+                            }
+                        }))
+        } else {
+            Ok(value)
+        }
+    }
+
+    /// Create the closure value for a function expression, including the
+    /// recursive-closure placeholder fixup and binding a named `fn name() {}`
+    /// in the current scope. Flat; shared by both executors.
+    pub(super) fn create_function_closure(
+        &self,
+        function_expression: &crate::parsing::ast::types::BoxNode<FunctionExpression>,
+        annotations: &[Node<Annotation>],
+        metadata: &Metadata,
+        statement_kind: StatementKind<'_>,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
+        let attrs = annotations::get_fn_attrs(annotations, metadata.source_range)?;
+        let experimental = attrs
+            .as_ref()
+            .map(|a| a.experimental)
+            // Use the default for the field, not the bool type.
+            .unwrap_or_else(|| FnAttrs::default().experimental);
+
+        // Check the KCL @(feature_tree = ) annotation.
+        let include_in_feature_tree = attrs
+            .as_ref()
+            .map(|a| a.include_in_feature_tree)
+            // Use the default for the field, not the bool type.
+            .unwrap_or_else(|| FnAttrs::default().include_in_feature_tree);
+        let (mut closure, placeholder_env_ref) = if let Some(attrs) = attrs
+            && (attrs.impl_ == annotations::Impl::Rust
+                || attrs.impl_ == annotations::Impl::RustConstrainable
+                || attrs.impl_ == annotations::Impl::RustConstraint)
+        {
+            if let ModulePath::Std { value: std_path } = &exec_state.mod_local.path {
+                let (func, props) = crate::std::std_fn(std_path, statement_kind.expect_name());
+                (
+                    KclValue::Function {
+                        value: Box::new(FunctionSource::rust(func, function_expression.clone(), props, attrs)),
+                        meta: vec![metadata.to_owned()],
+                    },
+                    None,
+                )
+            } else {
+                return Err(KclError::new_semantic(KclErrorDetails::new(
+                    "Rust implementation of functions is restricted to the standard library".to_owned(),
+                    vec![metadata.source_range],
+                )));
+            }
+        } else {
+            let std_props = function_expression
+                .name_str()
+                .and_then(|name| exec_state.mod_local.path.build_std_fully_qualified_name(name))
+                .map(|name| StdFnProps::default(&name));
+            // Snapshotting memory here is crucial for semantics so that we close
+            // over variables. Variables defined lexically later shouldn't
+            // be available to the function body.
+            let (env_ref, placeholder_env_ref) = if function_expression.name.is_some() {
+                // Recursive function needs a snapshot that includes
+                // itself.
+                let dummy = EnvironmentRef::dummy();
+                (dummy, Some(dummy))
+            } else {
+                (exec_state.mut_stack().snapshot()?, None)
+            };
+            (
+                KclValue::Function {
+                    value: Box::new(FunctionSource::kcl(
+                        function_expression.clone(),
+                        env_ref,
+                        KclFunctionSourceParams {
+                            std_props,
+                            experimental,
+                            include_in_feature_tree,
+                        },
+                    )),
+                    meta: vec![metadata.to_owned()],
+                },
+                placeholder_env_ref,
+            )
+        };
+
+        // If the function expression has a name, i.e. `fn name() {}`,
+        // bind it in the current scope.
+        if let Some(fn_name) = &function_expression.name {
+            // If we used a placeholder env ref for recursion, fix it up
+            // with the name recursively bound so that it's available in
+            // the function body.
+            if let Some(placeholder_env_ref) = placeholder_env_ref {
+                closure = exec_state.mut_stack().add_recursive_closure(
+                    fn_name.name.to_owned(),
+                    closure,
+                    placeholder_env_ref,
+                    metadata.source_range,
+                )?;
+            } else {
+                // Regular non-recursive binding.
+                exec_state
+                    .mut_stack()
+                    .add(fn_name.name.clone(), closure.clone(), metadata.source_range)?;
+            }
+        }
+        Ok(closure)
+    }
 }
 
 /// When executing in sketch mode, whether we should skip executing this
 /// expression.
-fn sketch_mode_should_skip(expr: &Expr) -> bool {
+pub(super) fn sketch_mode_should_skip(expr: &Expr) -> bool {
     match expr {
         Expr::SketchBlock(sketch_block) => !sketch_block.is_being_edited,
         _ => true,
@@ -1629,72 +1724,7 @@ impl Node<SketchBlock> {
                 EarlyReturn::Error(err) => return Err(err),
             },
         };
-        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
-            object_id
-        } else {
-            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
-            debug_assert!(false, "{message}");
-            return Err(internal_err(message, range));
-        };
-        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
-        let sketch_block_artifact_id = {
-            use crate::execution::CodeRef;
-            use crate::execution::SketchBlock;
-            use crate::front::Plane;
-            use crate::front::SourceRef;
-
-            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
-
-            // Get the plane artifact ID so that we can do an exclusive borrow.
-            let plane_artifact_id = on_object.map(|object| object.artifact_id);
-            let plane_info = match &sketch_surface {
-                SketchSurface::Plane(plane) => Some(plane.info.clone()),
-                SketchSurface::Face(_) => None,
-            };
-
-            let standard_plane = match &sketch_ctor_on {
-                Plane::Default(plane) => Some(*plane),
-                Plane::Object(_) => None,
-            };
-
-            let artifact_id = ArtifactId::from(exec_state.next_uuid());
-            // Create the sketch scene object and replace its placeholder.
-            let sketch_scene_object = Object {
-                id: sketch_id,
-                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
-                    args: crate::front::SketchCtor { on: sketch_ctor_on },
-                    plane: on_object_id,
-                    segments: Default::default(),
-                    constraints: Default::default(),
-                }),
-                label: Default::default(),
-                comments: Default::default(),
-                artifact_id,
-                source: SourceRef::new(self.into(), self.node_path.clone()),
-            };
-            exec_state.set_scene_object(sketch_scene_object);
-
-            // Create and add the sketch block artifact.
-            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
-                id: artifact_id,
-                standard_plane,
-                plane_id: plane_artifact_id,
-                plane_info,
-                // Fill this in later once we create the path. We can't just add
-                // the artifact later because order relative to constraint
-                // artifacts is significant.
-                path_id: None,
-                code_ref: CodeRef::placeholder(range),
-                sketch_id,
-            }));
-
-            exec_state.push_op(Operation::GroupBegin {
-                group: Group::SketchBlock { sketch_id },
-                node_path: NodePath::placeholder(),
-                source_range: range,
-            });
-            artifact_id
-        };
+        let sketch_block_artifact_id = self.scene_setup(sketch_id, &sketch_surface, exec_state)?;
 
         let (return_result, variables, sketch_block_state) = {
             // Don't early return until the stack frame is popped!
@@ -1770,8 +1800,282 @@ impl Node<SketchBlock> {
                 self,
             ));
         };
-        let mut sketch_block_state = sketch_block_state;
+        let return_value = self
+            .finalize_sketch_block(
+                sketch_id,
+                &sketch_surface,
+                sketch_block_artifact_id,
+                variables,
+                sketch_block_state,
+                exec_state,
+                ctx,
+            )
+            .await?;
+        Ok(if self.is_being_edited {
+            // When the sketch block is being edited, we exit the program
+            // immediately.
+            return_value.exit()
+        } else {
+            return_value.continue_()
+        })
+    }
 
+    /// Executes the arguments of the sketch block and returns the sketch ID and
+    /// surface. The surface is the `on` argument, which is basically a Plane or
+    /// Face.
+    ///
+    /// In sketch mode, the execution cache is used to look up the sketch
+    /// surface.
+    ///
+    /// The sketch ID is generated in either case so that it's stable. But only
+    /// a placeholder scene object is created for it.
+    async fn exec_arguments(
+        &self,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        if !exec_state.sketch_mode() {
+            // Evaluate arguments.
+            //
+            // Sketch mode only executes the sketch block body. Arguments must
+            // be evaluated in engine execution so that things like Planes and
+            // Faces can be created in the engine.
+            let mut labeled = IndexMap::new();
+            for labeled_arg in &self.arguments {
+                let source_range = SourceRange::from(labeled_arg.arg.clone());
+                let metadata = Metadata { source_range };
+                let value_cf = ctx
+                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
+                    .await?;
+                let value = early_return!(value_cf);
+                let arg = Arg::new(value, source_range);
+                match &labeled_arg.label {
+                    Some(label) => {
+                        labeled.insert(label.name.clone(), arg);
+                    }
+                    None => {
+                        let name = labeled_arg.arg.ident_name();
+                        if let Some(name) = name {
+                            labeled.insert(name.to_owned(), arg);
+                        } else {
+                            return Err(KclError::new_semantic(KclErrorDetails::new(
+                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
+                                vec![SourceRange::from(&labeled_arg.arg)],
+                            ))
+                            .into());
+                        }
+                    }
+                }
+            }
+            self.finish_arguments_after_eval(labeled, exec_state, ctx).await
+        } else {
+            self.arguments_from_cache(exec_state)
+        }
+    }
+
+    /// The evaluation-free tail of sketch-block argument handling: validate
+    /// the arguments, resolve the `on` surface, ensure it exists in the
+    /// engine, and mint the stable sketch id. Shared by both executors.
+    pub(super) async fn finish_arguments_after_eval(
+        &self,
+        labeled: IndexMap<String, Arg>,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+        let mut args = Args::new_no_args(
+            range,
+            self.node_path.clone(),
+            ctx.clone(),
+            Some(SketchBlock::CALLEE_NAME.to_owned()),
+        );
+        args.labeled = labeled;
+
+        // Report any arguments that aren't valid sketch block parameters.
+        // This is non-fatal so that the rest of the block still executes,
+        // matching how unexpected keyword arguments are handled for
+        // function calls.
+        //
+        // Checking arguments should be done after evaluating them, the same
+        // order as if we were calling a function.
+        self.check_for_unexpected_arguments(&args, exec_state)?;
+
+        let arg_on_value: KclValue =
+            args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
+
+        let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+            let message = "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+        };
+        let mut sketch_surface = arg_on.into_sketch_surface();
+
+        // Ensure that the plane has an ObjectId. Always create an Object so
+        // that we're consistent with IDs.
+        match &mut sketch_surface {
+            SketchSurface::Plane(plane) => {
+                // Ensure that it's been created in the engine.
+                ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
+            }
+            SketchSurface::Face(_) => {
+                // All faces should already be created in the engine.
+            }
+        }
+
+        // Generate an ID for the sketch block. This must be done after
+        // arguments so that we get the same result when the arguments are
+        // cached. This must be done before the sketch block body so that no
+        // matter how many IDs are generated due to objects in the body, the
+        // sketch ID is always stable.
+        let sketch_id = exec_state.next_object_id();
+        exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
+        let on_cache_name = sketch_on_cache_name(sketch_id);
+        // Store in memory so that it's cached.
+        exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
+
+        Ok((sketch_id, sketch_surface))
+    }
+
+    /// Sketch-mode path: arguments cannot be re-evaluated, so look the `on`
+    /// surface up from the execution cache. Flat; shared by both executors.
+    pub(super) fn arguments_from_cache(
+        &self,
+        exec_state: &mut ExecState,
+    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
+        let range = SourceRange::from(self);
+        {
+            // In sketch mode, we can't re-evaluate arguments. Instead, look
+            // them up from cache.
+
+            // Generate an ID for the sketch block. This must be done before the
+            // sketch block body so that no matter how many IDs are generated
+            // due to objects in the body, the sketch ID is always stable.
+            let sketch_id = exec_state.next_object_id();
+            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
+            let on_cache_name = sketch_on_cache_name(sketch_id);
+            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
+
+            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
+                let message =
+                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
+                debug_assert!(false, "{message}");
+                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
+            };
+            let mut sketch_surface = arg_on.into_sketch_surface();
+
+            // Ensure that the plane has an ObjectId. Always create an Object so
+            // that we're consistent with IDs.
+            if sketch_surface.object_id().is_none() {
+                // Look up the last object. Since this is where we would have
+                // created it in real execution, it will be the last object.
+                let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
+                    return Err(internal_err(
+                        "In sketch mode, the `on` plane argument must refer to an existing plane object.",
+                        range,
+                    )
+                    .into());
+                };
+                sketch_surface.set_object_id(last_object.id);
+            }
+
+            Ok((sketch_id, sketch_surface))
+        }
+    }
+
+    /// Create the sketch scene object and sketch-block artifact, and open
+    /// the feature-tree group. Flat; shared by both executors.
+    pub(super) fn scene_setup(
+        &self,
+        sketch_id: ObjectId,
+        sketch_surface: &SketchSurface,
+        exec_state: &mut ExecState,
+    ) -> Result<ArtifactId, KclError> {
+        let range = SourceRange::from(self);
+        let on_object_id = if let Some(object_id) = sketch_surface.object_id() {
+            object_id
+        } else {
+            let message = "The `on` argument should have an object after ensure_sketch_plane_in_engine".to_owned();
+            debug_assert!(false, "{message}");
+            return Err(internal_err(message, range));
+        };
+        let sketch_ctor_on = sketch_on_frontend_plane(&self.arguments, on_object_id);
+        let sketch_block_artifact_id = {
+            use crate::execution::CodeRef;
+            use crate::execution::SketchBlock;
+            use crate::front::Plane;
+            use crate::front::SourceRef;
+
+            let on_object = exec_state.mod_local.artifacts.scene_object_by_id(on_object_id);
+
+            // Get the plane artifact ID so that we can do an exclusive borrow.
+            let plane_artifact_id = on_object.map(|object| object.artifact_id);
+            let plane_info = match &sketch_surface {
+                SketchSurface::Plane(plane) => Some(plane.info.clone()),
+                SketchSurface::Face(_) => None,
+            };
+
+            let standard_plane = match &sketch_ctor_on {
+                Plane::Default(plane) => Some(*plane),
+                Plane::Object(_) => None,
+            };
+
+            let artifact_id = ArtifactId::from(exec_state.next_uuid());
+            // Create the sketch scene object and replace its placeholder.
+            let sketch_scene_object = Object {
+                id: sketch_id,
+                kind: ObjectKind::Sketch(crate::frontend::sketch::Sketch {
+                    args: crate::front::SketchCtor { on: sketch_ctor_on },
+                    plane: on_object_id,
+                    segments: Default::default(),
+                    constraints: Default::default(),
+                }),
+                label: Default::default(),
+                comments: Default::default(),
+                artifact_id,
+                source: SourceRef::new(self.into(), self.node_path.clone()),
+            };
+            exec_state.set_scene_object(sketch_scene_object);
+
+            // Create and add the sketch block artifact.
+            exec_state.add_artifact(Artifact::SketchBlock(SketchBlock {
+                id: artifact_id,
+                standard_plane,
+                plane_id: plane_artifact_id,
+                plane_info,
+                // Fill this in later once we create the path. We can't just add
+                // the artifact later because order relative to constraint
+                // artifacts is significant.
+                path_id: None,
+                code_ref: CodeRef::placeholder(range),
+                sketch_id,
+            }));
+
+            exec_state.push_op(Operation::GroupBegin {
+                group: Group::SketchBlock { sketch_id },
+                node_path: NodePath::placeholder(),
+                source_range: range,
+            });
+            artifact_id
+        };
+        Ok(sketch_block_artifact_id)
+    }
+
+    /// Solve constraints, send segments to the engine, update artifacts and
+    /// scene objects, close the feature-tree group, and build the sketch's
+    /// result object. Flat (the body has already executed); shared by both
+    /// executors.
+    #[allow(clippy::too_many_arguments)]
+    pub(super) async fn finalize_sketch_block(
+        &self,
+        sketch_id: ObjectId,
+        sketch_surface: &SketchSurface,
+        sketch_block_artifact_id: ArtifactId,
+        variables: IndexMap<String, KclValue>,
+        mut sketch_block_state: SketchBlockState,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValue, KclError> {
+        let range = SourceRange::from(self);
         // Translate sketch variables and constraints to solver input.
         let constraints = sketch_block_state
             .solver_constraints
@@ -1928,7 +2232,7 @@ impl Node<SketchBlock> {
         for unsolved_segment in &sketch_block_state.needed_by_engine {
             solved_segments.push(substitute_sketch_var_in_segment(
                 unsolved_segment.clone(),
-                &sketch_surface,
+                sketch_surface,
                 sketch_engine_id,
                 None,
                 &solve_outcome,
@@ -1949,7 +2253,7 @@ impl Node<SketchBlock> {
 
         // Build the sketch and send everything to the engine.
         let sketch = create_segments_in_engine(
-            &sketch_surface,
+            sketch_surface,
             sketch_engine_id,
             &mut solved_segments,
             &sketch_block_state.segment_tags,
@@ -1978,7 +2282,7 @@ impl Node<SketchBlock> {
         // the same.
         let variables = substitute_sketch_vars(
             variables,
-            &sketch_surface,
+            sketch_surface,
             sketch_engine_id,
             sketch.as_ref(),
             &solve_outcome,
@@ -2058,153 +2362,7 @@ impl Node<SketchBlock> {
             object_kind: KclObjectKind::Default,
             meta: vec![metadata],
         };
-        Ok(if self.is_being_edited {
-            // When the sketch block is being edited, we exit the program
-            // immediately.
-            return_value.exit()
-        } else {
-            return_value.continue_()
-        })
-    }
-
-    /// Executes the arguments of the sketch block and returns the sketch ID and
-    /// surface. The surface is the `on` argument, which is basically a Plane or
-    /// Face.
-    ///
-    /// In sketch mode, the execution cache is used to look up the sketch
-    /// surface.
-    ///
-    /// The sketch ID is generated in either case so that it's stable. But only
-    /// a placeholder scene object is created for it.
-    async fn exec_arguments(
-        &self,
-        exec_state: &mut ExecState,
-        ctx: &ExecutorContext,
-    ) -> Result<(ObjectId, SketchSurface), EarlyReturn> {
-        let range = SourceRange::from(self);
-
-        if !exec_state.sketch_mode() {
-            // Evaluate arguments.
-            //
-            // Sketch mode only executes the sketch block body. Arguments must
-            // be evaluated in engine execution so that things like Planes and
-            // Faces can be created in the engine.
-            let mut labeled = IndexMap::new();
-            for labeled_arg in &self.arguments {
-                let source_range = SourceRange::from(labeled_arg.arg.clone());
-                let metadata = Metadata { source_range };
-                let value_cf = ctx
-                    .execute_expr(&labeled_arg.arg, exec_state, &metadata, &[], StatementKind::Expression)
-                    .await?;
-                let value = early_return!(value_cf);
-                let arg = Arg::new(value, source_range);
-                match &labeled_arg.label {
-                    Some(label) => {
-                        labeled.insert(label.name.clone(), arg);
-                    }
-                    None => {
-                        let name = labeled_arg.arg.ident_name();
-                        if let Some(name) = name {
-                            labeled.insert(name.to_owned(), arg);
-                        } else {
-                            return Err(KclError::new_semantic(KclErrorDetails::new(
-                                "Arguments to sketch blocks must be either labeled or simple identifiers".to_owned(),
-                                vec![SourceRange::from(&labeled_arg.arg)],
-                            ))
-                            .into());
-                        }
-                    }
-                }
-            }
-            let mut args = Args::new_no_args(
-                range,
-                self.node_path.clone(),
-                ctx.clone(),
-                Some(SketchBlock::CALLEE_NAME.to_owned()),
-            );
-            args.labeled = labeled;
-
-            // Report any arguments that aren't valid sketch block parameters.
-            // This is non-fatal so that the rest of the block still executes,
-            // matching how unexpected keyword arguments are handled for
-            // function calls.
-            //
-            // Checking arguments should be done after evaluating them, the same
-            // order as if we were calling a function.
-            self.check_for_unexpected_arguments(&args, exec_state)?;
-
-            let arg_on_value: KclValue =
-                args.get_kw_arg(SKETCH_BLOCK_PARAM_ON, &RuntimeType::sketch_or_surface(), exec_state)?;
-
-            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
-                let message =
-                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
-                debug_assert!(false, "{message}");
-                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
-            };
-            let mut sketch_surface = arg_on.into_sketch_surface();
-
-            // Ensure that the plane has an ObjectId. Always create an Object so
-            // that we're consistent with IDs.
-            match &mut sketch_surface {
-                SketchSurface::Plane(plane) => {
-                    // Ensure that it's been created in the engine.
-                    ensure_sketch_plane_in_engine(plane, exec_state, ctx, range, self.node_path.clone()).await?;
-                }
-                SketchSurface::Face(_) => {
-                    // All faces should already be created in the engine.
-                }
-            }
-
-            // Generate an ID for the sketch block. This must be done after
-            // arguments so that we get the same result when the arguments are
-            // cached. This must be done before the sketch block body so that no
-            // matter how many IDs are generated due to objects in the body, the
-            // sketch ID is always stable.
-            let sketch_id = exec_state.next_object_id();
-            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
-            let on_cache_name = sketch_on_cache_name(sketch_id);
-            // Store in memory so that it's cached.
-            exec_state.mut_stack().add(on_cache_name, arg_on_value, range)?;
-
-            Ok((sketch_id, sketch_surface))
-        } else {
-            // In sketch mode, we can't re-evaluate arguments. Instead, look
-            // them up from cache.
-
-            // Generate an ID for the sketch block. This must be done before the
-            // sketch block body so that no matter how many IDs are generated
-            // due to objects in the body, the sketch ID is always stable.
-            let sketch_id = exec_state.next_object_id();
-            exec_state.add_placeholder_scene_object(sketch_id, range, self.node_path.clone());
-            let on_cache_name = sketch_on_cache_name(sketch_id);
-            let arg_on_value = exec_state.stack().get_owned(&on_cache_name, range)?;
-
-            let Some(arg_on) = SketchOrSurface::from_kcl_val(&arg_on_value) else {
-                let message =
-                    "The `on` argument to a sketch block must be convertible to a sketch or surface.".to_owned();
-                debug_assert!(false, "{message}");
-                return Err(KclError::new_semantic(KclErrorDetails::new(message, vec![range])).into());
-            };
-            let mut sketch_surface = arg_on.into_sketch_surface();
-
-            // Ensure that the plane has an ObjectId. Always create an Object so
-            // that we're consistent with IDs.
-            if sketch_surface.object_id().is_none() {
-                // Look up the last object. Since this is where we would have
-                // created it in real execution, it will be the last object.
-                let Some(last_object) = exec_state.mod_local.artifacts.scene_objects.last() else {
-                    return Err(internal_err(
-                        "In sketch mode, the `on` plane argument must refer to an existing plane object.",
-                        range,
-                    )
-                    .into());
-                };
-                sketch_surface.set_object_id(last_object.id);
-            }
-
-            Ok((sketch_id, sketch_surface))
-        }
+        Ok(return_value)
     }
 
     /// Report a non-fatal error for each argument that isn't a valid sketch
@@ -2230,7 +2388,7 @@ impl Node<SketchBlock> {
         Ok(())
     }
 
-    async fn load_sketch2_into_current_scope(
+    pub(super) async fn load_sketch2_into_current_scope(
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
@@ -2290,7 +2448,7 @@ impl Node<SketchBlock> {
 }
 
 impl SketchBlock {
-    fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
+    pub(super) fn prep_mem(&self, parent: EnvironmentRef, exec_state: &mut ExecState) -> Result<(), KclError> {
         exec_state.mut_stack().push_new_env_for_call(parent)
     }
 }
@@ -2334,7 +2492,7 @@ impl Node<SketchVar> {
     }
 }
 
-fn apply_ascription(
+pub(super) fn apply_ascription(
     value: &KclValue,
     ty: &Node<Type>,
     exec_state: &mut ExecState,
@@ -2512,7 +2670,7 @@ impl Node<MemberExpression> {
         };
         // TODO: The order of execution is wrong. We should execute the object
         // *before* the property.
-        let property = Property::try_from(
+        let property = match Property::try_from(
             self.computed,
             self.property.clone(),
             exec_state,
@@ -2522,12 +2680,34 @@ impl Node<MemberExpression> {
             &[],
             StatementKind::Expression,
         )
-        .await?;
+        .await
+        {
+            Ok(property) => property,
+            // The property expression exited, e.g. by calling exit().
+            // Propagate the exit so that it terminates the enclosing module.
+            Err(EarlyReturn::Value(cf)) => return Ok(cf),
+            Err(EarlyReturn::Error(err)) => return Err(err),
+        };
         let object_cf = ctx
             .execute_expr(&self.object, exec_state, &meta, &[], StatementKind::Expression)
             .await?;
         let object = control_continue!(object_cf);
+        self.apply_member(object, property, exec_state, ctx).await
+    }
 
+    /// Apply property access or indexing to an already-evaluated object: the
+    /// evaluation-free second half of member-expression execution, shared by
+    /// both executors.
+    pub(super) async fn apply_member(
+        &self,
+        object: KclValue,
+        property: Property,
+        exec_state: &mut ExecState,
+        ctx: &ExecutorContext,
+    ) -> Result<KclValueControlFlow, KclError> {
+        let meta = Metadata {
+            source_range: SourceRange::from(self),
+        };
         // Check the property and object match -- e.g. ints for arrays, strs for objects.
         match (object, property, self.computed) {
             (KclValue::Segment { value: segment }, Property::String(property), false) => match property.as_str() {
@@ -3528,7 +3708,7 @@ impl Node<BinaryExpression> {
                     match left_part {
                         BinaryPart::BinaryExpression(child) => {
                             stack.push(State::FromLeft { node });
-                            stack.push(State::EvaluateLeft(*child));
+                            stack.push(State::EvaluateLeft(child.into_node()));
                         }
                         part => {
                             let left_value = part.get_result(exec_state, ctx).await?;
@@ -3548,7 +3728,7 @@ impl Node<BinaryExpression> {
                     match right_part {
                         BinaryPart::BinaryExpression(child) => {
                             stack.push(State::FromRight { node, left });
-                            stack.push(State::EvaluateLeft(*child));
+                            stack.push(State::EvaluateLeft(child.into_node()));
                         }
                         part => {
                             let right_value = part.get_result(exec_state, ctx).await?;
@@ -3573,7 +3753,7 @@ impl Node<BinaryExpression> {
             .ok_or_else(|| Self::missing_result_error(self))
     }
 
-    async fn apply_operator(
+    pub(super) async fn apply_operator(
         &self,
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
@@ -5317,10 +5497,16 @@ impl Node<UnaryExpression> {
         exec_state: &mut ExecState,
         ctx: &ExecutorContext,
     ) -> Result<KclValueControlFlow, KclError> {
+        let value = self.argument.get_result(exec_state, ctx).await?;
+        let value = control_continue!(value);
+        self.apply_unary(value, exec_state).map(KclValue::continue_)
+    }
+
+    /// Apply the unary operator to an already-evaluated operand. Shared by
+    /// both executors.
+    pub(super) fn apply_unary(&self, value: KclValue, exec_state: &mut ExecState) -> Result<KclValue, KclError> {
         match self.operator {
             UnaryOperator::Not => {
-                let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = control_continue!(value);
                 let KclValue::Bool {
                     value: bool_value,
                     meta: _,
@@ -5342,11 +5528,9 @@ impl Node<UnaryExpression> {
                     meta,
                 };
 
-                Ok(negated.continue_())
+                Ok(negated)
             }
             UnaryOperator::Neg => {
-                let value = self.argument.get_result(exec_state, ctx).await?;
-                let value = control_continue!(value);
                 let err = || {
                     KclError::new_semantic(KclErrorDetails::new(
                         format!(
@@ -5365,8 +5549,7 @@ impl Node<UnaryExpression> {
                             value: -value,
                             meta,
                             ty: *ty,
-                        }
-                        .continue_())
+                        })
                     }
                     KclValue::Plane { value } => {
                         let mut plane = value.clone();
@@ -5384,7 +5567,7 @@ impl Node<UnaryExpression> {
 
                         plane.id = exec_state.next_uuid();
                         plane.object_id = None;
-                        Ok(KclValue::Plane { value: plane }.continue_())
+                        Ok(KclValue::Plane { value: plane })
                     }
                     KclValue::Object {
                         value: values, meta, ..
@@ -5444,26 +5627,21 @@ impl Node<UnaryExpression> {
                             meta: meta.clone(),
                             constrainable: false,
                             object_kind: KclObjectKind::Default,
-                        }
-                        .continue_())
+                        })
                     }
                     _ => Err(err()),
                 }
             }
-            UnaryOperator::Plus => {
-                let operand = self.argument.get_result(exec_state, ctx).await?;
-                let operand = control_continue!(operand);
-                match operand {
-                    KclValue::Number { .. } | KclValue::Plane { .. } => Ok(operand.continue_()),
-                    _ => Err(KclError::new_semantic(KclErrorDetails::new(
-                        format!(
-                            "You can only apply unary + to numbers or planes, but this is a {}",
-                            operand.human_friendly_type()
-                        ),
-                        vec![self.into()],
-                    ))),
-                }
-            }
+            UnaryOperator::Plus => match value {
+                KclValue::Number { .. } | KclValue::Plane { .. } => Ok(value),
+                _ => Err(KclError::new_semantic(KclErrorDetails::new(
+                    format!(
+                        "You can only apply unary + to numbers or planes, but this is a {}",
+                        value.human_friendly_type()
+                    ),
+                    vec![self.into()],
+                ))),
+            },
         }
     }
 }
@@ -5597,7 +5775,24 @@ impl Node<ArrayRangeExpression> {
                 StatementKind::Expression,
             )
             .await?;
-        let start_val = control_continue!(start_val);
+        let start_val_for_build = control_continue!(start_val);
+        let metadata = Metadata::from(&self.end_element);
+        let end_val = ctx
+            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
+            .await?;
+        let end_val = control_continue!(end_val);
+        self.build_range(start_val_for_build, end_val, exec_state)
+            .map(KclValue::continue_)
+    }
+
+    /// Build the range value from evaluated endpoints. The evaluation-free
+    /// second half of range execution, shared by both executors.
+    pub(super) fn build_range(
+        &self,
+        start_val: KclValue,
+        end_val: KclValue,
+        exec_state: &mut ExecState,
+    ) -> Result<KclValue, KclError> {
         let start = start_val
             .as_ty_f64()
             .ok_or(KclError::new_semantic(KclErrorDetails::new(
@@ -5607,11 +5802,6 @@ impl Node<ArrayRangeExpression> {
                 ),
                 vec![self.into()],
             )))?;
-        let metadata = Metadata::from(&self.end_element);
-        let end_val = ctx
-            .execute_expr(&self.end_element, exec_state, &metadata, &[], StatementKind::Expression)
-            .await?;
-        let end_val = control_continue!(end_val);
         let end = end_val.as_ty_f64().ok_or(KclError::new_semantic(KclErrorDetails::new(
             format!(
                 "Expected number for range end but found {}",
@@ -5661,8 +5851,7 @@ impl Node<ArrayRangeExpression> {
                 })
                 .collect(),
             ty: RuntimeType::Primitive(PrimitiveType::Number(ty)),
-        }
-        .continue_())
+        })
     }
 }
 
@@ -5769,7 +5958,7 @@ impl Node<IfExpression> {
 }
 
 #[derive(Debug)]
-enum Property {
+pub(super) enum Property {
     UInt(usize),
     String(String),
 }
@@ -5785,7 +5974,7 @@ impl Property {
         metadata: &Metadata,
         annotations: &[Node<Annotation>],
         statement_kind: StatementKind<'a>,
-    ) -> Result<Self, KclError> {
+    ) -> Result<Self, EarlyReturn> {
         let property_sr = vec![sr];
         if !computed {
             let Expr::Name(identifier) = value else {
@@ -5794,7 +5983,8 @@ impl Property {
                     "Object expressions like `obj.property` must use simple identifier names, not complex expressions"
                         .to_owned(),
                     property_sr,
-                )));
+                ))
+                .into());
             };
             return Ok(Property::String(identifier.to_string()));
         }
@@ -5802,14 +5992,16 @@ impl Property {
         let prop_value = ctx
             .execute_expr(&value, exec_state, metadata, annotations, statement_kind)
             .await?;
-        let prop_value = match prop_value.control {
-            ControlFlowKind::Continue => prop_value.into_value(),
-            ControlFlowKind::Exit => {
-                let message = "Early return inside array brackets is currently not supported".to_owned();
-                debug_assert!(false, "{}", &message);
-                return Err(internal_err(message, sr));
-            }
-        };
+        // If the property expression exited, e.g. by calling exit(), propagate
+        // the exit so that it terminates the enclosing module.
+        let prop_value = early_return!(prop_value);
+        Ok(Self::from_value(prop_value, sr)?)
+    }
+
+    /// Convert an already-evaluated computed-property value (the expression
+    /// inside array brackets) into a Property. Shared by both executors.
+    pub(super) fn from_value(prop_value: KclValue, sr: SourceRange) -> Result<Self, KclError> {
+        let property_sr = vec![sr];
         match prop_value {
             KclValue::Number { value, ty, meta: _ } => {
                 if !matches!(
@@ -6089,6 +6281,8 @@ d = b + c
             },
             context_type: ContextType::Mock,
             execution_callbacks: Default::default(),
+            executor_kind: Default::default(),
+            machine_call_depth_limit: crate::execution::machine::DEFAULT_MACHINE_CALL_DEPTH_LIMIT,
         };
         let mut exec_state = ExecState::new(&exec_ctxt);
 

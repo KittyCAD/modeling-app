@@ -20,18 +20,17 @@ use crate::exec::KclValue;
 use crate::execution::Artifact;
 use crate::execution::ArtifactId;
 use crate::execution::CodeRef;
-use crate::execution::ControlFlowKind;
 use crate::execution::Face;
 use crate::execution::GdtAnnotation;
 use crate::execution::GdtAnnotationArtifact;
 use crate::execution::Metadata;
 use crate::execution::ModelingCmdMeta;
 use crate::execution::Plane;
-use crate::execution::StatementKind;
 use crate::execution::TagIdentifier;
 use crate::execution::types::ArrayLen;
 use crate::execution::types::RuntimeType;
 use crate::parsing::ast::types as ast;
+use crate::parsing::ast::types::BoxNode;
 use crate::std::Args;
 use crate::std::args::FromKclValue;
 use crate::std::args::TyF64;
@@ -1705,21 +1704,9 @@ fn resolve_datums(datums: Option<Vec<String>>, args: &Args, annotation_name: &st
 async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclError> {
     let plane_ast = plane_ast("XY", args.source_range);
     let metadata = Metadata::from(args.source_range);
-    let plane_value = args
-        .ctx
-        .execute_expr(&plane_ast, exec_state, &metadata, &[], StatementKind::Expression)
-        .await?;
-    let plane_value = match plane_value.control {
-        ControlFlowKind::Continue => plane_value.into_value(),
-        ControlFlowKind::Exit => {
-            let message = "Early return inside plane value is currently not supported".to_owned();
-            debug_assert!(false, "{}", &message);
-            return Err(KclError::new_internal(KclErrorDetails::new(
-                message,
-                vec![args.source_range],
-            )));
-        }
-    };
+    let plane_value = args.ctx.eval_expr_fresh_root(&plane_ast, exec_state, &metadata).await?;
+    // Evaluating a constant name cannot exit().
+    let plane_value = plane_value.into_value();
     Ok(plane_value
         .as_plane()
         .ok_or_else(|| {
@@ -1734,7 +1721,7 @@ async fn xy_plane(exec_state: &mut ExecState, args: &Args) -> Result<Plane, KclE
 /// An AST node for a plane with the given name.
 fn plane_ast(plane_name: &str, range: SourceRange) -> ast::Node<ast::Expr> {
     ast::Node::new(
-        ast::Expr::Name(Box::new(ast::Node::new(
+        ast::Expr::Name(BoxNode::new(ast::Node::new(
             ast::Name {
                 name: ast::Identifier::new(plane_name),
                 path: Vec::new(),

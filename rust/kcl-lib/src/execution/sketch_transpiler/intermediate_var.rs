@@ -5,6 +5,7 @@ use crate::SourceRange;
 use crate::errors::KclErrorDetails;
 use crate::front::find_defined_names;
 use crate::frontend::modify::next_free_name_with_padding;
+use crate::parsing::ast::types::BoxNode;
 use crate::parsing::ast::types::ItemVisibility;
 use crate::parsing::ast::types::LabeledArg;
 use crate::parsing::ast::types::PipeExpression;
@@ -188,11 +189,11 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<bool, Kcl
                             // If call has an explicit unlabeled arg, we
                             // shouldn't change it.
                             if is_unlabeled_pipe_value(call) {
-                                call.unlabeled = Some(ast::Expr::Name(Box::new(ast::Name::new(&sketch_name))));
+                                call.unlabeled = Some(ast::Expr::Name(BoxNode::new(ast::Name::new(&sketch_name))));
                             } else if is_labeled_shorthand(call) {
                                 let shorthand_arg = call
                                     .unlabeled
-                                    .replace(ast::Expr::Name(Box::new(ast::Name::new(&sketch_name))));
+                                    .replace(ast::Expr::Name(BoxNode::new(ast::Name::new(&sketch_name))));
                                 if let Some(arg) = shorthand_arg {
                                     call.arguments.insert(0, LabeledArg { label: None, arg });
                                 }
@@ -211,7 +212,7 @@ fn migrate_expr(context: &mut Context, expr: &mut ast::Expr) -> Result<bool, Kcl
             };
             let sketch_pipe_body = node.body.drain(..new_start_index).collect();
             let sketch_non_code_meta = node.non_code_meta.split_at(new_start_index);
-            let pipe_expr = ast::Expr::PipeExpression(Box::new(ast::Node::no_src(PipeExpression {
+            let pipe_expr = ast::Expr::PipeExpression(BoxNode::new(ast::Node::no_src(PipeExpression {
                 body: sketch_pipe_body,
                 non_code_meta: sketch_non_code_meta,
                 digest: None,

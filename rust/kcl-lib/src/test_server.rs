@@ -213,9 +213,12 @@ pub async fn new_context(with_auth: bool, current_file: Option<PathBuf>) -> Resu
     if let Some(current_file) = current_file {
         settings.with_current_file(crate::TypedPath(current_file));
     }
-    let ctx = ExecutorContext::new(&client, settings)
+    let mut ctx = ExecutorContext::new(&client, settings)
         .await
         .map_err(ConnectionError::Establishing)?;
+    // Differential testing: the simulation suite runs under both executors
+    // (see the machine-executor CI job).
+    ctx.executor_kind = crate::execution::machine::ExecutorKind::from_test_env();
     Ok(ctx)
 }
 

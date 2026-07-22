@@ -802,7 +802,7 @@ fn numeric_literal(i: &mut TokenSlice) -> ModalResult<Node<NumericLiteral>> {
 
 fn literal(i: &mut TokenSlice) -> ModalResult<BoxNode<Literal>> {
     alt((string_literal, unsigned_number_literal, bool_value))
-        .map(Box::new)
+        .map(BoxNode::new)
         .context(expected("a KCL literal, like 'myPart' or 3"))
         .parse_next(i)
 }
@@ -916,7 +916,7 @@ fn sketch_var(i: &mut TokenSlice) -> ModalResult<Node<SketchVar>> {
 
     Ok(Node::new(
         SketchVar {
-            initial: literal.map(Box::new),
+            initial: literal.map(BoxNode::new),
             digest: None,
         },
         var_token.start,
@@ -1116,9 +1116,9 @@ pub enum NonCodeOr<T> {
 /// Parse a KCL array of elements.
 fn array(i: &mut TokenSlice) -> ModalResult<Expr> {
     alt((
-        array_empty.map(Box::new).map(Expr::ArrayExpression),
-        array_end_start.map(Box::new).map(Expr::ArrayRangeExpression),
-        array_elem_by_elem.map(Box::new).map(Expr::ArrayExpression),
+        array_empty.map(BoxNode::new).map(Expr::ArrayExpression),
+        array_end_start.map(BoxNode::new).map(Expr::ArrayRangeExpression),
+        array_elem_by_elem.map(BoxNode::new).map(Expr::ArrayExpression),
     ))
     .parse_next(i)
 }
@@ -1288,7 +1288,7 @@ fn object_property_same_key_and_val(i: &mut TokenSlice) -> ModalResult<Node<Obje
     let module_id = key.module_id;
     Ok(Node::new(
         ObjectProperty {
-            value: Expr::Name(Box::new(key.clone().into())),
+            value: Expr::Name(BoxNode::new(key.clone().into())),
             key,
             digest: None,
         },
@@ -1573,7 +1573,7 @@ fn else_if(i: &mut TokenSlice) -> ModalResult<Node<ElseIf>> {
     let then_val = program
         .verify(|block| block.ends_with_expr())
         .parse_next(i)
-        .map(Box::new)?;
+        .map(BoxNode::new)?;
     ignore_whitespace(i);
     let end = close_brace(i)?.end;
     ignore_whitespace(i);
@@ -1612,7 +1612,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         .verify(|block| block.ends_with_expr())
         .parse_next(i)
         .map_err(|e| e.cut())
-        .map(Box::new)?;
+        .map(BoxNode::new)?;
     ignore_whitespace(i);
     let _ = close_brace(i)?;
     ignore_whitespace(i);
@@ -1664,7 +1664,7 @@ fn if_expr(i: &mut TokenSlice) -> ModalResult<BoxNode<IfExpression>> {
         return if_with_no_else(cond, then_val, else_ifs);
     }
     ignore_whitespace(i);
-    let Ok(final_else) = program.parse_next(i).map(Box::new) else {
+    let Ok(final_else) = program.parse_next(i).map(BoxNode::new) else {
         ParseContext::err(CompilationIssue::err(else_range, IF_ELSE_CANNOT_BE_EMPTY));
         let _ = opt(close_brace).parse_next(i);
         return if_with_no_else(cond, then_val, else_ifs);
@@ -1709,7 +1709,7 @@ fn function_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
         let err = CompilationIssue::fatal(result.as_source_range(), "Anonymous function requires `fn` before `(`");
         return Err(ErrMode::Cut(err.into()));
     }
-    Ok(Expr::FunctionExpression(Box::new(result)))
+    Ok(Expr::FunctionExpression(BoxNode::new(result)))
 }
 
 // Looks like
@@ -1775,7 +1775,7 @@ fn member_expression_dot(i: &mut TokenSlice) -> ModalResult<(Expr, usize, bool)>
         .map(|p| {
             let ni: Node<Identifier> = *p;
             let nn: Node<Name> = ni.into();
-            Expr::Name(Box::new(nn))
+            Expr::Name(BoxNode::new(nn))
         })
         .parse_next(i)?;
     let end = property.end();
@@ -1830,7 +1830,7 @@ fn build_member_expression(object: Expr, mut members: Vec<(Expr, usize, bool)>) 
         .fold(initial_member_expression, |accumulated, (property, end, computed)| {
             Node::new(
                 MemberExpression {
-                    object: Expr::MemberExpression(Box::new(accumulated)),
+                    object: Expr::MemberExpression(BoxNode::new(accumulated)),
                     computed,
                     property,
                     digest: None,
@@ -2661,7 +2661,7 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     let start = i.checkpoint();
     let mut expr = alt((
-        unary_expression.map(Box::new).map(Expr::UnaryExpression),
+        unary_expression.map(BoxNode::new).map(Expr::UnaryExpression),
         expr_allowed_in_pipe_expr,
     ))
     .context(expected("a KCL value"))
@@ -2669,16 +2669,18 @@ fn expression_but_not_pipe(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     if has_binary_operator_after_optional_ascription(i) {
         i.reset(&start);
-        expr = Expr::BinaryExpression(Box::new(binary_expression.parse_next(i)?));
+        expr = Expr::BinaryExpression(BoxNode::new(binary_expression.parse_next(i)?));
     }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
+        expr = Expr::AscribedExpression(BoxNode::new(AscribedExpression::new(expr, ty)))
     }
     let label = opt(label).parse_next(i)?;
     match label {
-        Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
+        Some(label) => Ok(Expr::LabelledExpression(BoxNode::new(LabelledExpression::new(
+            expr, label,
+        )))),
         None => Ok(expr),
     }
 }
@@ -2710,15 +2712,15 @@ fn unnecessarily_bracketed(i: &mut TokenSlice) -> ModalResult<Expr> {
 fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
     let parsed_expr = alt((
         alt((
-            bool_value.map(Box::new).map(Expr::Literal),
-            tag.map(Box::new).map(Expr::TagDeclarator),
+            bool_value.map(BoxNode::new).map(Expr::Literal),
+            tag.map(BoxNode::new).map(Expr::TagDeclarator),
             literal.map(Expr::Literal),
-            sketch_var.map(Box::new).map(Expr::SketchVar),
+            sketch_var.map(BoxNode::new).map(Expr::SketchVar),
             fn_call_or_sketch_block,
-            name.map(Box::new).map(Expr::Name),
+            name.map(BoxNode::new).map(Expr::Name),
             array,
-            object.map(Box::new).map(Expr::ObjectExpression),
-            pipe_sub.map(Box::new).map(Expr::PipeSubstitution),
+            object.map(BoxNode::new).map(Expr::ObjectExpression),
+            pipe_sub.map(BoxNode::new).map(Expr::PipeSubstitution),
         )),
         alt((function_expr, if_expr.map(Expr::IfExpression), unnecessarily_bracketed)),
     ))
@@ -2727,7 +2729,7 @@ fn expr_allowed_in_pipe_expr(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     if let Ok(Some(members)) = opt(find_members).parse_next(i) {
         let mem = build_member_expression(parsed_expr, members);
-        return Ok(Expr::MemberExpression(Box::new(mem)));
+        return Ok(Expr::MemberExpression(BoxNode::new(mem)));
     }
     Ok(parsed_expr)
 }
@@ -2737,17 +2739,17 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     let mut expr = alt((
         alt((
             if_expr.map(Expr::IfExpression),
-            unary_expression.map(Box::new).map(Expr::UnaryExpression),
-            bool_value.map(Box::new).map(Expr::Literal),
+            unary_expression.map(BoxNode::new).map(Expr::UnaryExpression),
+            bool_value.map(BoxNode::new).map(Expr::Literal),
             literal.map(Expr::Literal),
-            sketch_var.map(Box::new).map(Expr::SketchVar),
+            sketch_var.map(BoxNode::new).map(Expr::SketchVar),
             fn_call_or_sketch_block,
-            name.map(Box::new).map(Expr::Name),
+            name.map(BoxNode::new).map(Expr::Name),
             array,
-            object.map(Box::new).map(Expr::ObjectExpression),
+            object.map(BoxNode::new).map(Expr::ObjectExpression),
         )),
         alt((
-            binary_expr_in_parens.map(Box::new).map(Expr::BinaryExpression),
+            binary_expr_in_parens.map(BoxNode::new).map(Expr::BinaryExpression),
             unnecessarily_bracketed,
         )),
     ))
@@ -2757,12 +2759,12 @@ fn possible_operands(i: &mut TokenSlice) -> ModalResult<Expr> {
     .parse_next(i)?;
     if let Ok(Some(members)) = opt(find_members).parse_next(i) {
         let mem = build_member_expression(expr, members);
-        expr = Expr::MemberExpression(Box::new(mem));
+        expr = Expr::MemberExpression(BoxNode::new(mem));
     }
 
     let ty = opt((colon, opt(whitespace), type_)).parse_next(i)?;
     if let Some((_, _, ty)) = ty {
-        expr = Expr::AscribedExpression(Box::new(AscribedExpression::new(expr, ty)))
+        expr = Expr::AscribedExpression(BoxNode::new(AscribedExpression::new(expr, ty)))
     }
 
     Ok(expr)
@@ -2827,7 +2829,7 @@ fn declaration(i: &mut TokenSlice) -> ModalResult<BoxNode<VariableDeclaration>> 
                     func.name = Some(id.clone());
                     func
                 })
-                .map(Box::new)
+                .map(BoxNode::new)
                 .map(Expr::FunctionExpression)
                 .context(expected("a KCL function expression, like () { return 1 }"))
                 .parse_next(i);
@@ -3588,12 +3590,12 @@ fn primitive_type(i: &mut TokenSlice) -> ModalResult<Node<PrimitiveType>> {
                 if let Some((args, ret)) = tys {
                     if let Some((unnamed, named)) = args {
                         if let Some(unnamed) = unnamed {
-                            ft.unnamed_arg = Some(Box::new(unnamed));
+                            ft.unnamed_arg = Some(BoxNode::new(unnamed));
                         }
                         ft.named_args = named;
                     }
                     if let Some((_, _, ty)) = ret {
-                        ft.return_type = Some(Box::new(ty));
+                        ft.return_type = Some(BoxNode::new(ty));
                     }
                 }
 
@@ -3726,7 +3728,7 @@ fn parameter(i: &mut TokenSlice) -> ModalResult<ParamDescription> {
         arg_name,
         type_,
         default_value: match (question_mark.is_some(), default_literal) {
-            (true, Some(lit)) => Some(DefaultParamVal::Literal(*lit)),
+            (true, Some(lit)) => Some(DefaultParamVal::Literal(lit.into_node())),
             (true, None) => Some(DefaultParamVal::none()),
             (false, None) => None,
             (false, Some(lit)) => {
@@ -3883,7 +3885,9 @@ fn labelled_fn_call(i: &mut TokenSlice) -> ModalResult<Expr> {
 
     let label = opt(label).parse_next(i)?;
     match label {
-        Some(label) => Ok(Expr::LabelledExpression(Box::new(LabelledExpression::new(expr, label)))),
+        Some(label) => Ok(Expr::LabelledExpression(BoxNode::new(LabelledExpression::new(
+            expr, label,
+        )))),
         None => Ok(expr),
     }
 }
@@ -3954,7 +3958,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
                 ));
             }
         }
-        return Ok(Expr::SketchBlock(Box::new(Node {
+        return Ok(Expr::SketchBlock(BoxNode::new(Node {
             start,
             end,
             module_id,
@@ -3971,7 +3975,7 @@ fn fn_call_or_sketch_block(i: &mut TokenSlice) -> ModalResult<Expr> {
             },
         })));
     }
-    Ok(Expr::CallExpressionKw(Box::new(fn_call)))
+    Ok(Expr::CallExpressionKw(BoxNode::new(fn_call)))
 }
 
 fn fn_call_kw(i: &mut TokenSlice) -> ModalResult<Node<CallExpressionKw>> {
@@ -4304,7 +4308,7 @@ e
         let Expr::MemberExpression(expr) = in_ctx(|| expression.parse(tokens)).unwrap() else {
             panic!();
         };
-        let Expr::BinaryExpression(be) = expr.inner.property else {
+        let Expr::BinaryExpression(be) = expr.into_node().inner.property else {
             panic!();
         };
         assert_eq!(be.inner.operator, BinaryOperator::Add);
@@ -4550,11 +4554,11 @@ mySk1 = startSketchOn(XY)
         let BodyItem::VariableDeclaration(item) = body.remove(0) else {
             panic!("expected vardec");
         };
-        let val = item.inner.declaration.inner.init;
+        let val = item.into_node().inner.declaration.inner.init;
         let Expr::PipeExpression(pipe) = val else {
             panic!("expected pipe");
         };
-        let mut noncode = pipe.inner.non_code_meta;
+        let mut noncode = pipe.into_node().inner.non_code_meta;
         assert_eq!(noncode.non_code_nodes.len(), 1);
         let comment = noncode.non_code_nodes.remove(&0).unwrap().pop().unwrap();
         assert_eq!(
@@ -4608,7 +4612,10 @@ mySk1 = startSketchOn(XY)
 
         let tokens = crate::parsing::token::lex(test_input, ModuleId::default()).unwrap();
         let (body, non_code_meta) = match in_ctx(|| expression.parse_next(&mut tokens.as_slice())).unwrap() {
-            Expr::PipeExpression(e) => (e.inner.body, e.inner.non_code_meta),
+            Expr::PipeExpression(e) => {
+                let e = e.into_node();
+                (e.inner.body, e.inner.non_code_meta)
+            }
             _ => panic!(),
         };
 
@@ -4855,7 +4862,7 @@ mySk1 = startSketchOn(XY)
         };
 
         assert_eq!(middle.operator, BinaryOperator::Div);
-        let BinaryPart::BinaryExpression(inner) = middle.inner.left else {
+        let BinaryPart::BinaryExpression(inner) = middle.into_node().inner.left else {
             panic!("expected nested binary expression");
         };
         assert_eq!(inner.operator, BinaryOperator::Sub);
@@ -5273,7 +5280,7 @@ mySk1 = startSketchOn(XY)
             },
             BinaryExpression {
                 operator: BinaryOperator::Add,
-                left: BinaryPart::Literal(Box::new(Node::with_node_path(
+                left: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                     Literal {
                         value: LiteralValue::Number {
                             value: 5.0,
@@ -5293,7 +5300,7 @@ mySk1 = startSketchOn(XY)
                         ],
                     },
                 ))),
-                right: BinaryPart::Literal(Box::new(Node::with_node_path(
+                right: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                     Literal {
                         value: "a".into(),
                         raw: r#""a""#.to_owned(),
@@ -5348,7 +5355,7 @@ mySk1 = startSketchOn(XY)
                                 ],
                             },
                             BinaryExpression {
-                                left: BinaryPart::Literal(Box::new(Node::with_node_path(
+                                left: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 5.0,
@@ -5369,7 +5376,7 @@ mySk1 = startSketchOn(XY)
                                     },
                                 ))),
                                 operator: BinaryOperator::Add,
-                                right: BinaryPart::Literal(Box::new(Node::with_node_path(
+                                right: BinaryPart::Literal(BoxNode::new(Node::with_node_path(
                                     Literal {
                                         value: LiteralValue::Number {
                                             value: 6.0,

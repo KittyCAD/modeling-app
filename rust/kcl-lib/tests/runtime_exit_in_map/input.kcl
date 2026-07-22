@@ -1,0 +1,16 @@
+@settings(experimentalFeatures = allow)
+
+fn double(@x) {
+  y = if x == 2 {
+    // Stop the whole program.
+    exit()
+  } else {
+    x * 2
+  }
+  return y
+}
+
+result = map([1, 2, 3], f = double)
+
+// We should never reach this.
+assert(1, isEqualTo = 2)

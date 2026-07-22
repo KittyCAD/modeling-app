@@ -154,7 +154,7 @@ jobs:
           name: nextest-archive
           path: rust/nextest-archive.tar.zst
   run-test-artifacts:
-    name: cargo test (shard ${{ matrix.partitionIndex}})
+    name: cargo test (shard ${{ matrix.partitionIndex}}, ${{ matrix.executor }})
     runs-on: namespace-profile-ubuntu-8-cores
     needs: build-test-artifacts
     strategy:
@@ -162,6 +162,10 @@ jobs:
       matrix:
         partitionIndex: [1, 2, 3]
         partitionTotal: [3]
+        # Differential testing: the whole suite runs under both the recursive
+        # executor and the CEK machine executor, and must produce identical
+        # snapshots. See rust/kcl-lib/src/execution/machine.rs.
+        executor: [recursive, machine]
     steps:
       - uses: runs-on/action@v2.2.0
       - uses: actions/create-github-app-token@v3.2.0
@@ -216,6 +220,7 @@ jobs:
           ZOO_API_TOKEN: ${{secrets.ZOO_API_TOKEN}}
           ZOO_HOST: https://api.dev.zoo.dev
           RUST_MIN_STACK: 10485760000
+          KCL_EXECUTOR: ${{ matrix.executor }}
           TAB_API_URL: ${{ vars.TAB_API_URL }}
           TAB_API_KEY: ${{ secrets.TAB_API_KEY }}
           CI_COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
