@@ -150,6 +150,38 @@ export function getPatternArtifactForCopyId(
   )
 }
 
+/**
+ * Resolve an engine selection that may be one of a pattern's copy IDs.
+ *
+ * A pattern copy has a materialized body artifact with the same code range as
+ * its owning Pattern. Prefer the Pattern in that case so selecting the copy
+ * still selects the pattern operation. If a later operation reused the same
+ * engine ID, its artifact has its own code range and must take precedence.
+ */
+export function getArtifactForSelectionId(
+  id: ArtifactId,
+  artifactGraph: ArtifactGraph
+): Artifact | undefined {
+  const directArtifact = artifactGraph.get(id)
+  const patternArtifact = getPatternArtifactForCopyId(id, artifactGraph)
+  if (!patternArtifact || !directArtifact) {
+    return patternArtifact ?? directArtifact
+  }
+
+  const directCodeRef =
+    'codeRef' in directArtifact
+      ? directArtifact.codeRef
+      : 'faceCodeRef' in directArtifact
+        ? directArtifact.faceCodeRef
+        : undefined
+  const isMaterializedPatternCopy =
+    directCodeRef?.range[0] === patternArtifact.codeRef.range[0] &&
+    directCodeRef.range[1] === patternArtifact.codeRef.range[1] &&
+    directCodeRef.range[2] === patternArtifact.codeRef.range[2]
+
+  return isMaterializedPatternCopy ? patternArtifact : directArtifact
+}
+
 export function expandPlane(
   plane: PlaneArtifact,
   artifactGraph: ArtifactGraph

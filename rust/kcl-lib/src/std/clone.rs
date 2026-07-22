@@ -116,13 +116,13 @@ async fn inner_clone(
                 let result_artifact_id = if solid.artifact_id == source_entity_id {
                     new_id.into()
                 } else {
-                    let result_artifact_id = exec_state.next_artifact_id();
-                    entity_clone_info = Some(EntityCloneInfo {
-                        source_artifact_id: solid.artifact_id,
-                        result_artifact_id,
-                    });
-                    result_artifact_id
+                    exec_state.next_artifact_id()
                 };
+                entity_clone_info = Some(EntityCloneInfo {
+                    source_artifact_id: solid.artifact_id,
+                    result_artifact_id,
+                    source_topology_id: source_topology_id.into(),
+                });
                 new_solid.id = new_id;
                 new_solid.value_id = new_id;
                 if let Some(sketch) = new_solid.sketch_mut() {
@@ -486,6 +486,7 @@ mod tests {
 
     use crate::exec::KclValueView;
     use crate::execution::Artifact;
+    use crate::execution::ArtifactId;
 
     // Ensure the clone function returns a sketch with different ids for all the internal paths and
     // the resulting sketch.
@@ -642,6 +643,60 @@ clonedComposite = clone(composite)
         };
         assert_eq!(cloned_artifact.id, cloned_composite.artifact_id);
         assert!(!cloned_artifact.consumed);
+
+        ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn kcl_test_clone_patterned_composite_uses_composite_topology() {
+        let code = r#"left = startSketchOn(XY)
+    |> startProfile(at = [0, 0])
+    |> line(end = [10, 0])
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+    |> extrude(length = 5)
+
+right = startSketchOn(XY)
+    |> startProfile(at = [5, 0])
+    |> line(end = [10, 0])
+    |> line(end = [0, 10])
+    |> line(end = [-10, 0])
+    |> close()
+    |> extrude(length = 5)
+
+composite = union([left, right])
+patterned = patternLinear3d(
+    composite,
+    instances = 2,
+    distance = 20,
+    axis = [1, 0, 0],
+)
+patternCopy = patterned[1]
+clonedCopy = clone(patternCopy)
+"#;
+        let ctx = crate::test_server::new_context(true, None).await.unwrap();
+        let program = crate::Program::parse_no_errs(code).unwrap();
+
+        let result = ctx.run_with_caching(program).await.unwrap();
+        let KclValueView::Solid { value: composite } = result.variables.get("composite").unwrap() else {
+            panic!("Expected composite to be a solid");
+        };
+        let KclValueView::Solid { value: pattern_copy } = result.variables.get("patternCopy").unwrap() else {
+            panic!("Expected patternCopy to be a solid");
+        };
+        let KclValueView::Solid { value: cloned_copy } = result.variables.get("clonedCopy").unwrap() else {
+            panic!("Expected clonedCopy to be a solid");
+        };
+
+        assert_eq!(pattern_copy.original_id(), composite.id);
+        assert_eq!(cloned_copy.original_id(), cloned_copy.id);
+        assert_eq!(cloned_copy.artifact_id, cloned_copy.id.into());
+        assert_ne!(pattern_copy.id, cloned_copy.id);
+        assert!(matches!(
+            result.artifact_graph.get(&cloned_copy.artifact_id),
+            Some(Artifact::CompositeSolid(_))
+        ));
 
         ctx.close().await;
     }
@@ -838,11 +893,38 @@ clonedCopy = clone(patternCopy)
         let cloned_wall = cloned_sketch.tags.get("wall").unwrap().get_cur_info().unwrap();
         assert_ne!(pattern_wall.id, cloned_wall.id);
         assert_ne!(pattern_wall.surface, cloned_wall.surface);
+        let cloned_wall_id = ArtifactId::new(
+            cloned_wall
+                .surface
+                .as_ref()
+                .expect("Expected cloned wall tag to reference a surface")
+                .face_id(),
+        );
 
         let pattern_cap = pattern_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
         let cloned_cap = cloned_copy.faces.get("endCap").unwrap().get_cur_info().unwrap();
         assert_ne!(pattern_cap.id, cloned_cap.id);
         assert_ne!(pattern_cap.surface, cloned_cap.surface);
+        let cloned_cap_id = ArtifactId::new(
+            cloned_cap
+                .surface
+                .as_ref()
+                .expect("Expected cloned cap tag to reference a surface")
+                .face_id(),
+        );
+
+        assert!(matches!(
+            result.artifact_graph.get(&cloned_copy.artifact_id),
+            Some(Artifact::Sweep(_))
+        ));
+        assert!(matches!(
+            result.artifact_graph.get(&cloned_wall_id),
+            Some(Artifact::Wall(wall)) if wall.sweep_id == cloned_copy.artifact_id
+        ));
+        assert!(matches!(
+            result.artifact_graph.get(&cloned_cap_id),
+            Some(Artifact::Cap(cap)) if cap.sweep_id == cloned_copy.artifact_id
+        ));
 
         ctx.close().await;
     }

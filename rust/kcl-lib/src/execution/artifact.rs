@@ -81,6 +81,10 @@ pub struct ArtifactCommand {
 pub(crate) struct EntityCloneInfo {
     pub source_artifact_id: ArtifactId,
     pub result_artifact_id: ArtifactId,
+    /// The engine entity whose children describe the source body's topology.
+    /// Pattern copies have their own root and child IDs, but retain the
+    /// topology of the body from which they were patterned.
+    pub source_topology_id: ArtifactId,
 }
 
 pub type DummyPathToNode = Vec<()>;
@@ -1137,7 +1141,9 @@ fn flatten_modeling_command_responses(
 struct PendingEntityCloneMapping {
     clone_cmd_id: Uuid,
     old_entity_id: Uuid,
+    source_topology_id: Uuid,
     old_child_ids: Option<Vec<Uuid>>,
+    source_topology_child_ids: Option<Vec<Uuid>>,
 }
 
 /// Build old->new entity ID maps for each clone command by pairing the
@@ -1152,10 +1158,16 @@ fn build_entity_clone_id_maps(
     for artifact_command in artifact_commands {
         match &artifact_command.command {
             ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
+                let source_topology_id = artifact_command
+                    .entity_clone_info
+                    .map(|info| Uuid::from(info.source_topology_id))
+                    .unwrap_or(*entity_id);
                 pending.push(PendingEntityCloneMapping {
                     clone_cmd_id: artifact_command.cmd_id,
                     old_entity_id: *entity_id,
+                    source_topology_id,
                     old_child_ids: None,
+                    source_topology_child_ids: None,
                 });
             }
             ModelingCmd::EntityGetAllChildUuids(kcmc::EntityGetAllChildUuids { entity_id, .. }) => {
@@ -1169,10 +1181,6 @@ fn build_entity_clone_id_maps(
                 let mut completed_index = None;
                 for index in (0..pending.len()).rev() {
                     let pending_map = &mut pending[index];
-                    if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
-                        pending_map.old_child_ids = Some(child_ids.clone());
-                        break;
-                    }
                     if let Some(old_child_ids) = &pending_map.old_child_ids
                         && *entity_id == pending_map.clone_cmd_id
                     {
@@ -1184,8 +1192,26 @@ fn build_entity_clone_id_maps(
                         for (old_id, new_id) in old_child_ids.iter().zip(child_ids.iter()) {
                             id_map.insert(ArtifactId::new(*old_id), ArtifactId::new(*new_id));
                         }
+                        if pending_map.source_topology_id != pending_map.old_entity_id
+                            && let Some(source_topology_child_ids) = &pending_map.source_topology_child_ids
+                        {
+                            for (source_id, new_id) in source_topology_child_ids.iter().zip(child_ids.iter()) {
+                                id_map.insert(ArtifactId::new(*source_id), ArtifactId::new(*new_id));
+                            }
+                        }
                         clone_id_maps.insert(pending_map.clone_cmd_id, id_map);
                         completed_index = Some(index);
+                        break;
+                    }
+                    if pending_map.old_child_ids.is_none() && *entity_id == pending_map.old_entity_id {
+                        pending_map.old_child_ids = Some(child_ids.clone());
+                        if pending_map.source_topology_id == pending_map.old_entity_id {
+                            pending_map.source_topology_child_ids = Some(child_ids.clone());
+                        }
+                        break;
+                    }
+                    if pending_map.source_topology_child_ids.is_none() && *entity_id == pending_map.source_topology_id {
+                        pending_map.source_topology_child_ids = Some(child_ids.clone());
                         break;
                     }
                 }
@@ -1528,25 +1554,6 @@ fn pattern_artifact_updates(
             let copy_id = ArtifactId::new(face_edge_info.object_id);
             match source_body {
                 Artifact::Sweep(source) => {
-                    let mut topology_id_map = AHashMap::default();
-                    topology_id_map.insert(source.id, copy_id);
-                    for (source_id, copy_id) in source
-                        .surface_ids
-                        .iter()
-                        .copied()
-                        .zip(face_edge_info.faces.iter().copied().map(ArtifactId::new))
-                    {
-                        topology_id_map.insert(source_id, copy_id);
-                    }
-                    for (source_id, copy_id) in source
-                        .edge_ids
-                        .iter()
-                        .copied()
-                        .zip(face_edge_info.edges.iter().copied().map(ArtifactId::new))
-                    {
-                        topology_id_map.insert(source_id, copy_id);
-                    }
-
                     let mut copy = source.clone();
                     copy.id = copy_id;
                     copy.surface_ids = face_edge_info.faces.iter().copied().map(ArtifactId::new).collect();
@@ -1555,29 +1562,6 @@ fn pattern_artifact_updates(
                     copy.consumed = false;
                     copy.pattern_ids = Vec::new();
                     return_arr.push(Artifact::Sweep(copy));
-
-                    // Preserve the structural face/edge artifacts as well as
-                    // the body's flat topology lists. Their sketch links stay
-                    // on the source geometry, while ownership moves to the
-                    // materialized copy Sweep.
-                    for topology_id in source.surface_ids.iter().chain(&source.edge_ids) {
-                        let Some(source_artifact) = artifacts.get(topology_id) else {
-                            continue;
-                        };
-                        if !matches!(
-                            source_artifact,
-                            Artifact::Wall(_) | Artifact::Cap(_) | Artifact::SweepEdge(_)
-                        ) {
-                            continue;
-                        }
-                        return_arr.push(remap_artifact_for_clone(
-                            source_artifact,
-                            &topology_id_map,
-                            &code_ref,
-                            pattern_id.into(),
-                            source.id,
-                        ));
-                    }
                 }
                 Artifact::CompositeSolid(source) => {
                     let mut copy = source.clone();
@@ -2248,12 +2232,7 @@ fn artifacts_to_update(
         }
         ModelingCmd::EntityClone(kcmc::EntityClone { entity_id, .. }) => {
             let source_entity_id = ArtifactId::new(*entity_id);
-            // A separate body identity is only meaningful when the source
-            // artifact is distinct from the cloned engine entity. Composite
-            // solids use the engine entity as their body artifact directly.
-            let entity_clone_info = artifact_command
-                .entity_clone_info
-                .filter(|info| info.source_artifact_id != source_entity_id);
+            let entity_clone_info = artifact_command.entity_clone_info;
             let source_id = entity_clone_info
                 .map(|info| info.source_artifact_id)
                 .unwrap_or(source_entity_id);
@@ -2270,6 +2249,29 @@ fn artifacts_to_update(
             entity_id_map.insert(source_entity_id, id);
             entity_id_map.insert(source_id, result_id);
 
+            // A materialized pattern copy contains the copy's face and edge
+            // IDs, while its structural Wall/Cap/SweepEdge artifacts remain
+            // attached to the pattern's source body. Map that body to the
+            // clone result so those structural artifacts can be cloned only
+            // when the copy itself is cloned.
+            let pattern_source_body_id = artifacts.values().find_map(|artifact| {
+                let Artifact::Pattern(pattern) = artifact else {
+                    return None;
+                };
+                if !pattern.copy_ids.contains(&source_id) {
+                    return None;
+                }
+                pattern_source_ids(artifacts, pattern.source_id).into_iter().find(|id| {
+                    matches!(
+                        artifacts.get(id),
+                        Some(Artifact::Sweep(_) | Artifact::CompositeSolid(_))
+                    )
+                })
+            });
+            if let Some(pattern_source_body_id) = pattern_source_body_id {
+                entity_id_map.insert(pattern_source_body_id, result_id);
+            }
+
             let mut cloned_artifacts = Vec::new();
             cloned_artifacts.push(remap_artifact_for_clone(
                 source_artifact,
@@ -2281,7 +2283,10 @@ fn artifacts_to_update(
 
             for artifact in artifacts.values() {
                 let artifact_id = artifact.id();
-                if artifact_id == source_id || !entity_id_map.contains_key(&artifact_id) {
+                if artifact_id == source_id
+                    || Some(artifact_id) == pattern_source_body_id
+                    || !entity_id_map.contains_key(&artifact_id)
+                {
                     continue;
                 }
                 cloned_artifacts.push(remap_artifact_for_clone(

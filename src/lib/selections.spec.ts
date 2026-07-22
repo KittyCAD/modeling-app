@@ -1684,6 +1684,30 @@ describe('pattern copy selection highlighting', () => {
     expect(result?.engineEntityId).toBe(materializedCopy.id)
   })
 
+  test('prefers a later operation that reuses a pattern copy body ID', () => {
+    const laterComposite = {
+      type: 'compositeSolid',
+      id: 'copy-body-id',
+      subType: 'union',
+      codeRef: { range: [30, 40, 0], nodePath: [] },
+      solidIds: [],
+      toolIds: [],
+      consumed: false,
+    } as unknown as Artifact
+    const graph = new Map([
+      [patternArtifact.id, patternArtifact],
+      [laterComposite.id, laterComposite],
+    ])
+
+    const result = getBodySelectionFromPrimitiveParentEntityId(
+      laterComposite.id,
+      graph
+    )
+
+    expect(result?.artifact).toBe(laterComposite)
+    expect(result?.engineEntityId).toBeUndefined()
+  })
+
   test('keeps a selected copied pattern entity highlighted through selection batching', () => {
     const result = handleSelectionBatch({
       selections: {

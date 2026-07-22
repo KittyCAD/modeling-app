@@ -53,11 +53,11 @@ import { showSketchOnImportToast } from '@src/components/SketchOnImportToast'
 import { showUnsupportedSelectionToast } from '@src/components/ToastUnsupportedSelection'
 import type { KclManager } from '@src/lang/KclManager'
 import {
+  getArtifactForSelectionId,
   getArtifactOfTypes,
   getCapCodeRef,
   getCodeRefsByArtifactId,
   getOriginalSegmentArtifact,
-  getPatternArtifactForCopyId,
   getSketchBlockForArtifact,
   getSketchBlockForPathArtifact,
   getSweepArtifactFromSelection,
@@ -391,14 +391,13 @@ export function getBodySelectionFromPrimitiveParentEntityId(
     lookUpPatternCopies?: boolean
   } = {}
 ): Selection | null {
-  const patternArtifact = getPatternArtifactForCopyId(
+  const parentArtifact = getArtifactForSelectionId(
     parentEntityId,
     artifactGraph
   )
-  if (patternArtifact && !lookUpPatternCopies) {
+  if (parentArtifact?.type === 'pattern' && !lookUpPatternCopies) {
     return null
   }
-  const parentArtifact = patternArtifact ?? artifactGraph.get(parentEntityId)
   if (!parentArtifact) {
     return null
   }
@@ -1188,9 +1187,10 @@ export async function getEventForSelectWithPoint(
   }
 
   const selectedEngineEntityId = data.entity_id
-  let _artifact =
-    getPatternArtifactForCopyId(selectedEngineEntityId, artifactGraph) ??
-    artifactGraph.get(selectedEngineEntityId)
+  let _artifact = getArtifactForSelectionId(
+    selectedEngineEntityId,
+    artifactGraph
+  )
   if (!_artifact) {
     // if there's no artifact but there is a data.entity_id, it means we don't recognize the engine entity
 

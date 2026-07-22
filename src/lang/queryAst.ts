@@ -16,10 +16,10 @@ import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
 import { sourceRangeContains } from '@src/lang/sourceRange'
 import {
   codeRefFromRange,
+  getArtifactForSelectionId,
   getArtifactOfTypes,
   getCodeRefsByArtifactId,
   getFaceCodeRef,
-  getPatternArtifactForCopyId,
 } from '@src/lang/std/artifactGraph'
 import { getArgForEnd, sketchLineHelperMapKw } from '@src/lang/std/sketch'
 import { getSketchSegmentFromSourceRange } from '@src/lang/std/sketchConstraints'
@@ -1785,9 +1785,7 @@ export function retrieveSelectionsFromOpArg(
 
   const graphSelections: Selection[] = []
   for (const artifactId of artifactIds) {
-    let artifact =
-      getPatternArtifactForCopyId(artifactId, artifactGraph) ??
-      artifactGraph.get(artifactId)
+    let artifact = getArtifactForSelectionId(artifactId, artifactGraph)
     if (!artifact) {
       continue
     }
