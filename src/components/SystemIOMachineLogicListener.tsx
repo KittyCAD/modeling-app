@@ -16,6 +16,7 @@ import {
   webSafePathSplit,
 } from '@src/lib/paths'
 import { lspService } from '@src/lang/lsp/registry/contract'
+import { getDefaultDirectoryProjectLibraryPath } from '@src/lib/projectLibraries'
 import {
   useHasListedProjects,
   useLastOperation,
@@ -45,6 +46,10 @@ export function SystemIOMachineLogicListener() {
   const navigate = useNavigate()
   const settingsValues = settings.useSettings()
   const lsp = registry.get(lspService)
+  const defaultDirectoryLibraryPath =
+    getDefaultDirectoryProjectLibraryPath(
+      settingsValues.app.libraries.current
+    ) || ''
   const { pathname } = useLocation()
 
   function safestNavigateToFile({
@@ -67,11 +72,9 @@ export function SystemIOMachineLogicListener() {
       encodedURI
     ) {
       filePathWithExtension = decodeURIComponent(encodedURI)
-      const applicationProjectDirectory =
-        settingsValues.app.projectDirectory.current
       projectDirectory = getProjectDirectoryFromKCLFilePath(
         filePathWithExtension,
-        applicationProjectDirectory
+        defaultDirectoryLibraryPath
       )
     }
 
@@ -215,13 +218,12 @@ export function SystemIOMachineLogicListener() {
         systemIOActor.send({
           type: SystemIOMachineEvents.setProjectDirectoryPath,
           data: {
-            requestedProjectDirectoryPath:
-              settingsValues.app.projectDirectory.current || '',
+            requestedProjectDirectoryPath: defaultDirectoryLibraryPath,
           },
         })
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps -- TODO: blanket-ignored fix me!
-    }, [settingsValues.app.projectDirectory.current, pathname])
+    }, [defaultDirectoryLibraryPath, pathname])
   }
 
   const useDefaultProjectName = () => {
@@ -267,9 +269,7 @@ export function SystemIOMachineLogicListener() {
           })
         }
       },
-      settingsValues.app.projectDirectory.current
-        ? [settingsValues.app.projectDirectory.current]
-        : []
+      defaultDirectoryLibraryPath ? [defaultDirectoryLibraryPath] : []
     )
   }
 

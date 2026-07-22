@@ -183,7 +183,7 @@ import type {
 import { calculateIntersectionOfTwoLines } from 'sketch-helpers'
 
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
 type DraftSegment = 'line' | 'tangentialArc'
 

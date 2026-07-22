@@ -2,6 +2,10 @@ import type { Configuration } from '@rust/kcl-lib/bindings/Configuration'
 import { APP_NAME, ARCHIVE_DIR, IS_PLAYWRIGHT_KEY } from '@src/lib/constants'
 import fsZds from '@src/lib/fs-zds'
 import { webSafeJoin } from '@src/lib/pathUtils'
+import {
+  getDefaultDirectoryProjectLibraryPath,
+  isProjectLibrarySettings,
+} from '@src/lib/projectLibraries'
 
 import type { FileEntry, Project } from '@src/lib/project'
 import { err } from '@src/lib/trap'
@@ -22,6 +26,11 @@ export type ProjectRoute = {
 function getProjectDirectorySetting(
   configuration: DeepPartial<Configuration>
 ): string | undefined {
+  const libraries = configuration.settings?.app?.libraries
+  if (isProjectLibrarySettings(libraries)) {
+    return getDefaultDirectoryProjectLibraryPath(libraries)
+  }
+
   const projectSettings = configuration.settings?.project
   if (
     !projectSettings ||
@@ -297,19 +306,6 @@ export function desktopSafePathSplit(targetPath: string): string[] {
 
 export function desktopSafePathJoin(paths: string[]): string {
   return paths.join(fsZds.sep)
-}
-
-/**
- * Don't pass a folder path, only files with extensions for best results.
- */
-export const enforceFileEXT = (
-  filePath: string,
-  ext: string | null
-): string | null => {
-  if (ext === null) {
-    return null
-  }
-  return filePath ? (filePath.endsWith(ext) ? filePath : filePath + ext) : null
 }
 
 export const getEXTNoPeriod = (filePath: string) => {

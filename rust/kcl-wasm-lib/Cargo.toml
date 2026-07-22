@@ -2,7 +2,7 @@
 name = "kcl-wasm-lib"
 description = "KittyCAD Language wasm bindings"
 license = "MIT"
-version = "0.1.169"
+version = "0.1.170"
 edition = "2024"
 repository = "https://github.com/KittyCAD/modeling-app"
 publish = false
@@ -56,6 +56,9 @@ features = [
 anyhow.workspace = true
 pretty_assertions = "1.4.1"
 wasm-bindgen-test = "0.3.65"
+
+[lints]
+workspace = true
 
 # Local development only. Placeholder to speed up development cycle
 #[package.metadata.wasm-pack.profile.release]

@@ -17,8 +17,11 @@ import {
   createOnNegotiationNeeded,
   createOnSignalingStateChange,
   createOnTrack,
-} from '@src/network/peerConnection'
-import type { IEventListenerTracked, ManagerTearDown } from '@src/network/utils'
+} from '@src/lib/engineConnection/peerConnection'
+import type {
+  IEventListenerTracked,
+  ManagerTearDown,
+} from '@src/lib/engineConnection/utils'
 import {
   ConnectingType,
   DATACHANNEL_NAME_UMC,
@@ -26,13 +29,13 @@ import {
   EngineConnectionStateType,
   PING_INTERVAL_MS,
   WebSocketStatusCodes,
-} from '@src/network/utils'
+} from '@src/lib/engineConnection/utils'
 import {
   createOnWebSocketClose,
   createOnWebSocketError,
   createOnWebSocketMessage,
   createOnWebSocketOpen,
-} from '@src/network/websocketConnection'
+} from '@src/lib/engineConnection/websocketConnection'
 
 // An interface for a promise that needs to be awaited and pass the resolve reject to
 // other dependencies. We do not need to pass values between these. It is mainly

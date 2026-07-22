@@ -807,7 +807,7 @@ export fn ellipse(
 /// extrude([originalSketch.line1, originalSketch.line2], length = -1, bodyType = SURFACE)
 /// ```
 /// ```kcl,sketchSolve
-/// @settings(kclVersion = 2.0, experimentalFeatures = allow)
+/// @settings(kclVersion = 2.0)
 ///
 /// // The direction parameter can apply to sketches, segments, or edges
 /// // Directions can be specified by an axis, a sketch segment, or a body's edge.
@@ -899,7 +899,7 @@ export fn extrude(
   symmetric?: bool,
   /// If specified, will extrude in this direction instead of the sketch plane normal.
   /// If an edge is being extruded, this defaults to halfway between the faces on either side of the edge.
-  @(experimental = true) direction?: Point3d | Edge | TaggedEdge | Segment,
+  direction?: Point3d | Edge | TaggedEdge | Segment,
   /// If specified, will also extrude in the opposite direction to 'distance' to the specified distance. If 'symmetric' is true, this value is ignored.
   bidirectionalLength?: number(Length),
   /// A named tag for the face at the start of the extrusion, i.e. the original sketch.
