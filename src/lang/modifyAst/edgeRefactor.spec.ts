@@ -1108,6 +1108,32 @@ describe('refactorZ0006Unified', () => {
       }
     )
 
+    it.each([
+      {
+        name: 'extrude-to-reference',
+        kcl: 'extrude(getOppositeEdge(edge1), to = face1)',
+      },
+      {
+        name: 'twist extrude',
+        kcl: 'extrude(getOppositeEdge(edge1), length = 5, twistAngle = 90deg)',
+      },
+    ])('does not refactor the concrete target of a $name', ({ kcl }) => {
+      const ast = assertParse(kcl, wasmInstance)
+      const metadata: EdgeRefactorMeta[] = [
+        {
+          edgeId: '00000000-0000-0000-0000-000000000000',
+          sourceRange: sourceRangeForCall(ast, 'getOppositeEdge'),
+          faceIds: facePair(
+            '00000000-0000-0000-0000-000000000001',
+            '00000000-0000-0000-0000-000000000002'
+          ),
+          stdlibFn: 'getOppositeEdge',
+        },
+      ]
+
+      expect(findExtrudeEdgeCallsToFix(ast, metadata)).toEqual([])
+    })
+
     it('finds a direct tagged-edge extrude target from the artifact graph', () => {
       const ast = assertParse(KCL_EXTRUDE_TARGET_DIRECT_TAG, wasmInstance)
       const graph = createTaggedWallAndCapGraph(

@@ -1625,6 +1625,10 @@ function findExtrudeEdgeArgumentExpr(
   return arg?.arg ?? null
 }
 
+function extrudeRequiresConcreteTarget(call: Node<CallExpressionKw>): boolean {
+  return ['to', 'twistAngle'].some((label) => findKwArg(label, call) != null)
+}
+
 export function findExtrudeEdgeCallsToFix(
   program: Node<Program>,
   edgeRefactorMetadata: EdgeRefactorMeta[],
@@ -1643,6 +1647,9 @@ export function findExtrudeEdgeCallsToFix(
 
       const replacements: ExtrudeEdgeCallToFix['replacements'] = []
       for (const argument of ['target', 'to', 'direction'] as const) {
+        if (argument === 'target' && extrudeRequiresConcreteTarget(call)) {
+          continue
+        }
         const expr = findExtrudeEdgeArgumentExpr(call, argument)
         const deprecatedCall = expr
           ? findDeprecatedEdgeStdlibCallFromExpr(program, expr, pathToNode)
