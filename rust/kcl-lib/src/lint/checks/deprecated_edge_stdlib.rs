@@ -148,8 +148,9 @@ fn contains_deprecated_edge_stdlib(expr: &Expr, prog: &AstNode<Program>) -> bool
             .elements
             .iter()
             .any(|element| is_deprecated_edge_stdlib_or_variable_expr(element, prog)),
-        Expr::Name(name) => top_level_variable_init(prog, name.name.name.as_str()).is_some_and(|init| {
-            matches!(init, Expr::ArrayExpression(_)) && contains_deprecated_edge_stdlib(init, prog)
+        Expr::Name(name) => top_level_variable_init(prog, name.name.name.as_str()).is_some_and(|init| match init {
+            Expr::ArrayExpression(_) => contains_deprecated_edge_stdlib(init, prog),
+            _ => is_deprecated_edge_stdlib_expr(init),
         }),
         _ => is_deprecated_edge_stdlib_or_variable_expr(expr, prog),
     }
@@ -575,6 +576,18 @@ surface001 = extrude(targets, length = 5mm, bodyType = SURFACE, method = NEW)
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert_eq!(z0006.len(), 1, "Z0006 follows a top-level array variable");
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_target_variable() {
+        let kcl = r#"target = getOppositeEdge(body001.sketch.tags.line1)
+surface001 = extrude(target, length = 5mm, bodyType = SURFACE, method = NEW)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 follows a top-level helper variable");
         assert!(z0006[0].description.contains("target"));
     }
 
