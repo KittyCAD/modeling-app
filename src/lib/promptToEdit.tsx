@@ -192,9 +192,11 @@ it is an ${
             artifact.subType
           } edge, in order to refer to this edge you should add a tag to the segment function in this source range,
 and then use the function ${
-            artifact.subType === 'adjacent'
-              ? 'getAdjacentEdge'
-              : 'getOppositeEdge'
+            artifact.subType === 'opposite'
+              ? 'getOppositeEdge'
+              : artifact.subType === 'previousAdjacent'
+                ? 'getPreviousAdjacentEdge'
+                : 'getNextAdjacentEdge'
           }
 See later source ranges for more context. about the sweep`,
           range: convertAppRangeToApiRange(selection.codeRef.range, code),

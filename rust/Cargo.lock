@@ -2522,6 +2522,7 @@ dependencies = [
  "twenty-twenty",
  "tynm",
  "typed-path",
+ "unicase",
  "url",
  "uuid",
  "validator",

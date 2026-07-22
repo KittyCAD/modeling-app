@@ -402,6 +402,7 @@ impl Context {
 
     /// Edit segment in sketch.
     #[wasm_bindgen]
+    #[expect(clippy::too_many_arguments)]
     pub async fn edit_segments(
         &self,
         version_json: &str,
@@ -624,6 +625,7 @@ impl Context {
 
     /// Edit a constraint label position in a sketch.
     #[wasm_bindgen]
+    #[expect(clippy::too_many_arguments)]
     pub async fn edit_distance_constraint_label_position(
         &self,
         version_json: &str,
@@ -709,7 +711,7 @@ impl Context {
             serde_json::from_str(sketch_json).map_err(|e| format!("Could not deserialize ObjectId: {e}"))?;
 
         // Convert flattened Vec<f64> to Vec<[f64; 2]> (expects pairs)
-        if points.len() % 2 != 0 {
+        if !points.len().is_multiple_of(2) {
             return Err(JsValue::from_str(
                 "Points array must have even length (pairs of x, y coordinates)",
             ));
@@ -759,7 +761,7 @@ impl Context {
         let (source_delta, scene_graph_delta) = match execute_trim_loop_with_context(
             &points_core,
             initial_scene_graph_delta,
-            &mut *guard,
+            &mut guard,
             &ctx,
             version,
             actual_sketch_id,
@@ -862,6 +864,7 @@ impl Context {
 
     /// Chain a segment to a previous segment by adding it and creating a coincident constraint.
     #[wasm_bindgen]
+    #[expect(clippy::too_many_arguments)]
     pub async fn chain_segment(
         &self,
         version_json: &str,
