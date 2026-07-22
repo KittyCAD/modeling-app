@@ -188,51 +188,47 @@ describe('project command config', () => {
     expect(systemIOActor.send).not.toHaveBeenCalled()
   })
 
-  it('defaults create project to the current library route', () => {
-    window.location.hash = '#/library/client-projects'
-    try {
-      const commands = createProjectCommands({
-        systemIOActor: createSystemIOActor(),
-        enableProjectDirectoryCommands: true,
-        getCreateProjectLibraryTargets: () => [
-          {
-            library: createLibrary('default-projects', 'Default Projects'),
-            createProject: {
-              run: vi.fn(),
-            },
-          },
-          {
-            library: createLibrary('client-projects', 'Client Projects'),
-            createProject: {
-              run: vi.fn(),
-            },
-          },
-        ],
-      })
-      const createCommand = commands.find(
-        (command) => command.name === 'Create project'
-      )
-      const libraryArg = createCommand?.args?.libraryId as unknown as {
-        defaultValue: () => string
-        options: () => CommandArgumentOption<string>[]
-      }
-
-      expect(libraryArg.defaultValue()).toBe('client-projects')
-      expect(libraryArg.options()).toEqual([
+  it('defaults create project to the current library context', () => {
+    const commands = createProjectCommands({
+      systemIOActor: createSystemIOActor(),
+      enableProjectDirectoryCommands: true,
+      getCurrentProjectLibraryId: () => 'client-projects',
+      getCreateProjectLibraryTargets: () => [
         {
-          name: 'Default Projects',
-          value: 'default-projects',
-          isCurrent: false,
+          library: createLibrary('default-projects', 'Default Projects'),
+          createProject: {
+            run: vi.fn(),
+          },
         },
         {
-          name: 'Client Projects',
-          value: 'client-projects',
-          isCurrent: false,
+          library: createLibrary('client-projects', 'Client Projects'),
+          createProject: {
+            run: vi.fn(),
+          },
         },
-      ])
-    } finally {
-      window.location.hash = ''
+      ],
+    })
+    const createCommand = commands.find(
+      (command) => command.name === 'Create project'
+    )
+    const libraryArg = createCommand?.args?.libraryId as unknown as {
+      defaultValue: () => string
+      options: () => CommandArgumentOption<string>[]
     }
+
+    expect(libraryArg.defaultValue()).toBe('client-projects')
+    expect(libraryArg.options()).toEqual([
+      {
+        name: 'Default Projects',
+        value: 'default-projects',
+        isCurrent: false,
+      },
+      {
+        name: 'Client Projects',
+        value: 'client-projects',
+        isCurrent: false,
+      },
+    ])
   })
 
   it('shows a prepopulated library picker when creating into multiple libraries', () => {

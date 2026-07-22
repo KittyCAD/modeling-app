@@ -108,6 +108,7 @@ const PROJECT_LIBRARY_PREVIEW_LIMIT = 6
 // as defined in Router.tsx, so we can use the desktop APIs and types.
 const Home = () => {
   useSignals()
+  const app = useApp()
   const {
     auth,
     billing,
@@ -116,7 +117,7 @@ const Home = () => {
     systemIOActor,
     registry,
     userFeatures,
-  } = useApp()
+  } = app
   const keymap = registry.optional(keymapService)
   const { kclManager } = useSingletons()
   const executingPath = useAbsoluteFilePath({ warnIfNoExecutingPath: false })
@@ -164,6 +165,7 @@ const Home = () => {
       : undefined
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
+  const selectedProjectLibraryId = selectedProjectLibrary?.id
   const scopedHomeProjectEntries = routeSelectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
@@ -190,6 +192,18 @@ const Home = () => {
   const sort = searchParams.get('sort_by') ?? 'modified:desc'
   const sidebarButtonClasses =
     'flex items-center p-2 gap-2 leading-tight border-transparent dark:border-transparent enabled:dark:border-transparent enabled:hover:border-primary/50 enabled:dark:hover:border-inherit active:border-primary dark:bg-transparent hover:bg-transparent'
+
+  useEffect(() => {
+    app.currentProjectLibraryIdSignal.value = selectedProjectLibraryId
+
+    return () => {
+      if (
+        app.currentProjectLibraryIdSignal.value === selectedProjectLibraryId
+      ) {
+        app.currentProjectLibraryIdSignal.value = undefined
+      }
+    }
+  }, [app, selectedProjectLibraryId])
 
   useEffect(() => {
     setCloudSyncProjectScope(undefined)

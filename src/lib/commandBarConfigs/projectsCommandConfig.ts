@@ -3,14 +3,13 @@ import type { Command, CommandArgumentOption } from '@src/lib/commandTypes'
 import { MAX_PROJECT_NAME_LENGTH } from '@src/lib/constants'
 import { isDesktop } from '@src/lib/isDesktop'
 import { PATHS } from '@src/lib/paths'
-import { webSafePathSplit } from '@src/lib/pathUtils'
 import {
   getProjectDirectoryOptions,
   getProjectDisplayName,
   getProjectOptionNameFromDirectoryName,
 } from '@src/lib/projectDisplayName'
-import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import type { Project } from '@src/lib/project'
+import type { ProjectLibrary } from '@src/lib/projectLibraries'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -58,28 +57,11 @@ function defaultEnableProjectDirectoryCommands() {
   return typeof window !== 'undefined' && Boolean(window.electron)
 }
 
-function currentLibraryIdFromLocation() {
-  if (typeof window === 'undefined') {
-    return undefined
-  }
-
-  const pathname = window.location.hash
-    ? window.location.hash.replace(/^#/, '').split('?')[0]
-    : window.location.pathname
-  const libraryPathPrefix = `${PATHS.LIBRARY}/`
-  if (!pathname.startsWith(libraryPathPrefix)) {
-    return undefined
-  }
-
-  return decodeURIComponent(
-    webSafePathSplit(pathname.slice(libraryPathPrefix.length))[0] ?? ''
-  )
-}
-
 export function createProjectCommands({
   systemIOActor,
   enableProjectDirectoryCommands = defaultEnableProjectDirectoryCommands(),
   getCurrentProjectDirectoryName,
+  getCurrentProjectLibraryId,
   getCreateProjectLibraryTargets,
   getHomeProjectActions,
   getHomeProjectEntries,
@@ -87,6 +69,7 @@ export function createProjectCommands({
   systemIOActor: ActorRefFrom<typeof systemIOMachine>
   enableProjectDirectoryCommands?: boolean
   getCurrentProjectDirectoryName?: () => string | undefined
+  getCurrentProjectLibraryId?: () => string | undefined
   getCreateProjectLibraryTargets?: () => readonly CreateProjectLibraryTarget[]
   getHomeProjectActions?: () => HomeProjectActionsService | undefined
   getHomeProjectEntries?: () => readonly HomeProjectEntry[] | undefined
@@ -238,9 +221,9 @@ export function createProjectCommands({
     })) ?? []
   const defaultCreateProjectLibraryId = () => {
     const options = createProjectLibraryOptions()
-    const routeLibraryId = currentLibraryIdFromLocation()
+    const currentLibraryId = getCurrentProjectLibraryId?.()
     return (
-      options.find((option) => option.value === routeLibraryId)?.value ??
+      options.find((option) => option.value === currentLibraryId)?.value ??
       options[0]?.value ??
       ''
     )

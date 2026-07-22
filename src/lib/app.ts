@@ -168,6 +168,8 @@ export interface AppSubsystems {
 
 export class App implements AppSubsystems {
   public projectSignal: Signal<ZDSProject | undefined> = signal(undefined)
+  public currentProjectLibraryIdSignal: Signal<string | undefined> =
+    signal(undefined)
   public debug: AppDebug = {}
   get project() {
     return this.projectSignal.value
@@ -519,6 +521,8 @@ export class App implements AppSubsystems {
             enableProjectDirectoryCommands,
             getCurrentProjectDirectoryName: () =>
               this.settings.actor.getSnapshot().context.currentProject?.name,
+            getCurrentProjectLibraryId: () =>
+              this.currentProjectLibraryIdSignal.value,
             getCreateProjectLibraryTargets: this.getCreateProjectLibraryTargets,
             getHomeProjectActions: () =>
               this.registry.get(homeProjectActionsService),
