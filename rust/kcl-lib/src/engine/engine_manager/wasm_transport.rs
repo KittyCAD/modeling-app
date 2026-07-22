@@ -55,6 +55,12 @@ pub struct ResponseContext {
     responses: Arc<RwLock<IndexMap<Uuid, WebSocketResponse>>>,
 }
 
+impl Default for ResponseContext {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[wasm_bindgen]
 impl ResponseContext {
     #[wasm_bindgen(constructor)]
@@ -161,7 +167,9 @@ impl WasmTransport {
 }
 
 // Safety: WebAssembly runs this transport on the browser's single thread.
+#[expect(unsafe_code)]
 unsafe impl Send for WasmTransport {}
+#[expect(unsafe_code)]
 unsafe impl Sync for WasmTransport {}
 
 #[async_trait::async_trait]

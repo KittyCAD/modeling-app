@@ -38,6 +38,8 @@ jobs:
           cache-workspaces: rust
           components: clippy
           rustflags: '' # Use .cargo/config.toml
+          # We need this to run clippy for the wasm32 target.
+          target: wasm32-unknown-unknown
 
       - name: Run clippy
         run: |

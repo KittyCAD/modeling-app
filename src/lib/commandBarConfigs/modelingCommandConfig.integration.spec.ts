@@ -269,18 +269,6 @@ describe('Extrude surface arguments', () => {
     ).toBe(false)
   })
 
-  it('uses experimental features for explicit direction selections', () => {
-    expect(
-      modelingStdLibCommandUsesExperimentalFeatures('Extrude', {
-        direction: selectionsForArtifact({ type: 'sweepEdge' } as Artifact),
-      })
-    ).toBe(true)
-
-    expect(modelingStdLibCommandUsesExperimentalFeatures('Extrude', {})).toBe(
-      false
-    )
-  })
-
   it('keeps bodyType optional for sketch segments before length is confirmed', () => {
     expect(
       extrudeSelectionRequiresBodyType({
@@ -427,8 +415,8 @@ describe('stdlib command arg derivation', () => {
     })
     expect(args.direction).toMatchObject({
       required: false,
-      status: 'experimental',
     })
+    expect(args.direction.status).toBeUndefined()
   })
 
   it('derives command status from KCL stdlib metadata', () => {
@@ -445,7 +433,7 @@ describe('stdlib command arg derivation', () => {
     ][] = [
       ['Extrude', {}, false],
       ['Extrude', { draftAngle: parsedLength('45deg') }, true],
-      ['Extrude', { direction: selectionsForArtifact() }, true],
+      ['Extrude', { direction: selectionsForArtifact() }, false],
       ['Fillet', { edges: selectionsForArtifact() }, false],
       ['Fillet', { version: parsedLength('2') }, true],
       ['Helical Gear', {}, true],

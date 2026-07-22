@@ -2,6 +2,7 @@ import { defineContract, defineValueSpec } from '@kittycad/registry'
 import type {
   HomeProjectEntry,
   HomeProjectEntryContribution,
+  HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
 import type {
   ProjectLibrary,
@@ -19,7 +20,10 @@ export type ProjectLibrarySettingDefaultContribution =
   | ProjectLibrarySetting
   | readonly ProjectLibrarySetting[]
 
-export interface ProjectLibraryOperation<Input, Result = unknown> {
+export interface ProjectLibraryOperation<
+  Input extends { library: ProjectLibrary },
+  Result = unknown,
+> {
   isAvailable?: (input: { library: ProjectLibrary }) => boolean
   run: (input: Input) => Result | Promise<Result>
 }
@@ -30,8 +34,28 @@ export interface ProjectLibraryCreateProjectInput {
   requestedProjectTitle: string
 }
 
+export interface ProjectLibraryProjectInput {
+  library: ProjectLibrary
+  project: HomeProjectEntry
+}
+
+export type ProjectLibraryOpenProjectInput = ProjectLibraryProjectInput
+
+export interface ProjectLibraryRenameProjectInput
+  extends ProjectLibraryProjectInput {
+  requestedName: string
+}
+
+export type ProjectLibraryDeleteProjectInput = ProjectLibraryProjectInput
+
 export interface ProjectLibraryTypeOperations {
   createProject?: ProjectLibraryOperation<ProjectLibraryCreateProjectInput>
+  openProject?: ProjectLibraryOperation<
+    ProjectLibraryOpenProjectInput,
+    HomeProjectOpenResult | undefined
+  >
+  renameProject?: ProjectLibraryOperation<ProjectLibraryRenameProjectInput>
+  deleteProject?: ProjectLibraryOperation<ProjectLibraryDeleteProjectInput>
 }
 
 export interface ProjectLibraryTypeContribution {
@@ -99,11 +123,14 @@ export function combineProjectLibraryTypes(
   return typeById
 }
 
-export function getProjectLibraryCreateProjectOperation(
+export function getProjectLibraryOperation<
+  OperationName extends keyof ProjectLibraryTypeOperations,
+>(
   libraryType: ProjectLibraryTypeContribution | undefined,
-  library: ProjectLibrary
-) {
-  const operation = libraryType?.operations?.createProject
+  library: ProjectLibrary,
+  operationName: OperationName
+): ProjectLibraryTypeOperations[OperationName] | undefined {
+  const operation = libraryType?.operations?.[operationName]
   if (!operation) {
     return undefined
   }
@@ -113,6 +140,13 @@ export function getProjectLibraryCreateProjectOperation(
   }
 
   return operation
+}
+
+export function getProjectLibraryCreateProjectOperation(
+  libraryType: ProjectLibraryTypeContribution | undefined,
+  library: ProjectLibrary
+) {
+  return getProjectLibraryOperation(libraryType, library, 'createProject')
 }
 
 export function combineProjectLibrarySettingDefaults(
