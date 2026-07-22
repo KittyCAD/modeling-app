@@ -8,19 +8,16 @@ import {
 } from '@kittycad/registry'
 import { effect, type Signal, signal } from '@preact/signals-core'
 import { buildFSHistoryExtension } from '@src/editor/plugins/fs'
-import {
-  buildZookeeperHistoryExtension,
-  type PreparedZookeeperPatchFileReplay,
-} from '@src/lib/zookeeper/editorPlugin'
 import { KclManager, ZDSProject } from '@src/lang/KclManager'
+import { type BillingRegistryService, billingService } from '@src/lib/billing'
 import { createAuthCommands } from '@src/lib/commandBarConfigs/authCommandConfig'
 import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsCommandConfig'
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
-import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import type { MachineManager } from '@src/lib/MachineManager'
 import type { Project } from '@src/lib/project'
 import RustContext from '@src/lib/rustContext'
@@ -33,11 +30,10 @@ import { reportRejection } from '@src/lib/trap'
 import { uuidv4 } from '@src/lib/utils'
 import type { ModuleType } from '@src/lib/wasm_lib_wrapper'
 import { onActiveWasmInstance } from '@src/lib/wasmLifecycle'
-import { withAPIBaseURL } from '@src/lib/withBaseURL'
 import {
-  BILLING_CONTEXT_DEFAULTS,
-  billingMachine,
-} from '@src/machines/billingMachine'
+  buildZookeeperHistoryExtension,
+  type PreparedZookeeperPatchFileReplay,
+} from '@src/lib/zookeeper/editorPlugin'
 import type { MlEphantManagerActor } from '@src/lib/zookeeper/mlEphantManagerMachine'
 import { getOnlySettingsFromContext } from '@src/machines/settingsMachine'
 import { systemIOMachineImpl } from '@src/machines/systemIO/systemIOMachineImpl'
@@ -80,13 +76,7 @@ import {
   appRegistryServicesSlot,
   coreRegistryItems,
 } from '@src/registry/registry'
-import { useSelector } from '@xstate/react'
-import type {
-  ActorRefFrom,
-  ContextFrom,
-  SnapshotFrom,
-  Subscription,
-} from 'xstate'
+import type { SnapshotFrom, Subscription } from 'xstate'
 import { createActor } from 'xstate'
 
 const appCommandsSlot = new Slot()
@@ -139,11 +129,7 @@ export type AppCommandSystem = CommandSystemService
 
 export type AppSettingsSystem = SettingsRegistryService
 
-export type AppBillingSystem = {
-  actor: ActorRefFrom<typeof billingMachine>
-  send: ActorRefFrom<typeof billingMachine>['send']
-  useContext: () => ContextFrom<typeof billingMachine>
-}
+export type AppBillingSystem = BillingRegistryService
 
 export type AppUserFeaturesSystem = UserFeaturesRegistryService
 
@@ -289,6 +275,7 @@ export class App implements AppSubsystems {
     const commands = appRegistry.get(commandSystemService)
     const settings = appRegistry.get(settingsService)
     const settingsActor = settings.actor
+    const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
     layout.get()
     const engineCommandManager = new ConnectionManager({
@@ -299,18 +286,6 @@ export class App implements AppSubsystems {
       engineCommandManager,
       settingsActor
     )
-
-    const billingActor = createActor(billingMachine, {
-      input: {
-        ...BILLING_CONTEXT_DEFAULTS,
-        urlUserService: () => withAPIBaseURL(''),
-      },
-    }).start()
-    const billing: AppBillingSystem = {
-      actor: billingActor,
-      send: billingActor.send.bind(App),
-      useContext: () => useSelector(billingActor, ({ context }) => context),
-    }
 
     return {
       wasmPromise,
