@@ -108,6 +108,7 @@ import type {
   EngineRegionSelection,
   ExtrudeFacePlane,
   OffsetPlane,
+  PrimitiveFaceSketchTarget,
 } from '@src/machines/modelingSharedTypes'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
 import type { ConnectionManager } from '@src/network/connectionManager'
@@ -799,6 +800,35 @@ function createPrimitiveIndexReferenceExpr({
   kclManager,
   wasmInstance,
 }: SelectionExpressionBuilderContext): Expr | null {
+  const bodyExpr = getPrimitiveBodyReferenceExpr({
+    primitiveSelection,
+    artifactGraph,
+    ast: kclManager.ast,
+    wasmInstance,
+  })
+  if (!bodyExpr) return null
+
+  const functionName =
+    primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
+  return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
+    createLabeledArg(
+      'index',
+      createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
+    ),
+  ])
+}
+
+function getPrimitiveBodyReferenceExpr({
+  primitiveSelection,
+  artifactGraph,
+  ast,
+  wasmInstance,
+}: {
+  primitiveSelection: ReferenceablePrimitiveSelection
+  artifactGraph: ArtifactGraph
+  ast: Node<Program>
+  wasmInstance: ModuleType
+}): Expr | null {
   if (!primitiveSelection.parentEntityId) {
     return null
   }
@@ -819,7 +849,7 @@ function createPrimitiveIndexReferenceExpr({
   const bodyVariables = getVariableExprsFromSelection(
     { graphSelections: [bodySelection], otherSelections: [] },
     artifactGraph,
-    kclManager.ast,
+    ast,
     wasmInstance,
     undefined,
     {
@@ -831,15 +861,7 @@ function createPrimitiveIndexReferenceExpr({
     return null
   }
 
-  const bodyExpr = bodyVariables.exprs[0]
-  const functionName =
-    primitiveSelection.primitiveType === 'face' ? 'faceId' : 'edgeId'
-  return createCallExpressionStdLibKw(functionName, structuredClone(bodyExpr), [
-    createLabeledArg(
-      'index',
-      createLiteral(primitiveSelection.primitiveIndex, wasmInstance)
-    ),
-  ])
+  return bodyVariables.exprs[0]
 }
 
 const selectionExpressionApproaches: SelectionExpressionApproach[] = [
@@ -2439,7 +2461,11 @@ export async function selectSketchPlane(
     if (!kclManager) return
     if (!planeOrFaceId) return
 
-    if (useSketchSolveMode) {
+    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    const isDefaultPlane = Object.values(
+      kclManager.rustContext.defaultPlanes ?? {}
+    ).includes(planeOrFaceId)
+    if (useSketchSolveMode && (artifact || isDefaultPlane)) {
       kclManager.sceneInfra.modelingSend({
         type: 'Select sketch solve plane',
         data: planeOrFaceId,
@@ -2455,7 +2481,36 @@ export async function selectSketchPlane(
       return
     }
 
-    const artifact = kclManager.artifactGraph.get(planeOrFaceId)
+    if (!artifact) {
+      const primitiveSelection = await getPrimitiveSelectionForEntity(
+        planeOrFaceId,
+        kclManager.engineCommandManager
+      )
+      if (
+        primitiveSelection &&
+        isReferenceablePrimitiveSelection(primitiveSelection) &&
+        primitiveSelection.primitiveType === 'face'
+      ) {
+        const primitiveFaceTarget = await getPrimitiveFaceSketchTarget(
+          primitiveSelection,
+          kclManager
+        )
+        kclManager.sceneInfra.modelingSend({
+          type: 'Select sketch solve plane',
+          data: primitiveFaceTarget,
+        })
+        return
+      }
+    }
+
+    if (useSketchSolveMode) {
+      kclManager.sceneInfra.modelingSend({
+        type: 'Select sketch solve plane',
+        data: planeOrFaceId,
+      })
+      return
+    }
+
     const offsetPlaneSelected = await selectOffsetSketchPlane(artifact, {
       sceneInfra: kclManager.sceneInfra,
       sceneEntitiesManager: kclManager.sceneEntitiesManager,
@@ -2485,6 +2540,79 @@ export async function selectSketchPlane(
   } catch (err) {
     reportRejection(err)
   }
+}
+
+async function getPrimitiveFaceSketchTarget(
+  primitiveSelection: ReferenceablePrimitiveSelection,
+  kclManager: KclManager
+): Promise<PrimitiveFaceSketchTarget> {
+  const [wasmInstance, faceInfo] = await Promise.all([
+    kclManager.wasmInstancePromise,
+    kclManager.sceneEntitiesManager.getFaceDetails(primitiveSelection.entityId),
+  ])
+  const bodyExpr = getPrimitiveBodyReferenceExpr({
+    primitiveSelection,
+    ast: kclManager.ast,
+    artifactGraph: kclManager.artifactGraph,
+    wasmInstance,
+  })
+  if (!bodyExpr) {
+    throw new Error('Could not resolve the selected primitive face in KCL.')
+  }
+
+  const solidReference = getPrimitiveFaceSolidReference(bodyExpr)
+  if (!solidReference) {
+    throw new Error('Could not resolve the selected solid in KCL.')
+  }
+  if (!faceInfo?.origin || !faceInfo?.z_axis || !faceInfo?.y_axis) {
+    throw new Error('Could not get details for the selected primitive face.')
+  }
+
+  const { origin, z_axis, y_axis } = faceInfo
+  return {
+    type: 'primitiveFace',
+    face: {
+      index: primitiveSelection.primitiveIndex,
+      ...solidReference,
+    },
+    plane: {
+      type: 'extrudeFace',
+      faceId: primitiveSelection.entityId,
+      faceInfo: { type: 'primitiveFace' },
+      position: [origin.x, origin.y, origin.z].map(
+        (coordinate) => coordinate / kclManager.sceneInfra.baseUnitMultiplier
+      ) as [number, number, number],
+      zAxis: [z_axis.x, z_axis.y, z_axis.z],
+      yAxis: [y_axis.x, y_axis.y, y_axis.z],
+      sketchPathToNode: [],
+      extrudePathToNode: [],
+    },
+  }
+}
+
+function getPrimitiveFaceSolidReference(
+  bodyExpr: Expr
+): Pick<
+  PrimitiveFaceSketchTarget['face'],
+  'solid' | 'solidOutputIndex'
+> | null {
+  if (bodyExpr.type === 'Name') {
+    return { solid: bodyExpr.name.name }
+  }
+  if (
+    bodyExpr.type === 'MemberExpression' &&
+    bodyExpr.computed &&
+    bodyExpr.object.type === 'Name' &&
+    bodyExpr.property.type === 'Literal' &&
+    typeof bodyExpr.property.value === 'object'
+  ) {
+    return {
+      solid: bodyExpr.object.name.name,
+      solidOutputIndex: bodyExpr.property.value.value,
+    }
+  }
+
+  return null
 }
 
 export async function selectionBodyFace(

@@ -20,6 +20,7 @@ import type {
   MouseState,
   OffsetPlane,
   PlaneVisibilityMap,
+  PrimitiveFaceSketchTarget,
   SegmentOverlayPayload,
   Selections,
   SetSelections,
@@ -424,7 +425,7 @@ export type ModelingMachineEvent =
     }
   | {
       type: 'Select sketch solve plane'
-      data: ArtifactId
+      data: ArtifactId | PrimitiveFaceSketchTarget
     }
   | {
       type: 'Edit sketch solve'
@@ -3231,7 +3232,10 @@ export const modelingMachine = setup({
       }: {
         input:
           | {
-              artifactOrPlaneId: ArtifactId | undefined
+              artifactOrPlaneId:
+                | ArtifactId
+                | PrimitiveFaceSketchTarget
+                | undefined
               kclManager: KclManager
               rustContext: RustContext
               engineCommandManager: ConnectionManager
@@ -3257,23 +3261,28 @@ export const modelingMachine = setup({
           defaultUnit,
           projectRef,
         } = input
+        const primitiveFaceTarget =
+          typeof artifactOrPlaneId === 'string' ? null : artifactOrPlaneId
         if (kclManager.hasParseErrors()) {
           return reject(
             new Error('Unable to enter sketch while KCL has parse errors.')
           )
         }
-        let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null = null
+        let result: DefaultPlane | OffsetPlane | ExtrudeFacePlane | null =
+          primitiveFaceTarget?.plane ?? null
 
-        const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
-          sceneInfra: kclManager.sceneInfra,
-          rustContext,
-        })
-        if (!err(defaultResult) && defaultResult) {
-          result = defaultResult
+        if (typeof artifactOrPlaneId === 'string') {
+          const defaultResult = getDefaultSketchPlaneData(artifactOrPlaneId, {
+            sceneInfra: kclManager.sceneInfra,
+            rustContext,
+          })
+          if (!err(defaultResult) && defaultResult) {
+            result = defaultResult
+          }
         }
 
         // Look up the artifact from the artifact graph for getOffsetSketchPlaneData
-        if (!result) {
+        if (!result && typeof artifactOrPlaneId === 'string') {
           const artifact = kclManager.artifactGraph.get(artifactOrPlaneId)
           const offsetResult = await getOffsetSketchPlaneData(artifact, {
             sceneEntitiesManager: kclManager.sceneEntitiesManager,
@@ -3283,7 +3292,7 @@ export const modelingMachine = setup({
             result = offsetResult
           }
         }
-        if (!result) {
+        if (!result && typeof artifactOrPlaneId === 'string') {
           const sweepFaceSelected = await selectionBodyFace(
             artifactOrPlaneId,
             kclManager.artifactGraph,
@@ -3387,6 +3396,16 @@ export const modelingMachine = setup({
         if (result.type === 'defaultPlane') {
           sketchArgs = {
             on: { default: toPlaneName(result.plane) },
+          }
+        } else if (primitiveFaceTarget) {
+          if (setProgramOutcome.type !== 'Success') {
+            return reject(
+              new Error('Could not update SceneGraph before creating sketch.')
+            )
+          }
+
+          sketchArgs = {
+            on: { primitiveFace: primitiveFaceTarget.face },
           }
         } else {
           if (setProgramOutcome.type !== 'Success') {

@@ -21,6 +21,7 @@ import {
   getNodeFromPath,
   getSelectedPlaneAsNode,
   getSelectedPlaneId,
+  getSelectedSketchTarget,
   getVariableExprsFromSelection,
   hasSketchPipeBeenExtruded,
   isCursorInFunctionDefinition,
@@ -1146,6 +1147,25 @@ plane001 = offsetPlane(YZ, offset = 10)
     }
 
     expect(result?.value).toBe('XY')
+  })
+})
+
+describe('Testing getSelectedSketchTarget', () => {
+  it('returns an engine primitive face entity', () => {
+    const selections: Selections = {
+      graphSelections: [],
+      otherSelections: [
+        {
+          type: 'enginePrimitive',
+          entityId: 'primitive-face-entity',
+          parentEntityId: 'solid-entity',
+          primitiveIndex: 6,
+          primitiveType: 'face',
+        },
+      ],
+    }
+
+    expect(getSelectedSketchTarget(selections)).toBe('primitive-face-entity')
   })
 })
 

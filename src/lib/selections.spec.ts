@@ -5,7 +5,7 @@ import type { PlaneInfo } from '@rust/kcl-lib/bindings/PlaneInfo'
 import type { Point3d } from '@rust/kcl-lib/bindings/Point3d'
 import type { SceneInfra } from '@src/clientSideScene/sceneInfra'
 import { getNodePathFromSourceRange } from '@src/lang/queryAstNodePathUtils'
-import type { Artifact } from '@src/lang/std/artifactGraph'
+import { type Artifact, codeRefFromRange } from '@src/lang/std/artifactGraph'
 import type { ArtifactGraph, ExecState, SourceRange } from '@src/lang/wasm'
 import { assertParse } from '@src/lang/wasm'
 import type { ArtifactIndex } from '@src/lib/artifactIndex'
@@ -1907,7 +1907,7 @@ describe('selectSketchPlane', () => {
     const getFaceDetails = vi.fn()
 
     await selectSketchPlane('plane001', true, {
-      artifactGraph: new Map(),
+      artifactGraph: new Map([['plane001', { type: 'plane', id: 'plane001' }]]),
       rustContext: { defaultPlanes: null },
       sceneEntitiesManager: { getFaceDetails },
       sceneInfra: { modelingSend },
@@ -1918,5 +1918,90 @@ describe('selectSketchPlane', () => {
       data: 'plane001',
     })
     expect(getFaceDetails).not.toHaveBeenCalled()
+  })
+
+  test('routes an unmaterialized shell face to the frontend sketch API', async () => {
+    const { instance } = await buildTheWorldAndNoEngineConnection()
+    const shellCall = 'shell(extrude001, faces = capEnd001, thickness = .1)'
+    const code = `shell001 = ${shellCall}`
+    const ast = assertParse(code, instance)
+    const shellStart = code.indexOf(shellCall)
+    const shellRange: SourceRange = [
+      shellStart,
+      shellStart + shellCall.length,
+      0,
+    ]
+    const shellId = 'shell-artifact-id'
+    const faceId = 'inner-face-id'
+    const modelingSend = vi.fn()
+    const sendSceneCommand = vi
+      .fn()
+      .mockResolvedValueOnce({
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'entity_get_primitive_index',
+              data: { primitive_index: 6, entity_type: 'face' },
+            },
+          },
+        },
+      })
+      .mockResolvedValueOnce({
+        resp: {
+          type: 'modeling',
+          data: {
+            modeling_response: {
+              type: 'entity_get_parent_id',
+              data: { entity_id: shellId },
+            },
+          },
+        },
+      })
+    const getFaceDetails = vi.fn().mockResolvedValue({
+      origin: { x: 1, y: 2, z: 3 },
+      y_axis: { x: 0, y: 1, z: 0 },
+      z_axis: { x: 0, y: 0, z: 1 },
+    })
+
+    await selectSketchPlane(faceId, true, {
+      artifactGraph: new Map([
+        [
+          shellId,
+          {
+            type: 'compositeSolid',
+            id: shellId,
+            codeRef: codeRefFromRange(shellRange, ast),
+          } as Artifact,
+        ],
+      ]),
+      ast,
+      rustContext: { defaultPlanes: {} },
+      wasmInstancePromise: Promise.resolve(instance),
+      engineCommandManager: { sendSceneCommand },
+      sceneEntitiesManager: { getFaceDetails },
+      sceneInfra: { modelingSend, baseUnitMultiplier: 1 },
+    } as any)
+
+    expect(modelingSend).toHaveBeenCalledWith({
+      type: 'Select sketch solve plane',
+      data: {
+        type: 'primitiveFace',
+        face: {
+          solid: 'shell001',
+          index: 6,
+        },
+        plane: {
+          type: 'extrudeFace',
+          faceId,
+          faceInfo: { type: 'primitiveFace' },
+          position: [1, 2, 3],
+          yAxis: [0, 1, 0],
+          zAxis: [0, 0, 1],
+          sketchPathToNode: [],
+          extrudePathToNode: [],
+        },
+      },
+    })
   })
 })

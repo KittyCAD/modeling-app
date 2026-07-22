@@ -285,7 +285,13 @@ describe('toolbar state helpers', () => {
     const sketchItem = findModelingToolbarItem('sketch')
     const modelingState = {
       context: {
-        kclManager: { sceneInfra: { modelingSend } },
+        kclManager: {
+          artifactGraph: new Map([
+            ['plane-001', { id: 'plane-001', type: 'plane' }],
+          ]),
+          rustContext: { defaultPlanes: null },
+          sceneInfra: { modelingSend },
+        },
         selectionRanges: {
           graphSelections: [
             {
@@ -330,7 +336,13 @@ describe('toolbar state helpers', () => {
     const sketchItem = findModelingToolbarItem('sketch')
     const modelingState = {
       context: {
-        kclManager: { sceneInfra: { modelingSend } },
+        kclManager: {
+          artifactGraph: new Map(),
+          rustContext: {
+            defaultPlanes: { xy: 'default-plane-xy' },
+          },
+          sceneInfra: { modelingSend },
+        },
         selectionRanges: {
           graphSelections: [],
           otherSelections: [{ id: 'default-plane-xy', name: 'XY' }],
@@ -361,6 +373,37 @@ describe('toolbar state helpers', () => {
       type: 'Select sketch solve plane',
       data: 'default-plane-xy',
     })
+  })
+
+  test('offers sketching on a selected engine primitive face', () => {
+    const sketchItem = findModelingToolbarItem('sketch')
+    const modelingState = {
+      context: {
+        selectionRanges: {
+          graphSelections: [],
+          otherSelections: [
+            {
+              type: 'enginePrimitive',
+              entityId: 'inner-face-id',
+              parentEntityId: 'shell-id',
+              primitiveIndex: 6,
+              primitiveType: 'face',
+            },
+          ],
+        },
+      },
+    } as unknown as StateFrom<typeof modelingMachine>
+
+    if (typeof sketchItem.tooltipTitle !== 'function') {
+      throw new Error('Expected Start Sketch to have a dynamic tooltip')
+    }
+    expect(
+      sketchItem.tooltipTitle({
+        modelingState,
+        editorHasFocus: false,
+        sketchPathId: false,
+      } as any)
+    ).toBe('Start Sketch on face')
   })
 
   test('keeps the sketch-solve constraints dropdown on its default visible items before use', () => {

@@ -3,6 +3,7 @@ import type { EventFrom, StateFrom } from 'xstate'
 
 import type { CustomIconName } from '@src/components/CustomIcon'
 import { createLiteral } from '@src/lang/create'
+import { getSelectedEnginePrimitiveFace } from '@src/lang/queryAst'
 import { useApp } from '@src/lib/boot'
 import {
   EXPERIMENTAL_POINT_AND_CLICK_FLAG,
@@ -2581,6 +2582,14 @@ function getSelectedSketchTarget(selectionRanges: Selections): {
     }
   }
 
+  const primitiveFace = getSelectedEnginePrimitiveFace(selectionRanges)
+  if (primitiveFace) {
+    return {
+      id: primitiveFace.entityId,
+      title: 'Start Sketch on face',
+    }
+  }
+
   const planeSelection = getSelectedSketchTargetPlane(selectionRanges)
   const artifact = planeSelection?.artifact
   if (!artifact?.id) {
@@ -2623,7 +2632,8 @@ function getSelectedSketchIconColor(
     }
   }
 
-  return getSelectedSketchTargetPlane(selectionRanges)
+  return getSelectedSketchTargetPlane(selectionRanges) ||
+    getSelectedEnginePrimitiveFace(selectionRanges)
     ? `rgb(${SKETCH_SELECTION_RGB_STR})`
     : undefined
 }

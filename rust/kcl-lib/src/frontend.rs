@@ -5130,6 +5130,12 @@ fn sketch_on_ast_expr(
             }
             get_or_insert_ast_reference(ast, &on_object.source, "plane", None)
         }
+        Plane::PrimitiveFace(face) => {
+            let solid_expr =
+                indexed_solid_expr_for_sweep_output(ast_name_expr(face.solid.clone()), face.solid_output_index);
+            let face_id_expr = create_face_id_ast(solid_expr.clone(), face.index);
+            Ok(create_face_of_ast(solid_expr, face_id_expr))
+        }
     }
 }
 
@@ -5502,6 +5508,24 @@ fn create_face_of_ast(solid_expr: ast::Expr, face_expr: ast::Expr) -> ast::Expr 
         arguments: vec![ast::LabeledArg {
             label: Some(ast::Identifier::new("face")),
             arg: face_expr,
+        }],
+        digest: None,
+        non_code_meta: Default::default(),
+    })))
+}
+
+fn create_face_id_ast(solid_expr: ast::Expr, index: usize) -> ast::Expr {
+    ast::Expr::CallExpressionKw(Box::new(ast::Node::no_src(ast::CallExpressionKw {
+        callee: ast::Node::no_src(ast_sketch2_name("faceId")),
+        unlabeled: Some(solid_expr),
+        arguments: vec![ast::LabeledArg {
+            label: Some(ast::Identifier::new("index")),
+            arg: ast::Expr::Literal(Box::new(ast::Node::no_src(ast::Literal::from(ast::NumericLiteral {
+                value: index as f64,
+                suffix: NumericSuffix::None,
+                raw: index.to_string(),
+                digest: None,
+            })))),
         }],
         digest: None,
         non_code_meta: Default::default(),
@@ -13359,6 +13383,69 @@ face = faceOf(cube, face = side)
 
         ctx.close().await;
         mock_ctx.close().await;
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn test_new_sketch_on_primitive_index_face() {
+        let initial_source = "\
+@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [var 0mm, var 0mm], end = [var 7.93mm, var 0mm])
+  line2 = line(start = [var 7.93mm, var 0mm], end = [var 7.93mm, var 8.09mm])
+  line3 = line(start = [var 7.93mm, var 8.09mm], end = [var 0mm, var 8.09mm])
+  line4 = line(start = [var 0mm, var 8.09mm], end = [var 0mm, var 0mm])
+  coincident([line1.end, line2.start])
+  coincident([line2.end, line3.start])
+  coincident([line3.end, line4.start])
+  coincident([line4.end, line1.start])
+  parallel([line2, line4])
+  parallel([line3, line1])
+  perpendicular([line1, line2])
+  horizontal(line3)
+  coincident([line1.start, ORIGIN])
+}
+hidden001 = hide(sketch001)
+region001 = region(segments = [sketch001.line4, sketch001.line1])
+extrude001 = extrude(region001, length = 5, tagEnd = $capEnd001)
+shell001 = shell(extrude001, faces = capEnd001, thickness = 1)";
+        let expected_source = format!(
+            "{initial_source}\nface001 = faceOf(shell001, face = faceId(shell001, index = 6))\nsketch002 = sketch(on = face001) {{\n}}\n"
+        );
+        let mut ast = Program::parse(initial_source).unwrap().0.unwrap().ast;
+        let scene_graph = SceneGraph::empty(ProjectId(0), FileId(0), Version(0));
+        let face_expr = sketch_on_ast_expr(
+            &mut ast,
+            &scene_graph,
+            &Plane::PrimitiveFace(crate::frontend::api::PrimitiveFacePlane {
+                solid: "shell001".to_owned(),
+                solid_output_index: None,
+                index: 6,
+            }),
+        )
+        .unwrap();
+        let face_decl = ast::VariableDeclaration::new(
+            ast::VariableDeclarator::new("face001", face_expr),
+            ast::ItemVisibility::Default,
+            ast::VariableKind::Const,
+        );
+        ast.body
+            .push(ast::BodyItem::VariableDeclaration(Box::new(ast::Node::no_src(
+                face_decl,
+            ))));
+        let face_source = source_from_ast(&ast);
+        assert_eq!(
+            face_source,
+            format!("{initial_source}\nface001 = faceOf(shell001, face = faceId(shell001, index = 6))\n")
+        );
+
+        let new_source = format!("{face_source}sketch002 = sketch(on = face001) {{\n}}\n");
+        assert_eq!(new_source, expected_source);
+
+        let program = Program::parse(&new_source).unwrap().0.unwrap();
+        let ctx = ExecutorContext::new_mock(None).await;
+        ctx.run_mock(&program, &MockConfig::default()).await.unwrap();
+        ctx.close().await;
     }
 
     #[tokio::test(flavor = "multi_thread")]
