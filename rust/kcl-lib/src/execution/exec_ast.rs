@@ -1498,6 +1498,22 @@ impl ExecutorContext {
         Ok(item)
     }
 
+    /// Evaluate a single expression on whichever executor is active, as a
+    /// fresh root. For bounded internal evaluations (e.g. GD&T's constant
+    /// plane lookup).
+    pub(crate) async fn eval_expr_fresh_root(
+        &self,
+        expr: &Expr,
+        exec_state: &mut ExecState,
+        metadata: &Metadata,
+    ) -> Result<KclValueControlFlow, KclError> {
+        if self.is_machine_executor() {
+            return crate::execution::machine::run_expr(self, expr, exec_state, metadata).await;
+        }
+        self.execute_expr(expr, exec_state, metadata, &[], StatementKind::Expression)
+            .await
+    }
+
     /// Resolve a name to its value, running the module body first when the
     /// name refers to a module. Flat (module execution happens in its own
     /// fresh root); shared by both executors.

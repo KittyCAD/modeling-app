@@ -65,10 +65,7 @@ const MUST_HAVE_ONE_INSTANCE: &str = "There must be at least 1 instance of your 
 
 /// Repeat some 3D solid, changing each repetition slightly.
 pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result<KclValueControlFlow, KclError> {
-    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
-    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
-    let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
-    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let (solids, instances, transform, use_original) = pattern_transform_parse_args(&args, exec_state)?;
 
     match inner_pattern_transform(solids, instances, transform, use_original, exec_state, &args).await {
         Ok(solids) => Ok(KclValue::continue_(solids.into())),
@@ -81,10 +78,7 @@ pub async fn pattern_transform(exec_state: &mut ExecState, args: Args) -> Result
 
 /// Repeat some 2D sketch, changing each repetition slightly.
 pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Result<KclValueControlFlow, KclError> {
-    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
-    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
-    let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
-    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
+    let (sketches, instances, transform, use_original) = pattern_transform_2d_parse_args(&args, exec_state)?;
 
     match inner_pattern_transform_2d(sketches, instances, transform, use_original, exec_state, &args).await {
         Ok(sketches) => Ok(KclValue::continue_(sketches.into())),
@@ -93,6 +87,113 @@ pub async fn pattern_transform_2d(exec_state: &mut ExecState, args: Args) -> Res
         Err(EarlyReturn::Value(cf)) => Ok(cf),
         Err(EarlyReturn::Error(err)) => Err(err),
     }
+}
+
+/// Parse patternTransform's arguments. Shared by both executors.
+pub(crate) fn pattern_transform_parse_args(
+    args: &Args,
+    exec_state: &mut ExecState,
+) -> Result<(Vec<Solid>, u32, FunctionSource, Option<bool>), KclError> {
+    let solids = args.get_unlabeled_kw_arg("solids", &RuntimeType::solids(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
+    let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
+    Ok((solids, instances, transform, use_original))
+}
+
+/// Parse patternTransform2d's arguments. Shared by both executors.
+pub(crate) fn pattern_transform_2d_parse_args(
+    args: &Args,
+    exec_state: &mut ExecState,
+) -> Result<(Vec<Sketch>, u32, FunctionSource, Option<bool>), KclError> {
+    let sketches = args.get_unlabeled_kw_arg("sketches", &RuntimeType::sketches(), exec_state)?;
+    let instances: u32 = args.get_kw_arg("instances", &RuntimeType::count(), exec_state)?;
+    let transform: FunctionSource = args.get_kw_arg("transform", &RuntimeType::function(), exec_state)?;
+    let use_original = args.get_kw_arg_opt("useOriginal", &RuntimeType::bool(), exec_state)?;
+    Ok((sketches, instances, transform, use_original))
+}
+
+/// The "at least 1 instance" check both executors run before the callback
+/// loop.
+pub(crate) fn pattern_check_instances(instances: u32, source_range: SourceRange) -> Result<(), KclError> {
+    if instances < 1 {
+        return Err(KclError::new_semantic(KclErrorDetails::new(
+            MUST_HAVE_ONE_INSTANCE.to_owned(),
+            vec![source_range],
+        )));
+    }
+    Ok(())
+}
+
+/// Build the per-repetition callback arguments for patternTransform. Shared
+/// by both executors.
+pub(crate) fn transform_callback_args(
+    i: u32,
+    source_range: SourceRange,
+    node_path: Option<NodePath>,
+    exec_state: &mut ExecState,
+    ctxt: &ExecutorContext,
+) -> Args<crate::execution::fn_call::Sugary> {
+    let repetition_num = KclValue::Number {
+        value: i.into(),
+        ty: NumericType::count(),
+        meta: vec![source_range.into()],
+    };
+    Args::new(
+        Default::default(),
+        vec![(None, Arg::new(repetition_num, source_range))],
+        source_range,
+        node_path,
+        exec_state,
+        ctxt.clone(),
+        Some("transform closure".to_owned()),
+    )
+}
+
+/// Error when a transform callback produces no value. Shared by both
+/// executors.
+pub(crate) fn transform_missing_value_error(source_range: SourceRange) -> KclError {
+    KclError::new_semantic(KclErrorDetails::new(
+        "Transform function must return a value".to_string(),
+        vec![source_range],
+    ))
+}
+
+/// Unpack a transform callback's returned value into engine transforms: the
+/// evaluation-free tail of make_transform, shared by both executors.
+pub(crate) fn transforms_from_callback_value<T: GeometryTrait>(
+    transform_fn_return: KclValue,
+    source_range: SourceRange,
+    exec_state: &mut ExecState,
+) -> Result<Vec<Transform>, KclError> {
+    let source_ranges = vec![source_range];
+    let transforms = match transform_fn_return {
+        KclValue::Object { value, .. } => vec![value],
+        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
+            let transforms: Vec<_> = value
+                .into_iter()
+                .map(|val| {
+                    val.into_object().ok_or(KclError::new_semantic(KclErrorDetails::new(
+                        "Transform function must return a transform object".to_string(),
+                        source_ranges.clone(),
+                    )))
+                })
+                .collect::<Result<_, KclError>>()?;
+            transforms
+        }
+        _ => {
+            return Err(KclError::new_semantic(KclErrorDetails::new(
+                "Transform function must return a transform object".to_string(),
+                source_ranges,
+            )));
+        }
+    };
+
+    let transforms = transforms
+        .into_iter()
+        .map(|obj| transform_from_obj_fields::<T>(obj, source_ranges.clone(), exec_state))
+        .collect::<Result<_, KclError>>()?;
+    Ok(transforms)
 }
 
 async fn inner_pattern_transform(
@@ -105,13 +206,7 @@ async fn inner_pattern_transform(
 ) -> Result<Vec<Solid>, EarlyReturn> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
-    if instances < 1 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            MUST_HAVE_ONE_INSTANCE.to_owned(),
-            vec![args.source_range],
-        ))
-        .into());
-    }
+    pattern_check_instances(instances, args.source_range)?;
     for i in 1..instances {
         let t = make_transform::<Solid>(
             i,
@@ -144,13 +239,7 @@ async fn inner_pattern_transform_2d(
 ) -> Result<Vec<Sketch>, EarlyReturn> {
     // Build the vec of transforms, one for each repetition.
     let mut transform_vec = Vec::with_capacity(usize::try_from(instances).unwrap());
-    if instances < 1 {
-        return Err(KclError::new_semantic(KclErrorDetails::new(
-            MUST_HAVE_ONE_INSTANCE.to_owned(),
-            vec![args.source_range],
-        ))
-        .into());
-    }
+    pattern_check_instances(instances, args.source_range)?;
     for i in 1..instances {
         let t = make_transform::<Sketch>(
             i,
@@ -173,7 +262,7 @@ async fn inner_pattern_transform_2d(
     .await?)
 }
 
-async fn execute_pattern_transform<T: GeometryTrait>(
+pub(crate) async fn execute_pattern_transform<T: GeometryTrait>(
     transforms: Vec<Vec<Transform>>,
     geo_set: T::Set,
     use_original: bool,
@@ -256,66 +345,24 @@ async fn make_transform<T: GeometryTrait>(
     ctxt: &ExecutorContext,
 ) -> Result<Vec<Transform>, EarlyReturn> {
     // Call the transform fn for this repetition.
-    let repetition_num = KclValue::Number {
-        value: i.into(),
-        ty: NumericType::count(),
-        meta: vec![source_range.into()],
-    };
-    let transform_fn_args = Args::new(
-        Default::default(),
-        vec![(None, Arg::new(repetition_num, source_range))],
-        source_range,
-        node_path,
-        exec_state,
-        ctxt.clone(),
-        Some("transform closure".to_owned()),
-    );
+    let transform_fn_args = transform_callback_args(i, source_range, node_path, exec_state, ctxt);
     let transform_fn_return = transform
         .call_kw(None, exec_state, ctxt, transform_fn_args, source_range)
         .await?;
 
     // Unpack the returned transform object.
-    let source_ranges = vec![source_range];
-    let transform_fn_return = transform_fn_return.ok_or_else(|| {
-        KclError::new_semantic(KclErrorDetails::new(
-            "Transform function must return a value".to_string(),
-            source_ranges.clone(),
-        ))
-    })?;
+    let transform_fn_return = transform_fn_return.ok_or_else(|| transform_missing_value_error(source_range))?;
 
     // If the callback exited, e.g. by calling exit(), skip building the
     // pattern, and propagate the exit so that it terminates the enclosing
     // module.
     let transform_fn_return = early_return!(transform_fn_return);
 
-    let transforms = match transform_fn_return {
-        KclValue::Object { value, .. } => vec![value],
-        KclValue::Tuple { value, .. } | KclValue::HomArray { value, .. } => {
-            let transforms: Vec<_> = value
-                .into_iter()
-                .map(|val| {
-                    val.into_object().ok_or(KclError::new_semantic(KclErrorDetails::new(
-                        "Transform function must return a transform object".to_string(),
-                        source_ranges.clone(),
-                    )))
-                })
-                .collect::<Result<_, KclError>>()?;
-            transforms
-        }
-        _ => {
-            return Err(KclError::new_semantic(KclErrorDetails::new(
-                "Transform function must return a transform object".to_string(),
-                source_ranges,
-            ))
-            .into());
-        }
-    };
-
-    let transforms = transforms
-        .into_iter()
-        .map(|obj| transform_from_obj_fields::<T>(obj, source_ranges.clone(), exec_state))
-        .collect::<Result<_, KclError>>()?;
-    Ok(transforms)
+    Ok(transforms_from_callback_value::<T>(
+        transform_fn_return,
+        source_range,
+        exec_state,
+    )?)
 }
 
 fn transform_from_obj_fields<T: GeometryTrait>(
