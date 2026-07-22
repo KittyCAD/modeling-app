@@ -837,6 +837,41 @@ pub enum BeingExtruded {
     Edge,
 }
 
+/// Which edge should we use for querying Solid3dGetExtrusionInfo and GetAdjacencyInfo?
+/// It can be any edge of the body, but if our body is a clone, we should use an edge of
+/// the original body, not the new cloned body.
+fn get_extrusion_info_edge_id(sketch: &Sketch, any_edge_id: Uuid, clone_id_map: Option<&HashMap<Uuid, Uuid>>) -> Option<Uuid> {
+    // If this isn't a clone, there's no old/new body distinction.
+    // So just use the edge.
+    if sketch.clone.is_none() {
+        return Some(any_edge_id);
+    }
+    let Some(clone_map) = clone_id_map else {
+        return Some(any_edge_id);
+    };
+
+    // clone_map maps old IDs -> new IDs.
+    // If the `any_edge_id` is an ID of the OLD body
+    // (we know this if it's a _key_ of the map)
+    // we should use it (because that's the old body we're querying).
+    if clone_map.contains_key(&any_edge_id) {
+        return Some(any_edge_id);
+    }
+
+    // Otherwise, if the `any_edge_id` is an ID of the NEW body
+    // (we know this if it's a _value_ of the map),
+    // we should query the corresponding ID in the OLD body.
+    // i.e. if it's a hashmap value, find the corresponding key.
+    if let Some((old_edge_id, _)) = clone_map.iter().find(|(_, new_edge_id)| **new_edge_id == any_edge_id) {
+        return Some(*old_edge_id);
+    }
+
+    // Fall back to this if the clone_map doesn't have the data we expect.
+    // Engine will intuit an edge for the relevant calls, but it may mean the clone map was built wrong,
+    // or KCL and the engine disagree about what geometry exists.
+    None
+}
+
 /// This is similar to [`do_post_extrude()`], but for surfaces where a sketch
 /// isn't available.
 pub(crate) async fn after_surface_creation(
@@ -946,8 +981,26 @@ pub(crate) async fn do_post_extrude<'a>(
         )
         .await?;
 
-    // If the sketch is a clone, we will let the engine intuit an edge
-    let extrusion_info_edge_id = if sketch.clone.is_some() { None } else { edge_id };
+    let any_edge_id = if let Some(edge_id) = sketch.mirror {
+        edge_id
+    } else if let Some(id) = edge_id {
+        id
+    } else {
+        // The "get extrusion face info" API call requires *any* edge on the sketch being extruded.
+        // So, let's just use the first one.
+        let Some(any_edge_id) = sketch.paths.first().map(|edge| edge.get_base().geo_meta.id) else {
+            return Err(KclError::new_type(KclErrorDetails::new(
+                "Expected a non-empty sketch".to_owned(),
+                vec![args.source_range],
+            )));
+        };
+        any_edge_id
+    };
+
+    // If the sketch is a clone, we will use the original info to get the extrusion face info.
+    // So let's find an edge of the old body.
+    let extrusion_info_edge_id = get_extrusion_info_edge_id(sketch, any_edge_id, clone_id_map);    
+
     let mut sketch = sketch.clone();
     match body_type {
         BodyType::Solid => {
