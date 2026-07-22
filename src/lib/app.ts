@@ -15,6 +15,7 @@ import { createProjectCommands } from '@src/lib/commandBarConfigs/projectsComman
 import { OPFS_CLOUD_FEATURE_FLAG } from '@src/lib/constants'
 import type { Debugger } from '@src/lib/debugger'
 import { EngineDebugger } from '@src/lib/debugger'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { setKclRuntimeFlagsOnWasm } from '@src/lib/kclRuntimeFlags'
 import { layoutService } from '@src/lib/layout/registry/contract'
 import type { LayoutService } from '@src/lib/layout/types'
@@ -45,7 +46,6 @@ import {
   UserFeaturesTransition,
   userFeaturesContextHas,
 } from '@src/machines/userFeaturesMachine'
-import { ConnectionManager } from '@src/network/connectionManager'
 import {
   type AuthRegistryService,
   authService,
@@ -56,6 +56,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
@@ -278,9 +279,9 @@ export class App implements AppSubsystems {
     const billing = appRegistry.get(billingService)
     const layout = appRegistry.get(layoutService)
     layout.get()
-    const engineCommandManager = new ConnectionManager({
-      settingsActor,
-    })
+    const engineCommandManager = appRegistry.get(
+      engineConnectionService
+    ).manager
     const rustContext = new RustContext(
       wasmPromise,
       engineCommandManager,

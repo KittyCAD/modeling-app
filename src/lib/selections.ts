@@ -110,7 +110,7 @@ import type {
   OffsetPlane,
 } from '@src/machines/modelingSharedTypes'
 import type { Selection, Selections } from '@src/machines/modelingSharedTypes'
-import type { ConnectionManager } from '@src/network/connectionManager'
+import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import toast from 'react-hot-toast'
 import { CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer'
 
