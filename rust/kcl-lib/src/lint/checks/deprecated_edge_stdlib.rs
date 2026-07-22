@@ -94,7 +94,7 @@ fn get_unlabeled_arg(call: &CallExpressionKw) -> Option<&Expr> {
 fn deprecated_extrude_edge_arguments(call: &CallExpressionKw, prog: &AstNode<Program>) -> Vec<&'static str> {
     let mut arguments = Vec::with_capacity(3);
     if get_unlabeled_arg(call).is_some_and(|expr| {
-        is_deprecated_edge_stdlib_or_variable_expr(expr, prog)
+        contains_deprecated_edge_stdlib(expr, prog)
             || (matches!(expr, Expr::MemberExpression(_)) && is_direct_tag_ref(expr))
     }) {
         arguments.push("target");
@@ -140,6 +140,16 @@ fn is_deprecated_edge_stdlib_or_variable_expr(expr: &Expr, prog: &AstNode<Progra
         return false;
     };
     top_level_variable_init(prog, name.name.name.as_str()).is_some_and(is_deprecated_edge_stdlib_expr)
+}
+
+fn contains_deprecated_edge_stdlib(expr: &Expr, prog: &AstNode<Program>) -> bool {
+    match expr {
+        Expr::ArrayExpression(array) => array
+            .elements
+            .iter()
+            .any(|element| is_deprecated_edge_stdlib_or_variable_expr(element, prog)),
+        _ => is_deprecated_edge_stdlib_or_variable_expr(expr, prog),
+    }
 }
 
 /// Elements to check for deprecated/direct usage: from tags = [a, b] or tags = singleExpr.
@@ -528,6 +538,25 @@ extrude(cylinder3, to = targetEdge)
         let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
         let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
         assert_eq!(z0006.len(), 1, "comments do not hide a deprecated extrude target");
+        assert!(z0006[0].description.contains("target"));
+    }
+
+    #[test]
+    fn z0006_fires_for_extrude_with_deprecated_target_array() {
+        let kcl = r#"surface001 = extrude(
+  [
+    getOppositeEdge(body001.sketch.tags.line1),
+    getOppositeEdge(body001.sketch.tags.line3),
+  ],
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)
+"#;
+        let prog = crate::Program::parse_no_errs(kcl).unwrap();
+        let findings = prog.lint(lint_deprecated_edge_stdlib_in_fillet_chamfer).unwrap();
+        let z0006: Vec<_> = findings.iter().filter(|d| d.finding.code == Z0006.code).collect();
+        assert_eq!(z0006.len(), 1, "Z0006 fires for an array of deprecated extrude targets");
         assert!(z0006[0].description.contains("target"));
     }
 

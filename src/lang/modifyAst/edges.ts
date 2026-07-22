@@ -1517,7 +1517,7 @@ interface ExtrudeEdgeCallToFix {
   range: Z0006SourceRange
   replacements: Array<{
     argument: ExtrudeEdgeArgument
-    payload: FilletEdgeRefPayload
+    payload: FilletEdgeRefPayload | FilletEdgeRefPayload[]
   }>
   pathToCall?: PathToNode
 }
@@ -1657,6 +1657,34 @@ export function findExtrudeEdgeCallsToFix(
           continue
         }
         const expr = findExtrudeEdgeArgumentExpr(call, argument)
+        if (argument === 'target' && expr?.type === 'ArrayExpression') {
+          const payloads = expr.elements.map((element) => {
+            const deprecatedCall = findDeprecatedEdgeStdlibCallFromExpr(
+              program,
+              element,
+              pathToNode
+            )
+            if (!deprecatedCall) return null
+            const meta = edgeRefactorMetadata.find((candidate) =>
+              sourceRangeMatch(
+                candidate,
+                deprecatedCall.call.start,
+                deprecatedCall.call.end,
+                deprecatedCall.call.moduleId
+              )
+            )
+            return hasFaceIds(meta) ? edgeRefactorMetaToPayload(meta) : null
+          })
+          if (
+            payloads.length > 0 &&
+            payloads.every(
+              (payload): payload is FilletEdgeRefPayload => payload !== null
+            )
+          ) {
+            replacements.push({ argument, payload: payloads })
+          }
+          continue
+        }
         const deprecatedCall = expr
           ? findDeprecatedEdgeStdlibCallFromExpr(program, expr, pathToNode)
           : null
@@ -1819,7 +1847,7 @@ export function findExtrudeToCallsToFix(
   return findExtrudeEdgeCallsToFix(program, edgeRefactorMetadata).flatMap(
     ({ range, replacements, pathToCall }) => {
       const replacement = replacements.find(({ argument }) => argument === 'to')
-      if (!replacement) return []
+      if (!replacement || isArray(replacement.payload)) return []
       const [firstFaceId, secondFaceId] = replacement.payload.side_faces
       if (!firstFaceId || !secondFaceId) return []
       return [
@@ -2000,18 +2028,27 @@ function refactorExtrudeEdgeArgumentsInPlace(
     let failedToCreateEdgeRef = false
 
     for (const { argument, payload } of replacements) {
-      const result = createEdgeRefObjectExpression(
-        payload,
-        wasmInstance,
-        nextAst,
-        artifactGraph
-      )
-      if (err(result)) {
-        failedToCreateEdgeRef = true
-        break
+      const payloads = isArray(payload) ? payload : [payload]
+      const exprs: Expr[] = []
+      for (const item of payloads) {
+        const result = createEdgeRefObjectExpression(
+          item,
+          wasmInstance,
+          nextAst,
+          artifactGraph
+        )
+        if (err(result)) {
+          failedToCreateEdgeRef = true
+          break
+        }
+        exprs.push(result.expr)
+        nextAst = result.modifiedAst
       }
-      replacementExprs.push({ argument, expr: result.expr })
-      nextAst = result.modifiedAst
+      if (failedToCreateEdgeRef) break
+      replacementExprs.push({
+        argument,
+        expr: isArray(payload) ? createArrayExpression(exprs) : exprs[0],
+      })
     }
 
     if (failedToCreateEdgeRef || replacementExprs.length === 0) continue

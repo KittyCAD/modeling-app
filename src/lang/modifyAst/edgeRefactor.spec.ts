@@ -1777,6 +1777,41 @@ surface001 = extrude(
     )
 
     it(
+      'refactors an array of deprecated extrude targets',
+      { timeout: 30_000 },
+      async () => {
+        const kcl = `@settings(kclVersion = 2.0)
+
+sketch001 = sketch(on = XY) {
+  line1 = line(start = [0mm, 0mm], end = [10mm, 0mm])
+  line2 = line(start = [10mm, 0mm], end = [10mm, 10mm])
+  line3 = line(start = [10mm, 10mm], end = [0mm, 10mm])
+  line4 = line(start = [0mm, 10mm], end = [0mm, 0mm])
+}
+
+region001 = region(point = [5mm, 5mm], sketch = sketch001)
+body001 = extrude(region001, length = 5mm)
+surface001 = extrude(
+  [
+    getOppositeEdge(body001.sketch.tags.line1),
+    getOppositeEdge(body001.sketch.tags.line3),
+  ],
+  length = 5mm,
+  bodyType = SURFACE,
+  method = NEW,
+)`
+        const refactored = await runIntegrationRefactor(kcl)
+        const normalized = norm(refactored)
+        expect(normalized).not.toContain('getOppositeEdge(')
+        expect(normalized.match(/sideFaces =/g)).toHaveLength(2)
+
+        const refactoredAst = assertParse(refactored, instanceInThisFile)
+        await kclManagerInThisFile.executeAst({ ast: refactoredAst })
+        expect(kclManagerInThisFile.errors).toEqual([])
+      }
+    )
+
+    it(
       'refactors a direct tagged-edge extrude target',
       { timeout: 30_000 },
       async () => {
