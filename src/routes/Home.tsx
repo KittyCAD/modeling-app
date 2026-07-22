@@ -164,10 +164,10 @@ const Home = () => {
       : undefined
   const selectedProjectLibrary =
     routeSelectedProjectLibrary ?? singleProjectLibrary
-  const scopedHomeProjectEntries = selectedProjectLibrary
+  const scopedHomeProjectEntries = routeSelectedProjectLibrary
     ? getHomeProjectEntriesForLibrary(
         homeProjectEntries,
-        selectedProjectLibrary.id
+        routeSelectedProjectLibrary.id
       )
     : libraryId
       ? []

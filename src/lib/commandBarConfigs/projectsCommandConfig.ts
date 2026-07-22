@@ -10,6 +10,7 @@ import {
   getProjectOptionNameFromDirectoryName,
 } from '@src/lib/projectDisplayName'
 import type { ProjectLibrary } from '@src/lib/projectLibraries'
+import type { Project } from '@src/lib/project'
 import { getProjectDirectoryNameFromTitle } from '@src/lib/projectName'
 import { getHomeProjectDisplayName } from '@src/lib/homeProjects'
 import type { commandBarMachine } from '@src/machines/commandBarMachine'
@@ -40,7 +41,10 @@ export type ProjectsCommandSchema = {
 
 export interface CreateProjectLibraryTarget {
   library: ProjectLibrary
-  createProject: ProjectLibraryOperation<ProjectLibraryCreateProjectInput>
+  createProject: ProjectLibraryOperation<
+    ProjectLibraryCreateProjectInput,
+    Project | undefined
+  >
 }
 
 type HomeProjectCommandAction = 'open' | 'rename' | 'delete'
@@ -306,10 +310,16 @@ export function createProjectCommands({
         }
 
         if (target) {
-          return target.createProject.run({
-            library: target.library,
-            requestedProjectName,
-            requestedProjectTitle,
+          return Promise.resolve(
+            target.createProject.run({
+              library: target.library,
+              requestedProjectName,
+              requestedProjectTitle,
+            })
+          ).then((project) => {
+            if (project?.default_file) {
+              navigateToProjectFile(project.default_file)
+            }
           })
         }
 

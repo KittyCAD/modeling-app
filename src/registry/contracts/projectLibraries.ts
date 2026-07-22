@@ -4,6 +4,7 @@ import type {
   HomeProjectEntryContribution,
   HomeProjectOpenResult,
 } from '@src/registry/contracts/homeProjects'
+import type { Project } from '@src/lib/project'
 import type {
   ProjectLibrary,
   ProjectLibrarySetting,
@@ -49,7 +50,10 @@ export interface ProjectLibraryRenameProjectInput
 export type ProjectLibraryDeleteProjectInput = ProjectLibraryProjectInput
 
 export interface ProjectLibraryTypeOperations {
-  createProject?: ProjectLibraryOperation<ProjectLibraryCreateProjectInput>
+  createProject?: ProjectLibraryOperation<
+    ProjectLibraryCreateProjectInput,
+    Project | undefined
+  >
   openProject?: ProjectLibraryOperation<
     ProjectLibraryOpenProjectInput,
     HomeProjectOpenResult | undefined

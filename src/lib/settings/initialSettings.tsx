@@ -1,17 +1,12 @@
-import { useSignals } from '@preact/signals-react/runtime'
 import type { CameraOrbitType } from '@rust/kcl-lib/bindings/CameraOrbitType'
 import type { CameraProjectionType } from '@rust/kcl-lib/bindings/CameraProjectionType'
 import type { NamedView } from '@rust/kcl-lib/bindings/NamedView'
 import type { LayoutsWithMetadata } from '@src/lib/layout/types'
 import type { OnboardingStatus } from '@src/lib/onboardingPaths'
-import { useRef } from 'react'
+import { Suspense, lazy, useRef } from 'react'
 
 import { NIL as uuidNIL } from 'uuid'
 
-import {
-  ProjectLibrariesSettingInput,
-  projectLibraryTypeOptionsFromContributions,
-} from '@src/components/Settings/ProjectLibrariesSettingInput'
 import type { CameraSystem } from '@src/lib/cameraControls'
 import { cameraMouseDragGuards, cameraSystems } from '@src/lib/cameraControls'
 import {
@@ -40,7 +35,12 @@ import { Themes } from '@src/lib/theme'
 import { isEnumMember } from '@src/lib/types'
 import { capitaliseFC, isArray } from '@src/lib/utils'
 import { hexToRgba } from '@src/lib/utils'
-import { projectLibraryTypesValueSpec } from '@src/registry/contracts/projectLibraries'
+
+const ProjectLibrariesSetting = lazy(() =>
+  import('@src/components/Settings/ProjectLibrariesSetting').then((module) => ({
+    default: module.ProjectLibrariesSetting,
+  }))
+)
 
 /**
  * A setting that can be set at the user or project level
@@ -271,18 +271,11 @@ function createCoreSettings() {
           web: OPFS_CLOUD_FEATURE_FLAG,
         },
         validate: isProjectLibrarySettings,
-        Component: ({ value, updateValue, registry }) => {
-          useSignals()
-          const libraryTypeOptions = projectLibraryTypeOptionsFromContributions(
-            registry.signal(projectLibraryTypesValueSpec).value
-          )
-
+        Component: (props) => {
           return (
-            <ProjectLibrariesSettingInput
-              value={value}
-              updateValue={updateValue}
-              libraryTypeOptions={libraryTypeOptions}
-            />
+            <Suspense fallback={null}>
+              <ProjectLibrariesSetting {...props} />
+            </Suspense>
           )
         },
       }),
