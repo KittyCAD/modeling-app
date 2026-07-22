@@ -1,6 +1,6 @@
 import { EngineDebugger } from '@src/lib/debugger'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import { EngineCommandManagerEvents } from '@src/lib/engineConnection/utils'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { useEffect } from 'react'
 
 export function useOnVitestEngineOnline({
@@ -20,13 +20,13 @@ export function useOnVitestEngineOnline({
     }
 
     engineCommandManager.addEventListener(
-      EngineCommandManagerEvents.OnlineRequest,
+      EngineConnectionManagerEvents.OnlineRequest,
       onlineRequest as EventListener
     )
 
     return () => {
       engineCommandManager.removeEventListener(
-        EngineCommandManagerEvents.OnlineRequest,
+        EngineConnectionManagerEvents.OnlineRequest,
         onlineRequest as EventListener
       )
     }

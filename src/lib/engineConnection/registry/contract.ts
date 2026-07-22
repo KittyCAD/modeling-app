@@ -1,15 +1,13 @@
 import { defineContract, defineService } from '@kittycad/registry'
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 
-export type EngineCommandManagerRegistryService = {
+export type EngineConnectionService = {
   readonly manager: ConnectionManager
 }
 
-export const engineCommandManagerContract = defineContract({
-  engineCommandManagerService:
-    defineService<EngineCommandManagerRegistryService>(
-      'engine-command-manager'
-    ),
+export const engineConnectionContract = defineContract({
+  engineConnectionService:
+    defineService<EngineConnectionService>('engine-connection'),
 })
 
-export const { engineCommandManagerService } = engineCommandManagerContract
+export const { engineConnectionService } = engineConnectionContract

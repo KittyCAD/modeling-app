@@ -1,10 +1,6 @@
-import { type WebSocketResponse } from '@kittycad/lib/dist/types/src'
+import type { WebSocketResponse } from '@kittycad/lib/dist/types/src'
 import type { EngineCommand } from '@src/lang/std/artifactGraph'
 import { EngineDebugger } from '@src/lib/debugger'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { Themes } from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
-import { uuidv4 } from '@src/lib/utils'
 import type { Connection } from '@src/lib/engineConnection/connection'
 import type {
   IEventListenerTracked,
@@ -12,10 +8,14 @@ import type {
   UnreliableResponses,
 } from '@src/lib/engineConnection/utils'
 import {
-  EngineCommandManagerEvents,
   EngineConnectionEvents,
+  EngineConnectionManagerEvents,
   isHighlightSetEntity_type,
 } from '@src/lib/engineConnection/utils'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { Themes } from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import { uuidv4 } from '@src/lib/utils'
 
 export const createOnEngineConnectionRestartRequest = ({
   dispatchEvent,
@@ -24,7 +24,7 @@ export const createOnEngineConnectionRestartRequest = ({
 }) => {
   const onEngineConnectionRestartRequest = () => {
     dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.EngineRestartRequest)
+      new CustomEvent(EngineConnectionManagerEvents.EngineRestartRequest)
     )
   }
   return onEngineConnectionRestartRequest
@@ -36,7 +36,7 @@ export const createOnEngineOffline = ({
   dispatchEvent: (event: Event) => boolean
 }) => {
   const onEngineOffline = () => {
-    dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline))
+    dispatchEvent(new CustomEvent(EngineConnectionManagerEvents.Offline))
   }
   return onEngineOffline
 }
@@ -143,7 +143,7 @@ export const createOnEngineConnectionOpened = ({
     })
 
     dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.SceneReady, {
+      new CustomEvent(EngineConnectionManagerEvents.SceneReady, {
         detail: connection,
       })
     )

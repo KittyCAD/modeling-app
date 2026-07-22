@@ -1,9 +1,10 @@
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
 import { useEffect } from 'react'
+
 let didUseEffectRunOnce = false
 
 // Required for on page exit
-const resetGlobalEngineCommandManager = (
+const resetGlobalEngineConnectionManager = (
   engineCommandManager: ConnectionManager
 ) => {
   // reset the ability to initialize
@@ -26,6 +27,6 @@ export const useOnPageMounted = ({ callback }: { callback: () => void }) => {
   }, [callback])
 
   return {
-    resetGlobalEngineCommandManager,
+    resetGlobalEngineConnectionManager,
   }
 }

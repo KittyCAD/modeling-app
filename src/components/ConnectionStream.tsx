@@ -18,7 +18,6 @@ import { useTryConnect } from '@src/hooks/network/useTryConnect'
 import { useModelingContext } from '@src/hooks/useModelingContext'
 import { useNetworkContext } from '@src/hooks/useNetworkContext'
 import { NetworkHealthState } from '@src/hooks/useNetworkStatus'
-import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { findOperationForArtifact } from '@src/lang/queryAst'
 import {
   getArtifactOfTypes,
@@ -27,16 +26,17 @@ import {
 import { getAllOperations } from '@src/lang/wasm'
 import { useApp, useSingletons } from '@src/lib/boot'
 import { btnName } from '@src/lib/cameraControls'
+import { ClientErrorCode, reportClientError } from '@src/lib/clientErrors'
 import { EngineDebugger } from '@src/lib/debugger'
+import { EngineConnectionManagerEvents } from '@src/lib/engineConnection/utils'
 import { prepareEditCommand } from '@src/lib/featureTree'
 import { createThumbnailPNGOnDesktop } from '@src/lib/screenshot'
 import {
   getEngineRegionSelectionFromEntity,
   sendSelectEventToEngine,
 } from '@src/lib/selections'
-import { Themes, getResolvedTheme } from '@src/lib/theme'
+import { getResolvedTheme, Themes } from '@src/lib/theme'
 import { err, reportRejection } from '@src/lib/trap'
-import { EngineCommandManagerEvents } from '@src/lib/engineConnection/utils'
 import type {
   EngineSceneExtensionContext,
   EngineSceneStreamLayer,
@@ -320,14 +320,14 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
     ]
   )
 
-  const { resetGlobalEngineCommandManager } =
+  const { resetGlobalEngineConnectionManager } =
     useOnPageMounted(onPageMountedParams)
 
   // TODO: When exiting the page via the router teardown the engineCommandManager
   // Gotcha: If you do it too quickly listenToDarkModeMatcher will complain.
   const onPageExitParams = useMemo(
     () => ({
-      callback: resetGlobalEngineCommandManager,
+      callback: resetGlobalEngineConnectionManager,
       engineCommandManager: engineCommandManager,
       sceneInfra: sceneInfra,
     }),
@@ -390,7 +390,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
   const onWebSocketCloseParams = useMemo(
     () => ({
       callback: (code: string | undefined) => {
-        reportEngineDisconnect(EngineCommandManagerEvents.WebsocketClosed, {
+        reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
         setShowManualConnect(false)
@@ -412,7 +412,7 @@ export const ConnectionStream = (props: ConnectionStreamProps) => {
         })
       },
       infiniteDetectionLoopCallback: (code: string | undefined) => {
-        reportEngineDisconnect(EngineCommandManagerEvents.WebsocketClosed, {
+        reportEngineDisconnect(EngineConnectionManagerEvents.WebsocketClosed, {
           websocketCloseCode: code,
         })
         setShowManualConnect(true)

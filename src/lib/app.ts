@@ -60,7 +60,7 @@ import {
   commandSystemService,
   provideCommand,
 } from '@src/registry/contracts/commands'
-import { engineCommandManagerService } from '@src/registry/contracts/engineCommandManager'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { engineSceneRuntimeExtensionsSlot } from '@src/registry/contracts/engineScene'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { keymapService } from '@src/registry/contracts/keymap'
@@ -293,7 +293,7 @@ export class App implements AppSubsystems {
     const layout = appRegistry.get(layoutService)
     layout.get()
     const engineCommandManager = appRegistry.get(
-      engineCommandManagerService
+      engineConnectionService
     ).manager
     const rustContext = new RustContext(
       wasmPromise,

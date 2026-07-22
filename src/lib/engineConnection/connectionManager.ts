@@ -16,30 +16,6 @@ import {
   SYSTEM_SELECTION_COLOR,
 } from '@src/lib/constants'
 import { EngineDebugger } from '@src/lib/debugger'
-import {
-  isExportResponse,
-  isModelingBatchResponse,
-  isModelingResponse,
-} from '@src/lib/kcSdkGuards'
-import type RustContext from '@src/lib/rustContext'
-import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
-import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
-import {
-  type Themes,
-  darkModeMatcher,
-  getOppositeTheme,
-  getThemeColorForEngine,
-} from '@src/lib/theme'
-import { reportRejection } from '@src/lib/trap'
-import {
-  binaryToUuid,
-  hexToRgba,
-  isArray,
-  promiseFactory,
-  uuidv4,
-} from '@src/lib/utils'
-import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
-import type { SettingsActorType } from '@src/machines/settingsMachine'
 import { Connection } from '@src/lib/engineConnection/connection'
 import {
   createOnDarkThemeMediaQueryChange,
@@ -60,11 +36,35 @@ import type {
 } from '@src/lib/engineConnection/utils'
 import {
   ConnectingType,
-  EngineCommandManagerEvents,
   EngineConnectionEvents,
+  EngineConnectionManagerEvents,
   EngineConnectionStateType,
   REJECTED_TOO_EARLY_WEBSOCKET_MESSAGE,
 } from '@src/lib/engineConnection/utils'
+import {
+  isExportResponse,
+  isModelingBatchResponse,
+  isModelingResponse,
+} from '@src/lib/kcSdkGuards'
+import type RustContext from '@src/lib/rustContext'
+import type { SettingsViaQueryString } from '@src/lib/settings/settingsTypes'
+import { getSettingsFromActorContext } from '@src/lib/settings/settingsUtils'
+import {
+  darkModeMatcher,
+  getOppositeTheme,
+  getThemeColorForEngine,
+  type Themes,
+} from '@src/lib/theme'
+import { reportRejection } from '@src/lib/trap'
+import {
+  binaryToUuid,
+  hexToRgba,
+  isArray,
+  promiseFactory,
+  uuidv4,
+} from '@src/lib/utils'
+import { withKittycadWebSocketURL } from '@src/lib/withBaseURL'
+import type { SettingsActorType } from '@src/machines/settingsMachine'
 
 export type ConnectionSystemDeps = {
   settingsActor: SettingsActorType
@@ -222,7 +222,7 @@ export class ConnectionManager extends EventTarget {
 
     // Only used for useNetworkStatus.tsx listeners, why?!
     this.dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.EngineAvailable, {
+      new CustomEvent(EngineConnectionManagerEvents.EngineAvailable, {
         detail: this.connection,
       })
     )
@@ -878,7 +878,7 @@ export class ConnectionManager extends EventTarget {
         message.resp.type === 'modeling_batch' &&
         pending.command.type === 'modeling_cmd_batch_req'
       ) {
-        let individualPendingResponses: {
+        const individualPendingResponses: {
           [key: string]: WebSocketRequest
         } = {}
         pending.command.requests.forEach(({ cmd, cmd_id }) => {
@@ -1043,28 +1043,28 @@ export class ConnectionManager extends EventTarget {
     // It was torn down from a websocket close.
     if (options?.websocketClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineCommandManagerEvents.WebsocketClosed, {
+        new CustomEvent(EngineConnectionManagerEvents.WebsocketClosed, {
           detail: { code: options.code },
         })
       )
     } else if (options?.peerConnectionClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineCommandManagerEvents.peerConnectionClosed, {})
+        new CustomEvent(EngineConnectionManagerEvents.peerConnectionClosed, {})
       )
     } else if (options?.peerConnectionDisconnected) {
       this.dispatchEvent(
         new CustomEvent(
-          EngineCommandManagerEvents.peerConnectionDisconnected,
+          EngineConnectionManagerEvents.peerConnectionDisconnected,
           {}
         )
       )
     } else if (options?.peerConnectionFailed) {
       this.dispatchEvent(
-        new CustomEvent(EngineCommandManagerEvents.peerConnectionFailed, {})
+        new CustomEvent(EngineConnectionManagerEvents.peerConnectionFailed, {})
       )
     } else if (options?.dataChannelClosed) {
       this.dispatchEvent(
-        new CustomEvent(EngineCommandManagerEvents.dataChannelClose, {})
+        new CustomEvent(EngineConnectionManagerEvents.dataChannelClose, {})
       )
     }
 
@@ -1090,7 +1090,9 @@ export class ConnectionManager extends EventTarget {
 
     // It is possible all connections never even started, but we still want
     // to signal to the whole application we are "offline".
-    this.dispatchEvent(new CustomEvent(EngineCommandManagerEvents.Offline, {}))
+    this.dispatchEvent(
+      new CustomEvent(EngineConnectionManagerEvents.Offline, {})
+    )
 
     // Allow for restart!
     this.started = false
@@ -1098,8 +1100,8 @@ export class ConnectionManager extends EventTarget {
 
   /**
    * When an instance of new Connection() invokes .send() the send can be dropped because the websocket
-   * is not opened. When engineCommandManager.connection.send() drops the command it needs to reject it
-   * within the engine command manager. This will reject a specific pendingCommand which will prevent it from
+   * is not opened. When the engine connection manager's connection.send() drops the command it needs to reject it
+   * within the engine connection manager. This will reject a specific pendingCommand which will prevent it from
    * hanging forever
    */
   rejectPendingCommand({ cmdId }: { cmdId: string }) {
@@ -1153,7 +1155,7 @@ export class ConnectionManager extends EventTarget {
   // VITEST ONLY
   online() {
     this.dispatchEvent(
-      new CustomEvent(EngineCommandManagerEvents.OnlineRequest, {})
+      new CustomEvent(EngineConnectionManagerEvents.OnlineRequest, {})
     )
     EngineDebugger.addLog({
       label: 'connectionManager',

@@ -19,7 +19,7 @@ describe('useOnOfflineToExitSketchMode', () => {
       unmount()
       expect(callback).toHaveBeenCalledTimes(0)
     })
-    test('should add and remove offline listener on engine command manager', async () => {
+    test('should add and remove offline listener on engine connection manager', async () => {
       const callback = vi.fn(() => 1)
       const { engineCommandManager } =
         await buildTheWorldAndNoEngineConnection(true)

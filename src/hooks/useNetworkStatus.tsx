@@ -1,16 +1,16 @@
 import type { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import {
-  ConnectingTypeGroup,
-  DisconnectingType,
-  EngineCommandManagerEvents,
-  EngineConnectionEvents,
-  EngineConnectionStateType,
-  initialConnectingTypeGroupState,
-} from '@src/lib/engineConnection/utils'
 import type {
   ConnectingType,
   EngineConnectionState,
   IErrorType,
+} from '@src/lib/engineConnection/utils'
+import {
+  ConnectingTypeGroup,
+  DisconnectingType,
+  EngineConnectionEvents,
+  EngineConnectionManagerEvents,
+  EngineConnectionStateType,
+  initialConnectingTypeGroupState,
 } from '@src/lib/engineConnection/utils'
 import { useEffect, useState } from 'react'
 
@@ -122,12 +122,12 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
       setSteps(structuredClone(initialConnectingTypeGroupState))
     }
     engineCommandManager?.addEventListener(
-      EngineCommandManagerEvents.Offline,
+      EngineConnectionManagerEvents.Offline,
       offlineCallback
     )
     return () => {
       engineCommandManager?.removeEventListener(
-        EngineCommandManagerEvents.Offline,
+        EngineConnectionManagerEvents.Offline,
         offlineCallback
       )
     }
@@ -174,15 +174,15 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
     }: CustomEvent) => {
       setImmediateState(engineConnectionState)
       setSteps((steps) => {
-        let nextSteps = structuredClone(steps)
+        const nextSteps = structuredClone(steps)
         if (
           engineConnectionState.type === EngineConnectionStateType.Connecting
         ) {
           setInternetConnected(true)
 
           const groups = Object.values(nextSteps)
-          for (let group of groups) {
-            for (let step of group) {
+          for (const group of groups) {
+            for (const step of group) {
               if (step[0] !== engineConnectionState.value.type) continue
               step[1] = true
             }
@@ -193,8 +193,8 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
           engineConnectionState.type === EngineConnectionStateType.Disconnecting
         ) {
           const groups = Object.values(nextSteps)
-          for (let group of groups) {
-            for (let step of group) {
+          for (const group of groups) {
+            for (const step of group) {
               if (
                 engineConnectionState.value.type === DisconnectingType.Error
               ) {
@@ -240,13 +240,13 @@ export function useNetworkStatus(engineCommandManager?: ConnectionManager) {
     }
 
     engineCommandManager?.addEventListener(
-      EngineCommandManagerEvents.EngineAvailable,
+      EngineConnectionManagerEvents.EngineAvailable,
       onEngineAvailable as EventListener
     )
 
     return () => {
       engineCommandManager?.removeEventListener(
-        EngineCommandManagerEvents.EngineAvailable,
+        EngineConnectionManagerEvents.EngineAvailable,
         onEngineAvailable as EventListener
       )
 

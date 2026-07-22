@@ -4,13 +4,13 @@ import {
   Registry,
 } from '@kittycad/registry'
 import { ConnectionManager } from '@src/lib/engineConnection/connectionManager'
-import engineCommandManagerRegistryItem from '@src/lib/engineConnection/registry'
-import { engineCommandManagerService } from '@src/lib/engineConnection/registry/contract'
+import engineConnectionRegistryItem from '@src/lib/engineConnection/registry'
+import { engineConnectionService } from '@src/lib/engineConnection/registry/contract'
 import type { SettingsRegistryService } from '@src/registry/contracts/settings'
 import { settingsService } from '@src/registry/contracts/settings'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-describe('engine command manager extension', () => {
+describe('engine connection extension', () => {
   let registry: Registry | undefined
 
   afterEach(() => {
@@ -29,10 +29,10 @@ describe('engine command manager extension', () => {
         id: 'test-settings-service',
         providesServices: [provideService(settingsService, settings)],
       }),
-      engineCommandManagerRegistryItem,
+      engineConnectionRegistryItem,
     ])
 
-    const service = registry.get(engineCommandManagerService)
+    const service = registry.get(engineConnectionService)
 
     expect(service.manager).toBeInstanceOf(ConnectionManager)
   })
@@ -48,10 +48,10 @@ describe('engine command manager extension', () => {
         id: 'test-settings-service',
         providesServices: [provideService(settingsService, settings)],
       }),
-      engineCommandManagerRegistryItem,
+      engineConnectionRegistryItem,
     ])
 
-    const manager = registry.get(engineCommandManagerService).manager
+    const manager = registry.get(engineConnectionService).manager
     const tearDown = vi.spyOn(manager, 'tearDown')
 
     registry[Symbol.dispose]()

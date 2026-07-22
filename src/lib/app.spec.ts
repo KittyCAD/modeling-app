@@ -18,7 +18,7 @@ import type { UserFeaturesContext } from '@src/machines/userFeaturesMachine'
 import { UserFeaturesState } from '@src/machines/userFeaturesMachine'
 import { appHeaderItemsValueSpec } from '@src/registry/contracts/appHeader'
 import { commandsValueSpec } from '@src/registry/contracts/commands'
-import { engineCommandManagerService } from '@src/registry/contracts/engineCommandManager'
+import { engineConnectionService } from '@src/registry/contracts/engineConnection'
 import { executingEditorService } from '@src/registry/contracts/executingEditor'
 import { machineManagerService } from '@src/registry/contracts/machineManager'
 import { userFeaturesService } from '@src/registry/contracts/userFeatures'
@@ -201,15 +201,15 @@ describe('project system', () => {
     try {
       const registryUserFeatures = app.registry.get(userFeaturesService)
       const registryMachineManager = app.registry.get(machineManagerService)
-      const registryEngineCommandManager = app.registry.get(
-        engineCommandManagerService
+      const registryEngineConnectionManager = app.registry.get(
+        engineConnectionService
       )
 
       expect(app.wasmPromise).toBe(app.registry.get(wasmPromiseValueSpec))
       expect(app.machineManager).toBe(registryMachineManager.manager)
       expect(app.userFeatures.actor).toBe(registryUserFeatures.actor)
       expect(app.engineCommandManager).toBe(
-        registryEngineCommandManager.manager
+        registryEngineConnectionManager.manager
       )
     } finally {
       app.dispose()
