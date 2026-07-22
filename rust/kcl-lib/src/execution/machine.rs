@@ -386,6 +386,59 @@ enum Kont {
     // ---- sketch blocks ----
     SketchArgs(Box<SketchArgsState>),
     SketchBody(Box<SketchBodyState>),
+
+    // ---- resumable higher-order builtins ----
+    /// The reified native-loop state of map/reduce/patternTransform: their
+    /// callbacks run on THIS stack, so arbitrarily deep callback nesting
+    /// cannot overflow the native stack.
+    Resume(Box<ResumeState>),
+}
+
+/// Which resumable builtin is mid-iteration, with its loop state.
+#[derive(Debug)]
+enum ResumeState {
+    Map(MapResume),
+    Reduce(ReduceResume),
+    PatternTransform(PatternTransformResume),
+}
+
+#[derive(Debug)]
+struct MapResume {
+    f: FunctionSource,
+    rest: std::vec::IntoIter<KclValue>,
+    done: Vec<KclValue>,
+    source_range: SourceRange,
+    node_path: Option<crate::NodePath>,
+}
+
+#[derive(Debug)]
+struct ReduceResume {
+    f: FunctionSource,
+    rest: std::vec::IntoIter<KclValue>,
+    source_range: SourceRange,
+    node_path: Option<crate::NodePath>,
+}
+
+#[derive(Debug)]
+struct PatternTransformResume {
+    transform: FunctionSource,
+    instances: u32,
+    /// The repetition to run next; make_transform iterates 1..instances.
+    next_i: u32,
+    transforms: Vec<Vec<kittycad_modeling_cmds::shared::Transform>>,
+    geometry: PatternGeometry,
+    use_original: bool,
+    source_range: SourceRange,
+    node_path: Option<crate::NodePath>,
+    /// The builtin's own (desugared) arguments; the final engine application
+    /// reads its metadata exactly like the recursive executor does.
+    args: Args,
+}
+
+#[derive(Debug)]
+enum PatternGeometry {
+    Solids(Vec<crate::execution::Solid>),
+    Sketches(Vec<crate::execution::Sketch>),
 }
 
 /// Argument-evaluation state for a call: mirrors the argument loop of
@@ -410,7 +463,34 @@ struct BoundaryState {
     fn_src: FunctionSource,
     fn_name: Option<String>,
     callsite: SourceRange,
-    fn_meta: Vec<Metadata>,
+    /// What kind of raw result this boundary receives.
+    expects: BoundaryExpects,
+    /// Who initiated the call, which decides what happens to the finished
+    /// result (and whether errors get a backtrace entry).
+    completion: BoundaryCompletion,
+}
+
+/// The raw result shape a call boundary receives.
+#[derive(Debug)]
+enum BoundaryExpects {
+    /// A KCL function body ran: the block result arrives and the function's
+    /// value is the recorded __return.
+    KclBlock,
+    /// A resumable builtin's iteration produced the value directly.
+    StdValue,
+}
+
+/// Who initiated a call.
+#[derive(Debug)]
+enum BoundaryCompletion {
+    /// A call expression: a missing result is the "undefined function
+    /// result" error, and unwinding errors gain a backtrace entry.
+    CallExpr { fn_meta: Vec<Metadata> },
+    /// A callback invoked by a resumable builtin (map/reduce/
+    /// patternTransform): the finished result feeds the builtin's resume
+    /// continuation, and -- like the recursive executor's call_kw callers --
+    /// errors get no extra backtrace entry.
+    Callback,
 }
 
 /// Argument-evaluation state for a sketch block (non-sketch-mode).
@@ -463,11 +543,51 @@ pub(super) async fn run_block(
         in_flight: InFlight::None,
         last: None,
     };
-    let mut control = match step_block(root, None, &mut konts, exec_state, ctx).await {
+    let control = match step_block(root, None, &mut konts, exec_state, ctx).await {
         Ok(c) => c,
         Err(e) => return Err(unwind_error(e, &mut konts, exec_state)),
     };
+    match run_loop(ctx, control, konts, exec_state).await? {
+        RootResult::Done(applied) => applied.expect_block(),
+        RootResult::Exited(cf) => Ok(Some(cf)),
+    }
+}
 
+/// Run a single expression to completion on a fresh machine root. Used for
+/// bounded, internal evaluations (e.g. GD&T's constant `XY` plane lookup).
+pub(crate) async fn run_expr(
+    ctx: &ExecutorContext,
+    expr: &Expr,
+    exec_state: &mut ExecState,
+    metadata: &Metadata,
+) -> Result<KclValueControlFlow, KclError> {
+    let req = EvalRequest {
+        node: EvalNode::Expr(expr.clone()),
+        metadata: *metadata,
+        decl_name: None,
+        annotations: Vec::new(),
+    };
+    match run_loop(ctx, Control::Eval(Box::new(req)), Vec::new(), exec_state).await? {
+        RootResult::Done(applied) => Ok(applied.expect_value()?.continue_()),
+        RootResult::Exited(cf) => Ok(cf),
+    }
+}
+
+/// How a fresh root ended.
+enum RootResult {
+    /// The root computation finished with this result.
+    Done(Applied),
+    /// An exit() unwound all the way out (cleanups already ran).
+    Exited(KclValueControlFlow),
+}
+
+/// The machine loop: step until the continuation stack is exhausted.
+async fn run_loop(
+    ctx: &ExecutorContext,
+    mut control: Control,
+    mut konts: Vec<Kont>,
+    exec_state: &mut ExecState,
+) -> Result<RootResult, KclError> {
     loop {
         control = match control {
             Control::Eval(req) => match step_eval(*req, &mut konts, exec_state, ctx).await {
@@ -476,9 +596,7 @@ pub(super) async fn run_block(
             },
             Control::Apply(applied) => match konts.pop() {
                 None => {
-                    // The fresh root is done; the root BlockSeq's result is the
-                    // block result.
-                    return applied.expect_block();
+                    return Ok(RootResult::Done(applied));
                 }
                 Some(kont) => match step_apply(kont, applied, &mut konts, exec_state, ctx).await {
                     Ok(c) => c,
@@ -487,7 +605,7 @@ pub(super) async fn run_block(
             },
             Control::Exit(cf) => {
                 let cf = unwind_exit(cf, &mut konts, exec_state)?;
-                return Ok(Some(cf));
+                return Ok(RootResult::Exited(cf));
             }
         };
     }
@@ -519,11 +637,11 @@ fn unwind_exit(
                     }
                     Err(e) => {
                         // pop_env failed; propagate through the error unwind.
-                        return Err(unwind_error(
-                            e.add_unwind_location(b.fn_name.clone(), b.callsite),
-                            konts,
-                            exec_state,
-                        ));
+                        let e = match &b.completion {
+                            BoundaryCompletion::CallExpr { .. } => e.add_unwind_location(b.fn_name.clone(), b.callsite),
+                            BoundaryCompletion::Callback => e,
+                        };
+                        return Err(unwind_error(e, konts, exec_state));
                     }
                 }
             }
@@ -553,7 +671,15 @@ fn unwind_error(mut e: KclError, konts: &mut Vec<Kont>, exec_state: &mut ExecSta
                 exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
                 match b.fn_src.call_finish(b.state, Err(e), exec_state) {
                     Err(finished) => {
-                        e = finished.add_unwind_location(b.fn_name.clone(), b.callsite);
+                        // Callback boundaries get no backtrace entry, matching
+                        // the recursive executor (call_kw callers do not call
+                        // add_unwind_location).
+                        e = match &b.completion {
+                            BoundaryCompletion::CallExpr { .. } => {
+                                finished.add_unwind_location(b.fn_name.clone(), b.callsite)
+                            }
+                            BoundaryCompletion::Callback => finished,
+                        };
                     }
                     Ok(_) => {
                         e = KclError::new_internal(KclErrorDetails::new(
@@ -603,7 +729,11 @@ fn cleanup(kont: Kont, exec_state: &mut ExecState) {
         | Kont::LabelDone { .. }
         | Kont::PipeFirstDone { .. }
         | Kont::CallArgs(_)
-        | Kont::SketchArgs(_) => {}
+        | Kont::SketchArgs(_)
+        // Resumable-builtin loop state holds no ambient state: on unwind it
+        // is simply dropped, which is how exit() and errors inside callbacks
+        // abandon the rest of the iteration.
+        | Kont::Resume(_) => {}
         // Handled by the unwind loops directly.
         Kont::CallBoundary(_) | Kont::SketchBody(_) => unreachable!("boundaries are handled by the unwind loops"),
     }
@@ -1041,25 +1171,50 @@ async fn step_apply(
 
         Kont::CallArgs(state) => call_args_step(*state, applied, konts, exec_state, ctx).await,
         Kont::CallBoundary(boundary) => {
-            let block_result = applied.expect_block()?;
             exec_state.mod_local.machine_call_depth = exec_state.mod_local.machine_call_depth.saturating_sub(1);
             let BoundaryState {
                 state,
                 fn_src,
                 fn_name,
                 callsite,
-                fn_meta,
+                expects,
+                completion,
             } = *boundary;
-            // Read __return from the callee env (still pushed), then finish.
-            let result = fn_src.kcl_body_result(Ok(block_result), exec_state);
-            let finished = fn_src
-                .call_finish(state, result, exec_state)
-                .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
-            finish_call_value(finished, fn_name, callsite, fn_meta)
+            let result = match expects {
+                BoundaryExpects::KclBlock => {
+                    // Read __return from the callee env (still pushed).
+                    let block_result = applied.expect_block()?;
+                    fn_src.kcl_body_result(Ok(block_result), exec_state)
+                }
+                BoundaryExpects::StdValue => {
+                    let value = applied.expect_value()?;
+                    Ok(Some(value.continue_()))
+                }
+            };
+            match completion {
+                BoundaryCompletion::CallExpr { fn_meta } => {
+                    let finished = fn_src
+                        .call_finish(state, result, exec_state)
+                        .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
+                    finish_call_value(finished, fn_name, callsite, fn_meta)
+                }
+                BoundaryCompletion::Callback => {
+                    let finished = fn_src.call_finish(state, result, exec_state)?;
+                    match finished {
+                        Some(cf) if cf.is_some_return() => Ok(Control::Exit(cf)),
+                        Some(cf) => resume_drive(Feed::Callback(Some(cf.into_value())), konts, exec_state, ctx).await,
+                        None => resume_drive(Feed::Callback(None), konts, exec_state, ctx).await,
+                    }
+                }
+            }
         }
 
         Kont::SketchArgs(state) => sketch_args_step(*state, applied, konts, exec_state, ctx).await,
         Kont::SketchBody(state) => sketch_body_finish(*state, applied, exec_state, ctx).await,
+        Kont::Resume(_) => Err(KclError::new_internal(KclErrorDetails::new(
+            "machine executor: a value applied directly to resumable-builtin loop state".to_owned(),
+            Vec::new(),
+        ))),
     }
 }
 
@@ -1424,9 +1579,7 @@ async fn call_args_step(
     }
 }
 
-/// All arguments evaluated: build `Args`, run call setup, and either await a
-/// Rust builtin inline (a flat leaf) or push a call boundary plus the KCL
-/// function body (no native recursion).
+/// All arguments evaluated: build `Args` and run the call.
 async fn dispatch_call(
     state: CallArgsState,
     konts: &mut Vec<Kont>,
@@ -1456,6 +1609,51 @@ async fn dispatch_call(
         fn_name.clone(),
     );
 
+    match machine_call(
+        fn_src,
+        fn_display_name,
+        callsite,
+        args,
+        BoundaryCompletion::CallExpr { fn_meta },
+        konts,
+        exec_state,
+        ctx,
+    )
+    .await?
+    {
+        MachineCallOutcome::Control(control) => Ok(control),
+        MachineCallOutcome::LeafCallbackDone(_) => Err(KclError::new_internal(KclErrorDetails::new(
+            "machine executor: call expression produced a callback result".to_owned(),
+            vec![callsite],
+        ))),
+    }
+}
+
+/// What a machine call produced immediately.
+enum MachineCallOutcome {
+    /// Continue the machine with this control.
+    Control(Control),
+    /// A leaf builtin invoked as a callback completed synchronously; the
+    /// caller's feed loop hands this to the resume continuation (kept out of
+    /// the return path so runs of leaf callbacks use constant native stack).
+    LeafCallbackDone(Option<KclValue>),
+}
+
+/// Run a call on the machine: setup, then a flat leaf await (plain Rust
+/// builtins), a resumable-builtin entry (map/reduce/patternTransform), or a
+/// call boundary plus the KCL function body (no native recursion). Shared by
+/// call expressions and resumable-builtin callbacks.
+#[allow(clippy::too_many_arguments)]
+async fn machine_call(
+    fn_src: FunctionSource,
+    fn_name: Option<String>,
+    callsite: SourceRange,
+    args: Args<crate::execution::fn_call::Sugary>,
+    completion: BoundaryCompletion,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<MachineCallOutcome, KclError> {
     // Guard against runaway recursion: machine-native calls do not grow the
     // native stack, so this is policy, not a native-stack limit. It must
     // behave when raised to 50,000 or more.
@@ -1468,42 +1666,374 @@ async fn dispatch_call(
             vec![callsite],
         )));
     }
+    let decorate = |e: KclError, completion: &BoundaryCompletion| match completion {
+        BoundaryCompletion::CallExpr { .. } => e.add_unwind_location(fn_name.clone(), callsite),
+        BoundaryCompletion::Callback => e,
+    };
+
+    let resumable = match &fn_src.body {
+        FunctionBody::Rust(_) => fn_src.std_props.as_ref().and_then(|p| p.resumable),
+        FunctionBody::Kcl(_) => None,
+    };
+    if let Some(kind) = resumable {
+        let (call_state, args) = match fn_src.call_setup(&fn_name, exec_state, args, callsite) {
+            Ok(x) => x,
+            Err(e) => return Err(decorate(e, &completion)),
+        };
+        exec_state.mod_local.machine_call_depth += 1;
+        konts.push(Kont::CallBoundary(Box::new(BoundaryState {
+            state: call_state,
+            fn_src: fn_src.clone(),
+            fn_name,
+            callsite,
+            expects: BoundaryExpects::StdValue,
+            completion,
+        })));
+        // Parse errors after this point unwind through the boundary just
+        // pushed, finalizing the operation with is_error = true -- exactly
+        // like an error inside the recursive builtin's body.
+        return resumable_entry(kind, args, konts, exec_state, ctx)
+            .await
+            .map(MachineCallOutcome::Control);
+    }
 
     match &fn_src.body {
         FunctionBody::Rust(f) => {
-            // A flat leaf: setup, await the builtin, finish. Higher-order
-            // builtins (map/reduce/patternTransform) re-enter KCL through
-            // call_kw, which fresh-roots a machine run per callback until the
-            // resumable-callback phase lands.
-            let (call_state, args) = fn_src
-                .call_setup(&fn_display_name, exec_state, args, callsite)
-                .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
+            // A flat leaf: setup, await the builtin, finish.
+            let f = *f;
+            let (call_state, args) = match fn_src.call_setup(&fn_name, exec_state, args, callsite) {
+                Ok(x) => x,
+                Err(e) => return Err(decorate(e, &completion)),
+            };
             let result = f(exec_state, args).await.map(Some);
-            let finished = fn_src
-                .call_finish(call_state, result, exec_state)
-                .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
-            finish_call_value(finished, fn_display_name, callsite, fn_meta)
+            let finished = match fn_src.call_finish(call_state, result, exec_state) {
+                Ok(x) => x,
+                Err(e) => return Err(decorate(e, &completion)),
+            };
+            match completion {
+                BoundaryCompletion::CallExpr { fn_meta } => {
+                    finish_call_value(finished, fn_name, callsite, fn_meta).map(MachineCallOutcome::Control)
+                }
+                BoundaryCompletion::Callback => match finished {
+                    Some(cf) if cf.is_some_return() => Ok(MachineCallOutcome::Control(Control::Exit(cf))),
+                    Some(cf) => Ok(MachineCallOutcome::LeafCallbackDone(Some(cf.into_value()))),
+                    None => Ok(MachineCallOutcome::LeafCallbackDone(None)),
+                },
+            }
         }
         FunctionBody::Kcl(_) => {
-            let (call_state, args) = fn_src
-                .call_setup(&fn_display_name, exec_state, args, callsite)
-                .map_err(|e| e.add_unwind_location(fn_name.clone(), callsite))?;
+            let (call_state, args) = match fn_src.call_setup(&fn_name, exec_state, args, callsite) {
+                Ok(x) => x,
+                Err(e) => return Err(decorate(e, &completion)),
+            };
             if let Err(e) = crate::execution::fn_call::assign_args_to_params_kw(&fn_src, args, exec_state) {
                 let e = FunctionSource::call_abort_on_arg_binding_failure(call_state, e, exec_state);
-                return Err(e.add_unwind_location(fn_name.clone(), callsite));
+                return Err(decorate(e, &completion));
             }
             exec_state.mod_local.machine_call_depth += 1;
             let body = BlockRef::FnBody(fn_src.ast.arc());
             konts.push(Kont::CallBoundary(Box::new(BoundaryState {
                 state: call_state,
                 fn_src,
-                fn_name: fn_display_name,
+                fn_name,
                 callsite,
-                fn_meta,
+                expects: BoundaryExpects::KclBlock,
+                completion,
             })));
             push_block(body, BodyType::Block, konts);
-            step_block_kick(konts, exec_state, ctx).await
+            step_block_kick(konts, exec_state, ctx)
+                .await
+                .map(MachineCallOutcome::Control)
         }
+    }
+}
+
+/// Start a resumable builtin: parse its arguments (the boundary is already
+/// pushed, so failures finalize the operation like a builtin-body error) and
+/// run the first callback -- or produce the empty result immediately.
+async fn resumable_entry(
+    kind: crate::std::ResumableKind,
+    args: Args,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Control, KclError> {
+    let source_range = args.source_range;
+    let node_path = args.node_path.clone();
+    let resume = match kind {
+        crate::std::ResumableKind::Map => {
+            let (array, f) = crate::std::array::map_parse_args(&args, exec_state)?;
+            ResumeState::Map(MapResume {
+                f,
+                rest: array.into_iter(),
+                done: Vec::new(),
+                source_range,
+                node_path,
+            })
+        }
+        crate::std::ResumableKind::Reduce => {
+            let (array, f, initial) = crate::std::array::reduce_parse_args(&args, exec_state)?;
+            konts.push(Kont::Resume(Box::new(ResumeState::Reduce(ReduceResume {
+                f,
+                rest: array.into_iter(),
+                source_range,
+                node_path,
+            }))));
+            // The accumulator rides the callback results: seed it as if a
+            // callback had just produced the initial value.
+            return resume_drive(Feed::Callback(Some(initial)), konts, exec_state, ctx).await;
+        }
+        crate::std::ResumableKind::PatternTransform => {
+            let (solids, instances, transform, use_original) =
+                crate::std::patterns::pattern_transform_parse_args(&args, exec_state)?;
+            crate::std::patterns::pattern_check_instances(instances, source_range)?;
+            ResumeState::PatternTransform(PatternTransformResume {
+                transform,
+                instances,
+                next_i: 1,
+                transforms: Vec::with_capacity(usize::try_from(instances).unwrap_or_default()),
+                geometry: PatternGeometry::Solids(solids),
+                use_original: use_original.unwrap_or_default(),
+                source_range,
+                node_path,
+                args,
+            })
+        }
+        crate::std::ResumableKind::PatternTransform2d => {
+            let (sketches, instances, transform, use_original) =
+                crate::std::patterns::pattern_transform_2d_parse_args(&args, exec_state)?;
+            crate::std::patterns::pattern_check_instances(instances, source_range)?;
+            ResumeState::PatternTransform(PatternTransformResume {
+                transform,
+                instances,
+                next_i: 1,
+                transforms: Vec::with_capacity(usize::try_from(instances).unwrap_or_default()),
+                geometry: PatternGeometry::Sketches(sketches),
+                use_original: use_original.unwrap_or_default(),
+                source_range,
+                node_path,
+                args,
+            })
+        }
+    };
+    konts.push(Kont::Resume(Box::new(resume)));
+    resume_drive(Feed::Advance, konts, exec_state, ctx).await
+}
+
+/// What drives the next resume step.
+enum Feed {
+    /// Start the builtin's next iteration (entry).
+    Advance,
+    /// A callback just completed with this result.
+    Callback(Option<KclValue>),
+}
+
+/// Drive the innermost resume continuation. Loop-based (not recursive) so a
+/// run of leaf-builtin callbacks completes in constant native stack: each
+/// synchronously-finished callback feeds the next iteration of this loop.
+async fn resume_drive(
+    mut feed: Feed,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<Control, KclError> {
+    loop {
+        let Some(Kont::Resume(resume)) = konts.pop() else {
+            return Err(KclError::new_internal(KclErrorDetails::new(
+                "machine executor: callback finished with no resumable builtin awaiting it".to_owned(),
+                Vec::new(),
+            )));
+        };
+        let outcome = match feed {
+            Feed::Advance => resume_next(*resume, konts, exec_state, ctx).await?,
+            Feed::Callback(value) => resume_step(*resume, value, konts, exec_state, ctx).await?,
+        };
+        match outcome {
+            ResumeOutcome::Control(control) => return Ok(control),
+            ResumeOutcome::CallbackDone(value) => {
+                feed = Feed::Callback(value);
+            }
+        }
+    }
+}
+
+enum ResumeOutcome {
+    /// The machine continues with this control (a callback was started on
+    /// the continuation stack, or the builtin finished and its value was
+    /// applied).
+    Control(Control),
+    /// A leaf-builtin callback completed synchronously; feed this to the
+    /// next resume step.
+    CallbackDone(Option<KclValue>),
+}
+
+/// Record a callback's result, then continue the builtin's iteration.
+async fn resume_step(
+    resume: ResumeState,
+    fed: Option<KclValue>,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<ResumeOutcome, KclError> {
+    match resume {
+        ResumeState::Map(mut m) => {
+            let value = fed.ok_or_else(|| crate::std::array::map_missing_value_error(m.source_range))?;
+            m.done.push(value);
+            resume_next(ResumeState::Map(m), konts, exec_state, ctx).await
+        }
+        ResumeState::Reduce(r) => {
+            // fed is the new accumulator (or the seeded initial value).
+            let accum = fed.ok_or_else(|| crate::std::array::reduce_missing_value_error(r.source_range))?;
+            resume_reduce_next(r, accum, konts, exec_state, ctx).await
+        }
+        ResumeState::PatternTransform(mut p) => {
+            let value = fed.ok_or_else(|| crate::std::patterns::transform_missing_value_error(p.source_range))?;
+            let transforms = match &p.geometry {
+                PatternGeometry::Solids(_) => crate::std::patterns::transforms_from_callback_value::<
+                    crate::execution::Solid,
+                >(value, p.source_range, exec_state)?,
+                PatternGeometry::Sketches(_) => crate::std::patterns::transforms_from_callback_value::<
+                    crate::execution::Sketch,
+                >(value, p.source_range, exec_state)?,
+            };
+            p.transforms.push(transforms);
+            p.next_i += 1;
+            resume_next(ResumeState::PatternTransform(p), konts, exec_state, ctx).await
+        }
+    }
+}
+
+/// Start the builtin's next callback, or finish the builtin and apply its
+/// value (which lands on the builtin's call boundary).
+async fn resume_next(
+    resume: ResumeState,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<ResumeOutcome, KclError> {
+    match resume {
+        ResumeState::Map(mut m) => match m.rest.next() {
+            Some(elem) => {
+                let f = m.f.clone();
+                let callsite = m.source_range;
+                let args =
+                    crate::std::array::map_callback_args(elem, m.source_range, m.node_path.clone(), exec_state, ctx);
+                konts.push(Kont::Resume(Box::new(ResumeState::Map(m))));
+                start_callback(f, callsite, args, konts, exec_state, ctx).await
+            }
+            None => Ok(ResumeOutcome::Control(Control::Apply(Applied::Value(
+                crate::std::array::map_result(m.done),
+            )))),
+        },
+        ResumeState::PatternTransform(p) => {
+            if p.next_i < p.instances {
+                let f = p.transform.clone();
+                let callsite = p.source_range;
+                let args = crate::std::patterns::transform_callback_args(
+                    p.next_i,
+                    p.source_range,
+                    p.node_path.clone(),
+                    exec_state,
+                    ctx,
+                );
+                konts.push(Kont::Resume(Box::new(ResumeState::PatternTransform(p))));
+                start_callback(f, callsite, args, konts, exec_state, ctx).await
+            } else {
+                // All transforms collected: apply them to the geometry via
+                // the engine (a flat await), then the value lands on the
+                // builtin's call boundary.
+                let value = match p.geometry {
+                    PatternGeometry::Solids(solids) => {
+                        let out = crate::std::patterns::execute_pattern_transform::<crate::execution::Solid>(
+                            p.transforms,
+                            solids,
+                            p.use_original,
+                            exec_state,
+                            &p.args,
+                        )
+                        .await?;
+                        KclValue::from(out)
+                    }
+                    PatternGeometry::Sketches(sketches) => {
+                        let out = crate::std::patterns::execute_pattern_transform::<crate::execution::Sketch>(
+                            p.transforms,
+                            sketches,
+                            p.use_original,
+                            exec_state,
+                            &p.args,
+                        )
+                        .await?;
+                        KclValue::from(out)
+                    }
+                };
+                Ok(ResumeOutcome::Control(Control::Apply(Applied::Value(value))))
+            }
+        }
+        ResumeState::Reduce(_) => Err(KclError::new_internal(KclErrorDetails::new(
+            "machine executor: reduce must advance through resume_reduce_next".to_owned(),
+            Vec::new(),
+        ))),
+    }
+}
+
+/// Reduce carries its accumulator between callbacks.
+async fn resume_reduce_next(
+    mut r: ReduceResume,
+    accum: KclValue,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<ResumeOutcome, KclError> {
+    match r.rest.next() {
+        Some(elem) => {
+            let f = r.f.clone();
+            let callsite = r.source_range;
+            let args = crate::std::array::reduce_callback_args(
+                elem,
+                accum,
+                r.source_range,
+                r.node_path.clone(),
+                exec_state,
+                ctx,
+            );
+            konts.push(Kont::Resume(Box::new(ResumeState::Reduce(r))));
+            start_callback(f, callsite, args, konts, exec_state, ctx).await
+        }
+        None => Ok(ResumeOutcome::Control(Control::Apply(Applied::Value(accum)))),
+    }
+}
+
+/// Run one callback via the shared call path. A KCL callback pushes its
+/// boundary and body and returns Control; a leaf builtin completes inline,
+/// in which case the just-pushed Resume kont is popped again by the caller's
+/// feed loop.
+async fn start_callback(
+    f: FunctionSource,
+    callsite: SourceRange,
+    args: Args<crate::execution::fn_call::Sugary>,
+    konts: &mut Vec<Kont>,
+    exec_state: &mut ExecState,
+    ctx: &ExecutorContext,
+) -> Result<ResumeOutcome, KclError> {
+    // Boxed to break the async cycle machine_call -> resume -> machine_call.
+    // The edge is bounded: a leaf callback returns LeafCallbackDone (the
+    // caller's feed loop continues iterating with constant native stack), a
+    // KCL callback returns through the continuation stack, and only a
+    // callback that is itself a resumable builtin adds one nested frame.
+    match Box::pin(machine_call(
+        f,
+        None,
+        callsite,
+        args,
+        BoundaryCompletion::Callback,
+        konts,
+        exec_state,
+        ctx,
+    ))
+    .await?
+    {
+        MachineCallOutcome::Control(control) => Ok(ResumeOutcome::Control(control)),
+        MachineCallOutcome::LeafCallbackDone(value) => Ok(ResumeOutcome::CallbackDone(value)),
     }
 }
 
@@ -1833,6 +2363,55 @@ forever(1)
             let avg = start.elapsed() / RUNS as u32;
             println!("{kind:?}: {avg:?} per run over {RUNS} runs");
         }
+    }
+
+    /// The key requirement of the resumable-callback protocol: map calling a
+    /// function that maps again, nested hundreds of levels deep, runs on the
+    /// machine's continuation stack with no native-stack growth per level.
+    #[tokio::test(flavor = "multi_thread")]
+    async fn deeply_nested_map_callbacks() {
+        let code = r#"fn nest(@depth) {
+  return if depth == 0 {
+    1
+  } else {
+    map([depth - 1], f = nest)[0]
+  }
+}
+result = nest(400)
+"#;
+        let result = run_machine(code).await.unwrap();
+        let value = result
+            .exec_state
+            .stack()
+            .memory
+            .get_from_owned("result", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+        let KclValue::Number { value, .. } = value else {
+            panic!("expected a number, found {value:?}");
+        };
+        assert_eq!(value, 1.0);
+    }
+
+    /// A long run of leaf-builtin callbacks completes in constant native
+    /// stack (the feed loop, not recursion).
+    #[tokio::test(flavor = "multi_thread")]
+    async fn many_leaf_callbacks() {
+        let code = r#"fn double(@x) {
+  return x * 2
+}
+result = map([0..4999], f = double)
+"#;
+        let result = run_machine(code).await.unwrap();
+        let value = result
+            .exec_state
+            .stack()
+            .memory
+            .get_from_owned("result", result.mem_env, SourceRange::default(), 0)
+            .unwrap();
+        let KclValue::HomArray { value, .. } = value else {
+            panic!("expected an array, found {value:?}");
+        };
+        assert_eq!(value.len(), 5000);
     }
 
     /// Deep pipelines ride the continuation stack, not the native stack.

@@ -1948,6 +1948,22 @@ impl ExecutorContext {
         Ok(item)
     }
 
+    /// Evaluate a single expression on whichever executor is active, as a
+    /// fresh root. For bounded internal evaluations (e.g. GD&T's constant
+    /// plane lookup).
+    pub(crate) async fn eval_expr_fresh_root(
+        &self,
+        expr: &Expr,
+        exec_state: &mut ExecState,
+        metadata: &Metadata,
+    ) -> Result<KclValueControlFlow, KclError> {
+        if self.is_machine_executor() {
+            return crate::execution::machine::run_expr(self, expr, exec_state, metadata).await;
+        }
+        self.execute_expr(expr, exec_state, metadata, &[], StatementKind::Expression)
+            .await
+    }
+
     /// Create the closure value for a function expression, including the
     /// recursive-closure placeholder fixup and binding a named `fn name() {}`
     /// in the current scope. Flat; shared by both executors.
